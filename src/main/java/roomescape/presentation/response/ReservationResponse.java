@@ -15,7 +15,7 @@ public record ReservationResponse(
     public static ReservationResponse from(final Reservation reservation) {
         return new ReservationResponse(
             reservation.id(),
-            reservation.name(),
+            reservation.user().name(),
             reservation.date(),
             TimeSlotResponse.from(reservation.timeSlot()),
             ThemeResponse.from(reservation.theme())

@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.DomainFixtures.JUNK_THEME;
 import static roomescape.DomainFixtures.JUNK_TIME_SLOT;
+import static roomescape.DomainFixtures.JUNK_USER;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -35,13 +36,13 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가할 수 있다.")
     void reserve() {
         // given
-        var name = "포포";
+        var user = JUNK_USER;
         var date = DateUtils.tomorrow();
         var timeSlotId = JUNK_TIME_SLOT.id();
         var themeId = JUNK_THEME.id();
 
         // when
-        Reservation reserved = service.reserve(name, date, timeSlotId, themeId);
+        Reservation reserved = service.reserve(user, date, timeSlotId, themeId);
 
         // then
         var reservations = service.findAllReservations();
@@ -52,11 +53,11 @@ class ReservationServiceTest {
     @DisplayName("예약을 삭제할 수 있다.")
     void deleteReservation() {
         // given
-        var name = "포포";
+        var user = JUNK_USER;
         var date = DateUtils.tomorrow();
         var timeSlotId = JUNK_TIME_SLOT.id();
         var themeId = JUNK_THEME.id();
-        var reserved = service.reserve(name, date, timeSlotId, themeId);
+        var reserved = service.reserve(user, date, timeSlotId, themeId);
 
         // when
         boolean isRemoved = service.removeById(reserved.id());
@@ -73,13 +74,13 @@ class ReservationServiceTest {
     @DisplayName("지나간 날짜와 시간에 대한 예약 생성은 불가능하다.")
     void cannotReservePastDateTime() {
         // given
-        var name = "포포";
+        var user = JUNK_USER;
         var date = DateUtils.yesterday();
         var timeSlotId = JUNK_TIME_SLOT.id();
         var themeId = JUNK_THEME.id();
 
         // when & then
-        assertThatThrownBy(() -> service.reserve(name, date, timeSlotId, themeId))
+        assertThatThrownBy(() -> service.reserve(user, date, timeSlotId, themeId))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -87,14 +88,14 @@ class ReservationServiceTest {
     @DisplayName("지나가지 않은 날짜와 시간에 대한 예약 생성은 가능하다.")
     void canReserveFutureDateTime() {
         // given
-        var name = "포포";
+        var user = JUNK_USER;
         var date = DateUtils.tomorrow();
         var timeSlotId = JUNK_TIME_SLOT.id();
         var themeId = JUNK_THEME.id();
 
         // when & then
         assertThatCode(
-            () -> service.reserve(name, date, timeSlotId, themeId)
+            () -> service.reserve(user, date, timeSlotId, themeId)
         ).doesNotThrowAnyException();
     }
 
@@ -102,17 +103,17 @@ class ReservationServiceTest {
     @DisplayName("이미 예약된 날짜와 시간에 대한 예약 생성은 불가능하다.")
     void cannotReserveIdenticalDateTimeMultipleTimes() {
         // given
-        var name = "포포";
+        var user = JUNK_USER;
         var date = DateUtils.tomorrow();
         var timeSlotId = JUNK_TIME_SLOT.id();
         var themeId = JUNK_THEME.id();
 
         // when
-        service.reserve(name, date, timeSlotId, themeId);
+        service.reserve(user, date, timeSlotId, themeId);
 
         // then
         assertThatThrownBy(
-            () -> service.reserve(name, date, timeSlotId, themeId)
+            () -> service.reserve(user, date, timeSlotId, themeId)
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -120,16 +121,16 @@ class ReservationServiceTest {
     @DisplayName("이미 해당 날짜, 시간, 테마에 대한 예약이 존재하는 경우 중복된 예약은 불가능하다.")
     void cannotReserveDuplicate() {
         // given
-        var name = "포포";
+        var user = JUNK_USER;
         var date = DateUtils.tomorrow();
         var timeSlotId = JUNK_TIME_SLOT.id();
         var themeId = JUNK_THEME.id();
 
-        service.reserve(name, date, timeSlotId, themeId);
+        service.reserve(user, date, timeSlotId, themeId);
 
         // when & then
         assertThatThrownBy(
-            () -> service.reserve(name, date, timeSlotId, themeId)
+            () -> service.reserve(user, date, timeSlotId, themeId)
         ).isInstanceOf(IllegalArgumentException.class);
     }
 }

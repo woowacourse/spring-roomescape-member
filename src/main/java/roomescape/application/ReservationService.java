@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
+import roomescape.domain.User;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ThemeRepository;
 import roomescape.domain.repository.TimeSlotRepository;
@@ -27,12 +28,12 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public Reservation reserve(final String name, final LocalDate date, final long timeId, final long themeId) {
+    public Reservation reserve(final User user, final LocalDate date, final long timeId, final long themeId) {
         var timeSlot = findTimeSlot(timeId);
         var theme = findTheme(themeId);
         validateDuplicateReservation(date, timeSlot, theme);
 
-        var reservation = Reservation.reserveNewly(name, date, timeSlot, theme);
+        var reservation = Reservation.reserveNewly(user, date, timeSlot, theme);
         var id = reservationRepository.save(reservation);
         return reservation.withId(id);
     }

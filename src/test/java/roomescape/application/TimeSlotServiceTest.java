@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.DomainFixtures.JUNK_THEME;
+import static roomescape.DomainFixtures.JUNK_USER;
 
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
@@ -59,7 +60,7 @@ class TimeSlotServiceTest {
         var timeSlotService = new TimeSlotService(reservationRepository, timeSlotRepository);
 
         var timeSlotToBeRemoved = timeSlotService.register(LocalTime.of(10, 0));
-        var reservationWithTheTimeSlot = Reservation.ofExisting(1L, "포포", DateUtils.tomorrow(), timeSlotToBeRemoved, JUNK_THEME);
+        var reservationWithTheTimeSlot = Reservation.ofExisting(1L, JUNK_USER, DateUtils.tomorrow(), timeSlotToBeRemoved, JUNK_THEME);
         reservationRepository.save(reservationWithTheTimeSlot);
 
         // when & then

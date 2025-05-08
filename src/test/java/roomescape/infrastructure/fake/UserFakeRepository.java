@@ -1,6 +1,7 @@
 package roomescape.infrastructure.fake;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -22,6 +23,11 @@ public class UserFakeRepository implements UserRepository {
         var id = index.getAndIncrement();
         users.put(id, user);
         return id;
+    }
+
+    @Override
+    public List<User> findAll() {
+        return users.values().stream().toList();
     }
 
     @Override

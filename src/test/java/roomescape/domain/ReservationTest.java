@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static roomescape.DomainFixtures.JUNK_THEME;
 import static roomescape.DomainFixtures.JUNK_TIME_SLOT;
+import static roomescape.DomainFixtures.JUNK_USER;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,22 +15,10 @@ import roomescape.DateUtils;
 class ReservationTest {
 
     @Test
-    @DisplayName("이름이 여섯 글자 이상이면 예외가 발생한다")
-    void nameLengthException() {
-        assertThatThrownBy(() -> Reservation.ofExisting(
-            1L,
-            "여섯글자이름",
-            LocalDate.of(2023, 12, 1),
-            new TimeSlot(1L, LocalTime.of(10, 0)),
-            JUNK_THEME)
-        ).isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
     @DisplayName("예약 일시가 현재 일시보다 이전이면 예외가 발생한다.")
     void isBefore() {
         // given
-        var name = "포포";
+        var name = JUNK_USER;
         var yesterday = DateUtils.yesterday();
         var timeSlot = JUNK_TIME_SLOT;
         var theme = JUNK_THEME;
@@ -44,7 +33,7 @@ class ReservationTest {
     void isDateEquals() {
         // given
         var date = LocalDate.of(2023, 12, 1);
-        var reservation = Reservation.ofExisting(1L, "리버", date, JUNK_TIME_SLOT, JUNK_THEME);
+        var reservation = Reservation.ofExisting(1L, JUNK_USER, date, JUNK_TIME_SLOT, JUNK_THEME);
 
         // when
         boolean dateEquals = reservation.isDateEquals(LocalDate.of(2023, 12, 1));
@@ -59,7 +48,7 @@ class ReservationTest {
         // given
         var date = LocalDate.of(2023, 12, 1);
         var timeSlot = new TimeSlot(1L, LocalTime.of(10, 0));
-        var reservation = Reservation.ofExisting(1L, "리버", date, timeSlot, JUNK_THEME);
+        var reservation = Reservation.ofExisting(1L, JUNK_USER, date, timeSlot, JUNK_THEME);
 
         // when
         boolean timeSlotEquals = reservation.isTimeSlotEquals(new TimeSlot(1L, LocalTime.of(10, 0)));

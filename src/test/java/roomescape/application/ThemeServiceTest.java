@@ -3,6 +3,7 @@ package roomescape.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.DomainFixtures.JUNK_TIME_SLOT;
+import static roomescape.DomainFixtures.JUNK_USER;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
@@ -64,11 +65,11 @@ class ThemeServiceTest {
         var theme2 = themeService.register("테마2", "설명2", "썸네일2");
 
         reservationRepository.save(
-            Reservation.ofExisting(1L, "예약", LocalDate.of(2024, 5, 30), JUNK_TIME_SLOT, theme1));
+            Reservation.ofExisting(1L, JUNK_USER, LocalDate.of(2024, 5, 30), JUNK_TIME_SLOT, theme1));
         reservationRepository.save(
-            Reservation.ofExisting(2L,"예약", LocalDate.of(2024, 5, 30), JUNK_TIME_SLOT, theme2));
+            Reservation.ofExisting(2L, JUNK_USER, LocalDate.of(2024, 5, 30), JUNK_TIME_SLOT, theme2));
         reservationRepository.save(
-            Reservation.ofExisting(3L,"예약", LocalDate.of(2024, 5, 31), JUNK_TIME_SLOT, theme2));
+            Reservation.ofExisting(3L, JUNK_USER, LocalDate.of(2024, 5, 31), JUNK_TIME_SLOT, theme2));
 
 
         // when

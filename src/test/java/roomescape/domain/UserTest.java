@@ -1,12 +1,25 @@
 package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class UserTest {
+
+    @Test
+    @DisplayName("이름이 여섯 글자 이상이면 예외가 발생한다")
+    void nameLengthException() {
+        assertThatThrownBy(() -> new User(
+            1L,
+            "여섯글자이름",
+            UserRole.USER,
+            "email@email.com",
+            "password")
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
 
     @Test
     @DisplayName("비밀번호 일치 여부를 알 수 있다.")

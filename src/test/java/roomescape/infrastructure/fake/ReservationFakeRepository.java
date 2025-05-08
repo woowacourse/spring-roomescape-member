@@ -25,7 +25,7 @@ public class ReservationFakeRepository implements ReservationRepository {
         var id = index.getAndIncrement();
         var created = Reservation.ofExisting(
             id,
-            reservation.name(),
+            reservation.user(),
             reservation.date(),
             reservation.timeSlot(),
             reservation.theme()

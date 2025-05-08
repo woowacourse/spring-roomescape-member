@@ -27,6 +27,7 @@ class ReservationJdbcRepositoryTest {
     @DisplayName("타임 슬롯과 테마를 미리 세팅")
     @BeforeEach
     void setUp() {
+        jdbcTemplate.update("insert into USERS (id, name, role, email, password) values (?, ?, ?, ?, ?)", 1, "popo", "USER", "popo@email.com", "password");
         jdbcTemplate.update("insert into RESERVATION_TIME (id, start_at) values (?, ?)", 1, "10:00");
         jdbcTemplate.update("insert into THEME (id, name, description, thumbnail) values (?, ?, ?, ?)",
             1,
@@ -160,7 +161,7 @@ class ReservationJdbcRepositoryTest {
     private Reservation readyReservation() {
         return Reservation.ofExisting(
             1L,
-            "브라운",
+            DomainFixtures.JUNK_USER,
             LocalDate.of(2023, 12, 1),
             DomainFixtures.JUNK_TIME_SLOT,
             DomainFixtures.JUNK_THEME

@@ -1,6 +1,17 @@
+DROP TABLE IF EXISTS USERS;
 DROP TABLE IF EXISTS RESERVATION;
 DROP TABLE IF EXISTS THEME;
 DROP TABLE IF EXISTS RESERVATION_TIME;
+
+CREATE TABLE IF NOT EXISTS users
+(
+    id   BIGINT       NOT NULL AUTO_INCREMENT,
+    name VARCHAR(5),
+    role VARCHAR(5),
+    email VARCHAR(30) UNIQUE,
+    password VARCHAR(30),
+    PRIMARY KEY (id)
+);
 
 CREATE TABLE IF NOT EXISTS reservation_time
 (
@@ -21,11 +32,12 @@ CREATE TABLE IF NOT EXISTS theme
 CREATE TABLE IF NOT EXISTS reservation
 (
     id   BIGINT       NOT NULL AUTO_INCREMENT,
-    name VARCHAR(5) NOT NULL,
+    user_id BIGINT NOT NULL,
     date DATE NOT NULL,
     time_id BIGINT NOT NULL,
     theme_id BIGINT NOT NULL,
     PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );

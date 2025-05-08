@@ -13,18 +13,15 @@ import lombok.experimental.Accessors;
 @ToString
 public class Reservation {
 
-    private static final int NAME_MAX_LENGTH = 5;
-
     private Long id;
-    private final String name;
+    private final User user;
     private final LocalDate date;
     private final TimeSlot timeSlot;
     private final Theme theme;
 
-    private Reservation(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
-        validateNameLength(name);
+    private Reservation(final Long id, final User user, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
         this.id = id;
-        this.name = name;
+        this.user = user;
         this.date = date;
         this.timeSlot = timeSlot;
         this.theme = theme;
@@ -46,21 +43,15 @@ public class Reservation {
         return this.timeSlot.isSameAs(timeSlot);
     }
 
-    public static Reservation ofExisting(final long id, final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
-        return new Reservation(id, name, date, timeSlot, theme);
+    public static Reservation ofExisting(final long id, final User user, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
+        return new Reservation(id, user, date, timeSlot, theme);
     }
 
-    public static Reservation reserveNewly(final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
+    public static Reservation reserveNewly(final User user, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
         if (isBeforeNow(date, timeSlot)) {
             throw new IllegalArgumentException("이전 날짜로 예약할 수 없습니다.");
         }
-        return new Reservation(null, name, date, timeSlot, theme);
-    }
-
-    private void validateNameLength(final String name) {
-        if (name.isBlank() || name.length() > NAME_MAX_LENGTH) {
-            throw new IllegalArgumentException(String.format("이름은 공백이거나 %d자를 넘길 수 없습니다.", NAME_MAX_LENGTH));
-        }
+        return new Reservation(null, user, date, timeSlot, theme);
     }
 
     private static boolean isBeforeNow(final LocalDate date, final TimeSlot timeSlot) {

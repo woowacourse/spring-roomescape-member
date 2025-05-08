@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.application.AuthenticationService;
 import roomescape.presentation.api.ReservationApiController;
 import roomescape.presentation.response.ReservationResponse;
 
@@ -31,6 +32,8 @@ class MissionStepTest {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private ReservationApiController reservationApiController;
+    @Autowired
+    private AuthenticationService authenticationService;
 
     @Test
     void 일단계() {
@@ -59,17 +62,19 @@ class MissionStepTest {
     @Test
     void 삼단계() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", DateUtils.tomorrow().toString());
         params.put("timeId", "1");
         params.put("themeId", "1");
 
+        insertOneUser();
         insertOneReservationTimeSlot();
         insertOneReservationTheme();
+        var token = authenticationService.issueToken("email@email.com", "password");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
             .body(params)
+            .cookie("token", token)
             .when().post("/reservations")
             .then().log().all()
             .statusCode(HttpStatus.CREATED.value())
@@ -109,9 +114,10 @@ class MissionStepTest {
 
     @Test
     void 오단계() {
+        insertOneUser();
         insertOneReservationTimeSlot();
         insertOneReservationTheme();
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
+        jdbcTemplate.update("INSERT INTO reservation (user_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)", 1,
             DateUtils.tomorrow().toString(), 1, 1);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
@@ -129,16 +135,18 @@ class MissionStepTest {
     @Test
     void 육단계() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", DateUtils.tomorrow().toString());
         params.put("timeId", "1");
         params.put("themeId", "1");
 
+        insertOneUser();
         insertOneReservationTimeSlot();
         insertOneReservationTheme();
+        var token = authenticationService.issueToken("email@email.com", "password");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
+            .cookie("token", token)
             .body(params)
             .when().post("/reservations")
             .then().log().all()
@@ -184,16 +192,19 @@ class MissionStepTest {
 
     @Test
     void 팔단계() {
+        insertOneUser();
         insertOneReservationTimeSlot();
         insertOneReservationTheme();
+        var token = authenticationService.issueToken("email@email.com", "password");
+
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", DateUtils.tomorrow().toString());
         params.put("timeId", 1);
         params.put("themeId", "1");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
+            .cookie("token", token)
             .body(params)
             .when().post("/reservations")
             .then().log().all()
@@ -205,7 +216,7 @@ class MissionStepTest {
             .statusCode(HttpStatus.OK.value())
             .body("size()", is(1));
     }
-    
+
     @Test
     void 구단계() {
         boolean isJdbcTemplateInjected = false;
@@ -220,10 +231,15 @@ class MissionStepTest {
         assertThat(isJdbcTemplateInjected).isFalse();
     }
 
+    private void insertOneUser() {
+        jdbcTemplate.update("INSERT INTO users (id, name, role, email, password) VALUES (?, ?, ?, ?, ?)", 1, "admin", "ADMIN", "email@email.com", "password");
+    }
+
     private void insertOneReservationTimeSlot() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
     }
 
     private void insertOneReservationTheme() {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-    }}
+    }
+}

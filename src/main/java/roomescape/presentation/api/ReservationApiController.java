@@ -32,7 +32,7 @@ public class ReservationApiController {
         @Authenticated final User user,
         @RequestBody @Valid final CreateReservationRequest request
     ) {
-        var reservation = service.reserve(user.name(), request.date(), request.timeId(), request.themeId());
+        var reservation = service.reserve(user, request.date(), request.timeId(), request.themeId());
         var response = ReservationResponse.from(reservation);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(response);
     }
