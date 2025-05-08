@@ -182,4 +182,23 @@ class RoomescapeApplicationTest {
 
         assertThat(member.name()).isEqualTo("어드민");
     }
+
+    @DisplayName("회원가입 성공")
+    @Test
+    void registerMemberTest() {
+        int beforeSize = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM member", Integer.class);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "어드민");
+        params.put("email", "admin@email.com");
+        params.put("password", "password");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/members")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(beforeSize + 1));
+    }
 }

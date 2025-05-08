@@ -17,6 +17,14 @@ public class Member {
         return new Member(id, name, email, password);
     }
 
+    public static Member withoutId(String name, String email, String password) {
+        return new Member(null, name, email, password);
+    }
+
+    public static Member assignId(Long id, Member memberWithoutId) {
+        return new Member(id, memberWithoutId.getName(), memberWithoutId.getEmail(), memberWithoutId.getPassword());
+    }
+
     public Long getId() {
         return id;
     }

@@ -1,9 +1,11 @@
 package roomescape.infrastructure;
 
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.repository.MemberRepository;
@@ -22,6 +24,22 @@ public class JdbcMemberRepository implements MemberRepository {
 
     public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public Long save(Member member) {
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id");
+
+        Map<String, Object> params = Map.of(
+                "name", member.getName(),
+                "email", member.getEmail(),
+                "password", member.getPassword()
+        );
+
+        Number key = simpleJdbcInsert.executeAndReturnKey(params);
+        return key.longValue();
     }
 
     @Override
