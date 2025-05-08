@@ -23,7 +23,6 @@ public class JdbcMemberRepository implements MemberRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-
     @Override
     public Long save(Member member) {
         Map<String, Object> parameters = new HashMap<>();
@@ -48,6 +47,26 @@ public class JdbcMemberRepository implements MemberRepository {
                                 rs.getString("password")
                         ),
                         id
+                )
+                .stream()
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Member> findByEmail(String email) {
+        String query = """
+                SELECT id, name, email, password
+                FROM member
+                WHERE email = ?""";
+        return jdbcTemplate.query(
+                        query,
+                        (rs, rowNum) -> new Member(
+                                rs.getLong("id"),
+                                rs.getString("name"),
+                                rs.getString("email"),
+                                rs.getString("password")
+                        ),
+                        email
                 )
                 .stream()
                 .findFirst();
