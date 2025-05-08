@@ -5,14 +5,14 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.domain.user.UserName;
+import roomescape.domain.member.MemberName;
 
-class UserNameTest {
+class MemberNameTest {
 
     @Test
     void 유저_이름은_null일_수_없다() {
         // when & then
-        assertThatThrownBy(() -> new UserName(null))
+        assertThatThrownBy(() -> new MemberName(null))
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -23,7 +23,7 @@ class UserNameTest {
     })
     void 유저_이름이_5자_초과면_예외가_발생한다(String name) {
         // when & then
-        assertThatThrownBy(() -> new UserName(name))
+        assertThatThrownBy(() -> new MemberName(name))
                 .isInstanceOf(IllegalStateException.class);
     }
 
@@ -34,7 +34,7 @@ class UserNameTest {
     })
     void 올바르게_유저_이름을_생성한다(String name) {
         // when & then
-        assertThatCode(() -> new UserName(name))
+        assertThatCode(() -> new MemberName(name))
                 .doesNotThrowAnyException();
     }
 }

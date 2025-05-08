@@ -1,15 +1,15 @@
-package roomescape.domain.user;
+package roomescape.domain.member;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public record UserEmail(String email) {
+public record MemberEmail(String email) {
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
             "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
     );
 
-    public UserEmail(final String email) {
+    public MemberEmail(final String email) {
         this.email = Objects.requireNonNull(email, "email은 null이 아니어야 합니다.");
 
         if (email.isBlank()) {

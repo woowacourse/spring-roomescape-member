@@ -5,15 +5,14 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.domain.user.UserName;
-import roomescape.domain.user.UserPassword;
+import roomescape.domain.member.MemberPassword;
 
-class UserPasswordTest {
+class MemberPasswordTest {
 
     @Test
     void 비밀번호는_null일_수_없다() {
         // when & then
-        assertThatThrownBy(() -> new UserPassword(null))
+        assertThatThrownBy(() -> new MemberPassword(null))
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -24,7 +23,7 @@ class UserPasswordTest {
     })
     void 비밀번호가_30자를_초과하면_예외가_발생한다(String password) {
         // when & then
-        assertThatThrownBy(() -> new UserPassword(password))
+        assertThatThrownBy(() -> new MemberPassword(password))
                 .isInstanceOf(IllegalStateException.class);
     }
 
@@ -36,7 +35,7 @@ class UserPasswordTest {
     })
     void 올바르지_않은_형식의_비밀번호는_예외를_발생한다(String password) {
         // when & then
-        assertThatThrownBy(() -> new UserPassword(password))
+        assertThatThrownBy(() -> new MemberPassword(password))
                 .isInstanceOf(IllegalStateException.class);
     }
 
@@ -47,7 +46,7 @@ class UserPasswordTest {
     })
     void 비밀번호를_올바르게_생성한다(String password) {
         // when & then
-        assertThatCode(() -> new UserPassword(password))
+        assertThatCode(() -> new MemberPassword(password))
                 .doesNotThrowAnyException();
     }
 }

@@ -1,15 +1,16 @@
-package roomescape.domain.user;
+package roomescape.domain.member;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-public record UserPassword(String password) {
+public record MemberPassword(String password) {
 
     private static final Pattern DIGIT_PATTERN = Pattern.compile("\\d");
     private static final Pattern SPECIAL_CHAR_PATTERN = Pattern.compile("[!@#$%^&*(),.?\":{}|<>]");
     private static final Pattern LETTER_PATTERN = Pattern.compile("[A-Za-z]");
 
-    public UserPassword(final String password) {
+    public MemberPassword(final String password) {
         this.password = Objects.requireNonNull(password, "password은 null일 수 없습니다.");
 
         if (password.isBlank()) {
