@@ -30,15 +30,16 @@
 
 ### 어드민 페이지
 
-- `http://localhost:8080/admin`: 어드민 메인 페이지
-- `http://localhost:8080/admin/reservation`: 예약 관리 페이지
-- `http://localhost:8080/admin/time`: 시간 관리 페이지
-- `http://localhost:8080/admin/theme` : 테마 관리 페이지
+- `/admin`: 어드민 메인 페이지
+- `/admin/reservation`: 예약 관리 페이지
+- `/admin/time`: 시간 관리 페이지
+- `/admin/theme` : 테마 관리 페이지
 
 ### 사용자 페이지
 
-- `http://localhost:8080/` : 인기 테마 페이지
-- `http://localhost:8080/reservation` : 사용자 예약 페이지
+- `/login` : 로그인 페이지
+- `/` : 인기 테마 페이지
+- `/reservation` : 사용자 예약 페이지
 
 ---
 
@@ -318,4 +319,47 @@ Content-Type: application/json
         "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
    }
 ]
+```
+
+### 사용자 API
+#### 로그인 API
+
+**Request**
+
+```
+POST /login HTTP/1.1
+content-type: application/json
+host: localhost:8080
+
+{
+    "password": "password",
+    "email": "admin@email.com"
+}
+```
+
+**Response**
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+Keep-Alive: timeout=60
+Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+```
+
+#### 인증 정보 조회 API
+**Request**
+
+```
+GET /login/check HTTP/1.1
+cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+host: localhost:8080
+```
+
+**Response**
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+Keep-Alive: timeout=60
+Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
 ```
