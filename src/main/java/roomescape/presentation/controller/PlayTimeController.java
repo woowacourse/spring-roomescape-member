@@ -28,7 +28,7 @@ public class PlayTimeController {
     public ResponseEntity<PlayTimeResponse> create(
             @RequestBody final PlayTimeRequest playTimeRequest
     ) {
-        final PlayTimeResponse playTimeResponse = playTimeService.create(playTimeRequest);
+        final PlayTimeResponse playTimeResponse = playTimeService.insert(playTimeRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(playTimeResponse);
 
@@ -43,7 +43,7 @@ public class PlayTimeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final Long id) {
-        playTimeService.remove(id);
+        playTimeService.deleteById(id);
 
         return ResponseEntity.noContent().build();
     }

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,8 +18,6 @@ import roomescape.presentation.dto.PlayTimeResponse;
 
 class PlayTimeServiceTest {
 
-    private static final LocalTime FORMATTED_MAX_LOCAL_TIME = LocalTime.of(23, 59);
-
     private PlayTimeService playTimeService;
 
     @BeforeEach
@@ -27,91 +26,103 @@ class PlayTimeServiceTest {
     }
 
     @Test
-    @DisplayName("id를 통해 방탈출 시간을 조회한다.")
-    void findById() {
+    @DisplayName("방탈출 예약 시간 요청 객체로 방탈출 예약 시간을 저장한다")
+    void insert() {
         // given
         final LocalTime startAt = LocalTime.of(10, 10);
         final PlayTimeRequest playTimeRequest = new PlayTimeRequest(startAt);
-        final PlayTimeResponse playTimeResponse = playTimeService.create(playTimeRequest);
+
+        // when
+        final PlayTimeResponse playTimeResponse = playTimeService.insert(playTimeRequest);
+
+        // then
+        assertThat(playTimeResponse.startAt()).isEqualTo(startAt);
+    }
+
+    @Test
+    @DisplayName("저장하려는 방탈출 예약 시간과 동일한 방탈출 예약 시간이 이미 존재한다면 예외가 발생한다")
+    void insertWhenStartAtIsDuplicate() {
+        // given
+        final LocalTime startAt = LocalTime.of(10, 10);
+        final PlayTimeRequest playTimeRequest = new PlayTimeRequest(startAt);
+        playTimeService.insert(playTimeRequest);
+
+        // when & then
+        assertThatThrownBy(() -> playTimeService.insert(playTimeRequest))
+                .isInstanceOf(DuplicateException.class);
+    }
+
+    @Test
+    @DisplayName("모든 방탈출 예약 시간을 조회한다")
+    void findAll() {
+        // given
+        final PlayTimeRequest playTimeRequest1 = new PlayTimeRequest(LocalTime.of(10, 0));
+        final PlayTimeRequest playTimeRequest2 = new PlayTimeRequest(LocalTime.of(20, 15));
+        playTimeService.insert(playTimeRequest1);
+        playTimeService.insert(playTimeRequest2);
+
+        // when
+        final List<PlayTimeResponse> playTimeResponses = playTimeService.findAll();
+
+        // then
+        assertThat(playTimeResponses).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("id를 통해 방탈출 예약 시간을 조회한다")
+    void findByIdById() {
+        // given
+        final LocalTime startAt = LocalTime.of(10, 10);
+        final PlayTimeRequest playTimeRequest = new PlayTimeRequest(startAt);
+        final PlayTimeResponse playTimeResponse = playTimeService.insert(playTimeRequest);
         final Long id = playTimeResponse.id();
 
         // when
-        final PlayTime findPlayTime = playTimeService.find(id);
+        final PlayTime findPlayTime = playTimeService.findById(id);
 
-        // when & then
+        // then
         assertAll(
                 () -> assertThat(findPlayTime.getId()).isEqualTo(id),
                 () -> assertThat(findPlayTime.getStartAt()).isEqualTo(startAt)
         );
     }
 
-    @DisplayName("방탈출 시간을 저장한다.")
     @Test
-    void create() {
+    @DisplayName("id를 통해 방탈출 예약 시간을 조회할 때 대상이 없다면 예외가 발생한다")
+    void findByIdWhenNotExist() {
         // given
-        final PlayTimeRequest playTimeRequest = new PlayTimeRequest(FORMATTED_MAX_LOCAL_TIME);
-        final PlayTimeResponse expected = new PlayTimeResponse(1L, FORMATTED_MAX_LOCAL_TIME);
+        final Long notExistId = 999L;
 
         // when & then
-        assertThat(playTimeService.create(playTimeRequest))
-                .isEqualTo(expected);
-    }
-
-    @DisplayName("저장하려는 방탈출 시간이 이미 존재한다면 예외가 발생한다.")
-    @Test
-    void createOrThrowIfStartAtDuplicate() {
-        // given
-        final PlayTimeRequest playTimeRequest = new PlayTimeRequest(FORMATTED_MAX_LOCAL_TIME);
-        playTimeService.create(playTimeRequest);
-
-        // when & then
-        assertThatThrownBy(() -> playTimeService.create(playTimeRequest))
-                .isInstanceOf(DuplicateException.class);
-    }
-
-    @DisplayName("조회하려는 방탈출 시간 id가 없다면 예외가 발생한다.")
-    @Test
-    void findOrThrowIfIdNotExists() {
-        // given
-        final Long id = 1L;
-        final PlayTime expected = new PlayTime(1L, FORMATTED_MAX_LOCAL_TIME);
-
-        // when & then
-        assertThatThrownBy(() -> playTimeService.find(id))
+        assertThatThrownBy(() -> playTimeService.findById(notExistId))
                 .isInstanceOf(NotFoundException.class);
     }
 
-    @DisplayName("모든 방탈출 시간을 조회한다.")
     @Test
-    void findAll() {
+    @DisplayName("id를 통해 방탈출 예약 시간을 삭제한다")
+    void deleteById() {
         // given
-        playTimeService.create(new PlayTimeRequest(LocalTime.of(10, 0)));
-        playTimeService.create(new PlayTimeRequest(LocalTime.of(20, 15)));
+        final LocalTime startAt = LocalTime.of(10, 10);
+        final PlayTimeRequest playTimeRequest = new PlayTimeRequest(startAt);
+        final PlayTimeResponse playTimeResponse = playTimeService.insert(playTimeRequest);
+        final Long id = playTimeResponse.id();
 
-        // when & then
-        assertThat(playTimeService.findAll())
-                .containsExactly(
-                        new PlayTimeResponse(1L, LocalTime.of(10, 0)),
-                        new PlayTimeResponse(2L, LocalTime.of(20, 15))
-                );
+        // when
+        playTimeService.deleteById(id);
+
+        // then
+        final List<PlayTimeResponse> playTimeResponses = playTimeService.findAll();
+        assertThat(playTimeResponses).isEmpty();
     }
 
-    @DisplayName("방탈출 시간을 삭제한다.")
     @Test
-    void remove() {
+    @DisplayName("id를 통해 방탈출 예약 시간을 삭제할 때 대상이 없다면 예외가 발생한다")
+    void deleteByIdWhenNotExist() {
         // given
-        playTimeService.create(new PlayTimeRequest(FORMATTED_MAX_LOCAL_TIME));
-        playTimeService.remove(1L);
+        final Long notExistId = 999L;
 
         // when & then
-        assertThat(playTimeService.findAll()).isEmpty();
-    }
-
-    @DisplayName("삭제하려는 방탈출 시간 id가 없다면 예외가 발생한다.")
-    @Test
-    void removeOrThrowIfIdNotExists() {
-        // given & when & then
-        assertThatThrownBy(() -> playTimeService.remove(1L))
+        assertThatThrownBy(() -> playTimeService.deleteById(notExistId))
                 .isInstanceOf(NotFoundException.class);
     }
 }

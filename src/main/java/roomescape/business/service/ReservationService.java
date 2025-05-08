@@ -33,7 +33,7 @@ public class ReservationService {
     }
 
     public ReservationResponse create(final ReservationRequest reservationRequest) {
-        final PlayTime playTime = playTimeService.find(reservationRequest.timeId());
+        final PlayTime playTime = playTimeService.findById(reservationRequest.timeId());
         final Theme theme = themeService.find(reservationRequest.themeId());
         validateIsDuplicate(reservationRequest.date(), playTime, theme);
 
