@@ -24,16 +24,16 @@ public class MemberService {
         Member member = memberRepository.findByEmail(tokenRequest.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("유저 정보를 찾을 수 없습니다."));
 
-        return tokenProvider.createToken(member.getEmail());
+        return tokenProvider.createToken(member);
     }
 
     public MemberResponse findByToken(String token) {
-        String payload = tokenProvider.getPayload(token);
-        return findMember(payload);
+        Long id = tokenProvider.getInfo(token);
+        return findById(id);
     }
 
-    private MemberResponse findMember(String payload) {
-        Member member = memberRepository.findByEmail(payload)
+    private MemberResponse findById(Long id) {
+        Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("유저 정보를 찾을 수 없습니다."));
 
         return new MemberResponse(member.getName());

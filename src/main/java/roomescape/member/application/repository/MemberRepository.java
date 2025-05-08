@@ -8,4 +8,6 @@ public interface MemberRepository {
     Member insert(SignUpRequest signUpRequest);
 
     Optional<Member> findByEmail(String email);
+
+    Optional<Member> findById(Long id);
 }

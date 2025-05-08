@@ -1,7 +1,9 @@
 package roomescape.member.application;
 
+import roomescape.member.domain.Member;
+
 public interface TokenProvider {
 
-    String createToken(String payload);
-    String getPayload(String token);
+    String createToken(Member member);
+    Long getInfo(String token);
 }

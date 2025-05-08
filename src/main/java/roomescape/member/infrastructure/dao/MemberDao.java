@@ -5,15 +5,24 @@ import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.application.repository.MemberRepository;
 import roomescape.member.domain.Member;
 import roomescape.member.presentation.dto.SignUpRequest;
-import roomescape.member.presentation.dto.TokenRequest;
 
 @Repository
 public class MemberDao implements MemberRepository {
+    private static final RowMapper<Member> MEMBER_ROW_MAPPER = (resultSet, rowNum) ->
+            new Member(
+                    resultSet.getLong("id"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password"),
+                    resultSet.getString("name")
+            );
+
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -40,14 +49,18 @@ public class MemberDao implements MemberRepository {
         String sql = "select id, email, password, name from member where email = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
-                    sql, (resultSet, rowNum) -> {
-                        return new Member(
-                                resultSet.getLong("id"),
-                                resultSet.getString("email"),
-                                resultSet.getString("password"),
-                                resultSet.getString("name")
-                        );
-                    }, email));
+                    sql, MEMBER_ROW_MAPPER, email));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Member> findById(Long id) {
+        String sql = "select id, email, password, name from member where id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                    sql, MEMBER_ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
