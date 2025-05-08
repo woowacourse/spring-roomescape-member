@@ -13,7 +13,7 @@ import roomescape.exception.auth.AuthenticationException;
 public class JwtTokenProvider {
 
     private static final String COOKIE_KEY = "token";
-    private static final String USER_NAME_KEY = "username";
+    private static final String USERNAME_KEY = "username";
     private static final String NAME_KEY = "name";
     private static final String ROLE_KEY = "role";
     private static final int ONE_HOUR = 3600000;
@@ -27,7 +27,7 @@ public class JwtTokenProvider {
     public String createToken(Member member) {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
-                .claim(USER_NAME_KEY, member.getUsername())
+                .claim(USERNAME_KEY, member.getUsername())
                 .claim(NAME_KEY, member.getName())
                 .claim(ROLE_KEY, member.getRole())
                 .setExpiration(new Date(System.currentTimeMillis() + ONE_HOUR))
@@ -44,12 +44,14 @@ public class JwtTokenProvider {
                     .getBody();
 
             Long id = Long.parseLong(claims.getSubject());
-            String username = (String) claims.get("username");
-            String name = (String) claims.get("name");
-            Role role = Role.valueOf((String) claims.get("role"));
+            String username = (String) claims.get(USERNAME_KEY);
+            String name = (String) claims.get(NAME_KEY);
+            Role role = Role.valueOf((String) claims.get(ROLE_KEY));
             return new UserInfo(id, username, name, role);
-        } catch (RequiredTypeException e) {
+        } catch (RequiredTypeException | IllegalArgumentException e) {
             throw new AuthenticationException("토큰 파싱에 실패하였습니다");
+        } catch (Exception e) {
+            throw new AuthenticationException("토큰 처리 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 
