@@ -1,7 +1,6 @@
 package roomescape.dao;
 
 import java.util.Optional;
-import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +11,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import roomescape.model.Member;
+import roomescape.model.Role;
 
 @JdbcTest
 @Import(MemberJdbcDao.class)
@@ -22,7 +22,8 @@ public class MemberJdbcDaoTest {
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("email"),
-                    resultSet.getString("password")
+                    resultSet.getString("password"),
+                    Role.fromString(resultSet.getString("role"))
             );
 
     @Autowired
@@ -37,8 +38,8 @@ public class MemberJdbcDaoTest {
     void setUp() {
         this.email = "john@gmail.com";
         jdbcTemplate.update("INSERT INTO member"
-                        + " (name, email,password) VALUES (?, ?, ?)"
-                , "히로", email, "password");
+                        + " (name, email,password, role) VALUES (?, ?, ?, ?)"
+                , "히로", email, "password", Role.ADMIN.name());
     }
 
     @Test

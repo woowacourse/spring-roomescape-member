@@ -11,6 +11,7 @@ import roomescape.common.exception.UnauthorizedException;
 import roomescape.dto.request.LoginRequestDto;
 import roomescape.fake.FakeMemberDao;
 import roomescape.model.Member;
+import roomescape.model.Role;
 
 public class AuthServiceTest {
     private final FakeMemberDao fakeUserDao = new FakeMemberDao();
@@ -23,7 +24,7 @@ public class AuthServiceTest {
     void setUp() {
         this.email = "john@example.com";
         this.password = "password";
-        fakeUserDao.add(new Member("John", this.email, this.password));
+        fakeUserDao.add(new Member("John", this.email, this.password, Role.fromString("ADMIN")));
     }
 
     @Test

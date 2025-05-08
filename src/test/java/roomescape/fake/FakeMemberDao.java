@@ -24,7 +24,8 @@ public class FakeMemberDao implements MemberDao {
         database.put(id, new Member(
                 member.getName(),
                 member.getEmail(),
-                member.getPassword()
+                member.getPassword(),
+                member.getRole()
         ));
         return id;
     }

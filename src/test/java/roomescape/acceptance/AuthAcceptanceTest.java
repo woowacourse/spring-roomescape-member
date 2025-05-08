@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dto.response.MemberResponseDto;
+import roomescape.model.Role;
 import roomescape.service.JwtProvider;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -32,8 +33,8 @@ public class AuthAcceptanceTest {
         String token = jwtProvider.createToken(email);
 
         jdbcTemplate.update("INSERT INTO member"
-                        + " (name, email,password) VALUES (?, ?, ?)"
-                , name, email, "password");
+                        + " (name, email,password, role) VALUES (?, ?, ?, ?)"
+                , name, email, "password", Role.ADMIN.getValue());
 
         // when
         MemberResponseDto memberResponseDto = RestAssured.given().log().all()
