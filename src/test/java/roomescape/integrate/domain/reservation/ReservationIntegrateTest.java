@@ -14,12 +14,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.reservation.Theme;
 import roomescape.dto.reservation.ThemeResponseDto;
 import roomescape.integrate.fixture.RequestFixture;
+import roomescape.repository.reservation.ReservationRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -78,7 +83,7 @@ class ReservationIntegrateTest {
     }
 
     @Test
-    void 테마_랭킹_테스트() {
+    void 테마_랭킹_테스트(@Autowired ReservationRepository reservationRepository) {
         LocalTime afterTime = LocalTime.now().plusHours(1);
         long timeId = requestFixture.requestAddTime(afterTime.toString());
 
@@ -86,18 +91,18 @@ class ReservationIntegrateTest {
         long themeId2 = requestFixture.requestAddTheme("테마 명2", "description", "thumbnail");
         long themeId3 = requestFixture.requestAddTheme("테마 명3", "description", "thumbnail");
 
-        requestFixture.requestAddReservation("테마1예약이름1", String.valueOf(LocalDate.now().minusDays(1)), timeId, themeId1,
-                cookies);
-        requestFixture.requestAddReservation("테마1예약이름2", String.valueOf(LocalDate.now().minusDays(2)), timeId, themeId1,
-                cookies);
-        requestFixture.requestAddReservation("테마1예약이름3", String.valueOf(LocalDate.now().minusDays(3)), timeId, themeId1,
-                cookies);
-        requestFixture.requestAddReservation("테마2예약이름1", String.valueOf(LocalDate.now().minusDays(1)), timeId, themeId2,
-                cookies);
-        requestFixture.requestAddReservation("테마2예약이름2", String.valueOf(LocalDate.now().minusDays(2)), timeId, themeId2,
-                cookies);
-        requestFixture.requestAddReservation("테마3예약이름1", String.valueOf(LocalDate.now().minusDays(1)), timeId, themeId3,
-                cookies);
+        reservationRepository.add(new Reservation(null, "이름", LocalDate.now().minusDays(1),
+                new ReservationTime(timeId, afterTime), new Theme(themeId1, "테마 명1", "description", "thumbnail")));
+        reservationRepository.add(new Reservation(null, "이름", LocalDate.now().minusDays(2),
+                new ReservationTime(timeId, afterTime), new Theme(themeId1, "테마 명1", "description", "thumbnail")));
+        reservationRepository.add(new Reservation(null, "이름", LocalDate.now().minusDays(3),
+                new ReservationTime(timeId, afterTime), new Theme(themeId1, "테마 명1", "description", "thumbnail")));
+        reservationRepository.add(new Reservation(null, "이름", LocalDate.now().minusDays(4),
+                new ReservationTime(timeId, afterTime), new Theme(themeId2, "테마 명2", "description", "thumbnail")));
+        reservationRepository.add(new Reservation(null, "이름", LocalDate.now().minusDays(5),
+                new ReservationTime(timeId, afterTime), new Theme(themeId2, "테마 명2", "description", "thumbnail")));
+        reservationRepository.add(new Reservation(null, "이름", LocalDate.now().minusDays(6),
+                new ReservationTime(timeId, afterTime), new Theme(themeId3, "테마 명3", "description", "thumbnail")));
 
         Response response = RestAssured.given()
                 .when().get("/reservations/popular-themes")
