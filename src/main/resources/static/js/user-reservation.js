@@ -160,7 +160,7 @@ function onReservationButtonClick() {
     /*
     TODO: [3단계] 사용자 예약 - 예약 요청 API 호출 - 완료
           [5단계] 예약 생성 기능 변경 - 사용자
-          request 명세에 맞게 설정
+          request 명세에 맞게 설정 - 완료
     */
     const reservationData = {
       date: selectedDate,

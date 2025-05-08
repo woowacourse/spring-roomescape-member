@@ -29,7 +29,7 @@ function render(data) {
 
     /*
     TODO: [5단계] 예약 생성 기능 변경 - 관리자
-          예약 목록 조회 API 응답에 맞게 적용
+          예약 목록 조회 API 응답에 맞게 적용 - 완료
     */
     row.insertCell(0).textContent = item.id;              // 예약 id
     row.insertCell(1).textContent = item.name;     // 사용자 name
