@@ -3,7 +3,7 @@ package roomescape;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
-import roomescape.auth.config.WebMvcConfiguration;
+import roomescape.infrastructure.auth.config.WebMvcConfiguration;
 
 @SpringBootApplication
 @Import(WebMvcConfiguration.class)

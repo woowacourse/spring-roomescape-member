@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.auth.AuthenticationPrincipal;
-import roomescape.auth.member.UserInfo;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationSlot;
 import roomescape.domain.reservation.ReservationSlotTimes;
@@ -27,6 +25,8 @@ import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.dto.reservation.ReservationTimeSlotResponseDto;
 import roomescape.dto.reservation.ThemeResponseDto;
 import roomescape.dto.reservationmember.ReservationMemberResponseDto;
+import roomescape.infrastructure.auth.intercept.AuthenticationPrincipal;
+import roomescape.infrastructure.auth.member.UserInfo;
 import roomescape.service.reservation.ReservationService;
 import roomescape.service.reservationmember.ReservationMemberService;
 

@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.infrastructure.auth.intercept;
 
 import jakarta.servlet.http.HttpServletRequest;
 

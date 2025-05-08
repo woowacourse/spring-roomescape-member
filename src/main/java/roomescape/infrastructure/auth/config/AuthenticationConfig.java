@@ -1,11 +1,11 @@
-package roomescape.auth.config;
+package roomescape.infrastructure.auth.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import roomescape.auth.JwtTokenProvider;
+import roomescape.infrastructure.auth.jwt.JwtTokenProvider;
 
 @Configuration
 public class AuthenticationConfig {

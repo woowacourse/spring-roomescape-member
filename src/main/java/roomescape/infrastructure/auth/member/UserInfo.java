@@ -1,4 +1,4 @@
-package roomescape.auth.member;
+package roomescape.infrastructure.auth.member;
 
 import roomescape.domain.member.Role;
 

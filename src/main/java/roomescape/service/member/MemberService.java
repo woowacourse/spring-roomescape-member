@@ -3,12 +3,12 @@ package roomescape.service.member;
 import java.util.List;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import roomescape.auth.JwtTokenProvider;
-import roomescape.auth.member.UserInfo;
 import roomescape.domain.member.Member;
 import roomescape.dto.member.LoginRequestDto;
 import roomescape.dto.member.SignupRequestDto;
 import roomescape.exception.member.InvalidMemberException;
+import roomescape.infrastructure.auth.jwt.JwtTokenProvider;
+import roomescape.infrastructure.auth.member.UserInfo;
 import roomescape.repository.member.MemberRepository;
 
 @Service

@@ -1,14 +1,14 @@
-package roomescape.auth;
+package roomescape.infrastructure.auth.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.RequiredTypeException;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
-import roomescape.auth.member.UserInfo;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
 import roomescape.exception.auth.AuthenticationException;
+import roomescape.infrastructure.auth.member.UserInfo;
 
 public class JwtTokenProvider {
 

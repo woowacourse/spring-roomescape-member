@@ -1,11 +1,13 @@
-package roomescape.auth;
+package roomescape.infrastructure.auth.intercept;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.member.UserInfo;
 import roomescape.domain.member.Role;
+import roomescape.infrastructure.auth.jwt.JwtCookieResolver;
+import roomescape.infrastructure.auth.jwt.JwtTokenProvider;
+import roomescape.infrastructure.auth.member.UserInfo;
 
 public class PrevRequestHandler implements HandlerInterceptor {
 

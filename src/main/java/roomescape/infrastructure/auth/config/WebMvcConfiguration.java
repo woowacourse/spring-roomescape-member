@@ -1,4 +1,4 @@
-package roomescape.auth.config;
+package roomescape.infrastructure.auth.config;
 
 import java.util.List;
 import org.springframework.context.annotation.Bean;
@@ -7,11 +7,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.auth.AdminRequestMatcher;
-import roomescape.auth.AuthenticationPrincipalResolver;
-import roomescape.auth.JwtTokenProvider;
-import roomescape.auth.PrevRequestHandler;
-import roomescape.auth.RequestMatcher;
+import roomescape.infrastructure.auth.intercept.AdminRequestMatcher;
+import roomescape.infrastructure.auth.intercept.AuthenticationPrincipalResolver;
+import roomescape.infrastructure.auth.intercept.PrevRequestHandler;
+import roomescape.infrastructure.auth.intercept.RequestMatcher;
+import roomescape.infrastructure.auth.jwt.JwtTokenProvider;
 
 @Configuration
 @Import(AuthenticationConfig.class)

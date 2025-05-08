@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.infrastructure.auth.intercept;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -6,6 +6,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.infrastructure.auth.jwt.JwtCookieResolver;
+import roomescape.infrastructure.auth.jwt.JwtTokenProvider;
 
 public class AuthenticationPrincipalResolver implements HandlerMethodArgumentResolver {
 

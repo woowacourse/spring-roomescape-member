@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.infrastructure.auth.intercept;
 
 
 import java.lang.annotation.ElementType;

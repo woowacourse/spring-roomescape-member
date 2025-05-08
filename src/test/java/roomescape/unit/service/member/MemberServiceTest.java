@@ -8,10 +8,10 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import roomescape.auth.JwtTokenProvider;
 import roomescape.domain.member.Member;
 import roomescape.dto.member.LoginRequestDto;
 import roomescape.dto.member.SignupRequestDto;
+import roomescape.infrastructure.auth.jwt.JwtTokenProvider;
 import roomescape.service.member.MemberService;
 import roomescape.unit.repository.member.FakeMemberRepository;
 
