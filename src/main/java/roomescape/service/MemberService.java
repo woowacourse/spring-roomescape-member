@@ -26,12 +26,6 @@ public class MemberService {
         return LoginMemberResult.from(member);
     }
 
-    public CheckLoginUserResult findById(final Long id) {
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new ReservationException(id + "에 해당하는 유저가 없습니다."));
-        return CheckLoginUserResult.from(member);
-    }
-
     public RegisterUserResult create(final RegisterMemberParam registerMemberParam) {
         Long id = memberRepository.create(new CreateMemberQuery(
                 registerMemberParam.email(),
@@ -42,5 +36,11 @@ public class MemberService {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new ReservationException(id + "에 해당하는 유저가 없습니다."));
         return RegisterUserResult.from(member);
+    }
+
+    public CheckLoginUserResult findById(final Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new ReservationException(id + "에 해당하는 유저가 없습니다."));
+        return CheckLoginUserResult.from(member);
     }
 }

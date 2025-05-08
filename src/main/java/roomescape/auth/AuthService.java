@@ -1,6 +1,5 @@
 package roomescape.auth;
 
-import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.controller.request.LoginMemberInfo;
 import roomescape.domain.Member;
@@ -23,20 +22,11 @@ public class AuthService {
         return jwtTokenProvider.createToken(loginMemberResult);
     }
 
-    public Long extractSubjectFromToken(Cookie[] cookies) {
-        String token = jwtTokenProvider.extractTokenFromCookie(cookies);
-        if (token == null) {
-            throw new UnAuthorizedException();
-        }
-
+    public Long extractSubjectFromToken(String token) {
         return jwtTokenProvider.extractIdFromToken(token);
     }
 
     public LoginMemberInfo findMemberByToken(final String token) {
-        if (token == null || token.isBlank()) {
-            throw new UnAuthorizedException();
-        }
-
         Long id = jwtTokenProvider.extractIdFromToken(token);
         Member member = memberRepository.findById(id).orElseThrow(UnAuthorizedException::new);
 

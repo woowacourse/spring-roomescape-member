@@ -2,6 +2,9 @@ package roomescape.auth;
 
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Component;
+import roomescape.exception.UnAuthorizedException;
+
+import java.util.Arrays;
 
 @Component
 public class CookieProvider {
@@ -22,5 +25,17 @@ public class CookieProvider {
         invalidatedCookie.setSecure(true);
 
         return invalidatedCookie;
+    }
+
+    public String extractToken(final Cookie[] cookies) {
+        if (cookies == null) {
+            throw new UnAuthorizedException();
+        }
+
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals("token"))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElseThrow(UnAuthorizedException::new);
     }
 }
