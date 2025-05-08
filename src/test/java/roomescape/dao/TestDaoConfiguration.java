@@ -7,6 +7,11 @@ import org.springframework.context.annotation.Bean;
 public class TestDaoConfiguration {
 
     @Bean
+    public FakeMemberDaoImpl memberDao() {
+        return new FakeMemberDaoImpl();
+    }
+
+    @Bean
     public FakeReservationTimeDaoImpl reservationTimeDao() {
         return new FakeReservationTimeDaoImpl();
     }
