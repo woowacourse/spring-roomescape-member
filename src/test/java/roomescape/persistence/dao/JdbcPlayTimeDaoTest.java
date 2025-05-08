@@ -113,7 +113,7 @@ class JdbcPlayTimeDaoTest {
         );
     }
 
-    @DisplayName("해당하는 방탈출 시간이 없다면 0을 반환한다.")
+    @DisplayName("해당하는 방탈출 시간이 없다면 false를 반환한다.")
     @Test
     void removeNotExistsTime() {
         // given & when
