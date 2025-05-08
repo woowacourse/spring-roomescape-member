@@ -1,14 +1,14 @@
-package roomescape;
+package roomescape.entity;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-
-import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import roomescape.entity.ReservationTime;
 import roomescape.exception.impl.InvalidReservationTimeException;
+
+import java.time.LocalTime;
+
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class ReservationTimeTest {
 

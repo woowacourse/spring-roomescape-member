@@ -1,9 +1,8 @@
-package roomescape;
+package roomescape.entity;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.entity.Theme;
 import roomescape.exception.impl.ThemeNameMaxLengthExceedException;
 
 public class ThemeTest {

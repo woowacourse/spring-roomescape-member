@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.controller.api;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -6,9 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-
-import java.util.HashMap;
-import java.util.Map;
+import roomescape.controller.dto.ThemeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -17,14 +15,15 @@ public class ThemeApiTest {
     @Test
     @DisplayName("테마 생성 테스트")
     void createThemeWithStatus201Test() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "스테이지");
-        params.put("description", "인기 아이돌 실종 사건");
-        params.put("thumbnail", "무엇보다 무섭다");
+        var themeRequest = new ThemeRequest(
+                "스테이지",
+                "인기 아이돌 실종 사건",
+                "무엇보다 무섭다"
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(themeRequest)
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201);
@@ -51,8 +50,22 @@ public class ThemeApiTest {
     @Test
     @DisplayName("테마 삭제 테스트")
     void deleteThemeWithStatus204Test() {
+        var themeRequest = new ThemeRequest(
+                "삭제 테스트용 테마",
+                "삭제 테스트용 테마",
+                "삭제 테스트용 테마"
+        );
+
+        int themId = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeRequest)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201)
+                .extract().path("id");
+
         RestAssured.given().log().all()
-                .when().delete("/themes/3")
+                .when().delete("/themes/" + themId)
                 .then().log().all()
                 .statusCode(204);
     }
