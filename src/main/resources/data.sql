@@ -29,3 +29,6 @@ INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('하루', '2025-
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('제이미', '2025-05-04', 3, 5);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('베루스', '2025-05-05', 4, 5);
 
+INSERT INTO member (name, email, password) VALUES ('루키', 'rookie@woowa.com', 'rookie123');
+INSERT INTO member (name, email, password) VALUES ('하루', 'haru@woowa.com', 'haru123');
+INSERT INTO member (name, email, password) VALUES ('베루스', 'verus@woowa.com', 'verus123');
