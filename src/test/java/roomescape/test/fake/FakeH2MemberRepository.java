@@ -1,0 +1,24 @@
+package roomescape.test.fake;
+
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
+import roomescape.domain.Member;
+import roomescape.repository.MemberRepository;
+
+public class FakeH2MemberRepository implements MemberRepository {
+
+    private final Map<Long, Member> members = new ConcurrentHashMap<>(
+            Map.of(1L, new Member(1L, "아마", "email@email.com", "password", "member")));
+    private final AtomicLong index = new AtomicLong(1);
+
+    @Override
+    public Optional<Member> findMember(final String email, final String password) {
+        return members.values().stream()
+                .filter(member -> Objects.equals(member.getEmail(), email) && Objects.equals(member.getPassword(),
+                        password))
+                .findFirst();
+    }
+}
