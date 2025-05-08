@@ -30,4 +30,9 @@ public class PageController {
     public String getUserReservationPage() {
         return "reservation";
     }
+
+    @GetMapping("/login")
+    public String getLoginPage() {
+        return "login";
+    }
 }

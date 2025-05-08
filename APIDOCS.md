@@ -243,3 +243,12 @@
          "email": "admin@email.com"
       }
       ```
+
+- GET /login/check
+    - 설명 : 사용자 로그인 정보 조회
+    - 정상 응답 (200)
+      ```
+      {
+         "name": "어드민"
+      }
+      ```
