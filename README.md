@@ -25,13 +25,18 @@
 ## 3단계 - 사용자 기능
 
 - [x] 사용자가 예약을 생성한다.
-    - [x] 사용자는 날짜와 테마를 선택하면 예약 가능한 시간을 확인할 수 있습니다.
-    - [x] 사용자는 예약 가능한 시간을 확인하고, 원하는 시간에 예약을 할 수 있습니다.
-    - [x] /reservation 요청 시 사용자 예약 페이지를 응답합니다.
+    - [x] 사용자는 날짜와 테마를 선택하면 예약 가능한 시간을 확인할 수 있다.
+    - [x] 사용자는 예약 가능한 시간을 확인하고, 원하는 시간에 예약을 할 수 있다.
+    - [x] /reservation 요청 시 사용자 예약 페이지를 응답한다.
 - [x] 인기 테마를 조회한다.
-    - [x] 최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 확인하려 합니다.
-    - [x] 예를 들어 오늘이 4월 8일인 경우, 게임 날짜가 4월 1일부터 4월 7일까지인 예약 건수가 많은 순서대로 10개의 테마를 조회할 수 있어야 합니다.
-    - [x] / 요청 시 인기 테마 페이지를 응답합니다
+    - [x] 최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 확인할 수 있다.
+    - [x] 예를 들어 오늘이 4월 8일인 경우, 게임 날짜가 4월 1일부터 4월 7일까지인 예약 건수가 많은 순서대로 10개의 테마를 조회할 수 있다.
+    - [x] / 요청 시 인기 테마 페이지를 응답한다
+
+## 4단계 - 사용자 로그인
+
+- [ ] 사용자가 로그인을 할 수 있다.
+- [ ] 사용자의 정보를 조회하여 상단바 우측 로그인 상태를 표현할 수 있다.
 
 # API 명세
 
@@ -189,4 +194,45 @@ DELETE /themes/1 HTTP/1.1
 
 Response
 HTTP/1.1 204
+```
+
+### 로그인
+
+```
+Request
+POST /login HTTP/1.1
+content-type: application/json
+host: localhost:8080
+
+{
+    "password": String,
+    "email": String
+}
+
+Response
+HTTP/1.1 200 OK
+Content-Type: application/json
+Keep-Alive: timeout=60
+Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+```
+
+### 사용자 인증 정보 조회
+
+```
+Request
+GET /login/check HTTP/1.1
+cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+host: localhost:8080
+
+Response
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Type: application/json
+Date: Sun, 03 Mar 2024 19:16:56 GMT
+Keep-Alive: timeout=60
+Transfer-Encoding: chunked
+
+{
+    "name": "어드민"
+}
 ```
