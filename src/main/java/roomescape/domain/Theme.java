@@ -7,6 +7,7 @@ import lombok.NonNull;
 @Getter
 @AllArgsConstructor
 public class Theme {
+
     private Long id;
 
     @NonNull
@@ -18,7 +19,7 @@ public class Theme {
     @NonNull
     private String thumbnail;
 
-    public Theme(@NonNull String name, @NonNull final String description, @NonNull final String thumbnail) {
+    public Theme(@NonNull final String name, @NonNull final String description, @NonNull final String thumbnail) {
         this.id = null;
         this.name = name;
         this.description = description;

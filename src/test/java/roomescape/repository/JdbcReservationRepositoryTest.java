@@ -19,7 +19,7 @@ import roomescape.domain.Theme;
 class JdbcReservationRepositoryTest {
 
     private EmbeddedDatabase db;
-    private JdbcReservationRepository repository;
+    private JdbcReservationRepository sut;
 
     @BeforeEach
     void setUp() {
@@ -28,7 +28,7 @@ class JdbcReservationRepositoryTest {
                 .addScript("classpath:schema.sql")
                 .addScript("classpath:data.sql")
                 .build();
-        repository = new JdbcReservationRepository(db);
+        sut = new JdbcReservationRepository(db);
     }
 
     @AfterEach
@@ -46,7 +46,7 @@ class JdbcReservationRepositoryTest {
         Reservation reservation = new Reservation(null, name, date, new ReservationTime(1L, time), theme1);
 
         // when
-        Reservation saved = repository.save(reservation);
+        Reservation saved = sut.save(reservation);
 
         // then
         assertSoftly(soft -> {
@@ -67,13 +67,13 @@ class JdbcReservationRepositoryTest {
         Reservation reservation = new Reservation(null, existedName, existedDate,
                 new ReservationTime(1L, existedTime), theme1);
 
-        repository.save(reservation);
+        sut.save(reservation);
 
         // when
         // then
         assertSoftly(soft -> {
-            soft.assertThat(repository.existsByDateAndTimeAndTheme(existedDate, existedTime, 1L)).isTrue();
-            soft.assertThat(repository.existsByDateAndTimeAndTheme(date, time, 1L)).isFalse();
+            soft.assertThat(sut.existsByDateAndTimeAndTheme(existedDate, existedTime, 1L)).isTrue();
+            soft.assertThat(sut.existsByDateAndTimeAndTheme(date, time, 1L)).isFalse();
         });
     }
 
@@ -89,11 +89,11 @@ class JdbcReservationRepositoryTest {
         Theme theme2 = new Theme(2L, "테마2", "설명2", "썸네일2");
         Reservation reservation1 = new Reservation(null, name1, date, new ReservationTime(1L, time1), theme1);
         Reservation reservation2 = new Reservation(null, name2, date, new ReservationTime(2L, time2), theme2);
-        repository.save(reservation1);
-        repository.save(reservation2);
+        sut.save(reservation1);
+        sut.save(reservation2);
 
         // when
-        List<Reservation> reservations = repository.findAll();
+        List<Reservation> reservations = sut.findAll();
 
         // then
         assertThat(reservations).hasSize(2);
@@ -106,10 +106,10 @@ class JdbcReservationRepositoryTest {
         ReservationTime reservationTime = new ReservationTime(1L, localTime);
         Theme theme1 = new Theme(1L, "테마1", "설명1", "썸네일1");
         Reservation reservation = new Reservation("테스트", LocalDate.of(2999, 7, 1), reservationTime, theme1);
-        repository.save(reservation);
+        sut.save(reservation);
 
         // when
-        boolean exists = repository.existsByReservationTimeId(reservationTime.getId());
+        boolean exists = sut.existsByReservationTimeId(reservationTime.getId());
 
         // then
         assertThat(exists).isTrue();

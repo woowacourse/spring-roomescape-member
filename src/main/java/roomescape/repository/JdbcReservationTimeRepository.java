@@ -2,7 +2,6 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -12,14 +11,13 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.AvailableReservationTimeResponse;
+import roomescape.dto.response.AvailableReservationTimeResponse;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
     private static final RowMapper<ReservationTime> timeRowMapper = (resultSet, rowNum) -> {
-        final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-        final LocalTime time = LocalTime.parse(resultSet.getString("start_at"), timeFormatter);
+        final LocalTime time = LocalTime.parse(resultSet.getString("start_at"));
         return new ReservationTime(resultSet.getLong("id"), time);
     };
 

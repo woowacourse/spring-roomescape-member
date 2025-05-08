@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Theme;
-import roomescape.dto.PopularThemeResponse;
+import roomescape.dto.response.PopularThemeResponse;
 import roomescape.repository.ThemeRepository;
 
 public class StubThemeRepository implements ThemeRepository {

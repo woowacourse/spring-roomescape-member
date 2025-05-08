@@ -10,6 +10,7 @@ import lombok.NonNull;
 @Getter
 @AllArgsConstructor
 public class Reservation {
+
     private final Long id;
 
     @NonNull

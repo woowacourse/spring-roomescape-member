@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
+import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.response.ReservationResponse;
 import roomescape.error.NotFoundException;
 import roomescape.error.ReservationException;
 import roomescape.stub.StubReservationRepository;
@@ -32,15 +32,13 @@ class ReservationServiceTest {
     private final Reservation reservation2 = new Reservation(2L, "테스트2", LocalDate.of(2025, 6, 11), time2, theme2);
 
     private StubReservationRepository stubReservationRepository;
-    private StubReservationTimeRepository stubReservationTimeRepository;
-    private StubThemeRepository stubThemeRepository;
     private ReservationService sut;
 
     @BeforeEach
     void setUp() {
         stubReservationRepository = new StubReservationRepository(reservation1, reservation2);
-        stubReservationTimeRepository = new StubReservationTimeRepository(time1, time2);
-        stubThemeRepository = new StubThemeRepository(theme1, theme2);
+        StubReservationTimeRepository stubReservationTimeRepository = new StubReservationTimeRepository(time1, time2);
+        StubThemeRepository stubThemeRepository = new StubThemeRepository(theme1, theme2);
 
         sut = new ReservationService(stubReservationRepository, stubReservationTimeRepository, stubThemeRepository);
     }

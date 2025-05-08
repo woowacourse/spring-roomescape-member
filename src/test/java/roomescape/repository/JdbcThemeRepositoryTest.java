@@ -17,13 +17,13 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.PopularThemeResponse;
+import roomescape.dto.response.PopularThemeResponse;
 import roomescape.error.NotFoundException;
 
 class JdbcThemeRepositoryTest {
 
     private EmbeddedDatabase db;
-    private JdbcThemeRepository repository;
+    private JdbcThemeRepository sut;
     private JdbcReservationRepository jdbcReservationRepository;
 
     @BeforeEach
@@ -33,7 +33,7 @@ class JdbcThemeRepositoryTest {
                 .addScript("classpath:schema.sql")
                 .addScript("classpath:data.sql")
                 .build();
-        repository = new JdbcThemeRepository(db);
+        sut = new JdbcThemeRepository(db);
         jdbcReservationRepository = new JdbcReservationRepository(db);
     }
 
@@ -48,7 +48,7 @@ class JdbcThemeRepositoryTest {
         Theme theme = new Theme("테마이름", "테마설명", "테마썸네일");
 
         // when
-        Theme savedTheme = repository.save(theme);
+        Theme savedTheme = sut.save(theme);
 
         // then
         assertSoftly(soft -> {
@@ -62,7 +62,7 @@ class JdbcThemeRepositoryTest {
     @Test
     void 모든_테마를_조회한다() {
         // when
-        List<Theme> themes = repository.findAll();
+        List<Theme> themes = sut.findAll();
 
         // then
         assertThat(themes).hasSize(2);
@@ -82,7 +82,7 @@ class JdbcThemeRepositoryTest {
                         new Theme(2L, "이름2", "썸네일2", "설명2")));
 
         // when
-        List<PopularThemeResponse> allPopular = repository.findAllPopular();
+        List<PopularThemeResponse> allPopular = sut.findAllPopular();
 
         // then
         assertSoftly(soft -> {
@@ -99,8 +99,8 @@ class JdbcThemeRepositoryTest {
         Long id = 1L;
 
         // when
-        repository.deleteById(id);
-        List<Theme> themes = repository.findAll();
+        sut.deleteById(id);
+        List<Theme> themes = sut.findAll();
 
         // then
         assertThat(themes).hasSize(1)
@@ -111,7 +111,7 @@ class JdbcThemeRepositoryTest {
     @Test
     void 존재하지_않는_테마를_삭제할_때_예외_처리() {
         // then
-        assertThatThrownBy(() -> repository.deleteById(999L))
+        assertThatThrownBy(() -> sut.deleteById(999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("삭제할 테마가 없습니다. id=999");
     }
@@ -122,7 +122,7 @@ class JdbcThemeRepositoryTest {
         Long id = 1L;
 
         // when
-        Theme theme = repository.findById(id).get();
+        Theme theme = sut.findById(id).get();
 
         // then
         assertThat(theme.getId()).isEqualTo(id);
@@ -134,7 +134,7 @@ class JdbcThemeRepositoryTest {
         Long invalidId = 999L;
 
         // when
-        final Optional<Theme> optionalTheme = repository.findById(invalidId);
+        Optional<Theme> optionalTheme = sut.findById(invalidId);
 
         // then
         assertThat(optionalTheme).isEmpty();

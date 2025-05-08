@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeRequest;
-import roomescape.dto.ThemeResponse;
+import roomescape.dto.request.ThemeRequest;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.error.ReservationException;
 import roomescape.stub.StubReservationRepository;
 import roomescape.stub.StubThemeRepository;
@@ -30,14 +30,13 @@ class ThemeServiceTest {
     private final Reservation reservation2 = new Reservation(2L, "테스트2", LocalDate.of(2025, 6, 11), reservationTime2, theme2);
 
     private StubReservationRepository stubReservationRepository;
-    private StubThemeRepository stubThemeRepository;
 
     private ThemeService sut;
 
     @BeforeEach
     void setUp() {
         stubReservationRepository = new StubReservationRepository(reservation1, reservation2);
-        stubThemeRepository = new StubThemeRepository(theme1, theme2);
+        StubThemeRepository stubThemeRepository = new StubThemeRepository(theme1, theme2);
 
         sut = new ThemeService(stubThemeRepository, stubReservationRepository);
     }

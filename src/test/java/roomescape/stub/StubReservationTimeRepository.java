@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.AvailableReservationTimeResponse;
+import roomescape.dto.response.AvailableReservationTimeResponse;
 import roomescape.repository.ReservationTimeRepository;
 
 public class StubReservationTimeRepository implements ReservationTimeRepository {

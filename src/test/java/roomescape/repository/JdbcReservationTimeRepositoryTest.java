@@ -15,12 +15,12 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.AvailableReservationTimeResponse;
+import roomescape.dto.response.AvailableReservationTimeResponse;
 
 class JdbcReservationTimeRepositoryTest {
 
     private EmbeddedDatabase db;
-    private JdbcReservationTimeRepository repository;
+    private JdbcReservationTimeRepository sut;
     private JdbcReservationRepository jdbcReservationRepository;
 
     @BeforeEach
@@ -30,7 +30,7 @@ class JdbcReservationTimeRepositoryTest {
                 .addScript("classpath:schema.sql")
                 .addScript("classpath:data.sql")
                 .build();
-        repository = new JdbcReservationTimeRepository(db);
+        sut = new JdbcReservationTimeRepository(db);
         jdbcReservationRepository = new JdbcReservationRepository(db);
     }
 
@@ -45,7 +45,7 @@ class JdbcReservationTimeRepositoryTest {
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(11, 0));
 
         // when
-        ReservationTime savedReservationTime = repository.save(reservationTime);
+        ReservationTime savedReservationTime = sut.save(reservationTime);
 
         // then
         assertSoftly(soft -> {
@@ -58,7 +58,7 @@ class JdbcReservationTimeRepositoryTest {
     void 모든_예약_시간을_조회한다() {
         // given
         // when
-        List<ReservationTime> reservationTimes = repository.findAll();
+        List<ReservationTime> reservationTimes = sut.findAll();
 
         // then
         assertThat(reservationTimes).hasSize(2);
@@ -75,7 +75,7 @@ class JdbcReservationTimeRepositoryTest {
                         new Theme(1L, "이름1", "썸네일1", "설명1")));
 
         // when
-        List<AvailableReservationTimeResponse> allAvailable = repository.findAllAvailable(
+        List<AvailableReservationTimeResponse> allAvailable = sut.findAllAvailable(
                 LocalDate.of(2999, 5, 1), 1L);
 
         // then
@@ -93,8 +93,8 @@ class JdbcReservationTimeRepositoryTest {
         Long id = 1L;
 
         // when
-        repository.deleteById(id);
-        List<ReservationTime> reservationTimes = repository.findAll();
+        sut.deleteById(id);
+        List<ReservationTime> reservationTimes = sut.findAll();
 
         // then
         assertThat(reservationTimes).hasSize(1)
@@ -108,7 +108,7 @@ class JdbcReservationTimeRepositoryTest {
         Long id = 1L;
 
         // when
-        ReservationTime reservationTime = repository.findById(id).get();
+        ReservationTime reservationTime = sut.findById(id).get();
 
         // then
         assertThat(reservationTime.getId()).isEqualTo(id);
@@ -121,6 +121,6 @@ class JdbcReservationTimeRepositoryTest {
 
         // when
         // then
-        assertThat(repository.findById(invalidId)).isEmpty();
+        assertThat(sut.findById(invalidId)).isEmpty();
     }
 }

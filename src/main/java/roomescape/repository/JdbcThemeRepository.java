@@ -8,9 +8,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.error.NotFoundException;
 import roomescape.domain.Theme;
-import roomescape.dto.PopularThemeResponse;
+import roomescape.dto.response.PopularThemeResponse;
+import roomescape.error.NotFoundException;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {

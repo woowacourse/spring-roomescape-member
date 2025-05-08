@@ -8,6 +8,7 @@ import lombok.NonNull;
 @Getter
 @AllArgsConstructor
 public class ReservationTime {
+
     private Long id;
 
     @NonNull

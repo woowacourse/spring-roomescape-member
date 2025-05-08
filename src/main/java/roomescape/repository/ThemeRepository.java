@@ -3,7 +3,7 @@ package roomescape.repository;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.Theme;
-import roomescape.dto.PopularThemeResponse;
+import roomescape.dto.response.PopularThemeResponse;
 
 public interface ThemeRepository {
 
