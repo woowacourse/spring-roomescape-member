@@ -21,5 +21,6 @@ public interface ReservationDao {
 
     List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
 
-    List<Reservation> findByThemeIdAndMemberIdInDuration(long themeId, long memberId, LocalDate start, LocalDate end);
+    List<Reservation> findReservationByThemeIdAndMemberIdInDuration(long themeId, long memberId, LocalDate start,
+                                                                    LocalDate end);
 }

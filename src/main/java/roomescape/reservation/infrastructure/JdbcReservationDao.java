@@ -154,9 +154,9 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<Reservation> findByThemeIdAndMemberIdInDuration(final long themeId, final long memberId,
-                                                                final LocalDate start,
-                                                                final LocalDate end) {
+    public List<Reservation> findReservationByThemeIdAndMemberIdInDuration(final long themeId, final long memberId,
+                                                                           final LocalDate start,
+                                                                           final LocalDate end) {
         String sql = """
                     SELECT * FROM reservation r
                     JOIN reservation_time rt ON r.time_id = rt.id

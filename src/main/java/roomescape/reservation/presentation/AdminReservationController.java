@@ -48,7 +48,7 @@ public class AdminReservationController {
             @RequestParam(name = "dateFrom") LocalDate start,
             @RequestParam(name = "dateTo") LocalDate end
     ) {
-        List<ReservationResponse> reservationResponses = reservationService.findReservationByTimeAndDateInDuration(
+        List<ReservationResponse> reservationResponses = reservationService.findReservationByThemeIdAndMemberIdInDuration(
                 themeId, memberId, start, end);
         return ResponseEntity.ok(reservationResponses);
     }

@@ -96,4 +96,19 @@ class ReservationServiceTest {
                         new AvailableReservationTimeResponse(6L, LocalTime.of(20, 0), false)
                 ));
     }
+
+    @Test
+    void 해당기간에서_테마id와_멤버id로_예약을_조회한다() {
+        // given
+        Long themeId = 2L;
+        Long memberId = 1L;
+        LocalDate start = LocalDate.now().minusDays(10);
+        LocalDate end = LocalDate.now().minusDays(1);
+
+        // when
+
+        // then
+        assertThat(reservationService.findReservationByThemeIdAndMemberIdInDuration(
+                themeId, memberId, start, end)).hasSize(2);
+    }
 }

@@ -68,14 +68,14 @@ public class ReservationService {
         return getAvailableReservationTimeResponses(reservationTimes, bookedReservations, selectedTheme);
     }
 
-    public List<ReservationResponse> findReservationByTimeAndDateInDuration(
+    public List<ReservationResponse> findReservationByThemeIdAndMemberIdInDuration(
             final long themeId,
             final long memberId,
             final LocalDate start,
             final LocalDate end
     ) {
         List<Reservation> reservations = reservationDao
-                .findByThemeIdAndMemberIdInDuration(themeId, memberId, start, end);
+                .findReservationByThemeIdAndMemberIdInDuration(themeId, memberId, start, end);
         return reservations.stream()
                 .map(ReservationResponse::of)
                 .toList();
