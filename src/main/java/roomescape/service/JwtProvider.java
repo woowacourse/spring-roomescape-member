@@ -30,4 +30,12 @@ public class JwtProvider {
                 .signWith(SIGNATURE_ALGORITHM, secretKey)
                 .compact();
     }
+
+    public String getPayload(String token) {
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
 }

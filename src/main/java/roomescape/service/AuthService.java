@@ -5,6 +5,7 @@ import roomescape.common.exception.NotFoundException;
 import roomescape.common.exception.UnauthorizedException;
 import roomescape.dao.MemberDao;
 import roomescape.dto.request.LoginRequestDto;
+import roomescape.dto.response.MemberResponseDto;
 import roomescape.dto.response.TokenResponseDto;
 import roomescape.model.Member;
 
@@ -32,8 +33,15 @@ public class AuthService {
         return new TokenResponseDto(token);
     }
 
+    public MemberResponseDto getMemberByToken(String tokenFromCookie) {
+        String payload = jwtProvider.getPayload(tokenFromCookie);
+        Member member = findMemberByEmail(payload);
+        return new MemberResponseDto(member.getName());
+    }
+
     private Member findMemberByEmail(final String email) {
         return memberDao.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 사용자입니다."));
     }
+
 }
