@@ -1,8 +1,7 @@
-package roomescape.member.infrastructure;
+package roomescape.global.jwt;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import roomescape.member.presentation.AuthorizationExtractor;
 
 public class CookieAuthorizationExtractor implements AuthorizationExtractor {
 

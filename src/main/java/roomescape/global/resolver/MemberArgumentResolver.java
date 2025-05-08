@@ -7,10 +7,10 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.member.application.TokenProvider;
+import roomescape.global.jwt.TokenProvider;
 import roomescape.member.application.service.MemberService;
-import roomescape.member.infrastructure.CookieAuthorizationExtractor;
-import roomescape.member.presentation.AuthorizationExtractor;
+import roomescape.global.jwt.CookieAuthorizationExtractor;
+import roomescape.global.jwt.AuthorizationExtractor;
 import roomescape.member.presentation.dto.MemberResponse;
 
 @Component

@@ -1,4 +1,4 @@
-package roomescape.member.presentation;
+package roomescape.global.jwt;
 
 import jakarta.servlet.http.HttpServletRequest;
 

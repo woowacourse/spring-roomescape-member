@@ -3,7 +3,7 @@ package roomescape.member.application.service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
-import roomescape.member.application.TokenProvider;
+import roomescape.global.jwt.TokenProvider;
 import roomescape.member.application.repository.MemberRepository;
 import roomescape.member.domain.Member;
 import roomescape.member.presentation.dto.MemberResponse;

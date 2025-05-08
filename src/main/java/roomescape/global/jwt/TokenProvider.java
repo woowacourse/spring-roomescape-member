@@ -1,4 +1,4 @@
-package roomescape.member.application;
+package roomescape.global.jwt;
 
 import roomescape.member.domain.Member;
 
