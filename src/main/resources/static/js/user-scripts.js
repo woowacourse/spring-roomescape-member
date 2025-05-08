@@ -93,6 +93,11 @@ function signup() {
   window.location.href = '/signup';
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+    const signupForm = document.getElementById('signup-form');
+    signupForm.addEventListener('submit', register);
+});
+
 function register(event) {
   // 폼 데이터 수집
   const email = document.getElementById('email').value;
@@ -125,7 +130,6 @@ function register(event) {
           alert('Signup request failed');
           throw new Error('Signup request failed');
         }
-        return response.json(); // 여기서 응답을 JSON 형태로 변환
       })
       .then(data => {
         // 성공적인 응답 처리
