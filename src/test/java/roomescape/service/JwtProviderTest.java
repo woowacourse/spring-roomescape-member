@@ -1,6 +1,6 @@
 package roomescape.service;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +27,20 @@ class JwtProviderTest {
         String token = jwtProvider.createToken(email);
 
         // then
-        Assertions.assertThat(token).isNotBlank();
+        assertThat(token).isNotBlank();
+    }
+
+    @Test
+    @DisplayName("토큰에 담긴 정보가 정상적으로 파싱된다")
+    void test2() {
+        // given
+        String email = "example@gmail.com";
+        String token = jwtProvider.createToken(email);
+
+        // when
+        String payload = jwtProvider.getPayload(token);
+
+        // then
+        assertThat(payload).isEqualTo(email);
     }
 }
