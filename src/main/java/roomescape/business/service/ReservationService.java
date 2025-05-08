@@ -105,8 +105,7 @@ public class ReservationService {
                     break;
                 }
             }
-            availableTimes.add(new ReservationAvailableTimeResponse(playTime.getStartAt().toString(), playTime.getId(),
-                    isAlreadyBooked));
+            availableTimes.add(new ReservationAvailableTimeResponse(playTime, isAlreadyBooked));
         }
         return availableTimes;
     }

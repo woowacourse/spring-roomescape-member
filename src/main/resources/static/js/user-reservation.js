@@ -83,13 +83,7 @@ function checkDateAndTheme() {
 }
 
 function fetchAvailableTimes(date, themeId) {
-    /*
-    TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출
-          요청 포맷에 맞게 설정
-    */
-    let endPoint = AVAILABLE_TIME_API_ENDPOINT + '?date=' + date + '&themeId=' + themeId;
-    console.log(endPoint);
-
+    const endPoint = AVAILABLE_TIME_API_ENDPOINT + '?date=' + date + '&themeId=' + themeId;
     fetch(endPoint.toString(), { // 예약 가능 시간 조회 API endpoint
         method: 'GET',
         headers: {
@@ -103,25 +97,25 @@ function fetchAvailableTimes(date, themeId) {
 }
 
 function renderAvailableTimes(times) {
-  const timeSection = document.getElementById("time-section");
-  if (timeSection.classList.contains("disabled")) {
-    timeSection.classList.remove("disabled");
-  }
+    const timeSection = document.getElementById("time-section");
+    if (timeSection.classList.contains("disabled")) {
+        timeSection.classList.remove("disabled");
+    }
 
-  const timeSlots = document.getElementById('time-slots');
-  timeSlots.innerHTML = '';
-  if (times.length === 0) {
-    timeSlots.innerHTML = '<div class="no-times">선택할 수 있는 시간이 없습니다.</div>';
-    return;
-  }
-  times.forEach(time => {
-    const startAt = time.startAt;
-    const timeId = time.timeId;
-    const alreadyBooked = time.alreadyBooked;
+    const timeSlots = document.getElementById('time-slots');
+    timeSlots.innerHTML = '';
+    if (times.length === 0) {
+        timeSlots.innerHTML = '<div class="no-times">선택할 수 있는 시간이 없습니다.</div>';
+        return;
+    }
+    times.forEach(time => {
+        const startAt = time.playTime.startAt;
+        const timeId = time.playTime.id;
+        const alreadyBooked = time.alreadyBooked;
 
-    const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
-    timeSlots.appendChild(div);
-  });
+        const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
+        timeSlots.appendChild(div);
+    });
 }
 
 function checkDateAndThemeAndTime() {
