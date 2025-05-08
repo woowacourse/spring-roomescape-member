@@ -1,8 +1,9 @@
-package roomescape.controller.dto;
+package roomescape.controller.dto.reservationTime;
+
+import roomescape.entity.ReservationTime;
 
 import java.time.LocalTime;
 import java.util.List;
-import roomescape.entity.ReservationTime;
 
 public record ReservationTimeResponse(
         long id,

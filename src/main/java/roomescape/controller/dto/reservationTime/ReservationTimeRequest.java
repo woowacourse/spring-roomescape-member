@@ -1,7 +1,8 @@
-package roomescape.controller.dto;
+package roomescape.controller.dto.reservationTime;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 

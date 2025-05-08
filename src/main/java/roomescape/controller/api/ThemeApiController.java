@@ -4,8 +4,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.controller.dto.ThemeRequest;
-import roomescape.controller.dto.ThemeResponse;
+import roomescape.controller.dto.theme.ThemeRequest;
+import roomescape.controller.dto.theme.ThemeResponse;
 import roomescape.entity.Theme;
 import roomescape.service.ThemeService;
 
