@@ -15,7 +15,7 @@ import org.springframework.test.context.jdbc.Sql;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql("/sql/data.sql")
-public class ReservationTimeControllerTest {
+public class ReservationTimeApiTest {
     @Test
     void 예약시간_추가_테스트() {
         Map<String, String> params = new HashMap<>();

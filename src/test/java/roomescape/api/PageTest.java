@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.presentation.PageController;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-class PageControllerTest {
+class PageTest {
 
     @Autowired
     private PageController pageController;

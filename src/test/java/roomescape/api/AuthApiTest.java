@@ -17,7 +17,7 @@ import roomescape.domain.repository.MemberRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class AuthControllerTest {
+class AuthApiTest {
 
     @Autowired
     private MemberRepository memberRepository;

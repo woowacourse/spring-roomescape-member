@@ -16,7 +16,7 @@ import org.springframework.test.context.jdbc.Sql;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql("/sql/data.sql")
-public class ThemeControllerTest {
+public class ThemeApiTest {
     @Test
     void 테마_추가_테스트() {
         Map<String, String> params = new HashMap<>();
