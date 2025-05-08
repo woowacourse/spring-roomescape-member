@@ -86,7 +86,7 @@ class ThemeControllerTest {
         );
     }
 
-    @DisplayName("테마 목록을 조회한다.")
+    @DisplayName("모든 테마를 조회한다.")
     @Test
     void readAll() {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '소개1', '썸네일1')");
