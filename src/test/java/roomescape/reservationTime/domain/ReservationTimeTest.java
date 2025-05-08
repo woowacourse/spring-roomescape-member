@@ -27,4 +27,18 @@ class ReservationTimeTest {
         // then
         Assertions.assertThat(actual).isTrue();
     }
+
+    @DisplayName("ID가 null인 두 객체의 equals()는 false를 반환한다.")
+    @Test
+    void equals_false_whenEachIdNull() {
+        // given
+        ReservationTime reservationTime1 = ReservationTimeFixture.create(LocalTime.of(11, 10));
+        ReservationTime reservationTime2 = ReservationTimeFixture.create(LocalTime.of(11, 10));
+
+        // when
+        boolean actual = reservationTime1.equals(reservationTime2);
+
+        // then
+        Assertions.assertThat(actual).isFalse();
+    }
 }
