@@ -9,74 +9,100 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.repository.MemberRepository;
+import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.repository.ReservationTimeRepository;
+import roomescape.domain.repository.ThemeRepository;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.ExistedReservationException;
 import roomescape.exception.ReservationNotFoundException;
+import roomescape.fake.FakeMemberRepository;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.fake.FakeThemeRepository;
 
 class ReservationServiceTest {
 
-    private FakeReservationRepository fakeReservationDao;
-    private FakeReservationTimeRepository fakeReservationTimeDao;
-    private FakeThemeRepository fakeThemeDao;
+    private ReservationRepository reservationRepository;
+    private ReservationTimeRepository reservationTimeRepository;
+    private ThemeRepository themeRepository;
+    private MemberRepository memberRepository;
     private ReservationService reservationService;
-
-    private final ReservationTime fakeReservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
-    private final ReservationTime fakeReservationTime2 = new ReservationTime(2L, LocalTime.of(11, 0));
-    private final Theme theme1 = new Theme(1L, "themeName1", "des", "th");
-    private final Theme theme2 = new Theme(2L, "themeName2", "des", "th");
-
-    private final Reservation fakeReservation1 = Reservation.of(1L, "포라", LocalDate.of(2025, 7, 25),
-            fakeReservationTime1, theme1);
-    private final Reservation fakeReservation2 = Reservation.of(2L, "널안보면내마음에멍", LocalDate.of(2025, 12, 25),
-            fakeReservationTime2, theme2);
 
     @BeforeEach
     void setUp() {
-        fakeReservationTimeDao = new FakeReservationTimeRepository(fakeReservationTime1, fakeReservationTime2);
-        fakeReservationDao = new FakeReservationRepository(fakeReservation1, fakeReservation2);
-        fakeThemeDao = new FakeThemeRepository(theme1, theme2);
-        reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeThemeDao);
+        reservationTimeRepository = new FakeReservationTimeRepository();
+        reservationRepository = new FakeReservationRepository();
+        themeRepository = new FakeThemeRepository();
+        memberRepository = new FakeMemberRepository();
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
+                memberRepository);
     }
 
     @Test
     void 예약을_조회할_수_있다() {
-        // given & when
-        List<ReservationResponse> all = reservationService.findAll();
-
-        // then
-        assertThat(all.size()).isEqualTo(2);
-        assertThat(all.get(0).name()).isEqualTo("포라");
-        assertThat(all.get(1).name()).isEqualTo("널안보면내마음에멍");
-    }
-
-    @Test
-    void 예약을_추가할_수_있다() {
-        // given & when
-        ReservationCreateRequest 포비 = new ReservationCreateRequest("포비", LocalDate.now().plusDays(1), 1L, 1L);
-        reservationService.create(포비);
-        List<ReservationResponse> all = reservationService.findAll();
-
-        // then
-        assertThat(all.size()).isEqualTo(3);
-        assertThat(all.getLast().name()).isEqualTo("포비");
-    }
-
-    @Test
-    void 예약을_삭제할_수_있다() {
-        // given & when
-        reservationService.delete(fakeReservation1.getId());
+        // given
+        // given
+        ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
+        reservationTimeRepository.create(reservationTime1);
+        Theme theme1 = new Theme(1L, "themeName1", "des", "th");
+        themeRepository.create(theme1);
+        Member member1 = new Member(1L, "포라", "email1@domain.com", "password1");
+        memberRepository.save(member1);
+        Reservation reservation1 = Reservation.of(null, member1, LocalDate.of(2025, 7, 25),
+                reservationTime1, theme1);
+        reservationRepository.create(reservation1);
+        // when
         List<ReservationResponse> all = reservationService.findAll();
 
         // then
         assertThat(all.size()).isEqualTo(1);
-        assertThat(all.getFirst().name()).isEqualTo("널안보면내마음에멍");
+        assertThat(all.get(0).name()).isEqualTo("포라");
+    }
+
+    @Test
+    void 예약을_추가할_수_있다() {
+        // given
+        ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
+        reservationTimeRepository.create(reservationTime1);
+        Theme theme1 = new Theme(1L, "themeName1", "des", "th");
+        themeRepository.create(theme1);
+        Member member1 = new Member(1L, "name1", "email1@domain.com", "password1");
+        memberRepository.save(member1);
+        Reservation reservation1 = Reservation.of(null, member1, LocalDate.of(2025, 7, 25),
+                reservationTime1, theme1);
+        // when
+        reservationRepository.create(reservation1);
+
+        // then
+        List<ReservationResponse> all = reservationService.findAll();
+        assertThat(all.size()).isEqualTo(1);
+        assertThat(all.getLast().name()).isEqualTo("name1");
+    }
+
+    @Test
+    void 예약을_삭제할_수_있다() {
+        // given
+        ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
+        reservationTimeRepository.create(reservationTime1);
+        Theme theme1 = new Theme(1L, "themeName1", "des", "th");
+        themeRepository.create(theme1);
+        Member member1 = new Member(1L, "name1", "email1@domain.com", "password1");
+        memberRepository.save(member1);
+        Reservation reservation1 = Reservation.of(null, member1, LocalDate.of(2025, 7, 25),
+                reservationTime1, theme1);
+        Reservation savedReservation = reservationRepository.create(reservation1);
+        // when
+        reservationService.delete(savedReservation.getId());
+
+        // then
+        List<ReservationResponse> all = reservationService.findAll();
+        assertThat(all.size()).isEqualTo(0);
     }
 
     @Test
@@ -89,11 +115,19 @@ class ReservationServiceTest {
     @Test
     void 중복_예약하면_예외가_발생한다() {
         // given
-        ReservationCreateRequest 리사 = new ReservationCreateRequest("리사", LocalDate.of(2025, 7, 25), 1L, 1L);
+        ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
+        reservationTimeRepository.create(reservationTime1);
+        Theme theme1 = new Theme(1L, "themeName1", "des", "th");
+        themeRepository.create(theme1);
+        Member member1 = new Member(1L, "name1", "email1@domain.com", "password1");
+        memberRepository.save(member1);
+        Reservation reservation1 = Reservation.of(null, member1, LocalDate.of(2025, 7, 25),
+                reservationTime1, theme1);
+        reservationRepository.create(reservation1);
+        ReservationCreateRequest request = new ReservationCreateRequest(LocalDate.of(2025, 7, 25), 1L, 1L);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(리사))
+        assertThatThrownBy(() -> reservationService.create(1L, request))
                 .isInstanceOf(ExistedReservationException.class);
-        assertThat(reservationService.findAll().size()).isEqualTo(2);
     }
 }

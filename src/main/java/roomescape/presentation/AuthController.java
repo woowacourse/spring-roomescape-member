@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,7 +39,7 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public AuthenticatedUserResponse getAuthenticatedUser(@CookieValue("token") String token) {
-        return authService.getAuthenticatedUserFromToken(token);
+    public AuthenticatedUserResponse getAuthenticatedUser(Long memberId) {
+        return authService.getAuthenticatedUserFromToken(memberId);
     }
 }

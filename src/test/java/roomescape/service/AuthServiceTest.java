@@ -68,11 +68,10 @@ class AuthServiceTest {
     @Test
     void 토큰을_분해해서_사용자_정보를_조회한다() {
         // given
-        given(tokenProvider.extractSubject("token")).willReturn("1");
         Member member = new Member(null, "name1", "email1@domain.com", "password1");
         memberRepository.save(member);
         // when
-        AuthenticatedUserResponse token = authService.getAuthenticatedUserFromToken("token");
+        AuthenticatedUserResponse token = authService.getAuthenticatedUserFromToken(1L);
         // then
         assertThat(token.name()).isEqualTo("name1");
     }

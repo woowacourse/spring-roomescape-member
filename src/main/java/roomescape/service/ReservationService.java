@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.repository.MemberRepository;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
@@ -14,6 +16,7 @@ import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.exception.ExistedReservationException;
+import roomescape.exception.MemberNotFoundException;
 import roomescape.exception.ReservationNotFoundException;
 import roomescape.exception.ReservationTimeNotFoundException;
 import roomescape.exception.ThemeNotFoundException;
@@ -24,12 +27,18 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository,
+            MemberRepository memberRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<ReservationResponse> findAll() {
@@ -39,12 +48,13 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse create(ReservationCreateRequest request) {
+    public ReservationResponse create(Long memberId, ReservationCreateRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(ReservationTimeNotFoundException::new);
         Theme theme = themeRepository.findById(request.themeId()).orElseThrow(ThemeNotFoundException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
         Reservation reservation = Reservation.createWithoutId(
-                request.name(),
+                member,
                 request.date(),
                 reservationTime,
                 theme
@@ -54,7 +64,7 @@ public class ReservationService {
         Reservation savedReservation = reservationRepository.create(reservation);
         return new ReservationResponse(
                 savedReservation.getId(),
-                savedReservation.getName(),
+                savedReservation.getMember().getName(),
                 savedReservation.getDate(),
                 new ReservationTimeResponse(
                         savedReservation.getId(), savedReservation.getReservationTime().getStartAt()

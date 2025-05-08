@@ -22,7 +22,7 @@ class AuthControllerTest {
     private MemberRepository memberRepository;
 
     @Test
-    void 로그인_테스트() {
+    void 로그인_성공() {
         //given
         memberRepository.save(new Member(null, "name1", "email1@domain.com", "password1"));
         Map<String, Object> body = new HashMap<>();
@@ -39,7 +39,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void 비밀번호_불일치_테스트() {
+    void 로그인_비밀번호_불일치로_실패() {
         //given
         memberRepository.save(new Member(null, "name1", "email1@domain.com", "password1"));
         Map<String, Object> body = new HashMap<>();
@@ -56,7 +56,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void 존재하지_않는_이메일_테스트() {
+    void 로그인_존재하지_않는_이메일로_실패() {
         //given
         Map<String, Object> body = new HashMap<>();
         body.put("email", "email1@domain.com");
@@ -69,6 +69,31 @@ class AuthControllerTest {
                 .then()
                 .statusCode(400)
                 .body("message", equalTo("이메일 또는 비밀번호를 확인해주세요."));
+    }
+
+    @Test
+    void 인증_정보_조회_성공() {
+        //given
+        memberRepository.save(new Member(null, "name1", "email1@domain.com", "password1"));
+        Map<String, Object> body = Map.of(
+                "email", "email1@domain.com",
+                "password", "password1"
+        );
+        String token = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().post("/login")
+                .then()
+                .statusCode(200)
+                .extract().cookie("token");
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .cookie("token", token)
+                .when().get("/login/check")
+                .then()
+                .statusCode(200)
+                .body("name", equalTo("name1"));
     }
 
 }

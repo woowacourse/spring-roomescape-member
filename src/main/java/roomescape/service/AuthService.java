@@ -28,9 +28,8 @@ public class AuthService {
         return tokenProvider.createToken(String.valueOf(member.getId()));
     }
 
-    public AuthenticatedUserResponse getAuthenticatedUserFromToken(String token) {
-        String subject = tokenProvider.extractSubject(token);
-        Member member = memberRepository.findById(Long.parseLong(subject))
+    public AuthenticatedUserResponse getAuthenticatedUserFromToken(Long memberId) {
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow();
         return new AuthenticatedUserResponse(member.getName());
     }

@@ -19,8 +19,19 @@ public class ReservationControllerTest {
 
     @Test
     void 예약_추가_테스트() {
+        Map<String, Object> body = Map.of(
+                "email", "email1@domain.com",
+                "password", "password1"
+        );
+        String token = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().post("/login")
+                .then()
+                .statusCode(200)
+                .extract().cookie("token");
+
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", "2026-08-05");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
@@ -28,10 +39,11 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
+                .cookie("token", token)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("name", equalTo("브라운"));
+                .body("name", equalTo("포비"));
 
     }
 

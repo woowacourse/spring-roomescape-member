@@ -25,10 +25,12 @@ class ReservationTest {
 
     @Test
     void 예약날짜가_null일_경우_예외가_발생한다() {
+        // given
+        Member member = new Member(1L, "name1", "email1@email.com", "password1");
         // when & then
         Assertions.assertThatThrownBy(
                         () -> Reservation.createWithoutId(
-                                "짱구",
+                                member,
                                 null,
                                 ReservationTime.createWithoutId(LocalTime.of(9, 0)),
                                 Theme.createWithoutId("themeName", "des", "th")
@@ -38,10 +40,12 @@ class ReservationTest {
 
     @Test
     void 예약시간이_null일_경우_예외가_발생한다() {
+        // given
+        Member member = new Member(1L, "name1", "email1@email.com", "password1");
         // when & then
         Assertions.assertThatThrownBy(
                         () -> Reservation.createWithoutId(
-                                "짱구",
+                                member,
                                 LocalDate.of(2025, 1, 1),
                                 null,
                                 Theme.createWithoutId("themeName", "des", "th")
@@ -51,9 +55,11 @@ class ReservationTest {
 
     @Test
     void 지나간_시간에_예약을_생성할_경우_예외가_발생한다() {
+        // given
+        Member member = new Member(1L, "name1", "email1@email.com", "password1");
         // when & then
         Reservation reservation = Reservation.createWithoutId(
-                "짱구",
+                member,
                 LocalDate.of(2024, 1, 1),
                 new ReservationTime(1L, LocalTime.of(9, 0)),
                 Theme.createWithoutId("themeName", "des", "th")
@@ -64,10 +70,12 @@ class ReservationTest {
 
     @Test
     void 테마가_null일_경우_예외가_발생한다() {
+        // given
+        Member member = new Member(1L, "name1", "email1@email.com", "password1");
         // when & then
         Assertions.assertThatThrownBy(
                         () -> Reservation.createWithoutId(
-                                "name",
+                                member,
                                 LocalDate.now().plusDays(1),
                                 ReservationTime.createWithoutId(LocalTime.of(9, 0)),
                                 null

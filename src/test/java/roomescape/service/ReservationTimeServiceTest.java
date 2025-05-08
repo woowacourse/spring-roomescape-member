@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -28,9 +29,11 @@ class ReservationTimeServiceTest {
     private final ReservationTime fakeReservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
     private final ReservationTime fakeReservationTime2 = new ReservationTime(2L, LocalTime.of(11, 0));
     private final Theme theme = new Theme(1L, "themeName1", "des", "th");
-    private final Reservation fakeReservation1 = Reservation.of(1L, "포라", LocalDate.of(2025, 7, 25),
+    private final Member member1 = new Member(1L, "name1", "email1@domain.com", "password1");
+    private final Member member2 = new Member(1L, "name1", "email1@domain.com", "password1");
+    private final Reservation fakeReservation1 = Reservation.of(1L, member1, LocalDate.of(2025, 7, 25),
             fakeReservationTime1, theme);
-    private final Reservation fakeReservation2 = Reservation.of(2L, "널안보면내마음에멍", LocalDate.of(2025, 12, 25),
+    private final Reservation fakeReservation2 = Reservation.of(2L, member2, LocalDate.of(2025, 12, 25),
             fakeReservationTime1, theme);
 
 
