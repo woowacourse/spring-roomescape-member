@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.ReservationAvailability;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.business.domain.ReservationAvailability;
+import roomescape.business.domain.ReservationTime;
+import roomescape.business.domain.Theme;
 
 @Repository
 public class JdbcReservationAvailabilityDao implements ReservationAvailabilityRepository {
