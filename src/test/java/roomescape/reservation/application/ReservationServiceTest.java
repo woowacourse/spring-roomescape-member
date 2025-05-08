@@ -24,7 +24,7 @@ import roomescape.member.application.MemberService;
 import roomescape.member.application.dto.MemberDto;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRegistrationPolicy;
-import roomescape.reservation.domain.exception.ImpossibleReservationException;
+import roomescape.reservation.exception.ImpossibleReservationException;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.presentation.dto.request.AdminReservationRequest;
 import roomescape.reservation.presentation.dto.request.ReservationRequest;

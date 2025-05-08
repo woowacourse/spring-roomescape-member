@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public class NotFoundException extends CustomException {
     public NotFoundException(String targetName, Object value) {
-        super(new DetailedErrorCode(targetName, value));
+        super(new DetailedErrorCode(targetName, value), "리소스를 찾을 수 없습니다");
     }
 
     private static class DetailedErrorCode implements ErrorCode {

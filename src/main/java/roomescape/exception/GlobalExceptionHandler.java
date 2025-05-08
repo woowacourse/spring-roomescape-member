@@ -11,59 +11,25 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import roomescape.auth.exception.AuthorizationException;
-import roomescape.reservation.domain.exception.ImpossibleReservationException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(ImpossibleReservationException.class)
-    public ResponseEntity<ProblemDetail> handleImpossibleReservation(ImpossibleReservationException e) {
+    @ExceptionHandler(DomainException.class)
+    public ResponseEntity<ProblemDetail> handleDomainException(DomainException e) {
         ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        detail.setTitle("예약 불가");
+        detail.setTitle(e.getTitle());
         detail.setDetail(e.getMessage());
-        detail.setProperty("code", "IMPOSSIBLE_RESERVATION");
+        detail.setProperty("code", e.getCode());
         return ResponseEntity.badRequest().body(detail);
     }
 
-    @ExceptionHandler(AuthorizationException.class)
-    public ResponseEntity<ProblemDetail> handleAuthorizationException(AuthorizationException e) {
-        log.error("AuthorizationException", e);
-        ErrorCode code = e.getErrorCode();
-        ProblemDetail problem = ProblemDetail.forStatus(code.getStatus());
-        problem.setTitle("인증 오류");
-        problem.setDetail(code.getMessage());
-        problem.setProperty("code", "UNAUTHORIZED");
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problem);
-    }
-
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ProblemDetail> handleCustomException(BusinessException e) {
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ProblemDetail> handleCustomException(CustomException e) {
         ErrorCode code = e.getErrorCode();
         ProblemDetail detail = ProblemDetail.forStatus(code.getStatus());
-        detail.setTitle("비즈니스 규칙 위반");
-        detail.setDetail(code.getMessage());
-        detail.setProperty("code", code.name());
-        return ResponseEntity.status(code.getStatus()).body(detail);
-    }
-
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ProblemDetail> handleNotFound(NotFoundException e) {
-        ErrorCode code = e.getErrorCode();
-        ProblemDetail detail = ProblemDetail.forStatus(code.getStatus());
-        detail.setTitle("리소스를 찾을 수 없습니다");
-        detail.setDetail(e.getMessage());
-        detail.setProperty("code", code.name());
-        return ResponseEntity.status(code.getStatus()).body(detail);
-    }
-
-    @ExceptionHandler(InvalidInputException.class)
-    public ResponseEntity<ProblemDetail> handleInvalidInput(InvalidInputException e) {
-        ErrorCode code = e.getErrorCode();
-        ProblemDetail detail = ProblemDetail.forStatus(code.getStatus());
-        detail.setTitle("입력값 오류");
+        detail.setTitle(e.getTitle());
         detail.setDetail(code.getMessage());
         detail.setProperty("code", code.name());
         return ResponseEntity.status(code.getStatus()).body(detail);

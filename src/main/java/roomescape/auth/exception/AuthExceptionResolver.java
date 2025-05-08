@@ -12,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import roomescape.exception.ErrorCode;
 
 @Component
-public class GlobalExceptionResolver implements HandlerExceptionResolver {
+public class AuthExceptionResolver implements HandlerExceptionResolver {
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,
                                          Object handler, Exception ex) {

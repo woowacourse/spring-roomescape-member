@@ -1,11 +1,12 @@
 package roomescape.reservation.domain;
 
 import org.springframework.stereotype.Component;
-import roomescape.reservation.domain.exception.ImpossibleReservationException;
+import roomescape.reservation.exception.ImpossibleReservationException;
 import roomescape.reservation.exception.ReservationErrorCode;
 
 @Component
-public class ReservationRegistrationPolicy {
+public class
+ReservationRegistrationPolicy {
 
     public void validate(Reservation candidate, boolean existsDuplicatedReservation) {
         validateNotPast(candidate);
