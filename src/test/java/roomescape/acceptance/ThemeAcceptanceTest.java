@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.acceptance;
 
 
 import io.restassured.RestAssured;
@@ -22,7 +22,7 @@ import roomescape.dto.response.ThemeResponseDto;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ThemeControllerTest {
+class ThemeAcceptanceTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

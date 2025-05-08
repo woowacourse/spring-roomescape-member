@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.acceptance;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -21,7 +21,7 @@ import roomescape.dto.response.ReservationResponseDto;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationControllerTest {
+class ReservationAcceptanceTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
