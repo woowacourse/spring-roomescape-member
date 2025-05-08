@@ -12,12 +12,12 @@ import roomescape.model.Member;
 import roomescape.model.Role;
 
 @Repository
-public class MemberJdbcRepository implements MemberRepository {
+public class JdbcMemberRepository implements MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public MemberJdbcRepository(final DataSource dateSource) {
+    public JdbcMemberRepository(final DataSource dateSource) {
         this.jdbcTemplate = new JdbcTemplate(dateSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dateSource)
                 .withTableName("MEMBER")

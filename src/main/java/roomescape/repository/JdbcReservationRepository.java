@@ -17,7 +17,7 @@ import roomescape.model.Theme;
 import roomescape.model.TimeSlot;
 
 @Repository
-public class ReservationJdbcRepository implements ReservationRepository {
+public class JdbcReservationRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -46,7 +46,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
             JOIN MEMBER M ON R.MEMBER_ID = M.ID 
             """;
 
-    public ReservationJdbcRepository(final DataSource dataSource) {
+    public JdbcReservationRepository(final DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("RESERVATION")

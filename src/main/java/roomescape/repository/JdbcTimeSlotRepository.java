@@ -14,12 +14,12 @@ import org.springframework.stereotype.Repository;
 import roomescape.model.TimeSlot;
 
 @Repository
-public class TimeSlotJdbcRepository implements TimeSlotRepository {
+public class JdbcTimeSlotRepository implements TimeSlotRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public TimeSlotJdbcRepository(final DataSource dataSource) {
+    public JdbcTimeSlotRepository(final DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("RESERVATION_TIME")
