@@ -10,11 +10,11 @@ import org.junit.jupiter.api.Test;
 import roomescape.common.exception.NotFoundException;
 import roomescape.common.exception.UnauthorizedException;
 import roomescape.dto.request.LoginRequestDto;
-import roomescape.fake.FakeUserDao;
-import roomescape.model.User;
+import roomescape.fake.FakeMemberDao;
+import roomescape.model.Member;
 
 public class AuthServiceTest {
-    private final FakeUserDao fakeUserDao = new FakeUserDao();
+    private final FakeMemberDao fakeUserDao = new FakeMemberDao();
     private final AuthService authService = new AuthService(fakeUserDao);
 
     private String email;
@@ -24,7 +24,7 @@ public class AuthServiceTest {
     void setUp() {
         this.email = "john@example.com";
         this.password = "password";
-        fakeUserDao.add(new User("John", this.email, this.password));
+        fakeUserDao.add(new Member("John", this.email, this.password));
     }
 
     @Test
