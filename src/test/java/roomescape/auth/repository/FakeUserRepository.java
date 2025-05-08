@@ -25,10 +25,11 @@ public class FakeUserRepository implements UserRepository {
     }
 
     @Override
-    public void save(User user) {
+    public User save(User user) {
         if (findByEmail(user.getEmail()).isPresent()) {
             throw new ConflictException("이미 존재하는 유저입니다.");
         }
         users.add(user);
+        return user;
     }
 }

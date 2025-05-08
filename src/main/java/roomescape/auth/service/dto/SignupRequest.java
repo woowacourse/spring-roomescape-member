@@ -13,6 +13,6 @@ public record SignupRequest(
         String name
 ) {
         public User toEntity() {
-                return new User(0L, email, password);
+                return new User(0L, name, email, password);
         }
 }
