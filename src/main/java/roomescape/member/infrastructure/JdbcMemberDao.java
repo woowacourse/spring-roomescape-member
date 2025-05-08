@@ -39,14 +39,14 @@ public class JdbcMemberDao implements MemberDao {
 
     @Override
     public Member save(final Member member) {
-        String sql = "INSERT INTO theme (name, email, password, role) VALUES (:name, :email, :password, :role)";
+        String sql = "INSERT INTO member (name, email, password, role) VALUES (:name, :email, :password, :role)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
                 .addValue("password", member.getPassword())
-                .addValue("role", member.getRole());
+                .addValue("role", member.getRole().toString());
         jdbcTemplate.update(sql, mapSqlParameterSource, keyHolder);
 
         Number key = keyHolder.getKey();
@@ -66,6 +66,20 @@ public class JdbcMemberDao implements MemberDao {
         try {
             Member findMember = jdbcTemplate.queryForObject(
                     sql, new MapSqlParameterSource("id", id),
+                    ROW_MAPPER);
+            return Optional.of(findMember);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Object> findByEmail(final String email) {
+        String sql = "SELECT * FROM member WHERE email = :email";
+
+        try {
+            Member findMember = jdbcTemplate.queryForObject(
+                    sql, new MapSqlParameterSource("email", email),
                     ROW_MAPPER);
             return Optional.of(findMember);
         } catch (EmptyResultDataAccessException e) {

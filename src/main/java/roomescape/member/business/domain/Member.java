@@ -26,8 +26,8 @@ public class Member {
         this(null, new MemberName(name), new Email(email), new Password(password), role);
     }
 
-    public boolean isRole(final Role role) {
-        return this.role == role;
+    public Member(final String name, final String email, final String password) {
+        this(null, new MemberName(name), new Email(email), new Password(password), Role.MEMBER);
     }
 
     public Long getId() {

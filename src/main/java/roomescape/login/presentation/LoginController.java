@@ -13,6 +13,7 @@ import roomescape.login.business.service.LoginService;
 import roomescape.login.business.service.TokenCookieService;
 import roomescape.login.presentation.request.LoginCheckRequest;
 import roomescape.login.presentation.request.LoginRequest;
+import roomescape.login.presentation.request.SignupRequest;
 import roomescape.login.presentation.response.LoginCheckResponse;
 
 @RestController
@@ -40,8 +41,9 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public LoginCheckResponse checkLogin(LoginCheckRequest request) {
-        return loginService.checkLogin(request);
+    public ResponseEntity<LoginCheckResponse> checkLogin(LoginCheckRequest request) {
+        final LoginCheckResponse loginCheckResponse = loginService.checkLogin(request);
+        return ResponseEntity.ok(loginCheckResponse);
     }
 
     @PostMapping("/logout")
@@ -51,5 +53,11 @@ public class LoginController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie)
                 .build();
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<LoginCheckResponse> signup(@RequestBody SignupRequest request) {
+        final LoginCheckResponse loginCheckResponse = loginService.signup(request);
+        return ResponseEntity.ok(loginCheckResponse);
     }
 }
