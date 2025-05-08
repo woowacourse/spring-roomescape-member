@@ -92,6 +92,26 @@ HTTP/1.1 204
 - 로그인 기능을 구현하세요.
 - 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API를 구현하세요.
 
+### 회원가입 API
+
+request
+```
+POST /member HTTP/1.1
+content-type: application/json
+host: localhost:8080
+
+{
+    "email": "admin@email.com",
+    "password": "password",
+    "name": "name"
+}
+```
+
+response
+```
+HTTP/1.1 200 OK
+```
+
 ### 로그인 API
 
 request
@@ -136,3 +156,9 @@ Transfer-Encoding: chunked
     "name": "어드민"
 }
 ```
+
+## 5단계 - 로그인 리팩터링
+
+- Cookie에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 로직을 분리합니다.
+- 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용하도록 리팩터링 합니다.
+- 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링 합니다.
