@@ -7,37 +7,40 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.util.Map;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(code = BAD_REQUEST)
-    public ProblemDetail handleMethodArgumentNotValid(final MethodArgumentNotValidException ex) {
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex, final HttpHeaders headers, final HttpStatusCode status, final WebRequest request) {
         var problemDetail = ProblemDetail.forStatusAndDetail(ex.getStatusCode(), "유효성 검증에 실패했습니다.");
         var fieldErrors = ex.getFieldErrors()
             .stream()
             .collect(toMap(FieldError::getField, err -> (Object) err.getDefaultMessage()));
         problemDetail.setProperties(Map.of("message", fieldErrors));
-        return problemDetail;
+        return ResponseEntity.badRequest().body(problemDetail);
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseStatus(code = BAD_REQUEST)
-    public ProblemDetail handleHttpMessageNotReadable(final HttpMessageNotReadableException ex) {
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(final HttpMessageNotReadableException ex, final HttpHeaders headers, final HttpStatusCode status, final WebRequest request) {
         var problemDetail = ProblemDetail.forStatusAndDetail(BAD_REQUEST, "해석할 수 없는 요청입니다.");
         if (ex.getCause() instanceof InvalidFormatException ife) {
             var invalidFields = ife.getPath().stream().collect(toMap(Reference::getFieldName, r -> ife.getValue()));
             problemDetail.setProperties(Map.of("message", invalidFields));
         }
-        return problemDetail;
+        return ResponseEntity.badRequest().body(problemDetail);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

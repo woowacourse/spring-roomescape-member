@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import roomescape.application.TimeSlotService;
 import roomescape.presentation.request.CreateTimeSlotRequest;
@@ -26,7 +27,7 @@ public class TimeSlotApiController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<TimeSlotResponse> register(@Valid final CreateTimeSlotRequest request) {
+    public ResponseEntity<TimeSlotResponse> register(@RequestBody @Valid final CreateTimeSlotRequest request) {
         var timeSlot = service.register(request.startAt());
         var response = TimeSlotResponse.from(timeSlot);
         return ResponseEntity.created(URI.create("/times/" + timeSlot.id())).body(response);
