@@ -16,7 +16,7 @@ import roomescape.domain.RoomTheme;
 public class JdbcRoomThemeRepository implements RoomThemeRepository {
 
     private static final RowMapper<RoomTheme> THEME_ROW_MAPPER = (resultSet, rowNumber) ->
-            new RoomTheme(resultSet.getLong("id"),
+            new RoomTheme(resultSet.getLong("theme_id"),
                     resultSet.getString("theme_name"),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail"));
@@ -28,7 +28,7 @@ public class JdbcRoomThemeRepository implements RoomThemeRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
+                .usingGeneratedKeyColumns("theme_id");
     }
 
     @Override

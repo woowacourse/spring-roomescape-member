@@ -15,7 +15,7 @@ import roomescape.domain.MemberRoleType;
 public class JdbcMemberRepository implements MemberRepository {
 
     private static final RowMapper<Member> MEMBER_ROW_MAPPER = (resultSet, rowNum) -> new Member(
-            resultSet.getLong("id"),
+            resultSet.getLong("member_id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
             resultSet.getString("password"),
@@ -29,7 +29,7 @@ public class JdbcMemberRepository implements MemberRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("member")
-                .usingGeneratedKeyColumns("id");
+                .usingGeneratedKeyColumns("member_id");
         ;
     }
 
@@ -46,7 +46,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findById(final long id) {
-        String query = "SELECT * FROM member WHERE id = ?";
+        String query = "SELECT * FROM member WHERE member_id = ?";
         return jdbcTemplate.query(query, MEMBER_ROW_MAPPER, id).stream()
                 .findFirst();
     }
@@ -65,7 +65,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public boolean existsByEmail(final String email) {
-        String query = "SELECT EXISTS (SELECT * FROM member WHERE email = ?)";
+        String query = "SELECT EXISTS (SELECT 1 FROM member WHERE email = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, email));
     }
 }

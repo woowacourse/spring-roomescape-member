@@ -36,7 +36,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
+                .usingGeneratedKeyColumns("reservation_id");
     }
 
     @Override
@@ -60,19 +60,19 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         final String query = """
                 SELECT
-                    r.id AS reservation_id,
-                    r.name,
-                    r.date,
-                    rt.id AS time_id,
-                    rt.start_at AS time_value,
-                    t.theme_name,
-                    t.description,
-                    t.thumbnail
+                    reservation_id,
+                    name,
+                    date,
+                    rt.time_id,
+                    start_at AS time_value,
+                    theme_name,
+                    description,
+                    thumbnail
                 FROM reservation AS r
                 JOIN reservation_time AS rt
-                ON r.time_id = rt.id
+                ON r.time_id = rt.time_id
                 JOIN theme AS t 
-                ON r.theme_id = t.id
+                ON r.theme_id = t.theme_id
                 """;
         return jdbcTemplate.query(query, RESERVATION_ROW_MAPPER);
     }
@@ -81,14 +81,14 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Optional<Reservation> findById(long id) {
         final String query = """
                 SELECT
-                    r.id AS reservation_id,
-                    r.name,
-                    r.date,
+                    id AS reservation_id,
+                    name,
+                    date,
                     rt.id AS time_id,
-                    rt.start_at AS time_value,
-                    t.theme_name,
-                    t.description,
-                    t.thumbnail
+                    start_at AS time_value,
+                    theme_name,
+                    description,
+                    thumbnail
                 FROM reservation AS r
                 JOIN reservation_time AS rt
                 ON r.time_id = rt.id
