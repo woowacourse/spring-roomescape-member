@@ -1,5 +1,6 @@
 package roomescape.member.application.service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.member.application.TokenProvider;
@@ -36,10 +37,16 @@ public class MemberService {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("유저 정보를 찾을 수 없습니다."));
 
-        return new MemberResponse(member.getName());
+        return new MemberResponse(member);
     }
 
     public SignUpResponse signUp(SignUpRequest signUpRequest) {
         return new SignUpResponse(memberRepository.insert(signUpRequest).getId());
+    }
+
+    public List<MemberResponse> getMembers() {
+        return memberRepository.findAllMembers().stream()
+                .map(MemberResponse::new)
+                .toList();
     }
 }

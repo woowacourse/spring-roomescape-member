@@ -1,6 +1,7 @@
 package roomescape.member.presentation;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,14 @@ public class MemberController {
     ) {
         return ResponseEntity.ok().body(
                 memberService.signUp(signUpRequest)
+        );
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity<List<MemberResponse>> getMembers(
+    ) {
+        return ResponseEntity.ok().body(
+                memberService.getMembers()
         );
     }
 

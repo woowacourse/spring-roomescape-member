@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import roomescape.global.resolver.LoginMember;
 import roomescape.reservation.application.service.ReservationService;
 import roomescape.reservation.presentation.dto.AdminReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationResponse;
@@ -24,7 +23,7 @@ public class AdminReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> createReservation(
-            final @RequestBody @Valid AdminReservationRequest adminReservationRequest, LoginMember member
+            final @RequestBody @Valid AdminReservationRequest adminReservationRequest
     ) {
         ReservationResponse reservation = reservationService.createReservation(adminReservationRequest);
 
