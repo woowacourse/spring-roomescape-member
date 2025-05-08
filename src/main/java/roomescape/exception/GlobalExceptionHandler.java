@@ -22,4 +22,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Void> handDataExistException(final AlreadyExistException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Void> handleAuthenticationException(final AuthenticationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<Void> handleAuthorizationException(final AuthorizationException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Void> handleIllegalArgumentException(final IllegalArgumentException e) {
+        return ResponseEntity.badRequest().build();
+    }
 }

@@ -16,3 +16,9 @@ spring:
     init:
       mode: embedded
       schema-locations: classpath:schema.sql
+
+security:
+  jwt:
+    access-token:
+      secret-key: since-jjwt-api-0.11-secret-key-must-be-longer-than-32-bytes
+      validity-in-milliseconds: 900000

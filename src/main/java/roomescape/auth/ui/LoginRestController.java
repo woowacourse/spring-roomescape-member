@@ -1,0 +1,69 @@
+package roomescape.auth.ui;
+
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.application.AuthService;
+import roomescape.auth.application.BlacklistService;
+import roomescape.auth.domain.RequiresRole;
+import roomescape.auth.ui.dto.CheckAccessTokenResponse;
+import roomescape.auth.ui.dto.CreateAccessTokenRequest;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.UserRole;
+
+@RestController
+@RequiredArgsConstructor
+@Slf4j
+public class LoginRestController {
+
+    private final AuthService authService;
+    private final BlacklistService blacklistService;
+
+    @PostMapping("/login")
+    @RequiresRole(userRoles = {UserRole.ADMIN, UserRole.MEMBER, UserRole.GUEST})
+    public ResponseEntity<Void> createAccessToken(
+            @RequestBody final CreateAccessTokenRequest request, HttpServletResponse response
+    ) {
+        final String authToken = authService.createAccessToken(request);
+
+        final ResponseCookie cookie = ResponseCookie.from("token", authToken)
+                .path("/")
+                .httpOnly(true)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .build();
+    }
+
+    @PostMapping("/logout")
+    @RequiresRole(userRoles = {UserRole.ADMIN, UserRole.MEMBER})
+    public void logout(@CookieValue(value = "token") final String accessToken) {
+        log.atInfo().log("Logout accessToken: {}", accessToken);
+
+        if (blacklistService.isBlacklisted(accessToken)) {
+            return;
+        }
+        blacklistService.addToBlacklist(accessToken);
+    }
+
+
+    @GetMapping("/login/check")
+    @RequiresRole(userRoles = {UserRole.ADMIN, UserRole.MEMBER, UserRole.GUEST})
+    public ResponseEntity<CheckAccessTokenResponse> checkAccessToken(final Member member) {
+        if (member == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new CheckAccessTokenResponse("Unauthorized"));
+        }
+        return ResponseEntity.ok(new CheckAccessTokenResponse(member.getName()));
+    }
+}
