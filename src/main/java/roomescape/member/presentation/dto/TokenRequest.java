@@ -1,7 +1,12 @@
 package roomescape.member.presentation.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 public class TokenRequest {
+    @Email
     private String email;
+    @NotBlank
     private String password;
 
     public TokenRequest() {
