@@ -14,7 +14,6 @@ import roomescape.member.business.domain.Member;
 @Component
 public class JwtHandler {
 
-    public static final String CLAIM_EMAIL_KEY = "email";
     public static final String CLAIM_ID_KEY = "id";
     public static final String CLAIM_ROLE_KEY = "role";
 
@@ -29,7 +28,6 @@ public class JwtHandler {
 
         String accessToken = Jwts.builder()
                 .claim(CLAIM_ID_KEY, member.getId())
-                .claim(CLAIM_EMAIL_KEY, member.getEmail())
                 .claim(CLAIM_ROLE_KEY, member.getRole().toString())
                 .setIssuedAt(date)
                 .setExpiration(accessTokenExpiredAt)
@@ -43,7 +41,6 @@ public class JwtHandler {
         Claims claims = parseJwt(token);
 
         return Map.of(
-                CLAIM_EMAIL_KEY, claims.get(CLAIM_EMAIL_KEY).toString(),
                 CLAIM_ID_KEY, claims.get(CLAIM_ID_KEY).toString(),
                 CLAIM_ROLE_KEY, claims.get(CLAIM_ROLE_KEY).toString()
         );

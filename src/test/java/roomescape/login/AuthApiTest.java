@@ -60,10 +60,10 @@ public class AuthApiTest {
                 .split(";")[0]
                 .split(TokenCookieService.COOKIE_TOKEN_KEY + "=")[1];
 
-        String actual = jwtHandler.decode(token, JwtHandler.CLAIM_EMAIL_KEY);
+        String actual = jwtHandler.decode(token, JwtHandler.CLAIM_ID_KEY);
 
         // then
-        assertThat(actual).isEqualTo("test1@test.com");
+        assertThat(actual).isEqualTo("1");
     }
 
     @Test
