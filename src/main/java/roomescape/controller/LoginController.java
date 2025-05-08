@@ -59,7 +59,6 @@ public class LoginController {
             return ResponseEntity.status(401).build();
         }
 
-        // JWT 검증 로직 추가 (서명이 올바른지 확인해야 함)
         try {
             String name = Jwts.parser()
                     .verifyWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
