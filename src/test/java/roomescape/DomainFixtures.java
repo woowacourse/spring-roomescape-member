@@ -1,8 +1,8 @@
 package roomescape;
 
 import java.time.LocalTime;
-import roomescape.model.Theme;
-import roomescape.model.TimeSlot;
+import roomescape.domain.Theme;
+import roomescape.domain.TimeSlot;
 
 public class DomainFixtures {
 

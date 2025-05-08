@@ -19,8 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.controller.api.ReservationApiController;
-import roomescape.controller.response.ReservationResponse;
+import roomescape.presentation.api.ReservationApiController;
+import roomescape.presentation.response.ReservationResponse;
 
 @Sql(scripts = {"/test-schema.sql"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
