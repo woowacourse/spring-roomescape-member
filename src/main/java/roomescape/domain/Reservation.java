@@ -1,6 +1,5 @@
 package roomescape.domain;
 
-import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.EqualsAndHashCode;
@@ -10,9 +9,11 @@ import lombok.Getter;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Reservation {
 
+    private static final String KOREAN_WORDS_REGEX = "^[가-힣]+$";
+    private static final int NAME_MAX_SIZE = 5;
+
     @EqualsAndHashCode.Include
     private Long id;
-    @Size(max = 5, message = "이름은 다섯글자 이내로 입력해 주세요.")
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
@@ -22,6 +23,8 @@ public class Reservation {
                        final LocalDate date,
                        final ReservationTime time,
                        final ReservationTheme theme) {
+        validateNameKoreanWords(name);
+        validateNameSize(name);
         this.name = name;
         this.date = date;
         this.time = time;
@@ -39,5 +42,18 @@ public class Reservation {
 
     public LocalDateTime toDateTime() {
         return LocalDateTime.of(date, time.getStartAt());
+    }
+
+    private void validateNameKoreanWords(String name) {
+        if (!name.matches(KOREAN_WORDS_REGEX)) {
+            throw new IllegalArgumentException("[ERROR] 이름은 한국어로만 입력해 주세요.");
+        }
+    }
+
+    private void validateNameSize(String name) {
+        if (name.length() > NAME_MAX_SIZE) {
+            throw new IllegalArgumentException(
+                    "[ERROR] 이름은 " + NAME_MAX_SIZE + "글자 이내로 입력해 주세요. 현재 길이는 " + name.length() + "글자 입니다.");
+        }
     }
 }

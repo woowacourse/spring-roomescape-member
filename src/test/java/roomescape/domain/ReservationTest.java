@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
@@ -59,6 +60,44 @@ class ReservationTest {
 
         //then
         assertThat(isDuplicated).isFalse();
+    }
+
+    @DisplayName("이름의 사이즈가 최댓값 이내로 입력되었는지 검증한다.")
+    @Test
+    void validateNameSize() {
+        // given
+        String validName = "가나다라마";
+        String invalidName = "가나다라마바";
+        LocalDate date = LocalDate.of(2025, 4, 18);
+
+        // when
+        Reservation reservation = new Reservation(validName, date, null, null);
+
+        // then
+        assertThat(reservation.getName()).isEqualTo("가나다라마");
+        assertThatThrownBy(() -> new Reservation(invalidName, date, null, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 이름은 5글자 이내로 입력해 주세요. 현재 길이는 6글자 입니다.");
+
+    }
+
+    @DisplayName("이름이 한국어로만 입력되었는지 검증한다.")
+    @Test
+    void validateNameIsKorean() {
+        //given
+        String validName = "제프리";
+        String invalidName = "Jeffrey";
+        LocalDate date = LocalDate.of(2025, 4, 18);
+
+        // when
+        Reservation reservation = new Reservation(validName, date, null, null);
+
+        // then
+        assertThat(reservation.getName()).isEqualTo("제프리");
+        assertThatThrownBy(() -> new Reservation(invalidName, date, null, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 이름은 한국어로만 입력해 주세요.");
+
     }
 
 }
