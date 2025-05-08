@@ -127,7 +127,7 @@ class ReservationServiceTest {
         ReservationCreateRequest request = new ReservationCreateRequest(LocalDate.of(2025, 7, 25), 1L, 1L);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(1L, request))
+        assertThatThrownBy(() -> reservationService.create(1L, request.timeId(), request.themeId(), request.date()))
                 .isInstanceOf(ExistedReservationException.class);
     }
 }
