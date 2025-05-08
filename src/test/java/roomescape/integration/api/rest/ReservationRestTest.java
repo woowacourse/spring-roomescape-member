@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.common.RestAssuredTestBase;
 
-class ReservationRestTestBase extends RestAssuredTestBase {
+class ReservationRestTest extends RestAssuredTestBase {
 
     private Integer timeId;
     private Integer themeId;

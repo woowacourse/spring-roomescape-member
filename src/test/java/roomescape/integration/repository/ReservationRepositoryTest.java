@@ -23,7 +23,7 @@ import roomescape.integration.fixture.ReservationTimeDbFixture;
 import roomescape.integration.fixture.ReserverNameFixture;
 import roomescape.integration.fixture.ThemeDbFixture;
 
-public class ReservationRepositoryTestBase extends RepositoryBaseTest {
+public class ReservationRepositoryTest extends RepositoryBaseTest {
 
     private static final String SELECT_RESERVATION_BY_ID = "SELECT * FROM reservation WHERE id = ?";
     private static final String SELECT_ALL_RESERVATIONS = "SELECT * FROM reservation";

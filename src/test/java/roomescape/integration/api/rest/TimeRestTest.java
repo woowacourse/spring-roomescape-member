@@ -11,7 +11,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import roomescape.common.RestAssuredTestBase;
 
-class TimeRestTestBase extends RestAssuredTestBase {
+class TimeRestTest extends RestAssuredTestBase {
 
     private Map<String, String> reservationTime = Map.of("startAt", "10:00");
 

@@ -8,7 +8,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import roomescape.common.RestAssuredTestBase;
 
-class ThemeRestTestBase extends RestAssuredTestBase {
+class ThemeRestTest extends RestAssuredTestBase {
 
     private Map<String, String> createThemeRequest = Map.of(
             "name", "공포방탈출",

@@ -21,7 +21,7 @@ import roomescape.integration.fixture.ReservationDbFixture;
 import roomescape.integration.fixture.ReservationTimeDbFixture;
 import roomescape.integration.fixture.ThemeDbFixture;
 
-public class ReservationTimeRepositoryTestBase extends RepositoryBaseTest {
+public class ReservationTimeRepositoryTest extends RepositoryBaseTest {
 
     @Autowired
     private ReservationTimeRepository repository;
