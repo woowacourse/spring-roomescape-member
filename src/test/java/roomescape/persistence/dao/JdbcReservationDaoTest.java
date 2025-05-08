@@ -1,10 +1,27 @@
 package roomescape.persistence.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.business.domain.PlayTime;
+import roomescape.business.domain.Reservation;
+import roomescape.business.domain.Theme;
+import roomescape.persistence.entity.PlayTimeEntity;
+import roomescape.persistence.entity.ReservationEntity;
+import roomescape.persistence.entity.ThemeEntity;
 
 @JdbcTest
 class JdbcReservationDaoTest {
-/*
+
     private ReservationDao reservationDao;
 
     private final JdbcTemplate jdbcTemplate;
@@ -21,7 +38,18 @@ class JdbcReservationDaoTest {
                     PRIMARY KEY (id)
                 );
                 """);
+        jdbcTemplate.execute("""
+                CREATE TABLE IF NOT EXISTS theme
+                (
+                    id SERIAL,
+                    name        VARCHAR(255) NOT NULL,
+                    description VARCHAR(255) NOT NULL,
+                    thumbnail VARCHAR(255) NOT NULL,
+                    PRIMARY KEY (id)
+                );
+                """);
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:10')");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마', '소개', '썸네일')");
 
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -38,8 +66,10 @@ class JdbcReservationDaoTest {
                     name VARCHAR(255) NOT NULL,
                     date VARCHAR(255) NOT NULL,
                     time_id BIGINT,
+                    theme_id BIGINT,
                     PRIMARY KEY (id),
-                    FOREIGN KEY (time_id) REFERENCES reservation_time (id)
+                    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
+                    FOREIGN KEY (theme_id) REFERENCES theme (id)
                 );
                 """);
     }
@@ -56,15 +86,19 @@ class JdbcReservationDaoTest {
         ));
         final ReservationEntity actual = jdbcTemplate.queryForObject("""
                 SELECT
-                    r.id as reservation_id,
+                    r.id AS reservation_id,
                     r.name,
                     r.date,
-                    t.id as time_id,
-                    t.start_at as time_value
-                    FROM reservation as r
-                    inner join reservation_time as t
-                    on r.time_id = t.id
-                    WHERE r.id = ?
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation AS r
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                WHERE r.id = ?
                 """, ReservationEntity.getDefaultRowMapper(), id
         );
 
@@ -73,7 +107,8 @@ class JdbcReservationDaoTest {
                 1L,
                 "hotteok",
                 "2025-01-01",
-                PlayTimeEntity.from(playTimeFixture))
+                PlayTimeEntity.from(playTimeFixture),
+                ThemeEntity.from(themeFixture))
         );
     }
 
@@ -81,16 +116,16 @@ class JdbcReservationDaoTest {
     @Test
     void findAll() {
         // given
-        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id) values ('hotteok', '2025-01-01', 1)");
-        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id) values ('hotteok', '2025-01-02', 1)");
+        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', '2025-01-01', 1, 1)");
+        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', '2025-01-02', 1, 1)");
 
         // when
         final List<Reservation> actual = reservationDao.findAll();
 
         // then
         assertThat(actual).containsExactly(
-                Reservation.createWithId(1L, "hotteok", LocalDate.of(2025, 1, 1), playTimeFixture),
-                Reservation.createWithId(2L, "hotteok", LocalDate.of(2025, 1, 2), playTimeFixture)
+                Reservation.createWithId(1L, "hotteok", LocalDate.of(2025, 1, 1), playTimeFixture, themeFixture),
+                Reservation.createWithId(2L, "hotteok", LocalDate.of(2025, 1, 2), playTimeFixture, themeFixture)
         );
     }
 
@@ -98,7 +133,7 @@ class JdbcReservationDaoTest {
     @Test
     void remove() {
         // given
-        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id) values ('hotteok', '2025-01-01', 1)");
+        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', '2025-01-01', 1, 1)");
 
         // when
         final boolean flag = reservationDao.remove(1L);
@@ -121,19 +156,60 @@ class JdbcReservationDaoTest {
         assertThat(flag).isFalse();
     }
 
-    @DisplayName("데이터베이스에서 해당 방탈출 예약이 존재하는지 확인한다.")
+    @DisplayName("데이터베이스에서 해당 날짜에 해당하는 방탈출 예약이 존재하는지 확인한다.")
     @Test
-    void existsByDateAndTime() {
+    void existsByDate() {
         // given
-        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id) values ('hotteok', '2025-01-01', 1)");
+        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', '2025-01-01', 1, 1)");
         final LocalDate validDate = LocalDate.of(2025, 1, 1);
         final LocalDate invalidDate = LocalDate.of(2025, 1, 2);
 
         // when & then
         assertAll(
-                () -> assertThat(reservationDao.existsByDateAndTime(validDate, playTimeFixture)).isTrue(),
-                () -> assertThat(reservationDao.existsByDateAndTime(invalidDate, playTimeFixture)).isFalse()
+                () -> assertThat(reservationDao.existsByDateAndTimeAndTheme(validDate, playTimeFixture, themeFixture)).isTrue(),
+                () -> assertThat(reservationDao.existsByDateAndTimeAndTheme(invalidDate, playTimeFixture, themeFixture)).isFalse()
         );
     }
- */
+
+    @DisplayName("데이터베이스에서 해당 시간에 해당하는 방탈출 예약이 존재하는지 확인한다.")
+    @Test
+    void existsByTime() {
+        // given
+        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', '2025-01-01', 1, 1)");
+        final PlayTime validTime = playTimeFixture;
+        final PlayTime invalidTime = new PlayTime(LocalTime.of(10, 20));
+
+        // when & then
+        assertAll(
+                () -> assertThat(reservationDao.existsByDateAndTimeAndTheme(
+                        LocalDate.of(2025, 1, 1),
+                        validTime,
+                        themeFixture)).isTrue(),
+                () -> assertThat(reservationDao.existsByDateAndTimeAndTheme(
+                        LocalDate.of(2025, 1, 1),
+                        invalidTime,
+                        themeFixture)).isFalse()
+        );
+    }
+
+    @DisplayName("데이터베이스에서 해당 테마에 해당하는 방탈출 예약이 존재하는지 확인한다.")
+    @Test
+    void existsByTheme() {
+        // given
+        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', '2025-01-01', 1, 1)");
+        final Theme validTheme = themeFixture;
+        final Theme invalidTheme = new Theme("더미", "더미", "더미");
+
+        // when & then
+        assertAll(
+                () -> assertThat(reservationDao.existsByDateAndTimeAndTheme(
+                        LocalDate.of(2025, 1, 1),
+                        playTimeFixture,
+                        validTheme)).isTrue(),
+                () -> assertThat(reservationDao.existsByDateAndTimeAndTheme(
+                        LocalDate.of(2025, 1, 1),
+                        playTimeFixture,
+                        invalidTheme)).isFalse()
+        );
+    }
 }
