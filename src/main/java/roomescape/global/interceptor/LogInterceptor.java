@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.logging.Logger;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 
 public class LogInterceptor implements HandlerInterceptor {
     private static final Logger log = Logger.getLogger(LogInterceptor.class.getName());
@@ -17,15 +16,6 @@ public class LogInterceptor implements HandlerInterceptor {
 
         return true;
     }
-
-//    @Override
-//    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-//                           ModelAndView modelAndView) throws Exception {
-//        String requestURI = request.getRequestURI();
-//        int status = response.getStatus();
-//        log.info("[API RESPONSE] " + requestURI + ": " + status);
-//
-//    }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
