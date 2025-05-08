@@ -47,8 +47,8 @@ public class ThemeController {
                     )
             }
     )
-    public List<ThemeResponse> findAll() {
-        return themeService.findAll();
+    public ResponseEntity<List<ThemeResponse>> findAll() {
+        return ResponseEntity.ok(themeService.findAll());
     }
 
     @PostMapping
@@ -107,7 +107,7 @@ public class ThemeController {
                     )
             }
     )
-    public List<ThemeResponse> findPopularThemesInRecentSevenDays() {
-        return themeService.findPopularThemesInRecentSevenDays();
+    public ResponseEntity<List<ThemeResponse>> findPopularThemesInRecentSevenDays() {
+        return ResponseEntity.ok(themeService.findPopularThemesInRecentSevenDays());
     }
 }

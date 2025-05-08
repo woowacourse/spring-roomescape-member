@@ -47,8 +47,8 @@ public class ReservationController {
                     )
             }
     )
-    public List<ReservationResponse> findAll() {
-        return reservationService.findAll();
+    public ResponseEntity<List<ReservationResponse>> findAll() {
+        return ResponseEntity.ok(reservationService.findAll());
     }
 
     @PostMapping

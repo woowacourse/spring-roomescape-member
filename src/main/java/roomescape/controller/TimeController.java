@@ -52,8 +52,8 @@ public class TimeController {
                     )
             }
     )
-    public List<ReservationTimeResponse> findAll() {
-        return reservationTimeService.findAll();
+    public ResponseEntity<List<ReservationTimeResponse>> findAll() {
+        return ResponseEntity.ok(reservationTimeService.findAll());
     }
 
     @GetMapping("/paged")
@@ -69,14 +69,15 @@ public class TimeController {
                     )
             }
     )
-    public List<ReservationTimeResponse> findAllWithPaging(final PageRequest pageRequest) {
-        return reservationTimeService.findAllWithPaging(pageRequest).getContent();
+    public ResponseEntity<List<ReservationTimeResponse>> findAllWithPaging(final PageRequest pageRequest) {
+        return ResponseEntity.ok(reservationTimeService.findAllWithPaging(pageRequest).getContent());
     }
 
     @GetMapping("/available")
-    public List<ReservationTimeUserResponse> findAllByDateAndTheme(@RequestParam(value = "theme-id") final long themeId,
-                                                                   @RequestParam(value = "date") final LocalDate date) {
-        return reservationTimeService.findAllByDateAndTheme(themeId, date);
+    public ResponseEntity<List<ReservationTimeUserResponse>> findAllByDateAndTheme(
+            @RequestParam(value = "theme-id") final long themeId,
+            @RequestParam(value = "date") final LocalDate date) {
+        return ResponseEntity.ok(reservationTimeService.findAllByDateAndTheme(themeId, date));
     }
 
     @PostMapping
