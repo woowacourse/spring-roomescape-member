@@ -2,6 +2,7 @@ package roomescape.business.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,18 +26,23 @@ class PlayTimeServiceTest {
         playTimeService = new PlayTimeService(new FakePlayTimeDao());
     }
 
-    @DisplayName("방탈출 시간을 조회한다.")
     @Test
-    void find() {
+    @DisplayName("id를 통해 방탈출 시간을 조회한다.")
+    void findById() {
         // given
-        playTimeService.create(new PlayTimeRequest(FORMATTED_MAX_LOCAL_TIME));
+        final LocalTime startAt = LocalTime.of(10, 10);
+        final PlayTimeRequest playTimeRequest = new PlayTimeRequest(startAt);
+        final PlayTimeResponse playTimeResponse = playTimeService.create(playTimeRequest);
+        final Long id = playTimeResponse.id();
 
-        final Long id = 1L;
-        final PlayTime expected = PlayTime.createWithId(1L, FORMATTED_MAX_LOCAL_TIME);
+        // when
+        final PlayTime findPlayTime = playTimeService.find(id);
 
         // when & then
-        assertThat(playTimeService.find(id))
-                .isEqualTo(expected);
+        assertAll(
+                () -> assertThat(findPlayTime.getId()).isEqualTo(id),
+                () -> assertThat(findPlayTime.getStartAt()).isEqualTo(startAt)
+        );
     }
 
     @DisplayName("방탈출 시간을 저장한다.")
@@ -68,7 +74,7 @@ class PlayTimeServiceTest {
     void findOrThrowIfIdNotExists() {
         // given
         final Long id = 1L;
-        final PlayTime expected = PlayTime.createWithId(1L, FORMATTED_MAX_LOCAL_TIME);
+        final PlayTime expected = new PlayTime(1L, FORMATTED_MAX_LOCAL_TIME);
 
         // when & then
         assertThatThrownBy(() -> playTimeService.find(id))

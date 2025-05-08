@@ -23,16 +23,4 @@ class PlayTimeTest {
                         .isInstanceOf(IllegalArgumentException.class)
         );
     }
-
-    @DisplayName("id를 포함하여 생성할 때 id에 null은 들어올 수 없다.")
-    @Test
-    void createWithId() {
-        // given
-        final Long invalidId = null;
-        final LocalTime validStartAt = LocalTime.MAX;
-
-        // when & then
-        assertThatThrownBy(() -> PlayTime.createWithId(invalidId, validStartAt))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
 }
