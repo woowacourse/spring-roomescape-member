@@ -14,10 +14,6 @@ public class PlayTime {
         this.startAt = startAt;
     }
 
-    private void validateNonNull(final LocalTime startAt) {
-        if (startAt == null) {
-            throw new IllegalArgumentException("startAt이 null 입니다.");
-        }
     public PlayTime(final LocalTime startAt) {
         this(null, startAt);
     }
