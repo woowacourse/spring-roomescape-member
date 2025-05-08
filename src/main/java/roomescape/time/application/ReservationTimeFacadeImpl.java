@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ReservationTimeWebFacadeImpl implements ReservationTimeWebFacade {
+public class ReservationTimeFacadeImpl implements ReservationTimeFacade {
 
     private final ReservationTimeQueryService reservationTimeQueryService;
     private final ReservationTimeCommandService reservationTimeCommandService;

@@ -17,7 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ReservationWebFacadeImpl implements ReservationWebFacade {
+public class ReservationFacadeImpl implements ReservationFacade {
 
     private final ReservationQueryService reservationQueryService;
     private final ReservationCommandService reservationCommandService;

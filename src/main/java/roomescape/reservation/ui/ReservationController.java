@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.uri.UriFactory;
-import roomescape.reservation.application.ReservationWebFacade;
+import roomescape.reservation.application.ReservationFacade;
 import roomescape.reservation.ui.dto.AvailableReservationTimeWebResponse;
 import roomescape.reservation.ui.dto.CreateReservationWebRequest;
 import roomescape.reservation.ui.dto.ReservationResponse;
@@ -27,11 +27,11 @@ public class ReservationController {
 
     public static final String BASE_PATH = "/reservations";
 
-    private final ReservationWebFacade reservationWebFacade;
+    private final ReservationFacade reservationFacade;
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getAll() {
-        final List<ReservationResponse> reservations = reservationWebFacade.getAll();
+        final List<ReservationResponse> reservations = reservationFacade.getAll();
         return ResponseEntity.ok(reservations);
     }
 
@@ -39,14 +39,14 @@ public class ReservationController {
     public ResponseEntity<List<AvailableReservationTimeWebResponse>> getAvailable(
             @RequestParam final LocalDate date,
             @RequestParam final Long themeId) {
-        final List<AvailableReservationTimeWebResponse> reservations = reservationWebFacade.getAvailable(date, themeId);
+        final List<AvailableReservationTimeWebResponse> reservations = reservationFacade.getAvailable(date, themeId);
         return ResponseEntity.ok(reservations);
     }
 
     @PostMapping
     public ResponseEntity<ReservationResponse> create(
             @RequestBody final CreateReservationWebRequest createReservationWebRequest) {
-        final ReservationResponse reservationResponse = reservationWebFacade.create(createReservationWebRequest);
+        final ReservationResponse reservationResponse = reservationFacade.create(createReservationWebRequest);
         final URI location = UriFactory.buildPath(BASE_PATH, String.valueOf(reservationResponse.id()));
         return ResponseEntity.created(location)
                 .body(reservationResponse);
@@ -54,7 +54,7 @@ public class ReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable final Long id) {
-        reservationWebFacade.delete(id);
+        reservationFacade.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

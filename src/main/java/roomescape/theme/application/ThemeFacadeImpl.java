@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ThemeWebFacadeImpl implements ThemeWebFacade {
+public class ThemeFacadeImpl implements ThemeFacade {
 
     private final ThemeQueryService themeQueryService;
     private final ThemeCommandService themeCommandService;

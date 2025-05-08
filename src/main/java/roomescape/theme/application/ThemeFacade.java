@@ -5,7 +5,7 @@ import roomescape.theme.ui.dto.ThemeResponse;
 
 import java.util.List;
 
-public interface ThemeWebFacade {
+public interface ThemeFacade {
 
     List<ThemeResponse> getAll();
 
