@@ -100,10 +100,59 @@
             }
           ]
           ```
-          
-## TODO
-1. DTO검증 달아주기(@NotNull, @NotBlank)
-2. 서비스 로직 리팩터링
-3. 테스트 리팩터링
-4. 슬라이스 테스트 추가
-    - repository, RestAssured, domain, service
+
+## 4단계
+
+> 사용자 도메인 추가 및 로그인 기능 구현
+
+### 사용자 도메인 추가
+
+- name, email, password를 가진다.
+
+### 로그인 기능 구현
+
+- `GET /login`요청 시 `login` 페이지 응답
+- `POST /login`요청 시 쿠키에 토큰 반환
+  - request
+    ```angular2html
+    POST /login HTTP/1.1
+    content-type: application/json
+    host: localhost:8080
+
+    {
+        "password": "password",
+        "email": "admin@email.com"
+    }
+    ```
+    - response
+    ```angular2html
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    Keep-Alive: timeout=60
+    Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+    ```
+  - `GET /login/check`인증 정보 조회 api 구현
+      - request
+      ```angular2html
+      GET /login/check HTTP/1.1
+      cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+      host: localhost:8080
+      ```
+
+      - response
+      ```angular2html
+      HTTP/1.1 200 OK
+      Connection: keep-alive
+      Content-Type: application/json
+      Date: Sun, 03 Mar 2024 19:16:56 GMT
+      Keep-Alive: timeout=60
+      Transfer-Encoding: chunked
+
+      {
+        "name": "어드민"
+      }
+    ```
+
+
+### 로그인 후 Cookie를 이용해서 사용자의 정보를 조회하는 api 작성
+
