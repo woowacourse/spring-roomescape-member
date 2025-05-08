@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.common.annotation.Auth;
 import roomescape.domain.Member;
 import roomescape.dto.request.LoginRequest;
 import roomescape.repository.MemberRepository;
@@ -43,15 +44,11 @@ public class LoginController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<?> checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        try {
-            String name = authService.getVerifiedPayloadFrom(cookies)
-                    .get("name", String.class);
-
-            return ResponseEntity.ok(Map.of("name", name));
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body(Map.of("error", "Unauthorized"));
+    public ResponseEntity<Member> checkLogin(@Auth Member member) {
+        if (member == null) {
+            return ResponseEntity.status(401).build();
         }
+
+        return ResponseEntity.ok(member);
     }
 }

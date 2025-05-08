@@ -31,7 +31,7 @@
 - [x] 토큰으로 사용자의 정보를 조회하는 API 구현
 
 ### 🚀 5단계 - 로그인 리팩터링
-- [ ] HandlerMethodArgumentResolver을 활용하여 로그인한 사용자 정보를 컨트롤러 메서드에 주입하도록 로직 분리
+- [x] HandlerMethodArgumentResolver을 활용하여 로그인한 사용자 정보를 컨트롤러 메서드에 주입하도록 로직 분리
 - [x] 사용자 예약 생성 API에서 쿠키 정보를 사용하도록 리팩터링
 - [ ] 관리자 예약 생성 API에서 memberId 정보를 사용하도록 리팩터링
 - [ ] reservation.html, user-reservation.js 파일의 TODO 주석을 참고하여 변경
