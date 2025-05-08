@@ -5,19 +5,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.util.List;
 import javax.sql.DataSource;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
 
 @JdbcTest
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class RoomescapeRepositoryTest {
 
     @Autowired
@@ -29,16 +29,20 @@ class RoomescapeRepositoryTest {
     void setUp() {
         repository = new RoomescapeRepositoryImpl(dataSource);
         template = new JdbcTemplate(dataSource);
+        template.execute("INSERT INTO reservation_theme (name, description, thumbnail)"
+                + "VALUES ('레벨 1탈출', '우테코 레벨1를 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg')");
+        template.execute("insert into reservation_time (start_at) values ('15:40')");
+        template.execute("insert into reservation (name, date, time_id, theme_id) values ('브라운', '2023-08-05', 1, 1)");
+    }
+
+    @AfterEach
+    void tearDown() {
         template.execute("DELETE FROM reservation");
         template.execute("DELETE FROM reservation_time");
         template.execute("DELETE FROM reservation_theme");
         template.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
         template.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
         template.execute("ALTER TABLE reservation_theme ALTER COLUMN id RESTART WITH 1");
-        template.execute("INSERT INTO reservation_theme (name, description, thumbnail)"
-                + "VALUES ('레벨 1탈출', '우테코 레벨1를 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg')");
-        template.execute("insert into reservation_time (start_at) values ('15:40')");
-        template.execute("insert into reservation (name, date, time_id, theme_id) values ('브라운', '2023-08-05', 1, 1)");
     }
 
     @Test

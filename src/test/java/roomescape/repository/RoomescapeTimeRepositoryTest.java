@@ -5,34 +5,35 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalTime;
 import java.util.List;
 import javax.sql.DataSource;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.ReservationTime;
 
 @JdbcTest
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class RoomescapeTimeRepositoryTest {
 
     @Autowired
     DataSource dataSource;
-    RoomescapeTimeRepository timeRepository;
     JdbcTemplate template;
+    RoomescapeTimeRepository timeRepository;
 
     @BeforeEach
     void setUp() {
         template = new JdbcTemplate(dataSource);
         timeRepository = new RoomescapeTimeRepositoryImpl(dataSource);
-        template.execute("DELETE FROM reservation");
-        template.execute("DELETE FROM reservation_time");
-        template.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-        template.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
         template.execute("insert into reservation_time (start_at) values ('15:40')");
+    }
 
+    @AfterEach
+    void tearDown() {
+        template.execute("DELETE FROM reservation_time");
+        template.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test
