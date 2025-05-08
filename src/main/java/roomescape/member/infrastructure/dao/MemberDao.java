@@ -36,7 +36,7 @@ public class MemberDao implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findByEmail(TokenRequest tokenRequest) {
+    public Optional<Member> findByEmail(String email) {
         String sql = "select id, email, password, name from member where email = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
@@ -47,20 +47,9 @@ public class MemberDao implements MemberRepository {
                                 resultSet.getString("password"),
                                 resultSet.getString("name")
                         );
-                    }, tokenRequest.getEmail()));
+                    }, email));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
-
-//    @Override
-//    public Optional<ReservationTime> findById(final Long timeId) {
-//        String sql = "select id, start_at from reservation_time where id = ?";
-//        try {
-//            return Optional.ofNullable(jdbcTemplate.queryForObject(
-//                    sql, RESERVATION_TIME_ROW_MAPPER, timeId));
-//        } catch (EmptyResultDataAccessException e) {
-//            return Optional.empty();
-//        }
-//    }
 }

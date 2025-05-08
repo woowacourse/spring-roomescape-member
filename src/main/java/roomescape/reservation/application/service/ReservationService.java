@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
+import roomescape.global.resolver.LoginMember;
 import roomescape.reservation.application.dto.CreateReservationRequest;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
@@ -31,14 +32,14 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public ReservationResponse createReservation(final ReservationRequest reservationRequest) {
+    public ReservationResponse createReservation(final ReservationRequest reservationRequest, final LoginMember member) {
         ReservationDate reservationDate = new ReservationDate(reservationRequest.getDate());
         ReservationTime reservationTime = getReservationTime(reservationRequest.getTimeId());
         Theme theme = getTheme(reservationRequest.getThemeId());
         validateReservationDateTime(reservationDate, reservationTime);
 
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                new ReservationName(reservationRequest.getName()),
+                new ReservationName(member.getName()),
                 theme,
                 reservationDate,
                 reservationTime

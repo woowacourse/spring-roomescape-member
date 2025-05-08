@@ -21,10 +21,10 @@ public class MemberService {
     }
 
     public String createToken(TokenRequest tokenRequest) {
-        Member member = memberRepository.findByEmail(tokenRequest)
+        Member member = memberRepository.findByEmail(tokenRequest.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("유저 정보를 찾을 수 없습니다."));
 
-        return tokenProvider.createToken(member.getName());
+        return tokenProvider.createToken(member.getEmail());
     }
 
     public MemberResponse findByToken(String token) {
@@ -33,7 +33,10 @@ public class MemberService {
     }
 
     private MemberResponse findMember(String payload) {
-        return new MemberResponse(payload);
+        Member member = memberRepository.findByEmail(payload)
+                .orElseThrow(() -> new NoSuchElementException("유저 정보를 찾을 수 없습니다."));
+
+        return new MemberResponse(member.getName());
     }
 
     public SignUpResponse signUp(SignUpRequest signUpRequest) {
