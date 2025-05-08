@@ -21,11 +21,23 @@ public class Member {
         this(null, null, email, password);
     }
 
+    public Member copyWithId(Long id) {
+        return new Member(id, name, email, password);
+    }
+
     public Long getId() {
         return id;
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }

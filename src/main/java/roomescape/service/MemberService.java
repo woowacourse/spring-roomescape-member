@@ -1,10 +1,13 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Component;
 import roomescape.config.LoginMember;
 import roomescape.dao.MemberDao;
 import roomescape.dto.AuthorizationResponse;
 import roomescape.dto.LoginRequest;
+import roomescape.dto.MemberRequest;
+import roomescape.dto.MemberResponse;
 import roomescape.entity.AccessToken;
 import roomescape.entity.Member;
 import roomescape.exception.InvalidAccessTokenException;
@@ -19,6 +22,29 @@ public class MemberService {
         this.memberDao = memberDao;
     }
 
+    public AuthorizationResponse findMember(LoginMember member) {
+        try {
+            Member realMemberINDb = memberDao.findById(member.getId());
+            return new AuthorizationResponse(realMemberINDb);
+        } catch (MemberNotFoundException exception) {
+            // TODO DAO에서 안잡고 여기서 잡은 이유 -> dao에서 잡기엔 너무 에러메세지가 authroization로직에서만 유효한 잡기이다.
+            throw new InvalidAccessTokenException();
+        }
+    }
+
+    public List<MemberResponse> findAllMembers() {
+        return memberDao.findAll().stream()
+                .map(MemberResponse::new)
+                .toList();
+    }
+
+    public MemberResponse createMember(MemberRequest request) {
+        Member memberWithoutId = request.toMember();
+        long id = memberDao.create(memberWithoutId);
+        Member member = memberWithoutId.copyWithId(id);
+        return new MemberResponse(member);
+    }
+
     public void validateMemberExistence(LoginRequest login) {
         boolean hasMember = memberDao.existsByEmailAndPassword(login.email(), login.password());
         if (!hasMember) {
@@ -29,15 +55,5 @@ public class MemberService {
     public AccessToken createAccessToken(LoginRequest request) {
         Member member = memberDao.findByEmailAndPassword(request.email(), request.password());
         return new AccessToken(member);
-    }
-
-    public AuthorizationResponse findMember(LoginMember member) {
-        try {
-            Member realMemberINDb = memberDao.findById(member.getId());
-            return new AuthorizationResponse(realMemberINDb);
-        } catch (MemberNotFoundException exception) {
-            // TODO DAO에서 안잡고 여기서 잡은 이유 -> dao에서 잡기엔 너무 에러메세지가 authroization로직에서만 유효한 잡기이다.
-            throw new InvalidAccessTokenException();
-        }
     }
 }

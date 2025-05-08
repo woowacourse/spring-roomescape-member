@@ -1,7 +1,11 @@
 package roomescape.dao;
 
+import java.sql.PreparedStatement;
+import java.util.List;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import roomescape.entity.Member;
 import roomescape.exception.MemberNotFoundException;
@@ -14,6 +18,15 @@ public class JdbcMemberDao implements MemberDao {
 
     public JdbcMemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String sql = "select * from member";
+        return jdbcTemplate.query(
+                sql,
+                new MemberMapper()
+        );
     }
 
     @Override
@@ -50,5 +63,25 @@ public class JdbcMemberDao implements MemberDao {
                 email,
                 password
         );
+    }
+
+    @Override
+    public long create(Member member) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sql = "insert into member (name, email, password) values (?, ?, ?)";
+        jdbcTemplate.update(
+                connection -> {
+                    PreparedStatement ps = connection.prepareStatement(
+                            sql,
+                            new String[]{"id"}
+                    );
+                    ps.setString(1, member.getName());
+                    ps.setString(2, member.getEmail());
+                    ps.setString(3, member.getPassword());
+                    return ps;
+                },
+                keyHolder
+        );
+        return keyHolder.getKey().longValue();
     }
 }
