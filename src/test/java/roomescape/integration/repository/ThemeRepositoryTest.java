@@ -13,12 +13,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.common.RepositoryBaseTest;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.theme.LastWeekRange;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeDescription;
 import roomescape.domain.theme.ThemeName;
 import roomescape.domain.theme.ThemeThumbnail;
+import roomescape.integration.fixture.MemberDbFixture;
 import roomescape.integration.fixture.ReservationDateFixture;
 import roomescape.integration.fixture.ReservationTimeDbFixture;
 import roomescape.repository.ThemeRepository;
@@ -39,6 +41,9 @@ public class ThemeRepositoryTest extends RepositoryBaseTest {
 
     @Autowired
     private ReservationTimeDbFixture reservationTimeDbFixture;
+
+    @Autowired
+    private MemberDbFixture memberDbFixture;
 
     private static final String SELECT_THEME_BY_ID = "SELECT * FROM theme WHERE id = ?";
     private static final String COUNT_THEME_BY_ID = "SELECT COUNT(*) FROM theme WHERE id = ?";
@@ -153,8 +158,9 @@ public class ThemeRepositoryTest extends RepositoryBaseTest {
     }
 
     private void addReservation(int count, ReservationDate date, ReservationTime time, Theme theme) {
+        Member member = memberDbFixture.한스_leehyeonsu4888_지메일_일반_멤버();
         for (int i = 0; i < count; i++) {
-            reservationDbFixture.예약_생성_한스(date, time, theme);
+            reservationDbFixture.예약_생성_한스(date, time, theme, member);
         }
     }
 }

@@ -7,12 +7,20 @@ public class Member {
     private final MemberName name;
     private final MemberEmail email;
     private final MemberEncodedPassword password;
+    private final MemberRole role;
 
-    public Member(final Long id, final MemberName name, final MemberEmail email, final MemberEncodedPassword password) {
+    public Member(
+            final Long id,
+            final MemberName name,
+            final MemberEmail email,
+            final MemberEncodedPassword password,
+            final MemberRole role
+    ) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public boolean isMatchPassword(MemberPassword rawPassword, PasswordEncoder encoder) {
@@ -33,5 +41,9 @@ public class Member {
 
     public MemberEncodedPassword getPassword() {
         return password;
+    }
+
+    public MemberRole getRole() {
+        return role;
     }
 }

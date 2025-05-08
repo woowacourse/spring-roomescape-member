@@ -12,9 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import roomescape.common.RepositoryBaseTest;
+import roomescape.domain.member.Member;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.AvailableReservationTime;
 import roomescape.domain.time.ReservationTime;
+import roomescape.integration.fixture.MemberDbFixture;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.integration.fixture.ReservationDateFixture;
 import roomescape.integration.fixture.ReservationDbFixture;
@@ -37,6 +39,9 @@ public class ReservationTimeRepositoryTest extends RepositoryBaseTest {
 
     @Autowired
     private ReservationDbFixture reservationDbFixture;
+
+    @Autowired
+    private MemberDbFixture memberDbFixture;
 
     @Test
     void 예약시간을_저장할_수_있다() {
@@ -129,7 +134,8 @@ public class ReservationTimeRepositoryTest extends RepositoryBaseTest {
         ReservationTime 예약시간 = reservationTimeDbFixture.예약시간_10시();
         reservationTimeDbFixture.예약시간_11시();
         Theme 공포 = themeDbFixture.공포();
-        reservationDbFixture.예약_한스_25_4_22(예약시간, 공포);
+        Member member = memberDbFixture.한스_leehyeonsu4888_지메일_일반_멤버();
+        reservationDbFixture.예약_한스_25_4_22(예약시간, 공포, member);
 
         // when
         List<AvailableReservationTime> available = repository.findAllAvailableReservationTimes(

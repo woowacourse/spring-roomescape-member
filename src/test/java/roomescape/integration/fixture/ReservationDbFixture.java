@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.theme.Theme;
@@ -19,7 +20,7 @@ public class ReservationDbFixture {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Reservation 예약_한스_25_4_22(ReservationTime reservationTime, Theme theme) {
+    public Reservation 예약_한스_25_4_22(ReservationTime reservationTime, Theme theme, Member member) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
@@ -34,10 +35,15 @@ public class ReservationDbFixture {
                 .addValue("theme_id", theme.getId())
         ).longValue();
 
-        return new Reservation(id, name, date, reservationTime, theme);
+        return new Reservation(id, member, date, reservationTime, theme);
     }
 
-    public Reservation 예약_생성_한스(ReservationDate reservationDate, ReservationTime reservationTime, Theme theme) {
+    public Reservation 예약_생성_한스(
+            ReservationDate reservationDate,
+            ReservationTime reservationTime,
+            Theme theme,
+            Member member
+    ) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
@@ -46,13 +52,13 @@ public class ReservationDbFixture {
         LocalDate date = reservationDate.date();
 
         Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
-                .addValue("name", name)
+                .addValue("member_id", member.getId())
                 .addValue("date", date)
                 .addValue("time_id", reservationTime.getId())
                 .addValue("theme_id", theme.getId())
         ).longValue();
 
-        return new Reservation(id, name, date, reservationTime, theme);
+        return new Reservation(id, member, date, reservationTime, theme);
     }
 
 

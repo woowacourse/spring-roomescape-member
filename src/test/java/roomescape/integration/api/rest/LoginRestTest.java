@@ -13,6 +13,7 @@ import roomescape.common.RestAssuredTestBase;
 import roomescape.domain.member.MemberEmail;
 import roomescape.domain.member.MemberEncodedPassword;
 import roomescape.domain.member.MemberName;
+import roomescape.domain.member.MemberRole;
 import roomescape.repository.MemberRepository;
 
 class LoginRestTest extends RestAssuredTestBase {
@@ -24,9 +25,10 @@ class LoginRestTest extends RestAssuredTestBase {
     void 로그인을_한다() {
         PasswordEncoder encoder = new BCryptPasswordEncoder();
         memberRepository.save(
-                new MemberEmail("leenyeonsu4888@gmail.com"),
+                new MemberEmail("leehyeonsu4888@gmail.com"),
                 new MemberName("한스"),
-                new MemberEncodedPassword(encoder.encode("gustn111!!"))
+                new MemberEncodedPassword(encoder.encode("gustn111!!")),
+                MemberRole.MEMBER
         );
 
         Map<String, Object> request = Map.of(
@@ -47,7 +49,8 @@ class LoginRestTest extends RestAssuredTestBase {
         memberRepository.save(
                 new MemberEmail("leenyeonsu4888@gmail.com"),
                 new MemberName("한스"),
-                new MemberEncodedPassword(encoder.encode("gustn111!!"))
+                new MemberEncodedPassword(encoder.encode("gustn111!!")),
+                MemberRole.MEMBER
         );
 
         Map<String, Object> request = Map.of(

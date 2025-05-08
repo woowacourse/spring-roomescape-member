@@ -9,12 +9,23 @@ import java.time.LocalDate;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import roomescape.common.RestAssuredTestBase;
+import roomescape.domain.member.MemberEmail;
+import roomescape.domain.member.MemberEncodedPassword;
+import roomescape.domain.member.MemberName;
+import roomescape.domain.member.MemberRole;
+import roomescape.repository.MemberRepository;
 
 class ReservationRestTest extends RestAssuredTestBase {
 
     private Integer timeId;
     private Integer themeId;
+
+    @Autowired
+    MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
@@ -39,13 +50,13 @@ class ReservationRestTest extends RestAssuredTestBase {
     @Test
     void 예약을_생성한다() {
         Map<String, Object> request = Map.of(
-                "name", "홍길동",
                 "date", LocalDate.now(FIXED_CLOCK).plusDays(1).toString(),
                 "timeId", timeId,
                 "themeId", themeId
         );
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("JSESSIONID", getSessionId())
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
@@ -81,5 +92,29 @@ class ReservationRestTest extends RestAssuredTestBase {
                 .when().delete("/reservations/{id}", 1)
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    private String getSessionId() {
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        memberRepository.save(
+                new MemberEmail("leenyeonsu4888@gmail.com"),
+                new MemberName("홍길동"),
+                new MemberEncodedPassword(encoder.encode("gustn111!!")),
+                MemberRole.MEMBER
+        );
+
+        Map<String, Object> request = Map.of(
+                "password", "gustn111!!",
+                "email", "leenyeonsu4888@gmail.com"
+        );
+
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .cookie("JSESSIONID");
     }
 }

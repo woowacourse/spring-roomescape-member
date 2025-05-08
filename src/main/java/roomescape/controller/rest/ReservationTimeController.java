@@ -33,7 +33,6 @@ public class ReservationTimeController {
             @RequestBody @Valid CreateReservationTimeRequest request
     ) {
         ReservationTimeResponse response = reservationTimeService.createReservationTime(request);
-
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);

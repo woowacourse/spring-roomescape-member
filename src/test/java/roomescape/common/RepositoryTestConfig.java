@@ -2,7 +2,11 @@ package roomescape.common;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import roomescape.integration.fixture.MemberDbFixture;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -41,5 +45,16 @@ public class RepositoryTestConfig {
     @Bean
     public ReservationTimeDbFixture reservationTimeDbFixture(JdbcTemplate jdbcTemplate) {
         return new ReservationTimeDbFixture(jdbcTemplate);
+    }
+
+    @Bean
+    public MemberDbFixture memberDbFixture(JdbcTemplate jdbcTemplate, PasswordEncoder encoder) {
+        return new MemberDbFixture(jdbcTemplate, encoder);
+    }
+
+    @Bean
+    @Primary
+    public PasswordEncoder passwordTestEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

@@ -9,6 +9,11 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberEmail;
+import roomescape.domain.member.MemberEncodedPassword;
+import roomescape.domain.member.MemberName;
+import roomescape.domain.member.MemberRole;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationDateTime;
@@ -31,8 +36,12 @@ public class ReservationRepository {
     public List<Reservation> findAll() {
         String sql = """
                 select r.id as reservation_id, 
-                       r.name,
                        r.date, 
+                       mb.id as member_id,
+                       mb.name as member_name,
+                       mb.email as member_email,
+                       mb.password as member_password,
+                       mb.role as member_role,
                        t.id as time_id, 
                        t.start_at as time_value, 
                        th.id as theme_id, 
@@ -42,12 +51,19 @@ public class ReservationRepository {
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on r.theme_id = th.id
+                inner join member as mb on r.member_id = mb.id
                 """;
 
         return jdbcTemplate.query(sql, (resultSet, rowNum) ->
                 new Reservation(
                         resultSet.getLong("id"),
-                        resultSet.getString("name"),
+                        new Member(
+                                resultSet.getLong("member_id"),
+                                new MemberName(resultSet.getString("member_name")),
+                                new MemberEmail(resultSet.getString("member_email")),
+                                new MemberEncodedPassword(resultSet.getString("member_password")),
+                                MemberRole.from(resultSet.getString("member_role"))
+                        ),
                         LocalDate.parse(resultSet.getString("date")),
                         new ReservationTime(
                                 resultSet.getLong("time_id"),
@@ -61,19 +77,19 @@ public class ReservationRepository {
                         )));
     }
 
-    public Reservation save(ReserverName reserverName, ReservationDateTime reservationDateTime, Theme theme) {
+    public Reservation save(Member member, ReservationDateTime reservationDateTime, Theme theme) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
 
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", reserverName.getName())
+                .addValue("member_id", member.getId())
                 .addValue("date", reservationDateTime.getReservationDate().date())
                 .addValue("time_id", reservationDateTime.getReservationTime().getId())
                 .addValue("theme_id", theme.getId());
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new Reservation(id, reserverName.getName(), reservationDateTime.getReservationDate().date(),
+        return new Reservation(id, member, reservationDateTime.getReservationDate().date(),
                 new ReservationTime(reservationDateTime.getReservationTime().getId(),
                         reservationDateTime.getReservationTime().getStartAt()),
                 theme);
@@ -82,8 +98,12 @@ public class ReservationRepository {
     public Optional<Reservation> findById(Long id) {
         String sql = """
                 select r.id as reservation_id, 
-                       r.name,
                        r.date, 
+                       mb.id as member_id,
+                       mb.name as member_name,
+                       mb.email as member_email,
+                       mb.password as member_password,
+                       mb.role as member_role,
                        t.id as time_id, 
                        t.start_at as time_value, 
                        th.id as theme_id, 
@@ -93,13 +113,20 @@ public class ReservationRepository {
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on r.theme_id = th.id
+                inner join member as mb on r.member_id = mb.id
                 where r.id = ?
                 """;
 
         return jdbcTemplate.query(sql, (resultSet, rowNum) ->
                         new Reservation(
                                 resultSet.getLong("id"),
-                                resultSet.getString("name"),
+                                new Member(
+                                        resultSet.getLong("member_id"),
+                                        new MemberName(resultSet.getString("member_name")),
+                                        new MemberEmail(resultSet.getString("member_email")),
+                                        new MemberEncodedPassword(resultSet.getString("member_password")),
+                                        MemberRole.from(resultSet.getString("member_role"))
+                                ),
                                 LocalDate.parse(resultSet.getString("date")),
                                 new ReservationTime(
                                         resultSet.getLong("time_id"),

@@ -1,4 +1,4 @@
-package roomescape.unit.domain.user;
+package roomescape.unit.domain.member;
 
 import static org.assertj.core.api.Assertions.*;
 

@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -12,6 +13,7 @@ import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberEmail;
 import roomescape.domain.member.MemberEncodedPassword;
 import roomescape.domain.member.MemberName;
+import roomescape.domain.member.MemberRole;
 
 @Repository
 public class MemberRepository {
@@ -23,31 +25,55 @@ public class MemberRepository {
         save(
                 new MemberEmail("leehyeonsu4888@gmail.com"),
                 new MemberName("한스"),
-                new MemberEncodedPassword(encoder.encode("gustn111!!"))
+                new MemberEncodedPassword(encoder.encode("gustn111!!")),
+                MemberRole.MEMBER
         );
     }
 
-    public Member save(MemberEmail email, MemberName name, MemberEncodedPassword password) {
+    public Member save(MemberEmail email, MemberName name, MemberEncodedPassword password, MemberRole role) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("member")
                 .usingGeneratedKeyColumns("id");
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", name.name())
                 .addValue("email", email.email())
-                .addValue("password", password.password());
+                .addValue("password", password.password())
+                .addValue("role", role.name());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new Member(id, name, email, password);
+        return new Member(id, name, email, password, role);
     }
 
     public Optional<Member> findByEmail(MemberEmail email) {
-        System.out.println(email.email());
         String sql = "select * from member where email = ? limit 1";
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Member(
                 resultSet.getLong("id"),
                 new MemberName(resultSet.getString("name")),
                 new MemberEmail(resultSet.getString("email")),
-                new MemberEncodedPassword(resultSet.getString("password"))
+                new MemberEncodedPassword(resultSet.getString("password")),
+                MemberRole.from(resultSet.getString("role"))
         ), email.email()).stream().findFirst();
+    }
+
+    public Optional<Member> findById(final Long memberId) {
+        String sql = "select * from member where id = ? limit 1";
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Member(
+                resultSet.getLong("id"),
+                new MemberName(resultSet.getString("name")),
+                new MemberEmail(resultSet.getString("email")),
+                new MemberEncodedPassword(resultSet.getString("password")),
+                MemberRole.from(resultSet.getString("role"))
+        ), memberId).stream().findFirst();
+    }
+
+    public List<Member> findAll() {
+        String sql = "select * from member";
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Member(
+                resultSet.getLong("id"),
+                new MemberName(resultSet.getString("name")),
+                new MemberEmail(resultSet.getString("email")),
+                new MemberEncodedPassword(resultSet.getString("password")),
+                MemberRole.from(resultSet.getString("role"))
+        ));
     }
 }

@@ -3,29 +3,30 @@ package roomescape.domain.reservation;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.domain.member.Member;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.theme.Theme;
 
 public class Reservation {
 
     private final Long id;
-    private final ReserverName reserverName;
+    private final Member member;
     private final ReservationDate reservationDate;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
     public Reservation(
             Long id,
-            String reserverName,
+            final Member member,
             LocalDate reservationDate,
             ReservationTime reservationTime,
             Theme theme
     ) {
         this.id = Objects.requireNonNull(id, "id는 null일 수 없습니다.");
-        this.reserverName = new ReserverName(Objects.requireNonNull(
-                reserverName,
+        this.member = Objects.requireNonNull(
+                member,
                 "예약자 이름은 null일 수 없습니다."
-        ));
+        );
         this.reservationDate = new ReservationDate(Objects.requireNonNull(
                 reservationDate,
                 "예약일은 null일 수 없습니다."
@@ -38,8 +39,8 @@ public class Reservation {
         return id;
     }
 
-    public String getReserverName() {
-        return reserverName.getName();
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
