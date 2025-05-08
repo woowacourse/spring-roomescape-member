@@ -3,6 +3,7 @@ package roomescape.service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.reservation.ReservationDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -28,6 +29,7 @@ public class ReservationService {
         this.themeService = themeService;
     }
 
+    @Transactional
     public ReservationCreateResponse create(final ReservationCreateRequest reservationCreateRequest) {
         final ReservationTime time = reservationTimeService.findById(reservationCreateRequest.timeId());
         final Theme theme = themeService.findById(reservationCreateRequest.themeId());
@@ -43,6 +45,7 @@ public class ReservationService {
         return ReservationCreateResponse.from(reservationDao.create(reservation));
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationResponse> findAll() {
         return reservationDao.findAll().stream()
                 .map(reservation -> new ReservationResponse(
@@ -55,6 +58,7 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional
     public void delete(final long id) {
         if (!reservationDao.existsById(id)) {
             throw new NoSuchElementException("예약이 존재하지 않습니다.");
