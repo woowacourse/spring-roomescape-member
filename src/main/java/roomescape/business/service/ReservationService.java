@@ -34,7 +34,7 @@ public class ReservationService {
 
     public ReservationResponse create(final ReservationRequest reservationRequest) {
         final PlayTime playTime = playTimeService.findById(reservationRequest.timeId());
-        final Theme theme = themeService.find(reservationRequest.themeId());
+        final Theme theme = themeService.findById(reservationRequest.themeId());
         validateIsDuplicate(reservationRequest.date(), playTime, theme);
 
         final Reservation reservation = reservationRequest.toDomain(playTime, theme);
@@ -79,7 +79,7 @@ public class ReservationService {
             final LocalDate date,
             final Long themeId
     ) {
-        final Theme theme = themeService.find(themeId);
+        final Theme theme = themeService.findById(themeId);
 
         return reservationDao.findAvailableTimesByDateAndTheme(date, theme);
     }

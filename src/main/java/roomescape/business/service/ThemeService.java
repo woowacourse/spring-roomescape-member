@@ -18,19 +18,14 @@ public class ThemeService {
         this.themeDao = themeDao;
     }
 
-    public Theme find(final Long id) {
-        return themeDao.find(id)
-                .orElseThrow(() -> new NotFoundException("해당하는 테마를 찾을 수 없습니다. 테마 id: %d".formatted(id)));
-    }
-
-    public ThemeResponse create(final ThemeRequest themeRequest) {
-        validateNameIsDuplicate(themeRequest.name());
+    public ThemeResponse insert(final ThemeRequest themeRequest) {
+        validateNameIsNotDuplicate(themeRequest.name());
         final Theme theme = themeRequest.toDomain();
         final Long id = themeDao.save(theme);
         return ThemeResponse.withId(id, theme);
     }
 
-    private void validateNameIsDuplicate(final String name) {
+    private void validateNameIsNotDuplicate(final String name) {
         if (themeDao.existsByName(name)) {
             throw new NotFoundException("추가 하려는 테마 이름이 이미 존재합니다.");
         }
@@ -42,7 +37,13 @@ public class ThemeService {
                 .toList();
     }
 
-    public void remove(final Long id) {
+    // TODO: ThemeResponse 반환하도록 수정
+    public Theme findById(final Long id) {
+        return themeDao.find(id)
+                .orElseThrow(() -> new NotFoundException("해당하는 테마를 찾을 수 없습니다. 테마 id: %d".formatted(id)));
+    }
+
+    public void deleteById(final Long id) {
         if (!themeDao.remove(id)) {
             throw new NotFoundException("해당하는 테마를 찾을 수 없습니다. 테마 id: %d".formatted(id));
         }
