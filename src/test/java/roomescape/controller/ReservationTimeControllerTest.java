@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.ReservationTimeRequest;
@@ -52,7 +54,7 @@ class ReservationTimeControllerTest {
         RestAssuredMockMvc.given().log().all()
                 .when().get("/times")
                 .then().log().all()
-                .statusCode(200)
+                .status(HttpStatus.OK)
                 .body("size()", is(2))
                 .body("[0].id", is(1))
                 .body("[0].startAt", is("11:00"))
@@ -76,7 +78,7 @@ class ReservationTimeControllerTest {
                 .body(request)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(201)
+                .status(HttpStatus.CREATED)
                 .body("id", is((int) expectedId))
                 .body("startAt", is(time.toString()));
     }
@@ -91,7 +93,7 @@ class ReservationTimeControllerTest {
         RestAssuredMockMvc.given().log().all()
                 .when().delete("/times/" + timeId)
                 .then().log().all()
-                .statusCode(204);
+                .status(HttpStatus.NO_CONTENT);
 
         verify(timeService, times(1)).deleteReservationTime(timeId);
     }
@@ -108,8 +110,23 @@ class ReservationTimeControllerTest {
         RestAssuredMockMvc.given().log().all()
                 .when().delete("/times/" + nonExistingId)
                 .then().log().all()
-                .statusCode(404);
+                .status(HttpStatus.NOT_FOUND);
 
         verify(timeService, times(1)).deleteReservationTime(nonExistingId);
+    }
+
+    @Test
+    @DisplayName("잘못된 JSON 요청에 대해 예외를 발생한다.")
+    void testHttpMessageNotReadableException() {
+        String invalidJson = "{ \"startAt\": \"시간 선택\" }";
+
+        RestAssuredMockMvc.given()
+                .contentType(ContentType.JSON)
+                .body(invalidJson)
+                .when()
+                .post("/times")
+                .then()
+                .status(HttpStatus.BAD_REQUEST)
+                .body("detail", containsString("요청된 JSON의 형태가 잘못되었습니다."));
     }
 }

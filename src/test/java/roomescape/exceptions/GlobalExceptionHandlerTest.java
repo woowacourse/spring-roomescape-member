@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 
 class GlobalExceptionHandlerTest {
 
@@ -75,6 +76,22 @@ class GlobalExceptionHandlerTest {
 
         // when
         ProblemDetail result = globalExceptionHandler.handleEntityDuplicate(exception);
+
+        // then
+        assertEquals(HttpStatus.BAD_REQUEST.value(), result.getStatus());
+        assertEquals(exception.getClass().getSimpleName(), result.getTitle());
+        assertEquals(exception.getMessage(), result.getDetail());
+        assertNotNull(result.getProperties().get("timestamp"));
+    }
+
+    @Test
+    @DisplayName("예상하지 못한 오류 발생 시, 400 에러가 발생한다.")
+    void handleJsonParseException() {
+        // given
+        HttpMessageNotReadableException exception = new HttpMessageNotReadableException("요청된 JSON의 형태가 잘못되었습니다.");
+
+        // when
+        ProblemDetail result = globalExceptionHandler.handleJsonParseException(exception);
 
         // then
         assertEquals(HttpStatus.BAD_REQUEST.value(), result.getStatus());
