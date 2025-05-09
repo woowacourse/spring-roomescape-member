@@ -1,8 +1,9 @@
-package roomescape.entity;
+package roomescape.entity.reservation;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import roomescape.entity.member.Member;
 
 public class Reservation {
 

@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.entity.Theme;
+import roomescape.entity.reservation.Theme;
 import roomescape.exceptions.EntityNotFoundException;
 
 @Repository

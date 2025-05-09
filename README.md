@@ -40,5 +40,5 @@
     - [x] GET /login 요청 시 로그인 폼이 있는 페이지(templates/login.html)를 응답합니다.
     - [x] POST /login 요청 시 응답 Cookie에 "token"값으로 토큰이 포함되도록 하세요.
 
-- [ ] 인증 정보 조회
+- [x] 인증 정보 조회
     - GET /login/check 요청 시 Cookie 이용하여 인증 정보를 조회하여 Role을 반환합니다.

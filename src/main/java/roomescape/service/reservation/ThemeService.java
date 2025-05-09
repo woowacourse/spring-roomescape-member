@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.reservation.ThemeRequest;
 import roomescape.dto.reservation.ThemeResponse;
-import roomescape.entity.Theme;
+import roomescape.entity.reservation.Theme;
 import roomescape.exceptions.reservation.ThemeDuplicateException;
 import roomescape.repository.reservation.ThemeRepository;
 

@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
-import roomescape.entity.Member;
+import roomescape.entity.member.Member;
 import roomescape.exceptions.EntityNotFoundException;
 
 @Repository
@@ -36,6 +36,17 @@ public class MemberJdbcDao implements MemberRepository {
                 .addValue("email", email)
                 .addValue("password", password);
         return Boolean.TRUE.equals(namedJdbcTemplate.queryForObject(sql, params, Boolean.class));
+    }
+
+    @Override
+    public Member findByEmail(String email) {
+        String sql = "select * from member where email = :email";
+        SqlParameterSource params = new MapSqlParameterSource("email", email);
+        try {
+            return namedJdbcTemplate.queryForObject(sql, params, getMemberRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("사용자 정보를 찾을 수 없습니다: " + email);
+        }
     }
 
     private RowMapper<Member> getMemberRowMapper() {

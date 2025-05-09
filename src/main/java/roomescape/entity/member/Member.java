@@ -1,8 +1,9 @@
-package roomescape.entity;
+package roomescape.entity.member;
 
 public class Member {
 
     private final Long id;
+    private final Role role;
     private final String name;
     private final String email;
     private final String password;
@@ -10,6 +11,15 @@ public class Member {
     public Member(Long id, String name, String email, String password) {
         validate(name, email, password);
         this.id = id;
+        this.role = Role.USER;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
+
+    protected Member(Long id, Role role, String name, String email, String password) {
+        this.id = id;
+        this.role = role;
         this.name = name;
         this.email = email;
         this.password = password;
@@ -58,5 +68,9 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public Role getRole() {
+        return role;
     }
 }

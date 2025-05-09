@@ -1,6 +1,6 @@
 package roomescape.dto;
 
-import roomescape.entity.Member;
+import roomescape.entity.member.Member;
 
 public record MemberRequest(
         long id,
