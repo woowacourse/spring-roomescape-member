@@ -30,7 +30,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         final String token = authTokenExtractor.extract(request);
-        if (token == null) {
+        if (token == null || !authTokenProvider.validateToken(token)) {
             return null;
         }
         final String email = authTokenProvider.getPrincipal(token);
