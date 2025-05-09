@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.presentation.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import roomescape.dto.request.LoginRequestDto;
 import roomescape.dto.response.TokenResponseDto;
-import roomescape.presentation.controller.AuthController;
 import roomescape.presentation.support.CookieUtils;
 import roomescape.service.AuthService;
 
