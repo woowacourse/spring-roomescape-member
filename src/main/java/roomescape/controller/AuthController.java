@@ -19,7 +19,6 @@ import roomescape.exception.UnauthorizedAccessException;
 import roomescape.service.LoginMemberService;
 import roomescape.service.LoginService;
 import roomescape.service.SignupService;
-import roomescape.util.CookieTokenExtractor;
 
 @RestController
 public class AuthController {
@@ -27,13 +26,11 @@ public class AuthController {
     private final SignupService signupService;
     private final LoginService loginService;
     private final LoginMemberService loginMemberService;
-    private final CookieTokenExtractor authorizationExtractor;
 
     public AuthController(SignupService signupService, LoginService loginService, LoginMemberService loginMemberService) {
         this.signupService = signupService;
         this.loginService = loginService;
         this.loginMemberService = loginMemberService;
-        this.authorizationExtractor = new CookieTokenExtractor();
     }
 
     @PostMapping("/members")

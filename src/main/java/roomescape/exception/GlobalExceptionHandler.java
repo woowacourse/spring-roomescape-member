@@ -59,6 +59,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UnauthorizedAccessException.class)
     public ProblemDetail handleUnauthorizedAccessException(UnauthorizedAccessException ex, HttpServletRequest request) {
-        return GlobalProblemDetail.of(HttpStatus.UNAUTHORIZED, List.of(ex.getMessage()), request.getRequestURI());
+        return GlobalProblemDetail.of(HttpStatus.FORBIDDEN, List.of(ex.getMessage()), request.getRequestURI());
     }
 }
