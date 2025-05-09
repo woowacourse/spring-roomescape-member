@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.util.auth.JwtTokenManager;
 import roomescape.login.presentation.dto.LoginCheckResponse;
 import roomescape.login.presentation.dto.LoginRequest;
-import roomescape.member.domain.Admin;
-import roomescape.member.service.AdminService;
+import roomescape.admin.domain.Admin;
+import roomescape.admin.service.AdminService;
 
 @RestController
 @RequestMapping("/admin")

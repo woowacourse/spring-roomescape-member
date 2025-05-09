@@ -1,8 +1,8 @@
-package roomescape.member.service;
+package roomescape.admin.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.member.domain.Admin;
-import roomescape.member.domain.AdminRepository;
+import roomescape.admin.domain.Admin;
+import roomescape.admin.domain.AdminRepository;
 
 @Service
 public class AdminService {

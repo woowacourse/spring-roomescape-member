@@ -1,4 +1,4 @@
-package roomescape.member.ui;
+package roomescape.admin.presentation;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

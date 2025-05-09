@@ -1,12 +1,12 @@
-package roomescape.member.infrastructure;
+package roomescape.admin.infrastructure;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
-import roomescape.member.domain.Admin;
-import roomescape.member.domain.AdminRepository;
+import roomescape.admin.domain.Admin;
+import roomescape.admin.domain.AdminRepository;
 
 @Repository
 public class JdbcAdminRepository implements AdminRepository {

@@ -1,4 +1,4 @@
-package roomescape.member.domain;
+package roomescape.admin.domain;
 
 public class Admin {
 
