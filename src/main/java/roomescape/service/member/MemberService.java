@@ -38,7 +38,7 @@ public class MemberService {
     }
 
     public String createToken(LoginRequest loginRequest) {
-        Member foundMember = memberRepository.findMemberByEmailAndPassword(loginRequest.toMember());
+        Member foundMember = memberRepository.findMemberByEmailAndPassword(loginRequest.email(),loginRequest.password());
         String token = JwtTokenProvider.createToken(foundMember);
         return token;
     }

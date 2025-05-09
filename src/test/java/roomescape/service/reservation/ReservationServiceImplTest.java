@@ -12,13 +12,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.domain.Member;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.enums.Role;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.exception.reservation.ReservationAlreadyExistsException;
 import roomescape.exception.reservation.ReservationNotFoundException;
 import roomescape.exception.reservationtime.ReservationTimeNotFoundException;
 import roomescape.exception.theme.ThemeNotFoundException;
+import roomescape.repository.member.MemberRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 import roomescape.repository.theme.ThemeRepository;
@@ -35,6 +38,9 @@ class ReservationServiceImplTest {
     @Mock
     private ThemeRepository themeRepository;
 
+    @Mock
+    private MemberRepository memberRepository;
+
     @InjectMocks
     private ReservationServiceImpl reservationService;
 
@@ -43,16 +49,17 @@ class ReservationServiceImplTest {
     void timeNotFound() {
         // given
         LocalDate today = LocalDate.now();
-        long timeId = 1L;
-        long themeId = 1L;
-        String name = "에드";
-        ReservationRequest request = new ReservationRequest(name, today, timeId, themeId);
+        Long timeId = 1L;
+        Long themeId = 1L;
+
+        ReservationRequest request = new ReservationRequest(today, timeId, themeId);
 
         // when
         when(timeRepository.findById(timeId)).thenReturn(Optional.empty());
 
         //then
-        assertThatThrownBy(() -> reservationService.create(request))
+        assertThatThrownBy(() -> reservationService.create(request, new Member(1L, "슬링키", "이메일", "비밀번호",
+                Role.ADMIN)))
                 .isInstanceOf(ReservationTimeNotFoundException.class);
     }
 
@@ -64,7 +71,7 @@ class ReservationServiceImplTest {
         long timeId = 1L;
         long themeId = 1L;
         String name = "에드";
-        ReservationRequest request = new ReservationRequest(name, today, timeId, themeId);
+        ReservationRequest request = new ReservationRequest(today, timeId, themeId);
 
         // when
         when(timeRepository.findById(timeId)).thenReturn(
@@ -72,7 +79,7 @@ class ReservationServiceImplTest {
 
         when(themeRepository.findById(themeId)).thenReturn(Optional.empty());
         //then
-        assertThatThrownBy(() -> reservationService.create(request))
+        assertThatThrownBy(() -> reservationService.create(request, new Member(1L, "슬링키", "이메일", "비밀번호", Role.ADMIN)))
                 .isInstanceOf(ThemeNotFoundException.class);
     }
 
@@ -84,7 +91,7 @@ class ReservationServiceImplTest {
         long timeId = 1L;
         long themeId = 1L;
         String name = "에드";
-        ReservationRequest request = new ReservationRequest(name, today, timeId, themeId);
+        ReservationRequest request = new ReservationRequest(today, timeId, themeId);
 
         // when
         when(timeRepository.findById(timeId)).thenReturn(
@@ -95,7 +102,7 @@ class ReservationServiceImplTest {
         when(reservationRepository.existsByDateAndTime(today, timeId)).thenReturn(true);
 
         //then
-        assertThatThrownBy(() -> reservationService.create(request))
+        assertThatThrownBy(() -> reservationService.create(request, new Member(1L, "슬링키", "이메일", "비밀번호", Role.ADMIN)))
                 .isInstanceOf(ReservationAlreadyExistsException.class);
     }
 
@@ -106,7 +113,7 @@ class ReservationServiceImplTest {
         long id = 99L;
 
         // when
-        when(reservationRepository.deleteById(id)).thenReturn(0);
+        when(reservationRepository.deleteReservationById(id)).thenReturn(0);
 
         // then
         assertThatThrownBy(() -> reservationService.deleteById(id))
