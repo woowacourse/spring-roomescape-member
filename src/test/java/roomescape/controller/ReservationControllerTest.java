@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dto.ReservationTimeCreateRequestDto;
-import roomescape.dto.ThemeCreateRequestDto;
+import roomescape.dto.time.ReservationTimeCreateRequest;
+import roomescape.dto.theme.ThemeCreateRequest;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -37,7 +37,7 @@ class ReservationControllerTest {
 
         @BeforeEach
         void setUp() {
-            ReservationTimeCreateRequestDto reservationTime = new ReservationTimeCreateRequestDto(LocalTime.of(10, 0));
+            ReservationTimeCreateRequest reservationTime = new ReservationTimeCreateRequest(LocalTime.of(10, 0));
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -46,7 +46,7 @@ class ReservationControllerTest {
                     .then().log().all()
                     .statusCode(201);
 
-            ThemeCreateRequestDto theme = new ThemeCreateRequestDto("a", "b", "https://");
+            ThemeCreateRequest theme = new ThemeCreateRequest("a", "b", "https://");
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -111,7 +111,7 @@ class ReservationControllerTest {
         @DisplayName("존재하는 예약을 삭제할 수 있다")
         @Test
         void deleteReservationTest() {
-            ReservationTimeCreateRequestDto reservationTime = new ReservationTimeCreateRequestDto(LocalTime.of(10, 0));
+            ReservationTimeCreateRequest reservationTime = new ReservationTimeCreateRequest(LocalTime.of(10, 0));
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -120,7 +120,7 @@ class ReservationControllerTest {
                     .then().log().all()
                     .statusCode(201);
 
-            ThemeCreateRequestDto theme = new ThemeCreateRequestDto("a", "b", "https://");
+            ThemeCreateRequest theme = new ThemeCreateRequest("a", "b", "https://");
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)

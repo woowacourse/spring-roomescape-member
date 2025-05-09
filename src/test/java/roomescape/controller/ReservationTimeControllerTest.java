@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dto.ReservationTimeCreateRequestDto;
-import roomescape.dto.ThemeCreateRequestDto;
+import roomescape.dto.time.ReservationTimeCreateRequest;
+import roomescape.dto.theme.ThemeCreateRequest;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -43,7 +43,7 @@ class ReservationTimeControllerTest {
         @Test
         void addReservationTimeTest() {
             LocalTime reservationTime = LocalTime.of(15, 30);
-            ReservationTimeCreateRequestDto requestTime = new ReservationTimeCreateRequestDto(reservationTime);
+            ReservationTimeCreateRequest requestTime = new ReservationTimeCreateRequest(reservationTime);
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -64,7 +64,7 @@ class ReservationTimeControllerTest {
         @Test
         void timeResponseTest() {
             LocalTime reservationTime = LocalTime.of(15, 40);
-            ReservationTimeCreateRequestDto requestTime = new ReservationTimeCreateRequestDto(reservationTime);
+            ReservationTimeCreateRequest requestTime = new ReservationTimeCreateRequest(reservationTime);
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -102,7 +102,7 @@ class ReservationTimeControllerTest {
         @Test
         void deleteTimeTest() {
             LocalTime reservationTime = LocalTime.of(15, 30);
-            ReservationTimeCreateRequestDto requestTime = new ReservationTimeCreateRequestDto(reservationTime);
+            ReservationTimeCreateRequest requestTime = new ReservationTimeCreateRequest(reservationTime);
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -126,8 +126,8 @@ class ReservationTimeControllerTest {
         @DisplayName("예약된 내역이 존재하는 시간은 삭제할 수 없다")
         @Test
         void deleteThemeExceptionTest() {
-            ReservationTimeCreateRequestDto requestTime = new ReservationTimeCreateRequestDto(LocalTime.of(10, 0));
-            ThemeCreateRequestDto requestTheme = new ThemeCreateRequestDto("테마", "설명", "https://");
+            ReservationTimeCreateRequest requestTime = new ReservationTimeCreateRequest(LocalTime.of(10, 0));
+            ThemeCreateRequest requestTheme = new ThemeCreateRequest("테마", "설명", "https://");
             Map<String, Object> reservationParams = new HashMap<>();
             reservationParams.put("name", "브라운");
             reservationParams.put("date", "2030-08-05");

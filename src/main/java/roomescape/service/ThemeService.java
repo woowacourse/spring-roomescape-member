@@ -6,8 +6,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeCreateRequestDto;
-import roomescape.dto.ThemeResponseDto;
+import roomescape.dto.theme.ThemeCreateRequest;
+import roomescape.dto.theme.ThemeResponse;
 import roomescape.exception.ConstrainedDataException;
 import roomescape.exception.DuplicateContentException;
 import roomescape.exception.NotFoundException;
@@ -22,22 +22,22 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public ThemeResponseDto createTheme(final ThemeCreateRequestDto requestDto) {
+    public ThemeResponse createTheme(final ThemeCreateRequest requestDto) {
         Theme requestTheme = requestDto.createWithoutId();
         try {
             Theme savedTheme = themeRepository.save(requestTheme)
                     .orElseThrow(() -> new IllegalStateException("[ERROR] 테마를 저장할 수 없습니다. 관리자에게 문의해 주세요."));
 
-            return ThemeResponseDto.from(savedTheme);
+            return ThemeResponse.from(savedTheme);
         } catch (DuplicateKeyException e) {
             throw new DuplicateContentException("[ERROR] 이미 동일한 이름의 테마가 존재합니다.");
         }
     }
 
-    public List<ThemeResponseDto> findAllThemes() {
+    public List<ThemeResponse> findAllThemes() {
         List<Theme> allTheme = themeRepository.findAll();
         return allTheme.stream()
-                .map(ThemeResponseDto::from)
+                .map(ThemeResponse::from)
                 .toList();
     }
 
@@ -53,12 +53,12 @@ public class ThemeService {
         }
     }
 
-    public List<ThemeResponseDto> findPopularThemes() {
+    public List<ThemeResponse> findPopularThemes() {
         LocalDate end = LocalDate.now();
         LocalDate start = end.minusDays(7);
         List<Theme> mostReservedThemes = themeRepository.findMostReservedByDateRange(start, end);
         return mostReservedThemes.stream()
-                .map(ThemeResponseDto::from)
+                .map(ThemeResponse::from)
                 .toList();
     }
 }

@@ -14,8 +14,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dto.ReservationTimeCreateRequestDto;
-import roomescape.dto.ThemeCreateRequestDto;
+import roomescape.dto.time.ReservationTimeCreateRequest;
+import roomescape.dto.theme.ThemeCreateRequest;
 
 import static org.hamcrest.Matchers.is;
 
@@ -45,7 +45,7 @@ class ThemeControllerTest {
         @DisplayName("Theme를 생성할 수 있다")
         @Test
         void addThemeTest() {
-            ThemeCreateRequestDto requestTheme = new ThemeCreateRequestDto("테마", "설명", "https://");
+            ThemeCreateRequest requestTheme = new ThemeCreateRequest("테마", "설명", "https://");
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -65,7 +65,7 @@ class ThemeControllerTest {
         @DisplayName("기존과 동일한 이름을 가진 테마는 생성할 수 없다")
         @Test
         void addThemeExceptionTest() {
-            ThemeCreateRequestDto requestTheme = new ThemeCreateRequestDto("테마", "설명", "https://");
+            ThemeCreateRequest requestTheme = new ThemeCreateRequest("테마", "설명", "https://");
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -161,7 +161,7 @@ class ThemeControllerTest {
         @DisplayName("저장된 테마를 삭제할 수 있다")
         @Test
         void deleteThemeTest() {
-            ThemeCreateRequestDto requestTheme = new ThemeCreateRequestDto("테마", "설명", "https://");
+            ThemeCreateRequest requestTheme = new ThemeCreateRequest("테마", "설명", "https://");
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -185,8 +185,8 @@ class ThemeControllerTest {
         @DisplayName("예약된 내역이 존재하는 테마는 삭제할 수 없다")
         @Test
         void deleteThemeExceptionTest() {
-            ReservationTimeCreateRequestDto requestTime = new ReservationTimeCreateRequestDto(LocalTime.of(10, 0));
-            ThemeCreateRequestDto requestTheme = new ThemeCreateRequestDto("테마", "설명", "https://");
+            ReservationTimeCreateRequest requestTime = new ReservationTimeCreateRequest(LocalTime.of(10, 0));
+            ThemeCreateRequest requestTheme = new ThemeCreateRequest("테마", "설명", "https://");
             Map<String, Object> reservationParams = new HashMap<>();
             reservationParams.put("name", "브라운");
             reservationParams.put("date", "2030-08-05");

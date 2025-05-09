@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.ReservationResponseDto;
+import roomescape.dto.reservation.ReservationResponse;
 import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.ReservationRepository;
 
@@ -37,7 +37,7 @@ class ReservationServiceTest {
             ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>(List.of(reservation1, reservation2)));
             reservationService = new ReservationService(reservationRepository);
 
-            List<ReservationResponseDto> responses = reservationService.findAllReservationResponses();
+            List<ReservationResponse> responses = reservationService.findAllReservationResponses();
 
             assertThat(responses).hasSize(2);
             assertThat(responses).extracting("name").containsExactly("가이온", "홍길동");

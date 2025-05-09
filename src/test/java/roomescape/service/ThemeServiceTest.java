@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeCreateRequestDto;
-import roomescape.dto.ThemeResponseDto;
+import roomescape.dto.theme.ThemeCreateRequest;
+import roomescape.dto.theme.ThemeResponse;
 import roomescape.exception.DuplicateContentException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.FakeThemeRepository;
@@ -38,8 +38,8 @@ class ThemeServiceTest {
 
             themeService = new ThemeService(themeRepository);
 
-            ThemeCreateRequestDto requestDto = new ThemeCreateRequestDto("테마 가이온", "가이온이 코딩을 합니다", "https://가이온_코딩중.png");
-            ThemeResponseDto responseDto = themeService.createTheme(requestDto);
+            ThemeCreateRequest requestDto = new ThemeCreateRequest("테마 가이온", "가이온이 코딩을 합니다", "https://가이온_코딩중.png");
+            ThemeResponse responseDto = themeService.createTheme(requestDto);
 
             Long id = responseDto.id();
             String name = requestDto.name();
@@ -60,8 +60,8 @@ class ThemeServiceTest {
 
             themeService = new ThemeService(themeRepository);
 
-            ThemeCreateRequestDto requestDto = new ThemeCreateRequestDto("테마 가이온", "가이온이 코딩을 합니다", "https://가이온_코딩중.png");
-            ThemeCreateRequestDto invalidRequestDto = new ThemeCreateRequestDto("테마 가이온", "가이온이 코딩을 합니다", "https://가이온_코딩중.png");
+            ThemeCreateRequest requestDto = new ThemeCreateRequest("테마 가이온", "가이온이 코딩을 합니다", "https://가이온_코딩중.png");
+            ThemeCreateRequest invalidRequestDto = new ThemeCreateRequest("테마 가이온", "가이온이 코딩을 합니다", "https://가이온_코딩중.png");
             themeService.createTheme(requestDto);
 
             assertThatThrownBy(() -> themeService.createTheme(invalidRequestDto)).isInstanceOf(DuplicateContentException.class);
@@ -84,7 +84,7 @@ class ThemeServiceTest {
 
             themeService = new ThemeService(themeRepository);
 
-            List<ThemeResponseDto> responses = themeService.findAllThemes();
+            List<ThemeResponse> responses = themeService.findAllThemes();
 
             assertThat(responses).hasSize(3);
         }
@@ -102,10 +102,10 @@ class ThemeServiceTest {
             themeRepository.addReservation(new Reservation(2L, "a", LocalDate.now().minusDays(3), reservationTime, theme2));
             themeRepository.addReservation(new Reservation(3L, "a", LocalDate.now().minusDays(4), reservationTime, theme2));
 
-            List<ThemeResponseDto> responses = themeService.findPopularThemes();
+            List<ThemeResponse> responses = themeService.findPopularThemes();
 
             assertThat(responses).hasSize(2);
-            assertThat(responses.get(0)).isEqualTo(ThemeResponseDto.from(theme2));
+            assertThat(responses.get(0)).isEqualTo(ThemeResponse.from(theme2));
         }
     }
 
@@ -120,12 +120,12 @@ class ThemeServiceTest {
         void deleteThemeByIdTest() {
             themeService = new ThemeService(themeRepository);
 
-            ThemeCreateRequestDto requestDto = new ThemeCreateRequestDto("a", "a", "https://");
-            ThemeResponseDto responseDto = themeService.createTheme(requestDto);
+            ThemeCreateRequest requestDto = new ThemeCreateRequest("a", "a", "https://");
+            ThemeResponse responseDto = themeService.createTheme(requestDto);
 
             themeService.deleteThemeById(responseDto.id());
 
-            List<ThemeResponseDto> allTimes = themeService.findAllThemes();
+            List<ThemeResponse> allTimes = themeService.findAllThemes();
             assertThat(allTimes).isEmpty();
         }
 

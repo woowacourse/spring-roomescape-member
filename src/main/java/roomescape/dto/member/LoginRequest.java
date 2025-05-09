@@ -1,8 +1,8 @@
-package roomescape.dto;
+package roomescape.dto.member;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record LoginRequestDto(
+public record LoginRequest(
         @NotBlank String password,
         @NotBlank String email
 ) {

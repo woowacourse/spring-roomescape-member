@@ -3,9 +3,9 @@ package roomescape.service;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
-import roomescape.dto.LoginRequestDto;
-import roomescape.dto.MemberResponseDto;
-import roomescape.dto.TokenResponseDto;
+import roomescape.dto.member.LoginRequest;
+import roomescape.dto.member.MemberResponse;
+import roomescape.dto.member.TokenResponse;
 import roomescape.exception.InvalidAuthorizationException;
 import roomescape.repository.MemberRepository;
 import roomescape.util.JwtTokenProvider;
@@ -21,13 +21,13 @@ public class LoginService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public TokenResponseDto createToken(LoginRequestDto loginRequestDto) {
-        if (checkInvalidLogin(loginRequestDto.email(), loginRequestDto.password())) {
+    public TokenResponse createToken(LoginRequest loginRequest) {
+        if (checkInvalidLogin(loginRequest.email(), loginRequest.password())) {
             throw new InvalidAuthorizationException("[ERROR] 로그인 정보를 다시 확인해 주세요.");
         }
 
-        String token = jwtTokenProvider.createToken(loginRequestDto.email());
-        return new TokenResponseDto(token);
+        String token = jwtTokenProvider.createToken(loginRequest.email());
+        return new TokenResponse(token);
     }
 
     private boolean checkInvalidLogin(String email, String password) {
@@ -36,13 +36,13 @@ public class LoginService {
                 .orElse(true);
     }
 
-    public MemberResponseDto findMember(String email) {
+    public MemberResponse findMember(String email) {
         Optional<Member> member = memberRepository.findByEmail(email);
-        return member.map(value -> new MemberResponseDto(value.getEmail()))
+        return member.map(value -> new MemberResponse(value.getEmail()))
                 .orElseThrow(() -> new InvalidAuthorizationException("[ERROR] 유효하지 않은 가입 정보입니다."));
     }
 
-    public MemberResponseDto findMemberByToken(String token) {
+    public MemberResponse findMemberByToken(String token) {
         if (token == null || token.isBlank()) throw new InvalidAuthorizationException("[ERROR] 로그인이 필요합니다.");
         if (!jwtTokenProvider.validateToken(token)) throw new InvalidAuthorizationException("[ERROR] 로그인 상태가 만료되었습니다.");
         String payload = jwtTokenProvider.getPayload(token);

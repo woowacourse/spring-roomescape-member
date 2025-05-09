@@ -1,10 +1,10 @@
-package roomescape.dto;
+package roomescape.dto.theme;
 
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 import roomescape.domain.Theme;
 
-public record ThemeCreateRequestDto(
+public record ThemeCreateRequest(
         @NotBlank(message = "[ERROR] 테마의 이름은 1글자 이상으로 이루어져야 합니다.") String name,
         @NotBlank(message = "[ERROR] 테마 설명이 없습니다.") String description,
         @NotBlank(message = "[ERROR] 테마 이미지가 없습니다.")

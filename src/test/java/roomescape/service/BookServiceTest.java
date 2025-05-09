@@ -12,9 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import roomescape.dto.ReservationCreateRequestDto;
-import roomescape.dto.ReservationResponseDto;
-import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.dto.reservation.ReservationCreateRequest;
+import roomescape.dto.reservation.ReservationResponse;
+import roomescape.dto.time.ReservationTimeResponse;
 import roomescape.exception.DuplicateContentException;
 import roomescape.exception.InvalidRequestException;
 import roomescape.exception.NotFoundException;
@@ -48,13 +48,13 @@ class BookServiceTest {
             ThemeRepository themeRepository = FakeThemeRepositoryFixture.create();
             bookService = new BookService(reservationRepository, reservationTimeRepository, themeRepository);
 
-            ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.now().plusDays(7), 1L, 1L);
-            ReservationResponseDto responseDto = bookService.createReservation(requestDto);
+            ReservationCreateRequest requestDto = new ReservationCreateRequest("가이온", LocalDate.now().plusDays(7), 1L, 1L);
+            ReservationResponse responseDto = bookService.createReservation(requestDto);
 
             Long id = responseDto.id();
             LocalDate date = responseDto.date();
             String name = requestDto.name();
-            ReservationTimeResponseDto time = responseDto.time();
+            ReservationTimeResponse time = responseDto.time();
             Long timeId = time.id();
             LocalTime localTime = time.startAt();
 
@@ -75,7 +75,7 @@ class BookServiceTest {
             ThemeRepository themeRepository = FakeThemeRepositoryFixture.create();
             bookService = new BookService(reservationRepository, reservationTimeRepository, themeRepository);
 
-            ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.now().plusDays(7), 10L, 1L);
+            ReservationCreateRequest requestDto = new ReservationCreateRequest("가이온", LocalDate.now().plusDays(7), 10L, 1L);
 
             assertThatThrownBy(() -> bookService.createReservation(requestDto)).isInstanceOf(NotFoundException.class);
         }
@@ -88,7 +88,7 @@ class BookServiceTest {
             ThemeRepository themeRepository = FakeThemeRepositoryFixture.create();
             bookService = new BookService(reservationRepository, reservationTimeRepository, themeRepository);
 
-            ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.now().plusDays(7), 1L, 10L);
+            ReservationCreateRequest requestDto = new ReservationCreateRequest("가이온", LocalDate.now().plusDays(7), 1L, 10L);
 
             assertThatThrownBy(() -> bookService.createReservation(requestDto)).isInstanceOf(NotFoundException.class);
         }
@@ -102,7 +102,7 @@ class BookServiceTest {
             ThemeRepository themeRepository = FakeThemeRepositoryFixture.create();
             bookService = new BookService(reservationRepository, reservationTimeRepository, themeRepository);
 
-            ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto(name, LocalDate.now().plusDays(7), 1L, 1L);
+            ReservationCreateRequest requestDto = new ReservationCreateRequest(name, LocalDate.now().plusDays(7), 1L, 1L);
 
             assertThatThrownBy(() -> bookService.createReservation(requestDto)).isInstanceOf(IllegalArgumentException.class);
         }
@@ -124,7 +124,7 @@ class BookServiceTest {
             bookService = new BookService(reservationRepository, reservationTimeRepository, themeRepository);
 
             LocalDate date = LocalDate.now().plusDays(7);
-            ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", date, 1L, 1L);
+            ReservationCreateRequest requestDto = new ReservationCreateRequest("가이온", date, 1L, 1L);
 
             assertThatThrownBy(() -> bookService.createReservation(requestDto)).isInstanceOf(DuplicateContentException.class);
         }
@@ -138,7 +138,7 @@ class BookServiceTest {
             bookService = new BookService(reservationRepository, reservationTimeRepository, themeRepository);
 
             LocalDate date = LocalDate.now().minusDays(7);
-            ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", date, 1L, 1L);
+            ReservationCreateRequest requestDto = new ReservationCreateRequest("가이온", date, 1L, 1L);
 
             assertThatThrownBy(() -> bookService.createReservation(requestDto)).isInstanceOf(InvalidRequestException.class);
         }
@@ -159,7 +159,7 @@ class BookServiceTest {
 
             bookService.deleteReservation(1L);
 
-            List<ReservationResponseDto> responses = reservationService.findAllReservationResponses();
+            List<ReservationResponse> responses = reservationService.findAllReservationResponses();
 
             assertThat(responses).isEmpty();
         }
