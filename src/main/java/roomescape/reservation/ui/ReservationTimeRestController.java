@@ -47,7 +47,6 @@ public class ReservationTimeRestController {
     }
 
     @GetMapping
-    @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER, AuthRole.GUEST})
     public ResponseEntity<List<ReservationTimeResponse>> findAll() {
         return ResponseEntity.ok(reservationTimeService.findAll());
     }

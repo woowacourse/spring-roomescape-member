@@ -6,7 +6,7 @@ import roomescape.auth.domain.AuthRole;
 import roomescape.auth.domain.RequiresRole;
 
 @Controller
-public class LoginController {
+public class AuthController {
 
     @GetMapping("/login")
     @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER, AuthRole.GUEST})

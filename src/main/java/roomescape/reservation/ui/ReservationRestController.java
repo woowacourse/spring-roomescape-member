@@ -50,7 +50,6 @@ public class ReservationRestController {
     }
 
     @GetMapping
-    @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER, AuthRole.GUEST})
     public ResponseEntity<List<ReservationResponse>> findAll() {
         final List<ReservationResponse> reservationResponses = reservationService.findAll();
 
@@ -58,7 +57,6 @@ public class ReservationRestController {
     }
 
     @GetMapping("/available-times")
-    @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER, AuthRole.GUEST})
     public ResponseEntity<List<AvailableReservationTimeResponse>> findAvailableReservationTimes(
             @ModelAttribute final AvailableReservationTimeRequest request) {
         final List<AvailableReservationTimeResponse> availableReservationTimes

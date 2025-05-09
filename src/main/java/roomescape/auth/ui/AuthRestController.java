@@ -23,13 +23,12 @@ import roomescape.member.domain.Member;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class LoginRestController {
+public class AuthRestController {
 
     private final AuthService authService;
     private final BlacklistService blacklistService;
 
     @PostMapping("/login")
-    @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER, AuthRole.GUEST})
     public ResponseEntity<Void> createAccessToken(
             @RequestBody final CreateAccessTokenRequest request, HttpServletResponse response
     ) {
@@ -58,7 +57,6 @@ public class LoginRestController {
 
 
     @GetMapping("/login/check")
-    @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER, AuthRole.GUEST})
     public ResponseEntity<CheckAccessTokenResponse> checkAccessToken(final Member member) {
         if (member == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

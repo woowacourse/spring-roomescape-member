@@ -26,7 +26,7 @@ public class CheckUserRoleInterceptor implements HandlerInterceptor {
         final RequiresRole requiresRole = handlerMethod.getMethodAnnotation(RequiresRole.class);
 
         if (requiresRole == null) {
-            return false;
+            return true;
         }
 
         final String accessToken = authTokenExtractor.extract(request);

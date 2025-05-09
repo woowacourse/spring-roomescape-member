@@ -47,7 +47,6 @@ public class ThemeRestController {
     }
 
     @GetMapping
-    @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER, AuthRole.GUEST})
     public ResponseEntity<List<ThemeResponse>> findAll() {
         final List<ThemeResponse> themeResponses = themeService.findAll();
 
@@ -55,7 +54,6 @@ public class ThemeRestController {
     }
 
     @GetMapping("/popular-list")
-    @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER, AuthRole.GUEST})
     public ResponseEntity<List<ThemeResponse>> findPopularThemes() {
         final List<ThemeResponse> popularThemes = themeService.findPopularThemes();
 
