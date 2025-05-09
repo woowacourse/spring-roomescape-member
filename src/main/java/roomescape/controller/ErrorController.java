@@ -27,7 +27,7 @@ public class ErrorController {
     }
 
     @ExceptionHandler(PastReservationException.class)
-    public ResponseEntity<ProblemDetail> handlePastReservationException(RuntimeException e) {
+    public ResponseEntity<ProblemDetail> handlePastReservationException(PastReservationException e) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setDetail(e.getMessage());
 
