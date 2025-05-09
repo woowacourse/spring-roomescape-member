@@ -349,6 +349,8 @@ Content-Type: application/json
 ]
 ```
 
+## User
+
 ### [로그인 API]
 
 ```text
@@ -365,8 +367,20 @@ host: localhost:8080
 ### 응답 예시
 HTTP/1.1 200 OK
 Content-Type: application/json
-Keep-Alive: timeout=60
 Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+```
+
+### [로그아웃 API]
+
+```text
+### 요청 예시
+GET /logout HTTP/1.1
+cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+host: localhost:8080
+
+### 응답 예시
+HTTP/1.1 204
+Content-Length: 0
 ```
 
 ### [인증 정보 조회 API]
@@ -379,11 +393,7 @@ host: localhost:8080
 
 ### 응답 예시
 HTTP/1.1 200 OK
-Connection: keep-alive
 Content-Type: application/json
-Date: Sun, 03 Mar 2024 19:16:56 GMT
-Keep-Alive: timeout=60
-Transfer-Encoding: chunked
 
 {
     "name": "어드민"

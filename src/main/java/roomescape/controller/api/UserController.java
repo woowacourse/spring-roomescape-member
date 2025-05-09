@@ -27,6 +27,16 @@ public class UserController {
     public void login(@RequestBody LoginRequest request, HttpServletResponse response) {
         String token = userService.login(request);
         Cookie cookie = new Cookie("token", token);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PostMapping("/logout")
+    public void logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
         response.addCookie(cookie);
     }
 
