@@ -118,14 +118,13 @@ public class JdbcReservationRepository implements ReservationRepository {
         final String sql = """
                 SELECT 
                     r.id AS id,
-                    r.name AS name,
                     r.date AS date,
                     rt.id AS time_id,
                     rt.start_at AS start_at,
                     th.id AS theme_id,
                     th.name AS theme_name,
                     th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
+                    th.thumbnail AS theme_thumbnail,
                     m.id AS member_id,
                     m.name AS member_name,
                     m.email AS member_email,
@@ -150,15 +149,14 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         final String sql = """
                 SELECT 
-                    r.id AS id,
-                    r.name AS name,
+                    r.id AS id,                
                     r.date AS date,
                     rt.id AS time_id,
                     rt.start_at AS start_at,
                     th.id AS theme_id,
                     th.name AS theme_name,
                     th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
+                    th.thumbnail AS theme_thumbnail,
                     m.id AS member_id,
                     m.name AS member_name,
                     m.email AS member_email,
