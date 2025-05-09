@@ -8,9 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
@@ -31,49 +33,49 @@ public class JdbcReservationDaoImpl implements ReservationDao {
 
     @Override
     public List<Reservation> findAll() {
-        /*
         String sql = """
-
-               select r.id as reservation_id, 
-                      r.name, 
-                      r.date,
-            
-                      rt.id as time_id,
-                      rt.start_at as time_value,
-            
-                      t.id as theme_id,
-                      t.name as theme_name,
-                      t.description as theme_description,
-                      t.thumbnail as theme_thumbnail
-               from reservation as r 
-               inner join reservation_time as rt on r.time_id = rt.id
-               inner join theme as t on r.theme_id = t.id 
+            select
+                        m.name as member_name,
+                        m.id as member_id,
+                        m.email as member_email,
+                        m.password as member_password,
+                        r.id as reservation_id,
+                        r.date as reservation_date,
+                        rt.id as time_id,
+                        rt.start_at,
+                        t.id as theme_id,
+                        t.name as theme_name,
+                        t.description as theme_description,
+                        t.thumbnail as theme_thumbnail
+            from reservation r
+            inner join member m on r.member_id = m.id
+            inner join reservation_time rt on r.time_id = rt.id
+            inner join theme t on r.theme_id = t.id  
             """;
 
         return jdbcTemplate.query(sql,
             (resultSet, RowNum) ->
                 new Reservation(resultSet.getLong("reservation_id"),
-                    createPerson(resultSet),
+                    createMember(resultSet),
                     createReservationDate(resultSet),
                     createReservationTime(resultSet),
                     createTheme(resultSet)
                 ));
-
-         */
-        return null;
     }
 
     private ReservationDate createReservationDate(ResultSet resultSet) throws SQLException {
         return new ReservationDate(LocalDate.parse(resultSet.getString("date")));
     }
 
-    /*
-    private Member createPerson(ResultSet resultSet) throws SQLException {
-        return new Member(resultSet.getString("name"));
+    private Member createMember(ResultSet resultSet) throws SQLException {
+        return new Member(
+            resultSet.getLong("member_id"),
+            resultSet.getString("member_name"),
+            resultSet.getString("member_email"),
+            resultSet.getString("member_password")
+        );
     }
 
-
-     */
     private Theme createTheme(ResultSet resultSet) throws SQLException {
         return new Theme(
             resultSet.getLong("theme_id"),
@@ -86,13 +88,13 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     private ReservationTime createReservationTime(ResultSet resultSet) throws SQLException {
         return new ReservationTime(
             resultSet.getLong("time_id"),
-            LocalTime.parse(resultSet.getString("time_value")));
+            LocalTime.parse(resultSet.getString("start_at")));
     }
 
     @Override
     public long save(Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>(4);
-        parameters.put("name", reservation.getPersonName());
+        parameters.put("member_id", reservation.getMemberId());
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTimeId());
         parameters.put("theme_id", reservation.getThemeId());
@@ -109,30 +111,32 @@ public class JdbcReservationDaoImpl implements ReservationDao {
 
     @Override
     public Optional<Reservation> findById(Long id) {
-        /*
         String query = """
-                SELECT r.id AS reservation_id,
-                       r.name,
-                       r.date,
-            
-                       rt.id AS time_id,
-                       rt.start_at AS time_value,
-            
-                       t.id AS theme_id,
-                       t.name AS theme_name,
-                       t.description AS theme_description,
-                       t.thumbnail AS theme_thumbnail
-                FROM reservation r
-                INNER JOIN reservation_time rt ON r.time_id = rt.id
-                INNER JOIN theme t ON r.theme_id = t.id
-                WHERE r.id = ?
+                select
+                        m.name as member_name,
+                        m.id as member_id,
+                        m.email as member_email,
+                        m.password as member_password,
+                        r.id as reservation_id,
+                        r.date as reservation_date,
+                        rt.id as time_id,
+                        rt.start_at,
+                        t.id as theme_id,
+                        t.name as theme_name,
+                        t.description as theme_description,
+                        t.thumbnail as theme_thumbnail
+            from reservation r
+            inner join member m on r.member_id = m.id
+            inner join reservation_time rt on r.time_id = rt.id
+            inner join theme t on r.theme_id = t.id
+            where r.id = ?
             """;
         try {
             Reservation reservation = jdbcTemplate.queryForObject(query,
                 (resultSet, rowNum) ->
                     new Reservation(
                         resultSet.getLong("id"),
-                        createPerson(resultSet),
+                        createMember(resultSet),
                         createReservationDate(resultSet),
                         createReservationTime(resultSet),
                         createTheme(resultSet)
@@ -143,14 +147,11 @@ public class JdbcReservationDaoImpl implements ReservationDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
-
-         */
-        return null;
     }
 
     @Override
     public int countExistReservationByTime(Long id) {
-        String query = "select count(*) from reservation where time_id = ?";
+        String query = "SELECT EXISTS (select count(1) from reservation where time_id = ?)";
         return jdbcTemplate.queryForObject(query, Integer.class, id);
     }
 

@@ -41,10 +41,6 @@ public class Reservation {
         return id;
     }
 
-    public String getPersonName() {
-        return member.getName();
-    }
-
     public LocalDate getDate() {
         return date.getDate();
     }
@@ -55,6 +51,10 @@ public class Reservation {
 
     public ReservationTime getReservationTime() {
         return reservationTime;
+    }
+
+    public long getMemberId() {
+        return member.getId();
     }
 
     public long getTimeId() {

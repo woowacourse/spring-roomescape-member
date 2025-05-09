@@ -30,6 +30,9 @@ public class JdbcReservationDaoTest {
     private ThemeDao themeDao;
 
     @Autowired
+    private MemberDao memberDao;
+
+    @Autowired
     private ReservationTimeDao reservationTimeDao;
 
     @Autowired
@@ -38,17 +41,24 @@ public class JdbcReservationDaoTest {
     private Theme theme;
     private ReservationTime reservationTime;
     private Reservation reservation;
+    private Member member;
 
     @BeforeEach
     void init() {
+        member = new Member("젠슨", "a@naver.com", "aabb");
+        long savedMemberId = memberDao.save(member);
+        member.setId(savedMemberId);
+
         theme = new Theme("테마1", "공포테마입니다", "http://aaa");
         long savedThemeId = themeDao.save(theme);
         theme.setId(savedThemeId);
+
         reservationTime = new ReservationTime(LocalTime.of(10, 0));
         long savedReservationTimeId = reservationTimeDao.save(reservationTime);
         reservationTime.setId(savedReservationTimeId);
+
         reservation = new Reservation(
-            new Member("james"),
+            member,
             new ReservationDate(LocalDate.of(2025, 12, 25)),
             reservationTime,
             theme);
@@ -59,9 +69,11 @@ public class JdbcReservationDaoTest {
         String query1 = "delete from reservation";
         String query2 = "delete from reservation_time";
         String query3 = "delete from theme";
+        String query4 = "delete from member";
         jdbcTemplate.update(query1);
         jdbcTemplate.update(query2);
         jdbcTemplate.update(query3);
+        jdbcTemplate.update(query4);
     }
 
     @DisplayName("reservation 객체가 주어졌을 때, db에 저장되며 id값을 반환해야 한다.")
@@ -76,27 +88,32 @@ public class JdbcReservationDaoTest {
     @DisplayName("db에 존재하는 모든 reservation을 가져올 수 있어야 한다.")
     @Test
     void get_all_reservation() {
-        Reservation reservation1 = new Reservation(new Member("james"),
+        Reservation reservation1 = new Reservation(
+            member,
             new ReservationDate(LocalDate.of(2025, 12, 25)),
             reservationTime, theme);
         reservationDao.save(reservation1);
-        Reservation reservation2 = new Reservation(new Member("james"),
+
+        Reservation reservation2 = new Reservation(
+            member,
             new ReservationDate(LocalDate.of(2025, 12, 26)),
             reservationTime, theme);
         reservationDao.save(reservation2);
-        Reservation reservation3 = new Reservation(new Member("james"),
+        Reservation reservation3 = new Reservation(
+            member,
             new ReservationDate(LocalDate.of(2025, 12, 27)),
             reservationTime, theme);
         reservationDao.save(reservation3);
-
         assertThat(reservationDao.findAll().size()).isEqualTo(3);
     }
+
 
     @DisplayName("reservationId가 주어졌을 때, 해당하는 데이터를 삭제해야 한다.")
     @Test
     void given_reservation_id_then_delete_data() {
         //given
-        Reservation reservation = new Reservation(new Member("james"),
+        Reservation reservation = new Reservation(
+            member,
             new ReservationDate(LocalDate.of(2025, 12, 25)),
             reservationTime, theme);
         long savedId = reservationDao.save(reservation);
