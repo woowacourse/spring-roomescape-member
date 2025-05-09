@@ -29,4 +29,18 @@ public class JdbcMemberDao implements MemberDao {
             return Optional.empty();
         }
     }
+
+    @Override
+    public Optional<Member> findById(Long memberId) {
+        try {
+            String sql = "select * from member where id = ?";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                    sql,
+                    new MemberMapper(),
+                    memberId
+            ));
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
+    }
 }
