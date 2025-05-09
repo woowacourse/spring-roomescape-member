@@ -22,13 +22,14 @@ public class UserDao {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
-            resultSet.getString("password")
+            resultSet.getString("password"),
+            resultSet.getString("role")
     );
 
     private final JdbcTemplate jdbcTemplate;
 
     public User insertAndGet(User user) {
-        String insertQuery = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
+        String insertQuery = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -44,7 +45,7 @@ public class UserDao {
     }
 
     public Optional<User> selectById(Long id) {
-        String selectQuery = "SELECT id, name, email, password FROM users WHERE id = ?";
+        String selectQuery = "SELECT id, name, email, password, role FROM users WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(selectQuery, DEFAULT_ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
@@ -53,7 +54,7 @@ public class UserDao {
     }
 
     public Optional<User> selectByEmail(String email) {
-        String selectQuery = "SELECT id, name, email, password FROM users WHERE email = ?";
+        String selectQuery = "SELECT id, name, email, password, role FROM users WHERE email = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(selectQuery, DEFAULT_ROW_MAPPER, email));
         } catch (EmptyResultDataAccessException e) {
@@ -62,7 +63,7 @@ public class UserDao {
     }
 
     public List<User> selectAll() {
-        String selectQuery = "SELECT id, name, email, password FROM users";
+        String selectQuery = "SELECT id, name, email, password, role FROM users";
         return jdbcTemplate.query(selectQuery, DEFAULT_ROW_MAPPER);
     }
 }

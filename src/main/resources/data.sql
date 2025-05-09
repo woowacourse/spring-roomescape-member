@@ -12,11 +12,11 @@ INSERT INTO theme (name, description, thumbnail) VALUES
                                                      ('우테코 학교', '잃어버린 DDD를 찾아라', '/image/school.png');
 
 -- user 테이블 초기 데이터
-INSERT INTO users (name, email, password) VALUES
-                                              ('웨이드', 'wade@nnnn.com', 'password'),
-                                              ('모코', 'moko@nnnn.com', 'password'),
-                                              ('리사', 'lisa@nnnn.com', 'password'),
-                                              ('검프', 'gump@nnnn.com', 'password');
+INSERT INTO users (name, email, password, role) VALUES
+                                              ('웨이드', 'wade@nnnn.com', 'password', 'normal'),
+                                              ('모코', 'moko@nnnn.com', 'password', 'admin'),
+                                              ('리사', 'lisa@nnnn.com', 'password', 'normal'),
+                                              ('검프', 'gump@nnnn.com', 'password', 'normal');
 
 -- reservation 테이블 초기 데이터
 INSERT INTO reservation (user_id, date, time_id, theme_id) VALUES

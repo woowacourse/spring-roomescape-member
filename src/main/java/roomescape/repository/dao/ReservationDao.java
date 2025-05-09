@@ -28,7 +28,8 @@ public class ReservationDao {
                     resultSet.getLong("user_id"),
                     resultSet.getString("user_name"),
                     resultSet.getString("user_email"),
-                    resultSet.getString("user_password")
+                    resultSet.getString("user_password"),
+                    resultSet.getString("user_role")
             ),
             resultSet.getDate("date").toLocalDate(),
             new ReservationTime(
@@ -48,7 +49,7 @@ public class ReservationDao {
     public List<Reservation> selectAll() {
         String selectAllQuery = """
                 SELECT r.id, r.date, r.time_id, r.theme_id,
-                        u.id AS user_id, u.name AS user_name, u.email AS user_email, u.password AS user_password,
+                        u.id AS user_id, u.name AS user_name, u.email AS user_email, u.password AS user_password, u.role AS user_role,
                         rt.start_at, th.name AS th_name,
                         th.description AS th_description, th.thumbnail AS th_thumbnail
                 FROM reservation r
