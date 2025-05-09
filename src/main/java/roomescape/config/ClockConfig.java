@@ -1,4 +1,4 @@
-package roomescape.common;
+package roomescape.config;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class AppConfig {
+public class ClockConfig {
 
     // TODO : Test Configuration과 분리
     @Bean

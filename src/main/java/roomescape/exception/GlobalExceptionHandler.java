@@ -1,9 +1,7 @@
-package roomescape.common;
+package roomescape.exception;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;

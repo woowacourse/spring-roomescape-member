@@ -1,7 +1,7 @@
 package roomescape.user.application;
 
-import roomescape.common.BusinessException;
-import roomescape.common.ErrorCode;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 
 public class AuthorizationException extends BusinessException {
 
