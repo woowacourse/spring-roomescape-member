@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeRequestDto;
-import roomescape.dto.ThemeResponseDto;
+import roomescape.dto.request.ThemeRequestDto;
+import roomescape.dto.response.ThemeResponseDto;
 import roomescape.repository.ThemeRepository;
 
 @Service

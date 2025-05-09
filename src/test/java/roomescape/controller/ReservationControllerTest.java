@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import roomescape.dto.ReservationRequestDto;
+import roomescape.dto.request.ReservationRequestDto;
 import roomescape.service.ReservationService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)

@@ -2,9 +2,9 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
-import roomescape.dto.CheckResponseDto;
-import roomescape.dto.TokenRequest;
-import roomescape.dto.TokenResponse;
+import roomescape.dto.request.TokenRequest;
+import roomescape.dto.response.CheckResponseDto;
+import roomescape.dto.response.TokenResponse;
 import roomescape.token.JwtProvider;
 
 @Service

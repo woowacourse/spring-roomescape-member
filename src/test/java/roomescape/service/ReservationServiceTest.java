@@ -19,7 +19,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.ReservationRequestDto;
+import roomescape.dto.request.ReservationRequestDto;
 import roomescape.exception.InvalidReservationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;

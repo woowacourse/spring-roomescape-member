@@ -3,9 +3,9 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.BookedReservationTimeResponseDto;
-import roomescape.dto.ReservationTimeRequestDto;
-import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.dto.request.ReservationTimeRequestDto;
+import roomescape.dto.response.BookedReservationTimeResponseDto;
+import roomescape.dto.response.ReservationTimeResponseDto;
 import roomescape.repository.ReservationTimeRepository;
 
 @Service

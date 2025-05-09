@@ -1,6 +1,5 @@
-package roomescape.dto;
+package roomescape.dto.request;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;

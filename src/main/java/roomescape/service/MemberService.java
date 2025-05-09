@@ -2,8 +2,8 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
-import roomescape.dto.MemberRequestDto;
-import roomescape.dto.MemberResponseDto;
+import roomescape.dto.request.MemberRequestDto;
+import roomescape.dto.response.MemberResponseDto;
 import roomescape.repository.MemberRepository;
 
 @Service

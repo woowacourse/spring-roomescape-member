@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.BookedReservationTimeResponseDto;
+import roomescape.dto.response.BookedReservationTimeResponseDto;
 
 public class FakeReservationTimeDaoImpl implements ReservationTimeDao {
 

@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.BookedReservationTimeResponseDto;
+import roomescape.dto.response.BookedReservationTimeResponseDto;
 
 @Sql(scripts = {"/test-schema.sql"})
 @SpringBootTest

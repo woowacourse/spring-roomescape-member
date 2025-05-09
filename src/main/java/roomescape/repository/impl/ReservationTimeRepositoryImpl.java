@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.BookedReservationTimeResponseDto;
+import roomescape.dto.response.BookedReservationTimeResponseDto;
 import roomescape.exception.InvalidReservationException;
 import roomescape.repository.ReservationTimeRepository;
 
