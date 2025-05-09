@@ -6,16 +6,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.Member;
 import roomescape.domain.enums.Role;
-import roomescape.service.member.MemberService;
+import roomescape.service.member.MemberServiceImpl;
 import roomescape.util.CookieManager;
 import roomescape.util.JwtTokenProvider;
 
 public class AdminInterceptor implements HandlerInterceptor {
 
-    private final MemberService memberService;
+    private final MemberServiceImpl memberServiceImpl;
 
-    public AdminInterceptor(MemberService memberService) {
-        this.memberService = memberService;
+    public AdminInterceptor(MemberServiceImpl memberServiceImpl) {
+        this.memberServiceImpl = memberServiceImpl;
     }
 
     @Override
@@ -24,7 +24,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         Cookie[] cookies = request.getCookies();
         String jwtToken = CookieManager.extractTokenFromCookies(cookies);
         Long id = JwtTokenProvider.findMemberIdByToken(jwtToken);
-        Member member = memberService.findMemberById(id);
+        Member member = memberServiceImpl.findMemberById(id);
         if (member == null || !member.getRole().equals(Role.ADMIN)) {
             response.setStatus(401);
             return false;

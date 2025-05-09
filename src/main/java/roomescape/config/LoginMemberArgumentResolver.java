@@ -8,16 +8,16 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.Member;
-import roomescape.service.member.MemberService;
+import roomescape.service.member.MemberServiceImpl;
 import roomescape.util.CookieManager;
 import roomescape.util.JwtTokenProvider;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberService memberService;
+    private final MemberServiceImpl memberServiceImpl;
 
-    public LoginMemberArgumentResolver(MemberService memberService) {
-        this.memberService = memberService;
+    public LoginMemberArgumentResolver(MemberServiceImpl memberServiceImpl) {
+        this.memberServiceImpl = memberServiceImpl;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         Cookie[] cookies = request.getCookies();
         String jwtToken = CookieManager.extractTokenFromCookies(cookies);
         Long id = JwtTokenProvider.findMemberIdByToken(jwtToken);
-        Member member = memberService.findMemberById(id);
+        Member member = memberServiceImpl.findMemberById(id);
         return member;
     }
 }
