@@ -33,12 +33,13 @@ public class MemberController {
         return memberService.findAllMembers();
     }
 
+    //TODO : 일반 유저 생성 api
     @PostMapping("/members")
     @ResponseStatus(HttpStatus.CREATED)
     public MemberResponse createMember(
             @RequestBody MemberRequest request
     ) {
-        return memberService.createMember(request);
+        return memberService.createUser(request);
     }
 
     @PostMapping("/login")

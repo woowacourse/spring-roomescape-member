@@ -68,7 +68,7 @@ public class JdbcMemberDao implements MemberDao {
     @Override
     public long create(Member member) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "insert into member (name, email, password) values (?, ?, ?)";
+        String sql = "insert into member (name, email, password, role) values (?, ?, ?, ?)";
         jdbcTemplate.update(
                 connection -> {
                     PreparedStatement ps = connection.prepareStatement(
@@ -78,6 +78,7 @@ public class JdbcMemberDao implements MemberDao {
                     ps.setString(1, member.getName());
                     ps.setString(2, member.getEmail());
                     ps.setString(3, member.getPassword());
+                    ps.setString(4, member.getRole().name());
                     return ps;
                 },
                 keyHolder

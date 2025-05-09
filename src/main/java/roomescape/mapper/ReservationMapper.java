@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.springframework.jdbc.core.RowMapper;
 import roomescape.entity.Member;
+import roomescape.entity.MemberRole;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
@@ -13,6 +14,7 @@ import roomescape.entity.Theme;
 public class ReservationMapper implements RowMapper<Reservation> {
 
     @Override
+    //TODO : member,time,theme은 각각의 mapper로 매핑 못하나?
     public Reservation mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new Reservation(
                 rs.getLong("id"),
@@ -21,7 +23,8 @@ public class ReservationMapper implements RowMapper<Reservation> {
                         rs.getLong("member_id"),
                         rs.getString("member_name"),
                         rs.getString("email"),
-                        rs.getString("password")
+                        rs.getString("password"),
+                        MemberRole.from(rs.getString("role"))
                 ),
                 new ReservationTime(
                         rs.getLong("time_id"),

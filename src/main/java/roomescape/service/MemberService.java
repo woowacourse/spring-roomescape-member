@@ -10,6 +10,7 @@ import roomescape.dto.MemberRequest;
 import roomescape.dto.MemberResponse;
 import roomescape.entity.AccessToken;
 import roomescape.entity.Member;
+import roomescape.entity.MemberRole;
 import roomescape.exception.InvalidAccessTokenException;
 import roomescape.exception.MemberNotFoundException;
 
@@ -38,14 +39,19 @@ public class MemberService {
                 .toList();
     }
 
-    public MemberResponse createMember(MemberRequest request) {
-        Member memberWithoutId = request.toMember();
+    public MemberResponse createUser(MemberRequest request) {
+        Member memberWithoutId = request.toMember(MemberRole.USER);
         long id = memberDao.create(memberWithoutId);
         Member member = memberWithoutId.copyWithId(id);
         return new MemberResponse(member);
     }
 
+    public MemberResponse createAdmin(MemberRequest request) {
+        return null;
+    }
+
     public void validateMemberExistence(LoginRequest login) {
+
         boolean hasMember = memberDao.existsByEmailAndPassword(login.email(), login.password());
         if (!hasMember) {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 틀렸습니다.");

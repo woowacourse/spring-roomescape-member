@@ -24,7 +24,7 @@ public class JdbcReservationDao implements ReservationDao {
     public List<Reservation> findAll() {
         String sql = """
                 select r.id, r.date, 
-                    member_id, m.name as member_name, m.email, m.password,
+                    member_id, m.name as member_name, m.email, m.password, m.role,
                     time_id, rt.start_at, 
                     theme_id, t.name as theme_name, t.description, t.thumbnail
                 from reservation as r 
