@@ -14,7 +14,7 @@ public class Reservation {
     public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme,
                        Member member) {
         this.id = id;
-        this.name = name;
+        this.name = "temp";
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;

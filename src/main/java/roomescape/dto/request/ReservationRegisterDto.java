@@ -14,9 +14,6 @@ public record ReservationRegisterDto(
         Long themeId
 ) {
     public ReservationRegisterDto {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("예약자명은 null이거나 공백일 수 없습니다");
-        }
 
         if (date == null || date.isBlank()) {
             throw new IllegalArgumentException("예약 날짜는 null이거나 공백일 수 없습니다");
