@@ -8,9 +8,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRepository;
 
 @Repository
-public class JdbcMemberRepository {
+public class JdbcMemberRepository implements MemberRepository {
 
     private static final RowMapper<Member> ROW_MAPPER = (resultSet, rowNum) -> Member.createWithId(
             resultSet.getLong("id"),
@@ -29,6 +30,7 @@ public class JdbcMemberRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public Long save(Member member) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", member.getName());
@@ -38,12 +40,14 @@ public class JdbcMemberRepository {
         return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
+    @Override
     public Member findById(Long id) {
         String sql = "SELECT * FROM member WHERE id = ?";
 
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
     }
 
+    @Override
     public boolean existByEmail(String email) {
         String sql = "SELECT EXISTS (SELECT 1 FROM member WHERE email = ?)";
 
