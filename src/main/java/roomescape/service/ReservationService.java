@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
@@ -55,7 +54,7 @@ public class ReservationService {
         Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
         Reservation reservation = Reservation.createWithoutId(member, date, reservationTime, theme);
         reservation.validateDateTime();
-        validateDuplicate(date, reservationTime.getStartAt(), theme);
+        validateDuplicate(date, reservationTime, theme);
         Reservation savedReservation = reservationRepository.create(reservation);
         return new ReservationResponse(
                 savedReservation.getId(),
@@ -68,8 +67,8 @@ public class ReservationService {
         );
     }
 
-    private void validateDuplicate(LocalDate date, LocalTime startAt, Theme theme) {
-        if (reservationRepository.findByDateTimeAndTheme(date, startAt, theme).isPresent()) {
+    private void validateDuplicate(LocalDate date, ReservationTime time, Theme theme) {
+        if (reservationRepository.findByDateTimeAndTheme(date, time, theme).isPresent()) {
             throw new ExistedReservationException();
         }
     }

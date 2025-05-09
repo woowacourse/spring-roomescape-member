@@ -1,13 +1,13 @@
 package roomescape.unit.fake;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.dto.request.ReservationCondition;
@@ -54,11 +54,11 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findByDateTimeAndTheme(LocalDate date, LocalTime time, Theme theme) {
+    public Optional<Reservation> findByDateTimeAndTheme(LocalDate date, ReservationTime time, Theme theme) {
         return fakeReservations.stream()
                 .filter(reservation -> reservation.getDate().equals(date))
-                .filter(reservation -> reservation.getReservationTime().getStartAt().equals(time))
-                .filter(reservation -> reservation.getTheme().equals(theme))
+                .filter(reservation -> reservation.getReservationTime().getId().equals(time.getId()))
+                .filter(reservation -> reservation.getTheme().getId().equals(theme.getId()))
                 .findFirst();
     }
 

@@ -1,10 +1,10 @@
 package roomescape.domain.repository;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationCondition;
 
@@ -21,6 +21,6 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(Long id);
 
-    Optional<Reservation> findByDateTimeAndTheme(LocalDate date, LocalTime time, Theme theme);
+    Optional<Reservation> findByDateTimeAndTheme(LocalDate date, ReservationTime time, Theme theme);
 }
 
