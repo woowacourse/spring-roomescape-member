@@ -3,28 +3,35 @@ package roomescape.auth.service;
 import org.springframework.stereotype.Service;
 import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
-import roomescape.global.security.JwtTokenProvider;
+import roomescape.auth.exception.LoginFailException;
+import roomescape.global.security.JwtProvider;
 import roomescape.member.domain.Member;
-import roomescape.member.service.MemberService;
+import roomescape.member.exception.MemberNotFoundException;
+import roomescape.member.repository.MemberRepository;
 
 @Service
 public class AuthService {
-    private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final MemberRepository memberRepository;
+    private final JwtProvider jwtProvider;
 
-    public AuthService(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
-        this.memberService = memberService;
-        this.jwtTokenProvider = jwtTokenProvider;
+    public AuthService(MemberRepository memberRepository, JwtProvider jwtProvider) {
+        this.memberRepository = memberRepository;
+        this.jwtProvider = jwtProvider;
     }
 
     public String login(LoginRequest request) {
-        Member member = memberService.findByEmailAndPassword(request.email(), request.password());
-        return jwtTokenProvider.createToken(member);
+        Member member = findByEmailAndPassword(request.email(), request.password());
+        return jwtProvider.createToken(member);
     }
 
-    public LoginCheckResponse loginCheck(String token) {
-        Long memberId = Long.parseLong(jwtTokenProvider.getMemberId(token));
-        Member member = memberService.findById(memberId);
+    private Member findByEmailAndPassword(String email, String password) {
+        return memberRepository.findIdByEmailAndPassword(email, password)
+                .orElseThrow(LoginFailException::new);
+    }
+
+    public LoginCheckResponse loginCheck(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
         return LoginCheckResponse.from(member);
     }
 }

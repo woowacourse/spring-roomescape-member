@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import roomescape.member.domain.Member;
 
 @Component
-public class JwtTokenProvider {
+public class JwtProvider {
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
     @Value("${security.jwt.token.expire-length}")
@@ -27,9 +27,9 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getMemberId(String token) {
+    public Long getMemberId(String token) {
         Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-        return claims.getSubject();
+        return Long.parseLong(claims.getSubject());
     }
 }
 

@@ -7,7 +7,5 @@ import roomescape.member.dto.MemberResponse;
 public interface MemberService {
     MemberResponse create(MemberRequest request);
 
-    Member findByEmailAndPassword(String email, String password);
-
     Member findById(Long id);
 }

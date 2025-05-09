@@ -1,6 +1,5 @@
 package roomescape.auth.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.service.AuthService;
+import roomescape.global.annotation.LoginMemberId;
 import roomescape.global.security.CookieUtil;
 
 @RestController
@@ -32,10 +32,8 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> loginCheck(HttpServletRequest request) {
-        // 리퀘스트에서 쿠키빼오고
-        String token = CookieUtil.extractTokenFromCookie(request.getCookies());
-        LoginCheckResponse response = authService.loginCheck(token);
+    public ResponseEntity<LoginCheckResponse> loginCheck(@LoginMemberId Long memberId) {
+        LoginCheckResponse response = authService.loginCheck(memberId);
 
         return ResponseEntity.ok(response);
     }
