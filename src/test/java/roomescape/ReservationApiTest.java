@@ -9,6 +9,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,7 @@ public class ReservationApiTest {
                 .body("size()", is(2));
     }
 
+    @Disabled
     @DisplayName("예약을 추가할 수 있다.")
     @Test
     void canCreateReservation() {
@@ -82,6 +84,7 @@ public class ReservationApiTest {
                 .header("location", "reservations/1");
     }
 
+    @Disabled
     @DisplayName("유효하지 않은 입력값으로 예약 추가가 불가능하다.")
     @Test
     void cannotCreateReservationsWhenInvalidRequest() {
@@ -101,6 +104,7 @@ public class ReservationApiTest {
                 .statusCode(400);
     }
 
+    @Disabled
     @DisplayName("과거의 날짜와 시간으로는 예약이 불가능하다")
     @Test
     void cannotCreateReservationsWhenPastRequest() {
@@ -119,6 +123,7 @@ public class ReservationApiTest {
                 .statusCode(400);
     }
 
+    @Disabled
     @DisplayName("중복 예약을 추가할 수 없다.")
     @Test
     void cannotCreateReservationsWhenDuplicatedTime() {

@@ -24,7 +24,7 @@ public class Member {
                 claims.get("name", String.class),
                 claims.get("email", String.class),
                 "0000",
-                claims.get("password", String.class));
+                claims.get("role", String.class));
     }
 
     public String getName() {

@@ -74,11 +74,10 @@
       ]
       ```
 - POST /reservations
-    - 설명 : 예약 추가
+    - 설명 : 사용자 예약 추가
     - 요청 파라미터
       ```
       {
-          String "name": "브라운",          // NotNull, NotBlank
           LocalDate "date": "2023-08-05",  // NotNull, (과거 날짜 허용X)
           Long "timeId": 1                 // NotNull, (과거 시간 허용X)
           Long "themeId": 1                 // NotNull, (과거 시간 허용X)
