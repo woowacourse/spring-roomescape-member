@@ -20,4 +20,9 @@ public class UserPageController {
     public String displayLogin() {
         return "/login";
     }
+
+    @GetMapping("/signup")
+    public String displaySignup() {
+        return "/signup";
+    }
 }
