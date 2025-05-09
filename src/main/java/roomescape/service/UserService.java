@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import roomescape.domain.User;
 import roomescape.dto.SignupRequest;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.LoginCheckResponse;
+import roomescape.dto.response.MemberResponse;
 import roomescape.repository.UserRepository;
 
 @Service
@@ -41,5 +43,11 @@ public class UserService {
 
     public User getById(Long id) {
         return userRepository.getById(id);
+    }
+
+    public List<MemberResponse> getAll() {
+        return userRepository.findAll().stream()
+                .map(MemberResponse::from)
+                .toList();
     }
 }

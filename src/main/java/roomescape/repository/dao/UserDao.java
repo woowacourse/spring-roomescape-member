@@ -1,6 +1,7 @@
 package roomescape.repository.dao;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -58,5 +59,10 @@ public class UserDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public List<User> selectAll() {
+        String selectQuery = "SELECT id, name, email, password FROM users";
+        return jdbcTemplate.query(selectQuery, DEFAULT_ROW_MAPPER);
     }
 }

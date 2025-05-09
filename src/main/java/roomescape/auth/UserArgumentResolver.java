@@ -11,6 +11,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import roomescape.service.UserService;
@@ -42,6 +43,17 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
                 break;
             }
         }
-        return userService.getById(Long.valueOf(jwtProvider.getPayload(token)));
+
+        try {
+            Long userId = Long.valueOf(jwtProvider.getPayload(token));
+            return userService.getById(userId);
+            // TODO: user notfound 대응 시 여기도 수정 필요
+        } catch (ExpiredJwtException e) {
+            // TODO: 예외 구체화 ; 핸들러에서 쿠키 제거
+            throw new RuntimeException("로그아웃하세요");
+        } catch (IllegalArgumentException e) {
+            // TODO: 예외 구체화 고민
+            throw new AuthenticationException("로그인 정보가 잘못되었습니다.");
+        }
     }
 }

@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
+import roomescape.auth.RequestUser;
+import roomescape.domain.User;
 import roomescape.dto.request.CreateReservationRequest;
 import roomescape.dto.response.ReservationResponse;
-import lombok.RequiredArgsConstructor;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -32,8 +34,8 @@ public class ReservationController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ReservationResponse create(@RequestBody CreateReservationRequest request) {
-        return reservationService.create(request);
+    public void create(@RequestUser User user, @RequestBody CreateReservationRequest request) {
+        reservationService.create(user.id(), request.date(), request.timeId(), request.themeId());
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

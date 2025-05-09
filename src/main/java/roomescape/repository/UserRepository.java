@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
@@ -33,5 +34,9 @@ public class UserRepository {
     // TODO: id or pw not found 시 커스텀 익셉션 반환하도록 변경
     public User getByEmail(String email) {
         return findByEmail(email).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디 또는 패스워드입니다."));
+    }
+
+    public List<User> findAll() {
+        return userDao.selectAll();
     }
 }

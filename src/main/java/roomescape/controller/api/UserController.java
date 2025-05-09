@@ -1,5 +1,7 @@
 package roomescape.controller.api;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +17,7 @@ import roomescape.domain.User;
 import roomescape.dto.SignupRequest;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.LoginCheckResponse;
+import roomescape.dto.response.MemberResponse;
 import roomescape.service.UserService;
 
 @RestController
@@ -39,6 +42,13 @@ public class UserController {
         cookie.setMaxAge(0);
         cookie.setPath("/");
         response.addCookie(cookie);
+    }
+
+    // TODO: members 독스 추가
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/members")
+    public List<MemberResponse> members() {
+        return userService.getAll();
     }
 
     /**

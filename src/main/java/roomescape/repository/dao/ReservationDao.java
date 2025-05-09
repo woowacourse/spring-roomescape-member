@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.User;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +24,12 @@ public class ReservationDao {
 
     private static final RowMapper<Reservation> DEFAULT_ROW_MAPPER = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("id"),
-            resultSet.getString("name"),
+            new User(
+                    resultSet.getLong("user_id"),
+                    resultSet.getString("user_name"),
+                    resultSet.getString("user_email"),
+                    resultSet.getString("user_password")
+            ),
             resultSet.getDate("date").toLocalDate(),
             new ReservationTime(
                     resultSet.getLong("time_id"),
@@ -41,8 +47,12 @@ public class ReservationDao {
 
     public List<Reservation> selectAll() {
         String selectAllQuery = """
-                SELECT r.id, r.name, r.date, r.time_id, r.theme_id, rt.start_at, th.name AS th_name, th.description AS th_description, th.thumbnail AS th_thumbnail
+                SELECT r.id, r.date, r.time_id, r.theme_id,
+                        u.id AS user_id, u.name AS user_name, u.email AS user_email, u.password AS user_password,
+                        rt.start_at, th.name AS th_name,
+                        th.description AS th_description, th.thumbnail AS th_thumbnail
                 FROM reservation r
+                INNER JOIN users u ON r.user_id = u.id
                 INNER JOIN reservation_time rt ON r.time_id = rt.id
                 INNER JOIN theme th ON r.theme_id = th.id
                 """;
@@ -50,12 +60,12 @@ public class ReservationDao {
     }
 
     public Reservation insertAndGet(Reservation reservation) {
-        String insertQuery = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO reservation (user_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insertQuery, new String[] {"id"});
-            ps.setString(1, reservation.name());
+            ps.setLong(1, reservation.user().id());
             ps.setString(2, reservation.date().toString());
             ps.setLong(3, reservation.time().id());
             ps.setLong(4, reservation.theme().id());
@@ -68,8 +78,12 @@ public class ReservationDao {
 
     public Optional<Reservation> selectById(Long id) {
         String selectQuery = """
-                SELECT r.id, r.name, r.date, r.time_id, r.theme_id, rt.start_at, th.name AS th_name, th.description AS th_description, th.thumbnail AS th_thumbnail
+                SELECT r.id, r.name, r.date, r.time_id, r.theme_id,
+                        u.id AS user_id, u.name AS user_name, u.email AS user_email, u.password AS user_password,
+                        rt.start_at, th.name AS th_name,
+                        th.description AS th_description, th.thumbnail AS th_thumbnail
                 FROM reservation r
+                INNER JOIN users u ON r.user_id = u.id
                 INNER JOIN reservation_time rt ON r.time_id = rt.id
                 INNER JOIN theme th ON r.theme_id = th.id
                 WHERE r.id = ?

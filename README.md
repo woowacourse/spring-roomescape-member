@@ -117,34 +117,37 @@ templates/signup.html (회원가입 페이지)
     - name : 예약자명
     - date : 예약 날짜 (yyyy-MM-dd)
     - time : 예약 시간 (HH:mm)
-- 다음과 같은 정보가 반환된다.
-    - id : 예약 번호
-    - name : 예약자명
-    - date : 예약 날짜
-    - time : 예약 시간
 
 ```text
 ### 요청 예시
 
 POST localhost:8080/reservations
 Content-Type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiZXhwIjoxNzQ2NzkwNzEyfQ.dzKozcNp-XT4w0lfSp5bQVwzffrCWmd5gLQ8wxqty7g; Path=/
 
 {
-  "name": "dompoo",
-  "date": "2024-12-05",
-  "time": "20:00"
+    "date": "2025-05-11",
+    "timeId": 1,
+    "themeId": 1
 }
 
 ### 응답 예시
 
 HTTP/1.1 201
 Content-Type: application/json
+```
+
+### [어드민 예약 추가 API]
+
+```text
+POST http://localhost:8080/admin/reservations
+Content-Type: application/json
 
 {
-  "id": 1,
-  "name": "dompoo",
-  "date": "2024-12-05",
-  "time": "20:00:00"
+  "memberId": 2,
+  "date": "2025-05-10",
+  "timeId": 1,
+  "themeId": 1
 }
 ```
 
@@ -380,7 +383,8 @@ host: localhost:8080
 
 ### 응답 예시
 HTTP/1.1 204
-Content-Length: 0
+Set-Cookie: token=; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:10 GMT; Path=/
+
 ```
 
 ### [인증 정보 조회 API]
@@ -398,4 +402,21 @@ Content-Type: application/json
 {
     "name": "어드민"
 }
+```
+
+### [회원가입 API]
+
+```text
+### 요청 예시
+POST /signup HTTP/1.1
+host: localhost:8080
+
+{
+    "name": "moko",
+    "email": "admin@email.com",
+    "password": "password"
+}
+
+### 응답 예시
+HTTP/1.1 201 CREATED
 ```
