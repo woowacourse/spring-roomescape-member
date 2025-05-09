@@ -13,3 +13,6 @@ VALUES ('테마1', '테마1입니다.',
         'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
        ('테마3', '테마3입니다.',
         'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
+
+INSERT INTO MEMBER (NAME, EMAIL, PASSWORD)
+VALUES ('어드민', 'admin@email.com', 'password');
