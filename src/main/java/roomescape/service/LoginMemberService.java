@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.LoginMember;
 import roomescape.exception.InvalidAuthorizationException;
@@ -26,5 +27,9 @@ public class LoginMemberService {
 
     public LoginMember findMember(String email) {
         return memberRepository.findByEmail(email).orElseThrow();
+    }
+
+    public List<LoginMember> findAllMembers() {
+        return memberRepository.findAll();
     }
 }

@@ -1,4 +1,4 @@
 package roomescape.dto.member;
 
-public record LoginMemberResponse(String name) {
+public record LoginMemberResponse(long id, String name) {
 }
