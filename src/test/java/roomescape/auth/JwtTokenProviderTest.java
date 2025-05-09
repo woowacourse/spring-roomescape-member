@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import roomescape.exception.UnAuthorizedException;
-import roomescape.service.result.LoginMemberResult;
+import roomescape.service.result.MemberResult;
 
 import java.util.Date;
 
@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class JwtTokenProviderTest {
 
     private static final String secretKey = "test1234test1234test1234test1234";
-    private int validityInMilliseconds = 3600000; //1h
+    private final int validityInMilliseconds = 3600000; //1h
     private JwtTokenProvider jwtTokenProvider;
 
     @BeforeEach
@@ -29,10 +29,10 @@ class JwtTokenProviderTest {
     @Test
     void 로그인_결과를_통해_토큰을_생성할_수_있다() {
         //given
-        LoginMemberResult loginMemberResult = new LoginMemberResult(1L, "Eve", "eve@example.com", "password");
+        MemberResult memberResult = new MemberResult(1L, "Eve", "eve@example.com");
 
         //when
-        String token = jwtTokenProvider.createToken(loginMemberResult);
+        String token = jwtTokenProvider.createToken(memberResult);
 
         //then
         assertThat(token).isNotNull();

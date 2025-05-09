@@ -7,7 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.exception.UnAuthorizedException;
-import roomescape.service.result.LoginMemberResult;
+import roomescape.service.result.MemberResult;
 
 import java.util.Date;
 
@@ -20,7 +20,7 @@ public class JwtTokenProvider {
     @Value("${security.jwt.token.expire-length}")
     private int validityInMilliseconds;
 
-    public String createToken(final LoginMemberResult member) {
+    public String createToken(final MemberResult member) {
         Date expirationDate = new Date(System.currentTimeMillis() + validityInMilliseconds);
 
         return Jwts.builder()

@@ -8,9 +8,7 @@ import roomescape.exception.ReservationException;
 import roomescape.persistence.query.CreateMemberQuery;
 import roomescape.service.param.LoginMemberParam;
 import roomescape.service.param.RegisterMemberParam;
-import roomescape.service.result.CheckLoginUserResult;
-import roomescape.service.result.LoginMemberResult;
-import roomescape.service.result.RegisterMemberResult;
+import roomescape.service.result.MemberResult;
 
 @Service
 public class MemberService {
@@ -21,13 +19,13 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public LoginMemberResult login(final LoginMemberParam loginMemberParam) {
+    public MemberResult login(final LoginMemberParam loginMemberParam) {
         Member member = memberRepository.findByEmailAndPassword(loginMemberParam.email(), loginMemberParam.password())
                 .orElseThrow(() -> new ReservationException(loginMemberParam.email() + " " + loginMemberParam.password() + "에 해당하는 유저가 없습니다."));
-        return LoginMemberResult.from(member);
+        return MemberResult.from(member);
     }
 
-    public RegisterMemberResult create(final RegisterMemberParam registerMemberParam) {
+    public MemberResult create(final RegisterMemberParam registerMemberParam) {
         Long id = memberRepository.create(new CreateMemberQuery(
                 registerMemberParam.name(),
                 MemberRole.USER,
@@ -37,12 +35,12 @@ public class MemberService {
 
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new ReservationException(id + "에 해당하는 유저가 없습니다."));
-        return RegisterMemberResult.from(member);
+        return MemberResult.from(member);
     }
 
-    public CheckLoginUserResult findById(final Long id) {
+    public MemberResult findById(final Long id) {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new ReservationException(id + "에 해당하는 유저가 없습니다."));
-        return CheckLoginUserResult.from(member);
+        return MemberResult.from(member);
     }
 }

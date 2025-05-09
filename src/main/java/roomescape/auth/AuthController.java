@@ -13,34 +13,34 @@ import roomescape.controller.request.LoginMemberRequest;
 import roomescape.controller.response.CheckLoginUserResponse;
 import roomescape.controller.response.LoginMemberResponse;
 import roomescape.service.MemberService;
-import roomescape.service.result.LoginMemberResult;
+import roomescape.service.result.MemberResult;
 
 @Controller
 public class AuthController {
 
-    private final AuthService authService;
+    private final JwtTokenProvider jwtTokenProvider;
     private final CookieProvider cookieProvider;
     private final MemberService memberService;
 
-    public AuthController(final AuthService authService, final CookieProvider cookieProvider, final MemberService memberService) {
-        this.authService = authService;
+    public AuthController(final JwtTokenProvider jwtTokenProvider, final CookieProvider cookieProvider, final MemberService memberService) {
+        this.jwtTokenProvider = jwtTokenProvider;
         this.cookieProvider = cookieProvider;
         this.memberService = memberService;
     }
 
     @PostMapping("/login") //TODO: 응답 형식 고려
     public ResponseEntity<LoginMemberResponse> login(@RequestBody LoginMemberRequest loginMemberRequest, HttpServletResponse response) {
-        LoginMemberResult loginMemberResult = memberService.login(loginMemberRequest.toServiceParam());
-        String token = authService.createToken(loginMemberResult);
+        MemberResult memberResult = memberService.login(loginMemberRequest.toServiceParam());
+        String token = jwtTokenProvider.createToken(memberResult);
 
         response.setHeader(HttpHeaders.SET_COOKIE, cookieProvider.create(token).toString());
-        return ResponseEntity.ok().body(LoginMemberResponse.from(loginMemberResult));
+        return ResponseEntity.ok().body(LoginMemberResponse.from(memberResult));
     }
 
     @GetMapping("/login/check")
     public ResponseEntity<CheckLoginUserResponse> loginCheck(@CookieValue("token") Cookie cookie) {
         String token = cookieProvider.extractTokenFromCookie(cookie);
-        Long id = authService.extractSubjectFromToken(token);
+        Long id = jwtTokenProvider.extractIdFromToken(token);
         return ResponseEntity.ok().body(CheckLoginUserResponse.from(memberService.findById(id)));
     }
 

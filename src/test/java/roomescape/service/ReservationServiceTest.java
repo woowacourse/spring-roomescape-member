@@ -11,7 +11,7 @@ import roomescape.fake.FakeThemeRepository;
 import roomescape.persistence.query.CreateMemberQuery;
 import roomescape.persistence.query.CreateReservationQuery;
 import roomescape.service.param.CreateReservationParam;
-import roomescape.service.result.LoginMemberResult;
+import roomescape.service.result.MemberResult;
 import roomescape.service.result.ReservationResult;
 import roomescape.service.result.ReservationTimeResult;
 import roomescape.service.result.ThemeResult;
@@ -105,10 +105,10 @@ class ReservationServiceTest {
 
         //then
         assertThat(reservationResults).isEqualTo(List.of(
-                new ReservationResult(1L, new LoginMemberResult(1L, "name1", "email1", "password1"), RESERVATION_DATE,
+                new ReservationResult(1L, new MemberResult(1L, "name1", "email1"), RESERVATION_DATE,
                         new ReservationTimeResult(1L, LocalTime.of(12, 1)),
                         new ThemeResult(1L, "test", "description", "thumbnail")),
-                new ReservationResult(2L, new LoginMemberResult(2L, "name2", "email2", "password2"), RESERVATION_DATE,
+                new ReservationResult(2L, new MemberResult(2L, "name2", "email2"), RESERVATION_DATE,
                         new ReservationTimeResult(2L, LocalTime.of(13, 1)),
                         new ThemeResult(1L, "test", "description", "thumbnail"))
         ));
@@ -130,7 +130,7 @@ class ReservationServiceTest {
 
         //then
         assertThat(reservationResult).isEqualTo(
-                new ReservationResult(1L, new LoginMemberResult(1L, "name1", "email1", "password1"),
+                new ReservationResult(1L, new MemberResult(1L, "name1", "email1"),
                         RESERVATION_DATE,
                         new ReservationTimeResult(1L, LocalTime.of(12, 0)),
                         new ThemeResult(1L, "test", "description", "thumbnail"))

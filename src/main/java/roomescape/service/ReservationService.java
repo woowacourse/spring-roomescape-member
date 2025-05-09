@@ -5,7 +5,7 @@ import roomescape.domain.*;
 import roomescape.exception.ReservationException;
 import roomescape.persistence.query.CreateReservationQuery;
 import roomescape.service.param.CreateReservationParam;
-import roomescape.service.result.LoginMemberResult;
+import roomescape.service.result.MemberResult;
 import roomescape.service.result.ReservationResult;
 import roomescape.service.result.ReservationTimeResult;
 import roomescape.service.result.ThemeResult;
@@ -69,7 +69,7 @@ public class ReservationService {
     private ReservationResult toReservationResult(Reservation reservation) {
         return new ReservationResult(
                 reservation.getId(),
-                LoginMemberResult.from(reservation.getMember()),
+                MemberResult.from(reservation.getMember()),
                 reservation.getDate(),
                 ReservationTimeResult.from(reservation.getTime()),
                 ThemeResult.from(reservation.getTheme()));

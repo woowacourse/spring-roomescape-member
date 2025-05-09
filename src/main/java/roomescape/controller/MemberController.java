@@ -9,7 +9,7 @@ import roomescape.controller.request.RegisterMemberRequest;
 import roomescape.controller.response.RegisterUserResponse;
 import roomescape.service.MemberService;
 import roomescape.service.param.RegisterMemberParam;
-import roomescape.service.result.RegisterMemberResult;
+import roomescape.service.result.MemberResult;
 
 @Controller
 public class MemberController {
@@ -28,8 +28,8 @@ public class MemberController {
     @PostMapping("/members") //TODO:응답 형식 고려
     public ResponseEntity<RegisterUserResponse> signup(@RequestBody final RegisterMemberRequest registerMemberRequest) {
         RegisterMemberParam registerMemberParam = registerMemberRequest.toServiceParam();
-        RegisterMemberResult registerMemberResult = memberService.create(registerMemberParam);
-        return ResponseEntity.ok(RegisterUserResponse.from(registerMemberResult));
+        MemberResult memberResult = memberService.create(registerMemberParam);
+        return ResponseEntity.ok(RegisterUserResponse.from(memberResult));
     }
 
     @GetMapping("/login")
