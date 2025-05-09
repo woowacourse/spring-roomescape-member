@@ -161,3 +161,6 @@ VALUES
 ('예약89', '2025-05-5', 11, 13),
 ('예약90', '2025-05-5', 12, 13),
 ('예약91', '2025-05-5', 13, 13);
+
+INSERT INTO users(name, email, password)
+VALUES ('name', 'user@email.com', 'password')
