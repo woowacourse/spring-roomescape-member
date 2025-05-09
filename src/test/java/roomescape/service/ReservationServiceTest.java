@@ -9,10 +9,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
+import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.reservation.ReservationResponse;
 import roomescape.exceptions.EntityNotFoundException;
-import roomescape.exceptions.ReservationDuplicateException;
+import roomescape.exceptions.reservation.ReservationDuplicateException;
+import roomescape.service.reservation.ReservationService;
 
 @SpringBootTest
 class ReservationServiceTest {

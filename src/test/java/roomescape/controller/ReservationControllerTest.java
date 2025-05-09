@@ -20,13 +20,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.dto.MemberResponse;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.ThemeResponse;
+import roomescape.controller.reservation.ReservationController;
+import roomescape.dto.auth.LoginRequest;
+import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.reservation.ReservationResponse;
+import roomescape.dto.reservation.ReservationTimeResponse;
+import roomescape.dto.reservation.ThemeResponse;
 import roomescape.exceptions.EntityNotFoundException;
-import roomescape.service.ReservationService;
+import roomescape.service.reservation.ReservationService;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest {
@@ -47,7 +48,7 @@ class ReservationControllerTest {
     void readReservation() {
         ReservationTimeResponse givenTime = new ReservationTimeResponse(1L, LocalTime.MAX);
         ThemeResponse givenTheme = new ThemeResponse(1L, "테스트", "테스트", "테스트");
-        MemberResponse givenMember = new MemberResponse(1L, "테스트", "test@example.com", "테스트");
+        LoginRequest givenMember = new LoginRequest(1L, "테스트", "test@example.com", "테스트");
         ReservationResponse response1 = new ReservationResponse(1L,
                 givenMember.name(),
                 LocalDate.now().plusDays(1),
@@ -87,7 +88,7 @@ class ReservationControllerTest {
         ReservationRequest dto = new ReservationRequest(fixedDate, expectedTimeId, expectedThemeId, expectedMemberId);
         ReservationTimeResponse givenTime = new ReservationTimeResponse(expectedTimeId, LocalTime.MAX);
         ThemeResponse givenTheme = new ThemeResponse(expectedThemeId, "테스트", "테스트", "테스트");
-        MemberResponse givenMember = new MemberResponse(expectedMemberId, "테스트", "test@example.com", "테스트");
+        LoginRequest givenMember = new LoginRequest(expectedMemberId, "테스트", "test@example.com", "테스트");
         ReservationResponse response = new ReservationResponse(expectedId,
                 givenMember.name(),
                 fixedDate,

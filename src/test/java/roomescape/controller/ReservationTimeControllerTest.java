@@ -20,10 +20,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
+import roomescape.controller.reservation.ReservationTimeController;
+import roomescape.dto.reservation.ReservationTimeRequest;
+import roomescape.dto.reservation.ReservationTimeResponse;
 import roomescape.exceptions.EntityNotFoundException;
-import roomescape.service.ReservationTimeService;
+import roomescape.service.reservation.ReservationTimeService;
 
 @WebMvcTest(ReservationTimeController.class)
 class ReservationTimeControllerTest {

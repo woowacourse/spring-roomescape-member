@@ -15,8 +15,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.dto.ReservationAvailableTimeResponse;
-import roomescape.service.UserReservationTimeService;
+import roomescape.controller.member.UserReservationController;
+import roomescape.dto.reservation.ReservationAvailableTimeResponse;
+import roomescape.service.memeber.UserReservationTimeService;
 
 @WebMvcTest(UserReservationController.class)
 class UserReservationControllerTest {

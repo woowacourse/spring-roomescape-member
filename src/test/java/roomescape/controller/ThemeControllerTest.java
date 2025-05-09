@@ -18,10 +18,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.dto.ThemeRequest;
-import roomescape.dto.ThemeResponse;
+import roomescape.controller.reservation.ThemeController;
+import roomescape.dto.reservation.ThemeRequest;
+import roomescape.dto.reservation.ThemeResponse;
 import roomescape.exceptions.EntityNotFoundException;
-import roomescape.service.ThemeService;
+import roomescape.service.reservation.ThemeService;
 
 @WebMvcTest(ThemeController.class)
 class ThemeControllerTest {
