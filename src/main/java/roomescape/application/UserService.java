@@ -26,7 +26,7 @@ public class UserService {
         return user.withId(id);
     }
 
-    public User findById(final long id) {
+    public User getById(final long id) {
         return repository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다. id : " + id));
     }

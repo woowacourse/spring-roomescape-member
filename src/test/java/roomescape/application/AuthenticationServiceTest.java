@@ -108,7 +108,7 @@ class AuthenticationServiceTest {
 
     @Test
     @DisplayName("토큰으로 유저를 찾을 수 있다.")
-    void findUserByToken() {
+    void getUserByToken() {
         // given
         var user = new User(1L, "포포", UserRole.USER, "popo@email.com", "password");
         userRepository.save(new User(1L, "포포", UserRole.USER, "popo@email.com", "password"));
@@ -116,7 +116,7 @@ class AuthenticationServiceTest {
         var issuedToken = service.issueToken(user.email(), user.password());
 
         // when
-        User foundUser = service.findUserByToken(issuedToken);
+        User foundUser = service.getUserByToken(issuedToken);
 
         assertThat(foundUser).isEqualTo(user);
     }
@@ -136,7 +136,7 @@ class AuthenticationServiceTest {
         var issuedToken = service.issueToken(user.email(), user.password());
 
         // when
-        assertThatThrownBy(() -> service.findUserByToken(issuedToken))
+        assertThatThrownBy(() -> service.getUserByToken(issuedToken))
             .isInstanceOf(AuthorizationException.class);
     }
 }

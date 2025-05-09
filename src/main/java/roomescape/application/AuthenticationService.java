@@ -28,7 +28,7 @@ public class AuthenticationService {
         return tokenProvider.isValidToken(token);
     }
 
-    public User findUserByToken(final String token) {
+    public User getUserByToken(final String token) {
         var isValidToken = tokenProvider.isValidToken(token);
         if (!isValidToken) {
             throw new AuthorizationException("토큰이 만료되었거나 유효하지 않습니다.");

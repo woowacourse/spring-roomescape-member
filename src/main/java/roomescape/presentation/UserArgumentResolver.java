@@ -27,6 +27,6 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         var request = (HttpServletRequest) webRequest.getNativeRequest();
         var token = ControllerSupports.findCookieValueByKey(request, "token")
             .orElseThrow(() -> new AuthorizationException("사용자 인증이 필요합니다."));
-        return authenticationService.findUserByToken(token);
+        return authenticationService.getUserByToken(token);
     }
 }
