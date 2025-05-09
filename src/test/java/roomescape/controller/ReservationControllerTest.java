@@ -23,9 +23,10 @@ public class ReservationControllerTest {
 
     private static final String NAME = "테스트";
     private static final String DATE = LocalDate.MAX.toString();
-    private static final int TEST_ID = 1;
-    private static final int TIME_ID = 1;
-    private static final int THEME_ID = 1;
+    private static final Long TEST_ID = 1L;
+    private static final Long TIME_ID = 1L;
+    private static final Long THEME_ID = 1L;
+    private static final Long MEMBER_ID = 1L;
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -63,7 +64,8 @@ public class ReservationControllerTest {
                         "name", is(NAME),
                         "date", is(DATE),
                         "reservationTime.id", is(TIME_ID),
-                        "theme.id", is(THEME_ID)
+                        "theme.id", is(THEME_ID),
+                        "member.id", is(MEMBER_ID)
                 );
     }
 

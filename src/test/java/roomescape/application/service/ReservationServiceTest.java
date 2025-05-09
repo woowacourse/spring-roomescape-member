@@ -48,12 +48,15 @@ class ReservationServiceTest {
     void findAllReservations() {
         // given
         List<Reservation> reservations = List.of(
-                new Reservation(1L, "name1", LocalDate.now(), new ReservationTime(1L, LocalTime.of(10, 0)),
-                        new Theme(1L, "테마1", "설명1", "썸네일1")),
-                new Reservation(2L, "name2", LocalDate.now().plusDays(1), new ReservationTime(2L, LocalTime.of(12, 0)),
-                        new Theme(2L, "테마2", "설명2", "썸네일2")),
-                new Reservation(3L, "name3", LocalDate.now().plusDays(2), new ReservationTime(3L, LocalTime.of(14, 0)),
-                        new Theme(3L, "테마3", "설명3", "썸네일3"))
+                new Reservation(1L, LocalDate.now(), new ReservationTime(1L, LocalTime.of(10, 0)),
+                        new Theme(1L, "테마1", "설명1", "썸네일1"),
+                        new Member(1L, "이름1", "test1@email.com", "password1", Role.ADMIN)),
+                new Reservation(2L, LocalDate.now().plusDays(1), new ReservationTime(2L, LocalTime.of(12, 0)),
+                        new Theme(2L, "테마2", "설명2", "썸네일2"),
+                        new Member(2L, "이름2", "test2@email.com", "password2", Role.ADMIN)),
+                new Reservation(3L, LocalDate.now().plusDays(2), new ReservationTime(3L, LocalTime.of(14, 0)),
+                        new Theme(3L, "테마3", "설명3", "썸네일3"),
+                        new Member(3L, "이름3", "test3@email.com", "password3", Role.ADMIN))
         );
 
         doReturn(reservations).when(reservationDao)
@@ -65,11 +68,11 @@ class ReservationServiceTest {
         // then
         assertThat(responses)
                 .hasSize(reservations.size())
-                .extracting("id", "name", "date")
+                .extracting("id", "date")
                 .containsExactly(
-                        tuple(1L, "name1", LocalDate.now()),
-                        tuple(2L, "name2", LocalDate.now().plusDays(1)),
-                        tuple(3L, "name3", LocalDate.now().plusDays(2))
+                        tuple(1L, LocalDate.now()),
+                        tuple(2L, LocalDate.now().plusDays(1)),
+                        tuple(3L, LocalDate.now().plusDays(2))
                 );
 
         // verify

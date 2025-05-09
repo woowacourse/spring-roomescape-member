@@ -18,10 +18,10 @@ public record ReservationRequest(
 
     public Reservation toReservationWith(Member member, ReservationTime reservationTime, Theme theme) {
         return new Reservation(
-                member.getName(),
                 date,
                 reservationTime,
-                theme
+                theme,
+                member
         );
     }
 

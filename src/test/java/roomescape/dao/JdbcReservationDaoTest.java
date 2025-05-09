@@ -14,8 +14,10 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 @JdbcTest
@@ -42,8 +44,8 @@ class JdbcReservationDaoTest {
         assertAll(
                 () -> assertThat(reservations).hasSize(1),
                 () -> assertThat(reservation)
-                        .extracting("id", "name", "date")
-                        .containsExactly(1L, "name", LocalDate.of(2025, 1, 1))
+                        .extracting("id", "date")
+                        .containsExactly(1L, LocalDate.of(2025, 1, 1))
         );
     }
 
@@ -53,7 +55,8 @@ class JdbcReservationDaoTest {
         // given
         Theme theme = new Theme(1L, "name", "description", "thumbnail");
         ReservationTime time = new ReservationTime(1L, LocalTime.of(11, 0));
-        Reservation reservation = new Reservation("name", LocalDate.of(2025, 1, 1), time, theme);
+        Member member = new Member(1L, "이름", "test@email.com", "password", Role.ADMIN);
+        Reservation reservation = new Reservation(LocalDate.of(2025, 1, 1), time, theme, member);
 
         // when
         Long savedId = jdbcReservationDao.save(reservation);
@@ -198,8 +201,8 @@ class JdbcReservationDaoTest {
 
     private void insertReservation(LocalDate date, Long themeId) {
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "test_name", date, 1L, themeId
+                "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+                date, 1L, themeId, 1L
         );
     }
 }
