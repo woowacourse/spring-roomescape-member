@@ -48,9 +48,9 @@ public class ReservationTimeService {
 
     public List<AvailableReservationTimeResponse> findAvailableReservationTimes(LocalDate date, Long themeId) {
         List<ReservationTime> allReservationTimes = reservationTimeRepository.findAll();
-        List<Reservation> availableReservationsByDate = reservationRepository.findByDateAndTheme(date, themeId);
+        List<Reservation> reservationsOnDate = reservationRepository.findByDateAndTheme(date, themeId);
 
-        List<ReservationTime> availableReservationTimes = availableReservationsByDate.stream()
+        List<ReservationTime> reservedTimes = reservationsOnDate.stream()
                 .map(Reservation::getTime)
                 .toList();
 
@@ -58,7 +58,7 @@ public class ReservationTimeService {
                 .map(reservationTime -> new AvailableReservationTimeResponse(
                         reservationTime.getId(),
                         reservationTime.getStartAt(),
-                        availableReservationTimes.contains(reservationTime)
+                        reservedTimes.contains(reservationTime)
                 ))
                 .toList();
     }
