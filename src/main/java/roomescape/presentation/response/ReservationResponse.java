@@ -5,8 +5,8 @@ import java.util.List;
 import roomescape.domain.Reservation;
 
 public record ReservationResponse(
-    Long id,
-    String name,
+    long id,
+    UserResponse user,
     LocalDate date,
     TimeSlotResponse time,
     ThemeResponse theme
@@ -15,7 +15,7 @@ public record ReservationResponse(
     public static ReservationResponse from(final Reservation reservation) {
         return new ReservationResponse(
             reservation.id(),
-            reservation.user().name(),
+            UserResponse.from(reservation.user()),
             reservation.date(),
             TimeSlotResponse.from(reservation.timeSlot()),
             ThemeResponse.from(reservation.theme())

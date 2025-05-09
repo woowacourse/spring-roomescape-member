@@ -1,0 +1,34 @@
+package roomescape.presentation.api;
+
+import jakarta.validation.Valid;
+import java.net.URI;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import roomescape.application.ReservationService;
+import roomescape.application.UserService;
+import roomescape.presentation.request.CreateReservationAdminRequest;
+import roomescape.presentation.response.ReservationResponse;
+
+@Controller
+@RequestMapping("/admin")
+public class AdminApiController {
+
+    private final ReservationService reservationService;
+    private final UserService userService;
+
+    public AdminApiController(final ReservationService reservationService, final UserService userService) {
+        this.reservationService = reservationService;
+        this.userService = userService;
+    }
+
+    @PostMapping("/reservations")
+    public ResponseEntity<ReservationResponse> reserve(@RequestBody @Valid final CreateReservationAdminRequest request) {
+        var user = userService.findById(request.userId());
+        var reservation = reservationService.reserve(user, request.date(), request.timeId(), request.themeId());
+        var response = ReservationResponse.from(reservation);
+        return ResponseEntity.created(URI.create("reservations/" + reservation.id())).body(response);
+    }
+}
