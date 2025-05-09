@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.application.AuthService;
-import roomescape.auth.application.BlacklistService;
 import roomescape.auth.domain.AuthRole;
 import roomescape.auth.domain.RequiresRole;
 import roomescape.auth.ui.dto.CheckAccessTokenResponse;
@@ -26,7 +25,6 @@ import roomescape.member.domain.Member;
 public class AuthRestController {
 
     private final AuthService authService;
-    private final BlacklistService blacklistService;
 
     @PostMapping("/login")
     public ResponseEntity<Void> createAccessToken(
@@ -46,13 +44,18 @@ public class AuthRestController {
 
     @PostMapping("/logout")
     @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER})
-    public void logout(@CookieValue(value = "token") final String accessToken) {
-        log.atInfo().log("Logout accessToken: {}", accessToken);
+    public ResponseEntity<Void> logout(@CookieValue(value = "token") final String accessToken) {
+        log.info("Logout accessToken: {}", accessToken);
 
-        if (blacklistService.isBlacklisted(accessToken)) {
-            return;
-        }
-        blacklistService.addToBlacklist(accessToken);
+        final ResponseCookie cookie = ResponseCookie.from("token", "")
+                .path("/")
+                .httpOnly(true)
+                .maxAge(0)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .build();
     }
 
 
