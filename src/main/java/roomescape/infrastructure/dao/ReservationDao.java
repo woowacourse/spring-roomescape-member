@@ -56,6 +56,26 @@ public class ReservationDao {
         );
     }
 
+    public List<Reservation> findByThemeIdAndMemberIdAndDate(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
+        String query = """
+                   SELECT r.id, r.member_id, r.date,
+                   rt.id AS time_id, rt.start_at AS time_value,
+                   t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, t.thumbnail AS theme_thumbnail
+                   FROM reservation AS r
+                   INNER JOIN reservation_time AS rt ON r.time_id = rt.id
+                   INNER JOIN theme AS t ON r.theme_id = t.id
+                   WHERE t.id = ? AND r.member_id = ? AND PARSEDATETIME(r.date, 'yyyy-MM-dd') BETWEEN PARSEDATETIME(?, 'yyyy-MM-dd') AND PARSEDATETIME(?, 'yyyy-MM-dd')
+                """;
+        return jdbcTemplate.query(
+                query,
+                ROW_MAPPER,
+                themeId,
+                memberId,
+                dateFrom,
+                dateTo
+        );
+    }
+
     public Reservation save(Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("member_id", reservation.getMemberId());

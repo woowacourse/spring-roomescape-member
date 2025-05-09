@@ -49,6 +49,11 @@ public class FakeReservationRepository implements ReservationRepository {
         return reservationDao.existByTimeId(timeId);
     }
 
+    @Override
+    public List<Reservation> findByThemeIdAndMemberIdAndDate(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
+        return reservationDao.findByThemeIdAndMemberIdAndDate(themeId, memberId, dateFrom, dateTo);
+    }
+
     public void clear() {
         reservationDao.clear();
     }

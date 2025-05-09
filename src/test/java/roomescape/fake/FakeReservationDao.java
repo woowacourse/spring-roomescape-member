@@ -24,6 +24,17 @@ public class FakeReservationDao {
         return RESERVATIONS.values().stream().toList();
     }
 
+    public List<Reservation> findByThemeIdAndMemberIdAndDate(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
+        return RESERVATIONS.values().stream()
+                .filter(reservation -> {
+                    boolean isThemeSame = reservation.getTheme().getId().equals(themeId);
+                    boolean isMemberSame = reservation.getMemberId().equals(memberId);
+                    boolean isBetweenDate = !reservation.getDate().isAfter(dateTo) && !reservation.getDate().isBefore(dateFrom);
+
+                    return isThemeSame && isMemberSame && isBetweenDate;
+                }).toList();
+    }
+
     public int deleteById(Long id) {
         if (RESERVATIONS.containsKey(id)) {
             RESERVATIONS.remove(id);

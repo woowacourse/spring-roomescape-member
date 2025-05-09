@@ -10,6 +10,7 @@ import roomescape.presentation.annotation.MemberAuthorization;
 import roomescape.presentation.dto.request.ReservationRequest;
 import roomescape.presentation.dto.response.ReservationResponse;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -25,6 +26,17 @@ public class ReservationController {
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getAll() {
         List<ReservationResponse> response = reservationService.findAll();
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ReservationResponse>> getByConditions(
+            @RequestParam("themeId") Long themeId,
+            @RequestParam("memberId") Long memberId,
+            @RequestParam("dateFrom") LocalDate dateFrom,
+            @RequestParam("dateTo") LocalDate dateTo
+    ) {
+        List<ReservationResponse> response = reservationService.findByThemeIdAndMemberIdAndDate(themeId, memberId, dateFrom, dateTo);
         return ResponseEntity.ok().body(response);
     }
 

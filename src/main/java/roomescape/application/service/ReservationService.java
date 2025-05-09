@@ -44,6 +44,15 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponse> findByThemeIdAndMemberIdAndDate(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
+        return reservationRepository.findByThemeIdAndMemberIdAndDate(themeId, memberId, dateFrom, dateTo).stream()
+                .map(reservation -> {
+                    Member member = memberRepository.findById(reservation.getMemberId());
+                    return ReservationResponse.of(reservation, member);
+                })
+                .toList();
+    }
+
     @Transactional
     public void deleteReservation(Long id) {
         int count = reservationRepository.deleteById(id);
