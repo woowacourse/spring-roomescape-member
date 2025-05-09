@@ -65,6 +65,8 @@ class ReservationTimeServiceTest {
                 .isInstanceOf(AlreadyExistException.class);
     }
 
+    // TODO: 테스트 추가: 해당_예약_시간으로_등록된_예약이_있으면_삭제할_수_없다
+
     @Test
     void 삭제할_예약시간이_없으면_예외가_발생한다() {
         // given

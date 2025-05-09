@@ -102,6 +102,8 @@ class ThemeServiceTest {
                 .isInstanceOf(AlreadyExistException.class);
     }
 
+    // TODO: 테스트 추가: 해당_테마로_등록된_예약이_있으면_삭제할_수_없다
+
     @TestConfiguration
     static class TestConfig {
 
