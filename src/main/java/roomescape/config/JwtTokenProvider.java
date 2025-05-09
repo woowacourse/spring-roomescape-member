@@ -3,7 +3,6 @@ package roomescape.config;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import java.time.Duration;
 import java.util.Date;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
@@ -12,11 +11,11 @@ import roomescape.domain.Member;
 public class JwtTokenProvider {
 
     private final static String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-    public static final Duration EXPIRE_DURATION = Duration.ofMinutes(30);
+    public static final int EXPIRE_DURATION = 3600000;
 
     public String createTokenByMember(Member member) {
         Date now = new Date();
-        Date expireDate = new Date(now.getTime() + EXPIRE_DURATION.toMinutes());
+        Date expireDate = new Date(now.getTime() + EXPIRE_DURATION);
 
         return Jwts.builder()
                 .setSubject(member.getId().toString())
