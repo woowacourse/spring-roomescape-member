@@ -3,8 +3,8 @@ package roomescape.entity.member;
 public class Member {
 
     private final Long id;
-    private final Role role;
     private final String name;
+    private final Role role;
     private final String email;
     private final String password;
 
@@ -17,7 +17,7 @@ public class Member {
         this.password = password;
     }
 
-    protected Member(Long id, Role role, String name, String email, String password) {
+    public Member(Long id, String name, Role role, String email, String password) {
         this.id = id;
         this.role = role;
         this.name = name;

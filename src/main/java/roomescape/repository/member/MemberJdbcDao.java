@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import roomescape.entity.member.Member;
+import roomescape.entity.member.Role;
 import roomescape.exceptions.EntityNotFoundException;
 
 @Repository
@@ -53,6 +54,7 @@ public class MemberJdbcDao implements MemberRepository {
         return (resultSet, rowNum) -> new Member(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
+                Role.valueOf(resultSet.getString("role")),
                 resultSet.getString("email"),
                 resultSet.getString("password")
         );
