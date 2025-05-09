@@ -1,7 +1,5 @@
 package roomescape.login.presentation;
 
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.util.auth.JwtTokenManager;
+import roomescape.login.presentation.annotation.LoginAdmin;
+import roomescape.login.presentation.dto.LoginAdminInfo;
 import roomescape.login.presentation.dto.LoginCheckResponse;
 import roomescape.login.presentation.dto.LoginRequest;
 import roomescape.admin.domain.Admin;
@@ -52,20 +52,8 @@ public class AdminLoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> checkLogin(final HttpServletRequest request) {
-        if (request.getCookies() == null) {
-            throw new IllegalStateException("인증할 수 없습니다.");
-        }
-
-        String token = Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName().equals("token"))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("인증할 수 없습니다."))
-                .getValue();
-
-        Long id = JwtTokenManager.getId(token);
-
-        Admin admin = adminService.findById(id);
+    public ResponseEntity<LoginCheckResponse> checkLogin(@LoginAdmin final LoginAdminInfo info) {
+        Admin admin = adminService.findById(info.id());
         return ResponseEntity.ok().body(new LoginCheckResponse(admin.getName()));
     }
 }
