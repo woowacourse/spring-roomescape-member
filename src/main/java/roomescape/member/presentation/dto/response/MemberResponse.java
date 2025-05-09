@@ -4,13 +4,11 @@ import java.util.List;
 import roomescape.member.application.dto.MemberDto;
 
 public record MemberResponse(
-        Long id,
-        String name,
-        String email
+        String name
 ) {
 
     public static MemberResponse from(MemberDto dto) {
-        return new MemberResponse(dto.id(), dto.name(), dto.email());
+        return new MemberResponse(dto.name());
     }
     public static List<MemberResponse> from(List<MemberDto> dtos) {
         return dtos.stream()

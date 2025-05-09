@@ -45,7 +45,7 @@ public class TokenLoginController {
 
     @GetMapping("/check")
     public ResponseEntity<MemberResponse> checkMember(@AuthenticatedMember LoginMember member) {
-        MemberResponse memberResponse = new MemberResponse(member.id(), member.name(), member.email());
+        MemberResponse memberResponse = new MemberResponse(member.name());
         return ResponseEntity.ok(memberResponse);
     }
 }

@@ -451,12 +451,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /reservations HTTP/1.1
 Content-Type: application/json
-Host: localhost:50027
+Host: localhost:60483
 Content-Length: 60
-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDY2NDU5NTAsImV4cCI6MTc0NjY0OTU1MH0.GU_r3zRpyOsn-8qSAkdos1fFJuwuMBQRXQs3hfPLoXg
+Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDY4MjM2NDUsImV4cCI6MTc0NjgyNzI0NX0.Jwr7iCoQGH-WSukQjVwXtiZxejodPt9dN5IgNKvCqn4
 
 {
-  "date" : "2025-05-09",
+  "date" : "2025-05-11",
   "timeId" : 1,
   "themeId" : 1
 }</code></pre>
@@ -484,7 +484,7 @@ Content-Length: 281
     "description" : "테마 1입니다.",
     "thumbnail" : "썸네일1"
   },
-  "date" : "2025-05-09",
+  "date" : "2025-05-11",
   "time" : {
     "id" : 1,
     "startAt" : "10:00"
@@ -502,15 +502,15 @@ Content-Length: 281
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /admin/reservations HTTP/1.1
 Content-Type: application/json
-Host: localhost:50027
+Host: localhost:60483
 Content-Length: 78
-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzQ2NjQ1OTUwLCJleHAiOjE3NDY2NDk1NTB9.y_GwvdvWDttlTimZPQ98a3DGGgocbBdTx-BvDJ1Pgik
+Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzQ2ODIzNjQ1LCJleHAiOjE3NDY4MjcyNDV9.GE_KOqKBFf0qA1nGZ13TtY-fFD02fktBueJj4vqbjw0
 
 {
-  "themeId" : 1,
+  "timeId" : 1,
+  "date" : "2025-05-11",
   "memberId" : 1,
-  "date" : "2025-05-09",
-  "timeId" : 1
+  "themeId" : 1
 }</code></pre>
 </div>
 </div>
@@ -536,7 +536,7 @@ Content-Length: 281
     "description" : "테마 1입니다.",
     "thumbnail" : "썸네일1"
   },
-  "date" : "2025-05-09",
+  "date" : "2025-05-11",
   "time" : {
     "id" : 1,
     "startAt" : "10:00"
@@ -553,7 +553,7 @@ Content-Length: 281
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /reservations/1 HTTP/1.1
-Host: localhost:50027</code></pre>
+Host: localhost:60483</code></pre>
 </div>
 </div>
 </div>
@@ -573,7 +573,7 @@ Host: localhost:50027</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /reservations HTTP/1.1
-Host: localhost:50027</code></pre>
+Host: localhost:60483</code></pre>
 </div>
 </div>
 </div>
@@ -597,7 +597,7 @@ Content-Length: 568
     "description" : "테마 1입니다.",
     "thumbnail" : "썸네일1"
   },
-  "date" : "2025-05-09",
+  "date" : "2025-05-11",
   "time" : {
     "id" : 1,
     "startAt" : "10:00"
@@ -614,7 +614,7 @@ Content-Length: 568
     "description" : "테마 2입니다.",
     "thumbnail" : "썸네일2"
   },
-  "date" : "2025-05-09",
+  "date" : "2025-05-11",
   "time" : {
     "id" : 2,
     "startAt" : "11:00"

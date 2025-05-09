@@ -46,6 +46,6 @@ public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumen
                 .orElseThrow(() -> new AuthorizationException(LOGIN_REQUIRED));
 
         Member member = authService.findMemberByToken(token);
-        return new LoginMember(member.getId(), member.getEmail(), member.getName());
+        return new LoginMember(member.getId(), member.getName());
     }
 }

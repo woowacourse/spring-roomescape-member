@@ -451,7 +451,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /login HTTP/1.1
 Content-Type: application/json
-Host: localhost:50027
+Host: localhost:60483
 Content-Length: 59
 
 {
@@ -466,7 +466,7 @@ Content-Length: 59
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzQ2NjQ1OTQ5LCJleHAiOjE3NDY2NDk1NDl9.mvdM5lZlo3M_OlY9EBDljPSntJMd45u9MisIhZUnaWI; Path=/; HttpOnly
+Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzQ2ODIzNjQ0LCJleHAiOjE3NDY4MjcyNDR9.8RZ2nTTJGxuh6JjqdYL7Q0pUqH6nd3ea9VAwF4OHTNM; Path=/; HttpOnly
 Location: /</code></pre>
 </div>
 </div>
@@ -480,8 +480,8 @@ Location: /</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /login/check HTTP/1.1
 Content-Type: application/json
-Host: localhost:50027
-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDY2NDU5NDksImV4cCI6MTc0NjY0OTU0OX0.My-jFGBsmfi0p7W4JIAQ437yzRtlf-K1i1WdQe1-g4Q</code></pre>
+Host: localhost:60483
+Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDY4MjM2NDQsImV4cCI6MTc0NjgyNzI0NH0.uuKLyxQGKvzJIepIr8jTM57poulmsB48CAjV29N2XoU</code></pre>
 </div>
 </div>
 </div>
@@ -491,12 +491,10 @@ Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3N
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 65
+Content-Length: 23
 
 {
-  "id" : 1,
-  "name" : "멍구",
-  "email" : "test@email.com"
+  "name" : "멍구"
 }</code></pre>
 </div>
 </div>
