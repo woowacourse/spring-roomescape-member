@@ -227,7 +227,7 @@ class ReservationApiTest {
                 .log()
                 .all()
                 .when()
-                .delete("/reservations/" + id.intValue())
+                .delete("/reservations/" + id)
                 .then()
                 .log()
                 .all()
