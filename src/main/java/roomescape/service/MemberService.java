@@ -47,7 +47,7 @@ public class MemberService {
         return publishToken(member);
     }
 
-    public String publishToken(final Member member) {
+    private String publishToken(final Member member) {
         JwtRequest jwtRequest = new JwtRequest(member.getId(), member.getName(), member.getEmail(),
                 member.getRole(), new Date());
         return jwtProvider.generateToken(jwtRequest);
