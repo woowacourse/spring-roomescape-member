@@ -27,6 +27,12 @@ public class JdbcMemberDao implements MemberDao {
     }
 
     @Override
+    public List<LoginMember> findAll() {
+        final String query = "SELECT * FROM member";
+        return jdbcTemplate.query(query, MEMBER_ROW_MAPPER);
+    }
+
+    @Override
     public Optional<LoginMember> findById(final long id) {
         final String query = "SELECT * FROM member WHERE id = ?";
         final List<LoginMember> members = jdbcTemplate.query(query, MEMBER_ROW_MAPPER, id);
