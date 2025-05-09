@@ -18,6 +18,9 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Roles;
+import roomescape.domain.auth.entity.User;
+import roomescape.domain.auth.repository.UserRepository;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
@@ -40,6 +43,9 @@ class ThemeApiTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @LocalServerPort
     private int port;
@@ -141,7 +147,9 @@ class ThemeApiTest {
         final Theme savedTheme = themeRepository.save(theme);
         final Long savedId = savedTheme.getId();
         final Name name = new Name("브라운");
-        final Reservation reservation = Reservation.withoutId(name, LocalDate.now(), savedTime, savedTheme);
+        final User user = userRepository.save(User.withoutId(name, "admin@naver.com", "1234", Roles.USER));
+
+        final Reservation reservation = Reservation.withoutId(user, LocalDate.now(), savedTime, savedTheme);
         reservationRepository.save(reservation);
 
         // when & then
@@ -172,12 +180,14 @@ class ThemeApiTest {
         final Theme savedTheme3 = themeRepository.save(theme3);
 
         final Name name = new Name("브라운");
-        reservationRepository.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 2), savedTime, savedTheme3));
-        reservationRepository.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 3), savedTime, savedTheme3));
-        reservationRepository.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 1), savedTime, savedTheme3));
-        reservationRepository.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 4), savedTime, savedTheme1));
-        reservationRepository.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 5), savedTime, savedTheme1));
-        reservationRepository.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 6), savedTime, savedTheme2));
+        final User user = userRepository.save(User.withoutId(name, "admin@naver.com", "1234", Roles.USER));
+
+        reservationRepository.save(Reservation.withoutId(user, minusDay(LocalDate.now(), 2), savedTime, savedTheme3));
+        reservationRepository.save(Reservation.withoutId(user, minusDay(LocalDate.now(), 3), savedTime, savedTheme3));
+        reservationRepository.save(Reservation.withoutId(user, minusDay(LocalDate.now(), 1), savedTime, savedTheme3));
+        reservationRepository.save(Reservation.withoutId(user, minusDay(LocalDate.now(), 4), savedTime, savedTheme1));
+        reservationRepository.save(Reservation.withoutId(user, minusDay(LocalDate.now(), 5), savedTime, savedTheme1));
+        reservationRepository.save(Reservation.withoutId(user, minusDay(LocalDate.now(), 6), savedTime, savedTheme2));
 
         // when & then
         RestAssured.given()

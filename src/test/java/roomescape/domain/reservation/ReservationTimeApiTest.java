@@ -17,6 +17,9 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Roles;
+import roomescape.domain.auth.entity.User;
+import roomescape.domain.auth.repository.UserRepository;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
@@ -39,6 +42,9 @@ public class ReservationTimeApiTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @LocalServerPort
     private int port;
@@ -163,7 +169,9 @@ public class ReservationTimeApiTest {
         final Theme savedTheme = themeRepository.save(theme);
         final Name name = new Name("꾹");
 
-        final Reservation reservation = Reservation.withoutId(name, LocalDate.now(), savedTime, savedTheme);
+        final User user = userRepository.save(User.withoutId(name, "admin@naver.com", "1234", Roles.USER));
+
+        final Reservation reservation = Reservation.withoutId(user, LocalDate.now(), savedTime, savedTheme);
         reservationRepository.save(reservation);
 
         // when & then

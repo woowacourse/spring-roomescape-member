@@ -20,6 +20,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Roles;
+import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.repository.UserRepository;
 import roomescape.domain.auth.service.JwtManager;
 import roomescape.domain.reservation.entity.Reservation;
@@ -72,7 +74,12 @@ class ReservationApiTest {
         final Theme savedTheme = themeRepository.save(theme);
 
         final Name name = new Name("브라운");
-        final Reservation reservation = Reservation.withoutId(name, LocalDate.now(), savedReservationTime, savedTheme);
+        final User user = User.withoutId(name, "admin@naver.com", "1234", Roles.USER);
+        final User savedUser = userRepository.save(user);
+
+        final Reservation reservation = Reservation.withoutId(savedUser, LocalDate.now(), savedReservationTime,
+                savedTheme);
+
         reservationRepository.save(reservation);
 
         // then
@@ -98,17 +105,20 @@ class ReservationApiTest {
         final Theme theme = Theme.withoutId("공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         final Theme savedTheme = themeRepository.save(theme);
-
         final LocalDate now = LocalDate.now();
 
+        final User user = userRepository.save(User.withoutId(new Name("브라운"), "dsa@naver.com", "1234", Roles.USER));
+        final String token = jwtManager.createToken(user);
+
         final Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", formatDateTime(now.plusDays(1)));
         reservation.put("timeId", savedReservationTime.getId());
         reservation.put("themeId", savedTheme.getId());
 
+
         // when & then
         RestAssured.given()
+                .cookie("token", token)
                 .log()
                 .all()
                 .contentType(ContentType.JSON)
@@ -138,13 +148,16 @@ class ReservationApiTest {
         final LocalDate now = LocalDate.now();
 
         final Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", formatDateTime(now.plusDays(1)));
         reservation.put("timeId", 1);
         reservation.put("themeId", savedTheme.getId());
 
+        final User user = userRepository.save(User.withoutId(new Name("브라운"), "dsa@naver.com", "1234", Roles.USER));
+        final String token = jwtManager.createToken(user);
+
         // when & then
         RestAssured.given()
+                .cookie("token", token)
                 .log()
                 .all()
                 .contentType(ContentType.JSON)
@@ -167,13 +180,16 @@ class ReservationApiTest {
         final LocalDate now = LocalDate.now();
 
         final Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", formatDateTime(now.plusDays(1)));
         reservation.put("timeId", savedReservationTime.getId());
         reservation.put("themeId", 1L);
 
+        final User user = userRepository.save(User.withoutId(new Name("브라운"), "dsa@naver.com", "1234", Roles.USER));
+        final String token = jwtManager.createToken(user);
+
         // when & then
         RestAssured.given()
+                .cookie("token", token)
                 .log()
                 .all()
                 .contentType(ContentType.JSON)
@@ -190,7 +206,6 @@ class ReservationApiTest {
     @Test
     void test6() {
         // given
-        final Name name = new Name("브라운");
         final LocalDate now = LocalDate.now();
 
         final ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
@@ -200,7 +215,11 @@ class ReservationApiTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         final Theme savedTheme = themeRepository.save(theme);
 
-        final Reservation reservation = Reservation.withoutId(name, now, savedReservationTime, savedTheme);
+        final Name name = new Name("브라운");
+        final User user = User.withoutId(name, "admin@naver.com", "1234", Roles.USER);
+        final User savedUser = userRepository.save(user);
+
+        final Reservation reservation = Reservation.withoutId(savedUser, now, savedReservationTime, savedTheme);
         final Reservation saved = reservationRepository.save(reservation);
         final Long id = saved.getId();
 
@@ -238,8 +257,12 @@ class ReservationApiTest {
         reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(11, 0)));
 
         final LocalDate date = LocalDate.now();
+
         final Name name = new Name("브라운");
-        reservationRepository.save(Reservation.withoutId(name, date, time1, theme));
+        final User user = User.withoutId(name, "admin@naver.com", "1234", Roles.USER);
+        final User savedUser = userRepository.save(user);
+
+        reservationRepository.save(Reservation.withoutId(savedUser, date, time1, theme));
 
         final String path = UriComponentsBuilder.fromUriString("/reservations/available")
                 .queryParam("date", formatDateTime(date))

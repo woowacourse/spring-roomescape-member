@@ -7,22 +7,22 @@ import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
 import roomescape.common.exception.InvalidArgumentException;
-import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.User;
 
 @Getter
 public class Reservation {
 
     private final Long id;
-    private final Name reservationName;
+    private final User user;
     private final LocalDate reservationDate;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
     @Builder
-    public Reservation(final Long id, final Name reservationName, final LocalDate reservationDate,
+    public Reservation(final Long id, final User user, final LocalDate reservationDate,
                        final ReservationTime reservationTime, final Theme theme) {
         this.id = id;
-        this.reservationName = reservationName;
+        this.user = user;
         this.reservationDate = reservationDate;
         this.reservationTime = reservationTime;
         this.theme = theme;
@@ -30,14 +30,14 @@ public class Reservation {
     }
 
     private void validateReservation() {
-        if (reservationName == null || reservationDate == null || reservationTime == null || theme == null) {
+        if (user == null || reservationDate == null || reservationTime == null || theme == null) {
             throw new InvalidArgumentException("Reservation field cannot be null");
         }
     }
 
-    public static Reservation withoutId(final Name name, final LocalDate reservationDate,
+    public static Reservation withoutId(final User user, final LocalDate reservationDate,
                                         final ReservationTime reservationTime, final Theme theme) {
-        return new Reservation(null, name, reservationDate, reservationTime, theme);
+        return new Reservation(null, user, reservationDate, reservationTime, theme);
     }
 
     public void validateNotPastReservation(final LocalDateTime now) {
@@ -68,7 +68,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return reservationName.getName();
+        return user.getName();
     }
 
     @Override

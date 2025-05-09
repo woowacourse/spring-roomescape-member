@@ -17,6 +17,10 @@ import org.springframework.context.annotation.Import;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Roles;
+import roomescape.domain.auth.entity.User;
+import roomescape.domain.auth.repository.UserRepository;
+import roomescape.domain.auth.repository.impl.UserDao;
 import roomescape.domain.reservation.dto.ReservationTimeRequest;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
 import roomescape.domain.reservation.entity.Reservation;
@@ -30,7 +34,7 @@ import roomescape.domain.reservation.repository.impl.ReservationTimeDAO;
 import roomescape.domain.reservation.repository.impl.ThemeDAO;
 
 @JdbcTest
-@Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class})
+@Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class, UserDao.class})
 class ReservationTimeServiceIntegrationTest {
 
     @Autowired
@@ -41,6 +45,9 @@ class ReservationTimeServiceIntegrationTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private ReservationTimeService reservationTimeService;
 
@@ -133,7 +140,9 @@ class ReservationTimeServiceIntegrationTest {
                 ReservationTime.withoutId(LocalTime.of(8, 0)));
 
         final Name name = new Name("꾹");
-        reservationRepository.save(Reservation.withoutId(name, LocalDate.now(), reservationTime, theme));
+        final User user = userRepository.save(User.withoutId(name, "admin@naver.com", "1234", Roles.USER));
+
+        reservationRepository.save(Reservation.withoutId(user, LocalDate.now(), reservationTime, theme));
         final Long timeId = reservationTime.getId();
 
         // when & then

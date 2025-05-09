@@ -25,7 +25,12 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findReservations(final Long themeId, final String name, final LocalDate dateFrom, final LocalDate dateTo) {
+    public List<Reservation> findReservations(final Long themeId, final Long userId, final LocalDate dateFrom, final LocalDate dateTo) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
         throw new UnsupportedOperationException();
     }
 
@@ -49,7 +54,7 @@ public class FakeReservationRepository implements ReservationRepository {
             return reservation;
         }
 
-        final Reservation reservationWithId = new Reservation(id.getAndIncrement(), reservation.getReservationName(),
+        final Reservation reservationWithId = new Reservation(id.getAndIncrement(), reservation.getUser(),
                 reservation.getReservationDate(), reservation.getReservationTime(), reservation.getTheme());
 
         reservations.put(reservationWithId.getId(), reservationWithId);
@@ -70,11 +75,6 @@ public class FakeReservationRepository implements ReservationRepository {
         return reservations.values()
                 .stream()
                 .anyMatch(reservation -> sameReservationDateTime(reservation, date, timeId));
-    }
-
-    @Override
-    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

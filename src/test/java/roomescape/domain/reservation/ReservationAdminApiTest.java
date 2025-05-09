@@ -10,24 +10,25 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.auth.entity.Name;
 import roomescape.domain.auth.entity.Roles;
+import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.service.JwtManager;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ReservationAdminApiTest {
 
+    private static String adminToken;
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    private static String adminToken;
-
     @LocalServerPort
     private int port;
 
     @BeforeAll
     static void setUp(@Autowired final JwtManager jwtManager) {
-        adminToken = jwtManager.createToken(1L, Roles.ADMIN);
+        final User user = new User(1L, new Name("꾹"), "tizm@naver.com", "1234", Roles.ADMIN);
+        adminToken = jwtManager.createToken(user);
     }
 
     @BeforeEach

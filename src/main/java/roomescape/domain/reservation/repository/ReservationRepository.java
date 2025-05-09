@@ -9,7 +9,7 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    List<Reservation> findReservations(Long themeId, String name, LocalDate dateFrom, LocalDate dateTo);
+    List<Reservation> findReservations(Long themeId, Long userId, LocalDate dateFrom, LocalDate dateTo);
 
     List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
 

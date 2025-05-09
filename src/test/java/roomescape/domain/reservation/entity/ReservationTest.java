@@ -3,6 +3,7 @@ package roomescape.domain.reservation.entity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import roomescape.common.exception.InvalidArgumentException;
-import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.User;
 
 class ReservationTest {
 
@@ -24,28 +25,15 @@ class ReservationTest {
         final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         final Theme theme = new Theme(1L, "공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        final User user = mock(User.class);
 
-        final Name name = new Name("꾹이");
-
-        final Reservation reservation = new Reservation(id, name, LocalDate.now(), reservationTime, theme);
+        final Reservation reservation = new Reservation(id, user, LocalDate.now(), reservationTime, theme);
 
         // when
         final boolean result = reservation.existId();
 
         // then
         assertThat(result).isEqualTo(expected);
-    }
-
-    @DisplayName("25자 이하의 이름을 사용할 수 있다.")
-    @Test
-    void test2() {
-        final String nameLength25 = "aaaaaaaaaabbbbbbbbbbccc25";
-        final Name name = new Name(nameLength25);
-        final Theme theme = new Theme(1L, "공포", "우테코 공포",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-
-        assertThatCode(() -> new Reservation(1L, name, LocalDate.now(), new ReservationTime(1L, LocalTime.now()),
-                theme)).doesNotThrowAnyException();
     }
 
     @DisplayName("예약 날짜는 현재보다 미래여야 한다.")
@@ -58,8 +46,9 @@ class ReservationTest {
         final Theme theme = new Theme(1L, "공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         final ReservationTime reservationTime = new ReservationTime(1L, future.toLocalTime());
-        final Reservation reservation = new Reservation(1L, new Name("예약"), future.toLocalDate(), reservationTime,
-                theme);
+        final User user = mock(User.class);
+
+        final Reservation reservation = new Reservation(1L, user, future.toLocalDate(), reservationTime, theme);
 
         // when & then
         assertThatCode(() -> reservation.validateNotPastReservation(now)).doesNotThrowAnyException();
@@ -75,8 +64,9 @@ class ReservationTest {
         final Theme theme = new Theme(1L, "공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         final ReservationTime reservationTime = new ReservationTime(1L, pastDay.toLocalTime());
-        final Reservation reservation = new Reservation(1L, new Name("예약"), pastDay.toLocalDate(), reservationTime,
-                theme);
+        final User user = mock(User.class);
+
+        final Reservation reservation = new Reservation(1L, user, pastDay.toLocalDate(), reservationTime, theme);
 
         // when & then
         assertThatThrownBy(() -> reservation.validateNotPastReservation(now)).isInstanceOf(

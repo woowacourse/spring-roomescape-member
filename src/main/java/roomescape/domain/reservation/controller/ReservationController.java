@@ -3,6 +3,8 @@ package roomescape.domain.reservation.controller;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,16 +18,18 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.auth.config.AuthenticationPrincipal;
 import roomescape.domain.auth.dto.LoginUserDto;
 import roomescape.domain.reservation.dto.BookedReservationTimeResponse;
-import roomescape.domain.reservation.dto.ReservationRequest;
+import roomescape.domain.reservation.dto.ReservationCreateRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.service.ReservationService;
 
+@Slf4j
 @RequestMapping("/reservations")
 @RestController
 public class ReservationController {
 
     private final ReservationService reservationService;
 
+    @Autowired
     public ReservationController(final ReservationService reservationService) {
         this.reservationService = reservationService;
     }
@@ -35,8 +39,7 @@ public class ReservationController {
             @RequestParam(value = "themeId", required = false) final Long themeId,
             @RequestParam(value = "memberId", required = false) final Long memberId,
             @RequestParam(value = "dataFrom", required = false) final LocalDate dataFrom,
-            @RequestParam(value = "dataTo", required = false) final LocalDate dataTo
-    ) {
+            @RequestParam(value = "dataTo", required = false) final LocalDate dataTo) {
         final List<ReservationResponse> response = reservationService.getAll(themeId, memberId, dataFrom, dataTo);
 
         return ResponseEntity.ok(response);
@@ -51,9 +54,9 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> create(@Valid @RequestBody final ReservationRequest request,
+    public ResponseEntity<ReservationResponse> create(@Valid @RequestBody final ReservationCreateRequest request,
                                                       @AuthenticationPrincipal final LoginUserDto userDto) {
-        final ReservationResponse response = reservationService.create(request);
+        final ReservationResponse response = reservationService.create(request, userDto.id());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);

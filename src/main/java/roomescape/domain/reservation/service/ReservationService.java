@@ -7,15 +7,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
-import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.repository.UserRepository;
 import roomescape.domain.reservation.dto.BookedReservationTimeResponse;
-import roomescape.domain.reservation.dto.ReservationRequest;
+import roomescape.domain.reservation.dto.ReservationCreateRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
 import roomescape.domain.reservation.entity.Reservation;
@@ -25,6 +26,7 @@ import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.repository.ThemeRepository;
 
+@Slf4j
 @Service
 public class ReservationService {
 
@@ -44,22 +46,21 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationResponse> getAll(final Long themeId, final Long memberId, final LocalDate dateFrom,
+    public List<ReservationResponse> getAll(final Long themeId, final Long userId, final LocalDate dateFrom,
                                             final LocalDate dateTo) {
-        if (hasNoArguments(themeId, memberId, dateFrom, dateTo)) {
+        if (hasNoIdArguments(themeId, userId) && hasNoDateArguments(dateFrom, dateTo)) {
             return getAllReservationResponses(reservationRepository.findAll());
         }
 
-        final String name = userRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 회원이 존재하지 않습니다! id = " + memberId))
-                .getName();
-
-        return getAllReservationResponses(reservationRepository.findReservations(themeId, name, dateFrom, dateTo));
+        return getAllReservationResponses(reservationRepository.findReservations(themeId, userId, dateFrom, dateTo));
     }
 
-    private boolean hasNoArguments(final Long themeId, final Long memberId, final LocalDate dateFrom,
-                                   final LocalDate dateTo) {
-        return themeId == null && memberId == null && dateFrom == null && dateTo == null;
+    private boolean hasNoIdArguments(final Long themeId, final Long memberId) {
+        return themeId == null && memberId == null;
+    }
+
+    private boolean hasNoDateArguments(final LocalDate dateFrom, final LocalDate dateTo) {
+        return dateFrom == null && dateTo == null;
     }
 
     private List<ReservationResponse> getAllReservationResponses(final List<Reservation> reservationRepository) {
@@ -69,12 +70,16 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse create(final ReservationRequest request) {
+    public ReservationResponse create(final ReservationCreateRequest request, final Long userId) {
         if (reservationRepository.existsByDateAndTimeId(request.date(), request.timeId())) {
             throw new AlreadyInUseException("해당 예약은 이미 존재합니다!");
         }
+        log.info("유저 아이디 : {}", userId);
 
-        final Reservation reservation = getReservation(request);
+        final User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 유저가 존재하지 않습니다!"));
+
+        final Reservation reservation = getReservation(request, user);
         reservation.validateNotPastReservation(LocalDateTime.now());
 
         final Reservation savedReservation = reservationRepository.save(reservation);
@@ -82,22 +87,21 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
-    private Reservation getReservation(final ReservationRequest request) {
+    private Reservation getReservation(final ReservationCreateRequest request, final User user) {
         final ReservationTime reservationTime = getReservationTime(request);
         final Theme theme = getTheme(request);
-        final Name name = new Name(request.name());
 
-        return Reservation.withoutId(name, request.date(), reservationTime, theme);
+        return Reservation.withoutId(user, request.date(), reservationTime, theme);
     }
 
-    private ReservationTime getReservationTime(final ReservationRequest request) {
+    private ReservationTime getReservationTime(final ReservationCreateRequest request) {
         final Long timeId = request.timeId();
 
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new EntityNotFoundException("reservationsTime not found id =" + timeId));
     }
 
-    private Theme getTheme(final ReservationRequest request) {
+    private Theme getTheme(final ReservationCreateRequest request) {
         final Long themeId = request.themeId();
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> new EntityNotFoundException("theme not found id =" + themeId));

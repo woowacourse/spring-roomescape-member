@@ -18,10 +18,12 @@ import org.springframework.context.annotation.Import;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Roles;
+import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.repository.UserRepository;
 import roomescape.domain.auth.repository.impl.UserDao;
 import roomescape.domain.reservation.dto.BookedReservationTimeResponse;
-import roomescape.domain.reservation.dto.ReservationRequest;
+import roomescape.domain.reservation.dto.ReservationCreateRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
 import roomescape.domain.reservation.dto.ThemeResponse;
@@ -74,8 +76,12 @@ public class ReservationServiceIntegrationTest {
         final ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
 
         final LocalDate date = LocalDate.of(2024, 4, 29);
+
         final Name name = new Name("꾹");
-        reservationRepository.save(Reservation.withoutId(name, date, savedTime, savedTheme));
+        final User user = User.withoutId(name, "admin@naver.com", "1234", Roles.USER);
+        final User savedUser = userRepository.save(user);
+
+        reservationRepository.save(Reservation.withoutId(savedUser, date, savedTime, savedTheme));
 
         // when
         final List<ReservationResponse> response = reservationService.getAll(null, null, null, null);
@@ -96,7 +102,6 @@ public class ReservationServiceIntegrationTest {
     @Test
     void test3() {
         // given
-        final String name = "꾹";
 
         final Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         final Long themeId = savedTheme.getId();
@@ -105,18 +110,23 @@ public class ReservationServiceIntegrationTest {
         final ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
         final Long timeId = savedTime.getId();
 
+        final Name name = new Name("꾹");
+        final User user = User.withoutId(name, "admin@naver.com", "1234", Roles.USER);
+        final Long userId = userRepository.save(user)
+                .getId();
+
         final LocalDate date = nextDay();
 
-        final ReservationRequest requestDto = new ReservationRequest(name, date, timeId, themeId);
+        final ReservationCreateRequest requestDto = new ReservationCreateRequest(date, timeId, themeId);
 
         // when
-        final ReservationResponse result = reservationService.create(requestDto);
+        final ReservationResponse result = reservationService.create(requestDto, userId);
 
         // then
         final SoftAssertions softAssertions = new SoftAssertions();
 
         softAssertions.assertThat(result.name())
-                .isEqualTo(name);
+                .isEqualTo(name.getName());
         softAssertions.assertThat(result.date())
                 .isEqualTo(date);
         softAssertions.assertThat(result.time())
@@ -137,8 +147,6 @@ public class ReservationServiceIntegrationTest {
     @Test
     void test4() {
         // given
-        final String name = "꾹";
-
         final Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         final Long themeId = savedTheme.getId();
 
@@ -147,19 +155,23 @@ public class ReservationServiceIntegrationTest {
         final Long timeId = savedTime.getId();
         final LocalDate date = nextDay();
 
-        final ReservationRequest requestDto = new ReservationRequest(name, date, timeId, themeId);
-        reservationService.create(requestDto);
+        final Name name = new Name("꾹");
+        final User user = User.withoutId(name, "admin@naver.com", "1234", Roles.USER);
+        final Long userId = userRepository.save(user)
+                .getId();
+
+        final ReservationCreateRequest requestDto = new ReservationCreateRequest(date, timeId, themeId);
+        reservationService.create(requestDto, userId);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(requestDto)).isInstanceOf(AlreadyInUseException.class);
+        assertThatThrownBy(() -> reservationService.create(requestDto, userId)).isInstanceOf(
+                AlreadyInUseException.class);
     }
 
     @DisplayName("과거 날짜에 예약을 추가하면 예외가 발생한다.")
     @Test
     void test5() {
         // given
-        final String name = "꾹";
-
         final Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         final Long themeId = savedTheme.getId();
 
@@ -170,10 +182,16 @@ public class ReservationServiceIntegrationTest {
         final ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(pastTime));
         final Long timeId = savedTime.getId();
 
-        final ReservationRequest requestDto = new ReservationRequest(name, date, timeId, themeId);
+        final Name name = new Name("꾹");
+        final User user = User.withoutId(name, "admin@naver.com", "1234", Roles.USER);
+        final Long userId = userRepository.save(user)
+                .getId();
+
+        final ReservationCreateRequest requestDto = new ReservationCreateRequest(date, timeId, themeId);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(requestDto)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> reservationService.create(requestDto, userId)).isInstanceOf(
+                IllegalArgumentException.class);
     }
 
     @DisplayName("존재하지 않는 예약 시간 ID로 저장하면 예외를 반환한다.")
@@ -185,14 +203,20 @@ public class ReservationServiceIntegrationTest {
         final LocalDate date = nextDay();
 
         final Long notExistId = 1000L;
-        final ReservationRequest requestDto = new ReservationRequest("꾹", date, notExistId, themeId);
+        final ReservationCreateRequest requestDto = new ReservationCreateRequest(date, notExistId, themeId);
 
-        assertThatThrownBy(() -> reservationService.create(requestDto)).isInstanceOf(EntityNotFoundException.class);
+        final Name name = new Name("꾹");
+        final User user = User.withoutId(name, "admin@naver.com", "1234", Roles.USER);
+        final Long userId = userRepository.save(user)
+                .getId();
+
+        assertThatThrownBy(() -> reservationService.create(requestDto, userId)).isInstanceOf(
+                EntityNotFoundException.class);
     }
 
-    @DisplayName("존재하지 않는 테마 ID로 저장하면 예외를 반환한다.")
+    @DisplayName("존재하지 않는 유저 ID로 저장하면 예외를 반환한다.")
     @Test
-    void notExistThemeId() {
+    void notExistUserIdTest() {
         final LocalDate date = now.toLocalDate()
                 .plusDays(1);
 
@@ -200,10 +224,35 @@ public class ReservationServiceIntegrationTest {
         final ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
         final Long timeId = savedTime.getId();
 
-        final Long notExistId = 1000L;
-        final ReservationRequest requestDto = new ReservationRequest("꾹", date, timeId, notExistId);
+        final Long themeId = themeRepository.save(Theme.withoutId("테마", "설명", "wwww.um.com"))
+                .getId();
+        final ReservationCreateRequest requestDto = new ReservationCreateRequest(date, timeId, themeId);
 
-        assertThatThrownBy(() -> reservationService.create(requestDto)).isInstanceOf(EntityNotFoundException.class);
+        final Long userId = 1L;
+        assertThatThrownBy(() -> reservationService.create(requestDto, userId)).isInstanceOf(
+                EntityNotFoundException.class);
+    }
+
+    @DisplayName("존재하지 않는 테마 ID로 저장하면 예외를 반환한다.")
+    @Test
+    void notExistThemeIdTest() {
+        final LocalDate date = now.toLocalDate()
+                .plusDays(1);
+
+        final LocalTime time = LocalTime.of(8, 0);
+        final ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
+        final Long timeId = savedTime.getId();
+
+        final Name name = new Name("꾹");
+        final User user = User.withoutId(name, "admin@naver.com", "1234", Roles.USER);
+        final Long userId = userRepository.save(user)
+                .getId();
+
+        final Long notExistId = 1000L;
+        final ReservationCreateRequest requestDto = new ReservationCreateRequest(date, timeId, notExistId);
+
+        assertThatThrownBy(() -> reservationService.create(requestDto, userId)).isInstanceOf(
+                EntityNotFoundException.class);
     }
 
     @DisplayName("예약을 삭제한다")
@@ -218,8 +267,10 @@ public class ReservationServiceIntegrationTest {
         final LocalDate date = nextDay();
         final Name name = new Name("꾹");
 
+        final User user = userRepository.save(User.withoutId(name, "admin@naver.com", "1234", Roles.USER));
+
         final Reservation savedReservation = reservationRepository.save(
-                Reservation.withoutId(name, date, savedTime, savedTheme));
+                Reservation.withoutId(user, date, savedTime, savedTheme));
 
         final Long id = savedReservation.getId();
 
@@ -250,8 +301,9 @@ public class ReservationServiceIntegrationTest {
         final Long themeId = savedTheme.getId();
 
         final Name name = new Name("꾹");
+        final User user = userRepository.save(User.withoutId(name, "admin@naver.com", "1234", Roles.USER));
 
-        reservationRepository.save(Reservation.withoutId(name, date, reservationTime1, savedTheme));
+        reservationRepository.save(Reservation.withoutId(user, date, reservationTime1, savedTheme));
 
         // when
         final List<BookedReservationTimeResponse> responses = reservationService.getAvailableTimes(date, themeId);

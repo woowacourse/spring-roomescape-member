@@ -16,6 +16,10 @@ import org.springframework.context.annotation.Import;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Roles;
+import roomescape.domain.auth.entity.User;
+import roomescape.domain.auth.repository.UserRepository;
+import roomescape.domain.auth.repository.impl.UserDao;
 import roomescape.domain.reservation.dto.ThemeRequest;
 import roomescape.domain.reservation.dto.ThemeResponse;
 import roomescape.domain.reservation.entity.Reservation;
@@ -29,7 +33,7 @@ import roomescape.domain.reservation.repository.impl.ReservationTimeDAO;
 import roomescape.domain.reservation.repository.impl.ThemeDAO;
 
 @JdbcTest
-@Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class})
+@Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class, UserDao.class})
 class ThemeServiceIntegrationTest {
 
     @Autowired
@@ -40,6 +44,9 @@ class ThemeServiceIntegrationTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private ThemeService themeService;
 
@@ -132,7 +139,9 @@ class ThemeServiceIntegrationTest {
 
         final LocalDate date = LocalDate.of(2024, 4, 29);
         final Name name = new Name("꾹");
-        reservationRepository.save(Reservation.withoutId(name, date, savedTime, savedTheme));
+        final User user = userRepository.save(User.withoutId(name, "admin@naver.com", "1234", Roles.USER));
+
+        reservationRepository.save(Reservation.withoutId(user, date, savedTime, savedTheme));
 
         // when & then
         assertThatThrownBy(() -> themeService.delete(themeId)).isInstanceOf(AlreadyInUseException.class);
@@ -150,12 +159,14 @@ class ThemeServiceIntegrationTest {
         final Theme theme2 = themeRepository.save(Theme.withoutId("테마2", "테마2", "www.m.com"));
         final Theme theme3 = themeRepository.save(Theme.withoutId("테마3", "테마3", "www.m.com"));
         final Name name = new Name("꾹");
-        reservationRepository.save(Reservation.withoutId(name, date.minusDays(2), reservationTime, theme1));
-        reservationRepository.save(Reservation.withoutId(name, date.minusDays(3), reservationTime, theme1));
-        reservationRepository.save(Reservation.withoutId(name, date.minusDays(4), reservationTime, theme2));
-        reservationRepository.save(Reservation.withoutId(name, date.minusDays(1), reservationTime, theme1));
-        reservationRepository.save(Reservation.withoutId(name, date.minusDays(5), reservationTime, theme2));
-        reservationRepository.save(Reservation.withoutId(name, date.minusDays(6), reservationTime, theme3));
+        final User user = userRepository.save(User.withoutId(name, "admin@naver.com", "1234", Roles.USER));
+
+        reservationRepository.save(Reservation.withoutId(user, date.minusDays(2), reservationTime, theme1));
+        reservationRepository.save(Reservation.withoutId(user, date.minusDays(3), reservationTime, theme1));
+        reservationRepository.save(Reservation.withoutId(user, date.minusDays(4), reservationTime, theme2));
+        reservationRepository.save(Reservation.withoutId(user, date.minusDays(1), reservationTime, theme1));
+        reservationRepository.save(Reservation.withoutId(user, date.minusDays(5), reservationTime, theme2));
+        reservationRepository.save(Reservation.withoutId(user, date.minusDays(6), reservationTime, theme3));
 
         // when
         final List<ThemeResponse> responses = themeService.getPopularThemes();

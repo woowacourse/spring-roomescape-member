@@ -17,6 +17,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Roles;
+import roomescape.domain.auth.entity.User;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
@@ -40,44 +42,48 @@ public class ReservationDAO implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         final String sql = """
-                  select rs.id as reservation_id, rs.name, rs.date,
-                       rst.id as reservation_time_id, rst.start_at,
-                       th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
+                select rs.id as reservation_id, rs.user_id, rs.date,
+                rst.id as reservation_time_id, rst.start_at,
+                th.id as theme_id, th.name as theme_name, th.description, th.thumbnail,
+                u.email, u.name as user_name, u.password, u.role
                 from reservation rs
                 INNER JOIN reservation_time rst ON rs.time_id = rst.id
                 INNER JOIN theme th ON rs.theme_id = th.id
+                INNER JOIN users u ON rs.user_id = u.id
                 """;
 
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> reservationOf(resultSet));
     }
 
     @Override
-    public List<Reservation> findReservations(final Long themeId, final String name, final LocalDate dateFrom,
+    public List<Reservation> findReservations(final Long themeId, final Long userId, final LocalDate dateFrom,
                                               final LocalDate dateTo) {
         final String sql = """
-                select rs.id as reservation_id, rs.name, rs.date,
-                       rst.id as reservation_time_id, rst.start_at,
-                       th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
+                select rs.id as reservation_id, rs.user_id, rs.date,
+                rst.id as reservation_time_id, rst.start_at,
+                th.id as theme_id, th.name as theme_name, th.description, th.thumbnail,
+                u.email, u.name as user_name, u.password, u.role
                 from reservation rs
                 INNER JOIN reservation_time rst ON rs.time_id = rst.id
                 INNER JOIN theme th ON rs.theme_id = th.id
+                INNER JOIN users u ON rs.user_id = u.id
                 WHERE (:themeId IS NULL OR th.id = :themeId)
-                  AND (:name IS NULL OR rs.name = :name)
+                  AND (:user_id IS NULL OR rs.user_id = :user_id)
                   AND (:dateFrom IS NULL OR rs.date >= :dateFrom)
                   AND (:dateTo IS NULL OR rs.date <= :dateTo)
                 """;
 
-        final Map<String, Object> params = findAllParamsOf(themeId, name, dateFrom, dateTo);
+        final Map<String, Object> params = findAllParamsOf(themeId, userId, dateFrom, dateTo);
 
         return jdbcTemplate.query(sql, params, (resultSet, rowNum) -> reservationOf(resultSet));
     }
 
-    private Map<String, Object> findAllParamsOf(final Long themeId, final String name, final LocalDate dateFrom,
+    private Map<String, Object> findAllParamsOf(final Long themeId, final Long userId, final LocalDate dateFrom,
                                                 final LocalDate dateTo) {
         final HashMap<String, Object> params = new HashMap<>();
 
         params.put("themeId", themeId);
-        params.put("name", name);
+        params.put("user_id", userId);
         params.put("dateFrom", dateFrom);
         params.put("dateTo", dateTo);
 
@@ -87,12 +93,14 @@ public class ReservationDAO implements ReservationRepository {
     @Override
     public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
         final String sql = """
-                select rs.id as reservation_id, rs.name, rs.date,
-                    rst.id as reservation_time_id, rst.start_at,
-                    th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
+                select rs.id as reservation_id, rs.user_id, rs.date,
+                rst.id as reservation_time_id, rst.start_at,
+                th.id as theme_id, th.name as theme_name, th.description, th.thumbnail,
+                u.email, u.name as user_name, u.password, u.role
                 from reservation rs
                 inner join reservation_time rst on rs.time_id = rst.id
                 inner join theme th on rs.theme_id = th.id
+                INNER JOIN users u ON rs.user_id = u.id
                 where th.id = :theme_id and rs.date = :date
                 """;
 
@@ -156,8 +164,8 @@ public class ReservationDAO implements ReservationRepository {
 
     private Reservation update(final Reservation reservation) {
         final String updateReservationSql = """
-                update reservation 
-                set name = :name, date = :date, time_id = :time_id, theme_id = :theme_id
+                update reservation
+                set user_id = :user_id, date = :date, time_id = :time_id, theme_id = :theme_id
                 where id =:id
                 """;
 
@@ -165,6 +173,8 @@ public class ReservationDAO implements ReservationRepository {
                 .addValue("date", reservation.getReservationDate())
                 .addValue("time_id", reservation.getReservationTimeId())
                 .addValue("theme_id", reservation.getThemeId())
+                .addValue("user_id", reservation.getUser()
+                        .getId())
                 .addValue("id", reservation.getId());
 
         final int updatedRowCount = jdbcTemplate.update(updateReservationSql, params);
@@ -180,23 +190,27 @@ public class ReservationDAO implements ReservationRepository {
         final MapSqlParameterSource params = new MapSqlParameterSource().addValue("name", reservation.getName())
                 .addValue("date", reservation.getReservationDate())
                 .addValue("time_id", reservation.getReservationTimeId())
-                .addValue("theme_id", reservation.getThemeId());
+                .addValue("theme_id", reservation.getThemeId())
+                .addValue("user_id", reservation.getUser()
+                        .getId());
 
         final long id = jdbcInsert.executeAndReturnKey(params)
                 .longValue();
 
-        return new Reservation(id, reservation.getReservationName(), reservation.getReservationDate(),
+        return new Reservation(id, reservation.getUser(), reservation.getReservationDate(),
                 reservation.getReservationTime(), reservation.getTheme());
     }
 
     private Optional<Reservation> reservationOf(final Map<String, Long> params) {
         final String sql = """
-                select rs.id as reservation_id, rs.name as name, rs.date,
-                       rst.id as reservation_time_id, rst.start_at,
-                       th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
+                select rs.id as reservation_id, rs.user_id, rs.date,
+                rst.id as reservation_time_id, rst.start_at,
+                th.id as theme_id, th.name as theme_name, th.description, th.thumbnail,
+                u.email, u.name as user_name, u.password, u.role
                 from reservation rs
                 INNER JOIN reservation_time rst ON rs.time_id = rst.id
                 INNER JOIN theme th ON rs.theme_id = th.id
+                INNER JOIN users u ON rs.user_id = u.id
                 WHERE rs.id = :reservation_id
                 """;
 
@@ -212,10 +226,20 @@ public class ReservationDAO implements ReservationRepository {
     private Reservation reservationOf(final ResultSet resultSet) throws SQLException {
         return Reservation.builder()
                 .id(resultSet.getLong("reservation_id"))
-                .reservationName(new Name(resultSet.getString("name")))
+                .user(userOf(resultSet))
                 .reservationDate(LocalDate.parse(resultSet.getString("date")))
                 .reservationTime(reservationTimeOf(resultSet))
                 .theme(themeOf(resultSet))
+                .build();
+    }
+
+    private User userOf(final ResultSet resultSet) throws SQLException {
+        return User.builder()
+                .id(resultSet.getLong("user_id"))
+                .email(resultSet.getString("email"))
+                .username(new Name(resultSet.getString("user_name")))
+                .password(resultSet.getString("password"))
+                .role(Roles.from(resultSet.getString("role")))
                 .build();
     }
 
