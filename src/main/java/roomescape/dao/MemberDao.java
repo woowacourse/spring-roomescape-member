@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
-import roomescape.domain.Theme;
 
 @Repository
 public class MemberDao {
@@ -43,6 +42,4 @@ public class MemberDao {
             return Optional.empty();
         }
     }
-
-
 }
