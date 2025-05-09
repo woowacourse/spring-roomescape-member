@@ -2,9 +2,9 @@ package roomescape.service;
 
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-import roomescape.domain.Member;
+import roomescape.domain.LoginMember;
+import roomescape.dto.member.LoginMemberResponse;
 import roomescape.dto.member.LoginRequest;
-import roomescape.dto.member.MemberResponse;
 import roomescape.dto.member.TokenResponse;
 import roomescape.exception.InvalidAuthorizationException;
 import roomescape.repository.MemberRepository;
@@ -31,21 +31,21 @@ public class LoginService {
     }
 
     private boolean checkInvalidLogin(String email, String password) {
-        Optional<Member> member = memberRepository.findByEmailAndPassword(email, password);
+        Optional<LoginMember> member = memberRepository.findByEmailAndPassword(email, password);
         return member.map(value -> !email.equals(value.getEmail()) || !password.equals(value.getPassword()))
                 .orElse(true);
     }
 
-    public MemberResponse findMember(String email) {
-        Optional<Member> member = memberRepository.findByEmail(email);
-        return member.map(value -> new MemberResponse(value.getEmail()))
-                .orElseThrow(() -> new InvalidAuthorizationException("[ERROR] 유효하지 않은 가입 정보입니다."));
-    }
-
-    public MemberResponse findMemberByToken(String token) {
+    public LoginMemberResponse findMemberByToken(String token) {
         if (token == null || token.isBlank()) throw new InvalidAuthorizationException("[ERROR] 로그인이 필요합니다.");
         if (!jwtTokenProvider.validateToken(token)) throw new InvalidAuthorizationException("[ERROR] 로그인 상태가 만료되었습니다.");
         String payload = jwtTokenProvider.getPayload(token);
         return findMember(payload);
+    }
+
+    private LoginMemberResponse findMember(String email) {
+        Optional<LoginMember> member = memberRepository.findByEmail(email);
+        return member.map(value -> new LoginMemberResponse(value.getEmail()))
+                .orElseThrow(() -> new InvalidAuthorizationException("[ERROR] 유효하지 않은 가입 정보입니다."));
     }
 }

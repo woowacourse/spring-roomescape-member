@@ -20,3 +20,6 @@ INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('가이온', '20
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('가이온', '2025-04-28', 1, 1);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('가이온', '2025-04-28', 2, 1);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('가이온', '2025-04-30', 2, 5);
+
+INSERT INTO member (name, email, password, role) VALUES ('어드민', 'admin@gmail.com', 'testtest', 'ADMIN');
+INSERT INTO member (name, email, password, role) VALUES ('회원', 'user@gmail.com', 'testtest', 'USER');

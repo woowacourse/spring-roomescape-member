@@ -1,17 +1,21 @@
 package roomescape.domain;
 
-public class Member {
+public class LoginMember {
 
+    private final Long id;
     private final String name;
     private final String email;
     private final String password;
+    private final String role;
 
-    public Member(String name, String email, String password) {
+    public LoginMember(Long id, String name, String email, String password, String role) {
         validateName(name);
 
+        this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     private void validateName(String name) {

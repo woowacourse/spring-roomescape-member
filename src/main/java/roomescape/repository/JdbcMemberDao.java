@@ -9,17 +9,19 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Member;
+import roomescape.domain.LoginMember;
 import roomescape.domain.RegistrationDetails;
 
 @Repository
 public class JdbcMemberDao implements MemberRepository {
 
-    private static final RowMapper<Member> rowMapper = ((rs, rowNum) -> {
+    private static final RowMapper<LoginMember> rowMapper = ((rs, rowNum) -> {
+        Long id = rs.getLong("id");
         String name = rs.getString("name");
         String email = rs.getString("email");
         String password = rs.getString("password");
-        return new Member(name, email, password);
+        String role = rs.getString("role");
+        return new LoginMember(id, name, email, password, role);
     });
 
     private final JdbcTemplate jdbcTemplate;
@@ -43,7 +45,7 @@ public class JdbcMemberDao implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findByEmail(String email) {
+    public Optional<LoginMember> findByEmail(String email) {
         String sql = "SELECT * FROM member WHERE email = ?";
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, email));
@@ -53,7 +55,7 @@ public class JdbcMemberDao implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findByEmailAndPassword(String email, String password) {
+    public Optional<LoginMember> findByEmailAndPassword(String email, String password) {
         String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, email, password));
