@@ -1,6 +1,8 @@
 package roomescape.auth.infrastructure;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -10,6 +12,7 @@ import java.util.Base64;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.auth.application.AuthorizationException;
 import roomescape.auth.domain.LoginMember;
 
 @Component
@@ -42,5 +45,42 @@ public class JwtTokenProvider {
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String extractPayload(String token) {
+        validateValidToken(token);
+
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
+    private void validateValidToken(final String token) {
+        validateTokenExists(token);
+        validateTokenIntegrityAndExpiration(token);
+    }
+
+    private void validateTokenExists(final String token) {
+        if (token == null || token.isBlank()) {
+            throw new AuthorizationException("로그인 토큰이 존재하지 않습니다");
+        }
+    }
+
+    private void validateTokenIntegrityAndExpiration(String token) {
+        try {
+            Jws<Claims> claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+
+            if (claims.getBody().getExpiration().before(new Date())) {
+                throw new AuthorizationException("토큰이 만료 되었습니다");
+            }
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new AuthorizationException("서명이 올바르지 않거나 잘못된 토큰입니다");
+        }
     }
 }
