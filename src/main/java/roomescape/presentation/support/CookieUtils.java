@@ -33,4 +33,14 @@ public class CookieUtils {
 
         return foundCookie.getValue();
     }
+
+    public boolean containsCookieForToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies == null) {
+            return false;
+        }
+        return Arrays.stream(cookies)
+                .anyMatch(cookie -> cookie.getName().equals("token"));
+    }
 }
