@@ -22,6 +22,10 @@ public class Member {
         return new Member(newPrimaryKey, member.name, member.email, member.password);
     }
 
+    public boolean checkInvalidLogin(String email, String password) {
+        return !(this.email.equals(email) || this.password.equals(password));
+    }
+
     private void validate(String name, String email, String password) {
         if (name == null || name.isBlank()) {
             throw new MemberValidationException("이름은 비어있을 수 없습니다.");
@@ -63,5 +67,15 @@ public class Member {
     @Override
     public int hashCode() {
         return Objects.hashCode(getId());
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }

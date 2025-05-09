@@ -1,6 +1,7 @@
 package roomescape.repository.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -8,6 +9,7 @@ import roomescape.domain.Member;
 import roomescape.repository.MemberRepository;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class JdbcMemberRepository implements MemberRepository {
@@ -33,5 +35,21 @@ public class JdbcMemberRepository implements MemberRepository {
 
         Long generatedKey = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return Member.generateWithPrimaryKey(member, generatedKey);
+    }
+
+    @Override
+    public Optional<Member> findByEmail(String email) {
+        String query = "SELECT id, name, email, password FROM member WHERE email = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query,
+                    (resultSet, rowNum) -> new Member(
+                            resultSet.getLong("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("email"),
+                            resultSet.getString("password")
+                    ), email));
+        } catch (DataAccessException exception) {
+            return Optional.empty();
+        }
     }
 }

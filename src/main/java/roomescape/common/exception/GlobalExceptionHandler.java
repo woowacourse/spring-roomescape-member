@@ -14,23 +14,29 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> nonExpectedExceptionHandler() {
+    public ResponseEntity<String> nonExpectedExceptionHandler(Exception exception) {
+        System.out.println(exception.getCause().getClass());
         return new ResponseEntity<>("예상하지 못한 예외가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(DomainValidationException.class)
-    public ResponseEntity<String> invalidDomainExceptionHandler(Exception exception) {
+    public ResponseEntity<String> invalidDomainExceptionHandler(DomainValidationException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(InvalidRequestException.class)
-    public ResponseEntity<String> invalidRequestExceptionHandler(Exception exception) {
+    public ResponseEntity<String> invalidRequestExceptionHandler(InvalidRequestException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> notFoundExceptionHandler(NotFoundException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<String> authorizationExceptionHandler(AuthorizationException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

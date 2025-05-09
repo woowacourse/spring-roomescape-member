@@ -1,8 +1,6 @@
 package roomescape.domain;
 
-import roomescape.common.exception.DomainValidationException;
 import roomescape.common.exception.ReservationValidationException;
-import roomescape.common.exception.ThemeValidationException;
 
 import java.time.LocalDate;
 import java.util.Objects;
