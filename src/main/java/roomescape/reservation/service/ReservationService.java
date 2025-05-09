@@ -6,7 +6,7 @@ import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
 import roomescape.member.dao.MemberDao;
-import roomescape.member.domain.LoginMember;
+import roomescape.member.domain.Member;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.service.dto.CreateReservationServiceRequest;
@@ -36,7 +36,7 @@ public class ReservationService {
     public Reservation addReservation(final CreateReservationServiceRequest creation) {
         final ReservationTime reservationTime = findReservationTimeByTimeId(creation.timeId());
         final RoomTheme theme = findThemeByThemeId(creation.themeId());
-        final LoginMember member = findMemberByMemberId(creation.memberId());
+        final Member member = findMemberByMemberId(creation.memberId());
         final Reservation reservation = new Reservation(creation.date(), reservationTime, theme, member);
 
         validatePastDateAndTime(reservation);
@@ -56,7 +56,7 @@ public class ReservationService {
                 .orElseThrow(() -> new NotExistedValueException("존재하지 않는 테마 입니다"));
     }
 
-    private LoginMember findMemberByMemberId(final long memberId) {
+    private Member findMemberByMemberId(final long memberId) {
         return memberDao.findById(memberId)
                 .orElseThrow(() -> new NotExistedValueException("존재하지 않는 멤버 입니다"));
     }

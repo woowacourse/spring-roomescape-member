@@ -11,10 +11,10 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
-import roomescape.theme.domain.RoomTheme;
-import roomescape.member.domain.LoginMember;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.theme.domain.RoomTheme;
 
 @Repository
 public class JdbcReservationDao implements ReservationDao {
@@ -31,7 +31,7 @@ public class JdbcReservationDao implements ReservationDao {
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail")),
 
-            new LoginMember(
+            new Member(
                     resultSet.getLong("member_id"),
                     resultSet.getString("role"),
                     resultSet.getString("name"),

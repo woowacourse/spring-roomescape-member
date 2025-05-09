@@ -6,25 +6,25 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.member.controller.dto.LoginMemberResponse;
-import roomescape.member.service.LoginMemberService;
+import roomescape.member.controller.dto.MemberResponse;
+import roomescape.member.service.MemberService;
 
 @RequestMapping("/members")
 @RestController
-public class LoginMemberController {
+public class MemberController {
 
-    private final LoginMemberService loginMemberService;
+    private final MemberService loginMemberService;
 
-    public LoginMemberController(final LoginMemberService loginMemberService) {
+    public MemberController(final MemberService loginMemberService) {
         this.loginMemberService = loginMemberService;
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<LoginMemberResponse> findAllReservationTimes() {
+    public List<MemberResponse> findAllReservationTimes() {
         return loginMemberService.findAllLoginMembers()
                 .stream()
-                .map(LoginMemberResponse::from)
+                .map(MemberResponse::from)
                 .toList();
     }
 }

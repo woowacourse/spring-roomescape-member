@@ -3,17 +3,17 @@ package roomescape.member.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.member.dao.MemberDao;
-import roomescape.member.domain.LoginMember;
+import roomescape.member.domain.Member;
 
 @Service
-public class LoginMemberService {
+public class MemberService {
     private final MemberDao memberDao;
 
-    public LoginMemberService(final MemberDao memberDao) {
+    public MemberService(final MemberDao memberDao) {
         this.memberDao = memberDao;
     }
 
-    public List<LoginMember> findAllLoginMembers() {
+    public List<Member> findAllLoginMembers() {
         return memberDao.findAll();
     }
 }

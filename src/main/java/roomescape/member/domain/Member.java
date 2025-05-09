@@ -3,7 +3,7 @@ package roomescape.member.domain;
 import roomescape.exception.custom.AuthorizationException;
 import roomescape.exception.custom.InvalidInputException;
 
-public class LoginMember {
+public class Member {
 
     private static final int MAX_LENGTH = 255;
 
@@ -13,11 +13,11 @@ public class LoginMember {
     private final String email;
     private final String password;
 
-    public LoginMember(final long id,
-                       final String role,
-                       final String name,
-                       final String email,
-                       final String password) {
+    public Member(final long id,
+                  final String role,
+                  final String name,
+                  final String email,
+                  final String password) {
         validateInvalidInput(role, name, email, password);
 
         this.id = id;

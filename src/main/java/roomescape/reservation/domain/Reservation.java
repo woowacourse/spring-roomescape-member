@@ -1,10 +1,10 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
-import roomescape.theme.domain.RoomTheme;
 import roomescape.exception.custom.InvalidInputException;
-import roomescape.member.domain.LoginMember;
+import roomescape.member.domain.Member;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.theme.domain.RoomTheme;
 
 public class Reservation {
 
@@ -14,13 +14,13 @@ public class Reservation {
     private final LocalDate date;
     private final ReservationTime time;
     private final RoomTheme theme;
-    private final LoginMember member;
+    private final Member member;
 
     public Reservation(final long id,
                        final LocalDate date,
                        final ReservationTime time,
                        final RoomTheme theme,
-                       final LoginMember member) {
+                       final Member member) {
         validateInvalidInput(date, time, theme, member);
 
         this.id = id;
@@ -33,7 +33,7 @@ public class Reservation {
     public Reservation(final LocalDate date,
                        final ReservationTime reservationTime,
                        final RoomTheme theme,
-                       final LoginMember member) {
+                       final Member member) {
         this(NON_SAVED_STATUS, date, reservationTime, theme, member);
     }
 
@@ -43,12 +43,12 @@ public class Reservation {
     }
 
     private void validateInvalidInput(final LocalDate date, final ReservationTime reservationTime,
-                                      final RoomTheme theme, final LoginMember member) {
+                                      final RoomTheme theme, final Member member) {
         validateNotNull(date, reservationTime, theme, member);
     }
 
     private void validateNotNull(final LocalDate date, final ReservationTime reservationTime,
-                                 final RoomTheme theme, final LoginMember member) {
+                                 final RoomTheme theme, final Member member) {
         if (date == null) {
             throw new InvalidInputException("예약 날짜는 빈 값이 입력될 수 없습니다");
         }
@@ -88,7 +88,7 @@ public class Reservation {
         return theme;
     }
 
-    public LoginMember getMember() {
+    public Member getMember() {
         return member;
     }
 }

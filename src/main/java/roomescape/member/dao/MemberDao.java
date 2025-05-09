@@ -2,13 +2,13 @@ package roomescape.member.dao;
 
 import java.util.List;
 import java.util.Optional;
-import roomescape.member.domain.LoginMember;
+import roomescape.member.domain.Member;
 
 public interface MemberDao {
 
-    List<LoginMember> findAll();
+    List<Member> findAll();
 
-    Optional<LoginMember> findById(long id);
+    Optional<Member> findById(long id);
 
-    Optional<LoginMember> findByEmail(String email);
+    Optional<Member> findByEmail(String email);
 }

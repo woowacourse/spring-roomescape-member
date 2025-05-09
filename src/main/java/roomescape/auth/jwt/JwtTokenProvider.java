@@ -13,7 +13,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.exception.custom.AuthorizationException;
-import roomescape.member.domain.LoginMember;
+import roomescape.member.domain.Member;
 
 @Component
 public class JwtTokenProvider {
@@ -31,7 +31,7 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createToken(LoginMember member) {
+    public String createToken(Member member) {
         Claims claims = Jwts.claims().setSubject(String.valueOf(member.getId()));
 
         Date now = new Date();

@@ -9,7 +9,7 @@ import roomescape.auth.service.dto.CreateTokenServiceRequest;
 import roomescape.exception.custom.AuthorizationException;
 import roomescape.exception.custom.NotExistedValueException;
 import roomescape.member.dao.MemberDao;
-import roomescape.member.domain.LoginMember;
+import roomescape.member.domain.Member;
 
 @Service
 public class AuthService {
@@ -23,13 +23,13 @@ public class AuthService {
     }
 
     public String createToken(CreateTokenServiceRequest request) {
-        LoginMember member = findMemberByEmail(request.email());
+        Member member = findMemberByEmail(request.email());
         member.validateRightPassword(request.password());
 
         return jwtTokenProvider.createToken(member);
     }
 
-    private LoginMember findMemberByEmail(String email) {
+    private Member findMemberByEmail(String email) {
         return memberDao.findByEmail(email)
                 .orElseThrow(() -> new AuthorizationException("존재하지 않는 이메일 입니다"));
     }
@@ -60,7 +60,7 @@ public class AuthService {
         }
     }
 
-    public LoginMember findMember(final String token) {
+    public Member findMember(final String token) {
         validateTokenExisted(token);
         final long memberId = Long.parseLong(jwtTokenProvider.extractPayload(token));
 
