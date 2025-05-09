@@ -86,7 +86,7 @@ class ThemeServiceTest {
     void id값으로_테마를_삭제할떄_예약에서_id가_사용중이라면_예외를_발생시킨다() {
         //given
         themeRepository.create(new Theme("test1", "description1", "thumbnail1"));
-        reservationRepository.create(new CreateReservationQuery(new Member(1L, "test1", "USER", "email", "password"),
+        reservationRepository.create(new CreateReservationQuery(new Member(1L, "test1", MemberRole.USER, "email", "password"),
                 LocalDate.of(2025, 5, 1),
                 new ReservationTime(1L, LocalTime.of(12, 0)),
                 new Theme(1L, "test1", "description1", "thumbnail1")));

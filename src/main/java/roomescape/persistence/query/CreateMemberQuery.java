@@ -1,4 +1,6 @@
 package roomescape.persistence.query;
 
-public record CreateMemberQuery(String name, String email, String password) {
+import roomescape.domain.MemberRole;
+
+public record CreateMemberQuery(String name, MemberRole role, String email, String password) {
 }

@@ -31,7 +31,7 @@ public class FakeMemberRepository implements MemberRepository {
 
     @Override
     public Long create(final CreateMemberQuery createMemberQuery) {
-        Member newMember = new Member(++id, createMemberQuery.name(), "USER", createMemberQuery.email(), createMemberQuery.password());
+        Member newMember = new Member(++id, createMemberQuery.name(), createMemberQuery.role(), createMemberQuery.email(), createMemberQuery.password());
         members.add(newMember);
         return id;
     }

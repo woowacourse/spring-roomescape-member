@@ -3,10 +3,7 @@ package roomescape.service;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.*;
 import roomescape.fake.FakeMemberRepository;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
@@ -45,7 +42,7 @@ class ReservationServiceTest {
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
         reservationTimeRepository.create(reservationTime);
         themeRepository.create(theme);
-        memberRepository.create(new CreateMemberQuery("name", "email", "password"));
+        memberRepository.create(new CreateMemberQuery("name", MemberRole.USER, "email", "password"));
         CreateReservationParam createReservationParam = new CreateReservationParam(1L, RESERVATION_DATE, 1L, 1L);
 
         //when
@@ -53,14 +50,14 @@ class ReservationServiceTest {
 
         //then
         assertThat(reservationRepository.findById(createdId))
-                .hasValue(new Reservation(1L, new Member(1L, "name", "USER", "email", "password"), RESERVATION_DATE, reservationTime, theme));
+                .hasValue(new Reservation(1L, new Member(1L, "name", MemberRole.USER, "email", "password"), RESERVATION_DATE, reservationTime, theme));
     }
 
     @Test
     void 예약을_생성할때_timeId가_데이터베이스에_존재하지_않는다면_예외가_발생한다() {
         //give
         themeRepository.create(new Theme(1L, "test", "description", "thumbnail"));
-        memberRepository.create(new CreateMemberQuery("name", "email", "password"));
+        memberRepository.create(new CreateMemberQuery("name", MemberRole.USER, "email", "password"));
         CreateReservationParam createReservationParam = new CreateReservationParam(1L, RESERVATION_DATE, 1L, 1L);
 
         //when & then
@@ -76,9 +73,9 @@ class ReservationServiceTest {
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
         reservationTimeRepository.create(reservationTime);
         themeRepository.create(theme);
-        memberRepository.create(new CreateMemberQuery("name", "email", "password"));
+        memberRepository.create(new CreateMemberQuery("name", MemberRole.USER, "email", "password"));
 
-        reservationRepository.create(new CreateReservationQuery(new Member(1L, "name", "USER", "email", "password"), RESERVATION_DATE, reservationTime, theme));
+        reservationRepository.create(new CreateReservationQuery(new Member(1L, "name", MemberRole.USER, "email", "password"), RESERVATION_DATE, reservationTime, theme));
 
         //when
         reservationService.deleteById(1L);
@@ -96,12 +93,12 @@ class ReservationServiceTest {
         themeRepository.create(theme);
         reservationTimeRepository.create(reservationTime1);
         reservationTimeRepository.create(reservationTime2);
-        memberRepository.create(new CreateMemberQuery("name1", "email1", "password1"));
-        memberRepository.create(new CreateMemberQuery("name2", "email1", "password2"));
+        memberRepository.create(new CreateMemberQuery("name1", MemberRole.USER, "email1", "password1"));
+        memberRepository.create(new CreateMemberQuery("name2", MemberRole.USER, "email1", "password2"));
 
 
-        reservationRepository.create(new CreateReservationQuery(new Member(1L, "name1", "USER", "email1", "password1"), RESERVATION_DATE, reservationTime1, theme));
-        reservationRepository.create(new CreateReservationQuery(new Member(2L ,"name2", "USER", "email2", "password2"), RESERVATION_DATE, reservationTime2, theme));
+        reservationRepository.create(new CreateReservationQuery(new Member(1L, "name1", MemberRole.USER, "email1", "password1"), RESERVATION_DATE, reservationTime1, theme));
+        reservationRepository.create(new CreateReservationQuery(new Member(2L ,"name2", MemberRole.USER, "email2", "password2"), RESERVATION_DATE, reservationTime2, theme));
 
         //when
         List<ReservationResult> reservationResults = reservationService.findAll();
@@ -124,9 +121,9 @@ class ReservationServiceTest {
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
         reservationTimeRepository.create(reservationTime);
         themeRepository.create(theme);
-        memberRepository.create(new CreateMemberQuery("name1", "email1", "password1"));
+        memberRepository.create(new CreateMemberQuery("name1", MemberRole.USER, "email1", "password1"));
 
-        reservationRepository.create(new CreateReservationQuery(new Member(1L, "name1", "USER", "email1", "password1"), RESERVATION_DATE, reservationTime, theme));
+        reservationRepository.create(new CreateReservationQuery(new Member(1L, "name1", MemberRole.USER, "email1", "password1"), RESERVATION_DATE, reservationTime, theme));
 
         //when
         ReservationResult reservationResult = reservationService.findById(1L);
@@ -147,9 +144,9 @@ class ReservationServiceTest {
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
         reservationTimeRepository.create(reservationTime);
         themeRepository.create(theme);
-        memberRepository.create(new CreateMemberQuery("name1", "email1", "password1"));
+        memberRepository.create(new CreateMemberQuery("name1", MemberRole.USER, "email1", "password1"));
 
-        reservationRepository.create(new CreateReservationQuery(new Member(1L ,"name1", "USER", "email1", "password1"), RESERVATION_DATE, reservationTime, theme));
+        reservationRepository.create(new CreateReservationQuery(new Member(1L ,"name1", MemberRole.USER, "email1", "password1"), RESERVATION_DATE, reservationTime, theme));
 
         //when & then
         assertThatThrownBy(() -> reservationService.findById(2L))
@@ -164,10 +161,10 @@ class ReservationServiceTest {
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
         reservationTimeRepository.create(reservationTime);
         themeRepository.create(theme);
-        memberRepository.create(new CreateMemberQuery("name1", "email1", "password1"));
+        memberRepository.create(new CreateMemberQuery("name1", MemberRole.USER, "email1", "password1"));
 
 
-        reservationRepository.create(new CreateReservationQuery(new Member(1L, "name1", "USER", "email1", "password1"), RESERVATION_DATE, reservationTime, theme));
+        reservationRepository.create(new CreateReservationQuery(new Member(1L, "name1", MemberRole.USER, "email1", "password1"), RESERVATION_DATE, reservationTime, theme));
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(new CreateReservationParam(1L, RESERVATION_DATE, 1L, 1L), LocalDateTime.now()))
@@ -182,7 +179,7 @@ class ReservationServiceTest {
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
         reservationTimeRepository.create(new ReservationTime(1L, reservationDateTime.toLocalTime()));
         themeRepository.create(theme);
-        memberRepository.create(new CreateMemberQuery("name1", "email1", "password1"));
+        memberRepository.create(new CreateMemberQuery("name1", MemberRole.USER, "email1", "password1"));
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(new CreateReservationParam(1L, reservationDateTime.toLocalDate(), 1L, 1L), currentDateTime))
@@ -197,7 +194,7 @@ class ReservationServiceTest {
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
         reservationTimeRepository.create(new ReservationTime(1L, reservationDateTime.toLocalTime()));
         themeRepository.create(theme);
-        memberRepository.create(new CreateMemberQuery("name1", "email1", "password1"));
+        memberRepository.create(new CreateMemberQuery("name1", MemberRole.USER, "email1", "password1"));
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(new CreateReservationParam(1L, reservationDateTime.toLocalDate(), 1L, 1L), currentDateTime))

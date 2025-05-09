@@ -8,6 +8,7 @@ import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
+import roomescape.domain.MemberRole;
 import roomescape.persistence.query.CreateMemberQuery;
 
 import javax.sql.DataSource;
@@ -47,7 +48,7 @@ class JdbcMemberRepositoryTest {
 
         //then
         assertThat(member).hasValue(
-                new Member(1L, "Eve", "USER", "eve@example.com", "password")
+                new Member(1L, "Eve", MemberRole.USER, "eve@example.com", "password")
         );
     }
 
@@ -61,14 +62,14 @@ class JdbcMemberRepositoryTest {
 
         //then
         assertThat(member).hasValue(
-                new Member(1L, "Eve", "USER", "eve@example.com", "password")
+                new Member(1L, "Eve", MemberRole.USER, "eve@example.com", "password")
         );
     }
 
     @Test
     void 멤버를_생성할_수_있다() {
         //given
-        CreateMemberQuery createMemberQuery = new CreateMemberQuery("Eve", "eve@example.com", "password");
+        CreateMemberQuery createMemberQuery = new CreateMemberQuery("Eve", MemberRole.USER, "eve@example.com", "password");
 
         //when & then
         assertThatCode(() -> memberRepository.create(createMemberQuery))

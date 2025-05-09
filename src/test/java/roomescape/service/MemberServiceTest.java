@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.junit.jupiter.api.Test;
+import roomescape.domain.MemberRole;
 import roomescape.exception.ReservationException;
 import roomescape.fake.FakeMemberRepository;
 import roomescape.persistence.query.CreateMemberQuery;
@@ -32,7 +33,7 @@ class MemberServiceTest {
     @Test
     void email과_password로_로그인_가능() {
         //given
-        memberRepository.create(new CreateMemberQuery("name1", "email1", "password1"));
+        memberRepository.create(new CreateMemberQuery("name1", MemberRole.USER, "email1", "password1"));
         LoginMemberParam loginMemberParam = new LoginMemberParam("email1", "password1");
 
         //when & then
@@ -48,7 +49,7 @@ class MemberServiceTest {
     @Test
     void id를_통해_멤버를_찾을_수_있다() {
         //given
-        memberRepository.create(new CreateMemberQuery("name1", "email1", "password1"));
+        memberRepository.create(new CreateMemberQuery("name1", MemberRole.USER, "email1", "password1"));
 
         //when & then
         assertThat(memberService.findById(1L)).isEqualTo(new CheckLoginUserResult("name1"));

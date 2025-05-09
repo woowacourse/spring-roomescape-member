@@ -3,6 +3,7 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
+import roomescape.domain.MemberRole;
 import roomescape.exception.ReservationException;
 import roomescape.persistence.query.CreateMemberQuery;
 import roomescape.service.param.LoginMemberParam;
@@ -29,6 +30,7 @@ public class MemberService {
     public RegisterMemberResult create(final RegisterMemberParam registerMemberParam) {
         Long id = memberRepository.create(new CreateMemberQuery(
                 registerMemberParam.name(),
+                MemberRole.USER,
                 registerMemberParam.email(),
                 registerMemberParam.password()
         ));

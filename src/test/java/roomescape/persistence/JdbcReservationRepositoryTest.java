@@ -6,10 +6,7 @@ import org.springframework.boot.autoconfigure.sql.init.SqlDataSourceScriptDataba
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.*;
 import roomescape.persistence.query.CreateReservationQuery;
 
 import javax.sql.DataSource;
@@ -56,8 +53,8 @@ class JdbcReservationRepositoryTest {
 
         //then
         assertThat(reservations).isEqualTo(List.of(
-                new Reservation(1L, new Member(1L, "Bob", "USER", "bob@example.com", "password"), LocalDate.of(2025, 4, 21), new ReservationTime(1L, LocalTime.of(12, 0)), new Theme(1L, "name", "description", "thumbnail")),
-                new Reservation(2L, new Member(2L, "Eve", "USER","eve@example.com", "password"), LocalDate.of(2025, 4, 22), new ReservationTime(1L, LocalTime.of(12, 0)), new Theme(1L, "name", "description", "thumbnail"))
+                new Reservation(1L, new Member(1L, "Bob", MemberRole.USER, "bob@example.com", "password"), LocalDate.of(2025, 4, 21), new ReservationTime(1L, LocalTime.of(12, 0)), new Theme(1L, "name", "description", "thumbnail")),
+                new Reservation(2L, new Member(2L, "Eve", MemberRole.USER,"eve@example.com", "password"), LocalDate.of(2025, 4, 22), new ReservationTime(1L, LocalTime.of(12, 0)), new Theme(1L, "name", "description", "thumbnail"))
         ));
     }
 
@@ -74,7 +71,7 @@ class JdbcReservationRepositoryTest {
 
         //then
         assertThat(reservation).hasValue(
-                new Reservation(1L, new Member(1L, "Bob", "USER", "bob@example.com", "password"), LocalDate.of(2025, 4, 21), new ReservationTime(1L, LocalTime.of(12, 0)), new Theme(1L, "name", "description", "thumbnail")));
+                new Reservation(1L, new Member(1L, "Bob", MemberRole.USER, "bob@example.com", "password"), LocalDate.of(2025, 4, 21), new ReservationTime(1L, LocalTime.of(12, 0)), new Theme(1L, "name", "description", "thumbnail")));
     }
 
     @Test
@@ -93,7 +90,7 @@ class JdbcReservationRepositoryTest {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
         jdbcTemplate.update("INSERT INTO member (name, role, email, password) VALUES ('Bob', 'USER', 'bob@example.com', 'password')");
 
-        CreateReservationQuery createReservationQuery = new CreateReservationQuery(new Member(1L, "Bob", "USER", "bob@example.com", "password"), LocalDate.of(2025, 4, 21),
+        CreateReservationQuery createReservationQuery = new CreateReservationQuery(new Member(1L, "Bob",  MemberRole.USER, "bob@example.com", "password"), LocalDate.of(2025, 4, 21),
                 new ReservationTime(1L, LocalTime.of(12, 0)), new Theme(1L, "name", "description", "thumbnail"));
 
         //when
@@ -103,7 +100,7 @@ class JdbcReservationRepositoryTest {
         Optional<Reservation> byId = reservationDao.findById(createdId);
         System.out.println(byId.get());
         assertThat(reservationDao.findById(createdId))
-                .hasValue(new Reservation(1L, new Member(1L, "Bob", "USER", "bob@example.com", "password"), LocalDate.of(2025, 4, 21),
+                .hasValue(new Reservation(1L, new Member(1L, "Bob", MemberRole.USER, "bob@example.com", "password"), LocalDate.of(2025, 4, 21),
                         new ReservationTime(1L, LocalTime.of(12, 0)), new Theme(1L, "name", "description", "thumbnail")));
     }
 
