@@ -45,7 +45,7 @@ public class LoginService {
 
     private LoginMemberResponse findMember(String email) {
         Optional<LoginMember> member = memberRepository.findByEmail(email);
-        return member.map(value -> new LoginMemberResponse(value.getEmail()))
+        return member.map(value -> new LoginMemberResponse(value.getName()))
                 .orElseThrow(() -> new InvalidAuthorizationException("[ERROR] 유효하지 않은 가입 정보입니다."));
     }
 }
