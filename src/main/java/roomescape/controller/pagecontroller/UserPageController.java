@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.pagecontroller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,5 +14,10 @@ public class UserPageController {
     @GetMapping
     public String bestThemes() {
         return "best-themes";
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
     }
 }
