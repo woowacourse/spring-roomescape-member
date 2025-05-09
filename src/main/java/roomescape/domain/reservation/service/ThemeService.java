@@ -9,8 +9,8 @@ import roomescape.common.exception.AlreadyInUseException;
 import roomescape.domain.reservation.dto.ThemeRequest;
 import roomescape.domain.reservation.dto.ThemeResponse;
 import roomescape.domain.reservation.entity.Theme;
-import roomescape.domain.reservation.repository.ReservationRepository;
-import roomescape.domain.reservation.repository.ThemeRepository;
+import roomescape.domain.reservation.repository.ReservationDao;
+import roomescape.domain.reservation.repository.ThemeDao;
 
 @Service
 public class ThemeService {
@@ -18,32 +18,32 @@ public class ThemeService {
     private static final int START_DATE_OFFSET = 8;
     private static final int END_DATE_OFFSET = 1;
 
-    private final ThemeRepository themeRepository;
-    private final ReservationRepository reservationRepository;
+    private final ThemeDao themeDao;
+    private final ReservationDao reservationDao;
 
-    public ThemeService(final ThemeRepository themeRepository, final ReservationRepository reservationRepository) {
-        this.themeRepository = themeRepository;
-        this.reservationRepository = reservationRepository;
+    public ThemeService(final ThemeDao themeDao, final ReservationDao reservationDao) {
+        this.themeDao = themeDao;
+        this.reservationDao = reservationDao;
     }
 
     public List<ThemeResponse> getAll() {
-        return themeRepository.findAll()
+        return themeDao.findAll()
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
 
     public ThemeResponse create(final ThemeRequest request) {
-        Theme theme = themeRepository.save(request.toEntity());
+        Theme theme = themeDao.save(request.toEntity());
         return ThemeResponse.from(theme);
     }
 
     public void delete(final Long id) {
-        if (reservationRepository.existsByThemeId(id)) {
+        if (reservationDao.existsByThemeId(id)) {
             throw new AlreadyInUseException("Theme with id " + id + " not found");
         }
 
-        themeRepository.deleteById(id);
+        themeDao.deleteById(id);
     }
 
     public List<ThemeResponse> getPopularThemes() {
@@ -53,7 +53,7 @@ public class ThemeService {
         LocalDate endDate = now.minusDays(END_DATE_OFFSET);
         int popularThemeCount = 10;
 
-        return themeRepository.findThemeRankingByReservation(startDate, endDate, popularThemeCount)
+        return themeDao.findThemeRankingByReservation(startDate, endDate, popularThemeCount)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();

@@ -25,9 +25,9 @@ import roomescape.domain.reservation.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
-import roomescape.domain.reservation.repository.ReservationRepository;
-import roomescape.domain.reservation.repository.ReservationTimeRepository;
-import roomescape.domain.reservation.repository.ThemeRepository;
+import roomescape.domain.reservation.repository.ReservationDao;
+import roomescape.domain.reservation.repository.ReservationTimeDao;
+import roomescape.domain.reservation.repository.ThemeDao;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
 @ActiveProfiles("test")
@@ -37,15 +37,12 @@ class ReservationApiTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
     @Autowired
-    private ReservationRepository reservationRepository;
-
+    private ReservationDao reservationDao;
     @Autowired
-    private ReservationTimeRepository reservationTimeRepository;
-
+    private ReservationTimeDao reservationTimeRepository;
     @Autowired
-    private ThemeRepository themeRepository;
+    private ThemeDao themeDao;
 
     public static String formatDateTime(LocalDate dateTime) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -85,12 +82,12 @@ class ReservationApiTest {
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
         Theme theme = Theme.withoutId("공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Theme savedTheme = themeRepository.save(theme);
+        Theme savedTheme = themeDao.save(theme);
 
         Reservation reservation = Reservation.withoutId(
                 new Name("꾹"), LocalDate.now(), savedReservationTime, savedTheme
         );
-        reservationRepository.save(reservation);
+        reservationDao.save(reservation);
 
         // then
         RestAssured.given().log().all()
@@ -109,7 +106,7 @@ class ReservationApiTest {
 
         Theme theme = Theme.withoutId("공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Theme savedTheme = themeRepository.save(theme);
+        Theme savedTheme = themeDao.save(theme);
 
         LocalDate now = LocalDate.now();
 
@@ -134,7 +131,7 @@ class ReservationApiTest {
 
         Theme theme = Theme.withoutId("공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Theme savedTheme = themeRepository.save(theme);
+        Theme savedTheme = themeDao.save(theme);
 
         LocalDate now = LocalDate.now();
 
@@ -189,10 +186,10 @@ class ReservationApiTest {
 
         Theme theme = Theme.withoutId("공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Theme savedTheme = themeRepository.save(theme);
+        Theme savedTheme = themeDao.save(theme);
 
         Reservation reservation = Reservation.withoutId(name, now, savedReservationTime, savedTheme);
-        Reservation saved = reservationRepository.save(reservation);
+        Reservation saved = reservationDao.save(reservation);
         Long id = saved.getId();
 
         // when & then
@@ -214,12 +211,12 @@ class ReservationApiTest {
     @DisplayName("예약 가능한 시간을 반환한다")
     @Test
     void test9() {
-        Theme theme = themeRepository.save(Theme.withoutId("공포", "공포", "www.m.com"));
+        Theme theme = themeDao.save(Theme.withoutId("공포", "공포", "www.m.com"));
         ReservationTime time1 = reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(10, 0)));
         reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(11, 0)));
 
         LocalDate date = LocalDate.now();
-        reservationRepository.save(Reservation.withoutId(new Name("꾹"), date, time1, theme));
+        reservationDao.save(Reservation.withoutId(new Name("꾹"), date, time1, theme));
 
         String path = UriComponentsBuilder.fromUriString("/reservations/available")
                 .queryParam("date", formatDateTime(date))

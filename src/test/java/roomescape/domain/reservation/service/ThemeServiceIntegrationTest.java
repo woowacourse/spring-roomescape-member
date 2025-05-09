@@ -23,12 +23,9 @@ import roomescape.domain.reservation.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
-import roomescape.domain.reservation.repository.ReservationRepository;
-import roomescape.domain.reservation.repository.ReservationTimeRepository;
-import roomescape.domain.reservation.repository.ThemeRepository;
-import roomescape.domain.reservation.repository.impl.ReservationDao;
-import roomescape.domain.reservation.repository.impl.ReservationTimeDao;
-import roomescape.domain.reservation.repository.impl.ThemeDao;
+import roomescape.domain.reservation.repository.ReservationDao;
+import roomescape.domain.reservation.repository.ReservationTimeDao;
+import roomescape.domain.reservation.repository.ThemeDao;
 
 @ActiveProfiles("test")
 @JdbcTest
@@ -36,11 +33,11 @@ import roomescape.domain.reservation.repository.impl.ThemeDao;
 class ThemeServiceIntegrationTest {
 
     @Autowired
-    private ReservationRepository reservationRepository;
+    private ReservationDao reservationDao;
     @Autowired
-    private ReservationTimeRepository reservationTimeRepository;
+    private ReservationTimeDao reservationTimeRepository;
     @Autowired
-    private ThemeRepository themeRepository;
+    private ThemeDao themeDao;
     @Autowired
     private ThemeService themeService;
 
@@ -48,8 +45,8 @@ class ThemeServiceIntegrationTest {
     @Test
     void test1() {
         // given
-        themeRepository.save(Theme.withoutId("테마1", "테마1", "www.m.com"));
-        themeRepository.save(Theme.withoutId("테마2", "테마2", "www.m.com"));
+        themeDao.save(Theme.withoutId("테마1", "테마1", "www.m.com"));
+        themeDao.save(Theme.withoutId("테마2", "테마2", "www.m.com"));
 
         // when
         List<ThemeResponse> responses = themeService.getAll();
@@ -96,7 +93,7 @@ class ThemeServiceIntegrationTest {
         themeService.delete(themeId);
 
         // then
-        assertThat(themeRepository.findAll()).isEmpty();
+        assertThat(themeDao.findAll()).isEmpty();
     }
 
     @DisplayName("없는 테마를 삭제할 수 없다")
@@ -111,14 +108,14 @@ class ThemeServiceIntegrationTest {
     @Test
     void test6() {
         // given
-        Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
+        Theme savedTheme = themeDao.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         Long themeId = savedTheme.getId();
 
         LocalTime time = LocalTime.of(8, 0);
         ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
 
         LocalDate date = LocalDate.of(2024, 4, 29);
-        reservationRepository.save(Reservation.withoutId(new Name("꾹"), date, savedTime, savedTheme));
+        reservationDao.save(Reservation.withoutId(new Name("꾹"), date, savedTime, savedTheme));
 
         // when & then
         assertThatThrownBy(() -> themeService.delete(themeId))
@@ -134,15 +131,15 @@ class ThemeServiceIntegrationTest {
         LocalDate date = LocalDateTime.now().toLocalDate();
         Name name = new Name("꾹");
 
-        Theme theme1 = themeRepository.save(Theme.withoutId("테마1", "테마1", "www.m.com"));
-        Theme theme2 = themeRepository.save(Theme.withoutId("테마2", "테마2", "www.m.com"));
-        Theme theme3 = themeRepository.save(Theme.withoutId("테마3", "테마3", "www.m.com"));
-        reservationRepository.save(Reservation.withoutId(name, date.minusDays(1), reservationTime, theme1));
-        reservationRepository.save(Reservation.withoutId(name, date.minusDays(2), reservationTime, theme1));
-        reservationRepository.save(Reservation.withoutId(name, date.minusDays(3), reservationTime, theme1));
-        reservationRepository.save(Reservation.withoutId(name, date.minusDays(4), reservationTime, theme2));
-        reservationRepository.save(Reservation.withoutId(name, date.minusDays(5), reservationTime, theme2));
-        reservationRepository.save(Reservation.withoutId(name, date.minusDays(6), reservationTime, theme3));
+        Theme theme1 = themeDao.save(Theme.withoutId("테마1", "테마1", "www.m.com"));
+        Theme theme2 = themeDao.save(Theme.withoutId("테마2", "테마2", "www.m.com"));
+        Theme theme3 = themeDao.save(Theme.withoutId("테마3", "테마3", "www.m.com"));
+        reservationDao.save(Reservation.withoutId(name, date.minusDays(1), reservationTime, theme1));
+        reservationDao.save(Reservation.withoutId(name, date.minusDays(2), reservationTime, theme1));
+        reservationDao.save(Reservation.withoutId(name, date.minusDays(3), reservationTime, theme1));
+        reservationDao.save(Reservation.withoutId(name, date.minusDays(4), reservationTime, theme2));
+        reservationDao.save(Reservation.withoutId(name, date.minusDays(5), reservationTime, theme2));
+        reservationDao.save(Reservation.withoutId(name, date.minusDays(6), reservationTime, theme3));
 
         // when
         List<ThemeResponse> responses = themeService.getPopularThemes();

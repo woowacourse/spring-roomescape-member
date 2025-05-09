@@ -24,12 +24,9 @@ import roomescape.domain.reservation.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
-import roomescape.domain.reservation.repository.ReservationRepository;
-import roomescape.domain.reservation.repository.ReservationTimeRepository;
-import roomescape.domain.reservation.repository.ThemeRepository;
-import roomescape.domain.reservation.repository.impl.ReservationDao;
-import roomescape.domain.reservation.repository.impl.ReservationTimeDao;
-import roomescape.domain.reservation.repository.impl.ThemeDao;
+import roomescape.domain.reservation.repository.ReservationDao;
+import roomescape.domain.reservation.repository.ReservationTimeDao;
+import roomescape.domain.reservation.repository.ThemeDao;
 
 @ActiveProfiles("test")
 @JdbcTest
@@ -37,18 +34,18 @@ import roomescape.domain.reservation.repository.impl.ThemeDao;
 class ReservationTimeServiceIntegrationTest {
 
     @Autowired
-    private ReservationRepository reservationRepository;
+    private ReservationDao reservationDao;
     @Autowired
-    private ReservationTimeRepository reservationTimeRepository;
+    private ReservationTimeDao reservationTimeDao;
     @Autowired
-    private ThemeRepository themeRepository;
+    private ThemeDao themeDao;
     @Autowired
     private ReservationTimeService reservationTimeService;
 
     @BeforeEach
     void setUp() {
 
-        reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
+        reservationTimeService = new ReservationTimeService(reservationTimeDao, reservationDao);
     }
 
     @DisplayName("모든 시간 정보를 가져온다.")
@@ -60,7 +57,7 @@ class ReservationTimeServiceIntegrationTest {
         List<LocalTime> localTimes = List.of(localTime1, localTime2);
 
         for (LocalTime localTime : localTimes) {
-            reservationTimeRepository.save(ReservationTime.withoutId(localTime));
+            reservationTimeDao.save(ReservationTime.withoutId(localTime));
         }
 
         // when
@@ -100,7 +97,7 @@ class ReservationTimeServiceIntegrationTest {
     @Test
     void test4() {
         // given
-        ReservationTime saved = reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(8, 0)));
+        ReservationTime saved = reservationTimeDao.save(ReservationTime.withoutId(LocalTime.of(8, 0)));
         Long id = saved.getId();
 
         // when & then
@@ -122,11 +119,11 @@ class ReservationTimeServiceIntegrationTest {
     @Test
     void test6() {
         // given
-        Theme theme = themeRepository.save(Theme.withoutId("테마1", "테마1", "www.m.com"));
+        Theme theme = themeDao.save(Theme.withoutId("테마1", "테마1", "www.m.com"));
 
-        ReservationTime reservationTime = reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(8, 0)));
+        ReservationTime reservationTime = reservationTimeDao.save(ReservationTime.withoutId(LocalTime.of(8, 0)));
 
-        reservationRepository.save(Reservation.withoutId(new Name("꾹"), LocalDate.now(), reservationTime, theme));
+        reservationDao.save(Reservation.withoutId(new Name("꾹"), LocalDate.now(), reservationTime, theme));
         Long timeId = reservationTime.getId();
 
         // when & then

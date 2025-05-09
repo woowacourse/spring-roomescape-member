@@ -1,4 +1,4 @@
-package roomescape.domain.reservation.repository.impl;
+package roomescape.domain.reservation.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,10 +18,9 @@ import org.springframework.stereotype.Repository;
 
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.entity.ReservationTime;
-import roomescape.domain.reservation.repository.ReservationTimeRepository;
 
 @Repository
-public class ReservationTimeDao implements ReservationTimeRepository {
+public class ReservationTimeDao {
 
     private static final String TABLE_NAME = "reservation_time";
 
@@ -36,7 +35,6 @@ public class ReservationTimeDao implements ReservationTimeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    @Override
     public List<ReservationTime> findAll() {
         String sql = "select * from reservation_time";
 
@@ -45,7 +43,6 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         );
     }
 
-    @Override
     public Optional<ReservationTime> findById(final Long id) {
         String sql = "select * from reservation_time where id = :id";
 
@@ -70,7 +67,6 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         );
     }
 
-    @Override
     public ReservationTime save(final ReservationTime reservationTime) {
         if (reservationTime.getStartAt() == null) {
             throw new IllegalArgumentException("start_at cannot be null");
@@ -107,7 +103,6 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         return new ReservationTime(id, reservationTime.getStartAt());
     }
 
-    @Override
     public void deleteById(final Long id) {
         String deleteSql = "delete from reservation_time where id = :id";
         Map<String, Long> params = Map.of("id", id);

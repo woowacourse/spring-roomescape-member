@@ -1,4 +1,4 @@
-package roomescape.domain.reservation.repository.impl;
+package roomescape.domain.reservation.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,10 +22,9 @@ import roomescape.domain.reservation.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
-import roomescape.domain.reservation.repository.ReservationRepository;
 
 @Repository
-public class ReservationDao implements ReservationRepository {
+public class ReservationDao {
 
     private static final String TABLE_NAME = "reservation";
 
@@ -40,7 +39,6 @@ public class ReservationDao implements ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    @Override
     public List<Reservation> findAll() {
         String sql = """
                 select rs.id as reservation_id, rs.name, rs.date, 
@@ -56,7 +54,6 @@ public class ReservationDao implements ReservationRepository {
         );
     }
 
-    @Override
     public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
         String sql = """
                 select rs.id as reservation_id, rs.name, rs.date,
@@ -75,7 +72,6 @@ public class ReservationDao implements ReservationRepository {
         );
     }
 
-    @Override
     public Optional<Reservation> findById(final Long id) {
         String sql = """
                 select rs.id as reservation_id, rs.name, rs.date,
@@ -92,7 +88,6 @@ public class ReservationDao implements ReservationRepository {
         return reservationOf(sql, params);
     }
 
-    @Override
     public Reservation save(final Reservation reservation) {
         if (reservation.existId()) {
             return update(reservation);
@@ -101,7 +96,6 @@ public class ReservationDao implements ReservationRepository {
         return create(reservation);
     }
 
-    @Override
     public void deleteById(final Long id) {
         String sql = "delete from reservation where id = :id";
         Map<String, Long> params = Map.of("id", id);
@@ -113,7 +107,6 @@ public class ReservationDao implements ReservationRepository {
         }
     }
 
-    @Override
     public boolean existsByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
         String sql = """
                 select count(*)
@@ -126,7 +119,6 @@ public class ReservationDao implements ReservationRepository {
         return rowCountByDateAndTimeAndTheme == 1;
     }
 
-    @Override
     public boolean existsByTimeId(final Long timeId) {
         String selectSql = "select count(*) from reservation where time_id = :time_id";
         Map<String, Long> params = Map.of("time_id", timeId);
@@ -136,7 +128,6 @@ public class ReservationDao implements ReservationRepository {
         return rowCountByTimeId > 0;
     }
 
-    @Override
     public boolean existsByThemeId(final Long themeId) {
         String selectSql = "select count(*) from reservation where theme_id = :theme_id";
 

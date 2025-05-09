@@ -22,9 +22,9 @@ import roomescape.domain.reservation.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
-import roomescape.domain.reservation.repository.ReservationRepository;
-import roomescape.domain.reservation.repository.ReservationTimeRepository;
-import roomescape.domain.reservation.repository.ThemeRepository;
+import roomescape.domain.reservation.repository.ReservationDao;
+import roomescape.domain.reservation.repository.ReservationTimeDao;
+import roomescape.domain.reservation.repository.ThemeDao;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
 @ActiveProfiles("test")
@@ -34,15 +34,12 @@ class ReservationTimeApiTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
     @Autowired
-    private ReservationTimeRepository reservationTimeRepository;
-
+    private ReservationTimeDao reservationTimeRepository;
     @Autowired
-    private ReservationRepository reservationRepository;
-
+    private ReservationDao reservationDao;
     @Autowired
-    private ThemeRepository themeRepository;
+    private ThemeDao themeDao;
 
     @AfterEach
     void tearDown() {
@@ -135,10 +132,10 @@ class ReservationTimeApiTest {
 
         Theme theme = Theme.withoutId("공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Theme savedTheme = themeRepository.save(theme);
+        Theme savedTheme = themeDao.save(theme);
 
         Reservation reservation = Reservation.withoutId(new Name("꾹"), LocalDate.now(), savedTime, savedTheme);
-        reservationRepository.save(reservation);
+        reservationDao.save(reservation);
 
         // when & then
         RestAssured.given().log().all()

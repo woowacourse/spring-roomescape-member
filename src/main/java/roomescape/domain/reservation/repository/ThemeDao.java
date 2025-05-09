@@ -1,4 +1,4 @@
-package roomescape.domain.reservation.repository.impl;
+package roomescape.domain.reservation.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,10 +18,9 @@ import org.springframework.stereotype.Repository;
 
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.entity.Theme;
-import roomescape.domain.reservation.repository.ThemeRepository;
 
 @Repository
-public class ThemeDao implements ThemeRepository {
+public class ThemeDao {
 
     private static final String TABLE_NAME = "theme";
 
@@ -35,14 +34,12 @@ public class ThemeDao implements ThemeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    @Override
     public List<Theme> findAll() {
         String sql = "select * from theme";
 
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> themeOf(resultSet));
     }
 
-    @Override
     public List<Theme> findThemeRankingByReservation(final LocalDate startDate, final LocalDate endDate,
                                                      final int rowCount
     ) {
@@ -63,7 +60,6 @@ public class ThemeDao implements ThemeRepository {
                 (resultSet, rowNum) -> themeOf(resultSet));
     }
 
-    @Override
     public Theme save(final Theme theme) {
         if (theme.existId()) {
             return update(theme);
@@ -71,7 +67,6 @@ public class ThemeDao implements ThemeRepository {
         return create(theme);
     }
 
-    @Override
     public void deleteById(final Long id) {
         String deleteSql = "delete from theme where id = :id";
         Map<String, Long> params = Map.of("id", id);
@@ -83,7 +78,6 @@ public class ThemeDao implements ThemeRepository {
         }
     }
 
-    @Override
     public Optional<Theme> findById(final Long id) {
         String sql = "select id, name, description, thumbnail from theme where id = :id";
 

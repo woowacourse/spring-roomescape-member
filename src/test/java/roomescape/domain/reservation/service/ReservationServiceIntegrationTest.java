@@ -28,12 +28,9 @@ import roomescape.domain.reservation.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
-import roomescape.domain.reservation.repository.ReservationRepository;
-import roomescape.domain.reservation.repository.ReservationTimeRepository;
-import roomescape.domain.reservation.repository.ThemeRepository;
-import roomescape.domain.reservation.repository.impl.ReservationDao;
-import roomescape.domain.reservation.repository.impl.ReservationTimeDao;
-import roomescape.domain.reservation.repository.impl.ThemeDao;
+import roomescape.domain.reservation.repository.ReservationDao;
+import roomescape.domain.reservation.repository.ReservationTimeDao;
+import roomescape.domain.reservation.repository.ThemeDao;
 
 @ActiveProfiles("test")
 @JdbcTest
@@ -43,11 +40,11 @@ class ReservationServiceIntegrationTest {
     private final LocalDateTime now = LocalDateTime.now();
 
     @Autowired
-    private ReservationRepository reservationRepository;
+    private ReservationDao reservationDao;
     @Autowired
-    private ReservationTimeRepository reservationTimeRepository;
+    private ReservationTimeDao reservationTimeDao;
     @Autowired
-    private ThemeRepository themeRepository;
+    private ThemeDao themeDao;
     @Autowired
     private ReservationService reservationService;
 
@@ -55,13 +52,13 @@ class ReservationServiceIntegrationTest {
     @Test
     void test1() {
         // given
-        Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
+        Theme savedTheme = themeDao.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
 
         LocalTime time = LocalTime.of(8, 0);
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
+        ReservationTime savedTime = reservationTimeDao.save(ReservationTime.withoutId(time));
 
         LocalDate date = LocalDate.of(2024, 4, 29);
-        reservationRepository.save(Reservation.withoutId(new Name("꾹"), date, savedTime, savedTheme));
+        reservationDao.save(Reservation.withoutId(new Name("꾹"), date, savedTime, savedTheme));
 
         // when
         List<ReservationResponse> response = reservationService.getAll();
@@ -84,11 +81,11 @@ class ReservationServiceIntegrationTest {
         // given
         String name = "꾹";
 
-        Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
+        Theme savedTheme = themeDao.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         Long themeId = savedTheme.getId();
 
         LocalTime time = LocalTime.of(8, 0);
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
+        ReservationTime savedTime = reservationTimeDao.save(ReservationTime.withoutId(time));
         Long timeId = savedTime.getId();
 
         LocalDate date = nextDay();
@@ -117,11 +114,11 @@ class ReservationServiceIntegrationTest {
         // given
         String name = "꾹";
 
-        Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
+        Theme savedTheme = themeDao.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         Long themeId = savedTheme.getId();
 
         LocalTime time = LocalTime.of(8, 0);
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
+        ReservationTime savedTime = reservationTimeDao.save(ReservationTime.withoutId(time));
         Long timeId = savedTime.getId();
         LocalDate date = nextDay();
 
@@ -139,13 +136,13 @@ class ReservationServiceIntegrationTest {
         // given
         String name = "꾹";
 
-        Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
+        Theme savedTheme = themeDao.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         Long themeId = savedTheme.getId();
 
         LocalDate date = now.toLocalDate();
         LocalTime pastTime = now.toLocalTime().minusMinutes(1);
 
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(pastTime));
+        ReservationTime savedTime = reservationTimeDao.save(ReservationTime.withoutId(pastTime));
         Long timeId = savedTime.getId();
 
         ReservationRequest requestDto = new ReservationRequest(name, date, timeId, themeId);
@@ -158,7 +155,7 @@ class ReservationServiceIntegrationTest {
     @DisplayName("존재하지 않는 예약 시간 ID로 저장하면 예외를 반환한다.")
     @Test
     void test6() {
-        Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
+        Theme savedTheme = themeDao.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         Long themeId = savedTheme.getId();
 
         LocalDate date = nextDay();
@@ -176,7 +173,7 @@ class ReservationServiceIntegrationTest {
         LocalDate date = now.toLocalDate().plusDays(1);
 
         LocalTime time = LocalTime.of(8, 0);
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
+        ReservationTime savedTime = reservationTimeDao.save(ReservationTime.withoutId(time));
         Long timeId = savedTime.getId();
 
         Long notExistId = 1000L;
@@ -190,13 +187,13 @@ class ReservationServiceIntegrationTest {
     @Test
     void test7() {
         // given
-        Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
+        Theme savedTheme = themeDao.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
 
         LocalTime time = LocalTime.of(8, 0);
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
+        ReservationTime savedTime = reservationTimeDao.save(ReservationTime.withoutId(time));
 
         LocalDate date = nextDay();
-        Reservation savedReservation = reservationRepository.save(
+        Reservation savedReservation = reservationDao.save(
                 Reservation.withoutId(new Name("꾹"), date, savedTime, savedTheme));
 
         Long id = savedReservation.getId();
@@ -221,11 +218,11 @@ class ReservationServiceIntegrationTest {
         LocalDate date = nextDay();
         LocalTime time1 = LocalTime.of(8, 0);
         LocalTime time2 = LocalTime.of(9, 0);
-        ReservationTime reservationTime1 = reservationTimeRepository.save(ReservationTime.withoutId(time1));
-        ReservationTime reservationTime2 = reservationTimeRepository.save(ReservationTime.withoutId(time2));
-        Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
+        ReservationTime reservationTime1 = reservationTimeDao.save(ReservationTime.withoutId(time1));
+        ReservationTime reservationTime2 = reservationTimeDao.save(ReservationTime.withoutId(time2));
+        Theme savedTheme = themeDao.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         Long themeId = savedTheme.getId();
-        reservationRepository.save(Reservation.withoutId(new Name("꾹"), date, reservationTime1, savedTheme));
+        reservationDao.save(Reservation.withoutId(new Name("꾹"), date, reservationTime1, savedTheme));
 
         // when
         List<BookedReservationTimeResponse> responses = reservationService.getAvailableTimes(date, themeId);

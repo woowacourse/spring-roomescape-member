@@ -23,9 +23,9 @@ import roomescape.domain.reservation.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
-import roomescape.domain.reservation.repository.ReservationRepository;
-import roomescape.domain.reservation.repository.ReservationTimeRepository;
-import roomescape.domain.reservation.repository.ThemeRepository;
+import roomescape.domain.reservation.repository.ReservationDao;
+import roomescape.domain.reservation.repository.ReservationTimeDao;
+import roomescape.domain.reservation.repository.ThemeDao;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
 @ActiveProfiles("test")
@@ -35,15 +35,12 @@ class ThemeApiTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
     @Autowired
-    private ReservationTimeRepository reservationTimeRepository;
-
+    private ReservationTimeDao reservationTimeRepository;
     @Autowired
-    private ReservationRepository reservationRepository;
-
+    private ReservationDao reservationDao;
     @Autowired
-    private ThemeRepository themeRepository;
+    private ThemeDao themeDao;
 
     private static LocalDate minusDay(LocalDate date, int days) {
         return date.minusDays(days);
@@ -76,7 +73,7 @@ class ThemeApiTest {
         // given
         Theme theme = Theme.withoutId("테마1", "테마1", "www.m.com");
 
-        themeRepository.save(theme);
+        themeDao.save(theme);
 
         // when & then
         RestAssured.given().log().all()
@@ -92,7 +89,7 @@ class ThemeApiTest {
         // given
         Theme theme = Theme.withoutId("테마1", "테마1", "www.m.com");
 
-        Theme saved = themeRepository.save(theme);
+        Theme saved = themeDao.save(theme);
 
         Long savedId = saved.getId();
 
@@ -127,11 +124,11 @@ class ThemeApiTest {
 
         Theme theme = Theme.withoutId("공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Theme savedTheme = themeRepository.save(theme);
+        Theme savedTheme = themeDao.save(theme);
         Long savedId = savedTheme.getId();
 
         Reservation reservation = Reservation.withoutId(new Name("꾹"), LocalDate.now(), savedTime, savedTheme);
-        reservationRepository.save(reservation);
+        reservationDao.save(reservation);
 
         // when & then
         RestAssured.given().log().all()
@@ -151,17 +148,17 @@ class ThemeApiTest {
         Theme theme1 = Theme.withoutId("공포1", "우테코 공포", "www.m.com");
         Theme theme2 = Theme.withoutId("공포2", "우테코 공포", "www.m.com");
         Theme theme3 = Theme.withoutId("공포3", "우테코 공포", "www.m.com");
-        Theme savedTheme1 = themeRepository.save(theme1);
-        Theme savedTheme2 = themeRepository.save(theme2);
-        Theme savedTheme3 = themeRepository.save(theme3);
+        Theme savedTheme1 = themeDao.save(theme1);
+        Theme savedTheme2 = themeDao.save(theme2);
+        Theme savedTheme3 = themeDao.save(theme3);
 
         Name name = new Name("꾹");
-        reservationRepository.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 1), savedTime, savedTheme3));
-        reservationRepository.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 2), savedTime, savedTheme3));
-        reservationRepository.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 3), savedTime, savedTheme3));
-        reservationRepository.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 4), savedTime, savedTheme1));
-        reservationRepository.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 5), savedTime, savedTheme1));
-        reservationRepository.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 6), savedTime, savedTheme2));
+        reservationDao.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 1), savedTime, savedTheme3));
+        reservationDao.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 2), savedTime, savedTheme3));
+        reservationDao.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 3), savedTime, savedTheme3));
+        reservationDao.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 4), savedTime, savedTheme1));
+        reservationDao.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 5), savedTime, savedTheme1));
+        reservationDao.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 6), savedTime, savedTheme2));
 
         // when & then
         RestAssured.given().log().all()

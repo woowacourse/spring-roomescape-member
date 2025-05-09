@@ -1,4 +1,4 @@
-package roomescape.domain.reservation.repository.impl;
+package roomescape.domain.reservation.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -24,7 +24,6 @@ import roomescape.domain.reservation.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
-import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
 @ActiveProfiles("test")
@@ -42,7 +41,7 @@ class ReservationDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
-    private ReservationRepository reservationRepository;
+    private ReservationDao reservationDao;
 
     @AfterEach
     void tearDown() {
@@ -61,7 +60,7 @@ class ReservationDaoTest {
         Reservation reservation = Reservation.withoutId(new Name(name), now.toLocalDate(), reservationTime, theme);
 
         // when
-        Reservation result = reservationRepository.save(reservation);
+        Reservation result = reservationDao.save(reservation);
 
         // then
         assertThat(result.getName()).isEqualTo(new Name(name));
@@ -88,7 +87,7 @@ class ReservationDaoTest {
                 new Reservation(reservationId, new Name(changedName), now.toLocalDate(), reservationTime, theme);
 
         // when
-        Reservation result = reservationRepository.save(updateReservation);
+        Reservation result = reservationDao.save(updateReservation);
 
         // then
         assertThat(result).isEqualTo(updateReservation);
@@ -104,7 +103,7 @@ class ReservationDaoTest {
         Reservation reservation = new Reservation(1L, new Name("꾹"), now.toLocalDate(), reservationTime, theme);
 
         // when & then
-        assertThatThrownBy(() -> reservationRepository.save(reservation))
+        assertThatThrownBy(() -> reservationDao.save(reservation))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -122,7 +121,7 @@ class ReservationDaoTest {
         saveReservation(id, name, now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
 
         // when
-        Reservation result = reservationRepository.findById(id).get();
+        Reservation result = reservationDao.findById(id).get();
 
         // then
         assertThat(result.getName()).isEqualTo(new Name(name));
@@ -150,7 +149,7 @@ class ReservationDaoTest {
         }
 
         // when
-        List<Reservation> result = reservationRepository.findAll();
+        List<Reservation> result = reservationDao.findAll();
 
         // then
         List<String> resultNames = result.stream()
@@ -196,7 +195,7 @@ class ReservationDaoTest {
         saveReservation(reservationId, name, now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
 
         // when
-        reservationRepository.deleteById(reservationId);
+        reservationDao.deleteById(reservationId);
 
         // then
         String sql = "select count(*) from reservation where id = ?";
@@ -222,7 +221,7 @@ class ReservationDaoTest {
 
         // when & then
         assertThat(
-                reservationRepository.existsByDateAndTimeIdAndThemeId(
+                reservationDao.existsByDateAndTimeIdAndThemeId(
                         LocalDate.of(2025, 4, day2), RESERVATION_TIME_ID, THEME_ID
                 )
         ).isEqualTo(expected);

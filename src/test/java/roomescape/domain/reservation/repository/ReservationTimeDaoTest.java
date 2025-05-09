@@ -1,4 +1,4 @@
-package roomescape.domain.reservation.repository.impl;
+package roomescape.domain.reservation.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -21,7 +21,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.entity.ReservationTime;
-import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
 @ActiveProfiles("test")
@@ -32,7 +31,7 @@ class ReservationTimeDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
-    private ReservationTimeRepository reservationTimeRepository;
+    private ReservationTimeDao reservationTimeRepository;
 
     @AfterEach
     void tearDown() {

@@ -21,29 +21,29 @@ import roomescape.domain.reservation.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
-import roomescape.domain.reservation.repository.ReservationRepository;
-import roomescape.domain.reservation.repository.ReservationTimeRepository;
-import roomescape.domain.reservation.repository.ThemeRepository;
+import roomescape.domain.reservation.repository.ReservationDao;
+import roomescape.domain.reservation.repository.ReservationTimeDao;
+import roomescape.domain.reservation.repository.ThemeDao;
 
 @Service
 public class ReservationService {
 
-    private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
+    private final ReservationDao reservationDao;
+    private final ReservationTimeDao reservationTimeDao;
+    private final ThemeDao themeDao;
 
     public ReservationService(
-            final ReservationRepository reservationRepository,
-            final ReservationTimeRepository reservationTimeRepository,
-            final ThemeRepository themeRepository
+            final ReservationDao reservationDao,
+            final ReservationTimeDao reservationTimeDao,
+            final ThemeDao themeDao
     ) {
-        this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
+        this.reservationDao = reservationDao;
+        this.reservationTimeDao = reservationTimeDao;
+        this.themeDao = themeDao;
     }
 
     public List<ReservationResponse> getAll() {
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationDao.findAll();
 
         return reservations.stream()
                 .map(ReservationResponse::from)
@@ -59,13 +59,13 @@ public class ReservationService {
         LocalDateTime now = LocalDateTime.now();
         validateDateTime(now, reservation.getReservationDate(), reservation.getReservationStartTime());
 
-        Reservation savedReservation = reservationRepository.save(reservation);
+        Reservation savedReservation = reservationDao.save(reservation);
 
         return ReservationResponse.from(savedReservation);
     }
 
     private boolean isAlreadyBooked(final ReservationRequest request) {
-        return reservationRepository.existsByDateAndTimeIdAndThemeId(
+        return reservationDao.existsByDateAndTimeIdAndThemeId(
                 request.date(), request.timeId(), request.themeId()
         );
     }
@@ -79,13 +79,13 @@ public class ReservationService {
 
     private Theme getTheme(final ReservationRequest request) {
         Long themeId = request.themeId();
-        return themeRepository.findById(themeId)
+        return themeDao.findById(themeId)
                 .orElseThrow(() -> new EntityNotFoundException("theme not found id =" + themeId));
     }
 
     private ReservationTime gerReservationTime(final ReservationRequest request) {
         Long timeId = request.timeId();
-        return reservationTimeRepository.findById(timeId)
+        return reservationTimeDao.findById(timeId)
                 .orElseThrow(() -> new EntityNotFoundException("reservationsTime not found id =" + timeId));
     }
 
@@ -98,7 +98,7 @@ public class ReservationService {
     }
 
     public void delete(final Long id) {
-        reservationRepository.deleteById(id);
+        reservationDao.deleteById(id);
     }
 
     public List<BookedReservationTimeResponse> getAvailableTimes(final LocalDate date, final Long themeId) {
@@ -113,7 +113,7 @@ public class ReservationService {
     private Map<ReservationTime, Boolean> processAlreadyBookedTimesMap(final LocalDate date, final Long themeId) {
         Set<ReservationTime> alreadyBookedTimes = getAlreadyBookedTimes(date, themeId);
 
-        return reservationTimeRepository.findAll()
+        return reservationTimeDao.findAll()
                 .stream()
                 .collect(Collectors.toMap(Function.identity(), alreadyBookedTimes::contains));
     }
@@ -126,7 +126,7 @@ public class ReservationService {
     }
 
     private Set<ReservationTime> getAlreadyBookedTimes(final LocalDate date, final Long themeId) {
-        return reservationRepository.findByDateAndThemeId(date, themeId)
+        return reservationDao.findByDateAndThemeId(date, themeId)
                 .stream()
                 .map(Reservation::getReservationTime)
                 .collect(Collectors.toSet());
