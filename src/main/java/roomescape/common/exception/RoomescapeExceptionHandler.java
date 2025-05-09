@@ -47,4 +47,11 @@ public class RoomescapeExceptionHandler {
         logger.error(ex.getMessage(), ex);
         return ex.getMessage();
     }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public String handleException(UnauthorizedException ex) {
+        logger.error(ex.getMessage(), ex);
+        return ex.getMessage();
+    }
 }
