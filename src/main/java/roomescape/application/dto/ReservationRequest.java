@@ -1,34 +1,31 @@
 package roomescape.application.dto;
 
 import java.time.LocalDate;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 public record ReservationRequest(
-        String name,
         LocalDate date,
         long timeId,
         long themeId
 ) {
 
     public ReservationRequest {
-        validateNotNull(name, date, timeId, themeId);
+        validateNotNull(date, timeId, themeId);
     }
 
-    public Reservation toReservationWith(ReservationTime reservationTime, Theme theme) {
+    public Reservation toReservationWith(Member member, ReservationTime reservationTime, Theme theme) {
         return new Reservation(
-                name,
+                member.getName(),
                 date,
                 reservationTime,
                 theme
         );
     }
 
-    private void validateNotNull(String name, LocalDate date, long timeId, long themeId) {
-        if (name == null) {
-            throw new IllegalArgumentException("잘못된 name 입력입니다.");
-        }
+    private void validateNotNull(LocalDate date, long timeId, long themeId) {
         if (date == null) {
             throw new IllegalArgumentException("잘못된 date 입력입니다.");
         }
