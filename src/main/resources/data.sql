@@ -161,4 +161,10 @@ values
     ('예약자55', 10, '2025-04-30', 55);
 
 insert into `user` (name, email, password, role)
-values ('name', 'email@email.com', 'password', 'USER');
+values ('name1', 'email1@email.com', 'password', 'USER'),
+       ('name2', 'email2@email.com', 'password', 'USER'),
+       ('name3', 'email3@email.com', 'password', 'USER'),
+       ('name4', 'email4@email.com', 'password', 'ADMIN'),
+       ('name5', 'email5@email.com', 'password', 'ADMIN'),
+       ('name6', 'email6@email.com', 'password', 'ADMIN')
+;
