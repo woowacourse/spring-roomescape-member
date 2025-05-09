@@ -2,10 +2,11 @@ package roomescape.auth.presentation;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.auth.exception.AuthErrorCode;
+import roomescape.auth.exception.AuthorizationException;
 import roomescape.auth.infrastructure.CookieAuthorizationExtractor;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.member.domain.Role;
@@ -22,33 +23,22 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws IOException {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
         Optional<String> result = extractor.extract(request);
-
         if (result.isEmpty()) {
-            return handleRedirectWithAlert(response, "로그인이 필요합니다.", "/login");
+            throw new AuthorizationException(AuthErrorCode.LOGIN_REQUIRED);
         }
 
         String token = result.get();
         if (!jwtTokenProvider.validateToken(token)) {
-            return handleRedirectWithAlert(response, "유효하지 않은 토큰입니다.", "/login");
+            throw new AuthorizationException(AuthErrorCode.INVALID_TOKEN);
         }
 
         Role role = jwtTokenProvider.getRole(token);
         if (role != Role.ADMIN) {
-            response.sendRedirect("/error/403.html");
-            return false;
+            throw new AuthorizationException(AuthErrorCode.FORBIDDEN_ACCESS);
         }
         return true;
-    }
-
-    private boolean handleRedirectWithAlert(HttpServletResponse response, String message, String redirectUrl) throws IOException {
-        response.setContentType("text/html; charset=UTF-8");
-        response.getWriter().write(
-                "<script>alert('" + message + "'); location.href='" + redirectUrl + "';</script>"
-        );
-        return false;
     }
 }
