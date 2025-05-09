@@ -1,4 +1,4 @@
-package roomescape.reservation.application.usecase;
+package roomescape.reservation.application.service;
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;

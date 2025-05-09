@@ -1,4 +1,4 @@
-package roomescape.theme.application.usecase;
+package roomescape.theme.application.service;
 
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.theme.domain.Theme;

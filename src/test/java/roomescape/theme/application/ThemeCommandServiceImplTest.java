@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.DuplicateException;
 import roomescape.theme.application.dto.CreateThemeServiceRequest;
-import roomescape.theme.application.usecase.ThemeCommandServiceImpl;
+import roomescape.theme.application.service.ThemeCommandServiceImpl;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeId;

@@ -1,4 +1,4 @@
-package roomescape.theme.application.usecase;
+package roomescape.theme.application.service;
 
 import roomescape.theme.application.dto.CreateThemeServiceRequest;
 import roomescape.theme.domain.Theme;

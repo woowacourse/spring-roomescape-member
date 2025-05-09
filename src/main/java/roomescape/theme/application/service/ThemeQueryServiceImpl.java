@@ -1,4 +1,4 @@
-package roomescape.theme.application.usecase;
+package roomescape.theme.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.domain.DomainTerm;
 import roomescape.common.exception.NotFoundException;
 import roomescape.reservation.application.dto.ThemeToBookCountServiceResponse;
-import roomescape.reservation.application.usecase.ReservationQueryService;
+import roomescape.reservation.application.service.ReservationQueryService;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeId;

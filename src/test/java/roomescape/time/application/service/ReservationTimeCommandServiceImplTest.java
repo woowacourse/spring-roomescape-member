@@ -1,4 +1,4 @@
-package roomescape.time.application.usecase;
+package roomescape.time.application.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -85,7 +85,7 @@ class ReservationTimeCommandServiceImplTest {
         // then
         assertThatThrownBy(() -> reservationTimeCommandService.delete(id))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("Tried to delete [RESERVATION_TIME] that does not exist. params={ReservationTimeId=ReservationTimeId(-1)}");
+                .hasMessage( "[RESERVATION_TIME] not found. params={ReservationTimeId=ReservationTimeId(-1)}");
     }
 
     @Test

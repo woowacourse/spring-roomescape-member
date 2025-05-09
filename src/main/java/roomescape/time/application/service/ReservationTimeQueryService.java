@@ -1,4 +1,4 @@
-package roomescape.time.application.usecase;
+package roomescape.time.application.service;
 
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeId;

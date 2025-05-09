@@ -1,4 +1,4 @@
-package roomescape.time.application.usecase;
+package roomescape.time.application.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
