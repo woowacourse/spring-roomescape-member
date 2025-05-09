@@ -68,6 +68,12 @@ public class MemberController {
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.OK)
     public void logout(
+            HttpServletResponse response
     ) {
+        Cookie expiredCookie = new Cookie("token", null);
+        expiredCookie.setHttpOnly(true);
+        expiredCookie.setPath("/");
+        expiredCookie.setMaxAge(0);
+        response.addCookie(expiredCookie);
     }
 }
