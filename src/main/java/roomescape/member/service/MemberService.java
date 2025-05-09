@@ -16,12 +16,12 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public void signup(final SignupRequest signupRequest) {
+    public Member signup(final SignupRequest signupRequest) {
         Member member = Member.withUnassignedId(signupRequest.name(), signupRequest.email(), signupRequest.password(),
                 MemberRole.USER);
         if (memberRepository.existsByEmailAndPassword(signupRequest.email(), signupRequest.password())) {
             throw new MemberDuplicatedException("이미 존재하는 회원입니다.");
         }
-        memberRepository.save(member);
+        return memberRepository.save(member);
     }
 }

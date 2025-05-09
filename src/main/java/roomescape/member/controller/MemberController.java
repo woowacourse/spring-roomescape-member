@@ -1,10 +1,12 @@
 package roomescape.member.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.member.domain.Member;
 import roomescape.member.dto.SignupRequest;
 import roomescape.member.service.MemberService;
 
@@ -19,8 +21,8 @@ public class MemberController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> signUp(final @RequestBody SignupRequest signupRequest){
-        memberService.signup(signupRequest);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Long> signUp(final @RequestBody SignupRequest signupRequest){
+        final Member member = memberService.signup(signupRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(member.getId().getDatabaseId());
     }
 }
