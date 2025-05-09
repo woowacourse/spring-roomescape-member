@@ -17,5 +17,5 @@ VALUES ('10:00');
 INSERT INTO RESERVATION (NAME, DATE, TIME_ID, THEME_ID)
 VALUES ('name', '2025-01-01', 1, 1);
 
-INSERT INTO MEMBER (NAME, EMAIL, PASSWORD)
-VALUES ('테스트', 'test@email.com', 'password');
+INSERT INTO MEMBER (NAME, EMAIL, PASSWORD, ROLE)
+VALUES ('테스트', 'test@email.com', 'password', 'ADMIN');
