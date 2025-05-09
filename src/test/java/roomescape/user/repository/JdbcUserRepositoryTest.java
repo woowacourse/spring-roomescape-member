@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import roomescape.user.domain.dto.User;
+import roomescape.user.domain.User;
 
 @JdbcTest
 @Import({JdbcUserRepository.class})

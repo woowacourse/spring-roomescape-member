@@ -1,7 +1,7 @@
 package roomescape.user.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.user.domain.dto.User;
+import roomescape.user.domain.User;
 import roomescape.user.domain.dto.UserRequestDto;
 import roomescape.user.repository.UserRepository;
 

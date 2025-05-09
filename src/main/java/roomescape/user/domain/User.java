@@ -1,4 +1,4 @@
-package roomescape.user.domain.dto;
+package roomescape.user.domain;
 
 public class User {
 
@@ -16,6 +16,10 @@ public class User {
 
     public User(String name, String email, String password) {
         this(null, name, email, password);
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {

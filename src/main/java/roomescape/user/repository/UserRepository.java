@@ -1,7 +1,7 @@
 package roomescape.user.repository;
 
 import java.util.Optional;
-import roomescape.user.domain.dto.User;
+import roomescape.user.domain.User;
 
 public interface UserRepository {
 

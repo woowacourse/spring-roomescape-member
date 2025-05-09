@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.user.domain.dto.User;
+import roomescape.user.domain.User;
 import roomescape.user.exception.NotFoundUserException;
 
 @Repository
