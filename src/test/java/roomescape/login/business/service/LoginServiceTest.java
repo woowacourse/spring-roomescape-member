@@ -3,13 +3,10 @@ package roomescape.login.business.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -25,14 +22,6 @@ class LoginServiceTest {
 
     @Autowired
     private LoginService loginService;
-
-    @LocalServerPort
-    private int port;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-    }
 
     @Test
     void 로그인_요청이_들어오면_토큰을_발급한다() {
@@ -56,5 +45,5 @@ class LoginServiceTest {
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("회원 정보가 존재하지 않습니다.");
     }
-    
+
 }

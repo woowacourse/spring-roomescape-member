@@ -4,14 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.restassured.RestAssured;
 import java.time.LocalTime;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -27,14 +24,6 @@ class ReservationTimeServiceTest {
 
     @Autowired
     private ReservationTimeService reservationTimeService;
-
-    @LocalServerPort
-    private int port;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-    }
 
     @Test
     void 모든_예약시간을_조회한다() {

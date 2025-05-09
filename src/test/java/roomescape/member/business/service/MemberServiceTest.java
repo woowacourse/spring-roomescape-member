@@ -2,13 +2,10 @@ package roomescape.member.business.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -23,14 +20,6 @@ class MemberServiceTest {
     @Autowired
     private MemberService memberService;
 
-    @LocalServerPort
-    private int port;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-    }
-
     @Test
     void 멤버를_모두_조회한다() {
         // given
@@ -40,7 +29,7 @@ class MemberServiceTest {
     }
 
     @Test
-    void id로_테마를_조회한다() {
+    void id로_멤버를_조회한다() {
         // given
         Long id = 1L;
 
