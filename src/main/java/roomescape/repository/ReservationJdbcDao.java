@@ -89,8 +89,8 @@ public class ReservationJdbcDao implements ReservationRepository {
         String sql = "select count(*) from reservation where date = :date and time_id = :timeId and theme_id = :themeId";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date", date)
-                .addValue("timeId", time.id())
-                .addValue("themeId", theme.id());
+                .addValue("timeId", time.getId())
+                .addValue("themeId", theme.getId());
         Integer count = namedJdbcTemplate.queryForObject(sql, params, Integer.class);
         return count != null && count > 0;
     }

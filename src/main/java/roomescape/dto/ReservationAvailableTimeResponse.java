@@ -12,6 +12,6 @@ public record ReservationAvailableTimeResponse(
 ) {
 
     public static ReservationAvailableTimeResponse of(final ReservationTime reservation, final boolean isBooked) {
-        return new ReservationAvailableTimeResponse(reservation.id(), reservation.startAt(), isBooked);
+        return new ReservationAvailableTimeResponse(reservation.getId(), reservation.getStartAt(), isBooked);
     }
 }

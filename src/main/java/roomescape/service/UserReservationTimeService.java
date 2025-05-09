@@ -27,7 +27,7 @@ public class UserReservationTimeService {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         return reservationTimes.stream()
-                .map(time -> ReservationAvailableTimeResponse.of(time, bookedTimeIds.contains(time.id())))
+                .map(time -> ReservationAvailableTimeResponse.of(time, bookedTimeIds.contains(time.getId())))
                 .toList();
     }
 }

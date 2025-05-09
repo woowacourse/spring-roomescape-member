@@ -11,6 +11,6 @@ public record ReservationTimeResponse(
 ) {
 
     public static ReservationTimeResponse from(final ReservationTime reservation) {
-        return new ReservationTimeResponse(reservation.id(), reservation.startAt());
+        return new ReservationTimeResponse(reservation.getId(), reservation.getStartAt());
     }
 }

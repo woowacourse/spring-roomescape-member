@@ -45,12 +45,12 @@ public class ReservationTimeJdbcDao implements ReservationTimeRepository {
     public ReservationTime save(ReservationTime reservationTime) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into reservation_time (start_at) values (:startAt)";
-        SqlParameterSource params = new MapSqlParameterSource("startAt", Time.valueOf(reservationTime.startAt()));
+        SqlParameterSource params = new MapSqlParameterSource("startAt", Time.valueOf(reservationTime.getStartAt()));
 
         namedJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new ReservationTime(id, reservationTime.startAt());
+        return new ReservationTime(id, reservationTime.getStartAt());
     }
 
     @Override

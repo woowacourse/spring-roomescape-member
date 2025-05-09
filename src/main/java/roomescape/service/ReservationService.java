@@ -42,7 +42,7 @@ public class ReservationService {
         Reservation reservation = Reservation.createIfDateTimeValid(request.name(), request.date(), time, theme);
         if (isDuplicate(reservation)) {
             throw new ReservationDuplicateException("해당 시각의 중복된 예약이 존재합니다.", reservation.getDate(),
-                    reservation.getTime().startAt(), reservation.getTheme().name());
+                    reservation.getTime().getStartAt(), reservation.getTheme().getName());
         }
 
         Reservation newReservation = reservationRepository.save(reservation);
