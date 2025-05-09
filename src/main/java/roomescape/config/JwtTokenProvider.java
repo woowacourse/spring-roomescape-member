@@ -10,8 +10,8 @@ import roomescape.domain.Member;
 @Component
 public class JwtTokenProvider {
 
-    private final static String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-    public static final int EXPIRE_DURATION = 3600000;
+    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+    private static final int EXPIRE_DURATION = 3600000;
 
     public String createTokenByMember(Member member) {
         Date now = new Date();
