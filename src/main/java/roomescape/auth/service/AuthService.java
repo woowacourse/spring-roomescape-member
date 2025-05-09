@@ -25,15 +25,15 @@ public class AuthService {
         return !userRepository.existUserByEmailAndPassword(email, password);
     }
 
+    public UserResponseDto findMemberByToken(String token) {
+        String payload = jwtTokenProvider.getPayload(token);
+        return findMember(payload);
+    }
+
     public UserResponseDto findMember(String email) {
         User user = userRepository.findUseByEmail(email)
                 .orElseThrow(() -> new NotFoundUserException("해당 유저를 찾을 수 없습니다."));
         return UserResponseDto.of(user);
-    }
-
-    public UserResponseDto findMemberByToken(String token) {
-        String payload = jwtTokenProvider.getPayload(token);
-        return findMember(payload);
     }
 
     public TokenResponseDto login(TokenRequestDto tokenRequestDto) {
