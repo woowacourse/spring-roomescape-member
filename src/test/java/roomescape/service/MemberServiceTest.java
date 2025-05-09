@@ -11,12 +11,14 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.MemberRoleType;
+import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.service.dto.request.MemberLoginCreation;
 import roomescape.service.dto.request.MemberSignUpCreation;
 import roomescape.service.dto.response.MemberResult;
 import roomescape.service.dto.response.MemberSignUpResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
@@ -39,6 +41,18 @@ class MemberServiceTest {
 
         //then
         assertThat(actual.name()).isEqualTo(creation.name());
+    }
+
+    @Test
+    @DisplayName("이미 사용 중인 이메일은 회원 가입 할 수 없다")
+    void cannotRegisterWhenExistedEmail() {
+        //given
+        MemberSignUpCreation creation = new MemberSignUpCreation("duplicate", "test@email.com", "1234");
+
+        //when //then
+        assertThatThrownBy(() -> memberService.register(creation))
+                .isInstanceOf(ExistedDuplicateValueException.class)
+                .hasMessage("이미 사용 중인 이메일입니다");
     }
 
     @Test
