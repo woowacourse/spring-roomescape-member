@@ -1,5 +1,18 @@
 # 기능 구현 목록
 
+- [ ] 로그인 페이지를 요청한다
+    - GET /login 요청시, templates/login.html 페이지를 반환한다
+- [ ] 로그인을 요청한다
+    - POST /login 요청시, 로그인 폼에 email, password 포함해 전송
+    - 응답 200 OK, timeout=60, 쿠키에 토큰 정보를 포함
+- 토큰을 생성한다
+- 쿠키를 생성한다
+- 쿠키를 조회한다
+- 토큰을 조회한다
+- [ ] 로그인 상태 확인을 요청한다
+    - GET /login/check, 쿠키
+    - 200 OK, name을 body에 포함
+
 ### 어드민 페이지
 
 - [x] "/admin" get 요청시, 어드민 페이지를 출력한다
@@ -14,7 +27,7 @@
 
 - [x] "/reservations" get 요청 시 모든 예약 정보를 반환한다.
 - [x] "/reservations/available" get 요청으로 날짜(date) 와 테마(themeId)를 쿼리 스트링으로 요청하면 예약 가능한 시간을 가져올 수 있다.
-  - 시간 정보 (timeResponse), 예약 여부 (alreadyBooked)를 반환한다.
+    - 시간 정보 (timeResponse), 예약 여부 (alreadyBooked)를 반환한다.
 
 ### 추가
 
@@ -59,7 +72,7 @@
 
 - [x] "/themes" get 요청 시 모든 테마 정보를 반환한다.
 - [ ] "/themes/popular" get 요청 시 오늘 날짜를 기준으로 8일 전 ~ 1일 전까지의 데이터에서 예약 건수가 많은 순서대로 10개의 테마를 알 수 있다.
-    
+
 ### 추가
 
 - [x] "/themes" post 요청 시 name, description, thumbnail 을 body로 전송하여 추가할 수 있다.
@@ -70,5 +83,6 @@
     - [x] 만약 해당 테마가 없다면 404 NOT FOUND 상태 코드가 반환된다.
 
 ### 예외
+
 - 동일한 이름에 대한 테마 처리
 
