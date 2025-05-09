@@ -1,7 +1,6 @@
 package roomescape.infrastructure;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -55,11 +54,9 @@ public class JwtTokenProvider {
 
     private void validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
-            Date now = new Date();
-            if (now.after(claims.getPayload().getExpiration())) {
-                throw new ExpiredTokenException();
-            }
+            Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredTokenException();
         } catch (JwtException | IllegalArgumentException e) {
             throw new InvalidTokenException();
         }
