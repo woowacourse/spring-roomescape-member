@@ -18,6 +18,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DomainException.class)
     public ResponseEntity<ProblemDetail> handleDomainException(DomainException e) {
+        log.error("Domain exception", e);
+
         ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         detail.setTitle(e.getTitle());
         detail.setDetail(e.getMessage());
@@ -27,6 +29,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ProblemDetail> handleCustomException(CustomException e) {
+        log.error("Custom exception", e);
+
         ErrorCode code = e.getErrorCode();
         ProblemDetail detail = ProblemDetail.forStatus(code.getStatus());
         detail.setTitle(e.getTitle());

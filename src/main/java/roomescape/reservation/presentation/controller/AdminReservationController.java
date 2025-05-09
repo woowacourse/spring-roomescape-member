@@ -1,5 +1,6 @@
 package roomescape.reservation.presentation.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +27,8 @@ public class AdminReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationDetailResponse> createReservation(@RequestBody AdminReservationRequest request) {
+    public ResponseEntity<ReservationDetailResponse> createReservation(
+            @Valid @RequestBody AdminReservationRequest request) {
         ReservationDto reservationDto = service.registerReservationForAdmin(request);
 
         ReservationDetailData data = queryService.getReservationDetailById(reservationDto.id());

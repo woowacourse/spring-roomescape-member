@@ -6,7 +6,6 @@ import java.time.LocalDate;
 
 public record AdminReservationRequest(
 
-
         @JsonFormat(pattern = "yyyy-MM-dd")
         @NotNull
         LocalDate date,

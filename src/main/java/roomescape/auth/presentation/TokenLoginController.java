@@ -2,6 +2,7 @@ package roomescape.auth.presentation;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,9 @@ public class TokenLoginController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> login(@RequestBody TokenRequest tokenRequest, HttpServletResponse response) {
+    public ResponseEntity<Void> login(
+            @Valid @RequestBody TokenRequest tokenRequest,
+            HttpServletResponse response) {
 
         TokenResponse tokenResponse = authService.createToken(tokenRequest);
 
