@@ -43,7 +43,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     public List<AvailableReservationTimeResponse> findAvailableTimes(LocalDate date, Long themeId) {
         Set<Long> reservedTimeIds = reservations.stream()
                 .filter(r -> r.getDate().isEqual(date) && r.getThemeId().equals(themeId))
-                .map(Reservation::getTimeId)
+                .map(reservation -> reservation.getTime().getId())
                 .collect(Collectors.toSet());
 
         return times.stream()

@@ -25,8 +25,8 @@ public class H2ReservationRepository implements ReservationRepository {
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
-                .addValue("date", reservation.getFormattedDate())
-                .addValue("time_id", reservation.getTimeId())
+                .addValue("date", reservation.getDate())
+                .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getThemeId());
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();

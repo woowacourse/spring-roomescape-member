@@ -26,7 +26,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
         String sql = "INSERT INTO reservation_time (start_at) VALUES (:start_at)";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("start_at", time.getFormattedTime());
+                .addValue("start_at", time.getStartAt());
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 

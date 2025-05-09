@@ -26,7 +26,7 @@ public class FakeReservationRepository implements ReservationRepository {
         return findAll().stream()
                 .anyMatch(reservation ->
                         reservation.getDate().equals(date) &&
-                                reservation.getTimeId().equals(timeId)
+                                reservation.getTime().getId().equals(timeId)
                 );
     }
 
@@ -38,7 +38,7 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAllByTimeId(Long id) {
         return reservations.stream()
-                .filter(reservation -> reservation.getTimeId().equals(id))
+                .filter(reservation -> reservation.getTime().getId().equals(id))
                 .toList();
     }
 }
