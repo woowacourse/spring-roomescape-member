@@ -56,11 +56,8 @@ public class ReservationTimeService {
         List<AvailableReservationTimeResult> responses = new ArrayList<>();
 
         for (ReservationTime reservationTime : totalReservationTime) {
-            if (bookedTime.contains(reservationTime)) {
-                responses.add(AvailableReservationTimeResult.of(reservationTime, true));
-                continue;
-            }
-            responses.add(AvailableReservationTimeResult.of(reservationTime, false));
+            boolean isBooked = bookedTime.contains(reservationTime);
+            responses.add(AvailableReservationTimeResult.of(reservationTime, isBooked));
         }
         return responses;
     }
