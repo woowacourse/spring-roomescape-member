@@ -4,10 +4,7 @@ import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
 import roomescape.persistence.query.CreateMemberQuery;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class FakeMemberRepository implements MemberRepository {
 
@@ -34,5 +31,10 @@ public class FakeMemberRepository implements MemberRepository {
         Member newMember = new Member(++id, createMemberQuery.name(), createMemberQuery.role(), createMemberQuery.email(), createMemberQuery.password());
         members.add(newMember);
         return id;
+    }
+
+    @Override
+    public List<Member> findAll() {
+        return Collections.unmodifiableList(members);
     }
 }

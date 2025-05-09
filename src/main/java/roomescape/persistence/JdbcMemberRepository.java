@@ -12,6 +12,7 @@ import roomescape.domain.MemberRole;
 import roomescape.persistence.query.CreateMemberQuery;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -68,5 +69,10 @@ public class JdbcMemberRepository implements MemberRepository {
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
+    }
+
+    @Override
+    public List<Member> findAll() {
+        return jdbcTemplate.query("SELECT id, role, name, email, password FROM member", userRowMapper);
     }
 }

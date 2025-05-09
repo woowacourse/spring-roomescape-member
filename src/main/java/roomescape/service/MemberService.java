@@ -10,6 +10,8 @@ import roomescape.service.param.LoginMemberParam;
 import roomescape.service.param.RegisterMemberParam;
 import roomescape.service.result.MemberResult;
 
+import java.util.List;
+
 @Service
 public class MemberService {
 
@@ -42,5 +44,11 @@ public class MemberService {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new ReservationException(id + "에 해당하는 유저가 없습니다."));
         return MemberResult.from(member);
+    }
+
+    public List<MemberResult> findAll() {
+        return memberRepository.findAll().stream()
+                .map(MemberResult::from)
+                .toList();
     }
 }

@@ -6,13 +6,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.controller.request.RegisterMemberRequest;
+import roomescape.controller.response.MemberResponse;
 import roomescape.controller.response.RegisterUserResponse;
 import roomescape.service.MemberService;
 import roomescape.service.param.RegisterMemberParam;
 import roomescape.service.result.MemberResult;
 
+import java.util.List;
+
 @Controller
-public class MemberController {
+public class MemberController { //TODO: 뷰는 따로 빼기
 
     private final MemberService memberService;
 
@@ -35,5 +38,14 @@ public class MemberController {
     @GetMapping("/login")
     public String loginForm() {
         return "login";
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity<List<MemberResponse>> findMembers() {
+        List<MemberResponse> members = memberService.findAll().stream()
+                .map(MemberResponse::from)
+                .toList();
+        
+        return ResponseEntity.ok().body(members);
     }
 }
