@@ -3,11 +3,9 @@ package roomescape.service;
 import java.util.Date;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRoleType;
 import roomescape.exception.custom.ExistedDuplicateValueException;
-import roomescape.exception.custom.InvalidRoleException;
 import roomescape.exception.custom.NotFoundValueException;
 import roomescape.jwt.JwtProvider;
 import roomescape.jwt.JwtRequest;
@@ -58,11 +56,5 @@ public class MemberService {
                 .stream()
                 .map(MemberResult::from)
                 .toList();
-    }
-
-    public void validAdminRole(final LoginMember loginMember) {
-        if (!loginMember.isSameRole(MemberRoleType.ADMIN)) {
-            throw new InvalidRoleException("관리자만 접근 가능합니다");
-        }
     }
 }
