@@ -4,8 +4,8 @@ import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.login.infrastructure.LoginAdminArgumentResolver;
-import roomescape.login.infrastructure.LoginMemberArgumentResolver;
+import roomescape.auth.login.presentation.argumentresolver.LoginAdminArgumentResolver;
+import roomescape.auth.login.presentation.argumentresolver.LoginMemberArgumentResolver;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {

@@ -1,4 +1,4 @@
-package roomescape.common.util.auth;
+package roomescape.auth.login.infrastructure;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;

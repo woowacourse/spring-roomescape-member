@@ -1,4 +1,4 @@
-package roomescape.login.infrastructure;
+package roomescape.auth.login.presentation.argumentresolver;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -8,16 +8,16 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.common.util.auth.JwtTokenManager;
-import roomescape.login.presentation.annotation.LoginAdmin;
-import roomescape.login.presentation.dto.LoginAdminInfo;
+import roomescape.auth.login.infrastructure.JwtTokenManager;
+import roomescape.auth.login.presentation.controller.dto.LoginMemberInfo;
+import roomescape.auth.login.presentation.controller.dto.annotation.LoginMember;
 
 @Component
-public class LoginAdminArgumentResolver implements HandlerMethodArgumentResolver {
+public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(LoginAdmin.class);
+        return parameter.hasParameterAnnotation(LoginMember.class);
     }
 
     @Override
@@ -35,6 +35,6 @@ public class LoginAdminArgumentResolver implements HandlerMethodArgumentResolver
                 .orElseThrow(() -> new IllegalStateException("인증할 수 없습니다."))
                 .getValue();
 
-        return new LoginAdminInfo(JwtTokenManager.getId(token));
+        return new LoginMemberInfo(JwtTokenManager.getId(token));
     }
 }

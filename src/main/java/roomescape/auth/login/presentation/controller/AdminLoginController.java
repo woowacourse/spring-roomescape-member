@@ -1,4 +1,4 @@
-package roomescape.login.presentation;
+package roomescape.auth.login.presentation.controller;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.common.util.auth.JwtTokenManager;
-import roomescape.login.presentation.annotation.LoginAdmin;
-import roomescape.login.presentation.dto.LoginAdminInfo;
-import roomescape.login.presentation.dto.LoginCheckResponse;
-import roomescape.login.presentation.dto.LoginRequest;
+import roomescape.auth.login.infrastructure.JwtTokenManager;
+import roomescape.auth.login.presentation.controller.dto.annotation.LoginAdmin;
+import roomescape.auth.login.presentation.controller.dto.LoginAdminInfo;
+import roomescape.auth.login.presentation.controller.dto.LoginCheckResponse;
+import roomescape.auth.login.presentation.controller.dto.LoginRequest;
 import roomescape.admin.domain.Admin;
 import roomescape.admin.service.AdminService;
 
