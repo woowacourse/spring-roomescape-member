@@ -41,7 +41,7 @@ public class ReservationIntegrationTest {
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
 
-        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 이름은 비어있을 수 없습니다.", "/reservations");
+        ExceptionResponse expected = new ExceptionResponse("[ERROR] 이름은 비어있을 수 없습니다.", "/reservations");
 
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -64,7 +64,7 @@ public class ReservationIntegrationTest {
         reservation.put("date", null);
         reservation.put("timeId", 1);
 
-        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 날짜는 null 일 수 없습니다.", "/reservations");
+        ExceptionResponse expected = new ExceptionResponse("[ERROR] 날짜는 null 일 수 없습니다.", "/reservations");
 
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -88,7 +88,7 @@ public class ReservationIntegrationTest {
         reservation.put("date", date);
         reservation.put("timeId", 1);
 
-        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 요청 날짜 형식이 맞지 않습니다.", "/reservations");
+        ExceptionResponse expected = new ExceptionResponse("[ERROR] 요청 날짜 형식이 맞지 않습니다.", "/reservations");
 
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -111,7 +111,7 @@ public class ReservationIntegrationTest {
         reservation.put("date", "2024-12-03");
         reservation.put("timeId", "a");
 
-        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 요청 입력이 잘못되었습니다.", "/reservations");
+        ExceptionResponse expected = new ExceptionResponse("[ERROR] 요청 입력이 잘못되었습니다.", "/reservations");
 
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -134,7 +134,7 @@ public class ReservationIntegrationTest {
         reservation.put("date", "2024-12-03");
         reservation.put("timeId", null);
 
-        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 예약 시간 번호는 null 일 수 없습니다.", "/reservations");
+        ExceptionResponse expected = new ExceptionResponse("[ERROR] 예약 시간 번호는 null 일 수 없습니다.", "/reservations");
 
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

@@ -67,7 +67,7 @@ public class ReservationTimeIntegrationTest {
         Map<String, Object> reservationTime = new HashMap<>();
         reservationTime.put("startAt", null);
 
-        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 시간은 null 일 수 없습니다.", "/times");
+        ExceptionResponse expected = new ExceptionResponse("[ERROR] 시간은 null 일 수 없습니다.", "/times");
 
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -89,7 +89,7 @@ public class ReservationTimeIntegrationTest {
         Map<String, Object> reservationTime = new HashMap<>();
         reservationTime.put("startAt", time);
 
-        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 요청 시간 형식이 맞지 않습니다.", "/times");
+        ExceptionResponse expected = new ExceptionResponse("[ERROR] 요청 시간 형식이 맞지 않습니다.", "/times");
 
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
