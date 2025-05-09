@@ -41,7 +41,7 @@ public class JwtTokenProvider implements AuthTokenProvider {
                 .claims(claims)
                 .issuedAt(now)
                 .expiration(validity)
-                .claim("role", role)
+                .claim("role", role.getRoleName())
                 .signWith(secretKey)
                 .compact();
     }
