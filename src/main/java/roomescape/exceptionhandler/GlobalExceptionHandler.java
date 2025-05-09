@@ -13,16 +13,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({NullPointerException.class, ConstraintException.class, IllegalArgumentException.class, AuthenticationException.class})
     public ResponseEntity<String> handleBadRequestException(RuntimeException e) {
+        System.out.println(e);
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     @ExceptionHandler(ResourceNotExistException.class)
     public ResponseEntity<Void> handleResourceNotExistException(ResourceNotExistException e) {
+        System.out.println(e);
         return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<Void> handleDataAccessException(DataAccessException e) {
+        System.out.println(e);
         return ResponseEntity.internalServerError().build();
     }
 }
