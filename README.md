@@ -188,3 +188,9 @@ host: localhost:8080
 "memberId": 1
 }
 ``` 
+
+
+TODO
+- Service, Repository 테스트 작성
+- Repository 리팩터링
+- 

@@ -111,8 +111,9 @@ public class ReservationServiceTest {
         when(reservationRepository.save(any(), any(), any())).thenReturn(
                 new Reservation(1L, member, 예약날짜_오늘, reservationTime, theme)
         );
+        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
 
-        ReservationResponse response = service.createReservation(request, member);
+        ReservationResponse response = service.createReservation(request, member.getId());
 
         assertThat(response.name()).isEqualTo("홍길동");
     }
@@ -129,7 +130,7 @@ public class ReservationServiceTest {
         ReservationCreateRequest request = new ReservationCreateRequest(예약날짜_오늘.getDate(), 999L, 1L);
         when(reservationTimeRepository.findById(999L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> service.createReservation(request, member))
+        assertThatThrownBy(() -> service.createReservation(request, member.getId()))
                 .isInstanceOf(NoSuchElementException.class);
     }
 
@@ -148,7 +149,7 @@ public class ReservationServiceTest {
         when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(reservationTime));
         when(reservationRepository.existSameDateTime(any(), eq(1L))).thenReturn(true);
 
-        assertThatThrownBy(() -> service.createReservation(request, member))
+        assertThatThrownBy(() -> service.createReservation(request, member.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -168,7 +169,7 @@ public class ReservationServiceTest {
         when(reservationRepository.existSameDateTime(any(), eq(1L))).thenReturn(false);
         when(themeRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> service.createReservation(request, member))
+        assertThatThrownBy(() -> service.createReservation(request, member.getId()))
                 .isInstanceOf(NoSuchElementException.class);
     }
 

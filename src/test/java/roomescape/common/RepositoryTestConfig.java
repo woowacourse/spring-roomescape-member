@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import roomescape.integration.fixture.MemberDbFixture;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -30,6 +31,11 @@ public class RepositoryTestConfig {
     @Bean
     public ReservationTimeRepository reservationTimeRepository(JdbcTemplate jdbcTemplate) {
         return new ReservationTimeRepository(jdbcTemplate);
+    }
+
+    @Bean
+    public MemberRepository memberRepository(JdbcTemplate jdbcTemplate) {
+        return new MemberRepository(jdbcTemplate);
     }
 
     @Bean

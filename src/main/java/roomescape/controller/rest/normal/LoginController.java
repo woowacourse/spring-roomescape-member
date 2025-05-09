@@ -24,8 +24,7 @@ public class LoginController {
 
     @PostMapping
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpSession session) {
-        LoginService member = loginService;
-        member.login(request);
+        Member member = loginService.login(request);
         session.setAttribute("LOGIN_MEMBER", member);
         return ResponseEntity.ok().build();
     }
