@@ -74,12 +74,10 @@ function login() {
     })
   })
       .then(response => {
-        if (200 === !response.status) {
-          alert('Login failed'); // 로그인 실패 시 경고창 표시
-          throw new Error('Login failed');
+        if (response.status !== 200) {
+            // alert(response.body.message); // 로그인 실패 시 경고창 표시
+            throw new Error('Login failed');
         }
-      })
-      .then(() => {
         updateUIBasedOnLogin(); // UI 업데이트
         window.location.href = '/';
       })
@@ -113,7 +111,7 @@ function register(event) {
   };
 
   // AJAX 요청 생성 및 전송
-  fetch('/members', {
+  fetch('/signup', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
