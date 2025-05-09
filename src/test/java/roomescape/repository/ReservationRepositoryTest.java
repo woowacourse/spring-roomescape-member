@@ -9,9 +9,11 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.dao.FakeMemberDaoImpl;
 import roomescape.dao.FakeReservationDaoImpl;
 import roomescape.dao.FakeReservationTimeDaoImpl;
 import roomescape.dao.FakeThemeDaoImpl;
+import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -25,6 +27,7 @@ import roomescape.repository.impl.ReservationRepositoryImpl;
 public class ReservationRepositoryTest {
 
     private ReservationRepository reservationRepository;
+    private MemberDao memberDao;
     private ReservationTimeDao reservationTimeDao;
     private ThemeDao themeDao;
     private ReservationDao reservationDao;
@@ -32,6 +35,7 @@ public class ReservationRepositoryTest {
     @BeforeEach
     void init() {
         reservationDao = new FakeReservationDaoImpl();
+        memberDao = new FakeMemberDaoImpl();
         themeDao = new FakeThemeDaoImpl();
         reservationTimeDao = new FakeReservationTimeDaoImpl();
         reservationRepository = new ReservationRepositoryImpl(reservationDao);
@@ -47,7 +51,8 @@ public class ReservationRepositoryTest {
     @Test
     @DisplayName("존재하는 예약ID를 가져오려고 할 경우, 성공해야 한다")
     void exist_reservation_id_get_then_success() {
-        Reservation reservation = createReservation(createTheme(), createReservationTime());
+        Reservation reservation = createReservation(createMember(), createTheme(),
+            createReservationTime());
         long savedId = reservationDao.save(reservation);
         reservation.setId(savedId);
         assertThatCode(() -> reservationRepository.findById(savedId))
@@ -57,7 +62,8 @@ public class ReservationRepositoryTest {
     @Test
     @DisplayName("존재하지 않는 예약ID를 삭제하려고 할 경우, 예외가 발생해야 한다.")
     void not_exist_theme_id_delete_then_throw_exception() {
-        Reservation reservation = createReservation(createTheme(), createReservationTime());
+        Reservation reservation = createReservation(createMember(), createTheme(),
+            createReservationTime());
         long savedId = reservationDao.save(reservation);
         reservation.setId(savedId);
         assertThatCode(() -> reservationRepository.delete(savedId))
@@ -70,12 +76,13 @@ public class ReservationRepositoryTest {
         //given
         Theme theme = createTheme();
         ReservationTime reservationTime = createReservationTime();
-        Reservation reservation = createReservation(theme, reservationTime);
+        Member member = createMember();
+        Reservation reservation = createReservation(member, theme, reservationTime);
         long savedId = reservationDao.save(reservation);
         reservation.setId(savedId);
 
         //when
-        Reservation anotherReservation = createReservation(theme, reservationTime);
+        Reservation anotherReservation = createReservation(member, theme, reservationTime);
         boolean result = reservationRepository.hasAnotherReservation(
             anotherReservation.getReservationDate(),
             anotherReservation.getTimeId());
@@ -84,13 +91,21 @@ public class ReservationRepositoryTest {
         assertThat(result).isTrue();
     }
 
-    private Reservation createReservation(Theme theme, ReservationTime reservationTime) {
+    private Reservation createReservation(Member member, Theme theme,
+        ReservationTime reservationTime) {
         return new Reservation(
-            new Member("jenson"),
+            member,
             new ReservationDate(LocalDate.of(2025, 5, 5)),
             reservationTime,
             theme
         );
+    }
+
+    private Member createMember() {
+        Member member = new Member("testMember", "a@email.com", "aaa");
+        long savedId = memberDao.save(member);
+        member.setId(savedId);
+        return member;
     }
 
     private Theme createTheme() {

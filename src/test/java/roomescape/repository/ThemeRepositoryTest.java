@@ -7,9 +7,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.dao.FakeMemberDaoImpl;
 import roomescape.dao.FakeReservationDaoImpl;
 import roomescape.dao.FakeReservationTimeDaoImpl;
 import roomescape.dao.FakeThemeDaoImpl;
+import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -23,6 +25,7 @@ import roomescape.repository.impl.ThemeRepositoryImpl;
 
 public class ThemeRepositoryTest {
 
+    private final MemberDao memberDao = new FakeMemberDaoImpl();
     private final ThemeDao themeDao = new FakeThemeDaoImpl();
     private final ReservationTimeDao reservationTimeDao = new FakeReservationTimeDaoImpl();
     private final ReservationDao reservationDao = new FakeReservationDaoImpl();
@@ -40,6 +43,10 @@ public class ThemeRepositoryTest {
     void delete_already_use_other_theme_id_then_throw_exception() {
 
         //given
+        Member member = new Member("testMember", "a@email.com", "aaa");
+        long savedMemberId = memberDao.save(member);
+        member.setId(savedMemberId);
+
         Theme theme = new Theme("공포", "공포테마입니다", "http://aaa");
         long savedThemeId = themeDao.save(theme);
         theme.setId(savedThemeId);
@@ -49,7 +56,7 @@ public class ThemeRepositoryTest {
         reservationTime.setId(savedReservationTimeId);
 
         Reservation reservation = new Reservation(
-            new Member("jenson"),
+            member,
             new ReservationDate(LocalDate.of(2025, 5, 5)),
             reservationTime,
             theme
