@@ -7,6 +7,7 @@ import roomescape.common.exception.NotFoundException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
+import roomescape.dto.auth.MemberInfoDto;
 import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.dto.reservationtime.ReservationTimeResponseDto;
@@ -28,8 +29,9 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
-    public ReservationResponseDto saveReservation(ReservationRequestDto reservationRequestDto) {
-        Reservation reservation = createReservation(reservationRequestDto);
+    public ReservationResponseDto saveReservation(ReservationRequestDto reservationRequestDto,
+                                                  MemberInfoDto memberInfoDto) {
+        Reservation reservation = createReservation(reservationRequestDto, memberInfoDto);
         validateReservation(reservation);
 
         Long id = reservationDao.saveReservation(reservation);
@@ -55,14 +57,15 @@ public class ReservationService {
         reservationDao.deleteById(id);
     }
 
-    private Reservation createReservation(ReservationRequestDto reservationRequestDto) {
+    private Reservation createReservation(ReservationRequestDto reservationRequestDto,
+                                          MemberInfoDto memberInfoDto) {
         ReservationTime foundTime = reservationTimeDao.findById(reservationRequestDto.timeId())
                 .orElseThrow(() -> new NotFoundException("id 에 해당하는 예약 시각이 존재하지 않습니다."));
 
         Theme foundTheme = themeDao.findById(reservationRequestDto.themeId())
                 .orElseThrow(() -> new NotFoundException("id 에 해당하는 테마가 존재하지 않습니다."));
 
-        return reservationRequestDto.convertToReservation(foundTime, foundTheme);
+        return reservationRequestDto.convertToReservation(memberInfoDto, foundTime, foundTheme);
     }
 
     private void validateReservation(Reservation reservation) {

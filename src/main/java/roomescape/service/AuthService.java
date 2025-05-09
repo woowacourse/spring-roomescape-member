@@ -4,38 +4,39 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.NotFoundException;
 import roomescape.common.exception.UnauthorizedException;
-import roomescape.dao.CustomerDao;
+import roomescape.dao.MemberDao;
+import roomescape.dto.auth.MemberInfoDto;
 import roomescape.dto.auth.LoginRequestDto;
-import roomescape.dto.customer.CustomerResponseDto;
-import roomescape.model.Customer;
+import roomescape.model.Member;
 import roomescape.common.util.JwtProvider;
 
 @Service
 public class AuthService {
 
-    private final CustomerDao customerDao;
+    private final MemberDao memberDao;
     private final JwtProvider jwtProvider;
 
-    public AuthService(CustomerDao customerDao, JwtProvider jwtProvider) {
-        this.customerDao = customerDao;
+    public AuthService(MemberDao memberDao, JwtProvider jwtProvider) {
+        this.memberDao = memberDao;
         this.jwtProvider = jwtProvider;
     }
 
     public String loginAndGenerateToken(LoginRequestDto loginRequestDto){
-        Customer customer = loginRequestDto.convertToUser();
-        boolean isExists = customerDao.existsByEmailAndPassword(customer);
+        Member member = loginRequestDto.convertToUser();
+        boolean isExists = memberDao.existsByEmailAndPassword(member);
         if (!isExists) {
             throw new UnauthorizedException("존재하지 않는 email 혹은 틀린 password 입니다.");
         }
-        return jwtProvider.createToken(customer);
+        return jwtProvider.createToken(member);
     }
 
-    public CustomerResponseDto findByToken(String token) {
+    public MemberInfoDto findByToken(String token) {
         Long customerId = jwtProvider.getSubjectFromToken(token);
-        Optional<Customer> customer = customerDao.findById(customerId);
+        Optional<Member> customer = memberDao.findById(customerId);
         if (customer.isEmpty()) {
             throw new NotFoundException("존재하지 않는 user 정보입니다.");
         }
-        return CustomerResponseDto.from(customer.get());
+        Member getMember = customer.get();
+        return new MemberInfoDto(getMember.getName());
     }
 }

@@ -1,11 +1,10 @@
 package roomescape.common.util;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import org.springframework.stereotype.Component;
-import roomescape.model.Customer;
+import roomescape.model.Member;
 
 @Component
 public class JwtProvider {
@@ -13,16 +12,16 @@ public class JwtProvider {
     private final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
 
 
-    public String createToken(Customer customer){
+    public String createToken(Member member){
 
         Date now = new Date();
         Date expiry = new Date(now.getTime() + EXPIRATION_TIME);
 
         return Jwts.builder()
-                .setSubject(customer.getId().toString())
+                .setSubject(member.getId().toString())
                 .setIssuedAt(now)
                 .setExpiration(expiry)
-                .claim("name", customer.getName())
+                .claim("name", member.getName())
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
     }
