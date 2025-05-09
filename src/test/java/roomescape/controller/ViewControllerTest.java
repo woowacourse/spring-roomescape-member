@@ -12,7 +12,7 @@ import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class AdminViewControllerTest {
+public class ViewControllerTest {
 
     @Test
     @DisplayName("/ GET 요청에 응답한다")
@@ -37,7 +37,7 @@ public class AdminViewControllerTest {
 
     @Test
     @DisplayName("/admin/reservation GET 요청에 응답한다")
-    void admin_reservation_page() {
+    void admin_adminReservation_page() {
         String token = getAdminToken();
 
         RestAssured.given().log().all()
