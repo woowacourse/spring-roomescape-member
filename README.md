@@ -411,3 +411,23 @@
         "name": "어드민"
     }
     ```
+
+사용자 로그아웃
+- [x] 로그아웃 요청(POST /auth/logout) API 구현
+  - [x] 클라이언트로부터 전달된 Cookie에서 토큰을 제거합니다.
+  - [x] token 쿠키를 빈 값으로 설정하고 Max-Age=0으로 만료시킵니다.
+  - Request
+    ```
+    POST /auth/logout HTTP/1.1
+    Host: localhost:8080
+    Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+    Content-Length: 0
+    ```
+
+  - Response
+    ```
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    Keep-Alive: timeout=60
+    Set-Cookie: token=; Max-Age=0; Path=/; HttpOnly
+    ```

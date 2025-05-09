@@ -64,6 +64,26 @@ public class AuthController {
                 .body(response);
     }
 
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(final HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Connection", "keep-alive");
+        headers.set("Keep-Alive", "timeout=60");
+
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_JSON)
+                .build();
+    }
+
     private String extractTokenFromCookie(Cookie[] cookies) {
         if (cookies == null) {
             return "";
