@@ -19,7 +19,7 @@ public enum AuthRole {
 
     public static AuthRole from(final String roleName) {
         return Arrays.stream(values())
-                .filter(userRole -> userRole.roleName.equals(roleName))
+                .filter(authRole -> authRole.roleName.equals(roleName))
                 .findFirst()
                 .orElse(AuthRole.GUEST);
     }

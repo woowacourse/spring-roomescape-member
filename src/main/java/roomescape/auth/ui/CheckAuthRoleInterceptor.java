@@ -12,7 +12,7 @@ import roomescape.auth.domain.AuthTokenProvider;
 import roomescape.auth.domain.RequiresRole;
 
 @RequiredArgsConstructor
-public class CheckUserRoleInterceptor implements HandlerInterceptor {
+public class CheckAuthRoleInterceptor implements HandlerInterceptor {
 
     private final AuthTokenExtractor<String> authTokenExtractor;
     private final AuthTokenProvider authTokenProvider;
@@ -33,6 +33,6 @@ public class CheckUserRoleInterceptor implements HandlerInterceptor {
         final AuthRole role = authTokenProvider.getRole(accessToken);
 
         return Arrays.stream(requiresRole.authRoles())
-                .anyMatch(userRole -> userRole == role);
+                .anyMatch(authRole -> authRole == role);
     }
 }
