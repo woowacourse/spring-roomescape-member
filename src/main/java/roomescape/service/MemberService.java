@@ -1,17 +1,20 @@
 package roomescape.service;
 
 import java.util.Date;
+import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRoleType;
 import roomescape.exception.custom.ExistedDuplicateValueException;
+import roomescape.exception.custom.InvalidRoleException;
 import roomescape.exception.custom.NotFoundValueException;
 import roomescape.jwt.JwtProvider;
 import roomescape.jwt.JwtRequest;
 import roomescape.repository.MemberRepository;
 import roomescape.service.dto.request.MemberLoginCreation;
 import roomescape.service.dto.request.MemberSignUpCreation;
-import roomescape.service.dto.response.MemberLoginCheckResult;
+import roomescape.service.dto.response.MemberResult;
 import roomescape.service.dto.response.MemberSignUpResult;
 
 @Service
@@ -50,8 +53,16 @@ public class MemberService {
         return jwtProvider.generateToken(jwtRequest);
     }
 
-    public MemberLoginCheckResult varifyToken(final String token) {
-        JwtRequest jwtRequest = jwtProvider.verifyToken(token);
-        return MemberLoginCheckResult.from(jwtRequest);
+    public List<MemberResult> getAllMemberByRole(MemberRoleType role) {
+        return memberRepository.findAllByRole(role)
+                .stream()
+                .map(MemberResult::from)
+                .toList();
+    }
+
+    public void validAdminRole(final LoginMember loginMember) {
+        if (!loginMember.isSameRole(MemberRoleType.ADMIN)) {
+            throw new InvalidRoleException("관리자만 접근 가능합니다");
+        }
     }
 }

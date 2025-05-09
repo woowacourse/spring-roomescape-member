@@ -40,7 +40,7 @@ class ReservationServiceTest {
 
         //then
         assertAll(
-                () -> assertThat(reservationService.findAllReservations()).hasSize(2),
+                () -> assertThat(reservationService.getAllReservations()).hasSize(2),
                 () -> assertThat(actual.id()).isEqualTo(2L)
         );
     }
@@ -109,7 +109,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 조회한다")
     void findReservation() {
         //given //when
-        List<ReservationResult> actual = reservationService.findAllReservations();
+        List<ReservationResult> actual = reservationService.getAllReservations();
 
         //then
         assertThat(actual).hasSize(1);

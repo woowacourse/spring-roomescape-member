@@ -58,7 +58,7 @@ class JwtProviderTest {
                 .subject(Long.toString(jwtRequest.id()))
                 .claim("name", jwtRequest.name())
                 .claim("email", jwtRequest.email())
-                .claim("role", jwtRequest.memberRoleType())
+                .claim("role", jwtRequest.role())
                 .issuer(ISSUER)
                 .issuedAt(jwtRequest.issuedAt())
                 .expiration(new Date(jwtRequest.issuedAt().getTime() + 100000))
@@ -71,7 +71,7 @@ class JwtProviderTest {
         //then
         assertAll(
                 () -> assertThat(actual.email()).isEqualTo(jwtRequest.email()),
-                () -> assertThat(actual.memberRoleType()).isEqualTo(actual.memberRoleType()),
+                () -> assertThat(actual.role()).isEqualTo(actual.role()),
                 () -> assertThat(roundOfMill(actual.issuedAt())).isEqualTo(roundOfMill(jwtRequest.issuedAt()))
         );
     }
@@ -91,7 +91,7 @@ class JwtProviderTest {
                 .subject(Long.toString(jwtRequest.id()))
                 .claim("name", jwtRequest.name())
                 .claim("email", jwtRequest.email())
-                .claim("role", jwtRequest.memberRoleType())
+                .claim("role", jwtRequest.role())
                 .issuer(ISSUER)
                 .issuedAt(jwtRequest.issuedAt())
                 .expiration(new Date(jwtRequest.issuedAt().getTime() - 10000))
@@ -114,7 +114,7 @@ class JwtProviderTest {
                 .subject(Long.toString(jwtRequest.id()))
                 .claim("name", jwtRequest.name())
                 .claim("email", jwtRequest.email())
-                .claim("role", jwtRequest.memberRoleType())
+                .claim("role", jwtRequest.role())
                 .issuer(ISSUER)
                 .issuedAt(jwtRequest.issuedAt())
                 .expiration(new Date(jwtRequest.issuedAt().getTime() - 10000))

@@ -1,6 +1,5 @@
-package roomescape.util;
+package roomescape.config.argumentResolver;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -9,16 +8,17 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.LoginMember;
-import roomescape.service.MemberService;
-import roomescape.service.dto.response.MemberLoginCheckResult;
+import roomescape.jwt.JwtProvider;
+import roomescape.jwt.JwtRequest;
+import roomescape.util.CookieParser;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberService memberService;
+    private final JwtProvider jwtProvider;
 
-    public LoginMemberArgumentResolver(MemberService memberService) {
-        this.memberService = memberService;
+    public LoginMemberArgumentResolver(final JwtProvider jwtProvider) {
+        this.jwtProvider = jwtProvider;
     }
 
     @Override
@@ -32,23 +32,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        String tokenCookie = getTokenCookie(request);
-        MemberLoginCheckResult memberLoginCheckResult = memberService.varifyToken(tokenCookie);
+        String tokenCookie = CookieParser.getTokenCookie(request, "token");
+        JwtRequest jwtRequest = jwtProvider.verifyToken(tokenCookie);
 
-        return new LoginMember(memberLoginCheckResult.id(), memberLoginCheckResult.name(),
-                memberLoginCheckResult.email(), memberLoginCheckResult.role());
-    }
-
-    private String getTokenCookie(final HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            return "";
-        }
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-        return "";
+        return new LoginMember(jwtRequest.id(), jwtRequest.name(), jwtRequest.email(), jwtRequest.role());
     }
 }

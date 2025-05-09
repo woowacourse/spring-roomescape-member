@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.annotation.AdminOnly;
 import roomescape.controller.dto.request.CreateReservationTimeRequest;
 import roomescape.controller.dto.response.AvailableReservationTimeResponse;
 import roomescape.controller.dto.response.ReservationTimeResponse;
+import roomescape.domain.LoginMember;
+import roomescape.service.MemberService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.request.ReservationTimeCreation;
 import roomescape.service.dto.response.ReservationTimeResult;
@@ -24,22 +27,27 @@ import roomescape.service.dto.response.ReservationTimeResult;
 @RestController
 public class ReservationTimeController {
 
+    private final MemberService memberService;
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(final ReservationTimeService reservationTimeService) {
+    public ReservationTimeController(final MemberService memberService,
+                                     final ReservationTimeService reservationTimeService) {
+        this.memberService = memberService;
         this.reservationTimeService = reservationTimeService;
     }
 
+    @AdminOnly
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationTimeResponse addReservationTime(@RequestBody @Valid CreateReservationTimeRequest request) {
+    public ReservationTimeResponse addReservationTime(@RequestBody @Valid CreateReservationTimeRequest request,
+                                                      LoginMember member) {
         final ReservationTimeCreation creation = ReservationTimeCreation.from(request);
         ReservationTimeResult reservationTimeResult = reservationTimeService.addReservationTime(creation);
         return ReservationTimeResponse.from(reservationTimeResult);
     }
 
     @GetMapping
-    public List<ReservationTimeResponse> findAllReservationTimes() {
+    public List<ReservationTimeResponse> findAllReservationTimes(LoginMember member) {
         return reservationTimeService.findAllReservationTimes()
                 .stream()
                 .map(ReservationTimeResponse::from)
@@ -48,7 +56,8 @@ public class ReservationTimeController {
 
     @GetMapping("/available")
     public List<AvailableReservationTimeResponse> findAvailableTime(@RequestParam(value = "date") LocalDate date,
-                                                                    @RequestParam(value = "themeId") long themeId) {
+                                                                    @RequestParam(value = "themeId") long themeId,
+                                                                    LoginMember member) {
         return reservationTimeService.findAllAvailableTime(date, themeId)
                 .stream()
                 .map(AvailableReservationTimeResponse::from)
@@ -57,7 +66,8 @@ public class ReservationTimeController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteReservationTime(@PathVariable long id) {
+    public void deleteReservationTime(@PathVariable long id, LoginMember member) {
+        memberService.validAdminRole(member);
         reservationTimeService.deleteById(id);
     }
 }

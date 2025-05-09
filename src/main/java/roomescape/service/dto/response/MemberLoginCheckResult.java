@@ -7,6 +7,6 @@ public record MemberLoginCheckResult(long id, String name, String email, MemberR
 
     public static MemberLoginCheckResult from(JwtRequest jwtRequest) {
         return new MemberLoginCheckResult(jwtRequest.id(), jwtRequest.name(),
-                jwtRequest.email(), jwtRequest.memberRoleType());
+                jwtRequest.email(), jwtRequest.role());
     }
 }

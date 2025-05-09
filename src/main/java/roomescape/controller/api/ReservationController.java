@@ -39,7 +39,7 @@ public class ReservationController {
 
     @GetMapping
     public List<ReservationResponse> findAllReservations() {
-        return reservationService.findAllReservations()
+        return reservationService.getAllReservations()
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();

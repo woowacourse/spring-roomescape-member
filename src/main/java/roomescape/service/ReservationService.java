@@ -15,7 +15,9 @@ import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.RoomThemeRepository;
+import roomescape.repository.criteria.ReservationCriteria;
 import roomescape.service.dto.request.ReservationCreation;
+import roomescape.service.dto.request.ReservationCriteriaCreation;
 import roomescape.service.dto.response.ReservationResult;
 
 @Service
@@ -43,7 +45,7 @@ public class ReservationService {
         validateDuplicateReservation(reservation);
 
         final long savedId = reservationRepository.insert(reservation);
-        final Reservation savedReservation = findById(savedId);
+        final Reservation savedReservation = getReservationById(savedId);
 
         return ReservationResult.from(savedReservation);
     }
@@ -96,12 +98,12 @@ public class ReservationService {
                 reservation.getTheme().getId());
     }
 
-    private Reservation findById(final long savedId) {
+    private Reservation getReservationById(final long savedId) {
         return reservationRepository.findById(savedId)
                 .orElseThrow(() -> new NotFoundValueException("존재하지 않는 예약입니다"));
     }
 
-    public List<ReservationResult> findAllReservations() {
+    public List<ReservationResult> getAllReservations() {
         return reservationRepository.findAll()
                 .stream()
                 .map(ReservationResult::from)

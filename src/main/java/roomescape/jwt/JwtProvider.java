@@ -30,7 +30,7 @@ public class JwtProvider {
                 .subject(Long.toString(jwtRequest.id()))
                 .claim("name", jwtRequest.name())
                 .claim("email", jwtRequest.email())
-                .claim("role", jwtRequest.memberRoleType())
+                .claim("role", jwtRequest.role())
                 .issuer(ISSUER)
                 .issuedAt(jwtRequest.issuedAt())
                 .expiration(new Date(jwtRequest.issuedAt().getTime() + ACCESS_EXPIRATION))
