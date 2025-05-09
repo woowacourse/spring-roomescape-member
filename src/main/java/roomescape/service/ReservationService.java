@@ -88,6 +88,13 @@ public class ReservationService {
         return getAvailableReservationTimeResponses(reservationTimes, bookedReservationTimes);
     }
 
+    public List<ReservationResponse> search(Long memberId, Long themeId, LocalDate from, LocalDate to) {
+        List<Reservation> findReservations = reservationDao.findByMemberIdAndThemeIdAndDateBetween(memberId, themeId, from, to);
+        return findReservations.stream()
+            .map(ReservationResponse::of)
+            .toList();
+    }
+
     private LoginMember createLoginMember(LoginCheckRequest loginCheckRequest) {
         return new LoginMember(
             loginCheckRequest.id(), loginCheckRequest.name(), loginCheckRequest.email(), loginCheckRequest.role());

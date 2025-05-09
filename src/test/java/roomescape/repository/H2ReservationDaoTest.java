@@ -96,4 +96,24 @@ class H2ReservationDaoTest {
             new Theme(2L, "", "", "")));
         assertThat(findReservation).isEqualTo(expected);
     }
+
+    @Test
+    void 멤버_ID_테마_ID_날짜_범위로_예약을_조회한다() {
+        Long memberId = 2L;
+        Long themeId = 3L;
+        LocalDate from = LocalDate.of(2025, 4, 20);
+        LocalDate to = LocalDate.of(2025, 4, 30);
+
+        List<Reservation> result = reservationDao.findByMemberIdAndThemeIdAndDateBetween(memberId, themeId, from, to);
+
+        List<Reservation> expected = List.of(new Reservation(
+            6L,
+            new LoginMember(2L, "브라운", "brown@email.com", Role.USER),
+            LocalDate.of(2025, 4, 25),
+            new ReservationTime(4L, LocalTime.of(16, 0)),
+            new Theme(3L, "", "", "")
+        ));
+
+        assertThat(result).isEqualTo(expected);
+    }
 }

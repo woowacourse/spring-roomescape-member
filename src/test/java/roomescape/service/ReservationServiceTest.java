@@ -114,4 +114,32 @@ class ReservationServiceTest {
                 new AvailableReservationTimeResponse(1L, LocalTime.of(10, 0), false)
             ));
     }
+
+    @Test
+    void 검색조건으로_예약을_조회한다() {
+        Long memberId = 1L;
+        Long themeId = 1L;
+        LocalDate from = LocalDate.of(2025, 1, 1);
+        LocalDate to = LocalDate.of(2025, 1, 3);
+
+        List<Reservation> reservations = List.of(
+            new Reservation(1L, new LoginMember(memberId, "어드민", "admin@email.com", Role.ADMIN),
+                LocalDate.of(2025, 1, 2),
+                new ReservationTime(1L, LocalTime.of(10, 0)),
+                new Theme(themeId, "테마1", "", ""))
+        );
+
+        Mockito.when(reservationDao.findByMemberIdAndThemeIdAndDateBetween(memberId, themeId, from, to))
+            .thenReturn(reservations);
+
+        List<ReservationResponse> result = reservationService.search(memberId, themeId, from, to);
+
+        assertThat(result).isEqualTo(List.of(
+            new ReservationResponse(1L,
+                LoginCheckResponse.from(memberId, "어드민"),
+                LocalDate.of(2025, 1, 2),
+                new ReservationTimeResponse(1L, LocalTime.of(10, 0)),
+                new ThemeResponse(themeId, "테마1", "", ""))
+        ));
+    }
 }

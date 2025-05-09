@@ -160,4 +160,23 @@ class ReservationApiTest {
             .then().log().all()
             .statusCode(400);
     }
+
+    @Test
+    void 어드민이_조건에_맞는_예약을_조회한다() {
+        String themeId = "2";
+        String memberId = "1";
+        String dateFrom = LocalDate.of(2025, 4, 1).toString();
+        String dateTo = LocalDate.of(2025, 5, 1).toString();
+
+        RestAssured.given().log().all()
+            .cookie("token", TOKEN)
+            .queryParam("themeId", themeId)
+            .queryParam("memberId", memberId)
+            .queryParam("dateFrom", dateFrom)
+            .queryParam("dateTo", dateTo)
+            .when().get("/admin/reservations")
+            .then().log().all()
+            .statusCode(200)
+            .body("size()", is(3));
+    }
 }

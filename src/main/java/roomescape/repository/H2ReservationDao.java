@@ -138,6 +138,38 @@ public class H2ReservationDao implements ReservationDao {
         return jdbcTemplate.query(sql, mapSqlParameterSource, getReservationRowMapper());
     }
 
+    @Override
+    public List<Reservation> findByMemberIdAndThemeIdAndDateBetween(Long memberId, Long themeId, LocalDate from, LocalDate to) {
+        String sql = """
+            SELECT
+                 r.id AS id,
+                 m.id AS member_id,
+                 m.name AS member_name,
+                 m.email AS member_email,
+                 m.role AS member_role,
+                 r.date AS date,
+                 t.id AS time_id,
+                 t.start_at AS time_value,
+                 th.id AS theme_id,
+                 th.name AS theme_name,
+                 th.description AS theme_description,
+                 th.thumbnail AS theme_thumbnail
+            FROM reservation r
+            JOIN reservation_time t ON r.time_id = t.id
+            JOIN theme th ON r.theme_id = th.id
+            JOIN member m ON r.member_id = m.id
+            WHERE m.id = :member_id AND th.id = :theme_id
+                  AND r.date BETWEEN :date_from AND :date_to
+            """;
+
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("theme_id", themeId)
+            .addValue("member_id", memberId)
+            .addValue("date_from", from)
+            .addValue("date_to", to);
+        return jdbcTemplate.query(sql, mapSqlParameterSource, getReservationRowMapper());
+    }
+
     private RowMapper<Reservation> getReservationRowMapper() {
         return (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("id"),
