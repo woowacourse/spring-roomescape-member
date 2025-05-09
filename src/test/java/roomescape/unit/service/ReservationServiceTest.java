@@ -39,24 +39,17 @@ class ReservationServiceTest {
     private ThemeRepository themeRepository;
     private MemberRepository memberRepository;
 
+    private LoginMember loginMember;
+
     @BeforeEach
     void setup() {
-        reservationRepository = new FakeReservationRepository();
-        reservationTimeRepository = new FakeReservationTimeRepository();
-        themeRepository = new FakeThemeRepository();
-        memberRepository = new FakeMemberRepository();
-
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
-                themeRepository, memberRepository);
+        initReservationService();
+        initLoginMember();
     }
 
     @Test
     void 예약을_추가하고_조회할_수_있다() {
         // given
-        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
-        Member member = memberRepository.add(beforeAddMember);
-        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
-
         ReservationTime reservationTime = new ReservationTime( LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
 
@@ -76,10 +69,6 @@ class ReservationServiceTest {
     @Test
     void 이전_날짜에_예약할_수_없다() {
         // given
-        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
-        Member member = memberRepository.add(beforeAddMember);
-        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
-
         ReservationTime reservationTime = new ReservationTime( LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
 
@@ -97,10 +86,6 @@ class ReservationServiceTest {
     @Test
     void 같은날짜일시_이전_시간에_예약할_수_없다() {
         // given
-        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
-        Member member = memberRepository.add(beforeAddMember);
-        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
-
         ReservationTime pastTime = new ReservationTime( LocalTime.now().minusHours(1L));
         long pastTimeId = reservationTimeRepository.add(pastTime).getId();
 
@@ -118,10 +103,6 @@ class ReservationServiceTest {
     @Test
     void 이후_날짜에_예약할_수_있다() {
         // given
-        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
-        Member member = memberRepository.add(beforeAddMember);
-        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
-
         ReservationTime reservationTime = new ReservationTime( LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
 
@@ -139,10 +120,6 @@ class ReservationServiceTest {
     @Test
     void 같은날짜일시_이후_시간_예약할_수_있다() {
         // given
-        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
-        Member member = memberRepository.add(beforeAddMember);
-        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
-
         ReservationTime reservationTime = new ReservationTime( LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
 
@@ -160,10 +137,6 @@ class ReservationServiceTest {
     @Test
     void 예약을_삭제하고_조회할_수_있다() {
         // given
-        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
-        Member member = memberRepository.add(beforeAddMember);
-        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
-
         ReservationTime reservationTime = new ReservationTime( LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
 
@@ -187,10 +160,6 @@ class ReservationServiceTest {
     @Test
     void 중복_예약은_불가능하다() {
         // given
-        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
-        Member member = memberRepository.add(beforeAddMember);
-        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
-
         ReservationTime reservationTime = new ReservationTime( LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
 
@@ -233,5 +202,21 @@ class ReservationServiceTest {
 
         //then
         assertThat(reservations).hasSize(3);
+    }
+
+    private void initReservationService() {
+        reservationRepository = new FakeReservationRepository();
+        reservationTimeRepository = new FakeReservationTimeRepository();
+        themeRepository = new FakeThemeRepository();
+        memberRepository = new FakeMemberRepository();
+
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
+                themeRepository, memberRepository);
+    }
+
+    private void initLoginMember() {
+        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
+        Member member = memberRepository.add(beforeAddMember);
+        loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
     }
 }

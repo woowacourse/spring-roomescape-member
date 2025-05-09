@@ -18,14 +18,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.dto.request.CreateReservationRequest;
+import roomescape.dto.request.CreateReservationTimeRequest;
+import roomescape.dto.request.CreateThemeRequest;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
+import roomescape.service.AuthService;
+import roomescape.service.ReservationService;
+import roomescape.service.ReservationTimeService;
+import roomescape.service.ThemeService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -36,6 +44,18 @@ class ReservationIntegrateTest {
     private final String PASSWORD = "test";
 
     private String token;
+
+    @Autowired
+    ReservationService reservationService;
+
+    @Autowired
+    ReservationTimeService reservationTimeService;
+
+    @Autowired
+    ThemeService themeService;
+
+    @Autowired
+    AuthService authService;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -54,45 +74,25 @@ class ReservationIntegrateTest {
 
     @Test
     void 예약_추가_테스트() {
+        // given
         LocalTime afterTime = LocalTime.now().plusHours(1L);
-        Map<String, String> timeParam = Map.of(
-                "startAt", afterTime.toString()
-        );
+        CreateReservationTimeRequest reservationTimeRequest = new CreateReservationTimeRequest(afterTime);
+        ReservationTime reservationTime = reservationTimeService.addReservationTime(reservationTimeRequest);
 
-        Map<String, String> themeParam = Map.of(
-                "name", "테마 명",
-                "description", "description",
-                "thumbnail", "thumbnail"
-        );
+        CreateThemeRequest themeRequest = new CreateThemeRequest("테마", "설명", "썸네일");
+        Theme theme = themeService.addTheme(themeRequest);
 
-        long timeId = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(timeParam)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201)
-                .extract().jsonPath().getLong("id");
-
-        long themeId = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .cookie("token", token)
-                .body(themeParam)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201)
-                .extract().jsonPath().getLong("id");
-
-        Map<String, Object> reservation = Map.of(
-                "name", "브라운",
+        Map<String, Object> reservationParam = Map.of(
                 "date", LocalDate.now().plusDays(1).toString(),
-                "timeId", timeId,
-                "themeId", themeId
+                "timeId", reservationTime.getId(),
+                "themeId", theme.getId()
         );
 
+        // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .cookie("token", token)
-                .body(reservation)
+                .body(reservationParam)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
@@ -100,131 +100,69 @@ class ReservationIntegrateTest {
 
     @Test
     void 예약_삭제_테스트() {
+        // given
         LocalTime afterTime = LocalTime.now().plusHours(1L);
-        Map<String, String> timeParam = Map.of(
-                "startAt", afterTime.toString()
-        );
+        CreateReservationTimeRequest reservationTimeRequest = new CreateReservationTimeRequest(afterTime);
+        ReservationTime reservationTime = reservationTimeService.addReservationTime(reservationTimeRequest);
 
-        Map<String, String> themeParam = Map.of(
-                "name", "테마 명",
-                "description", "description",
-                "thumbnail", "thumbnail"
-        );
+        CreateThemeRequest themeRequest = new CreateThemeRequest("테마", "설명", "썸네일");
+        Theme theme = themeService.addTheme(themeRequest);
 
-        long timeId = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(timeParam)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201)
-                .extract().jsonPath().getLong("id");
-
-        long themeId = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .cookie("token", token)
-                .body(themeParam)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201)
-                .extract().jsonPath().getLong("id");
-
-        Map<String, Object> reservation = Map.of(
-                "name", "브라운",
+        Map<String, Object> reservationParam = Map.of(
                 "date", LocalDate.now().plusDays(1).toString(),
-                "timeId", timeId,
-                "themeId", themeId
+                "timeId", reservationTime.getId(),
+                "themeId", theme.getId()
         );
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        CreateReservationRequest reservationRequest = new CreateReservationRequest(
+                tomorrow, reservationTime.getId(), theme.getId());
 
-        long reservationId = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .cookie("token", token)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201)
-                .extract().jsonPath().getLong("id");
+        LoginMember loginMember = authService.getLoginMemberByToken(token);
+        Reservation reservation = reservationService.addReservation(reservationRequest, loginMember);
 
+        // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().delete("/reservations/" + reservationId)
+                .when().delete("/reservations/" + reservation.getId())
                 .then().log().all()
                 .statusCode(204);
     }
 
     @Test
     void 테마_랭킹_테스트(@Autowired ReservationRepository reservationRepository) {
+        // given
         LocalTime afterTime = LocalTime.now().plusHours(1L);
-        Map<String, String> timeParam = Map.of(
-                "startAt", afterTime.toString()
-        );
+        CreateReservationTimeRequest reservationTimeRequest = new CreateReservationTimeRequest(afterTime);
+        ReservationTime reservationTime = reservationTimeService.addReservationTime(reservationTimeRequest);
 
-        Map<String, String> themeParam = Map.of(
-                "name", "테마 명1",
-                "description", "description",
-                "thumbnail", "thumbnail"
-        );
+        CreateThemeRequest themeRequest_1 = new CreateThemeRequest("테마 1", "설명", "썸네일");
+        Theme theme_1 = themeService.addTheme(themeRequest_1);
+        CreateThemeRequest themeRequest_2 = new CreateThemeRequest("테마 2", "설명", "썸네일");
+        Theme theme_2 = themeService.addTheme(themeRequest_2);
+        CreateThemeRequest themeRequest_3 = new CreateThemeRequest("테마 3", "설명", "썸네일");
+        Theme theme_3 = themeService.addTheme(themeRequest_3);
 
-        Map<String, String> themeParam2 = Map.of(
-                "name", "테마 명2",
-                "description", "description",
-                "thumbnail", "thumbnail"
-        );
-
-        Map<String, String> themeParam3 = Map.of(
-                "name", "테마 명3",
-                "description", "description",
-                "thumbnail", "thumbnail"
-        );
-
-        long timeId = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(timeParam)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201)
-                .extract().jsonPath().getLong("id");
-
-        long themeId_1 = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(themeParam)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201)
-                .extract().jsonPath().getLong("id");
-
-        long themeId_2 = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(themeParam2)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201)
-                .extract().jsonPath().getLong("id");
-
-        long themeId_3 = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(themeParam3)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201)
-                .extract().jsonPath().getLong("id");
-
-        // TODO: token을 이용한 member로 변경
         Member member = memberRepository.findByEmailAndPassword(EMAIL, PASSWORD)
                 .orElse(null);
 
         Reservation reservation1 = new Reservation(member, LocalDate.now().minusDays(1),
-                new ReservationTime(timeId, afterTime), new Theme(themeId_1, "테마 명1", "description", "thumbnail"));
+                new ReservationTime(reservationTime.getId(), afterTime),
+                new Theme(theme_1.getId(), "테마 명1", "description", "thumbnail"));
         Reservation reservation2 = new Reservation(member, LocalDate.now().minusDays(2),
-                new ReservationTime(timeId, afterTime), new Theme(themeId_1, "테마 명1", "description", "thumbnail"));
+                new ReservationTime(reservationTime.getId(), afterTime),
+                new Theme(theme_1.getId(), "테마 명1", "description", "thumbnail"));
         Reservation reservation3 = new Reservation(member, LocalDate.now().minusDays(3),
-                new ReservationTime(timeId, afterTime), new Theme(themeId_1, "테마 명1", "description", "thumbnail"));
+                new ReservationTime(reservationTime.getId(), afterTime),
+                new Theme(theme_1.getId(), "테마 명1", "description", "thumbnail"));
         Reservation reservation4 = new Reservation(member, LocalDate.now().minusDays(4),
-                new ReservationTime(timeId, afterTime), new Theme(themeId_2, "테마 명2", "description", "thumbnail"));
+                new ReservationTime(reservationTime.getId(), afterTime),
+                new Theme(theme_2.getId(), "테마 명2", "description", "thumbnail"));
         Reservation reservation5 = new Reservation(member, LocalDate.now().minusDays(5),
-                new ReservationTime(timeId, afterTime), new Theme(themeId_2, "테마 명2", "description", "thumbnail"));
+                new ReservationTime(reservationTime.getId(), afterTime),
+                new Theme(theme_2.getId(), "테마 명2", "description", "thumbnail"));
         Reservation reservation6 = new Reservation(member, LocalDate.now().minusDays(6),
-                new ReservationTime(timeId, afterTime), new Theme(themeId_3, "테마 명3", "description", "thumbnail"));
+                new ReservationTime(reservationTime.getId(), afterTime),
+                new Theme(theme_3.getId(), "테마 명3", "description", "thumbnail"));
 
         reservationRepository.add(reservation1);
         reservationRepository.add(reservation2);
@@ -233,6 +171,7 @@ class ReservationIntegrateTest {
         reservationRepository.add(reservation5);
         reservationRepository.add(reservation6);
 
+        // when
         Response response = RestAssured.given().log().all()
                 .when().get("/themes/popular")
                 .then().log().all()
@@ -243,6 +182,8 @@ class ReservationIntegrateTest {
                 .map(ThemeResponse::id)
                 .toList();
 
-        assertThat(rankingThemeIds).containsExactlyElementsOf(List.of(themeId_1, themeId_2, themeId_3));
+        // then
+        assertThat(rankingThemeIds).containsExactlyElementsOf(
+                List.of(theme_1.getId(), theme_2.getId(), theme_3.getId()));
     }
 }

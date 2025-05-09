@@ -44,8 +44,9 @@ class MemberServiceTest {
     @Test
     void 동일한_이메일을_추가할_수_없다() {
         // given
-        memberRepository.add(new Member("피케이", "pkkk@test.com", "test", Role.USER));
-        SignupRequest request = new SignupRequest("피케케", "pkkk@test.com", "test");
+        String sameEmail = "pkkk@test.com";
+        memberRepository.add(new Member("피케이", sameEmail, "test", Role.USER));
+        SignupRequest request = new SignupRequest("피케케", sameEmail, "test");
 
         // when & then
         assertThatThrownBy(() -> memberService.addMember(request))
