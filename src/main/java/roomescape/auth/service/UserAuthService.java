@@ -15,6 +15,7 @@ import roomescape.exception.unauthorized.UserUnauthorizedException;
 @Service
 public class UserAuthService {
     private final UserRepository userRepository;
+    // TODO: TokenProvider 인터페이스 삭제 - 테스트 Stub으로 변경
     private final TokenProvider jwtTokenProvider;
 
     public UserAuthService(UserRepository userRepository, TokenProvider jwtTokenProvider) {
