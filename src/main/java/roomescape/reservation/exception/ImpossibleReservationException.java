@@ -1,6 +1,6 @@
 package roomescape.reservation.exception;
 
-import roomescape.exception.DomainException;
+import roomescape.shared.domain.exception.DomainException;
 
 public class ImpossibleReservationException extends DomainException {
     public ImpossibleReservationException(String message) {

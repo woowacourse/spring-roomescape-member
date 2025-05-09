@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.shared.domain.exception;
 
 public class DomainException extends RuntimeException {
     private final String title;
