@@ -6,10 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.dto.ErrorResponse;
-import roomescape.exception.BadRequestException;
-import roomescape.exception.DuplicateContentException;
-import roomescape.exception.InvalidRequestException;
-import roomescape.exception.NotFoundException;
+import roomescape.exception.*;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -30,6 +27,15 @@ public class GlobalExceptionHandler {
                 HttpStatus.NOT_FOUND
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthorizationException(AuthorizationException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                ex.getMessage(),
+                HttpStatus.UNAUTHORIZED
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)

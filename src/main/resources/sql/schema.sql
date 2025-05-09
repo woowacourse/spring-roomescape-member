@@ -1,11 +1,12 @@
-CREATE TABLE user
+CREATE TABLE member
 (
-    id       BIGINT        NOT NULL AUTO_INCREMENT,
-    name     VARCHAR(255)  NOT NULL UNIQUE,
-    email    VARCHAR(255)  NOT NULL,
-    password VARCHAR(255)  NOT NULL
-    PRIMARY KEY (id)
-)
+    member_id  BIGINT        NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(255)  NOT NULL,
+    email    VARCHAR(255)  NOT NULL UNIQUE,
+    password VARCHAR(255)  NOT NULL,
+    role     VARCHAR(255)  NOT NULL,
+    PRIMARY KEY (member_id)
+);
 
 CREATE TABLE reservation_time
 (

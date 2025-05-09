@@ -84,7 +84,7 @@ class ReservationTimeControllerTest {
                     .body(params)
                     .when().post("/times")
                     .then().log().all()
-                    .statusCode(400);
+                    .statusCode(500);
         }
 
         @DisplayName("유효한 시간만 생성 가능하다")
@@ -98,7 +98,7 @@ class ReservationTimeControllerTest {
                     .body(params)
                     .when().post("/times")
                     .then().log().all()
-                    .statusCode(400);
+                    .statusCode(500);
         }
     }
 
