@@ -24,7 +24,7 @@ public final class Member {
         this(null, name, email, password, MemberRole.MEMBER);
     }
 
-    public Member(String email, String password, String name, MemberRole role) {
+    public Member(String name, String email, String password, MemberRole role) {
         this(null, name, email, password, role);
     }
 

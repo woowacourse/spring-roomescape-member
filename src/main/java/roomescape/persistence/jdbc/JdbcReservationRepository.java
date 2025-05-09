@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.domain.reservation.Reservation;
 import roomescape.persistence.ReservationRepository;
+import roomescape.persistence.entity.MemberEntity;
 import roomescape.persistence.entity.ReservationEntity;
 import roomescape.persistence.entity.ReservationThemeEntity;
 import roomescape.persistence.entity.ReservationTimeEntity;
@@ -32,19 +33,34 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         String query = """
                 SELECT
-                    r.id AS reservation_id, r.name, r.date,
-                    t.id AS time_id, t.start_at,
-                    th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail
+                    r.id AS reservation_id, 
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.role AS member_role,
+                    r.date,
+                    t.id AS time_id, 
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name, 
+                    th.description, 
+                    th.thumbnail
                 FROM reservation AS r
                 JOIN reservation_time AS t
                 JOIN theme AS th
-                ON r.time_id = t.id AND r.theme_id = th.id
+                JOIN member AS m
+                ON r.time_id = t.id AND r.theme_id = th.id AND r.member_id = m.id
                 """;
         List<ReservationEntity> reservationEntities = jdbcTemplate.query(
                 query,
                 (rs, rowNum) -> new ReservationEntity(
                         rs.getLong("reservation_id"),
-                        rs.getString("name"),
+                        new MemberEntity(
+                                rs.getLong("member_id"),
+                                rs.getString("member_name"),
+                                rs.getString("member_email"),
+                                rs.getString("member_role")
+                        ),
                         rs.getString("date"),
                         new ReservationTimeEntity(
                                 rs.getLong("time_id"),
@@ -67,12 +83,22 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Optional<Reservation> findById(Long id) {
         String query = """
                 SELECT
-                    r.id AS reservation_id, r.name, r.date,
-                    t.id AS time_id, t.start_at,
-                    th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail
+                    r.id AS reservation_id,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.role AS member_role,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description,
+                    th.thumbnail
                 FROM reservation AS r
                 JOIN reservation_time AS t
                 JOIN theme AS th
+                JOIN member AS m
                 ON r.time_id = t.id AND r.theme_id = th.id
                 WHERE r.id = ?
                 """;
@@ -80,7 +106,12 @@ public class JdbcReservationRepository implements ReservationRepository {
                         query,
                         (rs, rowNum) -> new ReservationEntity(
                                 rs.getLong("reservation_id"),
-                                rs.getString("name"),
+                                new MemberEntity(
+                                        rs.getLong("member_id"),
+                                        rs.getString("member_name"),
+                                        rs.getString("member_email"),
+                                        rs.getString("member_role")
+                                ),
                                 rs.getString("date"),
                                 new ReservationTimeEntity(
                                         rs.getLong("time_id"),
@@ -104,7 +135,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Long add(Reservation reservation) {
         ReservationEntity reservationEntity = ReservationEntity.fromDomain(reservation);
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", reservationEntity.getName());
+        parameters.put("member_id", reservationEntity.getMemberEntity().getId());
         parameters.put("date", reservationEntity.getDate());
         parameters.put("time_id", reservationEntity.getTimeEntity().getId());
         parameters.put("theme_id", reservationEntity.getThemeEntity().getId());

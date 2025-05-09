@@ -1,9 +1,11 @@
 package roomescape.business.service;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.business.domain.member.Member;
 import roomescape.business.domain.reservation.Reservation;
 import roomescape.business.domain.reservation.ReservationTheme;
 import roomescape.business.domain.reservation.ReservationTime;
@@ -11,9 +13,11 @@ import roomescape.config.LoginMember;
 import roomescape.exception.ReservationException;
 import roomescape.exception.ReservationThemeException;
 import roomescape.exception.ReservationTimeException;
+import roomescape.persistence.MemberRepository;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
 import roomescape.persistence.ReservationTimeRepository;
+import roomescape.presentation.dto.AdminReservationRequestDto;
 import roomescape.presentation.dto.ReservationRequestDto;
 import roomescape.presentation.dto.ReservationResponseDto;
 
@@ -23,14 +27,17 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationThemeRepository reservationThemeRepository;
+    private final MemberRepository memberRepository;
 
     @Autowired
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository,
-                              ReservationThemeRepository reservationThemeRepository) {
+                              ReservationThemeRepository reservationThemeRepository,
+                              MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationThemeRepository = reservationThemeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<ReservationResponseDto> getAllReservations() {
@@ -55,7 +62,25 @@ public class ReservationService {
         if (reservationTime.isInThePast(reservationDto.date())) {
             throw new ReservationException("과거 일시로 예약을 생성할 수 없습니다.");
         }
-        Reservation reservation = new Reservation(loginMember.name(), reservationDto.date(), reservationTime, theme);
+        Member member = memberRepository.findById(loginMember.id())
+                .orElseThrow(() -> new ReservationException("존재하지 않는 회원입니다."));
+        Reservation reservation = new Reservation(member, reservationDto.date(), reservationTime, theme);
+        validateDuplicatedReservation(reservation);
+        return reservationRepository.add(reservation);
+    }
+
+    @Transactional
+    public Long createReservation(AdminReservationRequestDto reservationRequestDto) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequestDto.timeId())
+                .orElseThrow(() -> new ReservationTimeException("존재하지 않는 예약 시간입니다."));
+        ReservationTheme theme = reservationThemeRepository.findById(reservationRequestDto.themeId())
+                .orElseThrow(() -> new ReservationThemeException("존재하지 않는 예약 테마입니다."));
+        if (reservationTime.isInThePast(reservationRequestDto.date())) {
+            throw new ReservationException("과거 일시로 예약을 생성할 수 없습니다.");
+        }
+        Member member = memberRepository.findById(reservationRequestDto.memberId())
+                .orElseThrow(() -> new ReservationException("존재하지 않는 회원입니다."));
+        Reservation reservation = new Reservation(member, reservationRequestDto.date(), reservationTime, theme);
         validateDuplicatedReservation(reservation);
         return reservationRepository.add(reservation);
     }

@@ -7,30 +7,32 @@ import roomescape.business.domain.reservation.ReservationDateTimeFormatter;
 public final class ReservationEntity {
 
     private final Long id;
-    private final String name;
+    private final MemberEntity memberEntity;
     private final String date;
     private final ReservationTimeEntity timeEntity;
     private final ReservationThemeEntity themeEntity;
 
     public ReservationEntity(Long id,
-                             String name,
+                             MemberEntity memberEntity,
                              String date,
                              ReservationTimeEntity timeEntity,
                              ReservationThemeEntity themeEntity) {
         this.id = id;
-        this.name = name;
+        this.memberEntity = memberEntity;
         this.date = date;
         this.timeEntity = timeEntity;
         this.themeEntity = themeEntity;
     }
 
-    private ReservationEntity(String name, String date, ReservationTimeEntity timeEntity,
+    private ReservationEntity(MemberEntity memberEntity,
+                              String date,
+                              ReservationTimeEntity timeEntity,
                               ReservationThemeEntity themeEntity) {
-        this(null, name, date, timeEntity, themeEntity);
+        this(null, memberEntity, date, timeEntity, themeEntity);
     }
 
     public ReservationEntity copyWithId(Long id) {
-        return new ReservationEntity(id, name, date, timeEntity, themeEntity);
+        return new ReservationEntity(id, memberEntity, date, timeEntity, themeEntity);
     }
 
     public boolean isSameReservation(ReservationEntity otherReservationEntity) {
@@ -43,15 +45,16 @@ public final class ReservationEntity {
         String reservationDate = reservation.getDate().toString();
         ReservationTimeEntity timeEntity = ReservationTimeEntity.fromDomain(reservation.getTime());
         ReservationThemeEntity themeEntity = ReservationThemeEntity.fromDomain(reservation.getTheme());
+        MemberEntity memberEntity = MemberEntity.fromDomain(reservation.getMember());
         if (reservation.getId() != null) {
             return new ReservationEntity(
                     reservation.getId(),
-                    reservation.getName(),
+                    memberEntity,
                     reservationDate,
                     timeEntity,
                     themeEntity);
         }
-        return new ReservationEntity(reservation.getName(), reservationDate, timeEntity, themeEntity);
+        return new ReservationEntity(memberEntity, reservationDate, timeEntity, themeEntity);
     }
 
     public Reservation toDomain() {
@@ -63,7 +66,7 @@ public final class ReservationEntity {
         }
         return new Reservation(
                 id,
-                name,
+                memberEntity.toDomain(),
                 ReservationDateTimeFormatter.parseDate(date),
                 timeEntity.toDomain(),
                 themeEntity.toDomain()
@@ -74,8 +77,12 @@ public final class ReservationEntity {
         return id;
     }
 
+    public MemberEntity getMemberEntity() {
+        return memberEntity;
+    }
+
     public String getName() {
-        return name;
+        return memberEntity.getName();
     }
 
     public String getDate() {

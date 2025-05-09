@@ -66,7 +66,7 @@ class ReservationControllerTest extends AbstractControllerTest {
         reservationThemeRepository.add(new ReservationTheme("테마1", "설명1", "테마1.jpg"));
         reservationThemeRepository.add(new ReservationTheme("테마2", "설명2", "테마2.jpg"));
         reservationRepository.add(new Reservation(
-                        "예약1",
+                        new Member(1L, "수양", "test@email.com", "1234"),
                         LocalDate.now().plusDays(1),
                         reservationTimeRepository.findById(1L).get(),
                         reservationThemeRepository.findById(1L).get()
@@ -91,7 +91,7 @@ class ReservationControllerTest extends AbstractControllerTest {
         // then
         assertAll(
                 () -> assertThat(response).hasSize(1),
-                () -> assertThat(response.get(0).name()).isEqualTo("예약1"),
+                () -> assertThat(response.get(0).member().name()).isEqualTo("수양"),
                 () -> assertThat(response.get(0).date()).isEqualTo(LocalDate.now().plusDays(1)),
                 () -> assertThat(response.get(0).time().startAt()).isEqualTo(LocalTime.of(10, 0)),
                 () -> assertThat(response.get(0).theme().name()).isEqualTo("테마1"),
@@ -107,7 +107,7 @@ class ReservationControllerTest extends AbstractControllerTest {
         reservationTimeRepository.add(new ReservationTime(LocalTime.of(10, 0)));
         reservationThemeRepository.add(new ReservationTheme("테마1", "설명1", "테마1.jpg"));
         Long id = reservationRepository.add(new Reservation(
-                        "예약1",
+                        new Member(1L, "수양", "test@email.com", "1234"),
                         LocalDate.now().plusDays(1),
                         reservationTimeRepository.findById(1L).get(),
                         reservationThemeRepository.findById(1L).get()
@@ -131,7 +131,7 @@ class ReservationControllerTest extends AbstractControllerTest {
         // then
         assertAll(
                 () -> assertThat(response.id()).isNotNull().isEqualTo(id),
-                () -> assertThat(response.name()).isEqualTo("예약1"),
+                () -> assertThat(response.member().name()).isEqualTo("수양"),
                 () -> assertThat(response.date()).isEqualTo(LocalDate.now().plusDays(1)),
                 () -> assertThat(response.time().startAt()).isEqualTo(LocalTime.of(10, 0)),
                 () -> assertThat(response.theme().name()).isEqualTo("테마1"),
@@ -170,7 +170,7 @@ class ReservationControllerTest extends AbstractControllerTest {
         // then
         assertAll(
                 () -> assertThat(response.id()).isNotNull(),
-                () -> assertThat(response.name()).isEqualTo("벨로"),
+                () -> assertThat(response.member().name()).isEqualTo("벨로"),
                 () -> assertThat(response.date()).isEqualTo(LocalDate.now().plusDays(1)),
                 () -> assertThat(response.time().startAt()).isEqualTo(LocalTime.of(10, 0)),
                 () -> assertThat(response.theme().name()).isEqualTo("테마1"),
@@ -218,7 +218,7 @@ class ReservationControllerTest extends AbstractControllerTest {
         reservationTimeRepository.add(new ReservationTime(LocalTime.of(10, 0)));
         reservationThemeRepository.add(new ReservationTheme("테마1", "설명1", "테마1.jpg"));
         reservationRepository.add(new Reservation(
-                        "예약1",
+                        new Member(1L, "수양", "test@email.com", "1234"),
                         LocalDate.now().plusDays(1),
                         reservationTimeRepository.findById(1L).get(),
                         reservationThemeRepository.findById(1L).get()
@@ -258,7 +258,7 @@ class ReservationControllerTest extends AbstractControllerTest {
         reservationTimeRepository.add(new ReservationTime(LocalTime.of(10, 0)));
         reservationThemeRepository.add(new ReservationTheme("테마1", "설명1", "테마1.jpg"));
         Long id = reservationRepository.add(new Reservation(
-                        "예약1",
+                        new Member(1L, "수양", "test@email.com", "1234"),
                         LocalDate.now().plusDays(1),
                         reservationTimeRepository.findById(1L).get(),
                         reservationThemeRepository.findById(1L).get()

@@ -5,7 +5,7 @@ import roomescape.business.domain.reservation.Reservation;
 
 public record ReservationResponseDto(
         long id,
-        String name,
+        MemberResponseDto member,
         LocalDate date,
         ReservationTimeResponseDto time,
         ReservationThemeResponseDto theme
@@ -14,7 +14,7 @@ public record ReservationResponseDto(
     public static ReservationResponseDto toResponse(Reservation reservation) {
         return new ReservationResponseDto(
                 reservation.getId(),
-                reservation.getName(),
+                MemberResponseDto.toResponse(reservation.getMember()),
                 reservation.getDate(),
                 ReservationTimeResponseDto.toResponse(reservation.getTime()),
                 ReservationThemeResponseDto.toResponse(reservation.getTheme())

@@ -23,6 +23,10 @@ public final class MemberEntity {
         this(null, name, email, password, role);
     }
 
+    public MemberEntity(Long id, String name, String email, String role) {
+        this(id, name, email, null, role);
+    }
+
     public MemberEntity copyWithId(Long id) {
         return new MemberEntity(id, name, email, password, role);
     }

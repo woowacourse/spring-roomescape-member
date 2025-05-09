@@ -1,42 +1,34 @@
 package roomescape.business.domain.reservation;
 
 import java.time.LocalDate;
+import roomescape.business.domain.member.Member;
 
 public final class Reservation {
 
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final ReservationTheme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, ReservationTheme theme) {
-        if (name == null || date == null || time == null || theme == null) {
-            throw new IllegalArgumentException("예약 정보는 null일 수 없습니다.");
-        }
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, ReservationTheme theme) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time, ReservationTheme theme) {
-        this(null, name, date, time, theme);
-    }
-
-    public boolean isSameReservation(Reservation otherReservation) {
-        return this.date.equals(otherReservation.date)
-                && this.time.getId().equals(otherReservation.time.getId())
-                && this.theme.getId().equals(otherReservation.theme.getId());
+    public Reservation(Member member, LocalDate date, ReservationTime time, ReservationTheme theme) {
+        this(null, member, date, time, theme);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {

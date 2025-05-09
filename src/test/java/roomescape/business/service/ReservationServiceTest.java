@@ -37,12 +37,13 @@ class ReservationServiceTest {
         ReservationRepository reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
         reservationThemeRepository = new FakeReservationThemeRepository();
+        MemberRepository memberRepository = new FakeMemberRepository();
         reservationService = new ReservationService(
                 reservationRepository,
                 reservationTimeRepository,
-                reservationThemeRepository
+                reservationThemeRepository,
+                memberRepository
         );
-        MemberRepository memberRepository = new FakeMemberRepository();
         memberRepository.save(new Member("벨로", "bello@email.com", "1234"));
         loginMember = new LoginMember(1L, "벨로", "bello@email.com", MemberRole.MEMBER);
     }

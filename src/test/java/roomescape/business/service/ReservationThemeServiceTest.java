@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.business.domain.member.Member;
 import roomescape.business.domain.reservation.Reservation;
 import roomescape.business.domain.reservation.ReservationTheme;
 import roomescape.business.domain.reservation.ReservationTime;
@@ -65,7 +66,7 @@ class ReservationThemeServiceTest {
     void deleteReferencedTheme() {
         // given
         Long themeId = reservationThemeRepository.add(new ReservationTheme("수양", "수양테마", "수양썸네일"));
-        reservationRepository.add(new Reservation("수양", LocalDate.now().plusDays(1), new ReservationTime(LocalTime.now()),
+        reservationRepository.add(new Reservation(new Member(1L, "수양", "test@email.com", "1234"), LocalDate.now().plusDays(1), new ReservationTime(LocalTime.now()),
                 new ReservationTheme(themeId, "수양", "수양테마", "수양썸네일")));
 
         // when

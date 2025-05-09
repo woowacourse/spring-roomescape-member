@@ -10,6 +10,8 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.business.domain.member.Member;
+import roomescape.business.domain.member.MemberRole;
 import roomescape.business.domain.reservation.Reservation;
 import roomescape.business.domain.reservation.ReservationTheme;
 import roomescape.business.domain.reservation.ReservationTime;
@@ -112,7 +114,7 @@ class ReservationTimeServiceTest {
         LocalDate date = tomorrow.toLocalDate();
         LocalTime time = tomorrow.toLocalTime();
         Long timeId = reservationTimeRepository.add(new ReservationTime(time));
-        reservationRepository.add(new Reservation("수양", date, new ReservationTime(timeId, time), new ReservationTheme(1L, "수양", "수양테마", "수양썸네일")));
+        reservationRepository.add(new Reservation(new Member(1L, "수양", "test@email.com", "1234"), date, new ReservationTime(timeId, time), new ReservationTheme(1L, "수양", "수양테마", "수양썸네일")));
 
         // when
         // then
