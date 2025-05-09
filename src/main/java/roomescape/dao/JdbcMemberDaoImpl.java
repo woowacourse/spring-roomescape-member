@@ -39,4 +39,21 @@ public class JdbcMemberDaoImpl implements MemberDao {
     private long getGeneratedId(final Number number) {
         return number.longValue();
     }
+
+    @Override
+    public Optional<Member> findByEmail(final String email) {
+        String query = "select * from member where email = ?";
+        try {
+            Member member = jdbcTemplate.queryForObject(query,
+                    (rs, rowNum) -> Member.from(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("password"))
+                    , email);
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }

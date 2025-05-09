@@ -1,5 +1,8 @@
 package roomescape.domain;
 
+import java.util.Objects;
+import roomescape.exception.InvalidAuthException;
+
 public class Member {
 
     private Long id;
@@ -22,6 +25,12 @@ public class Member {
 
     public static Member from(final Long id, final String name, final String email, final String password) {
         return new Member(id, name, email, password.trim(), "basic");
+    }
+
+    public void validatePassword(final String password) {
+        if (!this.password.equals(password)) {
+            throw new InvalidAuthException("비밀번호가 일치하지 않습니다.");
+        }
     }
 
     public Long getId() {

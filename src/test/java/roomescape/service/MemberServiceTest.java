@@ -32,4 +32,5 @@ class MemberServiceTest {
                 .extracting("id", "name", "email")
                 .containsExactly(1L, "testName", "testEmail");
     }
+
 }

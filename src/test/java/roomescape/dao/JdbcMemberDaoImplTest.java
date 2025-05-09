@@ -40,8 +40,21 @@ class JdbcMemberDaoImplTest {
 
         //then
         assertThat(actual).isEqualTo(1L);
-
     }
 
+    @DisplayName("email을 통해서 회원을 찾을 수 있다.")
+    @Test
+    void findByEmail() {
+        //given
+        Member member = Member.fromWithoutId("testName", "testEmail", "1234");
+        memberDao.save(member);
 
+        //when
+        Member actual = memberDao.findByEmail(member.getEmail())
+                .orElse(null);
+
+        //then
+        assertThat(actual).isNotNull();
+        assertThat(actual).isEqualTo(Member.from(1L, "testName", "testEmail", "1234"));
+    }
 }

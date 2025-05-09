@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Member;
 
@@ -15,5 +16,12 @@ public class FakeMemberDaoImpl implements MemberDao {
         member.setId(id.getAndIncrement());
         members.add(member);
         return member.getId();
+    }
+
+    @Override
+    public Optional<Member> findByEmail(final String email) {
+        return members.stream()
+                .filter(member -> member.getEmail().equals(email))
+                .findFirst();
     }
 }
