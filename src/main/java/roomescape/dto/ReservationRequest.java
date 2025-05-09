@@ -7,7 +7,7 @@ import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
-import roomescape.model.UserName;
+import roomescape.model.user.UserName;
 
 public record ReservationRequest(
         @JsonProperty(value = "name", defaultValue = "name") @NotNull String name,

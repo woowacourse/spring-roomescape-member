@@ -18,7 +18,7 @@ import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
-import roomescape.model.UserName;
+import roomescape.model.user.UserName;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservedChecker;
 

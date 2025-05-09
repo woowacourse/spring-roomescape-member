@@ -1,4 +1,4 @@
-package roomescape.model;
+package roomescape.model.user;
 
 import static roomescape.util.FormatValidator.validateNameFormat;
 

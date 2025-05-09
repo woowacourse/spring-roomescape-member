@@ -12,7 +12,7 @@ import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
-import roomescape.model.UserName;
+import roomescape.model.user.UserName;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository, ReservedTimeChecker, ReservedThemeChecker,
