@@ -29,6 +29,17 @@ public class H2MemberRepository implements MemberRepository {
     }
 
     @Override
+    public Optional<Member> findById(long id) {
+        String sql = "SELECT * FROM member WHERE member.id = ?";
+        try {
+            Member member = template.queryForObject(sql, mapper, id);
+            return Optional.of(member);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Optional<Member> findByEmail(String email) {
         String sql = "SELECT * FROM member WHERE member.email = ?";
         try {

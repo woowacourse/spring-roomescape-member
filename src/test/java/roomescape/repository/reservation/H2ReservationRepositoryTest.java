@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -30,6 +32,7 @@ class H2ReservationRepositoryTest {
 
     @BeforeEach
     void setup() {
+        template.execute("ALTER TABLE member ALTER COLUMN id RESTART WITH 1");
         template.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
         template.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
         template.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
@@ -39,15 +42,17 @@ class H2ReservationRepositoryTest {
     @Test
     void canFindAll() {
         // given
+        template.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)",
+                "회원", "test@test.com", "zdsa123!", MemberRole.GENERAL.toString());
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
         template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마1", "설명1", "썸네일1");
-        template.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "이름1", NEXT_DAY.toString(), 1L, 1L);
-        template.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "이름2", NEXT_DAY.toString(), 1L, 1L);
-        template.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "이름3", NEXT_DAY.toString(), 1L, 1L);
+        template.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, NEXT_DAY.toString(), 1L, 1L);
+        template.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, NEXT_DAY.toString(), 1L, 1L);
+        template.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, NEXT_DAY.toString(), 1L, 1L);
 
         // when
         List<Reservation> actualReservations = reservationRepository.findAll();
@@ -60,12 +65,13 @@ class H2ReservationRepositoryTest {
     @Test
     void canFindById() {
         // given
+        template.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)",
+                "회원", "test@test.com", "zdsa123!", MemberRole.GENERAL.toString());
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
         template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마1", "설명1", "썸네일1");
-        template.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "이름1", NEXT_DAY.toString(), 1L, 1L);
+        template.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, NEXT_DAY.toString(), 1L, 1L);
 
         // when
         Optional<Reservation> reservation = reservationRepository.findById(1L);
@@ -81,12 +87,14 @@ class H2ReservationRepositoryTest {
     @Test
     void canCheckAlreadyReserved() {
         // given
+        template.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)",
+                "회원", "test@test.com", "zdsa123!", MemberRole.GENERAL.toString());
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
         template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마1", "설명1", "썸네일1");
         template.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "이름1", NEXT_DAY.toString(), 1L, 1L);
+                "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, NEXT_DAY.toString(), 1L, 1L);
 
         // when
         boolean isAlreadyReserved = reservationRepository.checkAlreadyReserved(NEXT_DAY, 1L, 1L);
@@ -103,12 +111,14 @@ class H2ReservationRepositoryTest {
     @Test
     void canCheckExistenceInTime() {
         // given
+        template.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)",
+                "회원", "test@test.com", "zdsa123!", MemberRole.GENERAL.toString());
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
         template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마1", "설명1", "썸네일1");
         template.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "이름1", NEXT_DAY.toString(), 1L, 1L);
+                "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, NEXT_DAY.toString(), 1L, 1L);
 
         // when
         boolean isInTime = reservationRepository.checkExistenceInTime(1L);
@@ -125,12 +135,14 @@ class H2ReservationRepositoryTest {
     @Test
     void canCheckExistenceInTheme() {
         // given
+        template.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)",
+                "회원", "test@test.com", "zdsa123!", MemberRole.GENERAL.toString());
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
         template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마1", "설명1", "썸네일1");
         template.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "이름1", NEXT_DAY.toString(), 1L, 1L);
+                "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, NEXT_DAY.toString(), 1L, 1L);
 
         // when
         boolean isInTheme = reservationRepository.checkExistenceInTheme(1L);
@@ -147,18 +159,21 @@ class H2ReservationRepositoryTest {
     @Test
     void canAdd() {
         // given
+        template.update("INSERT INTO member (name, email, password, role) VALUES (?,?,?,?)",
+                "회원", "test@test.com", "ecxewqe!23", MemberRole.GENERAL.toString());
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
         template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마1", "설명1", "썸네일1");
+        Member member = new Member(1L, "회원", "test@test.com", "ecxewqe!23", MemberRole.GENERAL);
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "이름", "설명", "섬네일");
 
         // when
-        reservationRepository.add(Reservation.createWithoutId("이름1", NEXT_DAY, time, theme));
+        reservationRepository.add(Reservation.createWithoutId(member, NEXT_DAY, time, theme));
 
         // then
         Optional<Reservation> actualReservation = reservationRepository.findById(1L);
-        Reservation expectedReservation = new Reservation(1L, "이름1", NEXT_DAY, time, theme);
+        Reservation expectedReservation = new Reservation(1L, member, NEXT_DAY, time, theme);
         assertAll(
                 () -> assertThat(actualReservation).isPresent(),
                 () -> assertThat(actualReservation.get()).isEqualTo(expectedReservation)
@@ -169,12 +184,14 @@ class H2ReservationRepositoryTest {
     @Test
     void canDeleteById() {
         // given
+        template.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)",
+                "회원", "test@test.com", "zdsa123!", MemberRole.GENERAL.toString());
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
         template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마1", "설명1", "썸네일1");
         template.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "이름1", NEXT_DAY.toString(), 1L, 1L);
+                "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, NEXT_DAY.toString(), 1L, 1L);
 
         // when
         reservationRepository.deleteById(1L);

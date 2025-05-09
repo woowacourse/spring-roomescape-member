@@ -11,6 +11,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.annotation.AuthenticationPrinciple;
+import roomescape.domain.MemberRole;
 import roomescape.dto.other.AuthenticationInformation;
 import roomescape.exception.BadRequestException;
 import roomescape.utility.JwtTokenProvider;
@@ -58,6 +59,7 @@ public class AuthenticationInformationArgumentResolver implements HandlerMethodA
         Claims tokenContent = jwtTokenProvider.parseToken(accessToken);
         Long id = Long.valueOf(tokenContent.getSubject());
         String name = String.valueOf(tokenContent.get("name"));
-        return new AuthenticationInformation(id, name);
+        MemberRole role = MemberRole.valueOf(String.valueOf(tokenContent.get("role")));
+        return new AuthenticationInformation(id, name, role);
     }
 }

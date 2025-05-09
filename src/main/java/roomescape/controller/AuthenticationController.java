@@ -35,7 +35,7 @@ public class AuthenticationController {
 
     @GetMapping("/login/check")
     public MemberNameResponse checkLogin(
-            @Valid @AuthenticationPrinciple AuthenticationInformation authenticationInformation
+            @AuthenticationPrinciple AuthenticationInformation authenticationInformation
     ) {
         return new MemberNameResponse(authenticationInformation.name());
     }

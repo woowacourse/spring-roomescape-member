@@ -3,12 +3,14 @@ package roomescape.service;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationCreationRequest;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
+import roomescape.repository.member.MemberRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 import roomescape.repository.theme.ThemeRepository;
@@ -19,15 +21,18 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             ReservationTimeRepository reservationTimeRepository,
-            ThemeRepository themeRepository
+            ThemeRepository themeRepository,
+            MemberRepository memberRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<Reservation> getAllReservations() {
@@ -38,11 +43,12 @@ public class ReservationService {
         return loadReservationById(id);
     }
 
-    public long saveReservation(ReservationCreationRequest request) {
+    public long saveReservation(long memberId, ReservationCreationRequest request) {
+        Member member = loadMemberById(memberId);
         Theme theme = loadThemeById(request.themeId());
         ReservationTime reservationTime = loadReservationTimeById(request.timeId());
         Reservation reservation = Reservation.createWithoutId(
-                request.name(), request.date(), reservationTime, theme);
+                member, request.date(), reservationTime, theme);
 
         reservation.validatePastDateTime();
         validateAlreadyReserved(reservation);
@@ -59,6 +65,12 @@ public class ReservationService {
         Optional<Reservation> reservation = reservationRepository.findById(reservationId);
         return reservation
                 .orElseThrow(() -> new NotFoundException("[ERROR] ID에 해당하는 예약이 존재하지 않습니다."));
+    }
+
+    private Member loadMemberById(long memberId) {
+        Optional<Member> member = memberRepository.findById(memberId);
+        return member
+                .orElseThrow(() -> new NotFoundException("[ERROR] ID에 해당하는 회원이 존재하지 않습니다."));
     }
 
     private ReservationTime loadReservationTimeById(long reservationTimeId) {

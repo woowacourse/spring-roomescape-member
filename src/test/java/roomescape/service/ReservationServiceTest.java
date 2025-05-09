@@ -17,12 +17,15 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationCreationRequest;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
+import roomescape.repository.member.MemberRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 import roomescape.repository.theme.ThemeRepository;
@@ -33,8 +36,9 @@ class ReservationServiceTest {
     private final ReservationRepository reservationRepository = mock(ReservationRepository.class);
     private final ReservationTimeRepository timeRepository = mock(ReservationTimeRepository.class);
     private final ThemeRepository themeRepository = mock(ThemeRepository.class);
+    private final MemberRepository memberRepository = mock(MemberRepository.class);
     private final ReservationService reservationService =
-            new ReservationService(reservationRepository, timeRepository, themeRepository);
+            new ReservationService(reservationRepository, timeRepository, themeRepository, memberRepository);
 
     @DisplayName("저장된 예약들을 조회할 수 있다")
     @Test
@@ -82,9 +86,12 @@ class ReservationServiceTest {
     @Test
     void canSaveReservation() {
         // given
-        ReservationCreationRequest request = new ReservationCreationRequest("예약", NEXT_DAY, 1L, 1L);
+        long memberId = 1L;
+        ReservationCreationRequest request = new ReservationCreationRequest(NEXT_DAY, 1L, 1L);
+        Member member = new Member(memberId, "회원", "test@test.com", "qdas123!", MemberRole.GENERAL);
         Theme theme = new Theme(request.themeId(), "테마", "설명", "섬네일");
         ReservationTime time = new ReservationTime(request.timeId(), LocalTime.now());
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         when(themeRepository.findById(request.themeId())).thenReturn(Optional.of(theme));
         when(timeRepository.findById(request.timeId())).thenReturn(Optional.of(time));
         when(reservationRepository.checkAlreadyReserved(request.date(), request.timeId(), request.themeId()))
@@ -92,18 +99,42 @@ class ReservationServiceTest {
         when(reservationRepository.add(any())).thenReturn(1L);
 
         // when
-        long savedId = reservationService.saveReservation(request);
+        long savedId = reservationService.saveReservation(memberId, request);
 
         // then
         assertThat(savedId).isEqualTo(1L);
+    }
+
+    @DisplayName("예약을 추가할 때, 예약 회원이 유효하지 않은 경우 예외를 발생시킨다")
+    @Test
+    void cannotSaveReservationBecauseOfInvalidMember() {
+        // given
+        long memberId = 1L;
+        ReservationCreationRequest request = new ReservationCreationRequest(NEXT_DAY, 1L, 1L);
+        Theme theme = new Theme(request.themeId(), "테마", "설명", "섬네일");
+        ReservationTime time = new ReservationTime(request.timeId(), LocalTime.now());
+        when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+        when(themeRepository.findById(request.themeId())).thenReturn(Optional.of(theme));
+        when(timeRepository.findById(request.timeId())).thenReturn(Optional.of(time));
+        when(reservationRepository.checkAlreadyReserved(request.date(), request.timeId(), request.themeId()))
+                .thenReturn(false);
+        when(reservationRepository.add(any())).thenReturn(1L);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.saveReservation(memberId, request))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("[ERROR] ID에 해당하는 회원이 존재하지 않습니다.");
     }
 
     @DisplayName("예약을 추가할 때, 예약 테마가 유효하지 않은 경우 예외를 발생시킨다")
     @Test
     void cannotSaveReservationBecauseOfInvalidTheme() {
         // given
-        ReservationCreationRequest request = new ReservationCreationRequest("예약", NEXT_DAY, 1L, 1L);
+        long memberId = 1L;
+        ReservationCreationRequest request = new ReservationCreationRequest(NEXT_DAY, 1L, 1L);
+        Member member = new Member(memberId, "회원", "test@test.com", "qdas123!", MemberRole.GENERAL);
         ReservationTime time = new ReservationTime(request.timeId(), LocalTime.now());
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         when(themeRepository.findById(request.themeId())).thenReturn(Optional.empty());
         when(timeRepository.findById(request.timeId())).thenReturn(Optional.of(time));
         when(reservationRepository.checkAlreadyReserved(request.date(), request.timeId(), request.themeId()))
@@ -111,7 +142,7 @@ class ReservationServiceTest {
         when(reservationRepository.add(any())).thenReturn(1L);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.saveReservation(request))
+        assertThatThrownBy(() -> reservationService.saveReservation(memberId, request))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("[ERROR] ID에 해당하는 테마가 존재하지 않습니다.");
     }
@@ -120,8 +151,11 @@ class ReservationServiceTest {
     @Test
     void cannotSaveReservationBecauseOfInvalidTime() {
         // given
-        ReservationCreationRequest request = new ReservationCreationRequest("예약", NEXT_DAY, 1L, 1L);
+        long memberId = 1L;
+        ReservationCreationRequest request = new ReservationCreationRequest(NEXT_DAY, 1L, 1L);
+        Member member = new Member(memberId, "회원", "test@test.com", "qdas123!", MemberRole.GENERAL);
         Theme theme = new Theme(request.themeId(), "테마", "설명", "섬네일");
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         when(themeRepository.findById(request.themeId())).thenReturn(Optional.of(theme));
         when(timeRepository.findById(request.timeId())).thenReturn(Optional.empty());
         when(reservationRepository.checkAlreadyReserved(request.date(), request.timeId(), request.themeId()))
@@ -129,7 +163,7 @@ class ReservationServiceTest {
         when(reservationRepository.add(any())).thenReturn(1L);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.saveReservation(request))
+        assertThatThrownBy(() -> reservationService.saveReservation(memberId, request))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("[ERROR] ID에 해당하는 예약시간이 존재하지 않습니다.");
     }
@@ -138,9 +172,12 @@ class ReservationServiceTest {
     @Test
     void cannotCreateReservationWithPastDateTime() {
         // given
-        ReservationCreationRequest request = new ReservationCreationRequest("예약", TODAY, 1L, 1L);
+        long memberId = 1L;
+        ReservationCreationRequest request = new ReservationCreationRequest(TODAY, 1L, 1L);
+        Member member = new Member(memberId, "회원", "test@test.com", "qdas123!", MemberRole.GENERAL);
         Theme theme = new Theme(request.themeId(), "테마", "설명", "섬네일");
         ReservationTime time = new ReservationTime(request.timeId(), LocalTime.now().minusSeconds(1));
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         when(themeRepository.findById(request.themeId())).thenReturn(Optional.of(theme));
         when(timeRepository.findById(request.timeId())).thenReturn(Optional.of(time));
         when(reservationRepository.checkAlreadyReserved(request.date(), request.timeId(), request.themeId()))
@@ -148,7 +185,7 @@ class ReservationServiceTest {
         when(reservationRepository.add(any())).thenReturn(1L);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.saveReservation(request))
+        assertThatThrownBy(() -> reservationService.saveReservation(memberId, request))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("[ERROR] 이미 과거의 날짜와 시간입니다.");
     }
@@ -157,9 +194,12 @@ class ReservationServiceTest {
     @Test
     void cannotCreateReservationWithSameDateTime() {
         // given
-        ReservationCreationRequest request = new ReservationCreationRequest("예약", NEXT_DAY, 1L, 1L);
+        long memberId = 1L;
+        ReservationCreationRequest request = new ReservationCreationRequest(NEXT_DAY, 1L, 1L);
+        Member member = new Member(memberId, "회원", "test@test.com", "qdas123!", MemberRole.GENERAL);
         Theme theme = new Theme(request.themeId(), "테마", "설명", "섬네일");
         ReservationTime time = new ReservationTime(request.timeId(), LocalTime.now());
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         when(themeRepository.findById(request.themeId())).thenReturn(Optional.of(theme));
         when(timeRepository.findById(request.timeId())).thenReturn(Optional.of(time));
         when(reservationRepository.checkAlreadyReserved(request.date(), request.timeId(), request.themeId()))
@@ -167,7 +207,7 @@ class ReservationServiceTest {
         when(reservationRepository.add(any())).thenReturn(1L);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.saveReservation(request))
+        assertThatThrownBy(() -> reservationService.saveReservation(memberId, request))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("[ERROR] 이미 존재하는 예약입니다.");
     }

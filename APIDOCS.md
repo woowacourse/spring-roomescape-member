@@ -57,16 +57,20 @@
       [
           {
               Long "id": 1,
-              String "name": "브라운",
+              Member "member" : {
+                  Long "id" : 1,
+                  String "name" : "회원1"
+              },
               LocalDate "date": "2023-01-01",
               ReservationTime "time": {
                   Long "id": 1,
                   LocalTime "startAt" : "10:00"
+              },
               Theme "theme" : {
                   Long "id" : 1,
                   String "name" : "테마1",
                   String "description" : "재밌어요!",
-                  String "thumbnail" : "url",
+                  String "thumbnail" : "url"
               }
           },
           ...
@@ -77,7 +81,6 @@
     - 요청 파라미터
       ```
       {
-          String "name": "브라운",          // NotNull, NotBlank
           LocalDate "date": "2023-08-05",  // NotNull, (과거 날짜 허용X)
           Long "timeId": 1                 // NotNull, (과거 시간 허용X)
           Long "themeId": 1                // NotNull
@@ -87,22 +90,25 @@
       ```
       {
           Long "id": 1,
-          String "name": "브라운",
+          Member "member" : {
+                  Long "id" : 1,
+                  String "name" : "회원1"
+          },
           LocalDate "date": "2023-01-01",
           ReservationTime "time": {
               Long "id": 1,
               LocalTime "startAt" : "10:00"
+          },
           Theme "theme" : {
               Long "id" : 1,
               String "name" : "테마1",
               String "description" : "재밌어요!",
-              String "thumbnail" : "url",
+              String "thumbnail" : "url"
           }
       },
       ```
     - 예외 응답 (400)
         - API 입력값 입력되지 않은 경우
-        - 비어있거나 공백 이름이 입력된 경우
         - 과거의 날짜나 시간인 경우
         - 이미 예약이 완료된 날짜와 시간인 경우
 

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.MemberRole;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.other.TimeWithBookState;
 
@@ -87,11 +88,13 @@ class H2ReservationTimeRepositoryTest {
     @Test
     void canFindAllWithBookState() {
         // given
+        template.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)",
+                "회원", "test@test.com", "zdsa123!", MemberRole.GENERAL.toString());
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(11, 0));
         template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마1", "설명1", "썸네일1");
-        template.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "이름1", TODAY.toString(), 1L, 1L);
+        template.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, TODAY.toString(), 1L, 1L);
 
         // when
         List<TimeWithBookState> times = timeRepository.findAllWithBookState(TODAY, 1L);

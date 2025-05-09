@@ -28,7 +28,25 @@ class H2MemberRepositoryTest {
         template.execute("ALTER TABLE member ALTER COLUMN id RESTART WITH 1");
     }
 
-    @DisplayName("모든 예약을 조회할 수 있다")
+    @DisplayName("id로 회원을 조회할 수 있다")
+    @Test
+    void testMethodNameHere() {
+        // given
+        template.update("INSERT INTO member (name, email, password, role) VALUES (?,?,?,?)",
+                "회원", "test@test.com", "ecxewqe!23", MemberRole.GENERAL.toString());
+
+        // when
+        Optional<Member> actualMember = memberRepository.findById(1L);
+
+        // then
+        Member expectedMember = new Member(1L, "회원", "test@test.com", "ecxewqe!23", MemberRole.GENERAL);
+        assertAll(
+                () -> assertThat(actualMember.isPresent()).isTrue(),
+                () -> assertThat(actualMember.get()).isEqualTo(expectedMember)
+        );
+    }
+
+    @DisplayName("이메일로 회원을 조회할 수 있다")
     @Test
     void findByEmail() {
         // given
