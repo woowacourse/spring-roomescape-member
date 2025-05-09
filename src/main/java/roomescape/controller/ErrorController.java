@@ -51,7 +51,7 @@ public class ErrorController {
     }
 
     @ExceptionHandler(ThemeExistException.class)
-    public ResponseEntity<ProblemDetail> handleReservationExistException(ThemeExistException e) {
+    public ResponseEntity<ProblemDetail> handleThemeExistException(ThemeExistException e) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
         problemDetail.setDetail(e.getMessage());
 
