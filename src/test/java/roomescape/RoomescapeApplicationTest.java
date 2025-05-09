@@ -27,9 +27,9 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.auth.dto.MemberAuthResponse;
+import roomescape.auth.dto.TokenRequest;
 import roomescape.domain.repository.dto.TimeDataWithBookingInfo;
-import roomescape.presentation.controller.dto.MemberResponse;
-import roomescape.presentation.controller.dto.TokenRequest;
 import roomescape.testFixture.JdbcHelper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -172,13 +172,13 @@ class RoomescapeApplicationTest {
                 .statusCode(HttpStatus.OK.value())
                 .extract().header("Set-Cookie").split(";")[0].substring("token=".length());
 
-        MemberResponse member = RestAssured
+        MemberAuthResponse member = RestAssured
                 .given().log().all()
                 .cookie("token", cookie)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/login/check")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value()).extract().as(MemberResponse.class);
+                .statusCode(HttpStatus.OK.value()).extract().as(MemberAuthResponse.class);
 
         assertThat(member.name()).isEqualTo("어드민");
     }

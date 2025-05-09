@@ -1,13 +1,14 @@
-package roomescape.application;
+package roomescape.auth;
 
+import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
+import roomescape.application.MemberService;
 import roomescape.application.dto.MemberDto;
+import roomescape.auth.dto.TokenRequest;
+import roomescape.auth.dto.TokenResponse;
 import roomescape.exception.AuthorizationException;
 import roomescape.exception.NotFoundException;
 import roomescape.infrastructure.JwtTokenProvider;
-import roomescape.presentation.controller.dto.MemberResponse;
-import roomescape.presentation.controller.dto.TokenRequest;
-import roomescape.presentation.controller.dto.TokenResponse;
 
 @Service
 public class AuthService {
@@ -20,15 +21,8 @@ public class AuthService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public MemberResponse findMemberByToken(String token) {
-        String payload = jwtTokenProvider.getPayload(token);
-        return findMember(payload);
-    }
-
-    private MemberResponse findMember(String principal) {
-        Long memberId = Long.parseLong(principal);
-        MemberDto memberDto = memberService.getMemberById(memberId);
-        return new MemberResponse(memberDto.name());
+    public MemberDto getMemberById(Long id) {
+        return memberService.getMemberById(id);
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
@@ -40,5 +34,12 @@ public class AuthService {
         }
         String accessToken = jwtTokenProvider.createToken(memberDto);
         return new TokenResponse(accessToken);
+    }
+
+    public Cookie createCookie(String token) {
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        return cookie;
     }
 }

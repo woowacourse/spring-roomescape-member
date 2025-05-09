@@ -1,4 +1,4 @@
-package roomescape.presentation.controller.dto;
+package roomescape.auth.dto;
 
 public record TokenResponse(String accessToken) {
 }
