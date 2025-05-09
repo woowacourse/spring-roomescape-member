@@ -1,4 +1,4 @@
-package roomescape.user.ui;
+package roomescape.member.ui;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -7,16 +7,16 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.user.application.AuthService;
-import roomescape.user.application.UserService;
+import roomescape.member.application.AuthService;
+import roomescape.member.application.MemberService;
 
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
     private final AuthService authService;
-    private final UserService userService;
+    private final MemberService memberService;
 
-    public AuthenticationPrincipalArgumentResolver(AuthService authService, UserService userService) {
+    public AuthenticationPrincipalArgumentResolver(AuthService authService, MemberService memberService) {
         this.authService = authService;
-        this.userService = userService;
+        this.memberService = memberService;
     }
 
     @Override
@@ -37,6 +37,6 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
         }
 
         String userId = authService.getPayload(token);
-        return userService.findById(Long.parseLong(userId));
+        return memberService.findById(Long.parseLong(userId));
     }
 }

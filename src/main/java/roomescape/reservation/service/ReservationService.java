@@ -5,14 +5,17 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.AdminReservationRequest;
+import roomescape.reservation.dto.UserReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.Time;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.time.repository.TimeRepository;
-import roomescape.user.domain.User;
+import roomescape.member.application.MemberNotFoundException;
+import roomescape.member.domain.Member;
+import roomescape.member.infrastructure.MemberRepository;
 
 @Service
 public class ReservationService {
@@ -20,17 +23,19 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               TimeRepository timeRepository,
-                              ThemeRepository themeRepository) {
+                              ThemeRepository themeRepository, MemberRepository memberRepository) {
 
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
-    public ReservationResponse add(ReservationRequest request, User user) {
+    public ReservationResponse addByUser(UserReservationRequest request, Member user) {
         Time time = findReservationTimeOrThrow(request.timeId());
 
         LocalDate date = request.date();
@@ -39,7 +44,18 @@ public class ReservationService {
 
         Theme theme = findThemeOrThrow(request.themeId());
 
-        Reservation reservation = Reservation.createBeforeSaved(user.name(), date, time, theme);
+        Reservation reservation = Reservation.createBeforeSaved(user, date, time, theme);
+        return ReservationResponse.from(reservationRepository.add(reservation));
+    }
+
+    public ReservationResponse addByAdmin(AdminReservationRequest request) {
+        Member user = memberRepository.findById(request.memberId())
+                .orElseThrow(MemberNotFoundException::new);
+
+        Time time = findReservationTimeOrThrow(request.timeId());
+        Theme theme = findThemeOrThrow(request.themeId());
+
+        Reservation reservation = Reservation.createBeforeSaved(user, request.date(), time, theme);
         return ReservationResponse.from(reservationRepository.add(reservation));
     }
 

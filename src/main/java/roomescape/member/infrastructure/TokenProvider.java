@@ -1,4 +1,4 @@
-package roomescape.user.infrastructure;
+package roomescape.member.infrastructure;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -10,7 +10,7 @@ import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.user.application.AuthorizationException;
+import roomescape.member.application.AuthorizationException;
 
 @Component
 public class TokenProvider {

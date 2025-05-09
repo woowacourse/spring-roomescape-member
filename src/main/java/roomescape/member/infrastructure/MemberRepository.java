@@ -1,23 +1,27 @@
-package roomescape.user.infrastructure;
+package roomescape.member.infrastructure;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-import roomescape.user.domain.User;
+import roomescape.member.domain.Member;
+import roomescape.member.dto.MemberResponse;
 
 @Repository
-public class UserRepository {
+public class MemberRepository {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public UserRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public MemberRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
     public Optional<Long> findIdByEmailAndPassword(String email, String password) {
-        String sql = "SELECT id FROM users WHERE email = :email AND password = :password";
+        String sql = "SELECT id FROM member WHERE email = :email AND password = :password";
 
         Map<String, Object> parameter = Map.of("email", email,
                                             "password", password);
@@ -32,8 +36,8 @@ public class UserRepository {
         }
     }
 
-    public Optional<User> findById(Long id) {
-        String sql = "SELECT * FROM users WHERE id = :id";
+    public Optional<Member> findById(Long id) {
+        String sql = "SELECT * FROM member WHERE id = :id";
 
         Map<String, Object> parameter = Map.of("id", id);
 
@@ -41,7 +45,7 @@ public class UserRepository {
             return Optional.of(namedParameterJdbcTemplate.queryForObject(
                     sql,
                     parameter,
-                    (resultSet, rowNum) -> new User(
+                    (resultSet, rowNum) -> new Member(
                             resultSet.getLong("id"),
                             resultSet.getString("name"),
                             resultSet.getString("email"),
@@ -49,5 +53,18 @@ public class UserRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public List<Member> findAll() {
+        String sql = "select * from member";
+
+        return namedParameterJdbcTemplate.query(sql, (resultSet, rowNum) -> createMember(resultSet));
+    }
+
+    private Member createMember(ResultSet resultSet) throws SQLException {
+        return new Member(resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("email"),
+                resultSet.getString("password"));
     }
 }

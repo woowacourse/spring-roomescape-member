@@ -1,8 +1,7 @@
-package roomescape.user.application;
+package roomescape.member.application;
 
 import org.springframework.stereotype.Service;
-import roomescape.user.dto.LoginRequest;
-import roomescape.user.infrastructure.TokenProvider;
+import roomescape.member.infrastructure.TokenProvider;
 
 @Service
 public class AuthService {

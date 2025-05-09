@@ -1,4 +1,4 @@
-package roomescape.user.application;
+package roomescape.member.application;
 
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;

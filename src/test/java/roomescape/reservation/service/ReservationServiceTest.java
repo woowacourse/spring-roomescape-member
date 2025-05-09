@@ -9,7 +9,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.UserReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
@@ -42,7 +42,7 @@ class ReservationServiceTest {
         Long timeId = 1L;
         Long themeId = 2L;
 
-        ReservationRequest request = new ReservationRequest("미미", date, timeId, themeId);
+        UserReservationRequest request = new UserReservationRequest("미미", date, timeId, themeId);
         Time time = mock(Time.class);
         Theme theme = mock(Theme.class);
 
@@ -54,7 +54,7 @@ class ReservationServiceTest {
         given(reservationRepository.add(any())).willReturn(saved);
 
         // when
-        ReservationResponse response = reservationService.add(request);
+        ReservationResponse response = reservationService.addByUser(request);
 
         // then
         assertThat(response).isNotNull();
@@ -69,13 +69,13 @@ class ReservationServiceTest {
         Long timeId = 1L;
         Long themeId = 2L;
 
-        ReservationRequest request = new ReservationRequest("미미", date, timeId, themeId);
+        UserReservationRequest request = new UserReservationRequest("미미", date, timeId, themeId);
         given(timeRepository.findById(timeId)).willReturn(Optional.of(mock(Time.class)));
         given(themeRepository.findById(themeId)).willReturn(Optional.of(mock(Theme.class)));
         given(reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)).willReturn(true);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.add(request))
+        assertThatThrownBy(() -> reservationService.addByUser(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 이미 예약이 존재합니다.");
     }
@@ -88,7 +88,7 @@ class ReservationServiceTest {
         Long timeId = 1L;
         Long themeId = 2L;
 
-        ReservationRequest request = new ReservationRequest("미미", today, timeId, themeId);
+        UserReservationRequest request = new UserReservationRequest("미미", today, timeId, themeId);
         Time time = mock(Time.class);
 
         given(timeRepository.findById(timeId)).willReturn(Optional.of(time));
@@ -97,7 +97,7 @@ class ReservationServiceTest {
         given(time.isBefore(any(LocalTime.class))).willReturn(true);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.add(request))
+        assertThatThrownBy(() -> reservationService.addByUser(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 지난 시간으로는 예약할 수 없습니다.");
     }
