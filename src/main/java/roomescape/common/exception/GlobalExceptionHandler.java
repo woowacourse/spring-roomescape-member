@@ -34,6 +34,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(AlreadyExistException.class)
+    public ResponseEntity<String> alreadyExistExceptionHandler(AlreadyExistException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(AuthorizationException.class)
     public ResponseEntity<String> authorizationExceptionHandler(AuthorizationException exception) {
         System.out.println(exception.getCause().getClass());
