@@ -23,3 +23,14 @@ CREATE TABLE IF NOT EXISTS theme
     thumbnail   VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
+
+CREATE TABLE IF NOT EXISTS users
+(
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(255) NOT NULL,
+    email    VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role     ENUM('USER', 'ADMIN') NOT NULL,
+
+    PRIMARY KEY (id)
+);

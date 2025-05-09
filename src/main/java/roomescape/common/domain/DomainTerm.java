@@ -21,6 +21,14 @@ public enum DomainTerm {
     RESERVATION_TIME("예약 시간"),
     RESERVATION_TIME_ID("예약 시간 식별자"),
 
+    // User 도메인
+    USER("유저"),
+    USER_ID("유저 식별자"),
+    USER_NAME("유저 이름"),
+    USER_EMAIL("유저 이메일"),
+    USER_PASSWORD("유저 비밀번호"),
+    USER_ROLE("유저 역할"),
+
     // Common
     DOMAIN_ID("도메인 식별자"),
     ;
