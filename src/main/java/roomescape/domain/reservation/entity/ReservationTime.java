@@ -23,7 +23,7 @@ public class ReservationTime {
         return new ReservationTime(null, startAt);
     }
 
-    public void validateReservationTime() {
+    private void validateReservationTime() {
         if (startAt == null) {
             throw new InvalidArgumentException("startAt cannot be null");
         }
