@@ -179,4 +179,12 @@ class ReservationApiTest {
             .statusCode(200)
             .body("size()", is(3));
     }
+    
+    @Test
+    void 토큰없이_관리자페이지에_접근하면_401반환() {
+        RestAssured.given().log().all()
+            .when().get("/admin/reservations")
+            .then().log().all()
+            .statusCode(401);
+    }
 }
