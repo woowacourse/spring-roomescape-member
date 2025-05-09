@@ -3,7 +3,9 @@ package roomescape.member.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.member.controller.request.LoginRequest;
+import roomescape.member.controller.request.SignUpRequest;
 import roomescape.member.controller.response.MemberNameResponse;
+import roomescape.member.controller.response.MemberResponse;
 import roomescape.member.domain.Member;
 import roomescape.member.infrastructure.jwt.JwtHandler;
 import roomescape.member.infrastructure.repository.MemberRepository;
@@ -17,10 +19,7 @@ public class MemberService {
 
     public String login(LoginRequest request) {
         Member member = memberRepository.findByEmailAndPassword(request.email(), request.password())
-                .orElseGet(() -> {
-                    Member created = Member.create("name", request.email(), request.password());
-                    return memberRepository.save(created);
-                });
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 가입되지 않은 회원입니다."));
 
         return jwtHandler.createToken(member.getId());
     }
@@ -32,5 +31,15 @@ public class MemberService {
                 .orElseThrow();
 
         return new MemberNameResponse(member.getName());
+    }
+
+    public MemberResponse signUp(SignUpRequest request) {
+        Member member = Member.create(request.name(), request.email(), request.password());
+        boolean exists = memberRepository.existsByEmail(member.getEmail());
+        if (exists) {
+            throw new IllegalArgumentException("[ERROR] 이미 가입된 이메일입니다.");
+        }
+        Member signed = memberRepository.save(member);
+        return MemberResponse.from(signed);
     }
 }
