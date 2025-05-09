@@ -1,10 +1,16 @@
 package roomescape.user.infrastructure;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import java.util.Date;
+import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.user.application.AuthorizationException;
 
 @Component
 public class TokenProvider {
@@ -21,7 +27,38 @@ public class TokenProvider {
                 .setSubject(payload)
                 .setIssuedAt(now)
                 .setExpiration(expiredAt)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(getSigningKey())
                 .compact();
+    }
+
+    public boolean isInvalidToken(String token) {
+        try {
+            Jws<Claims> claims = Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token);
+            return claims.getBody().getExpiration().before(new Date());
+        }
+        catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    private SecretKey getSigningKey() {
+        byte[] secretKeyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(secretKeyBytes);
+    }
+
+    public String getPayload(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody().getSubject();
+        }
+        catch (JwtException | IllegalArgumentException exception) {
+            throw new AuthorizationException();
+        }
     }
 }
