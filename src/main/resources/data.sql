@@ -4,6 +4,9 @@ TRUNCATE TABLE theme;
 TRUNCATE TABLE reservation_time;
 SET FOREIGN_KEY_CHECKS = 1;
 
+INSERT INTO member (name, role, email, password)
+VALUES ("admin", "ADMIN", "admin@email.com", "1234");
+
 -- reservation_time
 INSERT INTO reservation_time (start_at)
 VALUES ('10:00');

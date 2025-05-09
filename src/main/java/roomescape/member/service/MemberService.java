@@ -34,7 +34,7 @@ public class MemberService {
     }
 
     public MemberResponse signUp(SignUpRequest request) {
-        Member member = Member.create(request.name(), request.email(), request.password());
+        Member member = Member.createUser(request.name(), request.email(), request.password());
         boolean exists = memberRepository.existsByEmail(member.getEmail());
         if (exists) {
             throw new IllegalArgumentException("[ERROR] 이미 가입된 이메일입니다.");
