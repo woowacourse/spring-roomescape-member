@@ -9,11 +9,12 @@ public record MemberResponse(
 
 ) {
 
-    public record Name(
+    public record IdName(
+            Long id,
             String name
     ) {
-        public static Name from(final Member member) {
-            return new Name(member.getName());
+        public static IdName from(final Member member) {
+            return new IdName(member.getId(), member.getName());
         }
     }
 }
