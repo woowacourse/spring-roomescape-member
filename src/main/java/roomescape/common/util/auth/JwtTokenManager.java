@@ -1,8 +1,5 @@
 package roomescape.common.util.auth;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
 import java.time.Instant;
@@ -25,12 +22,21 @@ public class JwtTokenManager {
                 .compact();
     }
 
-    public static Long getMemberId(String token) {
+    public static Long getId(String token) {
         return Long.valueOf(Jwts.parser()
                 .verifyWith(new SecretKeySpec(SECRET_KEY.getBytes(), "HmacSHA256"))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject());
+    }
+
+    public static String getRole(String token) {
+        return Jwts.parser()
+                .verifyWith(new SecretKeySpec(SECRET_KEY.getBytes(), "HmacSHA256"))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("role", String.class);
     }
 }
