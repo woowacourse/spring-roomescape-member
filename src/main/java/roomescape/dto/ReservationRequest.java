@@ -7,7 +7,7 @@ import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
 
 public record ReservationRequest(
-        LocalDate date, long timeId, long themeId
+        LocalDate date, Long timeId, Long themeId
 ) {
     public ReservationRequest {
         validateNotNull(date, timeId, themeId);

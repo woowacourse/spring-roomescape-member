@@ -36,13 +36,13 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse createReservation(ReservationRequest reservationRequest, LoginMember memberInfo) {
-        Member member = memberDao.findById(memberInfo.getId());
+    public ReservationResponse createReservation(ReservationRequest reservationRequest, LoginMember loginMember) {
+        Member member = memberDao.findById(loginMember.getId());
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
         Theme theme = themeDao.findById(reservationRequest.themeId());
         Reservation reservationWithoutId = reservationRequest.toReservationWith(member, reservationTime, theme);
-        reservationWithoutId.validatePastDateTime();
 
+        reservationWithoutId.validatePastDateTime();
         if (reservationDao.existBySameDateTime(reservationWithoutId)) {
             throw new IllegalArgumentException("중복된 예약은 생성이 불가능합니다.");
         }
