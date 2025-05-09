@@ -32,13 +32,13 @@ public class AuthService {
 
     public UserResponseDto findMember(String email) {
         User user = userRepository.findUseByEmail(email)
-                .orElseThrow(() -> new NotFoundUserException("해당 유저를 찾을 수 없습니다."));
+                .orElseThrow(NotFoundUserException::new);
         return UserResponseDto.of(user);
     }
 
     public TokenResponseDto login(TokenRequestDto tokenRequestDto) {
         userRepository.findUserByEmailAndPassword(tokenRequestDto.email(), tokenRequestDto.password())
-                .orElseThrow(() -> new NotFoundUserException("해당 유저를 찾을 수 없습니다."));
+                .orElseThrow(NotFoundUserException::new);
 
         return createToken(tokenRequestDto);
     }
