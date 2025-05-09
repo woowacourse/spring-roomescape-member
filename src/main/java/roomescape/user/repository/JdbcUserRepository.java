@@ -58,6 +58,17 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
+    public Optional<User> findUseByEmail(String email) {
+        String sql = "select id, name, email, password from users where email = ?";
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, userRowMapper, email));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Optional<User> findUserByEmailAndPassword(String email, String password) {
         String sql = "SELECT id, name, email, password "
                 + "FROM users "
