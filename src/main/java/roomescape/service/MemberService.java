@@ -16,8 +16,8 @@ public class MemberService {
     }
 
     public MemberRegisterResponse register(final MemberRegisterRequest request) {
-        Member member = request.toEntity();
-        Long id = memberDao.save(member);
+        final Member member = request.toEntity();
+        final Long id = memberDao.save(member);
         return MemberRegisterResponse.from(id, member);
     }
 }

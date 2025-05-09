@@ -16,6 +16,6 @@ public record MemberRegisterRequest(
 
 ) {
     public Member toEntity() {
-        return new Member(this.name, this.email, this.password);
+        return Member.fromWithoutId(this.name, this.email, this.password);
     }
 }

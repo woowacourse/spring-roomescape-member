@@ -2,6 +2,8 @@ package roomescape.dao;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -10,7 +12,7 @@ import roomescape.domain.Member;
 @Repository
 public class JdbcMemberDaoImpl implements MemberDao {
 
-    private static final int MEMBER_INITIAL_CAPACITY = 3;
+    private static final int MEMBER_INITIAL_CAPACITY = 4;
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertActor;
@@ -28,6 +30,7 @@ public class JdbcMemberDaoImpl implements MemberDao {
         parameters.put("name", member.getName());
         parameters.put("email", member.getEmail());
         parameters.put("password", member.getPassword());
+        parameters.put("role", member.getRole());
 
         Number number = insertActor.executeAndReturnKey(parameters);
         return getGeneratedId(number);

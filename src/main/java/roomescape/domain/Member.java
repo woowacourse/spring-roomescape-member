@@ -6,12 +6,22 @@ public class Member {
     private final String name;
     private final String email;
     private final String password;
+    private final String role;
 
-    public Member(final String name, final String email, final String password) {
-        this.id = null;
+    private Member(final Long id, final String name, final String email, final String password, final String role) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
+    }
+
+    public static Member fromWithoutId(final String name, final String email, final String password) {
+        return new Member(null, name, email, password.trim(), "basic");
+    }
+
+    public static Member from(final Long id, final String name, final String email, final String password) {
+        return new Member(id, name, email, password.trim(), "basic");
     }
 
     public Long getId() {
@@ -32,5 +42,25 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Member member = (Member) o;
+        return Objects.equals(getId(), member.getId()) && Objects.equals(getName(), member.getName())
+                && Objects.equals(getEmail(), member.getEmail()) && Objects.equals(getPassword(),
+                member.getPassword()) && Objects.equals(getRole(), member.getRole());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getEmail(), getPassword(), getRole());
     }
 }

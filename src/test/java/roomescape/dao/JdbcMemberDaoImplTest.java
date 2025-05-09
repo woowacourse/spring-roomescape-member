@@ -33,7 +33,7 @@ class JdbcMemberDaoImplTest {
     @Test
     void save() {
         //given
-        Member member = new Member("testName", "testEmail", "1234");
+        Member member = Member.fromWithoutId("testName", "testEmail", "1234");
 
         //when
         Long actual = memberDao.save(member);
