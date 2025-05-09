@@ -20,12 +20,17 @@ public class Member {
     @NonNull
     private final String password;
 
-    public Member(final Long id, @NonNull final String name, @NonNull final String email, @NonNull final String password) {
+    @NonNull
+    private final Role role;
+
+    public Member(final Long id, @NonNull final String name, @NonNull final String email,
+                  @NonNull final String password, @NonNull final Role role) {
         validateEmail(email);
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     private void validateEmail(final String email) {

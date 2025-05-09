@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 
 @Service
 public class JdbcMemberRepository implements MemberRepository {
@@ -16,7 +17,8 @@ public class JdbcMemberRepository implements MemberRepository {
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("email"),
-                    resultSet.getString("password")
+                    resultSet.getString("password"),
+                    Role.valueOf(resultSet.getString("role"))
             );
 
     private final JdbcTemplate jdbcTemplate;
@@ -26,7 +28,7 @@ public class JdbcMemberRepository implements MemberRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("member")
                 .usingGeneratedKeyColumns("id")
-                .usingColumns("name", "email", "password");
+                .usingColumns("name", "email", "password", "role");
     }
 
     @Override
@@ -34,10 +36,11 @@ public class JdbcMemberRepository implements MemberRepository {
         final MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
-                .addValue("password", member.getPassword());
+                .addValue("password", member.getPassword())
+                .addValue("role", member.getRole().name());
 
         final Long newId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return new Member(newId, member.getName(), member.getEmail(), member.getPassword());
+        return new Member(newId, member.getName(), member.getEmail(), member.getPassword(), member.getRole());
     }
 
     @Override
