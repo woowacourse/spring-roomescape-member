@@ -51,22 +51,4 @@ public final class FakeReservationThemeRepository implements ReservationThemeRep
                                                                                int limit) {
         return themes;
     }
-
-    @Override
-    public void deleteById(Long id) {
-        themes.removeIf(theme -> theme.getId().equals(id));
-    }
-
-    @Override
-    public Optional<ReservationTheme> findById(Long id) {
-        return themes.stream()
-                .filter(theme -> theme.getId().equals(id))
-                .findFirst();
-    }
-
-    @Override
-    public List<ReservationTheme> findByStartDateAndEndDateOrderByReservedDesc(LocalDate start, LocalDate end,
-                                                                               int limit) {
-        return themes;
-    }
 }

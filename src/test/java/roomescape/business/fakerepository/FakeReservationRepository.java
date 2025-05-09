@@ -60,16 +60,4 @@ public final class FakeReservationRepository implements ReservationRepository {
         return reservations.stream()
                 .anyMatch(reservation -> reservation.getTheme().getId().equals(id));
     }
-
-    @Override
-    public boolean existsByTimeId(Long timeId) {
-        return reservations.stream()
-                .anyMatch(reservation -> reservation.getTime().getId().equals(timeId));
-    }
-
-    @Override
-    public boolean existByThemeId(Long id) {
-        return reservations.stream()
-                .anyMatch(reservation -> reservation.getTheme().getId().equals(id));
-    }
 }

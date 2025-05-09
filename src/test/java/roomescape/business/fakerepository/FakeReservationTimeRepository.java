@@ -46,9 +46,4 @@ public final class FakeReservationTimeRepository implements ReservationTimeRepos
     public List<AvailableTimesResponseDto> findAvailableTimes(LocalDate date, Long themeId) {
         return List.of();
     }
-
-    @Override
-    public List<AvailableTimesResponseDto> findAvailableTimes(LocalDate date, Long themeId) {
-        return List.of();
-    }
 }
