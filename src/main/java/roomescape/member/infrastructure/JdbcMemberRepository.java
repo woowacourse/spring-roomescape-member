@@ -1,6 +1,7 @@
 package roomescape.member.infrastructure;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -96,5 +97,20 @@ public class JdbcMemberRepository implements MemberRepository {
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id)
                 .stream()
                 .findFirst();
+    }
+
+    @Override
+    public List<Member> findAll() {
+        final String sql = """
+                SELECT
+                    id,
+                    name,
+                    email,
+                    password,
+                    role
+                FROM members
+                """;
+
+        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
     }
 }
