@@ -14,7 +14,7 @@ import roomescape.exception.AlreadyExistException;
 import roomescape.theme.applcation.ThemeService;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
-import roomescape.theme.infrastructure.H2ThemeRepository;
+import roomescape.theme.infrastructure.JdbcThemeRepository;
 import roomescape.theme.ui.dto.CreateThemeRequest;
 import roomescape.theme.ui.dto.ThemeResponse;
 
@@ -109,7 +109,7 @@ class ThemeServiceTest {
         public ThemeRepository themeRepository(
                 final JdbcTemplate jdbcTemplate
         ) {
-            return new H2ThemeRepository(jdbcTemplate);
+            return new JdbcThemeRepository(jdbcTemplate);
         }
 
         @Bean
