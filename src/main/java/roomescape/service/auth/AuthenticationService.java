@@ -2,7 +2,7 @@ package roomescape.service.auth;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.exceptions.auth.AuthorizationUserNotFoundException;
+import roomescape.exceptions.auth.AuthorizationMemberNotFoundException;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.repository.member.MemberRepository;
 
@@ -20,7 +20,7 @@ public class AuthenticationService {
 
     public String createToken(String email, String password) {
         if (!memberRepository.existsByEmailAndPassword(email, password)) {
-            throw new AuthorizationUserNotFoundException("회원 정보를 찾을 수 없습니다.");
+            throw new AuthorizationMemberNotFoundException("회원 정보를 찾을 수 없습니다.");
         }
 
         return jwtTokenProvider.createToken(email);

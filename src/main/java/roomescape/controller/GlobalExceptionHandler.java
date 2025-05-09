@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exceptions.EntityDuplicateException;
 import roomescape.exceptions.EntityNotFoundException;
-import roomescape.exceptions.auth.AuthorizationUserNotFoundException;
+import roomescape.exceptions.auth.AuthorizationMemberNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(AuthorizationUserNotFoundException.class)
-    public ProblemDetail handleDataIntegrityViolation(AuthorizationUserNotFoundException e) {
+    @ExceptionHandler(AuthorizationMemberNotFoundException.class)
+    public ProblemDetail handleDataIntegrityViolation(AuthorizationMemberNotFoundException e) {
         return createErrorResponse(e, HttpStatus.BAD_REQUEST);
     }
 
