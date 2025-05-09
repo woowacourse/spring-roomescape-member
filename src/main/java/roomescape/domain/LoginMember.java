@@ -24,6 +24,10 @@ public class LoginMember {
         }
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
     }
@@ -34,5 +38,9 @@ public class LoginMember {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getRole() {
+        return role;
     }
 }

@@ -53,7 +53,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidAuthorizationException.class)
-    public ProblemDetail handleUnauthorizedException(InvalidAuthorizationException ex, HttpServletRequest request) {
+    public ProblemDetail handleInvalidAuthorizationException(InvalidAuthorizationException ex, HttpServletRequest request) {
+        return GlobalProblemDetail.of(HttpStatus.UNAUTHORIZED, List.of(ex.getMessage()), request.getRequestURI());
+    }
+
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ProblemDetail handleUnauthorizedAccessException(UnauthorizedAccessException ex, HttpServletRequest request) {
         return GlobalProblemDetail.of(HttpStatus.UNAUTHORIZED, List.of(ex.getMessage()), request.getRequestURI());
     }
 }

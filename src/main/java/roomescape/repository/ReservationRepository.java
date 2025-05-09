@@ -8,7 +8,7 @@ import roomescape.domain.Reservation;
 
 public interface ReservationRepository {
 
-    Optional<Reservation> save(final Reservation reservation);
+    long save(final Reservation reservation);
 
     List<Reservation> findAll();
 

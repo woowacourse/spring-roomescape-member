@@ -63,4 +63,14 @@ public class JdbcMemberDao implements MemberRepository {
             return Optional.empty();
         }
     }
+
+    @Override
+    public Optional<LoginMember> findById(long id) {
+        String sql = "SELECT * FROM member WHERE id = ?";
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }
