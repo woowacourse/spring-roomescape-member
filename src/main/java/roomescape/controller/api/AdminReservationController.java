@@ -35,4 +35,18 @@ public class AdminReservationController {
         ReservationResult reservationResult = reservationService.addReservation(creation);
         return ReservationResponse.from(reservationResult);
     }
+
+    @GetMapping("/admin/reservations/search")
+    public List<ReservationResponse> searchAllReservationsByCriteria(
+            @RequestParam(required = false) Long memberId,
+            @RequestParam(required = false) Long themeId,
+            @RequestParam(required = false, value = "dateFrom") LocalDate from,
+            @RequestParam(required = false, value = "dateTo") LocalDate to) {
+
+        ReservationCriteriaCreation creation = new ReservationCriteriaCreation(memberId, themeId, from, to);
+        return reservationService.getAllReservationByCriteria(creation)
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
 }

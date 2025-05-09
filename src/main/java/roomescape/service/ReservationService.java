@@ -110,6 +110,14 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResult> getAllReservationByCriteria(final ReservationCriteriaCreation creation) {
+        ReservationCriteria criteria = ReservationCriteria.from(creation);
+        return reservationRepository.findAllByCriteria(criteria)
+                .stream()
+                .map(ReservationResult::from)
+                .toList();
+    }
+
     public void removeReservationById(final long id) {
         boolean deleted = reservationRepository.deleteById(id);
 

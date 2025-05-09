@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -16,6 +17,7 @@ import roomescape.domain.MemberRoleType;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
+import roomescape.repository.criteria.ReservationCriteria;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -75,12 +77,51 @@ public class JdbcReservationRepository implements ReservationRepository {
                 FROM reservation AS r
                 JOIN reservation_time AS rt
                 ON r.time_id = rt.time_id
-                JOIN theme AS t 
+                JOIN theme AS t
                 ON r.theme_id = t.theme_id
-                JOIN member AS m 
+                JOIN member AS m
                 ON r.member_id = m.member_id
                 """;
         return jdbcTemplate.query(query, RESERVATION_ROW_MAPPER);
+    }
+
+    @Override
+    public List<Reservation> findAllByCriteria(final ReservationCriteria criteria) {
+        String sql = """
+                SELECT
+                    reservation_id,
+                    m.member_id, name, email, password, role,
+                    date,
+                    rt.time_id, start_at AS time_value,
+                    t.theme_id, theme_name, description, thumbnail
+                FROM reservation AS r
+                JOIN reservation_time AS rt
+                ON r.time_id = rt.time_id
+                JOIN theme AS t
+                ON r.theme_id = t.theme_id
+                JOIN member AS m
+                ON r.member_id = m.member_id
+                WHERE 1 = 1
+                """;
+        StringBuilder query = new StringBuilder(sql);
+        List<Object> params = new ArrayList<>();
+        if (criteria.memberId() != null) {
+            query.append(" AND m.member_id = ?");
+            params.add(criteria.memberId());
+        }
+        if (criteria.themeId() != null) {
+            query.append(" AND t.theme_id = ?");
+            params.add(criteria.themeId());
+        }
+        if (criteria.from() != null) {
+            query.append(" AND date >= ?");
+            params.add(criteria.from());
+        }
+        if (criteria.to() != null) {
+            query.append(" AND date <= ?");
+            params.add(criteria.to());
+        }
+        return jdbcTemplate.query(query.toString(), RESERVATION_ROW_MAPPER, params.toArray());
     }
 
     @Override
