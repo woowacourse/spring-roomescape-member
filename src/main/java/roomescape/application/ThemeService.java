@@ -11,7 +11,7 @@ import roomescape.domain.repository.ThemeRepository;
 @Service
 public class ThemeService {
 
-    public static final int MAX_THEME_FETCH_COUNT = 10;
+    private static final int MAX_THEME_FETCH_COUNT = 10;
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
 

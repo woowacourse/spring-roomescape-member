@@ -73,7 +73,6 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        // TODO : 필요한 것만 가져오는거 생각해보기
         return jdbcTemplate.query(selectAndJoinClause, RowMappers.RESERVATION);
     }
 

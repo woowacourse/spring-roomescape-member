@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record CreateReservationRequest(
-
     @JsonFormat(pattern = "yyyy-MM-dd")
     @NotNull
     LocalDate date,

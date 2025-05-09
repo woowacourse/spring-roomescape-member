@@ -42,7 +42,7 @@ public class User {
         throw new IllegalStateException("사용자 ID는 재할당할 수 없습니다. 현재 ID: " + this.id);
     }
 
-    public boolean matchesPassword(String passwordToCompare) {
+    public boolean matchesPassword(final String passwordToCompare) {
         return password.equals(passwordToCompare);
     }
 
