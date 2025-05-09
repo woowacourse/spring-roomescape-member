@@ -35,10 +35,10 @@ public class JdbcMemberDao implements MemberDao {
     }
 
     @Override
-    public Optional<Member> findByEmail(String email) {
-        final String sql = "SELECT * FROM member WHERE email = :email";
-        SqlParameterSource parameters = new MapSqlParameterSource("email", email);
-        Member member = jdbcTemplate.queryForObject(sql, parameters, memberMapper);
+    public Optional<Member> findById(long id) {
+        final String sql = "SELECT * FROM member WHERE id = :id";
+        final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        final Member member = jdbcTemplate.queryForObject(sql, parameters, memberMapper);
         return Optional.ofNullable(member);
     }
 }

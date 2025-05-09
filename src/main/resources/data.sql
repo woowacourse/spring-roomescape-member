@@ -28,4 +28,4 @@ INSERT INTO reservation(name, date, time_id, theme_id) VALUES('사용자1', '202
 INSERT INTO reservation(name, date, time_id, theme_id) VALUES('사용자1', '2025-04-24', 1, 7);
 INSERT INTO reservation(name, date, time_id, theme_id) VALUES('사용자1', '2025-04-24', 2, 10);
 
-INSERT INTO users(name, email, password) VALUES('김준영', 'rlawnsdud920@gmail.com', 'qwer!');
+INSERT INTO member(name, email, password) VALUES('김준영', 'rlawnsdud920@gmail.com', 'qwer!');

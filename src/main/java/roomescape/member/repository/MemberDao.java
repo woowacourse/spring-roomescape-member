@@ -7,5 +7,5 @@ public interface MemberDao {
 
     Optional<Member> findByEmailAndPassword(String email, String password);
 
-    Optional<Member> findByEmail(String email);
+    Optional<Member> findById(long memberId);
 }

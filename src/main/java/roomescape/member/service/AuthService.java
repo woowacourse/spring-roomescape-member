@@ -21,13 +21,14 @@ public class AuthService {
     public TokenResponse tokenLogin(final LoginInfo loginInfo) {
         final Member loginMember = memberDao.findByEmailAndPassword(loginInfo.email(), loginInfo.password())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일 혹은 비밀번호입니다."));
-        String token = tokenProvider.createToken(loginMember.getEmail());
+        Long memberId = loginMember.getId();
+        String token = tokenProvider.createToken(memberId.toString());
         return new TokenResponse(token);
     }
 
     public MemberInfo getMemberInfoByToken(String token) {
-        String email = tokenProvider.parsePayload(token);
-        Member member = memberDao.findByEmail(email)
+        long memberId = Long.parseLong(tokenProvider.parsePayload(token));
+        Member member = memberDao.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원 정보입니다."));
         return new MemberInfo(member);
     }
