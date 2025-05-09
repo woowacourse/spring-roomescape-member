@@ -36,14 +36,6 @@ public class ReservationController {
         return ResponseEntity.ok(reservationResponses);
     }
 
-//    @GetMapping("/conditions")
-//    public ResponseEntity<List<ReservationResponse>> findReservationsInConditions( {
-//        List<ReservationResponse> reservationResponses = reservationResults.stream()
-//                .map(ReservationResponse::from)
-//                .toList();
-//        return ResponseEntity.ok(reservationResponses);
-//    }
-
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody CreateReservationRequest createReservationRequest,
