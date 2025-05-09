@@ -7,19 +7,14 @@ import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.login.domain.Member;
 
 @Repository
 public class MemberDao {
-    private final SimpleJdbcInsert simpleJdbcInsert;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public MemberDao(DataSource dataSource) {
-        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("member")
-                .usingGeneratedKeyColumns("id");
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
@@ -35,14 +30,17 @@ public class MemberDao {
         }
     }
 
-//    public Member add(final Member member) {
-//        Map<String, Object> parameters = new HashMap<>();
-//        parameters.put("name", member.getName());
-//        parameters.put("email", member.getEmail());
-//        parameters.put("password", member.getPassword());
-//        long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-//        return new Member(id, member.getName(), member.getEmail(), member.getPassword());
-//    }
+    public Boolean isPasswordMatch(final String email, final String password) {
+        String sql = "SELECT password FROM member WHERE email = :email";
+        Map<String, Object> parameter = Map.of("email", email);
+
+        try {
+            String memberPassword = namedParameterJdbcTemplate.queryForObject(sql, parameter, String.class);
+            return password.equals(memberPassword);
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
+    }
 
     private Member createMember(final ResultSet resultSet) throws SQLException {
         return new Member(

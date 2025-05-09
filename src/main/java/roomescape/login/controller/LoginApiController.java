@@ -7,10 +7,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import roomescape.common.authentication.AuthenticationPrincipal;
 import roomescape.common.authorization.AuthorizationHandler;
 import roomescape.common.authorization.TokenAuthorizationHandler;
+import roomescape.login.dto.MemberRequest;
 import roomescape.login.dto.MemberResponse;
-import roomescape.login.dto.TokenRequest;
 import roomescape.login.dto.TokenResponse;
 import roomescape.login.service.LoginService;
 
@@ -26,18 +27,16 @@ public class LoginApiController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(
-            @RequestBody TokenRequest tokenRequest,
+            @RequestBody MemberRequest memberRequest,
             HttpServletResponse httpServletResponse
     ) {
-        TokenResponse tokenResponse = loginService.createToken(tokenRequest);
+        TokenResponse tokenResponse = loginService.createToken(memberRequest);
         authorizationHandler.createCookie(tokenResponse.accessToken(), httpServletResponse);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest httpServletRequest) {
-        String token = authorizationHandler.extractToken(httpServletRequest);
-        MemberResponse memberResponse = loginService.findMemberByToken(token);
+    public ResponseEntity<MemberResponse> checkLogin(@AuthenticationPrincipal MemberResponse memberResponse) {
         return ResponseEntity.ok(memberResponse);
     }
 

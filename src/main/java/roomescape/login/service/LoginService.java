@@ -2,18 +2,18 @@ package roomescape.login.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.common.authorization.JwtTokenProvider;
+import roomescape.common.exception.AuthenticationException;
 import roomescape.common.exception.InvalidEmailException;
 import roomescape.login.dao.MemberDao;
 import roomescape.login.domain.Member;
+import roomescape.login.dto.MemberRequest;
 import roomescape.login.dto.MemberResponse;
-import roomescape.login.dto.TokenRequest;
 import roomescape.login.dto.TokenResponse;
 
 @Service
 public class LoginService {
-    public static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-    public static final String INVALID_EMAIL_EXCEPTION_MESSAGE = "존재하지 않는 이메일입니다";
-    public static final String INVALID_EMAIL_FORMAT_EXCEPTION_MESSAGE = "올바른 이메일 양식을 입력해주세요";
+    private static final String AUTHENTICATION_FAIL_EXCEPTION_MESSAGE = "회원 로그인에 실패했습니다";
+    private static final String INVALID_EMAIL_EXCEPTION_MESSAGE = "존재하지 않는 이메일입니다";
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberDao memberDao;
@@ -23,27 +23,32 @@ public class LoginService {
         this.memberDao = memberDao;
     }
 
-    public TokenResponse createToken(final TokenRequest tokenRequest) {
-        validateEmail(tokenRequest.email());
-        String accessToken = jwtTokenProvider.createToken(tokenRequest);
+    public TokenResponse createToken(final MemberRequest memberRequest) {
+        Member member = findMemberByEmail(memberRequest.email());
+        validatePassword(member.getEmail(), memberRequest.password());
+
+        String accessToken = jwtTokenProvider.createToken(memberRequest);
         return new TokenResponse(accessToken);
     }
 
-    public MemberResponse findMemberByToken(final String token) {
+    public MemberResponse findByToken(final String token) {
         String email = jwtTokenProvider.getPayload(token);
-        return findMemberByEmail(email);
+        return findByEmail(email);
     }
 
-    public MemberResponse findMemberByEmail(final String email) {
-        Member member = memberDao.findByEmail(email)
-                .orElseThrow(() -> new InvalidEmailException(INVALID_EMAIL_EXCEPTION_MESSAGE));
-
+    public MemberResponse findByEmail(final String email) {
+        Member member = findMemberByEmail(email);
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getPassword());
     }
 
-    private void validateEmail(final String principal) {
-        if (!principal.matches(EMAIL_REGEX)) {
-            throw new InvalidEmailException(INVALID_EMAIL_FORMAT_EXCEPTION_MESSAGE);
+    private Member findMemberByEmail(final String email) {
+        return memberDao.findByEmail(email)
+                .orElseThrow(() -> new InvalidEmailException(INVALID_EMAIL_EXCEPTION_MESSAGE));
+    }
+
+    private void validatePassword(String email, String password) {
+        if (!memberDao.isPasswordMatch(email, password)) {
+            throw new AuthenticationException(AUTHENTICATION_FAIL_EXCEPTION_MESSAGE);
         }
     }
 }

@@ -3,8 +3,10 @@ package roomescape.common.authorization;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
 import roomescape.common.exception.AuthorizationException;
 
+@Component
 public class TokenAuthorizationHandler implements AuthorizationHandler<String> {
     public static final String INVALID_TOKEN_EXCEPTION_MESSAGE = "토큰 값이 존재하지 않습니다";
 
