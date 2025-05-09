@@ -6,7 +6,6 @@ import roomescape.theme.ui.dto.CreateThemeResponse;
 
 public record CreateReservationResponse(
         Long id,
-        String name,
         LocalDate date,
         CreateReservationTimeResponse time,
         CreateThemeResponse theme
@@ -15,7 +14,6 @@ public record CreateReservationResponse(
     public static CreateReservationResponse from(final Reservation reservation) {
         return new CreateReservationResponse(
                 reservation.getId(),
-                reservation.getName(),
                 reservation.getDate(),
                 CreateReservationTimeResponse.from(reservation.getTime()),
                 CreateThemeResponse.from(reservation.getTheme()));

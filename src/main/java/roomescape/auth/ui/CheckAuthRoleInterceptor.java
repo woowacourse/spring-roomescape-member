@@ -24,12 +24,14 @@ public class CheckAuthRoleInterceptor implements HandlerInterceptor {
         }
 
         final RequiresRole requiresRole = handlerMethod.getMethodAnnotation(RequiresRole.class);
-
         if (requiresRole == null) {
             return true;
         }
 
         final String accessToken = authTokenExtractor.extract(request);
+        if (!authTokenProvider.validateToken(accessToken)) {
+            return false;
+        }
         final AuthRole role = authTokenProvider.getRole(accessToken);
 
         return Arrays.stream(requiresRole.authRoles())

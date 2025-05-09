@@ -22,7 +22,6 @@ public class MemberRestController {
     private final MemberService memberService;
 
     @PostMapping
-    @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER, AuthRole.GUEST})
     public ResponseEntity<Void> create(@RequestBody CreateMemberRequest request) {
         memberService.create(request);
 
