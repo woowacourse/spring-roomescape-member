@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRoleType;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
@@ -20,11 +22,16 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("reservation_id"),
-            resultSet.getString("name"),
+            new Member(resultSet.getLong("member_id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password"),
+                    MemberRoleType.from(resultSet.getString("role"))),
             resultSet.getDate("date").toLocalDate(),
             new ReservationTime(resultSet.getLong("time_id"),
                     resultSet.getTime("time_value").toLocalTime()),
-            new RoomTheme(resultSet.getString("theme_name"),
+            new RoomTheme(resultSet.getLong("theme_id"),
+                    resultSet.getString("theme_name"),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail"))
     );
@@ -42,7 +49,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public long insert(final Reservation reservation) {
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
+                .addValue("member_id", reservation.getMember().getId())
                 .addValue("date", Date.valueOf(reservation.getDate()))
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
@@ -61,18 +68,17 @@ public class JdbcReservationRepository implements ReservationRepository {
         final String query = """
                 SELECT
                     reservation_id,
-                    name,
+                    m.member_id, name, email, password, role,
                     date,
-                    rt.time_id,
-                    start_at AS time_value,
-                    theme_name,
-                    description,
-                    thumbnail
+                    rt.time_id, start_at AS time_value,
+                    t.theme_id, theme_name, description, thumbnail
                 FROM reservation AS r
                 JOIN reservation_time AS rt
                 ON r.time_id = rt.time_id
                 JOIN theme AS t 
                 ON r.theme_id = t.theme_id
+                JOIN member AS m 
+                ON r.member_id = m.member_id
                 """;
         return jdbcTemplate.query(query, RESERVATION_ROW_MAPPER);
     }
@@ -82,18 +88,17 @@ public class JdbcReservationRepository implements ReservationRepository {
         final String query = """
                 SELECT
                     reservation_id,
-                    name,
+                    m.member_id, name, email, password, role,
                     date,
-                    rt.time_id AS time_id,
-                    start_at AS time_value,
-                    theme_name,
-                    description,
-                    thumbnail
+                    rt.time_id, start_at AS time_value,
+                    t.theme_id, theme_name, description, thumbnail
                 FROM reservation AS r
                 JOIN reservation_time AS rt
                 ON r.time_id = rt.time_id
                 JOIN theme AS t 
                 ON r.theme_id = t.theme_id
+                JOIN member AS m 
+                ON r.member_id = m.member_id
                 WHERE r.reservation_id = ?
                 """;
         List<Reservation> reservations = jdbcTemplate.query(query, RESERVATION_ROW_MAPPER, id);

@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.dto.request.CreateReservationRequest;
+import roomescape.domain.LoginMember;
+import roomescape.domain.MemberRoleType;
 import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotFoundValueException;
@@ -33,7 +35,7 @@ class ReservationServiceTest {
         LocalDate date = LocalDate.of(2100, 6, 30);
 
         //when
-        ReservationCreation creation = new ReservationCreation("test", date, 1L, 1L);
+        ReservationCreation creation = new ReservationCreation(1L, date, 1L, 1L);
         ReservationResult actual = reservationService.addReservation(creation);
 
         //then
@@ -48,11 +50,13 @@ class ReservationServiceTest {
     void exceptionWhenSameDateTime() {
         //given
         LocalDate date = LocalDate.of(2100, 1, 1);
-        reservationService.addReservation(ReservationCreation.from(new CreateReservationRequest("test", date, 1, 1)));
+        ReservationCreation creation = ReservationCreation.of(
+                new LoginMember(1, "test", "test@email.com", MemberRoleType.MEMBER),
+                new CreateReservationRequest(date, 1, 1));
+        reservationService.addReservation(creation);
 
         //when & then
-        ReservationCreation duplicated = new ReservationCreation("test", date, 1L, 1L);
-        assertThatThrownBy(() -> reservationService.addReservation(duplicated))
+        assertThatThrownBy(() -> reservationService.addReservation(creation))
                 .isInstanceOf(ExistedDuplicateValueException.class)
                 .hasMessageContaining("이미 예약이 존재하는 시간입니다");
     }
@@ -64,7 +68,10 @@ class ReservationServiceTest {
         LocalDate date = LocalDate.of(2000, 1, 1);
 
         //when & then
-        ReservationCreation past = new ReservationCreation("test", date, 1L, 1L);
+        ReservationCreation past = ReservationCreation.of(
+                new LoginMember(1, "test", "test@email.com", MemberRoleType.MEMBER),
+                new CreateReservationRequest(date, 1, 1));
+
         assertThatThrownBy(() -> reservationService.addReservation(past))
                 .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessageContaining("과거 시점은 예약할 수 없습니다");
@@ -73,9 +80,13 @@ class ReservationServiceTest {
     @Test
     @DisplayName("존재하지 않는 timeId인 경우 예외를 던진다")
     void throwExceptionWhenNotExistTimeId() {
-        //given //when & then
-        assertThatThrownBy(() -> reservationService.addReservation(
-                new ReservationCreation("test", LocalDate.of(3000, 1, 1), 1000, 1)))
+        //given
+        ReservationCreation notValidTimeId = ReservationCreation.of(
+                new LoginMember(1, "test", "test@email.com", MemberRoleType.MEMBER),
+                new CreateReservationRequest(LocalDate.of(3000, 1, 1), 1000, 1));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.addReservation(notValidTimeId))
                 .isInstanceOf(NotFoundValueException.class)
                 .hasMessageContaining("존재하지 않는 예약 가능 시간입니다");
     }
@@ -83,9 +94,13 @@ class ReservationServiceTest {
     @Test
     @DisplayName("존재하지 않는 themeId 경우 예외를 던진다")
     void throwExceptionWhenNotExistThemeId() {
-        //given //when & then
-        assertThatThrownBy(() -> reservationService.addReservation(
-                new ReservationCreation("test", LocalDate.of(3000, 1, 1), 1, 1000L)))
+        //given
+        ReservationCreation notValidThemeId = ReservationCreation.of(
+                new LoginMember(1, "test", "test@email.com", MemberRoleType.MEMBER),
+                new CreateReservationRequest(LocalDate.of(3000, 1, 1), 1, 1000));
+
+        //when & then
+        assertThatThrownBy(() -> reservationService.addReservation(notValidThemeId))
                 .isInstanceOf(NotFoundValueException.class)
                 .hasMessageContaining("존재하지 않는 테마 입니다");
     }

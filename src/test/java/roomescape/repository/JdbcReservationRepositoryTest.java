@@ -15,6 +15,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRoleType;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
@@ -37,7 +39,8 @@ class JdbcReservationRepositoryTest {
     @DisplayName("예약 데이터를 저장한다")
     void insert() {
         //given
-        Reservation reservation = new Reservation("test",
+        Reservation reservation = new Reservation(
+                new Member(1, "test", "test@email.com", "1234", MemberRoleType.MEMBER),
                 LocalDate.of(2100, 1, 1),
                 new ReservationTime(1, LocalTime.of(10, 0)),
                 new RoomTheme(1, "test", "test2", "test3"));

@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -42,6 +43,12 @@ public class JdbcMemberRepository implements MemberRepository {
                 .addValue("role", member.getRole().getName());
         Number newId = simpleJdbcInsert.executeAndReturnKey(parameters);
         return newId.longValue();
+    }
+
+    @Override
+    public List<Member> findAllByRole(final MemberRoleType role) {
+        String sql = "SELECT * FROM member WHERE role = ?";
+        return jdbcTemplate.query(sql, MEMBER_ROW_MAPPER, role.getName());
     }
 
     @Override

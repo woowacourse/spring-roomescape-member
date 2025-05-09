@@ -14,7 +14,15 @@ public class LoginMember {
         this.role = role;
     }
 
+    public long getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public boolean isSameRole(MemberRoleType role) {
+        return this.role.equals(role);
     }
 }

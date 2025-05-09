@@ -4,12 +4,14 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotFoundValueException;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.RoomThemeRepository;
@@ -19,22 +21,23 @@ import roomescape.service.dto.response.ReservationResult;
 @Service
 public class ReservationService {
 
+    private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final RoomThemeRepository roomThemeRepository;
 
-    public ReservationService(final ReservationRepository reservationRepository,
+    public ReservationService(final MemberRepository memberRepository,
+                              final ReservationRepository reservationRepository,
                               final ReservationTimeRepository reservationTimeRepository,
                               final RoomThemeRepository roomThemeRepository) {
+        this.memberRepository = memberRepository;
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.roomThemeRepository = roomThemeRepository;
     }
 
     public ReservationResult addReservation(final ReservationCreation creation) {
-        final ReservationTime reservationTime = findReservationTimeByTimeId(creation.timeId());
-        final RoomTheme theme = findThemeByThemeId(creation.themeId());
-        final Reservation reservation = new Reservation(creation.name(), creation.date(), reservationTime, theme);
+        final Reservation reservation = getReservationByCreation(creation);
 
         validatePastDateAndTime(reservation.getDate(), reservation.getTime());
         validateDuplicateReservation(reservation);
@@ -45,13 +48,26 @@ public class ReservationService {
         return ReservationResult.from(savedReservation);
     }
 
-    private ReservationTime findReservationTimeByTimeId(final long timeId) {
+    private Reservation getReservationByCreation(final ReservationCreation creation) {
+        final Member member = getMemberById(creation.memberId());
+        final ReservationTime reservationTime = getReservationTimeById(creation.timeId());
+        final RoomTheme theme = getThemeById(creation.themeId());
+        return new Reservation(member, creation.date(), reservationTime, theme);
+    }
+
+    private Member getMemberById(final long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundValueException("존재하지 않는 사용자입니다: memberId=%d"
+                        .formatted(memberId)));
+    }
+
+    private ReservationTime getReservationTimeById(final long timeId) {
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new NotFoundValueException("존재하지 않는 예약 가능 시간입니다: timeId=%d"
                         .formatted(timeId)));
     }
 
-    private RoomTheme findThemeByThemeId(final long themeId) {
+    private RoomTheme getThemeById(final long themeId) {
         return roomThemeRepository.findById(themeId)
                 .orElseThrow(() -> new NotFoundValueException("존재하지 않는 테마 입니다"));
     }

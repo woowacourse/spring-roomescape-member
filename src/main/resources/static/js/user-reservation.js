@@ -145,11 +145,7 @@ function onReservationButtonClick() {
     const name = document.getElementById('user-name').value;
 
     if (selectedDate && selectedThemeId && selectedTimeId) {
-
-        /*
-        TODO: [5단계] 예약 생성 기능 변경 - 사용자
-              request 명세에 맞게 설정
-        */
+        
         const reservationData = {
             date: selectedDate,
             themeId: selectedThemeId,
