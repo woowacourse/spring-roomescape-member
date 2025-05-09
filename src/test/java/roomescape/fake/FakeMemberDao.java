@@ -1,6 +1,8 @@
 package roomescape.fake;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -34,4 +36,10 @@ public class FakeMemberDao implements MemberDao {
     public Optional<Member> findById(Long id) {
         return Optional.ofNullable(database.get(id));
     }
+
+    @Override
+    public List<Member> findAll() {
+        return new ArrayList<>(database.values());
+    }
 }
+
