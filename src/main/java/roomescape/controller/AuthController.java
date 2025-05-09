@@ -1,7 +1,6 @@
 package roomescape.controller;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -69,8 +68,7 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginMemberResponse> checkLogin(@CookieValue(name = "token", required = false) HttpServletRequest request) {
-        String token = authorizationExtractor.extract(request);
+    public ResponseEntity<LoginMemberResponse> checkLogin(@CookieValue(name = "token", required = false) String token) {
         LoginMemberResponse response = loginService.findMemberByToken(token);
         return ResponseEntity.ok().body(response);
     }
