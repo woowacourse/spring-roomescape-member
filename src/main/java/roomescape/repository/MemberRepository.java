@@ -6,6 +6,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberEmail;
@@ -19,6 +21,13 @@ public class MemberRepository {
 
     public MemberRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        save(
+                new MemberEmail("leehyeonsu4888@gmail.com"),
+                new MemberName("한스"),
+                new MemberEncodedPassword(encoder.encode("gustn111!!")),
+                MemberRole.MEMBER
+        );
     }
 
     public Member save(MemberEmail email, MemberName name, MemberEncodedPassword password, MemberRole role) {

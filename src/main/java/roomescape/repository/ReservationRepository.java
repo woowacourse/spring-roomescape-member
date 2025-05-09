@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -160,4 +161,17 @@ public class ReservationRepository {
         return jdbcTemplate.queryForObject(sql, boolean.class, themeId);
     }
 
+    public List<Reservation> findAllWithCondition(
+            final Long memberId,
+            final Long themeId,
+            final LocalDate fromDate,
+            final LocalDate toDate
+    ) {
+        return new DynamicReservationSelectQuery(jdbcTemplate)
+                .addMemberCondition(memberId)
+                .addThemeCondition(themeId)
+                .addFromDateCondition(fromDate)
+                .addToDateCondition(toDate)
+                .findAllReservations();
+    }
 }

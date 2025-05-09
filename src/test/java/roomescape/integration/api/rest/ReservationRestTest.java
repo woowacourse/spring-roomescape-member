@@ -86,6 +86,24 @@ class ReservationRestTest extends RestAssuredTestBase {
     }
 
     @Test
+    void 필터를_이용해서_예약_목록을_조회한다() {
+        예약을_생성한다();
+        RestAssured.given().log().all()
+                .param("themeId", themeId)
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", greaterThan(0))
+                .body("[0].name", is("홍길동"))
+                .body("[0].time.id", is(1))
+                .body("[0].time.startAt", is("10:00"))
+                .body("[0].theme.id", is(1))
+                .body("[0].theme.name", is("어드벤처"))
+                .body("[0].theme.description", is("정글 탐험 컨셉"))
+                .body("[0].theme.thumbnail", is("https://example.com/adventure.jpg"));
+    }
+
+    @Test
     void 예약을_삭제한다() {
         예약을_생성한다();
         RestAssured.given().log().all()

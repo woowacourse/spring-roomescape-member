@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -93,8 +94,24 @@ public class ReservationService {
             throw new IllegalArgumentException("이미 예약이 찼습니다.");
         }
     }
+
     private Reservation getReservation(Long id) {
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("예약을 찾을 수 없습니다."));
+    }
+
+    public List<ReservationResponse> findAllReservationsWithFilter(
+            final Long memberId,
+            final Long themeId,
+            final LocalDate fromDate,
+            final LocalDate toDate
+    ) {
+        List<Reservation> allWithCondition = reservationRepository.findAllWithCondition(
+                memberId,
+                themeId,
+                fromDate,
+                toDate
+        );
+        return ReservationResponse.from(allWithCondition);
     }
 }
