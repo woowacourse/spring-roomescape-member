@@ -3,10 +3,10 @@ package roomescape.auth.service;
 import org.springframework.stereotype.Service;
 import roomescape.auth.entity.Member;
 import roomescape.auth.repository.MemberRepository;
-import roomescape.auth.service.dto.response.CheckResponse;
 import roomescape.auth.service.dto.request.LoginRequest;
-import roomescape.auth.service.dto.response.LoginResponse;
 import roomescape.auth.service.dto.request.SignupRequest;
+import roomescape.auth.service.dto.response.CheckResponse;
+import roomescape.auth.service.dto.response.LoginResponse;
 import roomescape.exception.badRequest.BadRequestException;
 import roomescape.exception.conflict.MemberEmailConflictException;
 import roomescape.exception.notFound.MemberNotFoundException;
@@ -16,9 +16,9 @@ import roomescape.exception.unauthorized.MemberUnauthorizedException;
 public class MemberAuthService {
     private final MemberRepository memberRepository;
     // TODO: TokenProvider 인터페이스 삭제 - 테스트 Stub으로 변경
-    private final TokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberAuthService(MemberRepository memberRepository, TokenProvider jwtTokenProvider) {
+    public MemberAuthService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
