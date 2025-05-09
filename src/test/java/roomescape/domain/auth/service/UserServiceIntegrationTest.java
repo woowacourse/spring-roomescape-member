@@ -67,7 +67,7 @@ class UserServiceIntegrationTest {
 
     @DisplayName("이미 존재하는 이메일이면 AlreadyInUseException 예외를 반환한다")
     @Test
-    void login_throwsException() {
+    void register_throwsException() {
         // given
         final String email = "t1@naver.com";
         userRepository.save(User.withoutId(new Name("꾹"), email, "1234", Roles.USER));

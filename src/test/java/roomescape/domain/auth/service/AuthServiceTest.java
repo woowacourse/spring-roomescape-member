@@ -89,7 +89,9 @@ class AuthServiceTest {
         @Test
         void login_throwsException2() {
             // given
-            final LoginRequest loginRequest = new LoginRequest("sdasdsad@naver.com", "123");
+            final String email = "sdasdsad@naver.com";
+            given(userRepository.findByEmail(email)).willReturn(Optional.empty());
+            final LoginRequest loginRequest = new LoginRequest(email, "123");
 
             // when & then
             assertThatThrownBy(() -> {
