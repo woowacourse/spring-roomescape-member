@@ -1,4 +1,4 @@
-package roomescape.user.controller;
+package roomescape.member.controller;
 
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -7,18 +7,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.user.controller.dto.UserInfoResponse;
-import roomescape.user.service.AuthService;
-import roomescape.user.service.dto.LoginInfo;
-import roomescape.user.service.dto.TokenResponse;
-import roomescape.user.service.dto.UserInfo;
+import roomescape.member.controller.dto.MemberInfoResponse;
+import roomescape.member.service.AuthService;
+import roomescape.member.service.dto.LoginInfo;
+import roomescape.member.service.dto.TokenResponse;
+import roomescape.member.service.dto.MemberInfo;
 
 @RestController
-public class UserController {
+public class MemberController {
 
     private final AuthService authService;
 
-    public UserController(final AuthService authService) {
+    public MemberController(final AuthService authService) {
         this.authService = authService;
     }
 
@@ -37,8 +37,8 @@ public class UserController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<UserInfoResponse> getLoginUserInfo(@CookieValue("token") String token) {
-        UserInfo userInfo = authService.getUserInfoByToken(token);
-        return ResponseEntity.ok().body(new UserInfoResponse(userInfo.name()));
+    public ResponseEntity<MemberInfoResponse> getLoginMemberInfo(@CookieValue("token") String token) {
+        MemberInfo memberInfo = authService.getMemberInfoByToken(token);
+        return ResponseEntity.ok().body(new MemberInfoResponse(memberInfo.name()));
     }
 }

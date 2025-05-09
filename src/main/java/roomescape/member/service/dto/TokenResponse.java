@@ -1,4 +1,4 @@
-package roomescape.user.service.dto;
+package roomescape.member.service.dto;
 
 public record TokenResponse(String token) {
 }
