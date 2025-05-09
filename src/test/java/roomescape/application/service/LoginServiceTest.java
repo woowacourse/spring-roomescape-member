@@ -18,6 +18,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import roomescape.application.dto.LoginRequest;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 
 @ExtendWith(MockitoExtension.class)
 class LoginServiceTest {
@@ -40,7 +41,7 @@ class LoginServiceTest {
         // given
         String email = "test@email.com";
         LoginRequest request = new LoginRequest("password", email);
-        Member member = new Member(1L, "name", email, "password");
+        Member member = new Member(1L, "name", email, "password", Role.ADMIN);
 
         doReturn(Optional.of(member)).when(memberDao)
                 .findByEmail(email);
@@ -84,7 +85,7 @@ class LoginServiceTest {
         // given
         String email = "test@email.com";
         LoginRequest request = new LoginRequest("otherPassword", email);
-        Member member = new Member(1L, "name", email, "password");
+        Member member = new Member(1L, "name", email, "password", Role.ADMIN);
 
         doReturn(Optional.of(member)).when(memberDao)
                 .findByEmail(email);

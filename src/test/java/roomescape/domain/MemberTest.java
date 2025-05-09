@@ -16,7 +16,7 @@ class MemberTest {
     @DisplayName("패스워드가 불일치 여부를 판단한다")
     void matchesPasswordReturnsTrueWhenMatched(String password, boolean expected) {
         // given
-        Member member = new Member("name", "email@email.com", "success");
+        Member member = new Member("name", "email@email.com", "success", Role.ADMIN);
 
         // when
         boolean result = member.notMatchesPassword(password);

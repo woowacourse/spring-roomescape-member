@@ -25,6 +25,7 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 @ExtendWith(MockitoExtension.class)
@@ -79,7 +80,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가한다")
     void createReservation() {
         // given
-        Member member = new Member("moda", "test@email.com", "password");
+        Member member = new Member("name", "test@email.com", "password", Role.ADMIN);
         ReservationRequest request = new ReservationRequest(LocalDate.now(), 1L, 1L);
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         Theme theme = new Theme(1L, "테마", "설명", "썸네일");
