@@ -11,6 +11,7 @@ import roomescape.dao.FakeMemberDaoImpl;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
 import roomescape.dto.LoginRequest;
+import roomescape.dto.MemberResponse;
 import roomescape.exception.InvalidAuthException;
 
 class AuthServiceTest {
@@ -50,5 +51,20 @@ class AuthServiceTest {
         assertThatThrownBy(() -> authService.createToken(request))
                 .isInstanceOf(InvalidAuthException.class);
 
+    }
+
+    @DisplayName("Cookie로 사용자 인증정보 조회를 할 수 있다.")
+    @Test
+    void findMemberByToken() {
+        //given
+        memberDao.save(Member.fromWithoutId("testName", "testEmail", "1234"));
+        LoginRequest request = new LoginRequest("testEmail", "1234");
+        String token = authService.createToken(request);
+
+        //when
+        MemberResponse actual = authService.findMemberByToken(token);
+
+        //then
+        assertThat(actual.name()).isEqualTo("testName");
     }
 }

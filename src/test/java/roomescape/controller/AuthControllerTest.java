@@ -16,10 +16,12 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import roomescape.auth.JwtTokenProvider;
 import roomescape.dao.FakeMemberDaoImpl;
 import roomescape.dao.TestDaoConfiguration;
 import roomescape.domain.Member;
 import roomescape.dto.LoginRequest;
+import roomescape.dto.MemberResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -29,6 +31,9 @@ class AuthControllerTest {
 
     @Autowired
     private FakeMemberDaoImpl memberDao;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @LocalServerPort
     int port;
@@ -66,5 +71,31 @@ class AuthControllerTest {
         assertThat(tokenCookie).isNotNull();
     }
 
+    @DisplayName("사용자 인증 정보를 조회하면 사용자 이름을 응답한다.")
+    @Test
+    void checkLogin() {
+        //given
+        Member member = Member.fromWithoutId("testName", "testEmail", "1234");
+        memberDao.save(member);
+
+        String token = jwtTokenProvider.createToken(member);
+
+        //when
+        MemberResponse actual = RestAssured
+                .given()
+                .log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", token)
+                .when()
+                .get("/login/check")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract()
+                .as(MemberResponse.class);
+
+        //then
+        assertThat(actual.name()).isEqualTo("testName");
+    }
 
 }

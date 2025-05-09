@@ -23,4 +23,19 @@ class JwtTokenProviderTest {
         assertThat(actual).isNotNull();
     }
 
+    @DisplayName("토큰을 추출하여 사용자 식별값을 반환한다.")
+    @Test
+    void getSubjectFromPayloadBy() {
+        //given
+        Member member = Member.from(1L, "testName", "testEmail", "1234");
+
+        String token = jwtTokenProvider.createToken(member);
+
+        //when
+        Long actual = jwtTokenProvider.getSubjectFromPayloadBy(token);
+
+        //then
+        assertThat(actual).isEqualTo(1L);
+    }
+
 }

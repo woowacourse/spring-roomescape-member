@@ -56,4 +56,21 @@ public class JdbcMemberDaoImpl implements MemberDao {
             return Optional.empty();
         }
     }
+
+    @Override
+    public Optional<Member> findById(final Long id) {
+        String query = "select * from member where id = ?";
+        try {
+            Member member = jdbcTemplate.queryForObject(query,
+                    (rs, rowNum) -> Member.from(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("password"))
+                    , id);
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }

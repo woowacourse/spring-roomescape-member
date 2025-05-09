@@ -5,6 +5,8 @@ import roomescape.auth.JwtTokenProvider;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
 import roomescape.dto.LoginRequest;
+import roomescape.dto.MemberResponse;
+import roomescape.exception.InvalidAuthException;
 import roomescape.exception.MemberException;
 
 @Service
@@ -19,14 +21,24 @@ public class AuthService {
     }
 
     public String createToken(final LoginRequest request) {
-        Member member = findMemberBy(request.email());
+        Member member = findMemberByEmail(request.email());
         member.validatePassword(request.password());
         return jwtTokenProvider.createToken(member);
     }
 
-    private Member findMemberBy(final String email) {
+    private Member findMemberByEmail(final String email) {
         return memberDao.findByEmail(email)
                 .orElseThrow(() -> new MemberException("해당 이메일의 회원이 존재하지 않습니다."));
     }
 
+    public MemberResponse findMemberByToken(final String token) {
+        Long id = jwtTokenProvider.getSubjectFromPayloadBy(token);
+        Member member = findMemberById(id);
+        return new MemberResponse(member.getName());
+    }
+
+    private Member findMemberById(final Long id) {
+        return memberDao.findById(id)
+                .orElseThrow(() -> new InvalidAuthException("회원 정보를 찾을 수 없습니다."));
+    }
 }
