@@ -32,11 +32,11 @@ public class FakeReservationRepository implements ReservationRepository, FakeRep
     }
 
     @Override
-    public Long add(Reservation reservation) {
+    public Reservation add(Reservation reservation) {
         ReservationEntity newReservationEntity = ReservationEntity.fromDomain(reservation)
                 .copyWithId(idGenerator.getAndIncrement());
         reservations.add(newReservationEntity);
-        return newReservationEntity.getId();
+        return newReservationEntity.toDomain();
     }
 
     @Override

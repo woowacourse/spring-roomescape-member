@@ -9,7 +9,7 @@ public interface ReservationThemeRepository {
 
     List<ReservationTheme> findAll();
 
-    Long add(ReservationTheme reservationTheme);
+    ReservationTheme add(ReservationTheme reservationTheme);
 
     boolean existByName(String name);
 

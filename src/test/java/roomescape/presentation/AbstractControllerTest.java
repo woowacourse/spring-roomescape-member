@@ -10,5 +10,5 @@ import roomescape.TestRepositoryConfig;
 @TestPropertySource(properties = "spring.sql.init.mode=never")
 @ActiveProfiles("test")
 @Import(TestRepositoryConfig.class)
-abstract class AbstractControllerTest {
+public abstract class AbstractControllerTest {
 }

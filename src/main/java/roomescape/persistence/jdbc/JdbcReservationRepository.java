@@ -132,14 +132,15 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Long add(Reservation reservation) {
+    public Reservation add(Reservation reservation) {
         ReservationEntity reservationEntity = ReservationEntity.fromDomain(reservation);
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("member_id", reservationEntity.getMemberEntity().getId());
         parameters.put("date", reservationEntity.getDate());
         parameters.put("time_id", reservationEntity.getTimeEntity().getId());
         parameters.put("theme_id", reservationEntity.getThemeEntity().getId());
-        return jdbcInsert.executeAndReturnKey(parameters).longValue();
+        long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
+        return reservationEntity.copyWithId(id).toDomain();
     }
 
     @Override

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.business.domain.reservation.ReservationTime;
 import roomescape.persistence.ReservationTimeRepository;
 import roomescape.persistence.entity.ReservationTimeEntity;
-import roomescape.presentation.dto.AvailableTimesResponseDto;
+import roomescape.presentation.member.dto.AvailableTimesResponseDto;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -66,11 +66,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public Long add(ReservationTime reservationTime) {
+    public ReservationTime add(ReservationTime reservationTime) {
         ReservationTimeEntity reservationTimeEntity = ReservationTimeEntity.fromDomain(reservationTime);
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("start_at", reservationTimeEntity.getStartAt());
-        return jdbcInsert.executeAndReturnKey(parameters).longValue();
+        long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
+        return reservationTimeEntity.copyWithId(id).toDomain();
     }
 
     @Override

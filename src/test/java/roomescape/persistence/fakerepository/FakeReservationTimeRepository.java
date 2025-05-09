@@ -12,7 +12,7 @@ import roomescape.business.domain.reservation.ReservationDateTimeFormatter;
 import roomescape.business.domain.reservation.ReservationTime;
 import roomescape.persistence.ReservationTimeRepository;
 import roomescape.persistence.entity.ReservationTimeEntity;
-import roomescape.presentation.dto.AvailableTimesResponseDto;
+import roomescape.presentation.member.dto.AvailableTimesResponseDto;
 
 @Repository
 public class FakeReservationTimeRepository implements ReservationTimeRepository, FakeRepository {
@@ -36,11 +36,11 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository,
     }
 
     @Override
-    public Long add(ReservationTime reservationTime) {
+    public ReservationTime add(ReservationTime reservationTime) {
         ReservationTimeEntity newReservationTimeEntity = ReservationTimeEntity.fromDomain(reservationTime)
                 .copyWithId(idGenerator.getAndIncrement());
         reservationTimes.add(newReservationTimeEntity);
-        return newReservationTimeEntity.getId();
+        return newReservationTimeEntity.toDomain();
     }
 
     @Override

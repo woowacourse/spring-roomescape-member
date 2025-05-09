@@ -48,13 +48,14 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
     }
 
     @Override
-    public Long add(ReservationTheme reservationTheme) {
+    public ReservationTheme add(ReservationTheme reservationTheme) {
         ReservationThemeEntity reservationThemeEntity = ReservationThemeEntity.fromDomain(reservationTheme);
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", reservationThemeEntity.getName());
         parameters.put("description", reservationThemeEntity.getDescription());
         parameters.put("thumbnail", reservationThemeEntity.getThumbnail());
-        return (long) jdbcInsert.executeAndReturnKey(parameters);
+        long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
+        return reservationThemeEntity.copyWithId(id).toDomain();
     }
 
     @Override

@@ -24,11 +24,11 @@ public class FakeReservationThemeRepository implements ReservationThemeRepositor
     }
 
     @Override
-    public Long add(ReservationTheme reservationTheme) {
+    public ReservationTheme add(ReservationTheme reservationTheme) {
         ReservationThemeEntity newThemeEntity = ReservationThemeEntity.fromDomain(reservationTheme)
                 .copyWithId(idGenerator.getAndIncrement());
         themes.add(newThemeEntity);
-        return newThemeEntity.getId();
+        return newThemeEntity.toDomain();
     }
 
     @Override
