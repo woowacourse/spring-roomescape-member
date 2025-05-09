@@ -30,4 +30,18 @@ class JdbcUserRepositoryTest {
         Assertions.assertThat(actual).isEqualTo(expected);
     }
 
+    @DisplayName("이메일과 비밀번호가 일치하는 User가 존재하는 지를 검사할 수 있다.")
+    @Test
+    void existUserByEmailAndPassword() {
+        // given
+        User user = new User(1L, "name", "email", "password");
+        jdbcUserRepository.save(user);
+
+        // when
+        boolean actual = jdbcUserRepository.existUserByEmailAndPassword(user.getEmail(),
+                user.getPassword());
+
+        // then
+        Assertions.assertThat(actual).isTrue();
+    }
 }

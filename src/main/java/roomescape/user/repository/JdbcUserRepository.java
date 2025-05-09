@@ -51,6 +51,13 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
+    public boolean existUserByEmailAndPassword(String email, String password) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM users WHERE email = ? AND password = ?)";
+
+        return jdbcTemplate.queryForObject(sql, Boolean.class, email, password);
+    }
+
+    @Override
     public User findUserByEmailAndPassword(String email, String password) {
         String sql = "SELECT id, name, email, password "
                 + "FROM users "
