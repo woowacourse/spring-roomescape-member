@@ -2,46 +2,47 @@ package roomescape.unit.fake;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.dto.response.AvailableTimeResponse;
 
 public class FakeReservationTimeRepository implements ReservationTimeRepository {
 
-    private final List<ReservationTime> fakeReservationTimes = new ArrayList<>();
+    private final List<ReservationTime> reservationTimes = new ArrayList<>();
     private final AtomicLong index = new AtomicLong(1);
+    private final ReservationRepository reservationRepository;
 
-    public FakeReservationTimeRepository(ReservationTime... reservationTimes) {
-        Arrays.stream(reservationTimes)
-                .forEach(reservationTime -> fakeReservationTimes.add(reservationTime));
+    public FakeReservationTimeRepository(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
     }
 
     @Override
     public List<ReservationTime> findAll() {
-        return new ArrayList<>(fakeReservationTimes);
+        return new ArrayList<>(reservationTimes);
     }
 
     @Override
     public ReservationTime create(ReservationTime reservationTime) {
         ReservationTime reservationTimeWithId = new ReservationTime(index.getAndIncrement(),
                 reservationTime.getStartAt());
-        fakeReservationTimes.add(reservationTimeWithId);
+        reservationTimes.add(reservationTimeWithId);
         return reservationTimeWithId;
     }
 
     @Override
     public void delete(Long id) {
-        fakeReservationTimes.removeIf(reservationTime -> reservationTime.getId().equals(id));
+        reservationTimes.removeIf(reservationTime -> reservationTime.getId().equals(id));
     }
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
-        return Optional.ofNullable(fakeReservationTimes.stream()
+        return Optional.ofNullable(reservationTimes.stream()
                 .filter(reservationTime -> reservationTime.getId().equals(id))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new));
@@ -49,6 +50,14 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<AvailableTimeResponse> findByDateAndThemeIdWithBooked(LocalDate date, Long themeId) {
-        return List.of();
+        List<ReservationTime> nonAvailableReservations = reservationRepository.findAll().stream()
+                .filter(reservation -> reservation.getDate().equals(date))
+                .filter(reservation -> reservation.getTheme().getId().equals(themeId))
+                .map(Reservation::getReservationTime)
+                .toList();
+
+        return reservationTimes.stream()
+                .map(t -> new AvailableTimeResponse(t.getId(), t.getStartAt(), nonAvailableReservations.contains(t)))
+                .toList();
     }
 }
