@@ -51,4 +51,30 @@ class JdbcMemberDaoTest {
             .isInstanceOf(NotFoundException.class)
             .hasMessageContaining("member");
     }
+
+    @Test
+    @DisplayName("해당 이메일이 없다면 true를 반환한다.")
+    void existMemberByEmail() {
+        Member member = new Member("이름", "이메일", "비밀번호");
+        jdbcMemberDao.addMember(member);
+
+        assertThat(jdbcMemberDao.existMemberByEmail(member.getEmail())).isTrue();
+    }
+
+    @Test
+    @DisplayName("해당 이메일이 없다면 false를 반환한다.")
+    void notExistMemberByEmail() {
+        Member member = new Member("이름", "이메일", "비밀번호");
+
+        assertThat(jdbcMemberDao.existMemberByEmail(member.getEmail())).isFalse();
+    }
+
+    @Test
+    @DisplayName("사용자를 추가할 수 있다.")
+    void addMember() {
+        Member member = new Member("이름", "이메일", "비밀번호");
+        Member newMember = jdbcMemberDao.addMember(member);
+
+        assertThat(newMember).isNotNull();
+    }
 }

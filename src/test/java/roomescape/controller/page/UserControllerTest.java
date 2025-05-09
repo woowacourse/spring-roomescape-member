@@ -20,6 +20,15 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("/signup 요청시 사용자 회원가입 페이지 응답")
+    void signupPage() {
+        RestAssured.given().log().all()
+            .when().get("/signup")
+            .then().log().all()
+            .statusCode(200);
+    }
+
+    @Test
     @DisplayName("/login 요청시 사용자 로그인 페이지 응답")
     void loginPage() {
         RestAssured.given().log().all()

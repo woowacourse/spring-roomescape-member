@@ -1,8 +1,11 @@
 package roomescape.dao.jdbc;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
@@ -12,9 +15,13 @@ import roomescape.exception.custom.NotFoundException;
 public class JdbcMemberDao implements MemberDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
     public JdbcMemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+            .withTableName("member")
+            .usingGeneratedKeyColumns("id");
     }
 
     public Member findMemberByEmail(String email) {
@@ -33,6 +40,22 @@ public class JdbcMemberDao implements MemberDao {
         } catch (DataAccessException e) {
             throw new NotFoundException("member");
         }
+    }
+
+    public boolean existMemberByEmail(String email) {
+        String sql = "SELECT EXISTS(SELECT id FROM member WHERE email = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, email));
+    }
+
+    public Member addMember(Member member) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("name", member.getName());
+        param.put("email", member.getEmail());
+        param.put("password", member.getPassword());
+
+        Number key = jdbcInsert.executeAndReturnKey(param);
+        return new Member(key.longValue(), member.getName(), member.getEmail(),
+            member.getPassword());
     }
 
     private RowMapper<Member> createMemberMapper() {
