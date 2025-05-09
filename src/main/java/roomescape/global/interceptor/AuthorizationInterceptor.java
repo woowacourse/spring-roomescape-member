@@ -14,7 +14,6 @@ import roomescape.global.jwt.TokenProvider;
 import roomescape.member.domain.Role;
 
 public class AuthorizationInterceptor implements HandlerInterceptor {
-    private static final Logger log = LoggerFactory.getLogger(AuthorizationInterceptor.class);
     private final AuthorizationExtractor authorizationExtractor;
     private final TokenProvider tokenProvider;
 
@@ -30,8 +29,6 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         if (!(handler instanceof HandlerMethod handlerMethod)) {
             return true;
         }
-
-        log.info("asfasdfasfsdafsafsfsadfasfasd");
 
         final String token = authorizationExtractor.extract(request);
         final TokenInfo tokenInfo = tokenProvider.getInfo(token);

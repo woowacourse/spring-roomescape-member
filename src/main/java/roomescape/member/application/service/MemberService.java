@@ -30,14 +30,12 @@ public class MemberService {
 
     public MemberResponse findByToken(String token) {
         Long id = tokenProvider.getInfo(token).getId();
-        return findById(id);
+        return new MemberResponse(findById(id));
     }
 
-    private MemberResponse findById(Long id) {
-        Member member = memberRepository.findById(id)
+    public Member findById(Long id) {
+        return memberRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("유저 정보를 찾을 수 없습니다."));
-
-        return new MemberResponse(member);
     }
 
     public SignUpResponse signUp(SignUpRequest signUpRequest) {

@@ -1,11 +1,11 @@
 package roomescape.reservation.application.service;
 
 import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
-import roomescape.global.resolver.LoginMember;
 import roomescape.member.application.repository.MemberRepository;
 import roomescape.member.domain.Member;
 import roomescape.reservation.application.dto.CreateReservationRequest;
@@ -13,7 +13,6 @@ import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.application.repository.ThemeRepository;
 import roomescape.reservation.domain.ReservationDate;
-import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.presentation.dto.AdminReservationRequest;
@@ -38,14 +37,14 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public ReservationResponse createReservation(final ReservationRequest reservationRequest, final LoginMember member) {
+    public ReservationResponse createReservation(final ReservationRequest reservationRequest, final Member member) {
         ReservationDate reservationDate = new ReservationDate(reservationRequest.getDate());
         ReservationTime reservationTime = getReservationTime(reservationRequest.getTimeId());
         Theme theme = getTheme(reservationRequest.getThemeId());
         validateReservationDateTime(reservationDate, reservationTime);
 
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                new ReservationName(member.getName()),
+                member,
                 theme,
                 reservationDate,
                 reservationTime
@@ -64,7 +63,7 @@ public class ReservationService {
                 .orElseThrow(() -> new NoSuchElementException("유저 정보를 찾을 수 없습니다."));
 
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                new ReservationName(member.getName()),
+                member,
                 theme,
                 reservationDate,
                 reservationTime
@@ -75,6 +74,13 @@ public class ReservationService {
 
     public List<ReservationResponse> getReservations() {
         return reservationRepository.findAllReservations().stream()
+                .map(ReservationResponse::new)
+                .toList();
+    }
+
+    public List<ReservationResponse> getReservations(Long memberId, Long themeId, LocalDate dateFrom,
+                                                     LocalDate dateTo) {
+        return reservationRepository.findReservationsBy(memberId, themeId, dateFrom, dateTo).stream()
                 .map(ReservationResponse::new)
                 .toList();
     }

@@ -2,6 +2,7 @@ package roomescape.reservation.presentation;
 
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,9 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.global.resolver.LoginMember;
+import roomescape.member.domain.Member;
 import roomescape.reservation.application.service.ReservationService;
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationResponse;
@@ -29,7 +32,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
-            final @RequestBody @Valid ReservationRequest reservationRequest, LoginMember member
+            final @RequestBody @Valid ReservationRequest reservationRequest, Member member
     ) {
         ReservationResponse reservation = reservationService.createReservation(reservationRequest, member);
 
@@ -37,11 +40,23 @@ public class ReservationController {
                 .body(reservation);
     }
 
+//    @GetMapping
+//    public ResponseEntity<List<ReservationResponse>> getReservations(
+//    ) {
+//        return ResponseEntity.ok().body(
+//                reservationService.getReservations()
+//        );
+//    }
+
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations(
+        final @RequestParam(required = false) Long memberId,
+        final @RequestParam(required = false) Long themeId,
+        final @RequestParam(required = false) LocalDate dateFrom,
+        final @RequestParam(required = false) LocalDate dateTo
     ) {
         return ResponseEntity.ok().body(
-                reservationService.getReservations()
+                reservationService.getReservations(memberId, themeId, dateFrom, dateTo)
         );
     }
 

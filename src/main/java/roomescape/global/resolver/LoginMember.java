@@ -1,10 +1,16 @@
 package roomescape.global.resolver;
 
 public class LoginMember {
+    private final Long id;
     private final String name;
 
-    public LoginMember(String name) {
+    public LoginMember(Long id, String name) {
+        this.id = id;
         this.name = name;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
