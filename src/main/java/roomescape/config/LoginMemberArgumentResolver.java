@@ -9,6 +9,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.AccessToken;
 import roomescape.business.service.member.MemberService;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -31,17 +32,17 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   ModelAndViewContainer mavContainer,
                                   @NonNull NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) {
-        String token = getAccessToken(webRequest);
-        return memberService.getMemberFromToken(token);
+        AccessToken accessToken = getAccessToken(webRequest);
+        return memberService.getMemberFromToken(accessToken);
     }
 
-    private String getAccessToken(NativeWebRequest webRequest) {
+    private AccessToken getAccessToken(NativeWebRequest webRequest) {
         HttpServletRequest httpServletRequest = getHttpServletRequest(webRequest);
-        String accessToken = getAccessTokenFromCookies(httpServletRequest.getCookies());
-        if (accessToken == null) {
+        String accessTokenValue = getAccessTokenFromCookies(httpServletRequest.getCookies());
+        if (accessTokenValue == null) {
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
-        return accessToken;
+        return AccessToken.of(accessTokenValue);
     }
 
     private HttpServletRequest getHttpServletRequest(NativeWebRequest webRequest) {
