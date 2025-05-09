@@ -9,6 +9,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.JwtProvider;
 import roomescape.dto.request.LoginCheckRequest;
+import roomescape.exception.AuthenticationException;
 import roomescape.service.MemberService;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -28,13 +29,18 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
-        Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
+        String token = extractTokenFromCookie(request.getCookies());
+        if (token.isBlank()) {
+            throw new AuthenticationException("로그인 정보가 없습니다.");
+        }
+
         Long memberId = JwtProvider.extractMemberId(token);
         return memberService.findById(memberId);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
+        if (cookies == null) return "";
+
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();
