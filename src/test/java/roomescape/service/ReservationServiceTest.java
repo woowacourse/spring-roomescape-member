@@ -2,11 +2,17 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.dto.request.CreateReservationRequest;
 import roomescape.domain.LoginMember;
 import roomescape.domain.MemberRoleType;
@@ -14,6 +20,7 @@ import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotFoundValueException;
 import roomescape.service.dto.request.ReservationCreation;
+import roomescape.service.dto.request.ReservationCriteriaCreation;
 import roomescape.service.dto.response.ReservationResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,6 +29,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@ActiveProfiles("test")
+@Sql(scripts = "/schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "/reservation-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationServiceTest {
 
@@ -131,5 +141,34 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.removeReservationById(notExistId))
                 .isInstanceOf(NotFoundValueException.class)
                 .hasMessageContaining("존재하지 않는 예약입니다");
+    }
+
+    private static Stream<Arguments> provideCriteria() {
+        return Stream.of(
+                Arguments.of(new ReservationCriteriaCreation(1L, 1L,
+                        LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 1)), 1),
+                Arguments.of(new ReservationCriteriaCreation(null, 1L,
+                        LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 1)), 1),
+                Arguments.of(new ReservationCriteriaCreation(1L, null,
+                        LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 1)), 1),
+                Arguments.of(new ReservationCriteriaCreation(1L, 1L, null, LocalDate.of(2025, 1, 1)), 1),
+                Arguments.of(new ReservationCriteriaCreation(1L, 1L, LocalDate.of(2025, 1, 1), null), 1),
+                Arguments.of(new ReservationCriteriaCreation(null, null, null, null), 1),
+                Arguments.of(new ReservationCriteriaCreation(null, null,
+                        LocalDate.of(2025, 1, 2), LocalDate.of(2025, 1, 2)), 0),
+                Arguments.of(new ReservationCriteriaCreation(2L, 1L,
+                        LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 1)), 0)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideCriteria")
+    @DisplayName("필터 기준을 기반으로 예약을 조회한다")
+    void findReservationByCriteria(ReservationCriteriaCreation criteriaCreation, int expectedSize) {
+        //when
+        List<ReservationResult> actual = reservationService.getAllReservationByCriteria(criteriaCreation);
+
+        //then
+        assertThat(actual).hasSize(expectedSize);
     }
 }

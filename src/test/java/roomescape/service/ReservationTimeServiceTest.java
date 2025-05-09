@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotFoundValueException;
@@ -20,6 +22,9 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@ActiveProfiles("test")
+@Sql(scripts = "/schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "/reservation-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeServiceTest {
 
@@ -30,7 +35,7 @@ class ReservationTimeServiceTest {
     @DisplayName("시간 데이터를 추가할 수 있어야 한다")
     void addReservationTime() {
         //given //when
-        ReservationTimeCreation creation = new ReservationTimeCreation(LocalTime.of(11, 0));
+        ReservationTimeCreation creation = new ReservationTimeCreation(LocalTime.of(15, 0));
         reservationTimeService.addReservationTime(creation);
 
         //then
@@ -41,7 +46,7 @@ class ReservationTimeServiceTest {
     @DisplayName("이미 존재하는 시간 데이터일 경우 예외를 던진다")
     void cannotAddReservationTime() {
         //given
-        ReservationTimeCreation creation = new ReservationTimeCreation(LocalTime.of(12, 0));
+        ReservationTimeCreation creation = new ReservationTimeCreation(LocalTime.of(10, 0));
 
         //when & then
         assertThatThrownBy(() -> reservationTimeService.addReservationTime(creation))
@@ -63,7 +68,7 @@ class ReservationTimeServiceTest {
     @DisplayName("이용가능한 예약 시간을 조회한다")
     void findAvailableTime() {
         //given
-        LocalDate date = LocalDate.of(2025, 4, 28);
+        LocalDate date = LocalDate.of(2025, 1, 1);
         long themeId = 1L;
 
         // when

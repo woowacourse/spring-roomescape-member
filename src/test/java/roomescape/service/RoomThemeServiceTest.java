@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotFoundValueException;
@@ -17,6 +19,9 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@ActiveProfiles("test")
+@Sql(scripts = "/schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "/reservation-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class RoomThemeServiceTest {
 
@@ -27,7 +32,7 @@ class RoomThemeServiceTest {
     @DisplayName("테마를 추가한다")
     void addTheme() {
         //given
-        RoomThemeCreation creation = new RoomThemeCreation("test", "description", "thumbnail");
+        RoomThemeCreation creation = new RoomThemeCreation("addTheme", "description", "thumbnail");
         //when //then
         assertThatCode(() -> roomThemeService.addTheme(creation))
                 .doesNotThrowAnyException();
@@ -37,7 +42,7 @@ class RoomThemeServiceTest {
     @DisplayName("같은 테마가 존재하면 예외를 던진다")
     void throwExceptionWhenExistSameTheme() {
         //given
-        RoomThemeCreation creation = new RoomThemeCreation("test", "description", "thumbnail");
+        RoomThemeCreation creation = new RoomThemeCreation("duplicate", "description", "thumbnail");
         roomThemeService.addTheme(creation);
 
         //when //then
@@ -53,14 +58,14 @@ class RoomThemeServiceTest {
         List<RoomThemeResult> allThemes = roomThemeService.findAllThemes();
 
         //then
-        assertThat(allThemes).hasSize(1);
+        assertThat(allThemes).hasSize(2);
     }
 
     @Test
     @DisplayName("테마를 삭제한다")
     void deleteTheme() {
         //given
-        RoomThemeResult theme = roomThemeService.addTheme(new RoomThemeCreation("test", "description", "thumbnail"));
+        RoomThemeResult theme = roomThemeService.addTheme(new RoomThemeCreation("delete", "description", "thumbnail"));
         long deleteId = theme.id();
 
         //when //then
