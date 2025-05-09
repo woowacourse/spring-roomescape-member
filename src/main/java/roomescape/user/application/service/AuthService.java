@@ -8,7 +8,6 @@ import roomescape.user.domain.User;
 import roomescape.user.infrastructure.JwtTokenProvider;
 import roomescape.user.presentation.dto.LoginRequest;
 import roomescape.user.presentation.dto.TokenResponse;
-import roomescape.user.presentation.dto.UserResponse;
 
 @Service
 public class AuthService {
@@ -28,11 +27,10 @@ public class AuthService {
         return tokenProvider.createToken(user);
     }
 
-    public UserResponse getUser(String token) {
+    public User getUser(String token) {
         String email = tokenProvider.resolveToken(token);
-        User user = userRepository.findByEmail(email)
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new InvalidUserException("존재하지 않는 유저입니다.", HttpStatus.NOT_FOUND));
-        return new UserResponse(user.getName());
     }
 
     private void validateUserLogin(User user, LoginRequest loginRequest) {

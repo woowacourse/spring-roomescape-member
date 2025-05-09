@@ -10,7 +10,6 @@ import roomescape.user.infrastructure.JwtTokenProvider;
 import roomescape.user.infrastructure.fake.FakeUserDao;
 import roomescape.user.presentation.dto.LoginRequest;
 import roomescape.user.presentation.dto.TokenResponse;
-import roomescape.user.presentation.dto.UserResponse;
 
 class AuthServiceTest {
 
@@ -49,10 +48,10 @@ class AuthServiceTest {
         TokenResponse token = authService.login(loginRequest);
 
         // when
-        UserResponse user = authService.getUser(token.accessToken());
+        User user = authService.getUser(token.accessToken());
 
         // then
-        assertThat(user.name()).isEqualTo("name");
+        assertThat(user.getName()).isEqualTo("name");
     }
 
 }
