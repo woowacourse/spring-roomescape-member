@@ -1,8 +1,10 @@
 package roomescape.member.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
+import roomescape.member.presentation.MemberResponse;
 
 @Service
 public class MemberService {
@@ -23,5 +25,11 @@ public class MemberService {
 
     public Member findById(final Long id) {
         return memberRepository.findById(id);
+    }
+
+    public List<MemberResponse> findAll() {
+        return memberRepository.findAll().stream()
+                .map(member -> new MemberResponse(member.getId(), member.getName()))
+                .toList();
     }
 }
