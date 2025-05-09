@@ -10,26 +10,25 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.domain.AuthRole;
 import roomescape.auth.domain.RequiresRole;
 import roomescape.member.domain.Member;
 import roomescape.reservation.application.ReservationService;
+import roomescape.reservation.ui.dto.AdminReservationResponse;
 import roomescape.reservation.ui.dto.AvailableReservationTimeRequest;
 import roomescape.reservation.ui.dto.AvailableReservationTimeResponse;
 import roomescape.reservation.ui.dto.CreateReservationRequest;
 import roomescape.reservation.ui.dto.CreateReservationResponse;
-import roomescape.reservation.ui.dto.ReservationResponse;
+import roomescape.reservation.ui.dto.MemberReservationResponse;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/reservations")
 public class ReservationRestController {
 
     private final ReservationService reservationService;
 
-    @PostMapping
+    @PostMapping("/reservations")
     @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER})
     public ResponseEntity<CreateReservationResponse> create(
             @RequestBody final CreateReservationRequest request,
@@ -41,7 +40,7 @@ public class ReservationRestController {
                 .body(response);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/reservations/{id}")
     @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER})
     public ResponseEntity<Void> delete(@PathVariable final Long id) {
         reservationService.delete(id);
@@ -49,14 +48,21 @@ public class ReservationRestController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReservationResponse>> findAll() {
-        final List<ReservationResponse> reservationResponses = reservationService.findAll();
+    @GetMapping("/reservations")
+    public ResponseEntity<List<MemberReservationResponse>> findAllByMember() {
+        final List<MemberReservationResponse> memberReservationResponses = reservationService.findAllByMember();
 
-        return ResponseEntity.ok(reservationResponses);
+        return ResponseEntity.ok(memberReservationResponses);
     }
 
-    @GetMapping("/available-times")
+    @GetMapping("/admin/reservations")
+    public ResponseEntity<List<AdminReservationResponse>> findAllByAdmin() {
+        final List<AdminReservationResponse> adminReservationResponses = reservationService.findAllByAdmin();
+
+        return ResponseEntity.ok(adminReservationResponses);
+    }
+
+    @GetMapping("/reservations/available-times")
     public ResponseEntity<List<AvailableReservationTimeResponse>> findAvailableReservationTimes(
             @ModelAttribute final AvailableReservationTimeRequest request) {
         final List<AvailableReservationTimeResponse> availableReservationTimes

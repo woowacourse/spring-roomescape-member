@@ -11,11 +11,12 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.ReservationTimeRepository;
+import roomescape.reservation.ui.dto.AdminReservationResponse;
 import roomescape.reservation.ui.dto.AvailableReservationTimeRequest;
 import roomescape.reservation.ui.dto.AvailableReservationTimeResponse;
 import roomescape.reservation.ui.dto.CreateReservationRequest;
 import roomescape.reservation.ui.dto.CreateReservationResponse;
-import roomescape.reservation.ui.dto.ReservationResponse;
+import roomescape.reservation.ui.dto.MemberReservationResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 
@@ -53,10 +54,17 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public List<ReservationResponse> findAll() {
+    public List<MemberReservationResponse> findAllByMember() {
         return reservationRepository.findAll()
                 .stream()
-                .map(ReservationResponse::from)
+                .map(MemberReservationResponse::from)
+                .toList();
+    }
+
+    public List<AdminReservationResponse> findAllByAdmin() {
+        return reservationRepository.findAll()
+                .stream()
+                .map(AdminReservationResponse::from)
                 .toList();
     }
 
