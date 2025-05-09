@@ -40,14 +40,6 @@ public class ReservationController {
                 .body(reservation);
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<ReservationResponse>> getReservations(
-//    ) {
-//        return ResponseEntity.ok().body(
-//                reservationService.getReservations()
-//        );
-//    }
-
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations(
         final @RequestParam(required = false) Long memberId,
