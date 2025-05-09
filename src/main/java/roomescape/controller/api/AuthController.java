@@ -15,16 +15,15 @@ import roomescape.exception.custom.AuthenticatedException;
 import roomescape.service.AuthService;
 
 @RestController
-@RequestMapping("/login")
-public class LoginController {
+public class AuthController {
 
     private final AuthService authService;
 
-    private LoginController(AuthService authService) {
+    private AuthController(AuthService authService) {
         this.authService = authService;
     }
 
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<Void> createToken(@RequestBody LoginRequest request,
         HttpServletResponse response) {
         String token = authService.createToken(request);
@@ -37,7 +36,7 @@ public class LoginController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/check")
+    @GetMapping("/login/check")
     public ResponseEntity<LoginResponse> checkLogin(HttpServletRequest request) {
         String token = extractTokenFromCookie(request.getCookies());
 
@@ -52,5 +51,16 @@ public class LoginController {
         }
 
         throw new AuthenticatedException();
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
     }
 }

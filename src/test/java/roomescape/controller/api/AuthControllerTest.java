@@ -16,7 +16,7 @@ import roomescape.provider.JwtTokenProvider;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class LoginControllerTest {
+class AuthControllerTest {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
