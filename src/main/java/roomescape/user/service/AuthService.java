@@ -1,7 +1,6 @@
 package roomescape.user.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.user.TokenProvider;
 import roomescape.user.domain.User;
 import roomescape.user.repository.UserDao;
 import roomescape.user.service.dto.LoginInfo;
