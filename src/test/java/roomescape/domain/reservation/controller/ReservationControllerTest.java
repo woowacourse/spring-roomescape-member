@@ -2,13 +2,16 @@ package roomescape.domain.reservation.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -27,15 +30,21 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.auth.config.JwtConfig;
+import roomescape.domain.auth.config.JwtProperties;
+import roomescape.domain.auth.dto.LoginUserDto;
+import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Roles;
+import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.service.AuthService;
-import roomescape.domain.reservation.dto.ReservationRequest;
+import roomescape.domain.auth.service.JwtManager;
+import roomescape.domain.reservation.dto.ReservationCreateRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
 import roomescape.domain.reservation.dto.ThemeResponse;
 import roomescape.domain.reservation.service.ReservationService;
 
 @WebMvcTest(ReservationController.class)
-@Import(JwtConfig.class)
+@Import({JwtConfig.class, JwtProperties.class})
 public class ReservationControllerTest {
 
     @Autowired
@@ -52,6 +61,15 @@ public class ReservationControllerTest {
 
     @MockitoBean
     private AuthService authService;
+
+    @Autowired
+    private JwtManager jwtManager;
+
+    private static String formatStartAt(final LocalTime time) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        return time.format(formatter);
+    }
 
     @DisplayName("모든 예약 정보를 가져온다.")
     @Test
@@ -90,7 +108,7 @@ public class ReservationControllerTest {
         final LocalTime time = LocalTime.of(8, 0);
         final String name = "꾹이";
 
-        final ReservationRequest request = new ReservationRequest(name, date, timeId, themeId);
+        final ReservationCreateRequest request = new ReservationCreateRequest(date, timeId, themeId);
         final ReservationTimeResponse timeResponse = new ReservationTimeResponse(timeId, time);
         final ThemeResponse themeResponse = new ThemeResponse(themeId, "공포", "묘사", "url");
         final ReservationResponse response = new ReservationResponse(reservationId, name, date, timeResponse,
@@ -98,9 +116,16 @@ public class ReservationControllerTest {
 
         final String requestContent = objectMapper.writeValueAsString(request);
 
-        when(reservationService.create(request)).thenReturn(response);
+        final User user = new User(1L, new Name(name), "2321@naver.com", "1234", Roles.USER);
+        final String token = jwtManager.createToken(user);
+        final Cookie cookie = new Cookie("token", token);
+        final LoginUserDto loginUserDto = mock(LoginUserDto.class);
+
+        when(authService.getLoginUser((Cookie[]) any())).thenReturn(loginUserDto);
+        when(reservationService.create(eq(request), any())).thenReturn(response);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
+                        .cookie(cookie)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestContent))
                 .andExpect(status().isCreated())
@@ -111,31 +136,6 @@ public class ReservationControllerTest {
                 .andExpect(jsonPath("$.time.startAt").value(formatStartAt(time)));
     }
 
-    private static String formatStartAt(final LocalTime time) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-
-        return time.format(formatter);
-    }
-
-    @DisplayName("이름이 존재하지 않을 경우 400 상태 코드를 반환한다.")
-    @Test
-    void test3() throws Exception {
-        // given
-        final Long timeId = 1L;
-        final Long themeId = 1L;
-        final LocalDate date = LocalDate.now();
-
-        final ReservationRequest request = new ReservationRequest(null, date, timeId, themeId);
-
-        final String requestContent = objectMapper.writeValueAsString(request);
-
-        // when
-        mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestContent))
-                .andExpect(status().isBadRequest());
-    }
-
     @DisplayName("존재하지 않는 TimeId면 404 상태 코드를 반환한다.")
     @Test
     void test4() throws Exception {
@@ -143,20 +143,45 @@ public class ReservationControllerTest {
         final Long timeId = 1L;
         final Long themeId = 1L;
         final LocalDate date = LocalDate.now();
-        final String name = "꾹이";
 
-        final ReservationRequest request = new ReservationRequest(name, date, timeId, themeId);
+        final ReservationCreateRequest request = new ReservationCreateRequest(date, timeId, themeId);
+
+        final String requestContent = objectMapper.writeValueAsString(request);
+        final String name = "꾹이";
+        final User user = new User(1L, new Name(name), "2321@naver.com", "1234", Roles.USER);
+        final String token = jwtManager.createToken(user);
+        final Cookie cookie = new Cookie("token", token);
+        final LoginUserDto loginUserDto = mock(LoginUserDto.class);
+
+        // when
+        when(authService.getLoginUser((Cookie[]) any())).thenReturn(loginUserDto);
+        when(reservationService.create(any(), any())).thenThrow(EntityNotFoundException.class);
+
+        // then
+        mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
+                        .cookie(cookie)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestContent))
+                .andExpect(status().isNotFound());
+    }
+
+    @DisplayName("인증 쿠키가 존재하지 않을 경우 401 상태 코드를 반환한다.")
+    @Test
+    void test3() throws Exception {
+        // given
+        final Long timeId = 1L;
+        final Long themeId = 1L;
+        final LocalDate date = LocalDate.now();
+
+        final ReservationCreateRequest request = new ReservationCreateRequest(date, timeId, themeId);
 
         final String requestContent = objectMapper.writeValueAsString(request);
 
         // when
-        when(reservationService.create(any())).thenThrow(EntityNotFoundException.class);
-
-        // then
         mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestContent))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isUnauthorized());
     }
 
     @DisplayName("예약 정보를 삭제한다.")
@@ -204,24 +229,5 @@ public class ReservationControllerTest {
         }
 
         assertThat(isJdbcTemplateInjected).isFalse();
-    }
-
-    @DisplayName("이름이 공백일 경우 400 상태 코드를 반환한다.")
-    @Test
-    void test7() throws Exception {
-        // given
-        final String name = "";
-        final LocalDate date = LocalDate.now();
-        final Long timeId = 1L;
-        final Long themeId = 1L;
-
-        final ReservationRequest request = new ReservationRequest(name, date, timeId, themeId);
-        final String content = objectMapper.writeValueAsString(request);
-
-        // when & then
-        mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
-                .andExpect(status().isBadRequest());
     }
 }
