@@ -6,18 +6,21 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.repository.ReservationTimeRepository;
+import roomescape.infrastructure.JdbcReservationTimeRepository;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@JdbcTest
 class JdbcReservationTimeRepositoryTest {
 
-    @Autowired
     private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    public JdbcReservationTimeRepositoryTest(JdbcTemplate jdbcTemplate) {
+        this.reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
+    }
 
     @Test
     void 예약_시간을_추가할_수_있다() {
@@ -49,12 +52,12 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void 예약_시간을_삭제할_수_있다() {
         // given
-        ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
-        reservationTimeRepository.create(reservationTime);
+        ReservationTime savedTime = reservationTimeRepository.create(
+                ReservationTime.createWithoutId(LocalTime.of(10, 0)));
         int beforeSize = reservationTimeRepository.findAll().size();
 
         // when
-        reservationTimeRepository.delete(1L);
+        reservationTimeRepository.delete(savedTime.getId());
         int afterSize = reservationTimeRepository.findAll().size();
 
         // then

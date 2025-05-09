@@ -3,64 +3,83 @@ package roomescape.unit.infrastructure;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Theme;
+import roomescape.domain.repository.ThemeRepository;
 import roomescape.infrastructure.JdbcThemeRepository;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@JdbcTest
 public class JdbcThemeRepositoryTest {
+
+    private final JdbcTemplate jdbcTemplate;
+    private final ThemeRepository themeRepository;
+
     @Autowired
-    private JdbcThemeRepository jdbcThemeDao;
+    public JdbcThemeRepositoryTest(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.themeRepository = new JdbcThemeRepository(jdbcTemplate);
+    }
 
     @Test
     void 테마를_추가할_수_있다() {
         // given
-
         Theme theme = Theme.createWithoutId("레벨2", "탈출하자",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-
         // when
-        Theme createdTheme = jdbcThemeDao.create(theme);
-
+        Theme createdTheme = themeRepository.create(theme);
         // then
-        assertThat(createdTheme.getName()).isEqualTo("레벨2");
+        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
+        assertThat(count).isEqualTo(Integer.valueOf(1));
     }
 
     @Test
     void 전체_테마를_조회한다() {
         // given
-        Theme theme1 = Theme.createWithoutId("레벨1", "탈출하자",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Theme theme2 = Theme.createWithoutId("레벨2", "탈출하자",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        jdbcThemeDao.create(theme1);
-        jdbcThemeDao.create(theme2);
+        themeRepository.create(
+                Theme.createWithoutId(
+                        "레벨1",
+                        "탈출하자",
+                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
+        );
+        themeRepository.create(
+                Theme.createWithoutId(
+                        "레벨2",
+                        "탈출하자",
+                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
+        );
         // when
-        List<Theme> allTheme = jdbcThemeDao.findAll();
+        List<Theme> allTheme = themeRepository.findAll();
         // then
-        assertThat(allTheme).hasSize(2);
-        assertThat(allTheme.getFirst().getName()).isEqualTo("레벨1");
-        assertThat(allTheme.get(1).getName()).isEqualTo("레벨2");
+        SoftAssertions soft = new SoftAssertions();
+        soft.assertThat(allTheme).hasSize(2);
+        soft.assertThat(allTheme.getFirst().getName()).isEqualTo("레벨1");
+        soft.assertThat(allTheme.get(1).getName()).isEqualTo("레벨2");
+        soft.assertAll();
     }
 
     @Test
     void 테마를_삭제한다() {
         // given
-        Theme theme1 = Theme.createWithoutId("레벨1", "탈출하자",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Theme theme2 = Theme.createWithoutId("레벨2", "탈출하자",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        jdbcThemeDao.create(theme1);
-        jdbcThemeDao.create(theme2);
+        Theme theme1 = themeRepository.create(
+                Theme.createWithoutId(
+                        "레벨2",
+                        "탈출하자",
+                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
+        );
+        Theme theme2 = themeRepository.create(
+                Theme.createWithoutId(
+                        "레벨1",
+                        "탈출하자",
+                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
+        );
         // when
-        jdbcThemeDao.delete(1L);
+        themeRepository.delete(theme1.getId());
         // then
-        List<Theme> allTheme = jdbcThemeDao.findAll();
-        assertThat(allTheme).hasSize(1);
+        List<Theme> allThemes = themeRepository.findAll();
+        assertThat(allThemes).hasSize(1);
     }
 }

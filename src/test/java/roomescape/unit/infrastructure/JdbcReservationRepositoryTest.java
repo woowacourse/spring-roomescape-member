@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.auth.Role;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
@@ -20,21 +19,27 @@ import roomescape.domain.repository.MemberRepository;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
+import roomescape.dto.request.ReservationCondition;
+import roomescape.infrastructure.JdbcMemberRepository;
+import roomescape.infrastructure.JdbcReservationRepository;
+import roomescape.infrastructure.JdbcReservationTimeRepository;
+import roomescape.infrastructure.JdbcThemeRepository;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@JdbcTest
 class JdbcReservationRepositoryTest {
-    @Autowired
+
     private ReservationRepository reservationRepository;
-
-    @Autowired
     private ReservationTimeRepository reservationTimeRepository;
-
-    @Autowired
     private ThemeRepository themeRepository;
+    private MemberRepository memberRepository;
 
     @Autowired
-    private MemberRepository memberRepository;
+    public JdbcReservationRepositoryTest(JdbcTemplate jdbcTemplate) {
+        this.reservationRepository = new JdbcReservationRepository(jdbcTemplate);
+        this.reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
+        this.themeRepository = new JdbcThemeRepository(jdbcTemplate);
+        this.memberRepository = new JdbcMemberRepository(jdbcTemplate);
+    }
 
     @Test
     void 예약_시간을_추가할_수_있다() {
@@ -115,21 +120,20 @@ class JdbcReservationRepositoryTest {
     @Test
     void timeId로_예약을_조회한다() {
         // given
-        ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
-        ReservationTime savedReservationTime = reservationTimeRepository.create(reservationTime);
+        ReservationTime savedReservationTime = reservationTimeRepository.create(
+                ReservationTime.createWithoutId(LocalTime.of(10, 0)));
         Theme theme = new Theme(null, "themeName", "des", "th");
         Theme savedTheme = themeRepository.create(theme);
         Member member = new Member(null, "포라", "email1@domain.com", "password1", Role.MEMBER);
         Member savedMember = memberRepository.save(member);
-        Reservation reservation = Reservation.createWithoutId(
+        Reservation savedReservation = reservationRepository.create(Reservation.createWithoutId(
                 savedMember,
                 LocalDate.now().plusDays(1),
                 savedReservationTime,
                 savedTheme
-        );
-        reservationRepository.create(reservation);
+        ));
         // when
-        List<Reservation> foundReservation = reservationRepository.findByTimeId(1L);
+        List<Reservation> foundReservation = reservationRepository.findByTimeId(savedReservationTime.getId());
         // then
         assertThat(foundReservation.getFirst().getMember().getName()).isEqualTo("포라");
     }
@@ -143,17 +147,64 @@ class JdbcReservationRepositoryTest {
         Theme savedTheme = themeRepository.create(theme);
         Member member = new Member(null, "포라", "email1@domain.com", "password1", Role.MEMBER);
         Member savedMember = memberRepository.save(member);
-        Reservation reservation = Reservation.createWithoutId(
+        Reservation savedReservation = reservationRepository.create(Reservation.createWithoutId(
                 savedMember,
                 LocalDate.now().plusDays(1),
                 savedReservationTime,
                 savedTheme
-        );
-        reservationRepository.create(reservation);
+        ));
         // when
-        Optional<Reservation> foundReservation = reservationRepository.findById(1L);
+        Optional<Reservation> foundReservation = reservationRepository.findById(savedReservation.getId());
         // then
         assertThat(foundReservation.isPresent()).isTrue();
         assertThat(foundReservation.get().getMember().getName()).isEqualTo("포라");
+    }
+
+    @Test
+    void 날짜와_시간과_테마로_예약을_조회한다() {
+        // given
+        ReservationTime savedTime = reservationTimeRepository.create(
+                ReservationTime.createWithoutId(LocalTime.of(9, 0))
+        );
+        Theme saveTheme = themeRepository.create(
+                Theme.createWithoutId("theme1", "desc", "thumb1")
+        );
+        Member member = memberRepository.save(new Member(null, "name1", "email1@domain.com", "pass1", Role.MEMBER));
+        Reservation savedReservation = reservationRepository.create(
+                Reservation.createWithoutId(member, LocalDate.of(2025, 1, 1), savedTime, saveTheme)
+        );
+        // when
+        Optional<Reservation> foundReservation = reservationRepository.findByDateTimeAndTheme(
+                LocalDate.of(2025, 1, 1), savedTime, saveTheme);
+        // then
+        assertThat(foundReservation).isPresent();
+        assertThat(foundReservation.get().getId()).isEqualTo(savedReservation.getId());
+    }
+
+    @Test
+    void 테마id_회원id_날짜범위로_예약을_조회한다() {
+        // given
+        ReservationTime savedTime = reservationTimeRepository.create(
+                ReservationTime.createWithoutId(LocalTime.of(9, 0))
+        );
+        Theme saveTheme = themeRepository.create(
+                Theme.createWithoutId("theme1", "desc", "thumb1")
+        );
+        Member savedMember = memberRepository.save(
+                new Member(null, "name1", "email1@domain.com", "pass1", Role.MEMBER));
+        Reservation savedReservation = reservationRepository.create(
+                Reservation.createWithoutId(savedMember, LocalDate.of(2025, 1, 1), savedTime, saveTheme)
+        );
+        // when
+        List<Reservation> foundReservation = reservationRepository.findByCondition(
+                new ReservationCondition(
+                        saveTheme.getId(),
+                        savedMember.getId(),
+                        LocalDate.of(2025, 1, 1),
+                        LocalDate.of(2025, 1, 1)
+                )
+        );
+        // then
+        assertThat(foundReservation).hasSize(1);
     }
 }
