@@ -6,7 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
-import roomescape.domain.Member;
+import roomescape.domain.member.Member;
 
 @Service
 public class AuthService {
@@ -44,6 +44,7 @@ public class AuthService {
                 .subject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("email", member.getEmail())
+                .claim("role", member.getRole())
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
     }

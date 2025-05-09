@@ -1,6 +1,7 @@
 package roomescape.dto.request;
 
-import roomescape.domain.Member;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 
 public record CreateMemberRequest(
         String name,
@@ -12,7 +13,8 @@ public record CreateMemberRequest(
                 null,
                 this.name,
                 this.email,
-                this.password
+                this.password,
+                Role.MEMBER
         );
     }
 }

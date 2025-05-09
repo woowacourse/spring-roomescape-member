@@ -7,10 +7,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.common.exception.NotAbleDeleteException;
-import roomescape.domain.Member;
+import roomescape.domain.member.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.member.Role;
 import roomescape.repository.ReservationRepository;
 
 @Repository
@@ -30,7 +31,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         final String query = """
                 SELECT
                     r.id,
-                    m.id AS member_id, m.name AS member_name, m.email AS member_email,
+                    m.id AS member_id, m.name AS member_name, m.email AS member_email, m.role AS member_role,
                     r.date,
                     t.id AS time_id, t.start_at,
                     th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail
@@ -47,7 +48,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                         new Member(
                                 resultSet.getLong("member_id"),
                                 resultSet.getString("member_name"),
-                                resultSet.getString("member_email")
+                                resultSet.getString("member_email"),
+                                Role.valueOf(resultSet.getString("member_role"))
                         ),
                         resultSet.getDate("date").toLocalDate(),
                         new ReservationTime(

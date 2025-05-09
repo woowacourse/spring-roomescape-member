@@ -8,7 +8,7 @@ import roomescape.common.exception.NotAbleReservationException;
 import roomescape.common.exception.NotFoundMemberException;
 import roomescape.common.exception.NotFoundReservationTimeException;
 import roomescape.common.exception.NotFoundThemeException;
-import roomescape.domain.Member;
+import roomescape.domain.member.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;

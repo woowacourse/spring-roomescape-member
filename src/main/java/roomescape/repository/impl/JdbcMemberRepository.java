@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Member;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.repository.MemberRepository;
 
 @Repository
@@ -25,7 +26,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
     public List<Member> readAll() {
         final String query = """
-                SELECT id, name, email
+                SELECT id, name, email, role
                 FROM member
                 """;
 
@@ -34,7 +35,8 @@ public class JdbcMemberRepository implements MemberRepository {
                 (resultSet, rowNum) -> new Member(
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
-                        resultSet.getString("email")
+                        resultSet.getString("email"),
+                        Role.valueOf(resultSet.getString("role"))
                 )
         );
     }
@@ -43,7 +45,8 @@ public class JdbcMemberRepository implements MemberRepository {
         Map<String, Object> parameters = Map.ofEntries(
                 Map.entry("name", member.getName()),
                 Map.entry("email", member.getEmail()),
-                Map.entry("password", member.getPassword())
+                Map.entry("password", member.getPassword()),
+                Map.entry("role", member.getRole())
         );
 
         Long generatedKey = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
@@ -56,7 +59,7 @@ public class JdbcMemberRepository implements MemberRepository {
     public boolean existsByEmail(Member member) {
         final String query = """
                 SELECT EXISTS(
-                    SELECT *
+                    SELECT id
                     FROM member
                     WHERE email = ?
                 )
@@ -71,7 +74,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
     public Optional<Member> findByEmailAndPassword(String email, String password) {
         final String query = """
-                SELECT id, name, email, password
+                SELECT id, name, email, password, role
                 FROM member
                 WHERE email = ? AND password = ?
                 """;
@@ -82,7 +85,8 @@ public class JdbcMemberRepository implements MemberRepository {
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
                         resultSet.getString("email"),
-                        resultSet.getString("password")
+                        resultSet.getString("password"),
+                        Role.valueOf(resultSet.getString("role"))
                 ),
                 email,
                 password
@@ -91,7 +95,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
     public Optional<Member> findById(Long id) {
         final String query = """
-                SELECT id, name, email
+                SELECT id, name, email, role
                 FROM member
                 WHERE id = ?
                 """;
@@ -101,7 +105,8 @@ public class JdbcMemberRepository implements MemberRepository {
                 (resultSet, rowNum) -> new Member(
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
-                        resultSet.getString("email")
+                        resultSet.getString("email"),
+                        Role.valueOf(resultSet.getString("role"))
                 ),
                 id
         ).stream().findFirst();

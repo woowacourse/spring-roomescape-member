@@ -1,7 +1,6 @@
 package roomescape.common.argument;
 
 import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
@@ -12,7 +11,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.common.annotation.Auth;
 import roomescape.common.exception.UnauthorizedException;
-import roomescape.domain.Member;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.service.AuthService;
 
 @Component
@@ -48,7 +48,8 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         return new Member(
                 Long.valueOf(claims.getSubject()),
                 claims.get("name", String.class),
-                claims.get("email", String.class)
+                claims.get("email", String.class),
+                Role.valueOf(claims.get("role", String.class))
         );
     }
 }
