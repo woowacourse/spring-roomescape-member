@@ -1,6 +1,7 @@
 package roomescape.exception;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,6 +18,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         ErrorResponse body = new ErrorResponse(e.getBindingResult().getAllErrors().getFirst().getDefaultMessage());
+        return ResponseEntity.badRequest().body(body);
+    }
+
+    @ExceptionHandler(value = HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(Exception e) {
+        ErrorResponse body = new ErrorResponse("잘못된 요청 형식입니다.");
         return ResponseEntity.badRequest().body(body);
     }
 
