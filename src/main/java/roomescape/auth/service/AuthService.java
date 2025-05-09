@@ -1,10 +1,11 @@
 package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.auth.domain.User;
 import roomescape.auth.dto.TokenRequest;
+import roomescape.auth.dto.UserResponse;
 import roomescape.auth.infrastructure.JwtTokenProvider;
-import roomescape.auth.repository.UserRepository;
+import roomescape.user.domain.User;
+import roomescape.user.repository.UserRepository;
 
 @Service
 public class AuthService {
@@ -27,8 +28,18 @@ public class AuthService {
         return jwtTokenProvider.createToken(findUser);
     }
 
-    private void validatePassword(User user, String requestPassword){
-        if(user.getPassword().equals(requestPassword)){
+    public UserResponse getUserData(String token) {
+        jwtTokenProvider.validateToken(token);
+        Long userId = Long.parseLong(jwtTokenProvider.getSubject(token));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        return UserResponse.from(user);
+    }
+
+    private void validatePassword(User user, String requestPassword) {
+        if (user.getPassword().equals(requestPassword)) {
             return;
         }
 

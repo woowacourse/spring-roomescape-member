@@ -1,10 +1,12 @@
-package roomescape.auth.repository;
+package roomescape.user.repository;
 
-import roomescape.auth.domain.User;
 import java.util.Optional;
+import roomescape.user.domain.User;
 
 public interface UserRepository {
 
     Optional<User> findByEmail(String email);
+
+    Optional<User> findById(Long id);
 
 }

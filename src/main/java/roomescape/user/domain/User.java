@@ -1,4 +1,4 @@
-package roomescape.auth.domain;
+package roomescape.user.domain;
 
 public class User {
 

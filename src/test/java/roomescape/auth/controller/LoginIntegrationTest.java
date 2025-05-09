@@ -1,6 +1,7 @@
 package roomescape.auth.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
@@ -9,15 +10,22 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.auth.dto.TokenRequest;
+import roomescape.auth.dto.UserResponse;
+import roomescape.auth.service.AuthService;
 import roomescape.global.config.TestConfig;
 
 @Import(TestConfig.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class LoginIntegrationTest {
+
+    @Autowired
+    private AuthService authService;
 
     @DisplayName("로그인 후 응답 헤더에 토큰을 반환한다")
     @Test
@@ -43,6 +51,62 @@ class LoginIntegrationTest {
                 () -> assertThat(header).contains("Path=/"),
                 () -> assertThat(header).contains("HttpOnly")
         );
+    }
+
+    @DisplayName("로그인 비밀번호가 올바르지 않으면 예외가 발생한다")
+    @Test
+    void login_password_mismatch() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("email", "rookie@woowa.com");
+        params.put("password", "invalidPassword");
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(400)
+                .body(equalTo("비밀번호가 일치하지 않습니다."));
+    }
+
+    @DisplayName("사용자의 정보를 가져온다")
+    @Test
+    void check_member_test() {
+        // given
+        String token = getValidToken();
+
+        // when
+        UserResponse response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie(LoginController.TOKEN_COOKIE_NAME, token)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .as(UserResponse.class);
+
+        // then
+        assertThat(response.name()).isEqualTo("루키");
+    }
+
+    @DisplayName("쿠키 내부에 토큰이 존재하지 않으면 예외가 발생한다")
+    @Test
+    void cookie_not_exists_exception() {
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(400)
+                .body(equalTo("인증 토큰이 쿠키에 존재하지 않습니다."));
+    }
+
+    private String getValidToken() {
+        String email = "rookie@woowa.com";
+        String password = "rookie123";
+        return authService.createToken(new TokenRequest(email, password));
     }
 
 }

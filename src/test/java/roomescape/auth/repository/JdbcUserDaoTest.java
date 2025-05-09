@@ -9,7 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.auth.domain.User;
+import roomescape.user.domain.User;
+import roomescape.user.repository.JdbcUserDao;
 import roomescape.util.repository.TestDataSourceFactory;
 
 class JdbcUserDaoTest {

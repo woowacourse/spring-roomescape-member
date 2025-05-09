@@ -5,9 +5,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.auth.domain.User;
+import roomescape.user.domain.User;
+import roomescape.user.repository.UserRepository;
 
-public class FakeUserDao implements UserRepository{
+public class FakeUserDao implements UserRepository {
 
     private final Map<Long, User> users = new ConcurrentHashMap<>();
     private final AtomicLong idGenerator = new AtomicLong();
@@ -28,11 +29,26 @@ public class FakeUserDao implements UserRepository{
         return Optional.of(emailUsers.getFirst());
     }
 
-    public Long save(String name, String email, String password){
+    public Long save(String name, String email, String password) {
         Long generatedId = idGenerator.incrementAndGet();
         User user = new User(generatedId, name, email, password);
         users.put(generatedId, user);
         return generatedId;
     }
 
+    @Override
+    public Optional<User> findById(Long id) {
+        List<User> users = this.users.values().stream()
+                .filter(user -> user.getId().equals(id))
+                .toList();
+
+        if (users.isEmpty()) {
+            return Optional.empty();
+        }
+        if (users.size() > 1) {
+            throw new IllegalStateException("조회 결과가 2개 이상입니다.");
+        }
+
+        return Optional.of(users.getFirst());
+    }
 }

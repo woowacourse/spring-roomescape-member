@@ -31,7 +31,7 @@ class JdbcReservationDaoTest {
 
     @AfterEach
     void dropTable() {
-        String dropSql = "DROP TABLE IF EXISTS reservation, reservation_time, theme";
+        String dropSql = "DROP TABLE IF EXISTS reservation, reservation_time, theme, member";
         jdbcTemplate.execute(dropSql);
     }
 

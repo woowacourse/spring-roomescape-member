@@ -15,7 +15,7 @@
  - [X] `GET /login` 요청 시 로그인 폼이 있는 페이지를 응답한다.
  - `templates/login.html` 파일을 이용
  - [X] `POST /login` 요청 시 body에 포함된 email, password 값을 이용하여 cookie에 "token" 값으로 토큰이 포함되도록 응답
- - [ ] `GET /login/check` 요청 시 Cookie에서 토큰 정보를 추출하여 멤버를 찾아 멤버 정보 응답
+ - [X] `GET /login/check` 요청 시 Cookie에서 토큰 정보를 추출하여 멤버를 찾아 멤버 정보 응답
 
 ### 사용자 인기 테마 조회
 - [X] 최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 확인할 수 있다.
