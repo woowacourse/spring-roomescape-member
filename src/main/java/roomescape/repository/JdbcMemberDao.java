@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 
 import javax.sql.DataSource;
 import java.util.Optional;
@@ -23,7 +24,7 @@ public class JdbcMemberDao implements MemberRepository {
         String role = rs.getString("role");
         String password = rs.getString("password");
 
-        return new Member(memberId, name, email, role, password);
+        return new Member(memberId, name, email, Role.valueOf(role), password);
     };
 
     private final JdbcTemplate jdbcTemplate;

@@ -9,12 +9,12 @@ public class Member {
     private final Long id;
     private final String name;
     private final String email;
-    private final String role;
+    private final Role role;
     private final String password;
 
-    public Member(Long id, String name, String email, String role, String password) {
+    public Member(Long id, String name, String email, Role role, String password) {
         validateName(name);
-        validateEamil(email);
+        validateEmail(email);
         validatePassword(password);
 
         this.id = id;
@@ -24,7 +24,7 @@ public class Member {
         this.password = password;
     }
 
-    public Member createWithoutId(String name, String email, String role, String password) {
+    public Member createWithoutId(String name, String email, Role role, String password) {
         return new Member(null, name, email, role, password);
     }
 
@@ -38,7 +38,7 @@ public class Member {
         }
     }
 
-    private void validateEamil(String email) {
+    private void validateEmail(String email) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 이메일은 1글자 이상으로 이루어져야 합니다. ");
         }
@@ -82,7 +82,7 @@ public class Member {
         return email;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
