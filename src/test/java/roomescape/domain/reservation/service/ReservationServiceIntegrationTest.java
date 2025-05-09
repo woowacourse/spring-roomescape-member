@@ -8,6 +8,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -306,12 +308,27 @@ public class ReservationServiceIntegrationTest {
         final List<BookedReservationTimeResponse> responses = reservationService.getAvailableTimes(date, themeId);
 
         // then
-        assertThat(responses).hasSize(2);
+        final SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(responses)
+                .hasSize(2);
 
         final List<Boolean> booleans = responses.stream()
                 .map(BookedReservationTimeResponse::alreadyBooked)
                 .toList();
-        assertThat(booleans).containsExactlyInAnyOrder(true, false);
+        softly.assertThat(booleans)
+                .containsExactlyInAnyOrder(true, false);
+
+        final Map<LocalTime, Boolean> timeBookingStatus = responses.stream()
+                .collect(Collectors.toMap(response -> response.timeResponse()
+                        .startAt(), BookedReservationTimeResponse::alreadyBooked));
+
+        softly.assertThat(timeBookingStatus.get(time1))
+                .isTrue(); // 8:00은 예약됨
+        softly.assertThat(timeBookingStatus.get(time2))
+                .isFalse(); // 9:00은 예약 가능
+
+        softly.assertAll();
     }
 
 }
