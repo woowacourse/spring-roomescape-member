@@ -19,3 +19,7 @@ VALUES ('10:00'),
 
 INSERT INTO member (name, email, password, role)
 VALUES ('히로', 'example@gmail.com', 'password', 'ADMIN');
+
+INSERT INTO reservation (name, date, time_id, theme_id, member_id)
+VALUES ('히로', '2025-05-09', 1, 1, 1);
+
