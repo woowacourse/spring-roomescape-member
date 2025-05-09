@@ -26,6 +26,6 @@ class ReservationTest {
         // then
         assertThatThrownBy(() -> new Reservation(id, name, date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약자명은 최소 1글자, 최대 5글자여야합니다.");
+                .hasMessage("사용자명은 최소 1글자, 최대 5글자여야합니다.");
     }
 }
