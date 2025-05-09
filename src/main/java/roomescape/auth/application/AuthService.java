@@ -25,7 +25,7 @@ public class AuthService {
             throw new AuthenticationException("이메일 혹은 비밀번호가 올바르지 않습니다.");
         }
 
-        return authTokenProvider.createAccessToken(request.email(), member.getRole());
+        return authTokenProvider.createAccessToken(member.getEmail(), member.getRole());
     }
 
     public Member getMemberByEmail(final String email) {
