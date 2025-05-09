@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import roomescape.config.LoginMember;
 import roomescape.presentation.dto.LoginCheckResponseDto;
 import roomescape.presentation.dto.LoginRequestDto;
 import roomescape.presentation.dto.MemberRequestDto;
+import roomescape.presentation.dto.MemberResponseDto;
 
 @RestController
 public final class MemberController {
@@ -53,6 +55,12 @@ public final class MemberController {
         String accessToken = extractTokenFromCookie(cookies);
         clearCookie(response);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity<List<MemberResponseDto>> getMembers() {
+        List<MemberResponseDto> members = memberService.getMembers();
+        return ResponseEntity.ok(members);
     }
 
     private void setCookie(HttpServletResponse response, String accessToken) {

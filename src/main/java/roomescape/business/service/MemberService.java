@@ -2,6 +2,7 @@ package roomescape.business.service;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.member.Member;
@@ -9,6 +10,7 @@ import roomescape.config.LoginMember;
 import roomescape.persistence.MemberRepository;
 import roomescape.presentation.dto.LoginRequestDto;
 import roomescape.presentation.dto.MemberRequestDto;
+import roomescape.presentation.dto.MemberResponseDto;
 
 @Service
 public class MemberService {
@@ -66,5 +68,12 @@ public class MemberService {
                 .parseSignedClaims(accesToken)
                 .getPayload()
                 .getSubject());
+    }
+
+    public List<MemberResponseDto> getMembers() {
+        return memberRepository.findAll()
+                .stream()
+                .map(MemberResponseDto::toResponse)
+                .toList();
     }
 }

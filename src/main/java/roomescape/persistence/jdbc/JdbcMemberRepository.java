@@ -1,6 +1,7 @@
 package roomescape.persistence.jdbc;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,5 +79,25 @@ public class JdbcMemberRepository implements MemberRepository {
                 .stream()
                 .findFirst()
                 .map(MemberEntity::toDomain);
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String query = """
+                SELECT id, name, email, password, role
+                FROM member""";
+        return jdbcTemplate.query(
+                        query,
+                        (rs, rowNum) -> new MemberEntity(
+                                rs.getLong("id"),
+                                rs.getString("name"),
+                                rs.getString("email"),
+                                rs.getString("password"),
+                                rs.getString("role")
+                        )
+                )
+                .stream()
+                .map(MemberEntity::toDomain)
+                .toList();
     }
 }

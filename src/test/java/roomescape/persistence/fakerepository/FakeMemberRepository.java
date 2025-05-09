@@ -38,6 +38,13 @@ public final class FakeMemberRepository implements MemberRepository, FakeReposit
     }
 
     @Override
+    public List<Member> findAll() {
+        return members.stream()
+                .map(MemberEntity::toDomain)
+                .toList();
+    }
+
+    @Override
     public void clear() {
         members.clear();
         idGenerator.set(1);
