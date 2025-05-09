@@ -5,12 +5,10 @@ import roomescape.domain.*;
 import roomescape.exception.ReservationException;
 import roomescape.persistence.query.CreateReservationQuery;
 import roomescape.service.param.CreateReservationParam;
-import roomescape.service.result.MemberResult;
 import roomescape.service.result.ReservationResult;
-import roomescape.service.result.ReservationTimeResult;
-import roomescape.service.result.ThemeResult;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -56,23 +54,21 @@ public class ReservationService {
     public List<ReservationResult> findAll() {
         List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
-                .map(this::toReservationResult)
+                .map(ReservationResult::from)
                 .toList();
     }
 
     public ReservationResult findById(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ReservationException(reservationId + "에 해당하는 reservation 튜플이 없습니다."));
-        return toReservationResult(reservation);
+        return ReservationResult.from(reservation);
     }
 
-    private ReservationResult toReservationResult(Reservation reservation) {
-        return new ReservationResult(
-                reservation.getId(),
-                MemberResult.from(reservation.getMember()),
-                reservation.getDate(),
-                ReservationTimeResult.from(reservation.getTime()),
-                ThemeResult.from(reservation.getTheme()));
+    public List<ReservationResult> findReservationsInConditions(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        List<Reservation> reservations = reservationRepository.findReservationsInConditions(memberId, themeId, dateFrom, dateTo);
+        return reservations.stream()
+                .map(ReservationResult::from)
+                .toList();
     }
 
     private void validateUniqueReservation(final CreateReservationParam createReservationParam, final ReservationTime reservationTime, final Theme theme) {

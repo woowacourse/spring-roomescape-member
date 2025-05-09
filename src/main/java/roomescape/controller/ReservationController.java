@@ -10,6 +10,7 @@ import roomescape.controller.response.ReservationResponse;
 import roomescape.service.ReservationService;
 import roomescape.service.result.ReservationResult;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,13 +25,24 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> findReservations() {
-        List<ReservationResult> reservationResults = reservationService.findAll();
+    public ResponseEntity<List<ReservationResponse>> findReservations(@RequestParam(required = false) Long memberId,
+                                                                      @RequestParam(required = false) Long themeId,
+                                                                      @RequestParam(required = false) LocalDate dateFrom,
+                                                                      @RequestParam(required = false) LocalDate dateTo) {
+        List<ReservationResult> reservationResults = reservationService.findReservationsInConditions(memberId, themeId, dateFrom, dateTo);
         List<ReservationResponse> reservationResponses = reservationResults.stream()
                 .map(ReservationResponse::from)
                 .toList();
         return ResponseEntity.ok(reservationResponses);
     }
+
+//    @GetMapping("/conditions")
+//    public ResponseEntity<List<ReservationResponse>> findReservationsInConditions( {
+//        List<ReservationResponse> reservationResponses = reservationResults.stream()
+//                .map(ReservationResponse::from)
+//                .toList();
+//        return ResponseEntity.ok(reservationResponses);
+//    }
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(

@@ -11,6 +11,7 @@ import roomescape.persistence.query.CreateReservationQuery;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -153,5 +154,73 @@ public class JdbcReservationRepository implements ReservationRepository {
                         WHERE r.theme_id = ? AND r.date = ?
                         """;
         return jdbcTemplate.query(sql, reservationRowMapper, themeId, reservationDate);
+    }
+
+    @Override
+    public List<Reservation> findReservationsInConditions(final Long memberId, final Long themeId, final LocalDate dateFrom, final LocalDate dateTo) {
+        String sql = """
+                        SELECT
+                            r.id as reservation_id,
+                            r.date,
+                            t.id as time_id,
+                            t.start_at as time_value,
+                            tm.id as theme_id,
+                            tm.name as theme_name,
+                            tm.description as theme_description,
+                            tm.thumbnail as theme_thumbnail,
+                            m.id as member_id,
+                            m.role as member_role,
+                            m.name as member_name,
+                            m.email as member_email,
+                            m.password as member_password
+                        FROM reservation as r
+                            inner join reservation_time as t on r.time_id = t.id
+                            inner join theme as tm on r.theme_id = tm.id
+                            inner join member as m on r.member_id = m.id
+                        """;
+
+        List<Object> parameters = new ArrayList<>();
+        boolean isFirstCondition = true;
+
+        // WHERE 절 추가 로직
+        if (memberId != null || themeId != null || dateFrom != null || dateTo != null) {
+            sql += " WHERE";
+        }
+
+        if (memberId != null) {
+            sql += " r.member_id = ?";
+            parameters.add(memberId);
+            isFirstCondition = false;
+        }
+
+        if (themeId != null) {
+            if (!isFirstCondition) {
+                sql += " AND";
+            }
+            sql += " r.theme_id = ?";
+            parameters.add(themeId);
+            isFirstCondition = false;
+        }
+
+        if (dateFrom != null) {
+            if (!isFirstCondition) {
+                sql += " AND";
+            }
+            sql += " r.date >= ?";
+            parameters.add(dateFrom);
+            isFirstCondition = false;
+        }
+
+        if (dateTo != null) {
+            if (!isFirstCondition) {
+                sql += " AND";
+            }
+            sql += " r.date <= ?";
+            parameters.add(dateTo);
+        }
+
+        sql += " ORDER BY r.date, t.start_at";
+
+        return jdbcTemplate.query(sql, reservationRowMapper, parameters.toArray());
     }
 }
