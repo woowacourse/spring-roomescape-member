@@ -13,8 +13,8 @@ import roomescape.user.repository.UserRepository;
 @Service
 public class AuthService {
 
-    private JwtTokenProvider jwtTokenProvider;
-    private UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
 
     public AuthService(JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
