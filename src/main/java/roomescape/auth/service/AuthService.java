@@ -12,7 +12,7 @@ import roomescape.auth.dto.TokenWithCookieResponse;
 import roomescape.auth.exception.UnauthorizedException;
 import roomescape.common.security.jwt.JwtTokenProvider;
 import roomescape.common.util.CookieUtil;
-import roomescape.user.service.UserService;
+import roomescape.member.service.MemberService;
 
 import java.util.Arrays;
 
@@ -20,11 +20,11 @@ import java.util.Arrays;
 public class AuthService {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserService userService;
+    private final MemberService memberService;
 
-    public AuthService(JwtTokenProvider jwtTokenProvider, UserService userService) {
+    public AuthService(JwtTokenProvider jwtTokenProvider, MemberService memberService) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.userService = userService;
+        this.memberService = memberService;
     }
 
     public TokenWithCookieResponse createToken(TokenRequest tokenRequest) {
@@ -48,7 +48,7 @@ public class AuthService {
 
         try {
             String email = jwtTokenProvider.getEmail(token);
-            return LoginCheckResponse.from(userService.findNameByEmail(email));
+            return LoginCheckResponse.from(memberService.findNameByEmail(email));
         } catch (ExpiredJwtException e) {
             throw new UnauthorizedException("토큰이 만료되었습니다.");
         } catch (JwtException e) {

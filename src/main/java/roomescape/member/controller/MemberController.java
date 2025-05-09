@@ -1,29 +1,29 @@
-package roomescape.user.controller;
+package roomescape.member.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.user.dto.SignUpRequest;
-import roomescape.user.dto.SignUpResponse;
-import roomescape.user.service.UserService;
+import roomescape.member.dto.SignUpRequest;
+import roomescape.member.dto.SignUpResponse;
+import roomescape.member.service.MemberService;
 
 import java.net.URI;
 
 @RestController
 @RequestMapping("/members")
-public class UserController {
+public class MemberController {
 
-    private final UserService userService;
+    private final MemberService memberService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @PostMapping
     public ResponseEntity<SignUpResponse> signUp(@RequestBody SignUpRequest request) {
-        SignUpResponse signUpResponse = userService.registerUser(request);
+        SignUpResponse signUpResponse = memberService.registerUser(request);
         URI location = URI.create("/members/" + signUpResponse.getId());
         return ResponseEntity.created(location).body(signUpResponse);
     }

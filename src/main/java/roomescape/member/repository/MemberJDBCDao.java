@@ -1,4 +1,4 @@
-package roomescape.user.repository;
+package roomescape.member.repository;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -6,39 +6,39 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.common.vo.Role;
-import roomescape.user.entity.User;
+import roomescape.member.entity.Member;
+import roomescape.member.entity.Role;
 
 import java.util.Objects;
 
 @Repository
-public class UserJDBCDao implements UserRepository {
+public class MemberJDBCDao implements MemberRepository {
 
     private final NamedParameterJdbcTemplate namedJdbcTemplate;
 
-    public UserJDBCDao(NamedParameterJdbcTemplate namedJdbcTemplate) {
+    public MemberJDBCDao(NamedParameterJdbcTemplate namedJdbcTemplate) {
         this.namedJdbcTemplate = namedJdbcTemplate;
     }
 
     @Override
-    public User save(User user) {
+    public Member save(Member member) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into users (email, password, name, role) values (:email, :password, :name, :role)";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("email", user.getEmail())
-                .addValue("password", user.getPassword())
-                .addValue("name", user.getName())
-                .addValue("role", user.getRole().toString());
+                .addValue("email", member.getEmail())
+                .addValue("password", member.getPassword())
+                .addValue("name", member.getName())
+                .addValue("role", member.getRole().toString());
 
         namedJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new User(id, user.getEmail(), user.getPassword(), user.getName(), user.getRole());
+        return new Member(id, member.getEmail(), member.getPassword(), member.getName(), member.getRole());
     }
 
     @Override
-    public User findByEmail(String email) {
+    public Member findByEmail(String email) {
         String sql = "select * from users where email = :email";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
@@ -47,8 +47,8 @@ public class UserJDBCDao implements UserRepository {
         return namedJdbcTemplate.queryForObject(sql, params, getUserRowMapper());
     }
 
-    private RowMapper<User> getUserRowMapper() {
-        return (resultSet, rowNum) -> new User(
+    private RowMapper<Member> getUserRowMapper() {
+        return (resultSet, rowNum) -> new Member(
                 resultSet.getLong("id"),
                 resultSet.getString("email"),
                 resultSet.getString("password"),

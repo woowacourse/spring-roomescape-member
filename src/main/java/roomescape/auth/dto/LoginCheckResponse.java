@@ -1,6 +1,6 @@
 package roomescape.auth.dto;
 
-import roomescape.user.entity.User;
+import roomescape.member.entity.Member;
 
 public class LoginCheckResponse {
 
@@ -10,8 +10,8 @@ public class LoginCheckResponse {
         this.name = name;
     }
 
-    public static LoginCheckResponse from(User user) {
-        return new LoginCheckResponse(user.getName());
+    public static LoginCheckResponse from(Member member) {
+        return new LoginCheckResponse(member.getName());
     }
 
     public String getName() {

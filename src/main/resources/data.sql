@@ -105,9 +105,9 @@ VALUES
 -- theme_id 10: 1건
 ('user1', CURRENT_DATE - 1, 1, 10);
 
-INSERT INTO users (id, email, password, name, role)
-VALUES (1, 'admin@email.com', 'password', '관리자', 'ADMIN'),
-       (2, 'member@gmail.com', '1234', '회원1', 'MEMBER');
+INSERT INTO member (email, password, name, role)
+VALUES ('admin@email.com', 'password', '관리자', 'ADMIN'),
+       ('member@gmail.com', '1234', '회원1', 'USER');
 
 
 

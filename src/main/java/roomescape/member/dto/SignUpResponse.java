@@ -1,7 +1,7 @@
-package roomescape.user.dto;
+package roomescape.member.dto;
 
-import roomescape.common.vo.Role;
-import roomescape.user.entity.User;
+import roomescape.member.entity.Member;
+import roomescape.member.entity.Role;
 
 public class SignUpResponse {
     private final Long id;
@@ -16,8 +16,8 @@ public class SignUpResponse {
         this.role = role;
     }
 
-    public static SignUpResponse from(User user) {
-        return new SignUpResponse(user.getId(), user.getEmail(), user.getName(), user.getRole());
+    public static SignUpResponse from(Member member) {
+        return new SignUpResponse(member.getId(), member.getEmail(), member.getName(), member.getRole());
     }
 
     public Long getId() {

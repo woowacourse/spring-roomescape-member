@@ -1,15 +1,13 @@
-package roomescape.user.entity;
+package roomescape.member.entity;
 
-import roomescape.common.vo.Role;
-
-public class User {
+public class Member {
     private final Long id;
     private final String email;
     private final String password;
     private final String name;
     private final Role role;
 
-    public User(Long id, String email, String password, String name, Role role) {
+    public Member(Long id, String email, String password, String name, Role role) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -17,8 +15,8 @@ public class User {
         this.role = role;
     }
 
-    public static User withoutId(String email, String password, String name, Role role) {
-        return new User(null, email, password, name, role);
+    public static Member withoutId(String email, String password, String name, Role role) {
+        return new Member(null, email, password, name, role);
     }
 
     public Long getId() {
