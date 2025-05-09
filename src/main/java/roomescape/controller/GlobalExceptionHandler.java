@@ -9,18 +9,19 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exceptions.EntityDuplicateException;
 import roomescape.exceptions.EntityNotFoundException;
+import roomescape.exceptions.auth.AuthorizationUserNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(AuthorizationUserNotFoundException.class)
+    public ProblemDetail handleDataIntegrityViolation(AuthorizationUserNotFoundException e) {
+        return createErrorResponse(e, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ProblemDetail handleEntityNotFound(EntityNotFoundException e) {
         return createErrorResponse(e, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ProblemDetail handleDataIntegrityViolation(DataIntegrityViolationException e) {
-        return createErrorResponse(e, HttpStatus.BAD_REQUEST, "데이터 무결성 위반이 발생했습니다.");
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -31,6 +32,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EntityDuplicateException.class)
     public ProblemDetail handleEntityDuplicate(EntityDuplicateException e) {
         return createErrorResponse(e, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail handleDataIntegrityViolation(DataIntegrityViolationException e) {
+        return createErrorResponse(e, HttpStatus.BAD_REQUEST, "데이터 무결성 위반이 발생했습니다.");
     }
 
     @ExceptionHandler(Exception.class)

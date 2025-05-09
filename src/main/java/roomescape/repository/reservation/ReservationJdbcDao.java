@@ -97,7 +97,6 @@ public class ReservationJdbcDao implements ReservationRepository {
                 .addValue("themeId", theme.getId())
                 .addValue("memberId", member.getId());
         Integer count = namedJdbcTemplate.queryForObject(sql, params, Integer.class);
-        System.out.println(count);
         return count != null && count > 0;
     }
 

@@ -1,12 +1,10 @@
 package roomescape.dto.auth;
 
-import roomescape.entity.Member;
-
 public record LoginResponse(
-        String name
+        String token
 ) {
 
-    public static LoginResponse from(final Member member) {
-        return new LoginResponse(member.getName());
+    public static LoginResponse from(final String token) {
+        return new LoginResponse(token);
     }
 }

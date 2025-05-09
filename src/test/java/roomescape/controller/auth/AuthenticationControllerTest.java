@@ -1,0 +1,60 @@
+package roomescape.controller.auth;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.when;
+
+import io.restassured.http.ContentType;
+import io.restassured.http.Cookie;
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import io.restassured.module.mockmvc.response.MockMvcResponse;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import roomescape.dto.auth.LoginRequest;
+import roomescape.service.auth.AuthenticationService;
+
+@WebMvcTest(AuthenticationController.class)
+class AuthenticationControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockitoBean
+    private AuthenticationService service;
+
+    @BeforeEach
+    void setUp() {
+        RestAssuredMockMvc.mockMvc(mockMvc);
+    }
+
+    @Test
+    void loginShouldSetTokenCookie() {
+        // given
+        String email = "test@example.com";
+        String password = "password123";
+        String expectedToken = "generated-jwt-token";
+        LoginRequest request = new LoginRequest(email, password);
+
+        when(service.createToken(email, password)).thenReturn(expectedToken);
+
+        // when & then
+        MockMvcResponse response = RestAssuredMockMvc.given()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/auth/login")
+                .then()
+                .status(HttpStatus.OK)
+                .contentType(ContentType.JSON)
+                .header("Keep-Alive", "timeout=60")
+                .cookie("token", expectedToken)
+                .extract().response();
+        Cookie tokenCookie = response.getDetailedCookie("token");
+        assertThat(tokenCookie.getPath()).isEqualTo("/");
+        assertThat(tokenCookie.isHttpOnly()).isTrue();
+    }
+}

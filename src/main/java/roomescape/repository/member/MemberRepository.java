@@ -6,7 +6,5 @@ public interface MemberRepository {
 
     Member findById(Long id);
 
-    Member findByEmailAndPassword(String email, String password);
-
-    boolean existsByEmail(String email);
+    boolean existsByEmailAndPassword(String email, String password);
 }
