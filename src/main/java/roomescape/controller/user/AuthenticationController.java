@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.user;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
