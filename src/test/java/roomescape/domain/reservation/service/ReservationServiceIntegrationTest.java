@@ -38,7 +38,7 @@ import roomescape.domain.reservation.repository.impl.ReservationTimeDAO;
 import roomescape.domain.reservation.repository.impl.ThemeDAO;
 
 @JdbcTest
-@Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class, UserDao.class})
+@Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class, UserDao.class, ReservationService.class})
 public class ReservationServiceIntegrationTest {
 
     private static LocalDateTime now;
@@ -55,15 +55,12 @@ public class ReservationServiceIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
     private ReservationService reservationService;
 
     @BeforeEach
     void setUp() {
         now = LocalDateTime.now();
-
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
-                userRepository);
-
     }
 
     @DisplayName("모든 예약 정보를 가져온다")
