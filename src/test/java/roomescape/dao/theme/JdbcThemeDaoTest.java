@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -13,29 +11,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import roomescape.dao.reservation.JdbcReservationDao;
-import roomescape.dao.reservationTime.JdbcReservationTimeDao;
-import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 @JdbcTest
-@Import({JdbcReservationTimeDao.class, JdbcReservationDao.class, JdbcThemeDao.class})
+@Import(JdbcThemeDao.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @Sql(scripts = "/schema.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 class JdbcThemeDaoTest {
 
     @Autowired
-    private JdbcReservationTimeDao jdbcReservationTimeDao;
-
-    @Autowired
     private JdbcThemeDao jdbcThemeDao;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @DisplayName("데이터베이스에서 전체 테마를 조회한다.")
     @Test
@@ -44,8 +32,8 @@ class JdbcThemeDaoTest {
         // given
         Theme theme1 = Theme.create("test1", "test1", "test1");
         Theme theme2 = Theme.create("test1", "test1", "test1");
-        Theme savedTheme1 = jdbcThemeDao.create(theme1);
-        Theme savedTheme2 = jdbcThemeDao.create(theme2);
+        jdbcThemeDao.create(theme1);
+        jdbcThemeDao.create(theme2);
 
         // when
         List<Theme> themes = jdbcThemeDao.findAll();

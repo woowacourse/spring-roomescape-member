@@ -51,6 +51,7 @@ public class ThemeController {
 
     @GetMapping("/rank")
     public List<ThemeResponse> findPopularThemesInRecentSevenDays() {
-        return themeService.findPopularThemesInRecentSevenDays();
+        List<ThemeResponse> popularThemesInRecentSevenDays = themeService.findPopularThemesInRecentSevenDays();
+        return popularThemesInRecentSevenDays;
     }
 }

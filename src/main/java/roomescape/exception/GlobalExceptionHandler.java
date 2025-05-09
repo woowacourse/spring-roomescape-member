@@ -26,6 +26,11 @@ public class GlobalExceptionHandler {
         return createBadRequestResponse("Json 형식이 잘못되었습니다.");
     }
 
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<FailureResponse> handleMemberNotFoundException(MemberNotFoundException ex) {
+        return createUnAuthorizedResponse(ex.getMessage());
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<FailureResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
         return createBadRequestResponse(ex.getMessage());
@@ -44,6 +49,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<FailureResponse> handleNoSuchElementException(NoSuchElementException ex) {
         return createNotFoundResponse(ex.getMessage());
+    }
+
+    private ResponseEntity<FailureResponse> createUnAuthorizedResponse(String message) {
+        return createFailureResponse(HttpStatus.UNAUTHORIZED, message);
     }
 
     private ResponseEntity<FailureResponse> createNotFoundResponse(String message) {
