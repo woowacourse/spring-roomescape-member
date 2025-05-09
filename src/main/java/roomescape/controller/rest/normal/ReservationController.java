@@ -1,6 +1,7 @@
 package roomescape.controller.rest.normal;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,8 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.member.Member;
 import roomescape.global.Auth;
 import roomescape.service.request.ReservationCreateRequest;
 import roomescape.service.response.ReservationResponse;
@@ -27,11 +28,11 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<ReservationResponse> responses = reservationService.findAllReservations();
-        return ResponseEntity.ok(responses);
-    }
+//    @GetMapping
+//    public ResponseEntity<List<ReservationResponse>> getReservations() {
+//        List<ReservationResponse> responses = reservationService.findAllReservations();
+//        return ResponseEntity.ok(responses);
+//    }
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
@@ -48,5 +49,21 @@ public class ReservationController {
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservationById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReservationResponse>> getReservationsWithFilter(
+            @RequestParam Long memberId,
+            @RequestParam Long themeId,
+            @RequestParam LocalDate fromDate,
+            @RequestParam LocalDate toDate
+    ) {
+        List<ReservationResponse> responses = reservationService.findAllReservationsWithFilter(
+                memberId,
+                themeId,
+                fromDate,
+                toDate
+        );
+        return ResponseEntity.ok(responses);
     }
 }
