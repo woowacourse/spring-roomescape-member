@@ -41,17 +41,13 @@ VALUES ('오래된예약자19', '2025-04-11', 2, 2);
 
 -- reservation: 최근 데이터 (1~7일 전)
 -- 날짜는 예시로 2025-04-23 ~ 2025-04-29 (today = 2025-04-30 가정)
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('최근예약자1', '2025-04-29', 2, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('최근예약자2', '2025-04-28', 3, 1);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('최근예약자3', '2025-04-27', 1, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('최근예약자4', '2025-04-26', 2, 1);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('최근예약자5', '2025-04-25', 3, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('최근예약자6', '2025-04-24', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('최근예약자7', '2025-04-23', 2, 2);
+-- r.date ∈ [2025-04-30, 2025-05-06) → 통계에 포함됨
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('최근예약자1', '2025-05-06', 2, 2);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('최근예약자2', '2025-05-05', 3, 1);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('최근예약자3', '2025-05-04', 1, 2);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('최근예약자4', '2025-05-03', 2, 1);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('최근예약자5', '2025-05-02', 3, 2);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('최근예약자6', '2025-05-01', 1, 1);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('최근예약자7', '2025-04-30', 2, 2);
+
+INSERT INTO users (name, email, password) VALUES ('매트', 'matt.woowahan', '1234');
