@@ -43,6 +43,12 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        expireCookie(response);
+        return ResponseEntity.ok().build();
+    }
+
     private String extractTokenFromCookie(Cookie[] cookies) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(COOKIE_NAME)) {
@@ -50,6 +56,13 @@ public class AuthController {
             }
         }
         return "";
+    }
+
+    public void expireCookie(HttpServletResponse response) {
+        Cookie expireCookie = new Cookie(COOKIE_NAME, null);
+        expireCookie.setMaxAge(0);
+        expireCookie.setPath("/");
+        response.addCookie(expireCookie);
     }
 
 }

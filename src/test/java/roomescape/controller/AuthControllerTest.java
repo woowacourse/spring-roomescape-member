@@ -98,4 +98,30 @@ class AuthControllerTest {
         assertThat(actual.name()).isEqualTo("testName");
     }
 
+    @DisplayName("로그인 되어있는 사용자가 로그아웃을 하면 쿠키가 삭제된다.")
+    @Test
+    void logout() {
+        //given
+        Member member = Member.from(1L, "testName", "testEmail", "1234");
+        String token = jwtTokenProvider.createToken(member);
+
+        //when
+        ExtractableResponse<Response> response = RestAssured
+                .given()
+                .log().all()
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/logout")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract();
+
+        String actual = response.cookie("token");
+
+        //then
+        assertThat(actual).isEmpty();
+    }
+
 }
