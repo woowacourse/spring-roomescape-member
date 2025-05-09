@@ -12,11 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.reservation.Reservation;
 import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
-import roomescape.service.dto.CreateReservationServiceRequest;
+import roomescape.reservation.controller.dto.CreateReservationRequest;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.service.ReservationService;
+import roomescape.reservation.service.dto.CreateReservationServiceRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -46,7 +48,7 @@ class ReservationServiceTest {
     void addReservationTest_WhenDuplicatedReservationExists() {
         // given
         reservationService.addReservation(CreateReservationServiceRequest.from(
-                new roomescape.controller.dto.request.CreateReservationRequest("test", FUTURE_DATE, 1L, 1L)));
+                new CreateReservationRequest("test", FUTURE_DATE, 1L, 1L)));
 
         final CreateReservationServiceRequest duplicated = new CreateReservationServiceRequest("test", FUTURE_DATE, 1L,
                 1L);

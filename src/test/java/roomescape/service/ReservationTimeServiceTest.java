@@ -13,12 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.reservationtime.AvailableReservationTime;
-import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.InUseException;
 import roomescape.exception.custom.NotExistedValueException;
-import roomescape.service.dto.CreateReservationTimeServiceRequest;
+import roomescape.reservationtime.domain.AvailableReservationTime;
+import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.service.ReservationTimeService;
+import roomescape.reservationtime.service.dto.CreateReservationTimeServiceRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)

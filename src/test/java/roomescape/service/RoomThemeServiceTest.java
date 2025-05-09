@@ -10,11 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.roomtheme.RoomTheme;
+import roomescape.theme.domain.RoomTheme;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.InUseException;
 import roomescape.exception.custom.NotExistedValueException;
-import roomescape.service.dto.CreateRoomThemeServiceRequest;
+import roomescape.theme.service.dto.CreateRoomThemeServiceRequest;
+import roomescape.theme.service.RoomThemeService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)

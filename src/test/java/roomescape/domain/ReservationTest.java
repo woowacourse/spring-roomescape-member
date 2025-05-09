@@ -7,10 +7,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservationtime.ReservationTime;
-import roomescape.domain.roomtheme.RoomTheme;
+import roomescape.theme.domain.RoomTheme;
 import roomescape.exception.custom.InvalidInputException;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservationtime.domain.ReservationTime;
 
 class ReservationTest {
 
