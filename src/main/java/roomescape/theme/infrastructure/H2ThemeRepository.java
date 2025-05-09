@@ -63,14 +63,17 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public long countByName(final String name) {
+    public boolean existsByName(final String name) {
         final String sql = """
-                SELECT COUNT(*) AS count
-                FROM themes
-                WHERE name = ? 
+                SELECT EXISTS(
+                    SELECT 1
+                    FROM themes
+                    WHERE name = ?
+                    LIMIT 1
+                )
                 """;
 
-        return jdbcTemplate.queryForObject(sql, Long.class, name);
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
     @Override

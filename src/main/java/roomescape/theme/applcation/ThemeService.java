@@ -18,8 +18,7 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
 
     public ThemeResponse create(final CreateThemeRequest request) {
-        final long count = themeRepository.countByName(request.name());
-        if (count >= 1) {
+        if (themeRepository.existsByName(request.name())) {
             throw new AlreadyExistException("해당 테마명이 이미 존재합니다. name = " + request.name());
         }
 

@@ -8,7 +8,7 @@ public interface ThemeRepository {
 
     void deleteById(Long id);
 
-    long countByName(String name);
+    boolean existsByName(String name);
 
     Optional<Theme> findById(Long id);
 
