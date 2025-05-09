@@ -20,4 +20,9 @@ public class PublicController {
     public String signUp() {
         return "signup";
     }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
 }
