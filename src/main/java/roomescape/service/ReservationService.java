@@ -1,9 +1,11 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.dto.response.AvailableReservationTimeResponse;
+import roomescape.dto.request.LoginCheckRequest;
 import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.response.AvailableReservationTimeResponse;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.entity.LoginMember;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
@@ -40,15 +42,16 @@ public class ReservationService {
             .toList();
     }
 
-    public ReservationResponse add(ReservationRequest requestDto) {
+    public ReservationResponse add(ReservationRequest requestDto, LoginCheckRequest loginCheckRequest) {
         ReservationTime reservationTime = getReservationTime(requestDto);
         Theme theme = getTheme(requestDto);
+        LoginMember loginMember = createLoginMember(loginCheckRequest);
         List<Reservation> sameTimeReservations = reservationDao.findByDateAndThemeId(requestDto.date(), requestDto.themeId());
 
         validateIsBooked(sameTimeReservations, reservationTime, theme);
         validatePastDateTime(requestDto.date(), reservationTime.getStartAt());
 
-        Reservation reservation = new Reservation(requestDto.name(), requestDto.date(), reservationTime, theme);
+        Reservation reservation = new Reservation(loginMember, requestDto.date(), reservationTime, theme);
         Reservation saved = reservationDao.save(reservation);
         return ReservationResponse.of(saved);
     }
@@ -64,6 +67,11 @@ public class ReservationService {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
         List<ReservationTime> bookedReservationTimes = reservationTimeDao.findBookedTimes(date, themeId);
         return getAvailableReservationTimeResponses(reservationTimes, bookedReservationTimes);
+    }
+
+    private LoginMember createLoginMember(LoginCheckRequest loginCheckRequest) {
+        return new LoginMember(
+            loginCheckRequest.id(), loginCheckRequest.name(), loginCheckRequest.email(), loginCheckRequest.role());
     }
 
     private ReservationTime getReservationTime(ReservationRequest requestDto) {

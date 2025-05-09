@@ -7,21 +7,21 @@ import java.util.Objects;
 public class Reservation {
 
     private final Long id;
-    private final String name;
+    private final LoginMember member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, LoginMember member, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(LoginMember member, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, member, date, time, theme);
     }
 
     public boolean isBooked(ReservationTime reservationTime, Theme theme) {
@@ -33,8 +33,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public LoginMember getMember() {
+        return member;
     }
 
     public LocalDate getDate() {

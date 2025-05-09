@@ -23,20 +23,22 @@ VALUES ('컨저링', '실화 기반의 공포가 현실이 된다, 악령이 도
 
 INSERT INTO member (name, email, password, role)
 VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN');
+INSERT INTO member (name, email, password, role)
+VALUES ('브라운', 'brown@email.com', 'password', 'USER');
 
 -- 2 -> 1 -> 3
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('예약1', '2025-04-24', 1, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('예약2', '2025-04-25', 2, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('예약3', '2025-04-26', 2, 2);
+INSERT INTO reservation (member_id, date, time_id, theme_id)
+VALUES (1, '2025-04-24', 1, 2);
+INSERT INTO reservation (member_id, date, time_id, theme_id)
+VALUES (1, '2025-04-25', 2, 2);
+INSERT INTO reservation (member_id, date, time_id, theme_id)
+VALUES (1, '2025-04-26', 2, 2);
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('예약4', '2025-04-24', 3, 1);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('예약5', '2025-04-25', 4, 1);
+INSERT INTO reservation (member_id, date, time_id, theme_id)
+VALUES (2, '2025-04-24', 3, 1);
+INSERT INTO reservation (member_id, date, time_id, theme_id)
+VALUES (2, '2025-04-25', 4, 1);
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('예약6', '2025-04-25', 4, 3);
+INSERT INTO reservation (member_id, date, time_id, theme_id)
+VALUES (2, '2025-04-25', 4, 3);

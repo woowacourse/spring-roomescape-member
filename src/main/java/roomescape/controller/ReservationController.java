@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.dto.request.LoginCheckRequest;
 import roomescape.dto.response.AvailableReservationTimeResponse;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
@@ -35,8 +36,10 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> add(@Valid @RequestBody ReservationRequest requestDto) {
-        return new ResponseEntity<>(reservationService.add(requestDto), HttpStatus.CREATED);
+    public ResponseEntity<ReservationResponse> add(
+        @Valid @RequestBody ReservationRequest requestDto,
+        LoginCheckRequest loginCheckRequest) {
+        return new ResponseEntity<>(reservationService.add(requestDto, loginCheckRequest), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")

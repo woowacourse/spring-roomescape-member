@@ -3,14 +3,10 @@ package roomescape.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import roomescape.dto.request.LoginCheckRequest;
 import roomescape.dto.request.ReservationRequest;
-import roomescape.dto.response.AvailableReservationTimeResponse;
-import roomescape.dto.response.ReservationResponse;
-import roomescape.dto.response.ReservationTimeResponse;
-import roomescape.dto.response.ThemeResponse;
-import roomescape.entity.Reservation;
-import roomescape.entity.ReservationTime;
-import roomescape.entity.Theme;
+import roomescape.dto.response.*;
+import roomescape.entity.*;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.repository.ThemeDao;
@@ -21,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 
 class ReservationServiceTest {
 
@@ -42,21 +38,21 @@ class ReservationServiceTest {
     void 예약기록을_조회한다() {
         Mockito.when(reservationDao.findAll())
             .thenReturn(List.of(
-                new Reservation(1L, "드라고", LocalDate.of(2025, 1, 1), new ReservationTime(1L, LocalTime.of(10, 0)), new Theme(1L, "테마1", "", "")),
-                new Reservation(2L, "엠제이", LocalDate.of(2025, 1, 2), new ReservationTime(1L, LocalTime.of(10, 0)), new Theme(1L, "테마1", "", ""))
+                new Reservation(1L, new LoginMember(1L, "어드민", "admin@email.com", Role.ADMIN), LocalDate.of(2025, 1, 1), new ReservationTime(1L, LocalTime.of(10, 0)), new Theme(1L, "테마1", "", "")),
+                new Reservation(2L, new LoginMember(2L, "브라운", "brown@email.com", Role.USER), LocalDate.of(2025, 1, 2), new ReservationTime(1L, LocalTime.of(10, 0)), new Theme(1L, "테마1", "", ""))
             ));
 
         assertThat(reservationService.findAll()).isEqualTo(
             List.of(
-                new ReservationResponse(1L, "드라고", LocalDate.of(2025, 1, 1), new ReservationTimeResponse(1L, LocalTime.of(10, 0)), new ThemeResponse(1L, "테마1", "", "")),
-                new ReservationResponse(2L, "엠제이", LocalDate.of(2025, 1, 2), new ReservationTimeResponse(1L, LocalTime.of(10, 0)), new ThemeResponse(1L, "테마1", "", ""))
+                new ReservationResponse(1L, LoginCheckResponse.from("어드민"), LocalDate.of(2025, 1, 1), new ReservationTimeResponse(1L, LocalTime.of(10, 0)), new ThemeResponse(1L, "테마1", "", "")),
+                new ReservationResponse(2L, LoginCheckResponse.from("브라운"), LocalDate.of(2025, 1, 2), new ReservationTimeResponse(1L, LocalTime.of(10, 0)), new ThemeResponse(1L, "테마1", "", ""))
             )
         );
     }
 
     @Test
     void 예약을_추가한다() {
-        ReservationRequest request = new ReservationRequest("드라고", LocalDate.now().plusDays(1), 1L, 1L);
+        ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L);
         Mockito.when(reservationTimeDao.findById(Mockito.any()))
             .thenReturn(Optional.of(new ReservationTime(1L, LocalTime.of(10, 0))));
         Mockito.when(themeDao.findById(Mockito.any()))
@@ -64,12 +60,18 @@ class ReservationServiceTest {
         Mockito.when(reservationDao.findByDateAndThemeId(Mockito.any(), Mockito.any()))
             .thenReturn(List.of());
         Mockito.when(reservationDao.save(Mockito.any()))
-            .thenReturn(new Reservation(1L, "드라고", LocalDate.now().plusDays(1), new ReservationTime(1L, LocalTime.of(10, 0)), new Theme(1L, "인터스텔라", "", "")));
+            .thenReturn(
+                new Reservation(1L, new LoginMember(1L, "어드민", "email@email.com", Role.ADMIN),
+                    LocalDate.now().plusDays(1),
+                    new ReservationTime(1L, LocalTime.of(10, 0)),
+                    new Theme(1L, "인터스텔라", "", "")
+                )
+            );
 
-        assertThat(reservationService.add(request))
+        assertThat(reservationService.add(request, LoginCheckRequest.of(1L, "어드민", "email@email.com", Role.ADMIN)))
             .isEqualTo(new ReservationResponse(
                 1L,
-                "드라고",
+                LoginCheckResponse.from("어드민"),
                 LocalDate.now().plusDays(1),
                 new ReservationTimeResponse(1L, LocalTime.of(10, 0)),
                 new ThemeResponse(1L, "인터스텔라", "", "")
@@ -80,7 +82,8 @@ class ReservationServiceTest {
     void 예약을_삭제한다() {
         Long id = 1L;
         Mockito.when(reservationDao.findById(Mockito.any()))
-            .thenReturn(Optional.of(new Reservation(1L, "드라고", null, null, null)));
+            .thenReturn(Optional.of(new Reservation(1L, new LoginMember(1L, "어드민", "email@email.com", Role.ADMIN)
+                , null, null, null)));
 
 
         assertThatCode(() -> reservationService.deleteById(id))
