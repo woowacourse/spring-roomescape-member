@@ -1,7 +1,7 @@
-package roomescape.auth.infrastructure;
+package roomescape.dao;
 
 import java.util.Optional;
-import roomescape.auth.domain.LoginMember;
+import roomescape.domain.member.LoginMember;
 
 public interface MemberDao {
 

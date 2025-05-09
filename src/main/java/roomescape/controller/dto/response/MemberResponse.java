@@ -1,6 +1,6 @@
-package roomescape.auth.dto.response;
+package roomescape.controller.dto.response;
 
-import roomescape.auth.domain.LoginMember;
+import roomescape.domain.member.LoginMember;
 
 public record MemberResponse(String name) {
 

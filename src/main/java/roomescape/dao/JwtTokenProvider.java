@@ -1,4 +1,4 @@
-package roomescape.auth.infrastructure;
+package roomescape.dao;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -12,8 +12,8 @@ import java.util.Base64;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.auth.application.AuthorizationException;
-import roomescape.auth.domain.LoginMember;
+import roomescape.domain.member.LoginMember;
+import roomescape.exception.custom.AuthorizationException;
 
 @Component
 public class JwtTokenProvider {

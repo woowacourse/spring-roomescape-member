@@ -1,6 +1,6 @@
-package roomescape.auth.domain;
+package roomescape.domain.member;
 
-import roomescape.auth.application.AuthorizationException;
+import roomescape.exception.custom.AuthorizationException;
 
 public class LoginMember {
 

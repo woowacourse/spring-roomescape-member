@@ -1,4 +1,6 @@
-package roomescape.auth.dto.request;
+package roomescape.service.dto;
+
+import roomescape.controller.dto.request.LoginRequest;
 
 public record CreateTokenServiceRequest(String email, String password) {
 

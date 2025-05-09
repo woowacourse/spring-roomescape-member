@@ -1,11 +1,11 @@
-package roomescape.auth.infrastructure;
+package roomescape.dao;
 
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import roomescape.auth.domain.LoginMember;
+import roomescape.domain.member.LoginMember;
 
 @Repository
 public class JdbcMemberDao implements MemberDao {

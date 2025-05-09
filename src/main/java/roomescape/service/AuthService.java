@@ -1,14 +1,15 @@
-package roomescape.auth.application;
+package roomescape.service;
 
 import jakarta.servlet.http.Cookie;
 import java.util.Arrays;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
-import roomescape.auth.domain.LoginMember;
-import roomescape.auth.dto.request.CreateTokenServiceRequest;
-import roomescape.auth.infrastructure.JwtTokenProvider;
-import roomescape.auth.infrastructure.MemberDao;
+import roomescape.dao.JwtTokenProvider;
+import roomescape.dao.MemberDao;
+import roomescape.domain.member.LoginMember;
+import roomescape.exception.custom.AuthorizationException;
 import roomescape.exception.custom.NotExistedValueException;
+import roomescape.service.dto.CreateTokenServiceRequest;
 
 @Service
 public class AuthService {
