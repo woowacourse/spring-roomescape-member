@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.request.LoginRequest;
-import roomescape.controller.dto.response.MemberResponse;
+import roomescape.controller.dto.response.MemberNameResponse;
 import roomescape.domain.member.LoginMember;
 import roomescape.service.AuthService;
 import roomescape.service.dto.CreateTokenServiceRequest;
@@ -35,11 +35,11 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public MemberResponse checkLogin(HttpServletRequest request) {
+    public MemberNameResponse checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String token = authService.extractTokenFromCookie(cookies);
         LoginMember member = authService.findMember(token);
 
-        return MemberResponse.from(member);
+        return MemberNameResponse.from(member);
     }
 }
