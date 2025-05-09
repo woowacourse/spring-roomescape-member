@@ -17,6 +17,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.exception.ExistedReservationException;
 import roomescape.service.ReservationTimeService;
@@ -33,8 +34,8 @@ class ReservationTimeServiceTest {
 
     @BeforeEach
     void setUp() {
-        reservationTimeRepository = new FakeReservationTimeRepository();
         reservationRepository = new FakeReservationRepository();
+        reservationTimeRepository = new FakeReservationTimeRepository(reservationRepository);
         reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
     }
 
@@ -101,5 +102,23 @@ class ReservationTimeServiceTest {
         }
         assertThatThrownBy(() -> reservationTimeService.delete(1L))
                 .isInstanceOf(ExistedReservationException.class);
+    }
+
+    @Test
+    void 특정날짜와_테마의_예약시간들을_예약여부와_함께_조회한다() {
+        // given
+        ReservationTime savedTime = reservationTimeRepository.create(
+                ReservationTime.createWithoutId(LocalTime.of(9, 0)));
+        Theme theme = new Theme(1L, "name", "desc", "thumb");
+        Member member = new Member(1L, "name1", "email@domain.com", "pass1", Role.MEMBER);
+        reservationRepository.create(
+                Reservation.createWithoutId(member, LocalDate.of(2025, 1, 1), savedTime, theme)
+        );
+        // when
+        List<AvailableTimeResponse> filteredTimes = reservationTimeService.findTimesByDateAndThemeIdWithBooked(
+                LocalDate.of(2025, 1, 1), 1L);
+        // then
+        assertThat(filteredTimes).hasSize(1);
+        assertThat(filteredTimes.getFirst().alreadyBooked()).isTrue();
     }
 }
