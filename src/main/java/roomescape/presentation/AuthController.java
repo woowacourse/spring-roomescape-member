@@ -44,4 +44,14 @@ public class AuthController {
     public AuthenticatedUserResponse getAuthenticatedUser(@Authenticated Long memberId) {
         return authService.getAuthenticatedUser(memberId);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        ResponseCookie cookie = ResponseCookie.from("token")
+                .httpOnly(true)
+                .maxAge(0)
+                .path("/")
+                .build();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
+    }
 }
