@@ -249,15 +249,15 @@ public class JdbcReservationRepository implements ReservationRepository {
         StringBuilder sqlBuilder = new StringBuilder(sql);
         Map<String, Object> parameter = new HashMap<>();
         if (cond.memberId() != null) {
-            sqlBuilder.append("AND member_id = :memberId");
+            sqlBuilder.append("AND member_id = :memberId\n");
             parameter.put("memberId", cond.memberId());
         }
         if (cond.themeId() != null) {
-            sqlBuilder.append("AND theme_id = : themeId");
+            sqlBuilder.append("AND theme_id = :themeId\n");
             parameter.put("themeId", cond.themeId());
         }
         if (cond.dateFrom() != null && cond.dateTo() != null) {
-            sqlBuilder.append("AND date BETWEEN :dateFrom AND :dateTo");
+            sqlBuilder.append("AND date BETWEEN :dateFrom AND :dateTo\n");
             parameter.put("dateFrom", cond.dateFrom());
             parameter.put("dateTo", cond.dateTo());
         }
