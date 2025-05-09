@@ -54,7 +54,8 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findTopNReservedThemesBetween(int count, LocalDate startDate, LocalDate endDate) {
+    public List<Theme> findByDateRangeOrderByReservationCountLimitN(LocalDate startDate,
+                                                                    LocalDate endDate, int count) {
         return List.of();
     }
 }

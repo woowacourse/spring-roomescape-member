@@ -17,5 +17,5 @@ public interface ThemeRepository {
 
     Optional<Theme> findById(@NotNull Long aLong);
 
-    List<Theme> findTopNReservedThemesBetween(int count, LocalDate startDate, LocalDate endDate);
+    List<Theme> findByDateRangeOrderByReservationCountLimitN(LocalDate startDate, LocalDate endDate, int count);
 }

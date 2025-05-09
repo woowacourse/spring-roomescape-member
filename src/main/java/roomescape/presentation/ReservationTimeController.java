@@ -50,9 +50,9 @@ public class ReservationTimeController {
     }
 
     @GetMapping("theme/{themeId}")
-    public ResponseEntity<List<AvailableTimeResponse>> getAvailableTimes(
+    public ResponseEntity<List<AvailableTimeResponse>> getTimesWithBooked(
             @PathVariable("themeId") Long themeId, @RequestParam("date") LocalDate date
     ) {
-        return ResponseEntity.ok(reservationTimeService.findAvailableTimes(date, themeId));
+        return ResponseEntity.ok(reservationTimeService.findTimesByDateAndThemeIdWithBooked(date, themeId));
     }
 }

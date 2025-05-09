@@ -88,7 +88,8 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findTopNReservedThemesBetween(int count, LocalDate startDate, LocalDate endDate) {
+    public List<Theme> findByDateRangeOrderByReservationCountLimitN(LocalDate startDate,
+                                                                    LocalDate endDate, int count) {
         String sql = """
                 SELECT *
                 FROM (SELECT theme_id, COUNT(*) AS count

@@ -13,7 +13,6 @@ import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
 import roomescape.dto.request.ReservationCondition;
 import roomescape.dto.response.ReservationResponse;
-import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.exception.ExistedReservationException;
 import roomescape.exception.MemberNotFoundException;
 import roomescape.exception.ReservationNotFoundException;
@@ -56,15 +55,7 @@ public class ReservationService {
         reservation.validateDateTime();
         validateDuplicate(date, reservationTime, theme);
         Reservation savedReservation = reservationRepository.create(reservation);
-        return new ReservationResponse(
-                savedReservation.getId(),
-                savedReservation.getMember().getName(),
-                savedReservation.getDate(),
-                new ReservationTimeResponse(
-                        savedReservation.getId(), savedReservation.getReservationTime().getStartAt()
-                ),
-                savedReservation.getTheme().getName()
-        );
+        return ReservationResponse.toDto(savedReservation);
     }
 
     private void validateDuplicate(LocalDate date, ReservationTime time, Theme theme) {
