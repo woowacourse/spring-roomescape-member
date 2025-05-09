@@ -1,4 +1,4 @@
-package roomescape.controller.request;
+package roomescape.presentation.request;
 
 import java.time.LocalTime;
 import roomescape.service.param.CreateReservationTimeParam;

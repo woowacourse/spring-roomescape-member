@@ -1,4 +1,4 @@
-package roomescape.controller.request;
+package roomescape.presentation.request;
 
 import roomescape.service.param.LoginParam;
 

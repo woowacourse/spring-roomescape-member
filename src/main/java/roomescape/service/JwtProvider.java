@@ -3,7 +3,6 @@ package roomescape.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
@@ -46,7 +45,9 @@ public class JwtProvider {
 
     private Claims extractClaims(String token) {
         try {
-            return getJwtParser()
+            return Jwts.parser()
+                    .verifyWith(getSecretKey())
+                    .build()
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (ExpiredJwtException e) {
@@ -54,12 +55,6 @@ public class JwtProvider {
         } catch (JwtException | IllegalArgumentException e) {
             throw new AuthException("잘못된 형식의 토큰입니다.", e);
         }
-    }
-
-    private JwtParser getJwtParser() {
-        return Jwts.parser()
-                .verifyWith(getSecretKey())
-                .build();
     }
 
     private SecretKey getSecretKey() {

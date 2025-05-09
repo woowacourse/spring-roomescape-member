@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.presentation;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.request.LoginRequest;
-import roomescape.controller.response.LoginCheckResponse;
+import roomescape.presentation.request.LoginRequest;
+import roomescape.presentation.response.LoginCheckResponse;
 import roomescape.service.AuthService;
 import roomescape.service.JwtProvider.JwtPayload;
 import roomescape.service.result.LoginResult;
@@ -19,7 +19,7 @@ import roomescape.service.result.LoginResult;
 public class AuthController {
 
     private final AuthService authService;
-    
+
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
@@ -31,9 +31,9 @@ public class AuthController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest) {
 
         LoginResult loginResult = authService.login(loginRequest.toServiceParam());
-        String jwtCookie = createCookie("token", loginResult.token());
+        ResponseCookie jwtCookie = createCookie("token", loginResult.token());
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, jwtCookie)
+                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .build();
     }
 
@@ -43,14 +43,13 @@ public class AuthController {
         return ResponseEntity.ok().body(new LoginCheckResponse(jwtPayload.name()));
     }
 
-    private String createCookie(String name, String value) {
+    private ResponseCookie createCookie(String name, String value) {
         return ResponseCookie.from(name, value)
                 .httpOnly(true)
                 .secure(false) //http 적용전 임시
                 .path("/")
                 .sameSite("Strict")
                 .maxAge(validityInMilliseconds)
-                .build()
-                .toString();
+                .build();
     }
 }

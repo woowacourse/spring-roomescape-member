@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.presentation;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +10,7 @@ import roomescape.common.exception.AuthException.LoginAuthException;
 import roomescape.common.exception.BusinessRuleViolationException;
 import roomescape.common.exception.CoreException;
 import roomescape.common.exception.NotFoundEntityException;
+import roomescape.presentation.response.ApiFailResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.presentation;
 
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.request.CreateReservationRequest;
-import roomescape.controller.response.ReservationResponse;
+import roomescape.presentation.request.CreateReservationRequest;
+import roomescape.presentation.response.ReservationResponse;
 import roomescape.service.ReservationService;
 import roomescape.service.result.ReservationResult;
 

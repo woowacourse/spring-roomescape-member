@@ -1,4 +1,4 @@
-package roomescape.controller.response;
+package roomescape.presentation.response;
 
 public record LoginCheckResponse(
         String name

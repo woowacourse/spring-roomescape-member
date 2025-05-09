@@ -1,18 +1,10 @@
 package roomescape;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
-import roomescape.controller.ReservationController;
-import roomescape.controller.response.ReservationResponse;
-import roomescape.domain.ReservationRepository;
-
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -20,9 +12,16 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import roomescape.domain.ReservationRepository;
+import roomescape.presentation.ReservationController;
+import roomescape.presentation.response.ReservationResponse;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -67,7 +66,8 @@ public class MissionStepTest {
 
     @Test
     void 예약을_추가_또는_삭제_할_수_있다() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
+        jdbcTemplate.update(
+                "INSERT INTO theme (name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('15:40')");
 
         Map<String, String> params = new HashMap<>();
@@ -115,9 +115,11 @@ public class MissionStepTest {
 
     @Test
     void 데이터베이스에_추가한_reservation_모두를_응답할_수_있다() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
+        jdbcTemplate.update(
+                "INSERT INTO theme (name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('15:40')");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", RESERVATION_DATE, 1L, 1L);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
+                RESERVATION_DATE, 1L, 1L);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -133,7 +135,8 @@ public class MissionStepTest {
     @Test
     void 데이터베이스를_이용해_예약을_추가_또는_삭제_할_수_있다() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('15:40')");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
+        jdbcTemplate.update(
+                "INSERT INTO theme (name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
@@ -187,7 +190,8 @@ public class MissionStepTest {
     @Test
     void 에약을_생성하거나_조회할_수_있다() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('15:40')");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
+        jdbcTemplate.update(
+                "INSERT INTO theme (name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
