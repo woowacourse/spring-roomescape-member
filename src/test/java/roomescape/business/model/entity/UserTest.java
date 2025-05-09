@@ -29,7 +29,6 @@ class UserTest {
             assertThat(user).isNotNull();
             assertThat(user.name()).isEqualTo(VALID_NAME);
             assertThat(user.email()).isEqualTo(VALID_EMAIL);
-            assertThat(user.password()).isEqualTo(VALID_PASSWORD);
             assertThat(user.role()).isEqualTo(UserRole.USER.name());
         }
 
@@ -140,7 +139,6 @@ class UserTest {
             // when, then
             assertThat(user.name()).isEqualTo(VALID_NAME);
             assertThat(user.email()).isEqualTo(VALID_EMAIL);
-            assertThat(user.password()).isEqualTo(VALID_PASSWORD);
         }
     }
 }

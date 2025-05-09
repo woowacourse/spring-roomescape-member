@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.entity.User;
 import roomescape.business.model.repository.UserRepository;
@@ -35,7 +36,8 @@ class AuthServiceTest {
         // given
         String email = "test@example.com";
         String password = "password123";
-        User user = User.restore("user-id", "USER", "Test User", email, password);
+        String encodedPassword = new BCryptPasswordEncoder().encode(password);
+        User user = User.restore("user-id", "USER", "Test User", email, encodedPassword);
         AuthToken expectedAuth = mock(AuthToken.class);
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
