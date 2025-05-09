@@ -1,10 +1,11 @@
 package roomescape.service.result;
 
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 
-public record MemberResult(Long id, String name, String email) {
+public record MemberResult(Long id, String name, MemberRole role, String email) {
 
     public static MemberResult from(Member member) {
-        return new MemberResult(member.getId(), member.getName(), member.getEmail());
+        return new MemberResult(member.getId(), member.getName(), member.getRole(), member.getEmail());
     }
 }

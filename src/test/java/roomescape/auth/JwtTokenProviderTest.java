@@ -5,6 +5,7 @@ import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
+import roomescape.domain.MemberRole;
 import roomescape.exception.UnAuthorizedException;
 import roomescape.service.result.MemberResult;
 
@@ -29,7 +30,7 @@ class JwtTokenProviderTest {
     @Test
     void 로그인_결과를_통해_토큰을_생성할_수_있다() {
         //given
-        MemberResult memberResult = new MemberResult(1L, "Eve", "eve@example.com");
+        MemberResult memberResult = new MemberResult(1L, "Eve", MemberRole.USER, "eve@example.com");
 
         //when
         String token = jwtTokenProvider.createToken(memberResult);

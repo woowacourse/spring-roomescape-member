@@ -105,10 +105,10 @@ class ReservationServiceTest {
 
         //then
         assertThat(reservationResults).isEqualTo(List.of(
-                new ReservationResult(1L, new MemberResult(1L, "name1", "email1"), RESERVATION_DATE,
+                new ReservationResult(1L, new MemberResult(1L, "name1", MemberRole.USER, "email1"), RESERVATION_DATE,
                         new ReservationTimeResult(1L, LocalTime.of(12, 1)),
                         new ThemeResult(1L, "test", "description", "thumbnail")),
-                new ReservationResult(2L, new MemberResult(2L, "name2", "email2"), RESERVATION_DATE,
+                new ReservationResult(2L, new MemberResult(2L, "name2", MemberRole.USER, "email2"), RESERVATION_DATE,
                         new ReservationTimeResult(2L, LocalTime.of(13, 1)),
                         new ThemeResult(1L, "test", "description", "thumbnail"))
         ));
@@ -130,7 +130,7 @@ class ReservationServiceTest {
 
         //then
         assertThat(reservationResult).isEqualTo(
-                new ReservationResult(1L, new MemberResult(1L, "name1", "email1"),
+                new ReservationResult(1L, new MemberResult(1L, "name1", MemberRole.USER, "email1"),
                         RESERVATION_DATE,
                         new ReservationTimeResult(1L, LocalTime.of(12, 0)),
                         new ThemeResult(1L, "test", "description", "thumbnail"))

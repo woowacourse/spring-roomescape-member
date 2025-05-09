@@ -35,13 +35,13 @@ class MemberServiceTest {
         LoginMemberParam loginMemberParam = new LoginMemberParam("email1", "password1");
 
         //when & then
-        assertThat(memberService.login(loginMemberParam)).isEqualTo(new MemberResult(1L, "name1", "email1"));
+        assertThat(memberService.login(loginMemberParam)).isEqualTo(new MemberResult(1L, "name1", MemberRole.USER, "email1"));
     }
 
     @Test
     void 멤버를_생성할_수_있다() {
         assertThat(memberService.create(new RegisterMemberParam("name1", "email1", "password1")))
-                .isEqualTo(new MemberResult(1L, "name1", "email1"));
+                .isEqualTo(new MemberResult(1L, "name1", MemberRole.USER, "email1"));
     }
 
     @Test
@@ -50,7 +50,7 @@ class MemberServiceTest {
         memberRepository.create(new CreateMemberQuery("name1", MemberRole.USER, "email1", "password1"));
 
         //when & then
-        assertThat(memberService.findById(1L)).isEqualTo(new MemberResult(1L, "name1", "email1"));
+        assertThat(memberService.findById(1L)).isEqualTo(new MemberResult(1L, "name1", MemberRole.USER, "email1"));
     }
 
     @Test
