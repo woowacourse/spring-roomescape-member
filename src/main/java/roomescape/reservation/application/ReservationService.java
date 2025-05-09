@@ -2,8 +2,8 @@ package roomescape.reservation.application;
 
 import java.time.LocalDate;
 import org.springframework.stereotype.Service;
+import roomescape.exception.NotFoundException;
 import roomescape.member.application.MemberService;
-import roomescape.member.application.dto.MemberDto;
 import roomescape.reservation.application.dto.ReservationDto;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRegistrationPolicy;
@@ -36,8 +36,11 @@ public class ReservationService {
 
     public ReservationDto registerReservationForAdmin(AdminReservationRequest request) {
         Long memberId = request.memberId();
-        MemberDto memberDto = memberService.getMemberById(memberId);
-        return doRegisterReservation(request.date(), request.timeId(), request.themeId(), memberDto.id());
+        boolean existMember = memberService.existsById(memberId);
+        if(!existMember) {
+            throw new NotFoundException("memberId", memberId);
+        }
+        return doRegisterReservation(request.date(), request.timeId(), request.themeId(), memberId);
     }
 
     public ReservationDto registerReservationForUser(ReservationRequest request, Long memberId) {

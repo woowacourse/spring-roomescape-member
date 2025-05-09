@@ -21,11 +21,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.exception.NotFoundException;
 import roomescape.member.application.MemberService;
-import roomescape.member.application.dto.MemberDto;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRegistrationPolicy;
-import roomescape.reservation.exception.ImpossibleReservationException;
 import roomescape.reservation.domain.repository.ReservationRepository;
+import roomescape.reservation.exception.ImpossibleReservationException;
 import roomescape.reservation.presentation.dto.request.AdminReservationRequest;
 import roomescape.reservation.presentation.dto.request.ReservationRequest;
 import roomescape.theme.application.ThemeService;
@@ -58,7 +57,7 @@ class ReservationServiceTest {
         // given
         AdminReservationRequest request = new AdminReservationRequest(LocalDate.of(2025, 6, 1), 1L, 1L, 1L);
 
-        given(memberService.getMemberById(1L)).willReturn(MemberDto.from(MEMBER_1));
+        given(memberService.existsById(1L)).willReturn(true);
         given(themeService.getThemeById(1L)).willReturn(THEME_1);
         given(timeService.getTimeById(1L)).willReturn(RESERVATION_TIME_1);
         given(reservationRepository.save(any(Reservation.class))).willReturn(1L);
@@ -67,7 +66,7 @@ class ReservationServiceTest {
         reservationService.registerReservationForAdmin(request);
 
         // then
-        verify(memberService).getMemberById(MEMBER_1.getId());
+        verify(memberService).existsById(MEMBER_1.getId());
         verify(themeService).getThemeById(THEME_1.getId());
         verify(timeService).getTimeById(RESERVATION_TIME_1.getId());
         verify(reservationRepository).existsDuplicatedReservation(request.date(), request.timeId(), request.themeId());

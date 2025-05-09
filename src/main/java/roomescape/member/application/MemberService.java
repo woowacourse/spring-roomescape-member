@@ -26,4 +26,8 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException("memberId", id));
         return MemberDto.from(member);
     }
+
+    public boolean existsById(Long id) {
+        return memberRepository.existsById(id);
+    }
 }

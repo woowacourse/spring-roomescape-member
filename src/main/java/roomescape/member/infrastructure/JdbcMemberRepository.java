@@ -75,4 +75,17 @@ public class JdbcMemberRepository implements MemberRepository {
         String selectAll = "SELECT id, email, password, name, role FROM members";
         return jdbcTemplate.query(selectAll, MEMBER_ROW_MAPPER);
     }
+
+    @Override
+    public boolean existsById(Long id) {
+        String existSql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM members
+                    WHERE id = ?
+                )
+                """;
+        return jdbcTemplate.queryForObject(existSql, Boolean.class,
+                id);
+    }
 }
