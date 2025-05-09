@@ -1,9 +1,11 @@
 package roomescape.auth;
 
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,25 +28,25 @@ public class AuthController {
         this.memberService = memberService;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/login") //TODO: 응답 형식 고려
     public ResponseEntity<LoginMemberResponse> login(@RequestBody LoginMemberRequest loginMemberRequest, HttpServletResponse response) {
         LoginMemberResult loginMemberResult = memberService.login(loginMemberRequest.toServiceParam());
         String token = authService.createToken(loginMemberResult);
 
-        response.setHeader("Set-Cookie", cookieProvider.create(token).toString());
+        response.setHeader(HttpHeaders.SET_COOKIE, cookieProvider.create(token).toString());
         return ResponseEntity.ok().body(LoginMemberResponse.from(loginMemberResult));
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<CheckLoginUserResponse> loginCheck(HttpServletRequest request) {
-        String token = cookieProvider.extractToken(request.getCookies());
+    public ResponseEntity<CheckLoginUserResponse> loginCheck(@CookieValue("token") Cookie cookie) {
+        String token = cookieProvider.extractTokenFromCookie(cookie);
         Long id = authService.extractSubjectFromToken(token);
         return ResponseEntity.ok().body(CheckLoginUserResponse.from(memberService.findById(id)));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
-        response.setHeader("Set-Cookie", cookieProvider.invalidate().toString());
+    public ResponseEntity<Void> logout(@CookieValue("token") Cookie cookie, HttpServletResponse response) {
+        response.setHeader(HttpHeaders.SET_COOKIE, cookieProvider.invalidate(cookie).toString());
         return ResponseEntity.ok().build();
     }
 }

@@ -20,8 +20,8 @@ public class CookieProvider {
                 .build();
     }
 
-    public ResponseCookie invalidate() {
-        return ResponseCookie.from("token", "")
+    public ResponseCookie invalidate(Cookie cookie) {
+        return ResponseCookie.from("token", cookie.getValue())
                 .maxAge(0)
                 .path("/")
                 .secure(true)
@@ -30,7 +30,7 @@ public class CookieProvider {
                 .build();
     }
 
-    public String extractToken(final Cookie[] cookies) {
+    public String extractTokenFromCookies(final Cookie[] cookies) {
         if (cookies == null) {
             throw new UnAuthorizedException();
         }
@@ -40,5 +40,13 @@ public class CookieProvider {
                 .map(Cookie::getValue)
                 .findFirst()
                 .orElseThrow(UnAuthorizedException::new);
+    }
+
+    public String extractTokenFromCookie(final Cookie cookie) {
+        if (cookie == null) {
+            throw new UnAuthorizedException();
+        }
+
+        return cookie.getValue();
     }
 }

@@ -7,7 +7,6 @@ import roomescape.exception.UnAuthorizedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 class CookieProviderTest {
 
@@ -25,24 +24,34 @@ class CookieProviderTest {
     @Test
     void 쿠키를_무효화할_수_있다() {
         //given
-        ResponseCookie cookie = cookieProvider.invalidate();
+        ResponseCookie cookie = cookieProvider.invalidate(new Cookie("token", "test-token"));
 
         //when
-        assertAll(
-                () -> assertThat(cookie.getValue()).isEmpty(),
-                () -> assertThat(cookie.getMaxAge().getSeconds()).isEqualTo(0)
-        );
+        assertThat(cookie.getMaxAge().getSeconds()).isEqualTo(0);
+    }
+
+    @Test
+    void 쿠키_배열에서_토큰을_추출할_수_있다() {
+        //given
+        Cookie[] cookies = {
+                new Cookie("token", "test-token"),
+                new Cookie("token2", "test-token2")
+        };
+
+        //when
+        String extractedToken = cookieProvider.extractTokenFromCookies(cookies);
+
+        //then
+        assertThat(extractedToken).isEqualTo("test-token");
     }
 
     @Test
     void 쿠키에서_토큰을_추출할_수_있다() {
         //given
-        Cookie[] cookies = {
-                new Cookie("token", "test-token")
-        };
+        Cookie cookie = new Cookie("token", "test-token");
 
         //when
-        String extractedToken = cookieProvider.extractToken(cookies);
+        String extractedToken = cookieProvider.extractTokenFromCookie(cookie);
 
         //then
         assertThat(extractedToken).isEqualTo("test-token");
@@ -50,7 +59,7 @@ class CookieProviderTest {
 
     @Test
     void 쿠키가_null이면_예외가_발생한다() {
-        assertThatThrownBy(() -> cookieProvider.extractToken(null))
+        assertThatThrownBy(() -> cookieProvider.extractTokenFromCookies(null))
                 .isInstanceOf(UnAuthorizedException.class);
     }
 
@@ -63,7 +72,7 @@ class CookieProviderTest {
         };
 
         //when & then
-        assertThatThrownBy(() -> cookieProvider.extractToken(cookies))
+        assertThatThrownBy(() -> cookieProvider.extractTokenFromCookies(cookies))
                 .isInstanceOf(UnAuthorizedException.class);
     }
 }
