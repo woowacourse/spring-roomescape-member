@@ -56,6 +56,12 @@ class ReservationApiTest {
     @LocalServerPort
     private int port;
 
+    public static String formatDateTime(final LocalDate dateTime) {
+        final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        return dateTimeFormatter.format(dateTime);
+    }
+
     @BeforeEach
     void init() {
         RestAssured.port = port;
@@ -115,7 +121,6 @@ class ReservationApiTest {
         reservation.put("timeId", savedReservationTime.getId());
         reservation.put("themeId", savedTheme.getId());
 
-
         // when & then
         RestAssured.given()
                 .cookie("token", token)
@@ -129,12 +134,6 @@ class ReservationApiTest {
                 .log()
                 .all()
                 .statusCode(201);
-    }
-
-    public static String formatDateTime(final LocalDate dateTime) {
-        final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        return dateTimeFormatter.format(dateTime);
     }
 
     @DisplayName("존재하지 않는 예약 시간 ID 를 추가하면 예외를 반환한다.")

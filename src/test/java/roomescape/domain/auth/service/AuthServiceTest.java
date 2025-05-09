@@ -41,7 +41,8 @@ class AuthServiceTest {
 
     @BeforeEach
     void init() {
-        lenient().when(jwtProperties.getCookieKey()).thenReturn("token");
+        lenient().when(jwtProperties.getCookieKey())
+                .thenReturn("token");
     }
 
     @Nested

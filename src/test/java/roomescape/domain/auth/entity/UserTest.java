@@ -72,5 +72,4 @@ class UserTest {
             user.login(email, "123");
         }).isInstanceOf(InvalidAuthorizationException.class);
     }
-
 }

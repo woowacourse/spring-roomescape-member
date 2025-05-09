@@ -65,7 +65,6 @@ public class LoginApiTest {
                 .header(HttpHeaders.SET_COOKIE, containsString("HttpOnly"));
     }
 
-
     @DisplayName("로그인 실패 시 401 예외를 반환한다.")
     @Test
     void loginTest2() {

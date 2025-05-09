@@ -58,6 +58,11 @@ public class ReservationServiceIntegrationTest {
     @Autowired
     private ReservationService reservationService;
 
+    private static LocalDate nextDay() {
+        return now.toLocalDate()
+                .plusDays(1);
+    }
+
     @BeforeEach
     void setUp() {
         now = LocalDateTime.now();
@@ -133,11 +138,6 @@ public class ReservationServiceIntegrationTest {
                         savedTheme.getThumbnail()));
 
         softAssertions.assertAll();
-    }
-
-    private static LocalDate nextDay() {
-        return now.toLocalDate()
-                .plusDays(1);
     }
 
     @DisplayName("이미 존재하는 예약과 동일하면 예외가 발생한다.")

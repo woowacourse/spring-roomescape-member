@@ -71,5 +71,4 @@ public class AuthService {
                 .map(LoginUserDto::from)
                 .orElseThrow(() -> new InvalidAuthorizationException("해당 계정이 존재하지 않습니다."));
     }
-
 }

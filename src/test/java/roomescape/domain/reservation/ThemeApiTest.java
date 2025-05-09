@@ -29,7 +29,6 @@ import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.repository.ThemeRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
-
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ThemeApiTest {
 
@@ -50,6 +49,10 @@ class ThemeApiTest {
 
     @LocalServerPort
     private int port;
+
+    private static LocalDate minusDay(final LocalDate date, final int days) {
+        return date.minusDays(days);
+    }
 
     @BeforeEach
     void setUp() {
@@ -202,9 +205,5 @@ class ThemeApiTest {
                 .statusCode(200)
                 .body("size()", is(3))
                 .body("name", contains("공포3", "공포1", "공포2"));
-    }
-
-    private static LocalDate minusDay(final LocalDate date, final int days) {
-        return date.minusDays(days);
     }
 }

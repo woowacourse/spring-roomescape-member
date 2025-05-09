@@ -62,5 +62,4 @@ public class ThemeService {
                 .map(ThemeResponse::from)
                 .toList();
     }
-
 }
