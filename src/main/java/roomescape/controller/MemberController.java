@@ -12,15 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.config.LoginMember;
 import roomescape.dto.AuthorizationResponse;
 import roomescape.dto.LoginRequest;
-import roomescape.dto.MemberRequest;
 import roomescape.dto.MemberResponse;
+import roomescape.dto.SignupRequest;
 import roomescape.entity.AccessToken;
 import roomescape.service.MemberService;
 
 @RestController
 public class MemberController {
 
-    //TODO : /signup, /logout API
     private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
@@ -33,11 +32,10 @@ public class MemberController {
         return memberService.findAllMembers();
     }
 
-    //TODO : 일반 유저 생성 api
     @PostMapping("/members")
     @ResponseStatus(HttpStatus.CREATED)
     public MemberResponse createMember(
-            @RequestBody MemberRequest request
+            @RequestBody SignupRequest request
     ) {
         return memberService.createUser(request);
     }
@@ -65,5 +63,11 @@ public class MemberController {
             LoginMember member
     ) {
         return memberService.findMember(member);
+    }
+
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.OK)
+    public void logout(
+    ) {
     }
 }

@@ -6,8 +6,8 @@ import roomescape.config.LoginMember;
 import roomescape.dao.MemberDao;
 import roomescape.dto.AuthorizationResponse;
 import roomescape.dto.LoginRequest;
-import roomescape.dto.MemberRequest;
 import roomescape.dto.MemberResponse;
+import roomescape.dto.SignupRequest;
 import roomescape.entity.AccessToken;
 import roomescape.entity.Member;
 import roomescape.entity.MemberRole;
@@ -39,15 +39,11 @@ public class MemberService {
                 .toList();
     }
 
-    public MemberResponse createUser(MemberRequest request) {
+    public MemberResponse createUser(SignupRequest request) {
         Member memberWithoutId = request.toMember(MemberRole.USER);
         long id = memberDao.create(memberWithoutId);
         Member member = memberWithoutId.copyWithId(id);
         return new MemberResponse(member);
-    }
-
-    public MemberResponse createAdmin(MemberRequest request) {
-        return null;
     }
 
     public void validateMemberExistence(LoginRequest login) {
