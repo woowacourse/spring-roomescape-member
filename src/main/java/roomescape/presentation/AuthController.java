@@ -1,5 +1,6 @@
 package roomescape.presentation;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -31,7 +32,7 @@ public class AuthController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest) {
 
         LoginResult loginResult = authService.login(loginRequest.toServiceParam());
-        ResponseCookie jwtCookie = createCookie("token", loginResult.token());
+        ResponseCookie jwtCookie = createCookie("token", loginResult.token(), validityInMilliseconds);
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .build();
@@ -42,13 +43,21 @@ public class AuthController {
         return ResponseEntity.ok().body(new LoginCheckResponse(authInfo.name()));
     }
 
-    private ResponseCookie createCookie(String name, String value) {
+    @PostMapping("/logout")
+    public ResponseEntity<Void> loginCheck(HttpServletResponse response) {
+        ResponseCookie jwtCookie = createCookie("token", "", 0);
+        return ResponseEntity.noContent()
+                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .build();
+    }
+
+    private ResponseCookie createCookie(String name, String value, long maxAge) {
         return ResponseCookie.from(name, value)
                 .httpOnly(true)
                 .secure(false) //http 적용전 임시
                 .path("/")
                 .sameSite("Strict")
-                .maxAge(validityInMilliseconds)
+                .maxAge(maxAge)
                 .build();
     }
 }
