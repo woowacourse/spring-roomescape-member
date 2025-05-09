@@ -1,10 +1,16 @@
 package roomescape.repository.member;
 
+import java.util.List;
+import java.util.Optional;
 import roomescape.domain.Member;
 
 public interface MemberRepository {
 
-    Member findMember(Member memberRequest);
+    Member findMemberByEmailAndPassword(Member memberRequest);
 
-    Member findMemberById(Long id);
+    Optional<Member> findMemberById(Long id);
+
+    List<Member> findAllMembers();
+
+    Long addMember(Member member);
 }
