@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.auth.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
@@ -24,7 +25,7 @@ import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.repository.ThemeRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ReservationTimeApiTest {
 
     @Autowired
@@ -39,8 +40,12 @@ public class ReservationTimeApiTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @LocalServerPort
+    private int port;
+
     @BeforeEach
     void setUp() {
+        RestAssured.port = port;
         JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
     }
 

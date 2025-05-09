@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.auth.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
@@ -25,7 +26,7 @@ import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.repository.ThemeRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ThemeApiTest {
 
     @Autowired
@@ -40,12 +41,12 @@ class ThemeApiTest {
     @Autowired
     private ThemeRepository themeRepository;
 
-    private static LocalDate minusDay(final LocalDate date, final int days) {
-        return date.minusDays(days);
-    }
+    @LocalServerPort
+    private int port;
 
     @BeforeEach
     void setUp() {
+        RestAssured.port = port;
         JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
     }
 
@@ -75,7 +76,6 @@ class ThemeApiTest {
     void test2() {
         // given
         final Theme theme = Theme.withoutId("테마1", "테마1", "www.m.com");
-
         themeRepository.save(theme);
 
         // when & then
@@ -96,9 +96,7 @@ class ThemeApiTest {
     void test3() {
         // given
         final Theme theme = Theme.withoutId("테마1", "테마1", "www.m.com");
-
         final Theme saved = themeRepository.save(theme);
-
         final Long savedId = saved.getId();
 
         // when & then
@@ -137,14 +135,11 @@ class ThemeApiTest {
         // given
         final int conflictStatusCode = 409;
         final ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
-
         final ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
-
         final Theme theme = Theme.withoutId("공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         final Theme savedTheme = themeRepository.save(theme);
         final Long savedId = savedTheme.getId();
-
         final Name name = new Name("브라운");
         final Reservation reservation = Reservation.withoutId(name, LocalDate.now(), savedTime, savedTheme);
         reservationRepository.save(reservation);
@@ -196,5 +191,9 @@ class ThemeApiTest {
                 .statusCode(200)
                 .body("size()", is(3))
                 .body("name", contains("공포3", "공포1", "공포2"));
+    }
+
+    private static LocalDate minusDay(final LocalDate date, final int days) {
+        return date.minusDays(days);
     }
 }
