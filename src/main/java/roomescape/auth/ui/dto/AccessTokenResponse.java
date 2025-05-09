@@ -1,6 +1,6 @@
 package roomescape.auth.ui.dto;
 
-public record CreateAccessTokenResponse(
+public record AccessTokenResponse(
         String accessToken
 ) {
 

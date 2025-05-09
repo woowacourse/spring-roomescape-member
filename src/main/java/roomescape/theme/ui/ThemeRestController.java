@@ -15,7 +15,6 @@ import roomescape.auth.domain.AuthRole;
 import roomescape.auth.domain.RequiresRole;
 import roomescape.theme.applcation.ThemeService;
 import roomescape.theme.ui.dto.CreateThemeRequest;
-import roomescape.theme.ui.dto.CreateThemeResponse;
 import roomescape.theme.ui.dto.ThemeResponse;
 
 @RestController
@@ -27,10 +26,10 @@ public class ThemeRestController {
 
     @PostMapping
     @RequiresRole(authRoles = {AuthRole.ADMIN})
-    public ResponseEntity<CreateThemeResponse> create(
+    public ResponseEntity<ThemeResponse> create(
             @RequestBody final CreateThemeRequest request
     ) {
-        final CreateThemeResponse response = themeService.create(request);
+        final ThemeResponse response = themeService.create(request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);

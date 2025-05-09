@@ -1,23 +1,24 @@
 package roomescape.reservation.ui.dto;
 
 import java.time.LocalDate;
+import roomescape.member.ui.dto.MemberResponse;
 import roomescape.reservation.domain.Reservation;
-import roomescape.theme.ui.dto.CreateThemeResponse;
+import roomescape.theme.ui.dto.ThemeResponse;
 
 public record ReservationResponse(
         Long id,
-        String name,
+        MemberResponse.Name member,
         LocalDate date,
-        CreateReservationTimeResponse time,
-        CreateThemeResponse theme
+        ReservationTimeResponse time,
+        ThemeResponse theme
 ) {
 
     public static ReservationResponse from(final Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getMember().getName(),
+                MemberResponse.Name.from(reservation.getMember()),
                 reservation.getDate(),
-                CreateReservationTimeResponse.from(reservation.getTime()),
-                CreateThemeResponse.from(reservation.getTheme()));
+                ReservationTimeResponse.from(reservation.getTime()),
+                ThemeResponse.from(reservation.getTheme()));
     }
 }

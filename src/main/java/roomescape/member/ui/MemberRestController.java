@@ -16,7 +16,7 @@ import roomescape.auth.domain.RequiresRole;
 import roomescape.member.application.MemberService;
 import roomescape.member.domain.Member;
 import roomescape.member.ui.dto.CreateMemberRequest;
-import roomescape.member.ui.dto.MemberNameResponse;
+import roomescape.member.ui.dto.MemberResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -56,10 +56,10 @@ public class MemberRestController {
 
     @GetMapping
     @RequiresRole(authRoles = {AuthRole.ADMIN})
-    public ResponseEntity<List<MemberNameResponse>> findAll() {
-        final List<MemberNameResponse> memberNameResponses = memberService.findAll();
+    public ResponseEntity<List<MemberResponse.Name>> findAll() {
+        final List<MemberResponse.Name> responses = memberService.findAllNames();
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(memberNameResponses);
+                .body(responses);
     }
 }

@@ -15,7 +15,6 @@ import roomescape.auth.domain.AuthRole;
 import roomescape.auth.domain.RequiresRole;
 import roomescape.reservation.application.ReservationTimeService;
 import roomescape.reservation.ui.dto.CreateReservationTimeRequest;
-import roomescape.reservation.ui.dto.CreateReservationTimeResponse;
 import roomescape.reservation.ui.dto.ReservationTimeResponse;
 
 @RestController
@@ -27,10 +26,10 @@ public class ReservationTimeRestController {
 
     @PostMapping
     @RequiresRole(authRoles = {AuthRole.ADMIN})
-    public ResponseEntity<CreateReservationTimeResponse> create(
+    public ResponseEntity<ReservationTimeResponse> create(
             @RequestBody final CreateReservationTimeRequest request
     ) {
-        final CreateReservationTimeResponse response = reservationTimeService.create(request);
+        final ReservationTimeResponse response = reservationTimeService.create(request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);

@@ -9,7 +9,6 @@ import roomescape.exception.ResourceNotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 import roomescape.theme.ui.dto.CreateThemeRequest;
-import roomescape.theme.ui.dto.CreateThemeResponse;
 import roomescape.theme.ui.dto.ThemeResponse;
 
 @Service
@@ -18,7 +17,7 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
 
-    public CreateThemeResponse create(final CreateThemeRequest request) {
+    public ThemeResponse create(final CreateThemeRequest request) {
         final long count = themeRepository.countByName(request.name());
         if (count >= 1) {
             throw new AlreadyExistException("해당 테마명이 이미 존재합니다. name = " + request.name());
@@ -29,7 +28,7 @@ public class ThemeService {
         final Theme found = themeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + id));
 
-        return CreateThemeResponse.from(found);
+        return ThemeResponse.from(found);
     }
 
     public void delete(final Long id) {

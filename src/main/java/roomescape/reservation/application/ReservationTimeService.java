@@ -11,7 +11,6 @@ import roomescape.exception.ResourceNotFoundException;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.ReservationTimeRepository;
 import roomescape.reservation.ui.dto.CreateReservationTimeRequest;
-import roomescape.reservation.ui.dto.CreateReservationTimeResponse;
 import roomescape.reservation.ui.dto.ReservationTimeResponse;
 
 @Service
@@ -20,7 +19,7 @@ public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public CreateReservationTimeResponse create(final CreateReservationTimeRequest request) {
+    public ReservationTimeResponse create(final CreateReservationTimeRequest request) {
         final LocalTime startAt = request.startAt();
 
         final List<ReservationTime> foundReservationTimes = reservationTimeRepository.findAllByStartAt(startAt);
@@ -34,7 +33,7 @@ public class ReservationTimeService {
         final ReservationTime found = reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + id));
 
-        return CreateReservationTimeResponse.from(found);
+        return ReservationTimeResponse.from(found);
     }
 
     public void delete(final Long id) {

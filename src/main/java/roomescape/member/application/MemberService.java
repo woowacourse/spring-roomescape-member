@@ -9,7 +9,7 @@ import roomescape.exception.ResourceNotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
 import roomescape.member.ui.dto.CreateMemberRequest;
-import roomescape.member.ui.dto.MemberNameResponse;
+import roomescape.member.ui.dto.MemberResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -37,9 +37,9 @@ public class MemberService {
         memberRepository.deleteById(id);
     }
 
-    public List<MemberNameResponse> findAll() {
+    public List<MemberResponse.Name> findAllNames() {
         return memberRepository.findAll().stream()
-                .map(MemberNameResponse::from)
+                .map(MemberResponse.Name::from)
                 .toList();
     }
 }
