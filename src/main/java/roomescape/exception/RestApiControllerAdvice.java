@@ -45,11 +45,6 @@ public class RestApiControllerAdvice {
         return createFailureResponse(ex, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(Exception.class)
-    protected ResponseEntity<FailureResponse> handleException(final Exception ex) {
-        return createFailureResponse(new RuntimeException("예기치 못한 오류가 발생했습니다."), HttpStatus.BAD_REQUEST);
-    }
-
     private ResponseEntity<FailureResponse> createFailureResponse(final Exception ex, final HttpStatus status) {
         return new ResponseEntity<>(new FailureResponse(status, ex.getMessage()), status);
     }
