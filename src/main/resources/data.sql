@@ -1,3 +1,12 @@
+-- role
+INSERT INTO role(name)
+VALUES ('user'),
+       ('admin');
+
+-- member
+INSERT INTO member(name, email, password, role_id)
+VALUES ('gabin', 'gazette9@naver.com', '1234', 1);
+
 INSERT INTO reservation_time(start_at)
 VALUES ('09:00'),
        ('10:00'),
