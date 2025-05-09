@@ -12,6 +12,7 @@ import roomescape.time.domain.Time;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.time.repository.TimeRepository;
+import roomescape.user.domain.User;
 
 @Service
 public class ReservationService {
@@ -29,7 +30,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public ReservationResponse add(ReservationRequest request) {
+    public ReservationResponse add(ReservationRequest request, User user) {
         Time time = findReservationTimeOrThrow(request.timeId());
 
         LocalDate date = request.date();
@@ -38,7 +39,7 @@ public class ReservationService {
 
         Theme theme = findThemeOrThrow(request.themeId());
 
-        Reservation reservation = Reservation.createBeforeSaved(request.name(), date, time, theme);
+        Reservation reservation = Reservation.createBeforeSaved(user.name(), date, time, theme);
         return ReservationResponse.from(reservationRepository.add(reservation));
     }
 
