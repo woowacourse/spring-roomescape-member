@@ -13,17 +13,17 @@ public class AdminPageController {
         return "admin/index";
     }
 
-    @GetMapping("reservation")
+    @GetMapping("/reservation")
     public String getReservationPage() {
         return "admin/reservation-new";
     }
 
-    @GetMapping("time")
+    @GetMapping("/time")
     public String getTimePage() {
         return "admin/time";
     }
 
-    @GetMapping("themes")
+    @GetMapping("/themes")
     public String getThemePage() {
         return "admin/theme";
     }
