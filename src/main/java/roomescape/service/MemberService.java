@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.dto.LoginMember;
 import roomescape.dto.MemberLoginRequestDto;
 import roomescape.model.Member;
 import roomescape.repository.MemberRepository;
@@ -24,5 +25,11 @@ public class MemberService {
         }
         return authenticationService.generateToken(member);
 
+    }
+
+    public LoginMember getMember(Long id) {
+        Member member = memberRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("아이디 해당하는 멤버 없습니다"));
+        return new LoginMember(member.getId(), member.getRole(), member.getMemberName(), member.getEmail());
     }
 }

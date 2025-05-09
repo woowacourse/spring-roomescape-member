@@ -120,9 +120,14 @@
 
 ## 5단계
 
-- [ ] 사용자의 정보를 조회하는 로직을 리팩터링
+- [x] 사용자의 정보를 조회하는 로직을 리팩터링
     - Cookie에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 로직을 분리
     - HandlerMethodArgumentResolver 활용
 - [ ] 예약 생성 API 및 기능을 리팩터링
     - 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용하도록
-    - reservation.html, user-reservation.js 파일의 TODO 주석을 참고하여 변경된 명세에 맞게 클라이언트가 동작하도록 변경  
+    - reservation.html, user-reservation.js 파일의 TODO 주석을 참고하여 변경된 명세에 맞게 클라이언트가 동작하도록 변경
+
+### 고민해본 내용
+
+- resolver에서 멤버로 만드려면 인증 과정을 거쳐야 한다 -> 나중에 인터셉터에서 admin 검사(인증함)
+- 인증의 책임을 인터셉터에서 하는건?

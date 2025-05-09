@@ -35,6 +35,18 @@ public class AuthenticationService {
         } catch (JwtException e) {
             throw new IllegalArgumentException("접근할 수 없습니다.");
         }
+    }
 
+    public Long validateTokenAndGetId(String accessToken) {
+        try {
+            Claims payload = Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                    .build()
+                    .parseSignedClaims(accessToken)
+                    .getPayload();
+            return Long.parseLong(payload.getSubject());
+        } catch (JwtException e) {
+            throw new IllegalArgumentException("접근할 수 없습니다.");
+        }
     }
 }
