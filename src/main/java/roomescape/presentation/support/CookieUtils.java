@@ -20,7 +20,13 @@ public class CookieUtils {
     }
 
     public String getToken(HttpServletRequest request) {
-        Cookie foundCookie = Arrays.stream(request.getCookies())
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies == null) {
+            throw new UnauthorizedException("해당 경로로 접근할 권한이 없습니다.");
+        }
+
+        Cookie foundCookie = Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(COOKIE_NAME_FOR_TOKEN))
                 .findFirst()
                 .orElseThrow(() -> new UnauthorizedException("권한이 필요한 접근입니다."));
