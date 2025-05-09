@@ -42,6 +42,15 @@ public class AuthRestController {
                 .build();
     }
 
+    @GetMapping("/login/check")
+    public ResponseEntity<CheckAccessTokenResponse> checkAccessToken(final Member member) {
+        if (member == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new CheckAccessTokenResponse("Unauthorized"));
+        }
+        return ResponseEntity.ok(new CheckAccessTokenResponse(member.getName()));
+    }
+
     @PostMapping("/logout")
     @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER})
     public ResponseEntity<Void> logout(@CookieValue(value = "token") final String accessToken) {
@@ -56,15 +65,5 @@ public class AuthRestController {
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .build();
-    }
-
-
-    @GetMapping("/login/check")
-    public ResponseEntity<CheckAccessTokenResponse> checkAccessToken(final Member member) {
-        if (member == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new CheckAccessTokenResponse("Unauthorized"));
-        }
-        return ResponseEntity.ok(new CheckAccessTokenResponse(member.getName()));
     }
 }
