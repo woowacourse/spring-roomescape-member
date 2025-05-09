@@ -9,6 +9,7 @@ import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import roomescape.domain.auth.entity.Roles;
+import roomescape.domain.auth.entity.User;
 
 @Slf4j
 public class JwtManager {
@@ -21,10 +22,13 @@ public class JwtManager {
         this.validityInMilliseconds = validityInMilliseconds;
     }
 
-    public String createToken(final Long userId, final Roles role) {
+    public String createToken(final User user) {
         final Claims claims = Jwts.claims()
-                .setSubject(userId.toString());
-        claims.put("role", role.getRoleName());
+                .setSubject(user.getId()
+                        .toString());
+
+        claims.put("role", user.getRole()
+                .getRoleName());
 
         final Date now = new Date();
         final Date validity = new Date(now.getTime() + validityInMilliseconds);
