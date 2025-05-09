@@ -12,11 +12,11 @@ import org.springframework.stereotype.Repository;
 import roomescape.theme.entity.Theme;
 
 @Repository
-public class H2ThemeRepository implements ThemeRepository {
+public class JdbcThemeRepository implements ThemeRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public H2ThemeRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+    public JdbcThemeRepository(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

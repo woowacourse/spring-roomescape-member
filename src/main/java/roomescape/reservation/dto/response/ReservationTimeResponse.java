@@ -7,7 +7,7 @@ public record ReservationTimeResponse(
         String startAt
 ) {
 
-    public static ReservationTimeResponse from(ReservationTime entity) {
-        return new ReservationTimeResponse(entity.getId(), entity.getFormattedTime());
+    public static ReservationTimeResponse from(ReservationTime reservationTime) {
+        return new ReservationTimeResponse(reservationTime.getId(), reservationTime.getFormattedTime());
     }
 }

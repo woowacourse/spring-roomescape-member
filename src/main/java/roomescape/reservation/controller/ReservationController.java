@@ -24,7 +24,9 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> createReservation(
+            @RequestBody ReservationRequest request
+    ) {
         ReservationResponse response = reservationService.createReservation(request);
         return ResponseEntity.ok().body(response);
     }
@@ -35,7 +37,9 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteReservation(
+            @PathVariable("id") Long id
+    ) {
         reservationService.deleteReservation(id);
         return ResponseEntity.ok().build();
     }

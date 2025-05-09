@@ -26,7 +26,9 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest request) {
+    public ResponseEntity<ThemeResponse> createTheme(
+            @RequestBody ThemeRequest request
+    ) {
         ThemeResponse response = themeService.createTheme(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -37,15 +39,19 @@ public class ThemeController {
         return ResponseEntity.ok().body(responses);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable("id") Long id) {
-        themeService.deleteTheme(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> getPopularThemes(@RequestParam("limit") int limit) {
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes(
+            @RequestParam("limit") int limit
+    ) {
         List<ThemeResponse> response = themeService.getPopularThemes(limit);
         return ResponseEntity.ok().body(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTheme(
+            @PathVariable("id") Long id
+    ) {
+        themeService.deleteTheme(id);
+        return ResponseEntity.noContent().build();
     }
 }

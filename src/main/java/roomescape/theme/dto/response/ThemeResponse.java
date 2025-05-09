@@ -9,12 +9,12 @@ public record ThemeResponse(
         String thumbnail
 ) {
 
-    public static ThemeResponse from(Theme entity) {
+    public static ThemeResponse from(Theme theme) {
         return new ThemeResponse(
-                entity.getId(),
-                entity.getName(),
-                entity.getDescription(),
-                entity.getThumbnail()
+                theme.getId(),
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnail()
         );
     }
 }

@@ -12,11 +12,11 @@ import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.entity.ReservationTime;
 
 @Repository
-public class H2ReservationRepository implements ReservationRepository {
+public class JdbcReservationRepository implements ReservationRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public H2ReservationRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+    public JdbcReservationRepository(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

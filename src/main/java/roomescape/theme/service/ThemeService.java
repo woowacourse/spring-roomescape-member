@@ -36,7 +36,7 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponse> getPopularThemes(final int limit) {
+    public List<ThemeResponse> getPopularThemes(int limit) {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusWeeks(1);
         return themeRepository.findPopularDescendingUpTo(startDate, endDate, limit)
@@ -45,8 +45,8 @@ public class ThemeService {
                 .toList();
     }
 
-    public void deleteTheme(final Long id) {
-        final boolean deleted = themeRepository.deleteById(id);
+    public void deleteTheme(Long id) {
+        boolean deleted = themeRepository.deleteById(id);
         if (!deleted) {
             throw new NotFoundException("존재하지 않는 id 입니다.");
         }
