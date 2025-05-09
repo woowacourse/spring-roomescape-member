@@ -1,5 +1,6 @@
-package roomescape.admin.ui;
+package roomescape.view.ui;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,6 +9,7 @@ import roomescape.auth.domain.RequiresRole;
 
 @Controller
 @RequestMapping("/admin")
+@Slf4j
 public class AdminController {
 
     @GetMapping
@@ -19,6 +21,8 @@ public class AdminController {
     @GetMapping("/reservation")
     @RequiresRole(authRoles = AuthRole.ADMIN)
     public String reservation() {
+        log.info("AdminController.reservation() called");
+
         return "admin/reservation-new";
     }
 
