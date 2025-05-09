@@ -4,12 +4,14 @@ CREATE TABLE member
     name        VARCHAR(255) NOT NULL,
     email       VARCHAR(255) NOT NULL,
     password    VARCHAR(255) NOT NULL,
+    role        VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE reservation_time
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
+-- TODO: 타입 변경 (2순위)
     start_at VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
@@ -26,6 +28,7 @@ CREATE TABLE theme
 CREATE TABLE reservation
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
+-- TODO: member_id
     name     VARCHAR(255) NOT NULL,
     date     DATE NOT NULL,
     time_id  BIGINT,

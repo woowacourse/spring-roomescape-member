@@ -34,7 +34,8 @@ class LoginTest {
                 .body(signupParams)
                 .when()
                 .post("/members")
-                .then().log().all();
+                .then().log().all()
+                .statusCode(200);
     }
 
     @DisplayName("로그인 요청시 set-cookie로 토큰을 받을 수 있다.")

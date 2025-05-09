@@ -3,10 +3,11 @@ package roomescape.auth.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.auth.entity.Member;
+import roomescape.auth.entity.Role;
 import roomescape.auth.repository.FakeMemberRepository;
 import roomescape.auth.repository.MemberRepository;
 import roomescape.auth.service.dto.request.LoginRequest;
-import roomescape.auth.service.dto.request.SignupRequest;
+import roomescape.auth.service.dto.request.UserSignupRequest;
 import roomescape.exception.conflict.MemberEmailConflictException;
 import roomescape.exception.unauthorized.MemberUnauthorizedException;
 import roomescape.infrastructure.JwtTokenProvider;
@@ -38,9 +39,9 @@ class MemberAuthServiceTest {
         String email = "test@example.com";
         String password = "1234";
         String name = "test";
-        memberRepository.save(new Member(1L, name, email, password));
+        memberRepository.save(new Member(1L, name, Role.USER.name(), email, password));
 
-        SignupRequest request = new SignupRequest(
+        UserSignupRequest request = new UserSignupRequest(
                 email,
                 password,
                 name

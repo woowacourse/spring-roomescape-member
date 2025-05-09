@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.service.MemberAuthService;
-import roomescape.auth.service.dto.request.SignupRequest;
+import roomescape.auth.service.dto.request.UserSignupRequest;
 
 @RestController
 public class SignupController {
@@ -17,7 +17,7 @@ public class SignupController {
     }
 
     @PostMapping("/members")
-    public ResponseEntity<Void> signup(@RequestBody @Valid SignupRequest request) {
+    public ResponseEntity<Void> signup(@RequestBody @Valid UserSignupRequest request) {
         service.signup(request);
         return ResponseEntity.ok().build();
     }

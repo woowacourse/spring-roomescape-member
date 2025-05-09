@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.entity.Member;
 import roomescape.auth.repository.MemberRepository;
 import roomescape.auth.service.dto.request.LoginRequest;
-import roomescape.auth.service.dto.request.SignupRequest;
+import roomescape.auth.service.dto.request.UserSignupRequest;
 import roomescape.auth.service.dto.response.CheckResponse;
 import roomescape.auth.service.dto.response.LoginResponse;
 import roomescape.exception.badRequest.BadRequestException;
@@ -31,7 +31,7 @@ public class MemberAuthService {
         return new LoginResponse(token);
     }
 
-    public void signup(SignupRequest request) {
+    public void signup(UserSignupRequest request) {
         memberRepository.findByEmail(request.email())
                 .ifPresentOrElse(user -> {
                     throw new MemberEmailConflictException();

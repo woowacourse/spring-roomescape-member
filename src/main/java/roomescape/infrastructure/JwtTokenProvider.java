@@ -21,6 +21,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .subject(member.getId().toString())
                 .claim("email", member.getEmail())
+                .claim("role", member.getRole().name())
                 .expiration(expiration)
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
