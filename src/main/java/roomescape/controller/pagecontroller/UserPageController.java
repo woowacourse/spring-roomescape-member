@@ -15,9 +15,4 @@ public class UserPageController {
     public String bestThemes() {
         return "best-themes";
     }
-
-    @GetMapping("/login")
-    public String login() {
-        return "login";
-    }
 }
