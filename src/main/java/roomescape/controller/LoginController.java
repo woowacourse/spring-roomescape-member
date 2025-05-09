@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import roomescape.application.dto.LoginRequest;
-import roomescape.application.dto.MemberNameResponse;
+import roomescape.application.dto.MemberResponse;
 import roomescape.application.service.LoginService;
 
 @Controller
@@ -30,7 +30,7 @@ public class LoginController {
 
     @GetMapping("check")
     @ResponseBody
-    public MemberNameResponse readMemberName(HttpServletRequest request) {
+    public MemberResponse readMemberName(HttpServletRequest request) {
         return loginService.readMemberName(request);
     }
 

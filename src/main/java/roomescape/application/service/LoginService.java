@@ -8,7 +8,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.LoginRequest;
-import roomescape.application.dto.MemberNameResponse;
+import roomescape.application.dto.MemberResponse;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
 
@@ -34,7 +34,7 @@ public class LoginService {
                 .compact();
     }
 
-    public MemberNameResponse readMemberName(HttpServletRequest request) {
+    public MemberResponse readMemberName(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
 
         String token = extractTokenFromCookie(cookies);
@@ -46,7 +46,7 @@ public class LoginService {
 
         Optional<Member> member = memberDao.findById(memberId);
 
-        return new MemberNameResponse(member.get());
+        return new MemberResponse(member.get());
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
