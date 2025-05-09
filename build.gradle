@@ -5,6 +5,9 @@ plugins {
     id "org.asciidoctor.jvm.convert" version "3.3.2"
 }
 
+group = 'nextstep'
+version = '0.0.1-SNAPSHOT'
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
@@ -13,14 +16,6 @@ java {
 
 configurations {
     asciidoctorExt
-}
-
-group = 'nextstep'
-version = '0.0.1-SNAPSHOT'
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {
