@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.common.util.time.DateTime;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.presentation.dto.ReservationRequest;
@@ -20,26 +22,30 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(
             final DateTime dateTime,
             final ReservationRepository reservationRepository,
             final ReservationTimeRepository reservationTimeRepository,
-            final ThemeRepository themeRepository
+            final ThemeRepository themeRepository,
+            final MemberRepository memberRepository
     ) {
         this.dateTime = dateTime;
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
-    public ReservationResponse createReservation(final ReservationRequest request) {
+    public ReservationResponse createReservation(final ReservationRequest request, final Long memberId) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId());
         Theme theme = themeRepository.findById(request.themeId());
+        Member member = memberRepository.findById(memberId);
 
         validateExistDuplicateReservation(request, time);
 
-        Reservation reservation = Reservation.createWithoutId(request.name(), request.date(), time, theme);
+        Reservation reservation = Reservation.createWithoutId(member.getName(), request.date(), time, theme);
         validateCanReserveDateTime(reservation, dateTime.now());
         Long id = reservationRepository.save(reservation);
 
