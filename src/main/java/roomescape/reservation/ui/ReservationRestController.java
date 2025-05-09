@@ -2,6 +2,7 @@ package roomescape.reservation.ui;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,15 +16,16 @@ import roomescape.auth.domain.AuthRole;
 import roomescape.auth.domain.RequiresRole;
 import roomescape.member.domain.Member;
 import roomescape.reservation.application.ReservationService;
-import roomescape.reservation.ui.dto.AdminReservationResponse;
 import roomescape.reservation.ui.dto.AvailableReservationTimeRequest;
 import roomescape.reservation.ui.dto.AvailableReservationTimeResponse;
 import roomescape.reservation.ui.dto.CreateReservationRequest;
 import roomescape.reservation.ui.dto.CreateReservationResponse;
-import roomescape.reservation.ui.dto.MemberReservationResponse;
+import roomescape.reservation.ui.dto.ReservationResponse;
+import roomescape.reservation.ui.dto.ReservationsByCriteriaRequest;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationRestController {
 
     private final ReservationService reservationService;
@@ -49,17 +51,22 @@ public class ReservationRestController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<List<MemberReservationResponse>> findAllByMember() {
-        final List<MemberReservationResponse> memberReservationResponses = reservationService.findAllByMember();
+    @RequiresRole(authRoles = {AuthRole.ADMIN})
+    public ResponseEntity<List<ReservationResponse>> findAll() {
+        final List<ReservationResponse> reservationResponses = reservationService.findAll();
 
-        return ResponseEntity.ok(memberReservationResponses);
+        return ResponseEntity.ok(reservationResponses);
     }
 
     @GetMapping("/admin/reservations")
-    public ResponseEntity<List<AdminReservationResponse>> findAllByAdmin() {
-        final List<AdminReservationResponse> adminReservationResponses = reservationService.findAllByAdmin();
+    @RequiresRole(authRoles = {AuthRole.ADMIN})
+    public ResponseEntity<List<ReservationResponse>> findAllByCriteria(
+            @ModelAttribute final ReservationsByCriteriaRequest request
+    ) {
+        log.info(request.toString());
+        final List<ReservationResponse> reservationResponses = reservationService.findAllByCriteria(request);
 
-        return ResponseEntity.ok(adminReservationResponses);
+        return ResponseEntity.ok(reservationResponses);
     }
 
     @GetMapping("/reservations/available-times")

@@ -11,12 +11,12 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.ReservationTimeRepository;
-import roomescape.reservation.ui.dto.AdminReservationResponse;
 import roomescape.reservation.ui.dto.AvailableReservationTimeRequest;
 import roomescape.reservation.ui.dto.AvailableReservationTimeResponse;
 import roomescape.reservation.ui.dto.CreateReservationRequest;
 import roomescape.reservation.ui.dto.CreateReservationResponse;
-import roomescape.reservation.ui.dto.MemberReservationResponse;
+import roomescape.reservation.ui.dto.ReservationResponse;
+import roomescape.reservation.ui.dto.ReservationsByCriteriaRequest;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 
@@ -54,17 +54,19 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public List<MemberReservationResponse> findAllByMember() {
+    public List<ReservationResponse> findAll() {
         return reservationRepository.findAll()
                 .stream()
-                .map(MemberReservationResponse::from)
+                .map(ReservationResponse::from)
                 .toList();
     }
 
-    public List<AdminReservationResponse> findAllByAdmin() {
-        return reservationRepository.findAll()
+    public List<ReservationResponse> findAllByCriteria(final ReservationsByCriteriaRequest request) {
+        return reservationRepository.findAllByThemIdAndMemberIdAndDateRange(
+                        request.themeId(), request.memberId(), request.dateFrom(), request.dateTo()
+                )
                 .stream()
-                .map(AdminReservationResponse::from)
+                .map(ReservationResponse::from)
                 .toList();
     }
 

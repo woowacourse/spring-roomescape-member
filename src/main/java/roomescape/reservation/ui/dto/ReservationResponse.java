@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.ui.dto.CreateThemeResponse;
 
-public record AdminReservationResponse(
+public record ReservationResponse(
         Long id,
         String name,
         LocalDate date,
@@ -12,8 +12,8 @@ public record AdminReservationResponse(
         CreateThemeResponse theme
 ) {
 
-    public static AdminReservationResponse from(final Reservation reservation) {
-        return new AdminReservationResponse(
+    public static ReservationResponse from(final Reservation reservation) {
+        return new ReservationResponse(
                 reservation.getId(),
                 reservation.getMember().getName(),
                 reservation.getDate(),
