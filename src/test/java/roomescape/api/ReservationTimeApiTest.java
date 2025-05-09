@@ -111,7 +111,7 @@ public class ReservationTimeApiTest {
                 Reservation.createWithoutId(member, LocalDate.of(2025, 1, 1), reservationTime1, theme));
         // when
         List<AvailableTimeResponse> response = RestAssured.given().log().all()
-                .when().get("/times/available?date=2025-01-01&themeId=1")
+                .when().get("/times/theme/1?date=2025-01-01")
                 .then().log().all()
                 .statusCode(200)
                 .extract().jsonPath().getList(".", AvailableTimeResponse.class);

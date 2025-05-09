@@ -62,7 +62,7 @@ public class ThemeApiTest {
     void 인기테마_상위10개_조회_테스트() {
         RestAssured.given()
                 .contentType(ContentType.JSON)
-                .when().get("/themes/top10")
+                .when().get("/themes/rank")
                 .then().statusCode(200)
                 .body("size()", is(5));
     }
