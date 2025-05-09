@@ -54,7 +54,7 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean deleteBy(Long id) {
+    public boolean deleteById(Long id) {
         Optional<Reservation> findReservation = reservations.stream()
                 .filter(reservation -> Objects.equals(reservation.getId(), id))
                 .findAny();

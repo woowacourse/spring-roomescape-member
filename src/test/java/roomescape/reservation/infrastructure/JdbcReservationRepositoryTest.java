@@ -94,7 +94,7 @@ class JdbcReservationRepositoryTest {
                 LocalDate.of(2000, 11, 2), reservationTime, theme);
         reservationRepository.save(reservation);
 
-        boolean isDeleted = reservationRepository.deleteBy(themeId + plus);
+        boolean isDeleted = reservationRepository.deleteById(themeId + plus);
 
         assertThat(isDeleted).isEqualTo(expected);
     }

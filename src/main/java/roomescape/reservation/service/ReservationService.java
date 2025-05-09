@@ -55,7 +55,7 @@ public class ReservationService {
     }
 
     public void deleteReservationById(final Long id) {
-        boolean isDeleted = reservationRepository.deleteBy(id);
+        boolean isDeleted = reservationRepository.deleteById(id);
         validateExistIdToDelete(isDeleted);
     }
 
