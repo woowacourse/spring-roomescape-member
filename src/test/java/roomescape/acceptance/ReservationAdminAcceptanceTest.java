@@ -112,7 +112,7 @@ class ReservationAdminAcceptanceTest {
                     "INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)",
                     new String[]{"id"});
             ps.setString(1, member.getName());
-            ps.setString(2, member.getPassword());
+            ps.setString(2, member.getEmail());
             ps.setString(3, member.getPassword());
             ps.setString(4, member.getRole().getValue());
             return ps;
