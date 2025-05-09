@@ -31,7 +31,7 @@ public class AdminController {
             @RequestParam(required = false) Long themeId,
             @RequestParam(required = false) LocalDate dateFrom,
             @RequestParam(required = false) LocalDate dateTo
-            ) {
+    ) {
         List<Reservation> reservations = reservationService.findAllByFilter(memberId, themeId, dateFrom, dateTo);
         List<ReservationResponse> responses = reservations.stream()
                 .map(ReservationResponse::from)
@@ -51,4 +51,3 @@ public class AdminController {
                 .body(response);
     }
 }
-

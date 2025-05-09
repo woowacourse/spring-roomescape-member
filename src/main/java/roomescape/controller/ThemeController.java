@@ -15,18 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.dto.request.CreateThemeRequest;
 import roomescape.dto.response.ThemeResponse;
-import roomescape.service.ReservationService;
 import roomescape.service.ThemeService;
 
 @RestController
 @RequestMapping("/themes")
 public class ThemeController {
 
-    private final ReservationService reservationService;
     private final ThemeService themeService;
 
-    public ThemeController(ReservationService reservationService, ThemeService themeService) {
-        this.reservationService = reservationService;
+    public ThemeController(ThemeService themeService) {
         this.themeService = themeService;
     }
 
