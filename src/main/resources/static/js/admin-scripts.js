@@ -41,7 +41,7 @@ function updateUIBasedOnLogin() {
         console.error('Error:', error);
         document.getElementById('profile-name').textContent = 'Profile'; // 기본 텍스트로 재설정
         document.querySelector('.nav-item.dropdown').style.display = 'none'; // 드롭다운 메뉴 숨김
-        document.querySelector('.nav-item a[href="/login"]').parentElement.style.display = 'block'; // 로그인 버튼 표시
+        document.querySelector('.nav-item a[href="/admin/login"]').parentElement.style.display = 'block'; // 로그인 버튼 표시
       });
 }
 
@@ -113,7 +113,7 @@ function register(event) {
   };
 
   // AJAX 요청 생성 및 전송
-  fetch('/members', {
+  fetch('/admins', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -130,7 +130,7 @@ function register(event) {
       .then(data => {
         // 성공적인 응답 처리
         console.log('Signup successful:', data);
-        window.location.href = '/login';
+        window.location.href = '/admin/login';
       })
       .catch(error => {
         // 에러 처리
