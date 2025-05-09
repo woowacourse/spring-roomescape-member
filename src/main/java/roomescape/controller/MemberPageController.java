@@ -15,4 +15,9 @@ public class MemberPageController {
     public String bestThemes() {
         return "index";
     }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
 }
