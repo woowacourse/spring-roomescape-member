@@ -5,9 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.auth.exception.AuthException;
 import roomescape.common.exception.AlreadyExistsException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.common.exception.ValidationException;
+import roomescape.member.exception.MemberDuplicatedException;
 import roomescape.reservationtime.exception.ReservationTimeInUseException;
 
 @RestControllerAdvice
@@ -36,5 +38,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<String> handleValidationException(ValidationException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<String> handleAuthException(AuthException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+    }
+
+    @ExceptionHandler(MemberDuplicatedException.class)
+    public ResponseEntity<String> handleMemberDuplicatedException(MemberDuplicatedException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 }

@@ -15,4 +15,14 @@ public class CommonController {
     public String getPopularThemePage() {
         return "index";
     }
+
+    @GetMapping("/login")
+    public String getLoginPage() {
+        return "login";
+    }
+
+    @GetMapping("/signup")
+    public String getSignupPage() {
+        return "signup";
+    }
 }
