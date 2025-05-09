@@ -30,7 +30,7 @@ public class ReservationService {
     public ReservationResponse create(final CreateReservationRequest request, final Member member) {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(),
                 request.themeId())) {
-            throw new AlreadyExistException("해당 시간에 이미 예약된 테마입니다.");
+            throw new AlreadyExistException("해당 날짜와 시간에 이미 예약된 테마입니다.");
         }
 
         final ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
