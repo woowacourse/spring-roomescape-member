@@ -8,6 +8,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.AuthRequired;
 import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.vo.LoginInfo;
+import roomescape.exception.auth.NotAuthenticatedException;
 
 public class AuthenticationInterceptor implements HandlerInterceptor {
 
@@ -19,17 +20,19 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) {
-        if (!(handler instanceof HandlerMethod handlerMethod)) {
-            return true;
-        }
-        AuthRequired authRequired = handlerMethod.getMethodAnnotation(AuthRequired.class);
-        if (authRequired == null) {
-            return true;
-        }
+        if (isAuthenticationNotRequired(handler)) return true;
         String token = extractTokenFromCookies(request);
         LoginInfo loginInfo = jwtUtil.validateAndResolveToken(token);
         request.setAttribute("authorization", loginInfo);
         return true;
+    }
+
+    private static boolean isAuthenticationNotRequired(final Object handler) {
+        if (!(handler instanceof HandlerMethod handlerMethod)) {
+            return true;
+        }
+        AuthRequired authRequired = handlerMethod.getMethodAnnotation(AuthRequired.class);
+        return authRequired == null;
     }
 
     private String extractTokenFromCookies(HttpServletRequest request) {
@@ -43,6 +46,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             }
         }
 
-        return null;
+        throw new NotAuthenticatedException();
     }
 }

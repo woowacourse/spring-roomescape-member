@@ -10,6 +10,7 @@ import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.vo.LoginInfo;
 import roomescape.business.model.vo.UserRole;
 import roomescape.exception.auth.ForbiddenException;
+import roomescape.exception.auth.NotAuthenticatedException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,7 +50,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             }
         }
 
-        return null;
+        throw new NotAuthenticatedException();
     }
 
     private static void validateUserRole(final LoginInfo loginInfo, final Role role) {
