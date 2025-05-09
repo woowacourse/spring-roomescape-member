@@ -157,14 +157,15 @@ function onReservationButtonClick() {
       },
       body: JSON.stringify(reservationData)
     })
-        .then(response => {
-          if (response.status !== 201) throw new Error('Create failed');
+        .then(response => response.json())
+        .then(data => {
+          if (data.hasOwnProperty("status") && data.status !== 201) throw new Error(data.errors);
           alert("Reservation successful!");
           location.reload();
         })
         .catch(error => {
           alert(error);
-          console.error(error);
+          console.error('Error:', error);
         });
   } else {
     alert("Please select a date, theme, and time before making a reservation.");
