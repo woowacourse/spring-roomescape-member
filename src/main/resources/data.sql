@@ -55,3 +55,6 @@ VALUES -- 테마 1-10 (각 2개씩)
        ('허연우', '2023-03-24', 3, 14),
        ('이서진', '2023-03-25', 1, 15)
 ;
+
+INSERT INTO users(name, email, password)
+VALUES ('이름', 'qwer', '1234')

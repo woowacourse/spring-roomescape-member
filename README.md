@@ -40,13 +40,13 @@
 
 4. 사용자 로그인
 
-- [ ] 사용자 도메인 추가
-  - [ ] name, email, password
-- [ ] 로그인 기능 구현
-  - [ ] email을 로그인 id로, password를 비밀번호로
-  - [ ] `GET /login` 요청 시 로그인 폼이 있는 페이지 응답
-  - [ ] `POST /login` 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
-  - [ ] 응답 Cookie에 "token" 값으로 토큰을 포함
+- [x] 사용자 도메인 추가
+  - [x] name, email, password
+- [x] 로그인 기능 구현
+  - [x] email을 로그인 id로, password를 비밀번호로
+  - [x] `GET /login` 요청 시 로그인 폼이 있는 페이지 응답
+  - [x] `POST /login` 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
+  - [x] 응답 Cookie에 "token" 값으로 토큰을 포함
 - [ ] 로그인 후 Cookie를 이용하여 사용자 정보 조회 API 구현
   - [ ] 'GET /login/check'를 통해 인증 정보 조회
   - [ ] Cookie를 이용하여 사용자 정보 확인
