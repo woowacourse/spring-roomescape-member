@@ -13,16 +13,18 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import roomescape.service.UserService;
 
 @Component
 @RequiredArgsConstructor
-public class UserIdArgumentResolver implements HandlerMethodArgumentResolver {
+public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtProvider jwtProvider;
+    private final UserService userService;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(UserId.class);
+        return parameter.hasParameterAnnotation(RequestUser.class);
     }
 
     @Override
@@ -40,6 +42,6 @@ public class UserIdArgumentResolver implements HandlerMethodArgumentResolver {
                 break;
             }
         }
-        return Long.valueOf(jwtProvider.getPayload(token));
+        return userService.getById(Long.valueOf(jwtProvider.getPayload(token)));
     }
 }

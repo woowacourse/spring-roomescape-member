@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import roomescape.auth.UserId;
+import roomescape.auth.RequestUser;
+import roomescape.domain.User;
 import roomescape.dto.SignupRequest;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.LoginCheckResponse;
@@ -48,8 +49,8 @@ public class UserController {
     // TODO: 비로그인 상태인 경우 UserId(required=false)와 같이 변경(현재는 비로그인 상태 시 400 에러 발생: [ERROR] JWT String argument cannot be null or empty.)
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/login/check")
-    public LoginCheckResponse loginCheck(@UserId Long id) {
-        return userService.loginCheck(id);
+    public LoginCheckResponse loginCheck(@RequestUser User user) {
+        return userService.loginCheck(user);
     }
 
     @ResponseStatus(HttpStatus.CREATED)

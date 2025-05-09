@@ -8,17 +8,17 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import lombok.RequiredArgsConstructor;
-import roomescape.auth.UserIdArgumentResolver;
+import roomescape.auth.UserArgumentResolver;
 
 @Configuration
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-    private final UserIdArgumentResolver userIdArgumentResolver;
+    private final UserArgumentResolver userArgumentResolver;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(userIdArgumentResolver);
+        resolvers.add(userArgumentResolver);
     }
 
     @Override

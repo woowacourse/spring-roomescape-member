@@ -28,8 +28,7 @@ public class UserService {
         return jwtProvider.createToken(user);
     }
 
-    public LoginCheckResponse loginCheck(Long id) {
-        User user = userRepository.getById(id);
+    public LoginCheckResponse loginCheck(User user) {
         return LoginCheckResponse.from(user);
     }
 
@@ -38,5 +37,9 @@ public class UserService {
             throw new IllegalArgumentException("이미 사용중인 이메일입니다.");
         }
         userRepository.save(new User(request.name(), request.email(), request.password()));
+    }
+
+    public User getById(Long id) {
+        return userRepository.getById(id);
     }
 }
