@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.dto.request.LoginMember;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.ResourceNotExistException;
@@ -26,7 +28,8 @@ public class ReservationService {
     public ReservationService(
         ReservationDao reservationDao,
         ReservationTimeDao reservationTimeDao,
-        ThemeDao themeDao) {
+        ThemeDao themeDao
+    ) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
@@ -46,17 +49,23 @@ public class ReservationService {
         }
     }
 
-    public ReservationResponse save(ReservationRequest request) {
+    public ReservationResponse save(ReservationRequest request, LoginMember loginMember) {
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId())
             .orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당하는 시간이 없습니다"));
         Theme theme = themeDao.findById(request.themeId())
             .orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당하는 테마가 없습니다"));
+        Member member = new Member(
+            loginMember.id(),
+            loginMember.name(),
+            loginMember.email(),
+            loginMember.password()
+        );
         validateSaveReservation(request, reservationTime);
         Reservation reservation = new Reservation(
-            request.name(),
             request.date(),
             reservationTime,
-            theme
+            theme,
+            member
         );
         return getReservationResponse(reservation);
     }

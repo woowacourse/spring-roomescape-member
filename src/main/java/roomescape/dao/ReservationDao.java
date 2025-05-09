@@ -9,6 +9,7 @@ import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -31,19 +32,24 @@ public class ReservationDao {
             """
                 SELECT
                 r.id as reservation_id,
-                r.name,
                 r.date,
                 rt.id as time_id,
                 rt.start_at as time_value,
                 t.id as theme_id,
                 t.name as theme_name,
                 t.description as theme_description,
-                t.thumbnail as theme_thumbnail
+                t.thumbnail as theme_thumbnail,
+                m.id as member_id,
+                m.name as member_name,
+                m.email as member_email,
+                m.password as member_password
                 FROM reservation as r
                 inner join reservation_time as rt
                 on r.time_id = rt.id
                 inner join theme as t
                 on r.theme_id = t.id
+                inner join member as m
+                on r.member_id = m.id
                 """,
             (resultSet, rowNum) ->
             {
@@ -53,7 +59,6 @@ public class ReservationDao {
                 );
                 return new Reservation(
                     resultSet.getLong("reservation_id"),
-                    resultSet.getString("name"),
                     date,
                     new ReservationTime(
                         resultSet.getLong("time_id"),
@@ -67,6 +72,12 @@ public class ReservationDao {
                         resultSet.getString("theme_name"),
                         resultSet.getString("theme_description"),
                         resultSet.getString("theme_thumbnail")
+                    ),
+                    new Member(
+                        resultSet.getLong("member_id"),
+                        resultSet.getString("member_name"),
+                        resultSet.getString("member_email"),
+                        resultSet.getString("member_password")
                     )
                 );
             }
@@ -75,18 +86,18 @@ public class ReservationDao {
 
     public Reservation save(Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", reservation.getName());
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTime().getId());
         parameters.put("theme_id", reservation.getTheme().getId());
+        parameters.put("member_id", reservation.getMember().getId());
 
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Reservation(
             id,
-            reservation.getName(),
             reservation.getDate(),
             reservation.getTime(),
-            reservation.getTheme()
+            reservation.getTheme(),
+            reservation.getMember()
         );
     }
 

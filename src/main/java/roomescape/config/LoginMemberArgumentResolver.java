@@ -31,7 +31,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies);
         Member member = loginService.getLoginMemberByToken(token);
-        return new LoginMember(member.getId(), member.getName(), member.getEmail());
+        return new LoginMember(member.getId(), member.getName(), member.getEmail(),
+            member.getPassword());
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
