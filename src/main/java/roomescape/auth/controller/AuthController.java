@@ -47,4 +47,21 @@ public class AuthController {
         UserResponseDto userResponseDto = authService.findMemberByToken(token);
         return ResponseEntity.ok().body(userResponseDto);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@CookieValue(name = TOKEN_NAME_FIELD) String token) {
+        authService.findMemberByToken(token);
+
+        ResponseCookie cookie = ResponseCookie
+                .from(TOKEN_NAME_FIELD, "")
+                .domain("localhost")
+                .path("/")
+                .httpOnly(true)
+                .secure(false)
+                .maxAge(Duration.ofDays(0))
+                .sameSite("Strict")
+                .build();
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
+    }
 }
