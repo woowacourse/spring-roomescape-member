@@ -29,7 +29,7 @@ public class CookieUtils {
         Cookie foundCookie = Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(COOKIE_NAME_FOR_TOKEN))
                 .findFirst()
-                .orElseThrow(() -> new UnauthorizedException("권한이 필요한 접근입니다."));
+                .orElseThrow(() -> new UnauthorizedException("쿠키에 권한 정보가 포함되어 있지 않습니다."));
 
         return foundCookie.getValue();
     }

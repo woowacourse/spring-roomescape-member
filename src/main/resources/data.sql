@@ -19,4 +19,3 @@ VALUES ('10:00'),
 
 INSERT INTO member (name, email, password, role)
 VALUES ('히로', 'example@gmail.com', 'password', 'ADMIN');
-

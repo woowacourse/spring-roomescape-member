@@ -40,6 +40,7 @@ public class MissionStepTest {
     private ThemeJdbcDao themeDao;
 
     private String email;
+
     @Autowired
     private JwtProvider jwtProvider;
 
@@ -58,6 +59,7 @@ public class MissionStepTest {
     @Test
     void 일단계() {
         RestAssured.given().log().all()
+                .cookie("token", createToken())
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -67,15 +69,17 @@ public class MissionStepTest {
     @Test
     void 이단계() {
         RestAssured.given().log().all()
+                .cookie("token", createToken())
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
 
         RestAssured.given().log().all()
+                .cookie("token", createToken())
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
+                .body("size()", is(0));
     }
 
     @DisplayName("예약 생성 후 조회 및 삭제까지의 전체 흐름 테스트")
@@ -96,17 +100,20 @@ public class MissionStepTest {
                 .body("id", is(1));
 
         RestAssured.given().log().all()
+                .cookie("token", createToken())
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
+                .cookie("token", createToken())
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
+                .cookie("token", createToken())
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -130,7 +137,7 @@ public class MissionStepTest {
     void 오단계() {
         jdbcTemplate.update(
                 "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
-                 String.valueOf(LocalDate.now().plusDays(1)), "1", "1", "1");
+                String.valueOf(LocalDate.now().plusDays(1)), "1", "1", "1");
 
         List<ReservationResponseDto> reservations = RestAssured.given().log().all()
                 .cookie("token", createToken())
@@ -164,6 +171,7 @@ public class MissionStepTest {
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
+                .cookie("token", createToken())
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
@@ -213,6 +221,7 @@ public class MissionStepTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
+                .cookie("token", createToken())
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)

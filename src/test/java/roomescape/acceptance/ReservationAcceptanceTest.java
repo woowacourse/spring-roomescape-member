@@ -52,6 +52,7 @@ class ReservationAcceptanceTest {
 
         // when
         List<ReservationResponseDto> reservations = RestAssured.given().log().all()
+                .cookie("token", createToken())
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -178,6 +179,7 @@ class ReservationAcceptanceTest {
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", createToken())
                 .when().delete("/reservations/" + savedId)
                 .then().log().all()
                 .statusCode(204);

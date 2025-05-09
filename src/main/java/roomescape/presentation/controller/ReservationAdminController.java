@@ -6,10 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.common.exception.UnauthorizedException;
 import roomescape.dto.request.ReservationAdminRegisterDto;
 import roomescape.model.LoginMember;
-import roomescape.model.Role;
 import roomescape.service.ReservationAdminService;
 
 @RestController
@@ -26,10 +24,6 @@ public class ReservationAdminController {
     @ResponseStatus(HttpStatus.CREATED)
     public void addReservation(@RequestBody ReservationAdminRegisterDto reservationAdminRegisterDto,
                                LoginMember loginMember) {
-        if (!loginMember.role().equals(Role.ADMIN)) {
-            throw new UnauthorizedException("해당 경로로 접근할 권한이 없습니다.");
-        }
-
         reservationAdminService.saveReservation(reservationAdminRegisterDto);
     }
 }
