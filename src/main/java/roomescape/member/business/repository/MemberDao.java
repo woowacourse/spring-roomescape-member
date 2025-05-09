@@ -14,7 +14,7 @@ public interface MemberDao {
 
     Optional<Member> findById(Long id);
 
-    Optional<Object> findByEmail(String email);
+    Optional<Member> findByEmail(String email);
 
     Optional<Member> findByEmailAndPassword(String email, String password);
 }
