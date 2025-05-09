@@ -10,11 +10,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.application.UserReservationService;
-import roomescape.global.exception.BusinessRuleViolationException;
-import roomescape.domain.entity.Reservation;
-import roomescape.domain.repository.ReservationRepository;
-import roomescape.application.dto.request.CreateReservationServiceRequest;
+import roomescape.reservation.application.UserReservationService;
+import roomescape.reservation.global.exception.BusinessRuleViolationException;
+import roomescape.reservation.domain.entity.Reservation;
+import roomescape.reservation.domain.repository.ReservationRepository;
+import roomescape.reservation.application.dto.request.CreateReservationServiceRequest;
 import roomescape.support.IntegrationTestSupport;
 
 class UserReservationServiceTest extends IntegrationTestSupport {

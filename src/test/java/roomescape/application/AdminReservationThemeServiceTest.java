@@ -7,7 +7,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.global.exception.BusinessRuleViolationException;
+import roomescape.reservation.application.AdminReservationThemeService;
+import roomescape.reservation.global.exception.BusinessRuleViolationException;
 import roomescape.support.IntegrationTestSupport;
 
 class AdminReservationThemeServiceTest extends IntegrationTestSupport {
