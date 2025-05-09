@@ -3,10 +3,10 @@ package roomescape.unit.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -210,5 +210,28 @@ class ReservationServiceTest {
     void 존재하지_않는_예약을_조회시_예외가_발생한다() {
         assertThatThrownBy(() -> reservationService.getReservationById(-1L))
                 .isInstanceOf(InvalidReservationException.class);
+    }
+
+    @Test
+    void 필터에_따라_예약을_조회한다() {
+        //given
+        Member member = memberRepository.add(new Member("훌라", "email@email.com", "password", Role.USER));
+        Theme theme = themeRepository.add(new Theme("테마", "설명", "image.png"));
+        ReservationTime reservationTime = reservationTimeRepository.add(new ReservationTime(LocalTime.now().plusHours(1L)));
+        ReservationTime reservationTime2 = reservationTimeRepository.add(new ReservationTime(LocalTime.now().plusHours(2L)));
+        ReservationTime reservationTime3 = reservationTimeRepository.add(new ReservationTime(LocalTime.now().plusHours(3L)));
+        LocalDate tomorrow = LocalDate.now().plusDays(1L);
+        Reservation reservation1 = new Reservation(member, tomorrow, reservationTime, theme);
+        Reservation reservation2 = new Reservation(member, tomorrow, reservationTime2, theme);
+        Reservation reservation3 = new Reservation(member, tomorrow, reservationTime3, theme);
+        reservationRepository.add(reservation1);
+        reservationRepository.add(reservation2);
+        reservationRepository.add(reservation3);
+
+        //when
+        List<Reservation> reservations = reservationService.findAllByFilter(member.getId(), theme.getId(), tomorrow.minusDays(1), tomorrow.plusDays(1));
+
+        //then
+        assertThat(reservations).hasSize(3);
     }
 }
