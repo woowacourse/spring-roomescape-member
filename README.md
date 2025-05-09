@@ -214,7 +214,7 @@ HTTP/1.1 204
 
 ```
 Request
-GET /times/available?date={}&themeId={} HTTP/1.1
+GET /times/theme/{themeId}?date={} HTTP/1.1
 
 Response
 HTTP/1.1 200 

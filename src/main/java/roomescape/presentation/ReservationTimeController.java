@@ -28,13 +28,13 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> findAll() {
         List<ReservationTimeResponse> all = reservationTimeService.findAll();
         return ResponseEntity.ok(all);
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<ReservationTimeResponse> create(
             @Valid @RequestBody ReservationTimeRequest reservationTimeRequest) {
         ReservationTimeResponse reservationTime = reservationTimeService.create(reservationTimeRequest);
@@ -49,9 +49,10 @@ public class ReservationTimeController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/available")
-    public ResponseEntity<List<AvailableTimeResponse>> getAvailableTimes(@RequestParam("date") LocalDate date,
-                                                                         @RequestParam("themeId") Long themeId) {
+    @GetMapping("theme/{themeId}")
+    public ResponseEntity<List<AvailableTimeResponse>> getAvailableTimes(
+            @PathVariable("themeId") Long themeId, @RequestParam("date") LocalDate date
+    ) {
         return ResponseEntity.ok(reservationTimeService.findAvailableTimes(date, themeId));
     }
 }

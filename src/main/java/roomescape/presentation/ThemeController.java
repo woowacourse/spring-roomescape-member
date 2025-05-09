@@ -42,8 +42,8 @@ public class ThemeController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/top10")
-    public ResponseEntity<List<ThemeResponse>> getTop10Themes() {
+    @GetMapping("/rank")
+    public ResponseEntity<List<ThemeResponse>> getThemeRank() {
         return ResponseEntity.ok(themeService.getTop10MostReservedThemesInLast7Days());
     }
 }
