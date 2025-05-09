@@ -169,7 +169,7 @@ public class ReservationDAO implements ReservationRepository {
                 where id =:id
                 """;
 
-        final MapSqlParameterSource params = new MapSqlParameterSource().addValue("name", reservation.getName())
+        final MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date", reservation.getReservationDate())
                 .addValue("time_id", reservation.getReservationTimeId())
                 .addValue("theme_id", reservation.getThemeId())
@@ -187,7 +187,7 @@ public class ReservationDAO implements ReservationRepository {
     }
 
     private Reservation create(final Reservation reservation) {
-        final MapSqlParameterSource params = new MapSqlParameterSource().addValue("name", reservation.getName())
+        final MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date", reservation.getReservationDate())
                 .addValue("time_id", reservation.getReservationTimeId())
                 .addValue("theme_id", reservation.getThemeId())
