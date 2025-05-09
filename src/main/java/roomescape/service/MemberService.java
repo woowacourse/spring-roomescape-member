@@ -18,6 +18,9 @@ public class MemberService {
     }
 
     public Member addMember(SignupRequest request) {
+        if (memberRepository.existsByEmail(request.email())) {
+            throw new InvalidMemberException("동일한 이메일로 추가할 수 없습니다.");
+        }
         return memberRepository.add(request.toMember());
     }
 
