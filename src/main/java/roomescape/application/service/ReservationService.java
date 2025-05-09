@@ -7,6 +7,7 @@ import roomescape.application.dto.ReservationResponse;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -33,8 +34,8 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse createReservation(ReservationRequest request) {
-        Reservation reservationWithoutId = toReservation(request);
+    public ReservationResponse createReservation(Member member, ReservationRequest request) {
+        Reservation reservationWithoutId = toReservation(member, request);
         validateForCreation(reservationWithoutId);
 
         Reservation savedReservation = saveReservation(reservationWithoutId);
@@ -45,10 +46,10 @@ public class ReservationService {
         reservationDao.deleteById(id);
     }
 
-    private Reservation toReservation(ReservationRequest request) {
+    private Reservation toReservation(Member member, ReservationRequest request) {
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
         Theme theme = themeDao.findById(request.themeId());
-        return request.toReservationWith(reservationTime, theme);
+        return request.toReservationWith(member, reservationTime, theme);
     }
 
     private void validateForCreation(Reservation reservationWithoutId) {

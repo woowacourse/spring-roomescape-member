@@ -22,6 +22,7 @@ import roomescape.application.dto.ReservationResponse;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -78,7 +79,8 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가한다")
     void createReservation() {
         // given
-        ReservationRequest request = new ReservationRequest("name", LocalDate.now(), 1L, 1L);
+        Member member = new Member("moda", "test@email.com", "password");
+        ReservationRequest request = new ReservationRequest(LocalDate.now(), 1L, 1L);
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         Theme theme = new Theme(1L, "테마", "설명", "썸네일");
 
@@ -92,7 +94,7 @@ class ReservationServiceTest {
                 .save(any());
 
         // when
-        ReservationResponse response = reservationService.createReservation(request);
+        ReservationResponse response = reservationService.createReservation(member, request);
 
         // then
         assertThat(response)
