@@ -41,9 +41,9 @@ public class AuthenticationController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> loginCheck(@CookieValue(value = "token", required = false) String token,
+    public ResponseEntity<LoginCheckResponse> loginCheck(@CookieValue(value = "token", defaultValue = "") String token,
                                                          HttpServletResponse response) {
-        if (token == null) {
+        if (token.isBlank()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new LoginCheckResponse(null));
         }
