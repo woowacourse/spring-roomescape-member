@@ -11,11 +11,11 @@ import roomescape.exception.badRequest.BadRequestException;
 import roomescape.exception.conflict.MemberEmailConflictException;
 import roomescape.exception.notFound.MemberNotFoundException;
 import roomescape.exception.unauthorized.MemberUnauthorizedException;
+import roomescape.infrastructure.JwtTokenProvider;
 
 @Service
 public class MemberAuthService {
     private final MemberRepository memberRepository;
-    // TODO: TokenProvider 인터페이스 삭제 - 테스트 Stub으로 변경
     private final JwtTokenProvider jwtTokenProvider;
 
     public MemberAuthService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {

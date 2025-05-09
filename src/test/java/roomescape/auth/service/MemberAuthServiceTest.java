@@ -9,6 +9,7 @@ import roomescape.auth.service.dto.request.LoginRequest;
 import roomescape.auth.service.dto.request.SignupRequest;
 import roomescape.exception.conflict.MemberEmailConflictException;
 import roomescape.exception.unauthorized.MemberUnauthorizedException;
+import roomescape.infrastructure.JwtTokenProvider;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
