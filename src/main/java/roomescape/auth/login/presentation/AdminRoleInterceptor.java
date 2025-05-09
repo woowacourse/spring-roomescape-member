@@ -7,7 +7,7 @@ import java.util.Arrays;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.login.infrastructure.JwtTokenManager;
 
-public class AuthHandlerInterceptor implements HandlerInterceptor {
+public class AdminRoleInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
