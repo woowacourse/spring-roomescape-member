@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.MemberResponse;
 import roomescape.dao.MemberDao;
+import roomescape.domain.Member;
 
 @Service
 public class MemberService {
@@ -18,5 +19,10 @@ public class MemberService {
         return memberDao.findAll().stream()
                 .map(MemberResponse::new)
                 .toList();
+    }
+
+    public Member findById(Long memberId) {
+        return memberDao.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 회원 정보가 없습니다."));
     }
 }
