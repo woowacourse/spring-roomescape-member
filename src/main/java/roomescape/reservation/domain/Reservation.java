@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import roomescape.reservation.exception.InvalidReservationTimeException;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
+import roomescape.user.domain.User;
 
 public class Reservation {
 
@@ -13,19 +14,21 @@ public class Reservation {
     private final LocalDate date;
     private final ReservationTime reservationTime;
     private final Theme theme;
+    private final User user;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme, User user) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
+        this.user = user;
     }
 
-    public static Reservation of(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+    public static Reservation of(String name, LocalDate date, ReservationTime reservationTime, Theme theme, User user) {
         LocalDateTime dateTime = LocalDateTime.of(date, reservationTime.getStartAt());
         validateTense(dateTime);
-        return new Reservation(null, name, date, reservationTime, theme);
+        return new Reservation(null, name, date, reservationTime, theme, user);
     }
 
     private static void validateTense(LocalDateTime dateTime) {

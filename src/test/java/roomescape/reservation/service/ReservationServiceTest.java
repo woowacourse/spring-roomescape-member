@@ -40,7 +40,7 @@ class ReservationServiceTest {
 
     private Reservation createReservation(String name, int plusDays, ReservationTime time, Theme theme) {
         LocalDate date = LocalDate.now().plusDays(plusDays);
-        return Reservation.of(name, date, time, theme);
+        return Reservation.of(name, date, time, theme, null); // TODO 2025. 5. 10. 00:43: user 객체 생성
     }
 
     private ReservationRequestDto createRequestDto(String name, int plusDays, Long timeId, Long themeId) {

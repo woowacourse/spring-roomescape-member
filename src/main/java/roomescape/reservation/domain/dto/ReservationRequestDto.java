@@ -8,6 +8,6 @@ import roomescape.theme.domain.Theme;
 public record ReservationRequestDto(String name, LocalDate date, Long timeId, Long themeId) {
 
     public Reservation toEntity(ReservationTime reservationTime, Theme theme) {
-        return Reservation.of(name, date, reservationTime, theme);
+        return Reservation.of(name, date, reservationTime, theme, null); // TODO 2025. 5. 10. 00:41: user 객체 넣기
     }
 }

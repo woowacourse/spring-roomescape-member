@@ -38,8 +38,10 @@ public class JdbcReservationRepository implements ReservationRepository {
                 resultSet.getString("name"),
                 resultSet.getDate("date").toLocalDate(),
                 time,
-                theme
+                theme,
+                null // TODO 2025. 5. 10. 00:41: user 객체 넣기
         );
+
         return reservation;
     };
 
@@ -115,7 +117,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                     resultSet.getString("name"),
                     resultSet.getDate("date").toLocalDate(),
                     time,
-                    theme
+                    theme,
+                    null // TODO 2025. 5. 10. 00:41: 유저 객체 넣기
             );
         }, date, theme.getId());
     }
