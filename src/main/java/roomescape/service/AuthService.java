@@ -29,6 +29,13 @@ public class AuthService {
         session.setAttribute(LOGIN_INFO_KEY, loginInfo);
     }
 
+    public void logout(final HttpSession session) {
+        if (session.getAttribute(LOGIN_INFO_KEY) == null) {
+            throw new AccessDeniedException("로그인 정보가 없습니다.");
+        }
+        session.removeAttribute(LOGIN_INFO_KEY);
+    }
+
     public LoginInfo checkLogin(final HttpSession session) {
         final LoginInfo loginInfo = (LoginInfo) session.getAttribute(LOGIN_INFO_KEY);
         if (loginInfo == null) {
