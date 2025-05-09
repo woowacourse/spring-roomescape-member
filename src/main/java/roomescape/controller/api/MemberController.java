@@ -4,12 +4,10 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.annotation.AdminOnly;
 import roomescape.controller.dto.request.MemberLoginRequest;
@@ -44,7 +42,6 @@ public class MemberController {
     }
 
     @PostMapping("/members")
-    @ResponseStatus(HttpStatus.CREATED)
     public MemberSignUpResponse signup(@RequestBody @Valid MemberSignUpRequest request) {
         MemberSignUpCreation creation = MemberSignUpCreation.from(request);
         MemberSignUpResult signUpResult = memberService.register(creation);
