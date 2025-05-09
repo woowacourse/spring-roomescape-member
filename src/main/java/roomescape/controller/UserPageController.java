@@ -20,4 +20,10 @@ public class UserPageController {
     public String getHomePage() {
         return "index";
     }
+
+    @GetMapping("/login")
+    @Operation(summary = "로그인 페이지", description = "로그인 화면을 제공합니다.")
+    public String getLoginPage() {
+        return "login";
+    }
 }
