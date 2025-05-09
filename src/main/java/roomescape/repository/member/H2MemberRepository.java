@@ -30,14 +30,23 @@ public class H2MemberRepository implements MemberRepository {
     }
 
     @Override
-    public List<Member> findAll() {
-        String sql = "SELECT * FROM member";
-        return template.query(sql, mapper);
+    public List<Member> findAllByRole(MemberRole role) {
+        String sql = """
+                SELECT *
+                FROM member
+                WHERE member.role LIKE ?
+                ORDER BY member.id ASC
+                """;
+        return template.query(sql, mapper, role.toString());
     }
 
     @Override
     public Optional<Member> findById(long id) {
-        String sql = "SELECT * FROM member WHERE member.id = ?";
+        String sql = """
+                SELECT *
+                FROM member
+                WHERE member.id = ?
+                """;
         try {
             Member member = template.queryForObject(sql, mapper, id);
             return Optional.of(member);

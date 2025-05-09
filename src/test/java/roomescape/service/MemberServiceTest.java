@@ -16,7 +16,7 @@ class MemberServiceTest {
     private final MemberRepository memberRepository = mock(MemberRepository.class);
     private final MemberService memberService = new MemberService(memberRepository);
 
-    @DisplayName("모든 회원을 조회할 수 있다")
+    @DisplayName("특정 권한에 해당하는 회원들을 조회할 수 있다")
     @Test
     void testMethodNameHere() {
         // given
@@ -24,10 +24,10 @@ class MemberServiceTest {
                 new Member(1L, "회원1", "test1@test.com", "asdf1234!", MemberRole.GENERAL),
                 new Member(2L, "회원2", "test2@test.com", "asdf1234!", MemberRole.GENERAL),
                 new Member(3L, "회원3", "test3@test.com", "asdf1234!", MemberRole.GENERAL));
-        when(memberRepository.findAll()).thenReturn(expectedMembers);
+        when(memberRepository.findAllByRole(MemberRole.GENERAL)).thenReturn(expectedMembers);
 
         // when
-        List<Member> members = memberService.getAllMembers();
+        List<Member> members = memberService.getAllByRole(MemberRole.GENERAL);
 
         // then
         assertThat(members).hasSize(expectedMembers.size());
