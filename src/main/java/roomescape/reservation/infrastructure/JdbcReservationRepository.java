@@ -12,8 +12,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.auth.domain.AuthRole;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.UserRole;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReservationTime;
@@ -42,7 +42,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                             rs.getString("member_name"),
                             rs.getString("member_email"),
                             rs.getString("member_password"),
-                            UserRole.from(rs.getString("member_role"))
+                            AuthRole.from(rs.getString("member_role"))
                     )
             );
 

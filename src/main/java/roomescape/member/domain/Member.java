@@ -2,6 +2,7 @@ package roomescape.member.domain;
 
 
 import lombok.Getter;
+import roomescape.auth.domain.AuthRole;
 
 @Getter
 public class Member {
@@ -10,9 +11,9 @@ public class Member {
     private final String name;
     private final String email;
     private final String password;
-    private final UserRole role;
+    private final AuthRole role;
 
-    public Member(final Long id, final String name, final String email, final String password, final UserRole role) {
+    public Member(final Long id, final String name, final String email, final String password, final AuthRole role) {
         validateName(name);
         validateEmail(email);
         validatePassword(password);
@@ -25,7 +26,7 @@ public class Member {
         this.role = role;
     }
 
-    public Member(final String name, final String email, final String password, final UserRole role) {
+    public Member(final String name, final String email, final String password, final AuthRole role) {
         this(null, name, email, password, role);
     }
 
@@ -50,7 +51,7 @@ public class Member {
         }
     }
 
-    private void validateRole(UserRole role) {
+    private void validateRole(AuthRole role) {
         if (role == null) {
             throw new IllegalArgumentException("역할은 null 일 수 없습니다.");
         }

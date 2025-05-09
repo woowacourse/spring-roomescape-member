@@ -8,9 +8,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.auth.domain.AuthRole;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
-import roomescape.member.domain.UserRole;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,7 +22,7 @@ public class JdbcMemberRepository implements MemberRepository {
                     rs.getString("name"),
                     rs.getString("email"),
                     rs.getString("password"),
-                    UserRole.from(rs.getString("role"))
+                    AuthRole.from(rs.getString("role"))
             );
 
     private final JdbcTemplate jdbcTemplate;

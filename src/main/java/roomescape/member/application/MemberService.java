@@ -2,11 +2,11 @@ package roomescape.member.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.auth.domain.AuthRole;
 import roomescape.exception.AuthorizationException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
-import roomescape.member.domain.UserRole;
 import roomescape.member.ui.dto.CreateMemberRequest;
 
 @Service
@@ -20,7 +20,7 @@ public class MemberService {
                 request.name(),
                 request.email(),
                 request.password(),
-                UserRole.MEMBER
+                AuthRole.MEMBER
         );
         memberRepository.save(member);
     }
@@ -29,7 +29,7 @@ public class MemberService {
         final Member found = memberRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 예약 데이터가 존재하지 않습니다. id = " + id));
 
-        if (found.getRole() == UserRole.ADMIN) {
+        if (found.getRole() == AuthRole.ADMIN) {
             throw new AuthorizationException("관리자는 삭제할 수 없습니다.");
         }
         memberRepository.deleteById(id);

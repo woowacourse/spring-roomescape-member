@@ -2,13 +2,13 @@ package roomescape.auth.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.auth.domain.AuthRole;
 import roomescape.auth.domain.AuthTokenProvider;
 import roomescape.auth.ui.dto.CreateAccessTokenRequest;
 import roomescape.exception.AuthenticationException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
-import roomescape.member.domain.UserRole;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +30,6 @@ public class AuthService {
 
     public Member getMemberByEmail(final String email) {
         return memberRepository.findByEmail(email)
-                .orElseGet(() -> new Member("게스트", "게스트는_이메일이_없습니다", "패스워드도_없습니다", UserRole.GUEST));
+                .orElseGet(() -> new Member("게스트", "게스트는_이메일이_없습니다", "패스워드도_없습니다", AuthRole.GUEST));
     }
 }

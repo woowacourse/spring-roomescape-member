@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.domain.AuthRole;
 import roomescape.auth.domain.RequiresRole;
-import roomescape.member.domain.UserRole;
 import roomescape.theme.applcation.ThemeService;
 import roomescape.theme.ui.dto.CreateThemeRequest;
 import roomescape.theme.ui.dto.CreateThemeResponse;
@@ -26,7 +26,7 @@ public class ThemeRestController {
     private final ThemeService themeService;
 
     @PostMapping
-    @RequiresRole(userRoles = {UserRole.ADMIN})
+    @RequiresRole(authRoles = {AuthRole.ADMIN})
     public ResponseEntity<CreateThemeResponse> create(
             @RequestBody final CreateThemeRequest request
     ) {
@@ -37,7 +37,7 @@ public class ThemeRestController {
     }
 
     @DeleteMapping({"/{id}"})
-    @RequiresRole(userRoles = {UserRole.ADMIN})
+    @RequiresRole(authRoles = {AuthRole.ADMIN})
     public ResponseEntity<Void> delete(
             @PathVariable final Long id
     ) {
@@ -47,7 +47,7 @@ public class ThemeRestController {
     }
 
     @GetMapping
-    @RequiresRole(userRoles = {UserRole.ADMIN, UserRole.MEMBER, UserRole.GUEST})
+    @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER, AuthRole.GUEST})
     public ResponseEntity<List<ThemeResponse>> findAll() {
         final List<ThemeResponse> themeResponses = themeService.findAll();
 
@@ -55,7 +55,7 @@ public class ThemeRestController {
     }
 
     @GetMapping("/popular-list")
-    @RequiresRole(userRoles = {UserRole.ADMIN, UserRole.MEMBER, UserRole.GUEST})
+    @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER, AuthRole.GUEST})
     public ResponseEntity<List<ThemeResponse>> findPopularThemes() {
         final List<ThemeResponse> popularThemes = themeService.findPopularThemes();
 

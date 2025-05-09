@@ -12,8 +12,8 @@ import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.auth.domain.AuthRole;
 import roomescape.auth.domain.AuthTokenProvider;
-import roomescape.member.domain.UserRole;
 
 @Component
 public class JwtTokenProvider implements AuthTokenProvider {
@@ -30,7 +30,7 @@ public class JwtTokenProvider implements AuthTokenProvider {
         this.secretKey = Keys.hmacShaKeyFor(secretKeyValue.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createAccessToken(final String principal, final UserRole role) {
+    public String createAccessToken(final String principal, final AuthRole role) {
         Claims claims = Jwts.claims()
                 .subject(principal)
                 .build();
@@ -73,9 +73,9 @@ public class JwtTokenProvider implements AuthTokenProvider {
                 .toInstant();
     }
 
-    public UserRole getRole(final String token) {
+    public AuthRole getRole(final String token) {
         if (token == null || token.isEmpty()) {
-            return UserRole.GUEST;
+            return AuthRole.GUEST;
         }
 
         String role = Jwts.parser()
@@ -85,7 +85,7 @@ public class JwtTokenProvider implements AuthTokenProvider {
                 .getPayload()
                 .get("role", String.class);
 
-        return UserRole.from(role);
+        return AuthRole.from(role);
     }
 
     public boolean validateToken(final String token) {

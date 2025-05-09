@@ -1,28 +1,26 @@
-package roomescape.member.domain;
+package roomescape.auth.domain;
 
 import java.util.Arrays;
+import lombok.Getter;
 
-public enum UserRole {
+@Getter
+public enum AuthRole {
 
     ADMIN("어드민"),
-    MEMBER("멤버"),
+    MEMBER("가입"),
     GUEST("게스트"),
     ;
 
     private final String roleName;
 
-    UserRole(String roleName) {
+    AuthRole(String roleName) {
         this.roleName = roleName;
     }
 
-    public static UserRole from(final String roleName) {
+    public static AuthRole from(final String roleName) {
         return Arrays.stream(values())
                 .filter(userRole -> userRole.roleName.equals(roleName))
                 .findFirst()
-                .orElseGet(() -> UserRole.GUEST);
-    }
-
-    public String getRoleName() {
-        return roleName;
+                .orElse(AuthRole.GUEST);
     }
 }

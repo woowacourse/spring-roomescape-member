@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.domain.AuthRole;
 import roomescape.auth.domain.RequiresRole;
-import roomescape.member.domain.UserRole;
 import roomescape.reservation.application.ReservationTimeService;
 import roomescape.reservation.ui.dto.CreateReservationTimeRequest;
 import roomescape.reservation.ui.dto.CreateReservationTimeResponse;
@@ -26,7 +26,7 @@ public class ReservationTimeRestController {
     private final ReservationTimeService reservationTimeService;
 
     @PostMapping
-    @RequiresRole(userRoles = {UserRole.ADMIN})
+    @RequiresRole(authRoles = {AuthRole.ADMIN})
     public ResponseEntity<CreateReservationTimeResponse> create(
             @RequestBody final CreateReservationTimeRequest request
     ) {
@@ -37,7 +37,7 @@ public class ReservationTimeRestController {
     }
 
     @DeleteMapping("/{id}")
-    @RequiresRole(userRoles = {UserRole.ADMIN})
+    @RequiresRole(authRoles = {AuthRole.ADMIN})
     public ResponseEntity<Void> delete(
             @PathVariable final Long id
     ) {
@@ -47,7 +47,7 @@ public class ReservationTimeRestController {
     }
 
     @GetMapping
-    @RequiresRole(userRoles = {UserRole.ADMIN, UserRole.MEMBER, UserRole.GUEST})
+    @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER, AuthRole.GUEST})
     public ResponseEntity<List<ReservationTimeResponse>> findAll() {
         return ResponseEntity.ok(reservationTimeService.findAll());
     }

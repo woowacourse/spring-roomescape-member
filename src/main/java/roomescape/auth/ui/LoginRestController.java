@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.application.AuthService;
 import roomescape.auth.application.BlacklistService;
+import roomescape.auth.domain.AuthRole;
 import roomescape.auth.domain.RequiresRole;
 import roomescape.auth.ui.dto.CheckAccessTokenResponse;
 import roomescape.auth.ui.dto.CreateAccessTokenRequest;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.UserRole;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +29,7 @@ public class LoginRestController {
     private final BlacklistService blacklistService;
 
     @PostMapping("/login")
-    @RequiresRole(userRoles = {UserRole.ADMIN, UserRole.MEMBER, UserRole.GUEST})
+    @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER, AuthRole.GUEST})
     public ResponseEntity<Void> createAccessToken(
             @RequestBody final CreateAccessTokenRequest request, HttpServletResponse response
     ) {
@@ -46,7 +46,7 @@ public class LoginRestController {
     }
 
     @PostMapping("/logout")
-    @RequiresRole(userRoles = {UserRole.ADMIN, UserRole.MEMBER})
+    @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER})
     public void logout(@CookieValue(value = "token") final String accessToken) {
         log.atInfo().log("Logout accessToken: {}", accessToken);
 
@@ -58,7 +58,7 @@ public class LoginRestController {
 
 
     @GetMapping("/login/check")
-    @RequiresRole(userRoles = {UserRole.ADMIN, UserRole.MEMBER, UserRole.GUEST})
+    @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER, AuthRole.GUEST})
     public ResponseEntity<CheckAccessTokenResponse> checkAccessToken(final Member member) {
         if (member == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

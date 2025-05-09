@@ -6,10 +6,10 @@ import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.auth.domain.AuthRole;
 import roomescape.auth.domain.AuthTokenExtractor;
 import roomescape.auth.domain.AuthTokenProvider;
 import roomescape.auth.domain.RequiresRole;
-import roomescape.member.domain.UserRole;
 
 @RequiredArgsConstructor
 public class CheckUserRoleInterceptor implements HandlerInterceptor {
@@ -30,9 +30,9 @@ public class CheckUserRoleInterceptor implements HandlerInterceptor {
         }
 
         final String accessToken = authTokenExtractor.extract(request);
-        final UserRole role = authTokenProvider.getRole(accessToken);
+        final AuthRole role = authTokenProvider.getRole(accessToken);
 
-        return Arrays.stream(requiresRole.userRoles())
+        return Arrays.stream(requiresRole.authRoles())
                 .anyMatch(userRole -> userRole == role);
     }
 }
