@@ -8,4 +8,6 @@ public interface MemberDao {
     Optional<Member> findByEmailAndPassword(String email, String password);
 
     Optional<Member> findById(long memberId);
+
+    Member save(Member member);
 }

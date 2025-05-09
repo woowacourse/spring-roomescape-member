@@ -2,13 +2,13 @@ package roomescape.member.domain;
 
 public class Member {
     private final Long id;
-    private final String name;
+    private final MemberName name;
     private final String email;
     private final String password;
 
     public Member(final Long id, final String name, final String email, final String password) {
         this.id = id;
-        this.name = name;
+        this.name = new MemberName(name);
         this.email = email;
         this.password = password;
     }
@@ -18,7 +18,7 @@ public class Member {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     public String getEmail() {

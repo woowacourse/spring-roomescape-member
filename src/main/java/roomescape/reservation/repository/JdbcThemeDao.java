@@ -15,7 +15,7 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.ThemeName;
 
 @Repository
-public class H2ThemeDao implements ThemeDao {
+public class JdbcThemeDao implements ThemeDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final RowMapper<Theme> themeMapper = (resultSet, rowNum) ->
@@ -26,7 +26,7 @@ public class H2ThemeDao implements ThemeDao {
                     resultSet.getString("thumbnail")
             );
 
-    public H2ThemeDao(final NamedParameterJdbcTemplate jdbcTemplate) {
+    public JdbcThemeDao(final NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

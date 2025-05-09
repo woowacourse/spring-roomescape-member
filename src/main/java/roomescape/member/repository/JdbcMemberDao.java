@@ -5,6 +5,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 
@@ -36,9 +38,21 @@ public class JdbcMemberDao implements MemberDao {
 
     @Override
     public Optional<Member> findById(long id) {
-        final String sql = "SELECT * FROM member WHERE id = :id";
+        final String sql = "SELECT id, name, email, password FROM member WHERE id = :id";
         final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         final Member member = jdbcTemplate.queryForObject(sql, parameters, memberMapper);
         return Optional.ofNullable(member);
+    }
+
+    @Override
+    public Member save(Member member) {
+        final String sql = "INSERT INTO member(name, email, password) VALUES(:name, :email, :password)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("name", member.getName())
+                .addValue("email", member.getEmail())
+                .addValue("password", member.getPassword());
+        jdbcTemplate.update(sql, parameters, keyHolder, new String[]{"id"});
+        return new Member(keyHolder.getKeyAs(Long.class), member.getName(), member.getEmail(), member.getPassword());
     }
 }

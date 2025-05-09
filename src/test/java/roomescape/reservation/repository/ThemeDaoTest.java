@@ -28,7 +28,7 @@ class ThemeDaoTest {
     @BeforeEach
     void setUp() {
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
-        themeDao = new H2ThemeDao(namedParameterJdbcTemplate);
+        themeDao = new JdbcThemeDao(namedParameterJdbcTemplate);
     }
 
     @DisplayName("새로운 테마를 저장할 수 있다")

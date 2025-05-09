@@ -30,7 +30,7 @@ class ReservationTimeDaoTest {
     @BeforeEach
     void setUp() {
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
-        reservationTimeDao = new H2ReservationTimeDao(namedParameterJdbcTemplate);
+        reservationTimeDao = new JdbcReservationTimeDao(namedParameterJdbcTemplate);
     }
 
     @DisplayName("새로운 예약시간을 저장할 수 있다.")
