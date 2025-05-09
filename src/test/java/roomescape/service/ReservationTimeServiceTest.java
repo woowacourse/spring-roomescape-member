@@ -26,7 +26,7 @@ class ReservationTimeServiceTest {
         //given & when
         List<ReservationTimeResponse> actual = reservationService.readAllReservationTime();
         //then
-        assertThat(actual.size()).isEqualTo(16);
+        assertThat(actual.size()).isEqualTo(15);
         assertThat(actual.getFirst().startAt()).isEqualTo(LocalTime.of(9, 0));
     }
 
@@ -46,7 +46,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간을 성공적으로 삭제한다.")
     void successfulDeleteReservationTime() {
         // given
-        Long existingId = 16L;
+        Long existingId = 15L;
 
         // when
         reservationService.deleteReservationTime(existingId);

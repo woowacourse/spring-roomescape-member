@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.entity.Member;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
@@ -28,12 +29,14 @@ public class ReservationJdbcDao implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         String sql = """
-                select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at, th.id as theme_id,th.name as theme_name, th.description, th.thumbnail 
+                select r.id as reservation_id, r.date, t.id as time_id, t.start_at, th.id as theme_id,th.name as theme_name, th.description, th.thumbnail, m.id as member_id, m.name as member_name,m.email, m.password 
                 from reservation as r 
                 inner join reservation_time as t 
-                on r.time_id = t.id
-                inner join theme as th
-                on r.theme_id = th.id
+                on r.time_id = t.id 
+                inner join theme as th 
+                on r.theme_id = th.id 
+                inner join member as m 
+                on r.member_id = m.id 
                 order by r.id;
                 """;
         return namedJdbcTemplate.query(sql, getReservationRowMapper());
@@ -42,7 +45,7 @@ public class ReservationJdbcDao implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "insert into reservation (name, date, time_id, theme_id) values (:name, :date, :timeId, :themeId)";
+        String sql = "insert into reservation (date, time_id, theme_id, member_id) values (:date, :timeId, :themeId, :memberId)";
 
         SqlParameterSource params = new BeanPropertySqlParameterSource(reservation);
 
@@ -50,10 +53,11 @@ public class ReservationJdbcDao implements ReservationRepository {
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
         return Reservation.create(id,
-                reservation.getName(),
                 reservation.getDate(),
                 reservation.getTime(),
-                reservation.getTheme());
+                reservation.getTheme(),
+                reservation.getMember()
+        );
     }
 
     @Override
@@ -85,20 +89,21 @@ public class ReservationJdbcDao implements ReservationRepository {
         return namedJdbcTemplate.query(sql, params, (rs, rowNum) -> rs.getLong("time_id"));
     }
 
-    public boolean existsByDateAndTimeAndTheme(LocalDate date, ReservationTime time, Theme theme) {
-        String sql = "select count(*) from reservation where date = :date and time_id = :timeId and theme_id = :themeId";
+    public boolean existsByDateAndTimeAndTheme(LocalDate date, ReservationTime time, Theme theme, Member member) {
+        String sql = "select count(*) from reservation where date = :date and time_id = :timeId and theme_id = :themeId and member_id = :memberId";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date", date)
                 .addValue("timeId", time.getId())
-                .addValue("themeId", theme.getId());
+                .addValue("themeId", theme.getId())
+                .addValue("memberId", member.getId());
         Integer count = namedJdbcTemplate.queryForObject(sql, params, Integer.class);
+        System.out.println(count);
         return count != null && count > 0;
     }
 
     private RowMapper<Reservation> getReservationRowMapper() {
         return (resultSet, rowNum) -> Reservation.create(
                 resultSet.getLong("reservation_id"),
-                resultSet.getString("name"),
                 resultSet.getDate("date").toLocalDate(),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
@@ -109,6 +114,12 @@ public class ReservationJdbcDao implements ReservationRepository {
                         resultSet.getString("theme_name"),
                         resultSet.getString("description"),
                         resultSet.getString("thumbnail")
+                ),
+                new Member(
+                        resultSet.getLong("member_id"),
+                        resultSet.getString("member_name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password")
                 )
         );
     }

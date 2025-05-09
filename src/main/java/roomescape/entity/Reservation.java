@@ -6,42 +6,40 @@ import java.util.Objects;
 
 public class Reservation {
 
-    private static final int NAME_LENGTH = 10;
-
     private final Long id;
-    private final String name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
+    private final Member member;
 
-    protected Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    protected Reservation(Long id, LocalDate date, ReservationTime time, Theme theme, Member member) {
         this.id = id;
-        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.member = member;
     }
 
-    public static Reservation create(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validate(name, date, time, theme);
-        return new Reservation(id, name, date, time, theme);
+    public static Reservation create(Long id,
+                                     LocalDate date,
+                                     ReservationTime time,
+                                     Theme theme,
+                                     Member member
+    ) {
+        validate(date, time, theme, member);
+        return new Reservation(id, date, time, theme, member);
     }
 
-    public static Reservation createIfDateTimeValid(String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateName(name);
+    public static Reservation createIfDateTimeValid(LocalDate date,
+                                                    ReservationTime time,
+                                                    Theme theme,
+                                                    Member member
+    ) {
         validateTheme(theme);
+        validateMember(member);
         validateDateTimeIsAfterNow(date, time);
-        return new Reservation(null, name, date, time, theme);
+        return new Reservation(null, date, time, theme, member);
 
-    }
-
-    private static void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 유효하지 않은 예약자명입니다.");
-        }
-        if (name.length() > NAME_LENGTH) {
-            throw new IllegalArgumentException("[ERROR] 예약자명의 길이가 " + NAME_LENGTH + "자를 초과할 수 없습니다.");
-        }
     }
 
     private static void validateDate(LocalDate date) {
@@ -62,11 +60,17 @@ public class Reservation {
         }
     }
 
-    private static void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateName(name);
+    private static void validateMember(Member member) {
+        if (member == null) {
+            throw new IllegalArgumentException("[ERROR] 유효하지 않은 사용자입니다.");
+        }
+    }
+
+    private static void validate(LocalDate date, ReservationTime time, Theme theme, Member member) {
         validateTheme(theme);
         validateDate(date);
         validateTime(time);
+        validateMember(member);
     }
 
     private static void validateDateTimeIsAfterNow(LocalDate date, ReservationTime time) {
@@ -82,10 +86,6 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public LocalDate getDate() {
         return date;
     }
@@ -96,6 +96,10 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     public Long getTimeId() {
@@ -110,6 +114,13 @@ public class Reservation {
             return null;
         }
         return theme.getId();
+    }
+
+    public Long getMemberId() {
+        if (member == null) {
+            return null;
+        }
+        return member.getId();
     }
 
     @Override

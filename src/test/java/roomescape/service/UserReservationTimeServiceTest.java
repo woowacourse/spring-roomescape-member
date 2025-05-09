@@ -29,7 +29,7 @@ class UserReservationTimeServiceTest {
         //when
         List<ReservationAvailableTimeResponse> actual = service.readAvailableReservationTimes(givenDate, givenTheme);
         //then
-        assertThat(actual.size()).isEqualTo(16);
+        assertThat(actual.size()).isEqualTo(15);
         ReservationAvailableTimeResponse bookedResponse = actual.stream()
                 .filter(current -> current.startAt().equals(givenBooked))
                 .findFirst()

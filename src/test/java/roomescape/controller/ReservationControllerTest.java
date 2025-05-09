@@ -20,6 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.dto.MemberResponse;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
@@ -46,9 +47,16 @@ class ReservationControllerTest {
     void readReservation() {
         ReservationTimeResponse givenTime = new ReservationTimeResponse(1L, LocalTime.MAX);
         ThemeResponse givenTheme = new ThemeResponse(1L, "테스트", "테스트", "테스트");
-        ReservationResponse response1 = new ReservationResponse(1L, "브라운", LocalDate.now().plusDays(1), givenTime,
+        MemberResponse givenMember = new MemberResponse(1L, "테스트", "test@example.com", "테스트");
+        ReservationResponse response1 = new ReservationResponse(1L,
+                givenMember.name(),
+                LocalDate.now().plusDays(1),
+                givenTime,
                 givenTheme);
-        ReservationResponse response2 = new ReservationResponse(2L, "네오", LocalDate.now().plusDays(1), givenTime,
+        ReservationResponse response2 = new ReservationResponse(2L,
+                givenMember.name(),
+                LocalDate.now().plusDays(1),
+                givenTime,
                 givenTheme);
 
         List<ReservationResponse> reservations = List.of(
@@ -63,9 +71,9 @@ class ReservationControllerTest {
                 .status(HttpStatus.OK)
                 .body("size()", is(2))
                 .body("[0].id", is(1))
-                .body("[0].name", is("브라운"))
+                .body("[0].name", is("테스트"))
                 .body("[1].id", is(2))
-                .body("[1].name", is("네오"));
+                .body("[1].name", is("테스트"));
     }
 
     @Test
@@ -75,12 +83,17 @@ class ReservationControllerTest {
         long expectedId = 1L;
         long expectedTimeId = 1L;
         long expectedThemeId = 1L;
-
-        ReservationRequest dto = new ReservationRequest("브라운", fixedDate, expectedTimeId, expectedThemeId);
+        long expectedMemberId = 1L;
+        ReservationRequest dto = new ReservationRequest(fixedDate, expectedTimeId, expectedThemeId, expectedMemberId);
         ReservationTimeResponse givenTime = new ReservationTimeResponse(expectedTimeId, LocalTime.MAX);
-
-        ThemeResponse givenTheme = new ThemeResponse(1L, "테스트", "테스트", "테스트");
-        ReservationResponse response = new ReservationResponse(expectedId, "브라운", fixedDate, givenTime, givenTheme);
+        ThemeResponse givenTheme = new ThemeResponse(expectedThemeId, "테스트", "테스트", "테스트");
+        MemberResponse givenMember = new MemberResponse(expectedMemberId, "테스트", "test@example.com", "테스트");
+        ReservationResponse response = new ReservationResponse(expectedId,
+                givenMember.name(),
+                fixedDate,
+                givenTime,
+                givenTheme
+        );
         given(reservationService.postReservation(dto)).willReturn(response);
 
         RestAssuredMockMvc.given().log().all()
@@ -90,7 +103,7 @@ class ReservationControllerTest {
                 .then().log().all()
                 .status(HttpStatus.CREATED)
                 .body("id", is((int) expectedId))
-                .body("name", is("브라운"))
+                .body("name", is("테스트"))
                 .body("date", is(fixedDate.toString()))
                 .body("time.id", is((int) expectedTimeId))
                 .body("theme.id", is((int) expectedThemeId))

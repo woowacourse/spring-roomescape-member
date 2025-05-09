@@ -37,11 +37,11 @@ class ReservationServiceTest {
         List<ReservationResponse> given = reservationService.readReservation();
         assertThat(given.size()).isEqualTo(56);
         LocalDate givenDate = LocalDate.of(2028, 1, 10);
-
-        //when
         long timeId = 1L;
         long themeId = 1L;
-        ReservationRequest request = new ReservationRequest("브라운", givenDate, timeId, themeId);
+        long memberId = 1L;
+        //when
+        ReservationRequest request = new ReservationRequest(givenDate, timeId, themeId, memberId);
         ReservationResponse actual = reservationService.postReservation(request);
         //then
         assertThat(actual.id()).isEqualTo(57);
@@ -54,7 +54,9 @@ class ReservationServiceTest {
         LocalDate givenDate = LocalDate.MIN;
         long timeId = 1L;
         long themeId = 1L;
-        ReservationRequest request = new ReservationRequest("브라운", givenDate, timeId, themeId);
+        long memberId = 1L;
+
+        ReservationRequest request = new ReservationRequest(givenDate, timeId, themeId, memberId);
 
         //when&then
         assertThatThrownBy(() -> reservationService.postReservation(request))
@@ -69,7 +71,8 @@ class ReservationServiceTest {
         LocalDate daysAgo = LocalDate.now().plusDays(10);
         long timeId = 1L;
         long themeId = 10L;
-        ReservationRequest request = new ReservationRequest("user1", daysAgo, timeId, themeId);
+        long memberId = 1L;
+        ReservationRequest request = new ReservationRequest(daysAgo, timeId, themeId, memberId);
 
         //when&then
         assertThatThrownBy(() -> reservationService.postReservation(request))

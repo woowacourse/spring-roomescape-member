@@ -116,5 +116,6 @@ VALUES
 (CURRENT_DATE - 2, 2, 9, 1),
 (CURRENT_DATE - 2, 1, 9, 2),
 
--- theme_id 10: 1건
-(CURRENT_DATE - 1, 1, 10, 1);
+-- theme_id 10: 2건
+(CURRENT_DATE - 1, 1, 10, 1),
+(CURRENT_DATE + 10, 1, 10, 1);
