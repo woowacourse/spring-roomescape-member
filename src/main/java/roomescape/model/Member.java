@@ -2,11 +2,13 @@ package roomescape.model;
 
 public class Member {
     private final Long id;
+    private final String role;
     private final MemberName name;
     private final String email;
     private final String password;
 
-    public Member(final Long id, final MemberName name, final String email, final String password) {
+    public Member(final Long id, final String role, final MemberName name, final String email, final String password) {
+        this.role = role;
         this.email = email;
         validateNotNull(name, password);
         this.id = id;
@@ -20,5 +22,23 @@ public class Member {
         }
     }
 
+    public Long getId() {
+        return id;
+    }
 
+    public MemberName getMemberName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getRole() {
+        return role;
+    }
 }
