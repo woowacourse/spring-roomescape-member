@@ -15,7 +15,7 @@ class MemberTest {
     @Test
     void cannotCreateBecauseNullId() {
         // when & then
-        assertThatThrownBy(() -> new Member(null, "이름", "test@test.com", "비밀번호"))
+        assertThatThrownBy(() -> new Member(null, "이름", "test@test.com", "비밀번호", MemberRole.GENERAL))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 비어있는 ID로 멤버를 생성할 수 없습니다.");
     }
@@ -25,7 +25,7 @@ class MemberTest {
     @NullAndEmptySource
     void cannotCreateBecauseNullName(String name) {
         // when & then
-        assertThatThrownBy(() -> new Member(1L, name, "test@test.com", "비밀번호"))
+        assertThatThrownBy(() -> new Member(1L, name, "test@test.com", "비밀번호", MemberRole.GENERAL))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 비어있는 이름로 멤버를 생성할 수 없습니다.");
     }
@@ -37,7 +37,7 @@ class MemberTest {
         String tooLongName = "1".repeat(256);
 
         // when & then
-        assertThatThrownBy(() -> new Member(1L, tooLongName, "test@test.com", "비밀번호"))
+        assertThatThrownBy(() -> new Member(1L, tooLongName, "test@test.com", "비밀번호", MemberRole.GENERAL))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 최대길이를 초과한 이름으로는 멤버를 생성할 수 없습니다.");
     }
@@ -47,7 +47,7 @@ class MemberTest {
     @NullAndEmptySource
     void cannotCreateBecauseNullEmail(String email) {
         // when & then
-        assertThatThrownBy(() -> new Member(1L, "이름", email, "비밀번호"))
+        assertThatThrownBy(() -> new Member(1L, "이름", email, "비밀번호", MemberRole.GENERAL))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 비어있는 이메일로 멤버를 생성할 수 없습니다.");
     }
@@ -59,7 +59,7 @@ class MemberTest {
         String tooLongEmail = "1".repeat(256);
 
         // when & then
-        assertThatThrownBy(() -> new Member(1L, "이름", tooLongEmail, "비밀번호"))
+        assertThatThrownBy(() -> new Member(1L, "이름", tooLongEmail, "비밀번호", MemberRole.GENERAL))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 최대길이를 초과한 이메일로는 멤버를 생성할 수 없습니다.");
     }
@@ -71,7 +71,7 @@ class MemberTest {
         String invalidEmail = "invalidEmail";
 
         // when & then
-        assertThatThrownBy(() -> new Member(1L, "이름", invalidEmail, "비밀번호"))
+        assertThatThrownBy(() -> new Member(1L, "이름", invalidEmail, "비밀번호", MemberRole.GENERAL))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 올바르지 않은 형식의 이메일로는 멤버를 생성할 수 없습니다.");
     }
@@ -81,9 +81,9 @@ class MemberTest {
     @NullAndEmptySource
     void cannotCreateBecauseNullPassword(String password) {
         // when & then
-        assertThatThrownBy(() -> new Member(1L, "이름", "test@test.com", password))
+        assertThatThrownBy(() -> new Member(1L, "이름", "test@test.com", password, MemberRole.GENERAL))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 비어있는 이름으로 비밀번호를 생성할 수 없습니다.");
+                .hasMessage("[ERROR] 비어있는 비밀번호로 멤버를 생성할 수 없습니다.");
     }
 
     @DisplayName("최대길이를 초과한 비밀번호로 멤버를 생성할 수 없다")
@@ -93,22 +93,30 @@ class MemberTest {
         String tooLongPassword = "1".repeat(256);
 
         // when & then
-        assertThatThrownBy(() -> new Member(1L, "이름", "test@test.com", tooLongPassword))
+        assertThatThrownBy(() -> new Member(1L, "이름", "test@test.com", tooLongPassword, MemberRole.GENERAL))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 최대길이를 초과한 비밀번호로는 멤버를 생성할 수 없습니다.");
     }
 
     @DisplayName("비밀번호가 동일한지 확인할 수 있다")
     @Test
-    void testMethodNameHere() {
+    void canCheckSamePassword() {
         // given
-        Member member = new Member(1L, "이름", "test@test.com", "asdf1234!");
+        Member member = new Member(1L, "이름", "test@test.com", "asdf1234!", MemberRole.GENERAL);
 
         // when & then
         assertAll(
                 () -> assertThat(member.comparePassword("asdf1234!")).isTrue(),
                 () -> assertThat(member.comparePassword("zxcv5678!")).isFalse()
         );
+    }
 
+    @DisplayName("비어있는 권한으로는 멤버를 생성할 수 없다")
+    @Test
+    void can() {
+        // when & then
+        assertThatThrownBy(() -> new Member(1L, "이름", "test@test.com", "asdfe123!", null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 비어있는 권한으로 멤버를 생성할 수 없습니다.");
     }
 }

@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.MemberRole;
 import roomescape.utility.JwtTokenProvider;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -396,8 +397,8 @@ class RoomescapeApplicationTest {
     @DisplayName("로그인할 수 있다")
     @Test
     void canLogin() {
-        jdbcTemplate.update("INSERT INTO member (name, email, password) VALUES (?,?,?)",
-                "회원", "test@test.com", "ecxewqe!23");
+        jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES (?,?,?,?)",
+                "회원", "test@test.com", "ecxewqe!23", MemberRole.GENERAL.toString());
 
         Map<String, String> params = new HashMap<>();
         params.put("email", "test@test.com");
@@ -430,8 +431,8 @@ class RoomescapeApplicationTest {
     @DisplayName("비밀번호가 맞지 않을 경우 로그인할 수 없다")
     @Test
     void cannotLoginBecauseOfWrongPassword() {
-        jdbcTemplate.update("INSERT INTO member (name, email, password) VALUES (?,?,?)",
-                "회원", "test@test.com", "ecxewqe!23");
+        jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES (?,?,?,?)",
+                "회원", "test@test.com", "ecxewqe!23", MemberRole.GENERAL.toString());
 
         Map<String, String> params = new HashMap<>();
         params.put("email", "test@test.com");
@@ -448,7 +449,7 @@ class RoomescapeApplicationTest {
     @DisplayName("로그인 여부를 확인할 수 있다")
     @Test
     void canCheckLogin() {
-        String accessToken = jwtTokenProvider.makeAccessToken(1L, "회원");
+        String accessToken = jwtTokenProvider.makeAccessToken(1L, "회원", MemberRole.GENERAL);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -462,7 +463,7 @@ class RoomescapeApplicationTest {
     @DisplayName("토큰이 올바르지 않은 경우 예외가 발생한다")
     @Test
     void cannotCheckLoginBecauseOfInvalidToken() {
-        String accessToken = jwtTokenProvider.makeAccessToken(1L, "회원");
+        String accessToken = jwtTokenProvider.makeAccessToken(1L, "회원", MemberRole.GENERAL);
         String invalidToken = accessToken + "invalid";
 
         RestAssured.given().log().all()
@@ -495,7 +496,7 @@ class RoomescapeApplicationTest {
     @DisplayName("로그아웃을 할 수 있다")
     @Test
     void canLogout() {
-        String accessToken = jwtTokenProvider.makeAccessToken(1L, "회원");
+        String accessToken = jwtTokenProvider.makeAccessToken(1L, "회원", MemberRole.GENERAL);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

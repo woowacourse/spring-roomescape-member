@@ -9,6 +9,7 @@ import io.jsonwebtoken.Jwts;
 import java.util.Date;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.MemberRole;
 import roomescape.exception.UnauthorizedException;
 
 class JwtTokenProviderTest {
@@ -21,7 +22,7 @@ class JwtTokenProviderTest {
     @Test
     void canMakeAccessToken() {
         // when
-        String accessToken = jwtTokenProvider.makeAccessToken(1L, "이름");
+        String accessToken = jwtTokenProvider.makeAccessToken(1L, "이름", MemberRole.GENERAL);
 
         // then
         Date validity = new Date(new Date().getTime() + validityInMilliseconds);
@@ -38,7 +39,7 @@ class JwtTokenProviderTest {
     @Test
     void canParseToken() {
         // given
-        String accessToken = jwtTokenProvider.makeAccessToken(1L, "이름");
+        String accessToken = jwtTokenProvider.makeAccessToken(1L, "이름", MemberRole.GENERAL);
 
         // when
         Claims tokenBody = jwtTokenProvider.parseToken(accessToken);
@@ -48,6 +49,7 @@ class JwtTokenProviderTest {
         assertAll(
                 () -> assertThat(tokenBody.getSubject()).isEqualTo("1"),
                 () -> assertThat(tokenBody.get("name")).isEqualTo("이름"),
+                () -> assertThat(tokenBody.get("role")).isEqualTo(MemberRole.GENERAL.toString()),
                 () -> assertThat(tokenBody.getExpiration().getTime())
                         .isBetween(validity.getTime() - 60000, validity.getTime())
         );
@@ -57,7 +59,7 @@ class JwtTokenProviderTest {
     @Test
     void cannotParseTokenBecauseOfInvalidToken() {
         // given
-        String accessToken = jwtTokenProvider.makeAccessToken(1L, "이름");
+        String accessToken = jwtTokenProvider.makeAccessToken(1L, "이름", MemberRole.GENERAL);
         String invalidToken = accessToken + "invalid";
 
         // when & then
@@ -72,7 +74,7 @@ class JwtTokenProviderTest {
         // given
         long zeroValidityInMilliseconds = 0L;
         jwtTokenProvider = new JwtTokenProvider(secretKey, zeroValidityInMilliseconds);
-        String accessToken = jwtTokenProvider.makeAccessToken(1L, "이름");
+        String accessToken = jwtTokenProvider.makeAccessToken(1L, "이름", MemberRole.GENERAL);
 
         // when & then
         assertThatThrownBy(() -> jwtTokenProvider.parseToken(accessToken))

@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.exception.UnauthorizedException;
 import roomescape.repository.member.H2MemberRepository;
 import roomescape.repository.member.MemberRepository;
@@ -27,14 +28,14 @@ class AuthenticationServiceTest {
         // given
         String email = "test@test.com";
         String password = "test_password";
-        Member member = new Member(1L, "이름", email, password);
+        Member member = new Member(1L, "이름", email, password, MemberRole.GENERAL);
         when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
 
         // when
         String expectedToken = authenticationService.login(email, password);
 
         // then
-        String actualToken = jwtTokenProvider.makeAccessToken(member.getId(), member.getName());
+        String actualToken = jwtTokenProvider.makeAccessToken(member.getId(), member.getName(), MemberRole.GENERAL);
         assertThat(expectedToken).isEqualTo(actualToken);
     }
 
@@ -58,7 +59,7 @@ class AuthenticationServiceTest {
         // given
         String email = "test@test.com";
         String password = "test_password";
-        Member member = new Member(1L, "이름", email, password);
+        Member member = new Member(1L, "이름", email, password, MemberRole.GENERAL);
         when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
 
         // when

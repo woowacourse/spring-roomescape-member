@@ -21,7 +21,7 @@ public class AuthenticationService {
     public String login(String email, String password) {
         Member member = loadMemberByEmail(email);
         validateSamePassword(member, password);
-        return jwtTokenManager.makeAccessToken(member.getId(), member.getName());
+        return jwtTokenManager.makeAccessToken(member.getId(), member.getName(), member.getRole());
     }
 
     private Member loadMemberByEmail(String email) {

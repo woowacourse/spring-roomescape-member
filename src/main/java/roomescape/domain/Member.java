@@ -11,17 +11,19 @@ public class Member {
     private final String name;
     private final String email;
     private final String password;
+    private final MemberRole role;
 
-    public Member(Long id, String name, String email, String password) {
-        validate(id, name, email, password);
+    public Member(Long id, String name, String email, String password, MemberRole role) {
+        validate(id, name, email, password, role);
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
-    public static Member createWithoutId(String name, String email, String password) {
-        return new Member(DEFAULT_ID, name, email, password);
+    public static Member createWithoutId(Long id, String name, String email, String password, MemberRole role) {
+        return new Member(DEFAULT_ID, name, email, password, role);
     }
 
     public boolean comparePassword(String password) {
@@ -44,6 +46,10 @@ public class Member {
         return password;
     }
 
+    public MemberRole getRole() {
+        return role;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
@@ -58,11 +64,12 @@ public class Member {
         return Objects.hashCode(id);
     }
 
-    private void validate(Long id, String name, String email, String password) {
+    private void validate(Long id, String name, String email, String password, MemberRole role) {
         validateId(id);
         validateName(name);
         validateEmail(email);
         validatePassword(password);
+        validateRole(role);
     }
 
     private void validateId(Long id) {
@@ -94,10 +101,16 @@ public class Member {
 
     private void validatePassword(String password) {
         if (password == null || password.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 비어있는 이름으로 비밀번호를 생성할 수 없습니다.");
+            throw new IllegalArgumentException("[ERROR] 비어있는 비밀번호로 멤버를 생성할 수 없습니다.");
         }
         if (password.length() >= MAX_NAME_LENGTH) {
             throw new IllegalArgumentException("[ERROR] 최대길이를 초과한 비밀번호로는 멤버를 생성할 수 없습니다.");
+        }
+    }
+
+    private void validateRole(MemberRole role) {
+        if (role == null) {
+            throw new IllegalArgumentException("[ERROR] 비어있는 권한으로 멤버를 생성할 수 없습니다.");
         }
     }
 }

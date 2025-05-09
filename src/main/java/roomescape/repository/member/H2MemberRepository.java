@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 
 @Repository
 public class H2MemberRepository implements MemberRepository {
@@ -18,7 +19,8 @@ public class H2MemberRepository implements MemberRepository {
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("email"),
-                resultSet.getString("password")
+                resultSet.getString("password"),
+                MemberRole.valueOf(resultSet.getString("role"))
         );
     }
 

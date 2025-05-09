@@ -8,6 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.domain.MemberRole;
 import roomescape.exception.UnauthorizedException;
 
 @Component
@@ -26,12 +27,13 @@ public class JwtTokenProvider {
         this.validityInMilliseconds = validityInMilliseconds;
     }
 
-    public String makeAccessToken(long id, String name) {
+    public String makeAccessToken(long id, String name, MemberRole role) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
         return Jwts.builder()
                 .setSubject(String.valueOf(id))
                 .claim("name", name)
+                .claim("role", role)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
