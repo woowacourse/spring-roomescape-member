@@ -24,6 +24,10 @@ public class AuthenticationService {
         return tokenProvider.createToken(String.valueOf(user.id()));
     }
 
+    public boolean isAvailableToken(final String token) {
+        return tokenProvider.isValidToken(token);
+    }
+
     public User findUserByToken(final String token) {
         var isValidToken = tokenProvider.isValidToken(token);
         if (!isValidToken) {

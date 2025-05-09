@@ -25,12 +25,12 @@ class AuthenticationServiceTest {
     @DisplayName("올바른 이메일과 비밀번호로 토큰을 발행할 수 있다.")
     void issueToken() {
         // given
-        var user = new User(1L, "포포", UserRole.USER, "popo@email.com", "password");
+        var email = "popo@email.com";
+        var password = "password";
+        var user = new User(1L, "포포", UserRole.USER, email, password);
         userRepository.save(user);
 
         // when & then
-        var email = "popo@email.com";
-        var password = "password";
         assertThatCode(() -> service.issueToken(email, password))
             .doesNotThrowAnyException();
     }
@@ -61,6 +61,49 @@ class AuthenticationServiceTest {
         var wrongPassword = "xxxx";
         assertThatThrownBy(() -> service.issueToken(email, wrongPassword))
             .isInstanceOf(AuthorizationException.class);
+    }
+
+    @Test
+    @DisplayName("유효한 토큰에 대한 유효성 여부를 검사할 수 있다.")
+    void isAvailableToken() {
+        // given
+        var email = "popo@email.com";
+        var password = "password";
+        var user = new User(1L, "포포", UserRole.USER, email, password);
+        userRepository.save(user);
+
+        var issuedToken = service.issueToken(user.email(), user.password());
+        // when
+
+        boolean isAvailableToken = service.isAvailableToken(issuedToken);
+
+        // then
+        assertThat(isAvailableToken).isTrue();
+    }
+
+    @Test
+    @DisplayName("유효하지 않은 토큰에 대한 유효성 여부를 검사할 수 있다.")
+    void isAvailableToken2() {
+        // given
+        var email = "popo@email.com";
+        var password = "password";
+        var user = new User(1L, "포포", UserRole.USER, email, password);
+        userRepository.save(user);
+
+        var issuedToken = service.issueToken(user.email(), user.password());
+        var service = authServiceWithStubbedTokenProvider();
+        // when
+
+        boolean isAvailableToken = service.isAvailableToken(issuedToken);
+
+        // then
+        assertThat(isAvailableToken).isFalse();
+    }
+
+    private AuthenticationService authServiceWithStubbedTokenProvider() {
+        var stubTokenProvider = Mockito.mock(AuthenticationTokenProvider.class);
+        Mockito.when(stubTokenProvider.isValidToken(anyString())).thenReturn(false);
+        return new AuthenticationService(stubTokenProvider, userRepository);
     }
 
     @Test
