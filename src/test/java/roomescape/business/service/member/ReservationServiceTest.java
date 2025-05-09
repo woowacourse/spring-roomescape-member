@@ -45,7 +45,7 @@ class ReservationServiceTest {
                 memberRepository
         );
         memberRepository.save(new Member("벨로", "bello@email.com", "1234"));
-        loginMember = new LoginMember(1L, "벨로", "bello@email.com", MemberRole.MEMBER);
+        loginMember = new LoginMember(1L, "벨로", MemberRole.MEMBER);
     }
 
     @DisplayName("예약한다.")

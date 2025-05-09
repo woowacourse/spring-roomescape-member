@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.business.domain.member.Member;
+import roomescape.business.domain.member.MemberRole;
 import roomescape.business.domain.reservation.Reservation;
 import roomescape.business.domain.reservation.ReservationTheme;
 import roomescape.business.domain.reservation.ReservationTime;
@@ -24,6 +25,7 @@ import roomescape.persistence.fakerepository.FakeReservationThemeRepository;
 import roomescape.persistence.fakerepository.FakeReservationTimeRepository;
 import roomescape.presentation.AbstractControllerTest;
 import roomescape.presentation.admin.dto.AdminReservationRequestDto;
+import roomescape.presentation.member.dto.LoginRequestDto;
 import roomescape.presentation.member.dto.ReservationResponseDto;
 
 class AdminReservationControllerTest extends AbstractControllerTest {
@@ -45,10 +47,13 @@ class AdminReservationControllerTest extends AbstractControllerTest {
 
     private Long memberId;
 
+    private String token;
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        memberId = memberRepository.save(new Member("벨로", "bello@email.com", "1234"));
+        memberId = memberRepository.save(new Member("벨로", "bello@email.com", "1234", MemberRole.ADMIN));
+        token = testLoginAndReturnToken();
     }
 
     @AfterEach
@@ -75,6 +80,7 @@ class AdminReservationControllerTest extends AbstractControllerTest {
         ReservationResponseDto response = RestAssured
                 .given()
                 .log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(requestDto)
                 .when()
@@ -114,6 +120,7 @@ class AdminReservationControllerTest extends AbstractControllerTest {
         ErrorResponseDto errorResponseDto = RestAssured
                 .given()
                 .log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(requestDto)
                 .when()
@@ -154,6 +161,7 @@ class AdminReservationControllerTest extends AbstractControllerTest {
         ErrorResponseDto errorResponseDto = RestAssured
                 .given()
                 .log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(requestDto)
                 .when()
@@ -187,6 +195,7 @@ class AdminReservationControllerTest extends AbstractControllerTest {
         // then
         RestAssured
                 .given()
+                .cookie("token", token)
                 .log().all()
                 .when()
                 .delete("/admin/reservations/" + id)
@@ -197,4 +206,19 @@ class AdminReservationControllerTest extends AbstractControllerTest {
                 .isEmpty();
     }
 
+    private String testLoginAndReturnToken() {
+        return RestAssured
+                .given()
+                .log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", token)
+                .body(new LoginRequestDto("bello@email.com", "1234"))
+                .when()
+                .post("/login")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract()
+                .cookie("token");
+    }
 }

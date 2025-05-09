@@ -11,11 +11,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import roomescape.business.domain.member.Member;
+import roomescape.business.domain.member.MemberRole;
 import roomescape.business.domain.reservation.ReservationTheme;
 import roomescape.exception.ErrorResponseDto;
+import roomescape.persistence.fakerepository.FakeMemberRepository;
 import roomescape.persistence.fakerepository.FakeReservationThemeRepository;
 import roomescape.presentation.AbstractControllerTest;
 import roomescape.presentation.admin.dto.ReservationThemeResponseDto;
+import roomescape.presentation.member.dto.LoginRequestDto;
 
 class AdminReservationThemeControllerTest extends AbstractControllerTest {
 
@@ -25,9 +29,16 @@ class AdminReservationThemeControllerTest extends AbstractControllerTest {
     @Autowired
     private FakeReservationThemeRepository reservationThemeRepository;
 
+    @Autowired
+    private FakeMemberRepository memberRepository;
+
+    private String token;
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        memberRepository.save(new Member("벨로", "bello@email.com", "1234", MemberRole.ADMIN));
+        token = testLoginAndReturnToken();
     }
 
     @AfterEach
@@ -45,6 +56,7 @@ class AdminReservationThemeControllerTest extends AbstractControllerTest {
         ReservationThemeResponseDto response = RestAssured
                 .given()
                 .log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(reservationTheme)
                 .when()
@@ -76,6 +88,7 @@ class AdminReservationThemeControllerTest extends AbstractControllerTest {
         ErrorResponseDto errorResponseDto = RestAssured
                 .given()
                 .log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(reservationTheme2)
                 .when()
@@ -102,6 +115,7 @@ class AdminReservationThemeControllerTest extends AbstractControllerTest {
         RestAssured
                 .given()
                 .log().all()
+                .cookie("token", token)
                 .when()
                 .delete("/admin/themes/" + id)
                 .then()
@@ -110,5 +124,21 @@ class AdminReservationThemeControllerTest extends AbstractControllerTest {
 
         // then
         assertThat(reservationThemeRepository.findById(id)).isEmpty();
+    }
+
+    private String testLoginAndReturnToken() {
+        return RestAssured
+                .given()
+                .log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", token)
+                .body(new LoginRequestDto("bello@email.com", "1234"))
+                .when()
+                .post("/login")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract()
+                .cookie("token");
     }
 }

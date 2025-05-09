@@ -2,6 +2,7 @@ package roomescape.persistence.entity;
 
 import java.util.Objects;
 import roomescape.business.domain.member.Member;
+import roomescape.business.domain.member.MemberRole;
 
 public final class MemberEntity {
 
@@ -53,7 +54,7 @@ public final class MemberEntity {
         if (id == null) {
             throw new IllegalArgumentException("사용자 엔티티의 ID가 null이어서 도메인 객체로 변환할 수 없습니다.");
         }
-        return new Member(id, name, email, password);
+        return new Member(id, name, email, password, MemberRole.from(role));
     }
 
     public Long getId() {

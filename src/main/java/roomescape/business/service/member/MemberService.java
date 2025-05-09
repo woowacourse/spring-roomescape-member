@@ -46,7 +46,6 @@ public class MemberService {
         return new LoginMember(
                 member.getId(),
                 member.getName(),
-                member.getEmail(),
                 member.getRole()
         );
     }

@@ -32,19 +32,19 @@ VALUES ('폐교의 비밀', '1970년대 폐쇄된 학교에서 벌어지는 공�
 
 INSERT INTO member (name, email, password, role)
 VALUES ('어드민', 'admin@email.com', 'password', 'ROLE_ADMIN'),
-       ('지훈', 'jihun@email.com', 'password', 'ROLE_USER'),
-       ('서연', 'seoyeon@email.com', 'password', 'ROLE_USER'),
-       ('민준', 'mj@email.com', 'password', 'ROLE_USER'),
-       ('하영', 'ha0@email.com', 'password', 'ROLE_USER'),
-       ('예진', 'yejin@email.com', 'password', 'ROLE_USER'),
-       ('현우', 'hyeonwoo@email.com', 'password', 'ROLE_USER'),
-       ('채영', 'chae0@email.com', 'password', 'ROLE_USER'),
-       ('도윤', 'dodo@email.com', 'password', 'ROLE_USER'),
-       ('수민', 'sooooming@email.com', 'password', 'ROLE_USER'),
-       ('지아', 'zia@email.com', 'password', 'ROLE_USER'),
-       ('정우', 'jeongWoo@email.com', 'password', 'ROLE_USER'),
-       ('다현', 'dahyeon123@email.com', 'password', 'ROLE_USER'),
-       ('하늘', 'kimsky@email.com', 'password', 'ROLE_USER');
+       ('지훈', 'jihun@email.com', 'password', 'ROLE_MEMBER'),
+       ('서연', 'seoyeon@email.com', 'password', 'ROLE_MEMBER'),
+       ('민준', 'mj@email.com', 'password', 'ROLE_MEMBER'),
+       ('하영', 'ha0@email.com', 'password', 'ROLE_MEMBER'),
+       ('예진', 'yejin@email.com', 'password', 'ROLE_MEMBER'),
+       ('현우', 'hyeonwoo@email.com', 'password', 'ROLE_MEMBER'),
+       ('채영', 'chae0@email.com', 'password', 'ROLE_MEMBER'),
+       ('도윤', 'dodo@email.com', 'password', 'ROLE_MEMBER'),
+       ('수민', 'sooooming@email.com', 'password', 'ROLE_MEMBER'),
+       ('지아', 'zia@email.com', 'password', 'ROLE_MEMBER'),
+       ('정우', 'jeongWoo@email.com', 'password', 'ROLE_MEMBER'),
+       ('다현', 'dahyeon123@email.com', 'password', 'ROLE_MEMBER'),
+       ('하늘', 'kimsky@email.com', 'password', 'ROLE_MEMBER');
 
 INSERT INTO reservation (member_id, date, time_id, theme_id)
 VALUES (2, '2025-05-03', 1, 1),

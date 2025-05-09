@@ -14,7 +14,7 @@ import roomescape.business.service.member.MemberService;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private static final String ACCESS_TOKEN_COOKIE_NAME = "token";
+    public static final String ACCESS_TOKEN_COOKIE_NAME = "token";
 
     private final MemberService memberService;
 

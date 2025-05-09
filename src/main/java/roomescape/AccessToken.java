@@ -25,7 +25,7 @@ public final class AccessToken {
     private static String buildTokenByMember(Member member) {
         return Jwts.builder()
                 .subject(member.getId().toString())
-                .claim("role", "USER")
+                .claim("role", member.getRole().value())
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
     }

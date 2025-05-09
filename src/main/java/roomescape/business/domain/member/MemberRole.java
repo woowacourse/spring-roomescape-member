@@ -1,5 +1,7 @@
 package roomescape.business.domain.member;
 
+import java.util.stream.Stream;
+
 public enum MemberRole {
 
     MEMBER("ROLE_MEMBER"),
@@ -13,5 +15,12 @@ public enum MemberRole {
 
     public String value() {
         return value;
+    }
+
+    public static MemberRole from(String value) {
+        return Stream.of(values())
+                .filter(role -> role.value.equals(value))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("잘못된 계정입니다. 관리자에게 문의하세요."));
     }
 }
