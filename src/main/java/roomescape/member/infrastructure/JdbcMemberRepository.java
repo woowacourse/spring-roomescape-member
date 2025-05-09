@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
-import roomescape.member.domain.Role;
 
 @Repository
 public class JdbcMemberRepository implements MemberRepository {
@@ -16,8 +15,7 @@ public class JdbcMemberRepository implements MemberRepository {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
-            resultSet.getString("password"),
-            Role.valueOf(resultSet.getString("role"))
+            resultSet.getString("password")
     );
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -37,13 +35,27 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Member findByEmailAndPassword(String email, String password) {
-        String sql = "SELECT * FROM member WHERE email = :email AND password = :password";
+    public Member findByEmail(String email) {
+        String sql = "SELECT * FROM member WHERE email = :email";
 
         SqlParameterSource param = new MapSqlParameterSource()
-                .addValue("email", email)
-                .addValue("password", password);
-
+                .addValue("email", email);
+        
         return namedParameterJdbcTemplate.queryForObject(sql, param, ROW_MAPPER);
+    }
+
+    @Override
+    public boolean isExistsByEmail(String email) {
+        String sql = """
+                SELECT EXISTS(
+                    SELECT 1 FROM member
+                    WHERE email = :email
+                )
+                """;
+
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("email", email);
+
+        return namedParameterJdbcTemplate.queryForObject(sql, param, Boolean.class).booleanValue();
     }
 }

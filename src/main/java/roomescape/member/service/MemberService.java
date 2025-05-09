@@ -9,15 +9,19 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public MemberService(final MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
-    public Member findByEmailAndPassword(final String email, final String password) {
-        return memberRepository.findByEmailAndPassword(email, password);
+    public Member findByEmail(final String email) {
+        return memberRepository.findByEmail(email);
     }
 
-    public Member findById(final Long memberId) {
-        return memberRepository.findById(memberId);
+    public boolean isExistsByEmail(final String email) {
+        return memberRepository.isExistsByEmail(email);
+    }
+
+    public Member findById(final Long id) {
+        return memberRepository.findById(id);
     }
 }
