@@ -59,4 +59,15 @@ public class MemberApiController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        Cookie expiredCookie = new Cookie("token", null);
+        expiredCookie.setPath("/");
+        expiredCookie.setMaxAge(0);
+        expiredCookie.setHttpOnly(true);
+        response.addCookie(expiredCookie);
+
+        return ResponseEntity.ok().build();
+    }
 }
