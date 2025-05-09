@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.auth.domain.dto;
 
 public record TokenResponseDto(String accessToken) {
 }

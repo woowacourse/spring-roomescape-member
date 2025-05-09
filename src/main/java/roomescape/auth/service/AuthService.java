@@ -1,7 +1,13 @@
-package roomescape.auth;
+package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.domain.dto.TokenRequestDto;
+import roomescape.auth.domain.dto.TokenResponseDto;
+import roomescape.auth.exception.AuthorizationException;
+import roomescape.user.domain.dto.User;
 import roomescape.user.domain.dto.UserResponseDto;
+import roomescape.user.exception.NotFoundUserException;
 import roomescape.user.repository.UserRepository;
 
 @Service
@@ -19,13 +25,22 @@ public class AuthService {
         return !userRepository.existUserByEmailAndPassword(email, password);
     }
 
-    public UserResponseDto findMember(String principal) {
-        return null;
+    public UserResponseDto findMember(String email) {
+        User user = userRepository.findUseByEmail(email)
+                .orElseThrow(() -> new NotFoundUserException("해당 유저를 찾을 수 없습니다."));
+        return UserResponseDto.of(user);
     }
 
     public UserResponseDto findMemberByToken(String token) {
         String payload = jwtTokenProvider.getPayload(token);
         return findMember(payload);
+    }
+
+    public TokenResponseDto login(TokenRequestDto tokenRequestDto) {
+        userRepository.findUserByEmailAndPassword(tokenRequestDto.email(), tokenRequestDto.password())
+                .orElseThrow(() -> new NotFoundUserException("해당 유저를 찾을 수 없습니다."));
+
+        return createToken(tokenRequestDto);
     }
 
     public TokenResponseDto createToken(TokenRequestDto tokenRequestDto) {
