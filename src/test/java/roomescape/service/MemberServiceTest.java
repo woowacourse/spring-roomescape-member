@@ -2,7 +2,7 @@ package roomescape.service;
 
 import org.junit.jupiter.api.Test;
 import roomescape.domain.MemberRole;
-import roomescape.exception.ReservationException;
+import roomescape.exception.NotFoundMemberException;
 import roomescape.fake.FakeMemberRepository;
 import roomescape.persistence.query.CreateMemberQuery;
 import roomescape.service.param.LoginMemberParam;
@@ -24,7 +24,7 @@ class MemberServiceTest {
 
         //when & then
         assertThatThrownBy(() -> memberService.login(loginMemberParam))
-                .isInstanceOf(ReservationException.class)
+                .isInstanceOf(NotFoundMemberException.class)
                 .hasMessageContaining(loginMemberParam.email() + " " + loginMemberParam.password() + "에 해당하는 유저가 없습니다.");
     }
 
@@ -56,7 +56,7 @@ class MemberServiceTest {
     @Test
     void id를_통해_멤버를_찾으려_할_때_해당하는_id의_멤버가_존재하지_않으면_예외() {
         assertThatThrownBy(() -> memberService.findById(1L))
-                .isInstanceOf(ReservationException.class)
+                .isInstanceOf(NotFoundMemberException.class)
                 .hasMessage(1L + "에 해당하는 유저가 없습니다.");
     }
 }

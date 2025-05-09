@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import roomescape.domain.*;
+import roomescape.exception.NotFoundReservationException;
+import roomescape.exception.NotFoundReservationTimeException;
+import roomescape.exception.UnAvailableReservationException;
 import roomescape.fake.FakeMemberRepository;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
@@ -65,7 +68,7 @@ class ReservationServiceTest {
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(createReservationParam, LocalDateTime.now()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundReservationTimeException.class)
                 .hasMessage("1에 해당하는 정보가 없습니다.");
     }
 
@@ -140,7 +143,7 @@ class ReservationServiceTest {
 
         //when & then
         assertThatThrownBy(() -> reservationService.findById(2L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundReservationException.class)
                 .hasMessage("2에 해당하는 reservation 튜플이 없습니다.");
     }
 
@@ -150,11 +153,14 @@ class ReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
         Member member = new Member(1L, "name1", MemberRole.USER, "email1", "password1");
+        reservationTimeRepository.create(reservationTime);
+        themeRepository.create(theme);
+        memberRepository.create(new CreateMemberQuery(member.getName(), MemberRole.USER, member.getEmail(), member.getPassword()));
         reservationRepository.create(new CreateReservationQuery(member, RESERVATION_DATE, reservationTime, theme));
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(new CreateReservationParam(1L, RESERVATION_DATE, 1L, 1L), LocalDateTime.now()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(UnAvailableReservationException.class)
                 .hasMessage("테마에 대해 날짜와 시간이 중복된 예약이 존재합니다.");
     }
 
@@ -168,7 +174,7 @@ class ReservationServiceTest {
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(new CreateReservationParam(1L, reservationDateTime.toLocalDate(), 1L, 1L), currentDateTime))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(UnAvailableReservationException.class)
                 .hasMessage("지난 날짜와 시간에 대한 예약은 불가능합니다.");
     }
 
@@ -182,7 +188,7 @@ class ReservationServiceTest {
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(new CreateReservationParam(1L, reservationDateTime.toLocalDate(), 1L, 1L), currentDateTime))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(UnAvailableReservationException.class)
                 .hasMessage("예약 시간까지 10분도 남지 않아 예약이 불가합니다.");
     }
 

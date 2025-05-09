@@ -5,6 +5,8 @@ import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.DeletionNotAllowedException;
+import roomescape.exception.NotFoundReservationTimeException;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.fake.FakeThemeRepository;
@@ -52,7 +54,7 @@ class ReservationTimeServiceTest {
     void id에_해당하는_예약_시간이_없는경우_예외가_발생한다() {
         //given & when & then
         assertThatThrownBy(() -> reservationTimeService.findById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundReservationTimeException.class)
                 .hasMessage("1에 해당하는 reservation_time 튜플이 없습니다.");
     }
 
@@ -91,7 +93,7 @@ class ReservationTimeServiceTest {
 
         //when & then
         assertThatThrownBy(() -> reservationTimeService.deleteById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DeletionNotAllowedException.class)
                 .hasMessage("해당 예약 시간에 예약이 존재합니다.");
     }
 }
