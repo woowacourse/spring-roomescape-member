@@ -1,6 +1,5 @@
 package roomescape.fake;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,11 +33,6 @@ public class FakeReservationDao implements ReservationDao {
         );
         database.put(id, savedReservation);
         return id;
-    }
-
-    @Override
-    public List<Reservation> findAll() {
-        return new ArrayList<>(database.values());
     }
 
     @Override

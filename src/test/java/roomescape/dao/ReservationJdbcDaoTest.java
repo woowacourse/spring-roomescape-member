@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import roomescape.dto.request.ReservationSearchFilter;
 import roomescape.model.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
@@ -110,7 +111,6 @@ public class ReservationJdbcDaoTest {
         );
     }
 
-    //
     @Test
     @DisplayName("id 를 이용해 예약을 삭제한다")
     void test4() {
@@ -125,6 +125,87 @@ public class ReservationJdbcDaoTest {
         );
 
         assertThat(foundReservations).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("예약을 조회할 때 테마에 해당하는 결과만 조회한다")
+    void test5() {
+        // given
+        saveNewReservation(new Reservation(
+                LocalDate.now().plusDays(1),
+                this.reservationTime,
+                this.theme,
+                this.member
+        ));
+
+        // when
+        List<Reservation> result = reservationDao.findAll(
+                new ReservationSearchFilter(theme.getId(), null, null, null));
+
+        // then
+        List<Long> themeIds = result.stream()
+                .map(Reservation::getTheme)
+                .map(Theme::getId)
+                .toList();
+
+        assertThat(themeIds).containsOnly(theme.getId());
+    }
+
+    @Test
+    @DisplayName("예약을 조회할 때 멤버에 해당하는 결과만 조회한다")
+    void test6() {
+        // given
+        saveNewReservation(new Reservation(
+                LocalDate.now().plusDays(1),
+                this.reservationTime,
+                theme,
+                this.member
+        ));
+
+        // when
+        List<Reservation> result = reservationDao.findAll(
+                new ReservationSearchFilter(null, member.getId(), null, null));
+
+        // then
+        List<Long> memberIds = result.stream()
+                .map(Reservation::getMember)
+                .map(Member::getId)
+                .toList();
+
+        assertThat(memberIds).containsOnly(member.getId());
+    }
+
+    @Test
+    @DisplayName("예약을 조회할 때 기간에 해당하는 결과만 조회한다")
+    void test7() {
+        // given
+        LocalDate searchDate = LocalDate.now().plusDays(2);
+
+        saveNewReservation(new Reservation(
+                searchDate.plusDays(1),
+                this.reservationTime,
+                theme,
+                this.member
+        ));
+
+        saveNewReservation(new Reservation(
+                searchDate.minusDays(1),
+                this.reservationTime,
+                theme,
+                this.member
+        ));
+
+        // when
+        List<Reservation> result = reservationDao.findAll(
+                new ReservationSearchFilter(null, null, searchDate, searchDate.plusDays(1)));
+
+        // then
+        List<LocalDate> dates = result.stream()
+                .map(Reservation::getDate)
+                .toList();
+
+        assertThat(dates)
+                .allMatch(localDate -> !localDate.isBefore(searchDate));
     }
 
     private Long saveNewReservation(Reservation reservation) {

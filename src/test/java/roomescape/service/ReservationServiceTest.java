@@ -89,7 +89,7 @@ class ReservationServiceTest {
         reservationService.cancelReservation(saved.id());
 
         // then
-        List<ReservationResponseDto> reservations = reservationService.getAllReservations();
+        List<ReservationResponseDto> reservations = reservationService.getAllReservations(null);
         assertThat(reservations).isEmpty();
     }
 
