@@ -2,6 +2,8 @@ package roomescape.exception;
 
 import java.time.format.DateTimeParseException;
 import java.util.NoSuchElementException;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class RestApiControllerAdvice {
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -44,7 +47,7 @@ public class RestApiControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<FailureResponse> handleException(final Exception ex) {
-        return createFailureResponse(ex, HttpStatus.BAD_REQUEST);
+        return createFailureResponse(new RuntimeException("예기치 못한 오류가 발생했습니다."), HttpStatus.BAD_REQUEST);
     }
 
     private ResponseEntity<FailureResponse> createFailureResponse(final Exception ex, final HttpStatus status) {
