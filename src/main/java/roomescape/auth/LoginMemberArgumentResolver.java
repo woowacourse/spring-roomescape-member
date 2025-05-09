@@ -6,7 +6,9 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.controller.request.LoginMemberInfo;
 import roomescape.service.MemberService;
+import roomescape.service.result.MemberResult;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -29,6 +31,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(final MethodParameter parameter, final ModelAndViewContainer mavContainer, final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = cookieProvider.extractTokenFromCookies(request.getCookies());
-        return memberService.findById(jwtTokenProvider.extractIdFromToken(token));
+        MemberResult memberResult = memberService.findById(jwtTokenProvider.extractIdFromToken(token));
+        return LoginMemberInfo.of(memberResult.id());
     }
 }

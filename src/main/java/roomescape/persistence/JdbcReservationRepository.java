@@ -219,7 +219,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             parameters.add(dateTo);
         }
 
-        sql += " ORDER BY r.date, t.start_at";
+        sql += " ORDER BY r.id";
 
         return jdbcTemplate.query(sql, reservationRowMapper, parameters.toArray());
     }
