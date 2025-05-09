@@ -52,7 +52,7 @@ public class ThemeService {
     public List<ThemeResponse> getTop10MostReservedThemesInLast7Days() {
         LocalDate startDate = LocalDate.now().minusDays(8);
         List<Theme> themes = themeRepository.findByDateRangeOrderByReservationCountLimitN(startDate,
-                LocalDate.now(), 10);
+                LocalDate.now().minusDays(1), 10);
 
         return themes.stream().map(theme -> new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(),
                 theme.getThumbnail())).toList();
