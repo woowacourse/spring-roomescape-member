@@ -20,9 +20,16 @@ public class GlobalExceptionHandler {
         return new ExceptionResponse("잘못된 요청 형식입니다.");
     }
 
+    //TODO : 여기 권한 관련 에러가 있는 게 맞을까?
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ExceptionResponse handleIllegalArgumentException(IllegalArgumentException ex) {
+        return new ExceptionResponse(ex.getMessage());
+    }
+
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler({InvalidAccessTokenException.class, IllegalArgumentException.class})
-    public ExceptionResponse handleIllegalArgumentException(RuntimeException ex) {
+    @ExceptionHandler(InvalidAccessTokenException.class)
+    public ExceptionResponse handleAuthorizationException(RuntimeException ex) {
         return new ExceptionResponse(ex.getMessage());
     }
 }

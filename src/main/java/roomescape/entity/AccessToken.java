@@ -17,7 +17,7 @@ public class AccessToken {
     public AccessToken(Member member) {
         String accessToken = Jwts.builder()
                 .setSubject(member.getId().toString())
-                .claim("name", member.getName())
+                .claim("role", member.getRole().name())
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
         this.value = accessToken;
@@ -33,6 +33,19 @@ public class AccessToken {
                     .parseClaimsJws(value)
                     .getBody()
                     .getSubject());
+        } catch (NumberFormatException | JwtException e) {
+            //TODO 파싱 자체에 실패한 경우
+            throw new InvalidAccessTokenException();
+        }
+    }
+
+    public MemberRole findRole() {
+        try {
+            String roleName = Jwts.parser().setSigningKey(SECRET_KEY)
+                    .parseClaimsJws(value)
+                    .getBody()
+                    .get("role", String.class);
+            return MemberRole.from(roleName);
         } catch (NumberFormatException | JwtException e) {
             //TODO 파싱 자체에 실패한 경우
             throw new InvalidAccessTokenException();
