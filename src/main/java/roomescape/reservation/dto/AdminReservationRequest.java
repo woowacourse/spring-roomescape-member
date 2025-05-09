@@ -4,9 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
-public record ReservationRequest(
+public record AdminReservationRequest(
         @NotNull @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
         @NotNull Long timeId,
-        @NotNull Long themeId
+        @NotNull Long themeId,
+        @NotNull Long memberId
 ) {
 }

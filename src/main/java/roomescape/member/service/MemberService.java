@@ -1,10 +1,11 @@
 package roomescape.member.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.error.NotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
 import roomescape.member.repository.MemberRepository;
 
 @Service
@@ -17,8 +18,10 @@ public class MemberService {
         memberRepository.save(new Member(memberRequest.name(), memberRequest.email(), memberRequest.password()));
     }
 
-    public Member findByEmail(final String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("멤버가 존재하지 않습니다."));
+    public List<MemberResponse> findAllMember() {
+        return memberRepository.findAll()
+                .stream()
+                .map(MemberResponse::new)
+                .toList();
     }
 }

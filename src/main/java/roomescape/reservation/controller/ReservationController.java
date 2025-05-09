@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.dto.LoginMember;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
@@ -41,8 +42,9 @@ public class ReservationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponse saveReservation(@Valid @RequestBody final ReservationRequest request) {
-        return reservationService.saveReservation(request);
+    public ReservationResponse saveReservation(@Valid @RequestBody final ReservationRequest request,
+                                               final LoginMember member) {
+        return reservationService.saveReservation(request, member);
     }
 
     @DeleteMapping("/{id}")
