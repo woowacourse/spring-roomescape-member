@@ -28,4 +28,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
     }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthorizationException(AuthorizationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(e.getMessage()));
+    }
 }

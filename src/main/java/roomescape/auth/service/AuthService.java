@@ -4,8 +4,9 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.auth.domain.dto.TokenRequestDto;
 import roomescape.auth.domain.dto.TokenResponseDto;
-import roomescape.auth.exception.AuthorizationException;
-import roomescape.user.domain.dto.User;
+import roomescape.auth.exception.InvalidTokenException;
+import roomescape.globalException.AuthorizationException;
+import roomescape.user.domain.User;
 import roomescape.user.domain.dto.UserResponseDto;
 import roomescape.user.exception.NotFoundUserException;
 import roomescape.user.repository.UserRepository;
@@ -26,6 +27,9 @@ public class AuthService {
     }
 
     public UserResponseDto findMemberByToken(String token) {
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new InvalidTokenException();
+        }
         String payload = jwtTokenProvider.getPayload(token);
         return findMember(payload);
     }
