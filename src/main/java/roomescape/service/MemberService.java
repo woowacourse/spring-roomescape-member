@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
 import roomescape.domain.MemberRole;
-import roomescape.exception.ReservationException;
+import roomescape.exception.NotFoundMemberException;
 import roomescape.persistence.query.CreateMemberQuery;
 import roomescape.service.param.LoginMemberParam;
 import roomescape.service.param.RegisterMemberParam;
@@ -23,7 +23,7 @@ public class MemberService {
 
     public MemberResult login(final LoginMemberParam loginMemberParam) {
         Member member = memberRepository.findByEmailAndPassword(loginMemberParam.email(), loginMemberParam.password())
-                .orElseThrow(() -> new ReservationException(loginMemberParam.email() + " " + loginMemberParam.password() + "에 해당하는 유저가 없습니다."));
+                .orElseThrow(() -> new NotFoundMemberException(loginMemberParam.email() + " " + loginMemberParam.password() + "에 해당하는 유저가 없습니다."));
         return MemberResult.from(member);
     }
 
@@ -36,13 +36,13 @@ public class MemberService {
         ));
 
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new ReservationException(id + "에 해당하는 유저가 없습니다."));
+                .orElseThrow(() -> new NotFoundMemberException(id + "에 해당하는 유저가 없습니다."));
         return MemberResult.from(member);
     }
 
     public MemberResult findById(final Long id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new ReservationException(id + "에 해당하는 유저가 없습니다."));
+                .orElseThrow(() -> new NotFoundMemberException(id + "에 해당하는 유저가 없습니다."));
         return MemberResult.from(member);
     }
 

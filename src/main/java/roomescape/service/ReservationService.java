@@ -2,7 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.*;
-import roomescape.exception.ReservationException;
+import roomescape.exception.*;
 import roomescape.persistence.query.CreateReservationQuery;
 import roomescape.service.param.CreateReservationParam;
 import roomescape.service.result.ReservationResult;
@@ -29,11 +29,11 @@ public class ReservationService {
 
     public Long create(CreateReservationParam createReservationParam, LocalDateTime currentDateTime) {
         ReservationTime reservationTime = reservationTImeRepository.findById(createReservationParam.timeId()).orElseThrow(
-                () -> new ReservationException(createReservationParam.timeId() + "에 해당하는 정보가 없습니다."));
+                () -> new NotFoundReservationTimeException(createReservationParam.timeId() + "에 해당하는 정보가 없습니다."));
         Theme theme = themeRepository.findById(createReservationParam.themeId()).orElseThrow(
-                () -> new ReservationException(createReservationParam.themeId() + "에 해당하는 정보가 없습니다."));
+                () -> new NotFoundThemeException(createReservationParam.themeId() + "에 해당하는 정보가 없습니다."));
         Member member = memberRepository.findById(createReservationParam.memberId()).orElseThrow(
-                () -> new ReservationException(createReservationParam.memberId() + "에 해당하는 정보가 없습니다."));
+                () -> new NotFoundMemberException(createReservationParam.memberId() + "에 해당하는 정보가 없습니다."));
 
         validateUniqueReservation(createReservationParam, reservationTime, theme);
         validateReservationDateTime(createReservationParam, currentDateTime, reservationTime);
@@ -60,7 +60,7 @@ public class ReservationService {
 
     public ReservationResult findById(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new ReservationException(reservationId + "에 해당하는 reservation 튜플이 없습니다."));
+                .orElseThrow(() -> new NotFoundReservationException(reservationId + "에 해당하는 reservation 튜플이 없습니다."));
         return ReservationResult.from(reservation);
     }
 
@@ -73,18 +73,18 @@ public class ReservationService {
 
     private void validateUniqueReservation(final CreateReservationParam createReservationParam, final ReservationTime reservationTime, final Theme theme) {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(createReservationParam.date(), reservationTime.id(), theme.getId())) {
-            throw new ReservationException("테마에 대해 날짜와 시간이 중복된 예약이 존재합니다.");
+            throw new UnAvailableReservationException("테마에 대해 날짜와 시간이 중복된 예약이 존재합니다.");
         }
     }
 
     private void validateReservationDateTime(final CreateReservationParam createReservationParam, final LocalDateTime currentDateTime, final ReservationTime reservationTime) {
         LocalDateTime reservationDateTime = LocalDateTime.of(createReservationParam.date(), reservationTime.startAt());
         if (reservationDateTime.isBefore(currentDateTime)) {
-            throw new ReservationException("지난 날짜와 시간에 대한 예약은 불가능합니다.");
+            throw new UnAvailableReservationException("지난 날짜와 시간에 대한 예약은 불가능합니다.");
         }
         Duration duration = Duration.between(currentDateTime, reservationDateTime);
         if (duration.toMinutes() < 10) {
-            throw new ReservationException("예약 시간까지 10분도 남지 않아 예약이 불가합니다.");
+            throw new UnAvailableReservationException("예약 시간까지 10분도 남지 않아 예약이 불가합니다.");
         }
     }
 }
