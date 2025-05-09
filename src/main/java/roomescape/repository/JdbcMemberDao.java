@@ -1,11 +1,9 @@
 package roomescape.repository;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -16,9 +14,9 @@ import javax.sql.DataSource;
 import java.util.Optional;
 
 @Repository
-public class JdbcMemberDao implements MemberRepository{
+public class JdbcMemberDao implements MemberRepository {
 
-    private final static RowMapper<Member> rowMapper = (rs, rows)-> {
+    private final static RowMapper<Member> rowMapper = (rs, rows) -> {
         long memberId = rs.getLong("member_id");
         String name = rs.getString("name");
         String email = rs.getString("email");
@@ -40,7 +38,7 @@ public class JdbcMemberDao implements MemberRepository{
 
     @Override
     public Member save(Member member) {
-        try{
+        try {
             SqlParameterSource params = new MapSqlParameterSource()
                     .addValue("name", member.getName())
                     .addValue("email", member.getEmail())
@@ -49,7 +47,7 @@ public class JdbcMemberDao implements MemberRepository{
 
             long id = jdbcInsert.executeAndReturnKey(params).longValue();
             return new Member(id, member.getName(), member.getEmail(), member.getRole(), member.getPassword());
-        } catch (DuplicateKeyException e){
+        } catch (DuplicateKeyException e) {
             throw new IllegalStateException("[ERROR] 이미 등록된 EMAIL 입니다. " + member.getEmail());
         }
     }
@@ -58,12 +56,12 @@ public class JdbcMemberDao implements MemberRepository{
     public Optional<Member> findByEmailAndPassword(String email, String password) {
         try {
             String sql = """
-                SELECT member_id, name, email, role, password
-                FROM member
-                WHERE email = ? AND password = ?
-                """;
+                    SELECT member_id, name, email, role, password
+                    FROM member
+                    WHERE email = ? AND password = ?
+                    """;
             return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, email, password));
-        } catch (EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
@@ -74,10 +72,10 @@ public class JdbcMemberDao implements MemberRepository{
             String sql = """
                     SELECT member_id, name, email, role, password
                     FROM member
-                    WHERE id = ?
+                    WHERE member_id = ?
                     """;
             return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
-        } catch (EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }

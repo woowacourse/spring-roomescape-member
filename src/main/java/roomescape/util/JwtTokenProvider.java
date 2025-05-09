@@ -1,13 +1,15 @@
 package roomescape.util;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.util.Date;
 
 @Component
@@ -17,7 +19,7 @@ public class JwtTokenProvider {
     private final static String KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
     private final static SecretKey SECRET_KEY = Keys.hmacShaKeyFor(KEY.getBytes(StandardCharsets.UTF_8));
 
-    public String createToken(Member member){
+    public String createToken(Member member) {
         return Jwts.builder()
                 .subject(member.getId().toString())
                 .claim("name", member.getName())
@@ -29,11 +31,13 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String extractName(String token) {
-        return Jwts.parser()
+    public Long extractId(String token) {
+        String stringId = Jwts.parser()
                 .verifyWith(SECRET_KEY)
-                .build().parseClaimsJws(token)
-                .getPayload().get("name", String.class);
+                .build()
+                .parseClaimsJws(token)
+                .getPayload().getSubject();
+        return Long.parseLong(stringId);
     }
 
     public boolean validateToken(String token) {

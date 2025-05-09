@@ -3,8 +3,9 @@ package roomescape.controller.api;
 import jakarta.servlet.http.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.domain.LoginMember;
 import roomescape.dto.auth.LoginRequestDto;
-import roomescape.dto.auth.MemberResponse;
+import roomescape.dto.auth.MemberResponseDto;
 import roomescape.service.AuthService;
 
 @RestController
@@ -33,19 +34,8 @@ public class AuthController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
-        MemberResponse memberResponse = authService.checkLoginStatus(token);
+    public ResponseEntity<MemberResponseDto> checkLogin(LoginMember loginMember) {
+        MemberResponseDto memberResponse = new MemberResponseDto(loginMember.name());
         return ResponseEntity.ok(memberResponse);
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for(Cookie cookie : cookies) {
-            if(cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
     }
 }
