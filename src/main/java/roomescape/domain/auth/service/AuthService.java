@@ -5,33 +5,34 @@ import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.auth.config.JwtProperties;
 import roomescape.domain.auth.dto.LoginRequest;
 import roomescape.domain.auth.dto.LoginUserDto;
 import roomescape.domain.auth.dto.TokenResponse;
 import roomescape.domain.auth.dto.UserInfoResponse;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.exception.InvalidAuthorizationException;
-import roomescape.domain.auth.exception.UserNotFoundException;
 import roomescape.domain.auth.repository.UserRepository;
 
 @Slf4j
 @Service
 public class AuthService {
 
-    private static final String TOKEN_NAME = "token";
-
     private final JwtManager jwtManager;
     private final UserRepository userRepository;
+    private final String cookieKey;
 
-    public AuthService(final JwtManager jwtManager, final UserRepository userRepository) {
+    public AuthService(final JwtManager jwtManager, final UserRepository userRepository,
+                       final JwtProperties jwtProperties) {
         this.jwtManager = jwtManager;
         this.userRepository = userRepository;
+        this.cookieKey = jwtProperties.getCookieKey();
     }
 
     @Transactional(readOnly = true)
     public TokenResponse login(final LoginRequest loginRequest) {
         final User user = userRepository.findByEmail(loginRequest.email())
-                .orElseThrow(() -> new UserNotFoundException("해당 계정이 존재하지 않습니다."));
+                .orElseThrow(() -> new InvalidAuthorizationException("해당 계정이 존재하지 않습니다."));
 
         user.login(loginRequest.email(), loginRequest.password());
 
@@ -41,19 +42,16 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public UserInfoResponse getUserInfo(final String token) {
-        final Long userId = jwtManager.parseUserId(token);
-
-        final User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("해당 계정이 존재하지 않습니다."));
-
-        return UserInfoResponse.from(user);
+    public UserInfoResponse getUserInfo(final LoginUserDto loginUserDto) {
+        return userRepository.findById(loginUserDto.id())
+                .map(UserInfoResponse::from)
+                .orElseThrow(() -> new InvalidAuthorizationException("해당 계정이 존재하지 않습니다."));
     }
 
     @Transactional(readOnly = true)
     public LoginUserDto getLoginUser(final Cookie[] cookies) {
         return Arrays.stream(cookies)
-                .filter(cookie -> TOKEN_NAME.equals(cookie.getName()))
+                .filter(cookie -> cookieKey.equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst()
                 .map(this::getLoginUser)
@@ -71,7 +69,7 @@ public class AuthService {
 
         return userRepository.findById(userId)
                 .map(LoginUserDto::from)
-                .orElseThrow(() -> new UserNotFoundException("해당 계정이 존재하지 않습니다."));
+                .orElseThrow(() -> new InvalidAuthorizationException("해당 계정이 존재하지 않습니다."));
     }
 
 }
