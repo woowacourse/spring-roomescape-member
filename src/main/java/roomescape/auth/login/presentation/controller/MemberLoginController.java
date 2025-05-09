@@ -37,7 +37,7 @@ public class MemberLoginController {
             return ResponseEntity.status(401).build();
         }
 
-        String token = JwtTokenManager.crateToken(member.getId(), "USER");
+        String token = JwtTokenManager.crateToken(member.getId(), "MEMBER");
 
         ResponseCookie cookie = ResponseCookie.from("token", token)
                 .httpOnly(true)
