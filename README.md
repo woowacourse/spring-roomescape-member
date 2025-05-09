@@ -93,14 +93,14 @@
 
 ## 4단계
 
-- [ ] 사용자 도메인을 추가.
+- [x] 사용자 도메인을 추가.
     - 사용자는 다음의 정보를 가진다. name: 사용자 이름,email: 이메일, password: 비밀번호,
     - email을 로그인의 id로, password를 비밀번호로 사용.
-- [ ] 로그인 기능을 구현.
+- [x] 로그인 기능을 구현.
     - templates/login.html 파일을 이용해 GET /login 요청 시 로그인 폼이 있는 페이지를 응답.
     - POST /login 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함하세요.
     - 응답 Cookie에 "token"값으로 토큰이 포함.
-- [ ] 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API를 구현.
+- [x] 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API를 구현.
 
 ### 고민해본 내용
 
@@ -114,4 +114,15 @@
 
 ### 리팩토링
 
-- 페이지 컨트롤러랑 restcontroller api 다시 정리
+- 페이지 컨트롤러랑 restcontroller api 다시 정리,
+- 쿠키 생성 위치, jwt 서비스? 패키지 구조
+- Role enum으로 변환
+
+## 5단계
+
+- [ ] 사용자의 정보를 조회하는 로직을 리팩터링
+    - Cookie에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 로직을 분리
+    - HandlerMethodArgumentResolver 활용
+- [ ] 예약 생성 API 및 기능을 리팩터링
+    - 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용하도록
+    - reservation.html, user-reservation.js 파일의 TODO 주석을 참고하여 변경된 명세에 맞게 클라이언트가 동작하도록 변경  
