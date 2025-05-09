@@ -52,4 +52,20 @@ public class JdbcMemberRepository implements MemberRepository {
             return Optional.empty();
         }
     }
+
+    @Override
+    public Optional<Member> findById(Long id) {
+        String query = "SELECT id, name, email, password FROM member WHERE id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query,
+                    (resultSet, rowNum) -> new Member(
+                            resultSet.getLong("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("email"),
+                            resultSet.getString("password")
+                    ), id));
+        } catch (DataAccessException exception) {
+            return Optional.empty();
+        }
+    }
 }
