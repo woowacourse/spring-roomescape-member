@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 @Repository
@@ -77,7 +78,8 @@ public class ReservationDao {
                         resultSet.getLong("member_id"),
                         resultSet.getString("member_name"),
                         resultSet.getString("member_email"),
-                        resultSet.getString("member_password")
+                        resultSet.getString("member_password"),
+                        Role.valueOf(resultSet.getString("role"))
                     )
                 );
             }

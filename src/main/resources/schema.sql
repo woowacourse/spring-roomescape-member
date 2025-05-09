@@ -21,7 +21,9 @@ CREATE TABLE member
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    PRIMARY KEY (id)
+    role VARCHAR(50) NOT NULL DEFAULT 'USER',
+    PRIMARY KEY (id),
+    CHECK (role IN ('ADMIN', 'USER'))
 );
 
 CREATE TABLE reservation

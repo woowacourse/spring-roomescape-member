@@ -6,7 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
-import roomescape.dto.LoginRequest;
+import roomescape.dto.request.LoginRequest;
 import roomescape.exception.AuthenticationException;
 
 @Service

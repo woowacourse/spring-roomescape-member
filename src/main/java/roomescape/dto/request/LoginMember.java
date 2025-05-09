@@ -1,12 +1,14 @@
 package roomescape.dto.request;
 
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 
 public record LoginMember(
     Long id,
     String name,
     String email,
-    String password
+    String password,
+    Role role
 ) {
 
     public static LoginMember from(Member user) {
@@ -14,7 +16,8 @@ public record LoginMember(
             user.getId(),
             user.getName(),
             user.getEmail(),
-            user.getPassword()
+            user.getPassword(),
+            user.getRole()
         );
     }
 }
