@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.dto.request.LoginMemberRequest;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.MemberLoginCheckResponse;
 import roomescape.service.AuthService;
@@ -31,9 +32,8 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberLoginCheckResponse> loginCheck(HttpServletRequest request) {
-        String token = authorizationExtractor.extractTokenFromCookie(request);
-        MemberLoginCheckResponse response = authService.findMemberByToken(token);
+    public ResponseEntity<MemberLoginCheckResponse> loginCheck(LoginMemberRequest request) {
+        MemberLoginCheckResponse response = new MemberLoginCheckResponse(request.name());
         return ResponseEntity.ok(response);
     }
 

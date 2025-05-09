@@ -17,16 +17,6 @@ public class AuthService {
         this.jdbcMemberRepository = jdbcMemberRepository;
     }
 
-    public MemberLoginCheckResponse findMemberByToken(String token) {
-        if (!jwtTokenProvider.validateToken(token)) {
-            throw new AuthorizationException("인증 정보가 올바르지 않습니다.");
-        };
-        String payload = jwtTokenProvider.getPayload(token);
-        Long memberId = Long.parseLong(payload);
-        Member member = jdbcMemberRepository.findById(memberId).orElseThrow(() -> new AuthorizationException("인증되지 않은 유저 정보입니다."));
-        return MemberLoginCheckResponse.from(member);
-    }
-
     public String tokenLogin(LoginRequest request) {
         Member member = jdbcMemberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new AuthorizationException("인증되지 않은 유저 정보입니다."));

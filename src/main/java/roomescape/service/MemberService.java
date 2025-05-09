@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.AlreadyExistMemberException;
 import roomescape.common.exception.AuthorizationException;
+import roomescape.common.exception.NotFoundMemberException;
 import roomescape.domain.Member;
 import roomescape.dto.request.MemberSignUpRequest;
 import roomescape.dto.response.MemberSignUpResponse;
@@ -20,7 +21,6 @@ public class MemberService {
     }
 
     public MemberSignUpResponse signup(MemberSignUpRequest request) {
-        // todo: 이미 존재하는 회원 또는 회원가입 불가능한 상태인 경우 isSuccess false로 보내는 로직 구현
         String email = request.email();
         boolean alreadyExistMember = memberRepository.findByEmail(email).isPresent();
         if (alreadyExistMember) {
@@ -29,4 +29,10 @@ public class MemberService {
         Member member = memberRepository.save(request.toMember());
         return MemberSignUpResponse.of(member, true);
     }
+
+    public Member findMemberById(Long id) {
+        return memberRepository.findById(id).
+                orElseThrow(() -> new NotFoundMemberException("회원 정보가 존재하지 않습니다."));
+    }
+
 }
