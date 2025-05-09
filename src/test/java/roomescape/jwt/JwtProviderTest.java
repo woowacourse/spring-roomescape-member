@@ -3,9 +3,9 @@ package roomescape.jwt;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +40,7 @@ class JwtProviderTest {
         String actual = jwtProvider.generateToken(jwtRequest);
 
         //then
-        String expected = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6InRlc3QiLCJlbWFpbCI6InRlc3RAZW1haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaXNzIjoicm9vbWVzY2FwZSIsImlhdCI6MCwiZXhwIjo4NjQwMH0.lKGpfTtTZCy6snEXZXiNsE2XkwC0Y9-7i7k8_lPOL_E";
+        String expected = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6InRlc3QiLCJlbWFpbCI6InRlc3RAZW1haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaXNzIjoicm9vbWVzY2FwZSIsImlhdCI6MCwiZXhwIjo4NjQwMH0.CViALsK09IqgeSZc8RZ5nPaXAEixwB6cTbh84Wb9KDU";
         assertAll(
                 () -> assertThat(actual).isNotNull(),
                 () -> assertThat(actual).isEqualTo(expected)
@@ -53,7 +53,7 @@ class JwtProviderTest {
         //given
         Date issueDate = new Date();
         JwtRequest jwtRequest = new JwtRequest(1, "test", "test@email.com", MemberRoleType.ADMIN, issueDate);
-        SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(SECRET_KEY));
+        SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
         String token = Jwts.builder()
                 .subject(Long.toString(jwtRequest.id()))
                 .claim("name", jwtRequest.name())
@@ -86,7 +86,7 @@ class JwtProviderTest {
         //given
         Date issueDate = new Date();
         JwtRequest jwtRequest = new JwtRequest(1, "test", "test@email.com", MemberRoleType.ADMIN, issueDate);
-        SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(SECRET_KEY));
+        SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
         String token = Jwts.builder()
                 .subject(Long.toString(jwtRequest.id()))
                 .claim("name", jwtRequest.name())
@@ -109,7 +109,7 @@ class JwtProviderTest {
         //given
         Date issueDate = new Date();
         JwtRequest jwtRequest = new JwtRequest(1, "test", "test@email.com", MemberRoleType.ADMIN, issueDate);
-        SecretKey wrongSecretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(SECRET_KEY + "A"));
+        SecretKey wrongSecretKey = Keys.hmacShaKeyFor((SECRET_KEY + "A").getBytes(StandardCharsets.UTF_8));
         String token = Jwts.builder()
                 .subject(Long.toString(jwtRequest.id()))
                 .claim("name", jwtRequest.name())
