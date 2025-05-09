@@ -41,7 +41,7 @@ public class ThemeService {
         if (reservationRepository.existByThemeId(id)) {
             throw new IllegalArgumentException("예약한 기록이 존재하여 삭제할 수 없습니다.");
         }
-        boolean isDeleted = themeRepository.deleteBy(id);
+        boolean isDeleted = themeRepository.deleteById(id);
         validateIsExistsReservationTimeId(isDeleted);
     }
 

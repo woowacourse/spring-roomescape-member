@@ -1,7 +1,6 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 public interface ReservationRepository {
@@ -10,7 +9,7 @@ public interface ReservationRepository {
 
     boolean deleteBy(Long id);
 
-    List<Reservation> findBy(LocalDate date, Long themeId);
+    List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
 
     List<Reservation> findAll();
 

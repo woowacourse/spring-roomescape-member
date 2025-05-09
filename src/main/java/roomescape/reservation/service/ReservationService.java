@@ -33,8 +33,8 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(final ReservationRequest request) {
-        ReservationTime time = reservationTimeRepository.findBy(request.timeId());
-        Theme theme = themeRepository.findBy(request.themeId());
+        ReservationTime time = reservationTimeRepository.findById(request.timeId());
+        Theme theme = themeRepository.findById(request.themeId());
 
         Reservation reservation = Reservation.createWithoutId(dateTime.now(), request.name(), request.date(), time,
                 theme);

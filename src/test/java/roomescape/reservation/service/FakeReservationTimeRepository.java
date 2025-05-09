@@ -26,7 +26,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime findBy(Long id) {
+    public ReservationTime findById(Long id) {
         return reservationTimes.stream()
                 .filter(reservationTime -> Objects.equals(reservationTime.getId(), id))
                 .findAny()
@@ -39,7 +39,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean deleteBy(Long id) {
+    public boolean deleteById(Long id) {
         Optional<ReservationTime> findReservationTime = reservationTimes.stream()
                 .filter(reservation -> Objects.equals(reservation.getId(), id))
                 .findAny();

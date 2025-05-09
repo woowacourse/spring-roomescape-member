@@ -35,7 +35,7 @@ public class ReservationTimeService {
             throw new IllegalArgumentException("삭제할 수 없는 예약 시간입니다.");
         }
 
-        boolean isDeleted = reservationTimeRepository.deleteBy(id);
+        boolean isDeleted = reservationTimeRepository.deleteById(id);
         validateIsExistsReservationTimeId(isDeleted);
     }
 
@@ -52,7 +52,7 @@ public class ReservationTimeService {
     }
 
     public List<TimeConditionResponse> getTimesWithCondition(final TimeConditionRequest request) {
-        List<Reservation> reservations = reservationRepository.findBy(request.date(), request.themeId());
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(request.date(), request.themeId());
         List<ReservationTime> times = reservationTimeRepository.findAll();
 
         return times.stream()

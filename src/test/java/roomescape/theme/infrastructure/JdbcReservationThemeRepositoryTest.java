@@ -54,7 +54,7 @@ class JdbcReservationThemeRepositoryTest {
         Theme theme = Theme.createWithoutId("a", "a", "a");
         Long save = repository.save(theme);
 
-        boolean isDeleted = repository.deleteBy(save + plus);
+        boolean isDeleted = repository.deleteById(save + plus);
 
         assertThat(isDeleted).isEqualTo(expected);
     }
@@ -94,7 +94,7 @@ class JdbcReservationThemeRepositoryTest {
         Theme theme = Theme.createWithoutId("a", "a", "a");
         Long save = repository.save(theme);
 
-        Theme findTheme = repository.findBy(save);
+        Theme findTheme = repository.findById(save);
 
         assertAll(
                 () -> assertThat(findTheme.getName()).isEqualTo(theme.getName()),

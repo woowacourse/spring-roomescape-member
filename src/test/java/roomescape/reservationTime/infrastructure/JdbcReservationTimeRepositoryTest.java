@@ -45,7 +45,7 @@ class JdbcReservationTimeRepositoryTest {
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 10));
         Long save = repository.save(reservationTime);
 
-        boolean isDeleted = repository.deleteBy(save + plus);
+        boolean isDeleted = repository.deleteById(save + plus);
 
         assertThat(isDeleted).isEqualTo(expected);
     }
@@ -77,7 +77,7 @@ class JdbcReservationTimeRepositoryTest {
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 10));
         Long save = repository.save(reservationTime);
 
-        ReservationTime findTime = repository.findBy(save);
+        ReservationTime findTime = repository.findById(save);
 
         assertThat(reservationTime.getStartAt()).isEqualTo(findTime.getStartAt());
     }

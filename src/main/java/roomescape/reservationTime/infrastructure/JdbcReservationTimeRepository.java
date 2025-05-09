@@ -38,7 +38,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean deleteBy(final Long id) {
+    public boolean deleteById(final Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
         int count = jdbcTemplate.update(sql, id);
 
@@ -46,7 +46,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime findBy(final Long id) {
+    public ReservationTime findById(final Long id) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
     }

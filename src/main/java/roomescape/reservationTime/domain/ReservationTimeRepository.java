@@ -6,9 +6,9 @@ public interface ReservationTimeRepository {
 
     Long save(ReservationTime reservationTime);
 
-    boolean deleteBy(Long id);
+    boolean deleteById(Long id);
 
-    ReservationTime findBy(Long id);
+    ReservationTime findById(Long id);
 
     List<ReservationTime> findAll();
 }

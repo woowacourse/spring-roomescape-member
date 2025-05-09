@@ -73,7 +73,7 @@ class JdbcReservationRepositoryTest {
         reservationRepository.save(reservation2);
         reservationRepository.save(reservation3);
 
-        List<Reservation> reservations = reservationRepository.findBy(LocalDate.of(2000, 11, 2), themeId);
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(LocalDate.of(2000, 11, 2), themeId);
         List<String> names = reservations.stream()
                 .map(Reservation::getName)
                 .toList();
