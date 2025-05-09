@@ -35,6 +35,7 @@ class JdbcReservationRepositoryTest {
         jdbcTemplate.update("DROP TABLE reservation IF EXISTS");
         jdbcTemplate.update("DROP TABLE reservation_time IF EXISTS");
         jdbcTemplate.update("DROP TABLE theme IF EXISTS");
+        jdbcTemplate.update("DROP TABLE member IF EXISTS");
     }
 
     @Test
