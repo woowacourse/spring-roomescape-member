@@ -27,8 +27,4 @@ public class AuthService {
         }
         return new LoginResult(jwtProvider.issue(new JwtPayload(member.getId(), member.getName())));
     }
-
-    public JwtPayload extractToken(String token) {
-        return jwtProvider.extractPayload(token);
-    }
 }
