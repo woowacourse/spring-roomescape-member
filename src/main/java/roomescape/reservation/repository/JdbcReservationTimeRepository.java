@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -13,13 +14,10 @@ import roomescape.reservation.dto.response.AvailableReservationTimeResponse;
 import roomescape.reservation.entity.ReservationTime;
 
 @Repository
+@RequiredArgsConstructor
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
-
-    public JdbcReservationTimeRepository(NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public ReservationTime save(ReservationTime time) {

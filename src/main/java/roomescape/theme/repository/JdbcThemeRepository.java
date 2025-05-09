@@ -3,6 +3,7 @@ package roomescape.theme.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -12,13 +13,10 @@ import org.springframework.stereotype.Repository;
 import roomescape.theme.entity.Theme;
 
 @Repository
+@RequiredArgsConstructor
 public class JdbcThemeRepository implements ThemeRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
-
-    public JdbcThemeRepository(NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public Theme save(Theme theme) {

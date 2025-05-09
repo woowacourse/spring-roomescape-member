@@ -3,6 +3,7 @@ package roomescape.reservation.repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -12,13 +13,10 @@ import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.entity.ReservationTime;
 
 @Repository
+@RequiredArgsConstructor
 public class JdbcReservationRepository implements ReservationRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
-
-    public JdbcReservationRepository(NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     public Reservation save(Reservation reservation) {
         String query = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (:name, :date, :time_id, :theme_id)";

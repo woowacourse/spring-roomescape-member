@@ -2,6 +2,7 @@ package roomescape.theme.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.global.error.exception.ConflictException;
 import roomescape.global.error.exception.NotFoundException;
@@ -11,13 +12,10 @@ import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
 @Service
+@RequiredArgsConstructor
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
-
-    public ThemeService(ThemeRepository themeRepository) {
-        this.themeRepository = themeRepository;
-    }
 
     public ThemeResponse createTheme(ThemeRequest request) {
         Theme newTheme = request.toEntity();

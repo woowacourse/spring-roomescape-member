@@ -1,6 +1,8 @@
 package roomescape.reservation.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,18 +16,15 @@ import roomescape.reservation.dto.response.ReservationTimeResponse;
 import roomescape.reservation.service.ReservationTimeService;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/times")
 public class ReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(ReservationTimeService reservationTimeService) {
-        this.reservationTimeService = reservationTimeService;
-    }
-
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createTime(
-            @RequestBody ReservationTimeRequest request
+            @RequestBody @Valid ReservationTimeRequest request
     ) {
         ReservationTimeResponse response = reservationTimeService.createTime(request);
         return ResponseEntity.ok().body(response);

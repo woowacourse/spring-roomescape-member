@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.global.error.exception.BadRequestException;
 import roomescape.global.error.exception.ConflictException;
@@ -16,21 +17,12 @@ import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
 @Service
+@RequiredArgsConstructor
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
-
-    public ReservationService(
-            ReservationRepository reservationRepository,
-            ReservationTimeRepository reservationTimeRepository,
-            ThemeRepository themeRepository
-    ) {
-        this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
-    }
 
     public ReservationResponse createReservation(ReservationRequest request) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
