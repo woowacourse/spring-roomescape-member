@@ -31,6 +31,9 @@ public class JWTArgumentResolver implements HandlerMethodArgumentResolver {
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
         final Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return null;
+        }
 
         return authService.getLoginUser(cookies);
     }

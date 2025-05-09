@@ -23,4 +23,8 @@ public enum Roles {
     public boolean isNotAdmin() {
         return this != Roles.ADMIN;
     }
+
+    public boolean isAdmin() {
+        return this == Roles.ADMIN;
+    }
 }

@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -27,34 +28,33 @@ public class CheckAdminLoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler)
             throws Exception {
         final Cookie[] cookies = request.getCookies();
-
-        if (cookies != null) {
-            final String token = findToken(cookies);
-            if (token != null) {
-                final Roles role = jwtManager.getRole(token);
-                if (isAdmin(role)) {
-                    return true;
-                }
-            }
+        if (cookies == null) {
+            return setForbiddenResponse(response);
         }
 
-        setForbiddenResponse(response);
+        final boolean isAdmin = isAdmin(cookies);
+        if (isAdmin) {
+            return true;
+        }
+
+        return setForbiddenResponse(response);
+    }
+
+    private boolean isAdmin(final Cookie[] cookies) {
+        return findToken(cookies)
+                .map(jwtManager::getRole)
+                .anyMatch(Roles::isAdmin);
+    }
+
+    private boolean setForbiddenResponse(final HttpServletResponse response) {
+        response.setStatus(HttpStatus.FORBIDDEN.value());
+
         return false;
     }
 
-    private String findToken(final Cookie[] cookies) {
+    private Stream<String> findToken(final Cookie[] cookies) {
         return Arrays.stream(cookies)
                 .filter(cookie -> TOKEN_NAME.equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
-    }
-
-    private boolean isAdmin(final Roles role) {
-        return role != null && !role.isNotAdmin();
-    }
-
-    private void setForbiddenResponse(final HttpServletResponse response) {
-        response.setStatus(HttpStatus.FORBIDDEN.value());
+                .map(Cookie::getValue);
     }
 }

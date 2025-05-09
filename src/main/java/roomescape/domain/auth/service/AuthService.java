@@ -1,6 +1,7 @@
 package roomescape.domain.auth.service;
 
 import jakarta.servlet.http.Cookie;
+import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,7 @@ public class AuthService {
     public TokenResponse login(final LoginRequest loginRequest) {
         final User user = userRepository.findByEmail(loginRequest.email())
                 .orElseThrow(() -> new UserNotFoundException("해당 계정이 존재하지 않습니다."));
+
         user.login(loginRequest.email(), loginRequest.password());
 
         final String token = jwtManager.createToken(user.getId(), user.getRole());
@@ -50,18 +52,12 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public LoginUserDto getLoginUser(final Cookie[] cookies) {
-        if (cookies == null) {
-            return null;
-        }
-
-        for (final Cookie cookie : cookies) {
-            if (TOKEN_NAME.equals(cookie.getName())) {
-                final String token = cookie.getValue();
-                return getLoginUser(token);
-            }
-        }
-
-        return null;
+        return Arrays.stream(cookies)
+                .filter(cookie -> TOKEN_NAME.equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .map(this::getLoginUser)
+                .orElse(null);
     }
 
     @Transactional(readOnly = true)
