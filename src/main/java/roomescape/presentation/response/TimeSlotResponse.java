@@ -5,7 +5,7 @@ import java.util.List;
 import roomescape.domain.TimeSlot;
 
 public record TimeSlotResponse(
-    Long id,
+    long id,
     LocalTime startAt
 ) {
 

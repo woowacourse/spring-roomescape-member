@@ -5,7 +5,7 @@ import java.util.List;
 import roomescape.domain.AvailableTimeSlot;
 
 public record AvailableTimeSlotResponse(
-    Long id,
+    long id,
     LocalTime startAt,
     Boolean alreadyBooked
 ) {

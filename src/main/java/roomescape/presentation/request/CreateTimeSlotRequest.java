@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
 
 public record CreateTimeSlotRequest(
+
     @JsonFormat(pattern = "HH:mm")
     @NotNull
     LocalTime startAt
