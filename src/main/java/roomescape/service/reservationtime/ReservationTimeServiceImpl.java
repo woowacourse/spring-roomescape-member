@@ -25,6 +25,7 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
     }
 
     public ReservationTimeResponse create(ReservationTimeRequest request) {
+
         if (timeRepository.existsByStartAt(request.startAt())) {
             throw new ReservationTimeAlreadyExistsException();
         }
@@ -38,6 +39,7 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
     }
 
     public void deleteById(Long id) {
+
         if (isReservationExists(id)) {
             throw new UsingReservationTimeException();
         }
@@ -53,6 +55,7 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
     }
 
     public List<AvailableTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
+
         List<Long> bookedTimeIds = reservationRepository.findTimeIdsByDateAndTheme(date, themeId);
         List<ReservationTime> reservationTimes = timeRepository.findAll();
 

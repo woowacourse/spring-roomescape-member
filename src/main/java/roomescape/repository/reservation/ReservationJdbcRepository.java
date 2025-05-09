@@ -7,14 +7,39 @@ import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.enums.Role;
+import roomescape.dto.search.SearchConditions;
 
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
+
+    private final String joinedReservationTableSql = """
+            SELECT
+                r.id AS reservation_id,
+                r.date AS reservation_date,
+                rt.id AS time_id,
+                rt.start_at AS time_value,
+                t.id AS theme_id,
+                t.name AS theme_name,
+                t.description AS theme_description,
+                t.thumbnail AS theme_thumbnail,
+                m.id AS member_id,
+                m.name AS member_name,
+                m.email AS member_email,
+                m.password AS member_password,
+                m.role AS member_role
+            FROM
+                reservation r
+            INNER JOIN reservation_time rt ON r.time_id = rt.id
+            INNER JOIN theme t ON r.theme_id = t.id
+            INNER JOIN member m ON r.member_id = m.id
+            """;
 
     public ReservationJdbcRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -24,44 +49,28 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation add(Reservation reservation) {
+    public Reservation addReservation(Reservation reservation) {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", reservation.getName());
         params.put("date", reservation.getDate());
         params.put("time_id", reservation.getTime().getId());
         params.put("theme_id", reservation.getTheme().getId());
+        params.put("member_id", reservation.getMember().getId());
 
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return reservation.withId(id);
     }
 
     @Override
-    public int deleteById(Long id) {
+    public int deleteReservationById(Long id) {
         String sql = "delete from reservation where id = ?";
         return jdbcTemplate.update(sql, id);
     }
 
     @Override
-    public List<Reservation> findAll() {
-        String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    r.name AS reservation_name,
-                    r.date AS reservation_date,
-                    rt.id AS time_id,
-                    rt.start_at AS time_value,
-                    t.id AS theme_id,
-                    t.name AS theme_name,
-                    t.description AS theme_description,
-                    t.thumbnail AS theme_thumbnail
-                FROM
-                    reservation r
-                INNER JOIN reservation_time rt ON r.time_id = rt.id
-                INNER JOIN theme t ON r.theme_id = t.id;
-                
-                """;
+    public List<Reservation> findAllReservation() {
+
         return jdbcTemplate.query(
-                sql,
+                joinedReservationTableSql + ";",
                 (resultSet, rowNum) -> {
                     ReservationTime reservationTime = new ReservationTime(
                             resultSet.getLong("time_id"),
@@ -73,12 +82,18 @@ public class ReservationJdbcRepository implements ReservationRepository {
                             resultSet.getString("theme_description"),
                             resultSet.getString("theme_thumbnail"));
 
+                    Member member = new Member(
+                            resultSet.getLong("member_id"),
+                            resultSet.getString("member_name"),
+                            resultSet.getString("member_email"),
+                            resultSet.getString("member_password"), Role.valueOfResultSet(resultSet.getString("role")));
+
                     return new Reservation(
                             resultSet.getLong("reservation_id"),
-                            resultSet.getString("reservation_name"),
                             resultSet.getDate("reservation_date").toLocalDate(),
                             reservationTime,
-                            theme
+                            theme,
+                            member
                     );
                 }
         );
@@ -126,5 +141,38 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 endDate
         );
         return themeIds;
+    }
+
+    @Override
+    public List<Reservation> findReservationsByConditions(SearchConditions searchConditions) {
+        String sql =
+                joinedReservationTableSql + "WHERE r.member_id = ? AND r.theme_id = ? AND r.date >= ? AND r.date <= ?;";
+        List<Reservation> reservations = jdbcTemplate.query(sql, (resultSet, rowNum) -> {
+                    ReservationTime reservationTime = new ReservationTime(
+                            resultSet.getLong("time_id"),
+                            resultSet.getTime("time_value").toLocalTime());
+
+                    Theme theme = new Theme(
+                            resultSet.getLong("theme_id"),
+                            resultSet.getString("theme_name"),
+                            resultSet.getString("theme_description"),
+                            resultSet.getString("theme_thumbnail"));
+
+                    Member member = new Member(
+                            resultSet.getLong("member_id"),
+                            resultSet.getString("member_name"),
+                            resultSet.getString("member_email"),
+                            resultSet.getString("member_password"), Role.valueOfResultSet(resultSet.getString("role")));
+
+                    return new Reservation(
+                            resultSet.getLong("reservation_id"),
+                            resultSet.getDate("reservation_date").toLocalDate(),
+                            reservationTime,
+                            theme,
+                            member
+                    );
+                }, searchConditions.memberId(), searchConditions.themeId(), searchConditions.dateFrom(),
+                searchConditions.dateTo());
+        return reservations;
     }
 }
