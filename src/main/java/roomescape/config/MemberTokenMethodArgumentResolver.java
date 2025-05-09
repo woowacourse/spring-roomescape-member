@@ -7,9 +7,9 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.exception.unauthorized.UserUnauthorizedException;
+import roomescape.exception.unauthorized.MemberUnauthorizedException;
 
-public class UserTokenMethodArgumentResolver implements HandlerMethodArgumentResolver {
+public class MemberTokenMethodArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(AuthenticationPrincipal.class);
@@ -24,6 +24,6 @@ public class UserTokenMethodArgumentResolver implements HandlerMethodArgumentRes
                 return cookie.getValue();
             }
         }
-        throw new UserUnauthorizedException();
+        throw new MemberUnauthorizedException();
     }
 }

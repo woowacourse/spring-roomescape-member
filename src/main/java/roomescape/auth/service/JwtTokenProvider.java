@@ -4,7 +4,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.auth.entity.User;
+import roomescape.auth.entity.Member;
 
 import java.util.Date;
 
@@ -16,12 +16,12 @@ public class JwtTokenProvider implements TokenProvider {
     private long EXPIRE_LENGTH_MILLI;
 
     @Override
-    public String createToken(User user) {
+    public String createToken(Member member) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + EXPIRE_LENGTH_MILLI);
         return Jwts.builder()
-                .subject(user.getId().toString())
-                .claim("email", user.getEmail())
+                .subject(member.getId().toString())
+                .claim("email", member.getEmail())
                 .expiration(expiration)
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();

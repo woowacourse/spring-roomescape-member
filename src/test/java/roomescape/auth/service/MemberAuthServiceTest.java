@@ -2,20 +2,20 @@ package roomescape.auth.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.auth.entity.User;
-import roomescape.auth.repository.FakeUserRepository;
-import roomescape.auth.repository.UserRepository;
+import roomescape.auth.entity.Member;
+import roomescape.auth.repository.FakeMemberRepository;
+import roomescape.auth.repository.MemberRepository;
 import roomescape.auth.service.dto.request.LoginRequest;
 import roomescape.auth.service.dto.request.SignupRequest;
-import roomescape.exception.conflict.UserEmailConflictException;
-import roomescape.exception.unauthorized.UserUnauthorizedException;
+import roomescape.exception.conflict.MemberEmailConflictException;
+import roomescape.exception.unauthorized.MemberUnauthorizedException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class UserAuthServiceTest {
-    private final UserRepository userRepository = new FakeUserRepository();
+class MemberAuthServiceTest {
+    private final MemberRepository memberRepository = new FakeMemberRepository();
     private final TokenProvider tokenProvider = new FakeJwtTokenProvider();
-    private final UserAuthService service = new UserAuthService(userRepository, tokenProvider);
+    private final MemberAuthService service = new MemberAuthService(memberRepository, tokenProvider);
 
     @DisplayName("존재하지 않는 유저가 로그인을 요청하는 경우 예외가 발생한다.")
     @Test
@@ -26,7 +26,7 @@ class UserAuthServiceTest {
         // when & then
         assertThatThrownBy(() -> {
             service.login(request);
-        }).isInstanceOf(UserUnauthorizedException.class);
+        }).isInstanceOf(MemberUnauthorizedException.class);
     }
 
     @DisplayName("중복되는 이메일의 유저는 생성할 수 없다")
@@ -36,7 +36,7 @@ class UserAuthServiceTest {
         String email = "test@example.com";
         String password = "1234";
         String name = "test";
-        userRepository.save(new User(1L, name, email, password));
+        memberRepository.save(new Member(1L, name, email, password));
 
         SignupRequest request = new SignupRequest(
                 email,
@@ -47,6 +47,6 @@ class UserAuthServiceTest {
         // when & then
         assertThatThrownBy(() -> {
             service.signup(request);
-        }).isInstanceOf(UserEmailConflictException.class);
+        }).isInstanceOf(MemberEmailConflictException.class);
     }
 }

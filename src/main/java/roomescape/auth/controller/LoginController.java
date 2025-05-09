@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.auth.service.UserAuthService;
+import roomescape.auth.service.MemberAuthService;
 import roomescape.auth.service.dto.request.LoginRequest;
 import roomescape.auth.service.dto.response.CheckResponse;
 import roomescape.auth.service.dto.response.LoginResponse;
@@ -14,9 +14,9 @@ import roomescape.config.AuthenticationPrincipal;
 @RestController
 @RequestMapping("/login")
 public class LoginController {
-    private final UserAuthService service;
+    private final MemberAuthService service;
 
-    public LoginController(UserAuthService service) {
+    public LoginController(MemberAuthService service) {
         this.service = service;
     }
 

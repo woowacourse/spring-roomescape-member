@@ -7,79 +7,79 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.auth.entity.User;
+import roomescape.auth.entity.Member;
 
 import java.util.Optional;
 
 @Repository
-public class JdbcUserRepository implements UserRepository {
-    private static final RowMapper<User> rowMapper = (resultSet, rowNum) ->
-            new User(
+public class JdbcMemberRepository implements MemberRepository {
+    private static final RowMapper<Member> rowMapper = (resultSet, rowNum) ->
+            new Member(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("email"),
                     resultSet.getString("password"));
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public JdbcUserRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
     }
 
     @Override
-    public Optional<User> findById(Long userId) {
-        String query = "SELECT * FROM member WHERE id = :userId";
+    public Optional<Member> findById(Long memberId) {
+        String query = "SELECT * FROM member WHERE id = :memberId";
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("userId", userId);
+                .addValue("memberId", memberId);
         try {
-            User user = jdbcTemplate.queryForObject(query, params, rowMapper);
-            return Optional.of(user);
+            Member member = jdbcTemplate.queryForObject(query, params, rowMapper);
+            return Optional.of(member);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public Optional<User> findByEmailAndPassword(String email, String password) {
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
         String query = "SELECT * FROM member WHERE email = :email AND password = :password";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("password", password);
         try {
-            User user = jdbcTemplate.queryForObject(query, params, rowMapper);
-            return Optional.of(user);
+            Member member = jdbcTemplate.queryForObject(query, params, rowMapper);
+            return Optional.of(member);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
+    public Optional<Member> findByEmail(String email) {
         String query = "SELECT * FROM member WHERE email = :email";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("email", email);
         try {
-            User user = jdbcTemplate.queryForObject(query, params, rowMapper);
-            return Optional.of(user);
+            Member member = jdbcTemplate.queryForObject(query, params, rowMapper);
+            return Optional.of(member);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public User save(User user) {
+    public Member save(Member member) {
         String query = "INSERT INTO member (name, email, password) VALUES (:name, :email, :password)";
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", user.getName())
-                .addValue("email", user.getEmail())
-                .addValue("password", user.getPassword());
+                .addValue("name", member.getName())
+                .addValue("email", member.getEmail())
+                .addValue("password", member.getPassword());
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(query, params, keyHolder);
         final long id = keyHolder.getKey().longValue();
-        return new User(
+        return new Member(
                 id,
-                user.getName(),
-                user.getEmail(),
-                user.getPassword()
+                member.getName(),
+                member.getEmail(),
+                member.getPassword()
         );
     }
 }

@@ -1,9 +1,9 @@
 package roomescape.auth.service;
 
-import roomescape.auth.entity.User;
+import roomescape.auth.entity.Member;
 
 public interface TokenProvider {
-    String createToken(User user);
+    String createToken(Member member);
 
     String resolve(String token);
 }

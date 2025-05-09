@@ -10,6 +10,6 @@ import java.util.List;
 public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new UserTokenMethodArgumentResolver());
+        resolvers.add(new MemberTokenMethodArgumentResolver());
     }
 }

@@ -2,7 +2,7 @@ package roomescape.auth.service.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
-import roomescape.auth.entity.User;
+import roomescape.auth.entity.Member;
 
 public record SignupRequest(
         @Email
@@ -12,7 +12,7 @@ public record SignupRequest(
         @NotEmpty
         String name
 ) {
-        public User toEntity() {
-                return new User(0L, name, email, password);
+        public Member toEntity() {
+                return new Member(0L, name, email, password);
         }
 }
