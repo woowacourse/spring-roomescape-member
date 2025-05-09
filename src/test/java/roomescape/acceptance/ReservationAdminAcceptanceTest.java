@@ -16,6 +16,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.model.Member;
+import roomescape.model.Role;
 import roomescape.service.JwtProvider;
 import roomescape.service.ReservationAdminService;
 
@@ -36,7 +38,12 @@ class ReservationAdminAcceptanceTest {
 
     @BeforeEach
     void setUp() {
+        String email = "example@gmail.com";
+        Member member = new Member("히로", email, "password", Role.ADMIN);
 
+        insertNewRMemberWithJdbcTemplate(member);
+
+        this.token = jwtProvider.createToken(email);
     }
 
     @Test
@@ -59,6 +66,26 @@ class ReservationAdminAcceptanceTest {
                 .statusCode(401);
     }
 
+    @Test
+    @DisplayName("예약이 정상적으로 등록된다.")
+    void test2() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("date", LocalDate.now().plusDays(1).toString());
+        params.put("themeId", "1");
+        params.put("timeId", "1");
+        params.put("memberId", "1");
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", this.token)
+                .body(params)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(201);
+    }
+
     private Long insertNewReservationWithJdbcTemplate(final Long timeId, final Long themeId, LocalDate date) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -71,6 +98,23 @@ class ReservationAdminAcceptanceTest {
             ps.setLong(3, timeId);
             ps.setLong(4, themeId);
             ps.setLong(5, 1L);
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().longValue();
+    }
+
+    private Long insertNewRMemberWithJdbcTemplate(final Member member) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)",
+                    new String[]{"id"});
+            ps.setString(1, member.getName());
+            ps.setString(2, member.getPassword());
+            ps.setString(3, member.getPassword());
+            ps.setString(4, member.getRole().getValue());
             return ps;
         }, keyHolder);
 
