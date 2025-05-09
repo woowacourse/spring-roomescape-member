@@ -24,16 +24,16 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-
-        if (request.getCookies() == null) {
-            throw new IllegalStateException("인증할 수 없습니다.");
-        }
-
         String token = Arrays.stream(request.getCookies())
                 .filter(cookie -> cookie.getName().equals("token"))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("인증할 수 없습니다."))
                 .getValue();
+
+        String role = JwtTokenManager.getRole(token);
+        if (!role.equals("USER")) {
+            throw new IllegalStateException("인증할 수 없습니다.");
+        }
 
         return new LoginMemberInfo(JwtTokenManager.getId(token));
     }
