@@ -5,19 +5,19 @@ import roomescape.domain.Reservation;
 
 public record ReservationResponse(
         Long id,
-        String name,
         LocalDate date,
         ReservationTimeResponse reservationTime,
-        ThemeResponse theme
+        ThemeResponse theme,
+        MemberResponse member
 ) {
 
     public ReservationResponse(Reservation reservation) {
         this(
                 reservation.getId(),
-                reservation.getMember().getName(),
                 reservation.getDate(),
                 new ReservationTimeResponse(reservation.getReservationTime()),
-                new ThemeResponse(reservation.getTheme())
+                new ThemeResponse(reservation.getTheme()),
+                new MemberResponse(reservation.getMember())
         );
     }
 }

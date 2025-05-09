@@ -2,8 +2,10 @@ package roomescape.application.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.application.dto.AdminReservationCreateRequest;
 import roomescape.application.dto.ReservationRequest;
 import roomescape.application.dto.ReservationResponse;
+import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -20,12 +22,14 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
+    private final MemberDao memberDao;
 
     public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao,
-                              ThemeDao themeDao) {
+                              ThemeDao themeDao, MemberDao memberDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
+        this.memberDao = memberDao;
     }
 
     public List<ReservationResponse> findAllReservations() {
@@ -36,6 +40,20 @@ public class ReservationService {
 
     public ReservationResponse createReservation(Member member, ReservationRequest request) {
         Reservation reservationWithoutId = toReservation(member, request);
+        validateForCreation(reservationWithoutId);
+
+        Reservation savedReservation = saveReservation(reservationWithoutId);
+        return new ReservationResponse(savedReservation);
+    }
+
+    public ReservationResponse createReservation(AdminReservationCreateRequest request) {
+        Member member = memberDao.findById(request.memberId())
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자가 없습니다."));
+
+        ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
+        Theme theme = themeDao.findById(request.themeId());
+
+        Reservation reservationWithoutId = request.toReservationWith(member, reservationTime, theme);
         validateForCreation(reservationWithoutId);
 
         Reservation savedReservation = saveReservation(reservationWithoutId);

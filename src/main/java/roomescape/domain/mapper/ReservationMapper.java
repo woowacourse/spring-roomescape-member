@@ -30,7 +30,7 @@ public class ReservationMapper implements RowMapper<Reservation> {
                 ),
                 new Member(
                         rs.getLong("member_id"),
-                        rs.getString("name"),
+                        rs.getString("member_name"),
                         rs.getString("email"),
                         rs.getString("password"),
                         Role.valueOf(rs.getString("role"))
