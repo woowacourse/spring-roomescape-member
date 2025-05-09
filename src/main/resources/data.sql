@@ -34,7 +34,7 @@ INSERT INTO theme(name, description, thumbnail) VALUES ('The Arctic Expedition',
 INSERT INTO theme(name, description, thumbnail) VALUES ('The Wild West', 'Escape the wild west town before the showdown.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
 -- member 테이블에 대한 INSERT
-INSERT INTO member(name, role, email, password) VALUES ('admin', 'USER', 'admin@email.com', 'password');
+INSERT INTO member(name, role, email, password) VALUES ('admin', 'ADMIN', 'admin@email.com', 'password');
 INSERT INTO member (name, role, email, password) VALUES ('Alice', 'USER', 'alice@example.com', 'password');
 INSERT INTO member (name, role, email, password) VALUES ('Bob', 'USER', 'bob@example.com', 'password');
 INSERT INTO member (name, role, email, password) VALUES ('Charlie', 'USER', 'charlie@example.com', 'password');
@@ -45,19 +45,6 @@ INSERT INTO member (name, role, email, password) VALUES ('Grace', 'USER', 'grace
 INSERT INTO member (name, role, email, password) VALUES ('Heidi', 'USER', 'heidi@example.com', 'password');
 INSERT INTO member (name, role, email, password) VALUES ('Ivan', 'USER', 'ivan@example.com', 'password');
 INSERT INTO member (name, role, email, password) VALUES ('Judy', 'USER', 'judy@example.com', 'password');
-
-
-INSERT INTO member (name, role, email, password) VALUES ('Alice', 'USER', 'alice@example.com', 'password');
-INSERT INTO member (name, role, email, password) VALUES ('Bob', 'USER', 'bob@example.com', 'password');
-INSERT INTO member (name, role, email, password) VALUES ('Charlie', 'USER', 'charlie@example.com', 'password');
-INSERT INTO member (name, role, email, password) VALUES ('David', 'USER', 'david@example.com', 'password');
-INSERT INTO member (name, role, email, password) VALUES ('Eve', 'USER', 'eve@example.com', 'password');
-INSERT INTO member (name, role, email, password) VALUES ('Frank', 'USER', 'frank@example.com', 'password');
-INSERT INTO member (name, role, email, password) VALUES ('Grace', 'USER', 'grace@example.com', 'password');
-INSERT INTO member (name, role, email, password) VALUES ('Heidi', 'USER', 'heidi@example.com', 'password');
-INSERT INTO member (name, role, email, password) VALUES ('Ivan', 'USER', 'ivan@example.com', 'password');
-INSERT INTO member (name, role, email, password) VALUES ('Judy', 'USER', 'judy@example.com', 'password');
-
 
 -- reservation 테이블에 대한 INSERT
 INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (3, '2025-04-24', 3, 9);
