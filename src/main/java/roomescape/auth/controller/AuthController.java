@@ -17,6 +17,7 @@ import roomescape.user.domain.dto.UserResponseDto;
 @RestController
 public class AuthController {
 
+    private static final String TOKEN_NAME_FIELD = "token";
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
@@ -29,7 +30,7 @@ public class AuthController {
         TokenResponseDto tokenResponseDto = authService.login(tokenRequestDto);
 
         ResponseCookie cookie = ResponseCookie
-                .from("SESSION", tokenResponseDto.accessToken())
+                .from(TOKEN_NAME_FIELD, tokenResponseDto.accessToken())
                 .domain("localhost")
                 .path("/")
                 .httpOnly(true)
@@ -42,7 +43,7 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<UserResponseDto> checkAuth(@CookieValue(name = "SESSION") String token) {
+    public ResponseEntity<UserResponseDto> checkAuth(@CookieValue(name = TOKEN_NAME_FIELD) String token) {
         UserResponseDto userResponseDto = authService.findMemberByToken(token);
         return ResponseEntity.ok().body(userResponseDto);
     }
