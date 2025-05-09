@@ -136,24 +136,29 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAllByFilter(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
-        String sql = DEFUALT_SELECT_SQL;
-        List<String> args = new ArrayList<>();
+        StringBuilder sqlBuilder = new StringBuilder(DEFUALT_SELECT_SQL);
+        List<Object> args = new ArrayList<>();
+        List<String> conditions = new ArrayList<>();
 
         if (memberId != null) {
-            sql += " where r.member_id = ?";
-            args.add(String.valueOf(memberId));
+            conditions.add("r.member_id = ?");
+            args.add(memberId);
         }
         if (themeId != null) {
-            sql += " and r.theme_id = ?";
-            args.add(String.valueOf(themeId));
+            conditions.add("r.theme_id = ?");
+            args.add(themeId);
         }
         if (dateFrom != null && dateTo != null) {
-            sql += " and r.`date` between ? and ?";
-            args.add(String.valueOf(dateFrom));
-            args.add(String.valueOf(dateTo));
+            conditions.add("r.`date` between ? and ?");
+            args.add(dateFrom);
+            args.add(dateTo);
         }
 
-        return jdbcTemplate.query(sql, reservationRowMapper, args.toArray(new String[0]));
+        if (!conditions.isEmpty()) {
+            sqlBuilder.append(" where ").append(String.join(" and ", conditions));
+        }
+
+        return jdbcTemplate.query(sqlBuilder.toString(), reservationRowMapper, args.toArray(new String[0]));
     }
 
     @Override
