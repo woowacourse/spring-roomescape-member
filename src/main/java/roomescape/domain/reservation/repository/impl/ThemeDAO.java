@@ -100,7 +100,7 @@ public class ThemeDAO implements ThemeRepository {
 
     private Theme update(final Theme theme) {
         final String sql = """
-                update theme 
+                update theme
                 set name = :name, description = :description, thumbnail = :thumbnail
                 where id = :id
                 """;
