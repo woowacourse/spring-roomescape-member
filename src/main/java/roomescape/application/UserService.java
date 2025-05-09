@@ -3,6 +3,7 @@ package roomescape.application;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.User;
+import roomescape.domain.UserRole;
 import roomescape.domain.repository.UserRepository;
 
 @Service
@@ -12,6 +13,17 @@ public class UserService {
 
     public UserService(final UserRepository repository) {
         this.repository = repository;
+    }
+
+    public User register(final String email, final String password, final String name) {
+        var optionalUser = repository.findByEmail(email);
+        if (optionalUser.isPresent()) {
+            throw new IllegalStateException("이미 해당 이메일로 가입된 사용자가 있습니다.");
+        }
+
+        var user = new User(name, UserRole.USER, email, password);
+        var id = repository.save(user);
+        return user.withId(id);
     }
 
     public User findById(final long id) {

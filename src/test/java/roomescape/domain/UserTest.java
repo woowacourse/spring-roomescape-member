@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class UserTest {
 
     @Test
-    @DisplayName("이름이 여섯 글자 이상이면 예외가 발생한다")
+    @DisplayName("이름이 6글자 이상이면 예외가 발생한다")
     void nameLengthException() {
         assertThatThrownBy(() -> new User(
             1L,
@@ -18,6 +18,18 @@ class UserTest {
             UserRole.USER,
             "email@email.com",
             "password")
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("비밀번호가 30글자 이상이면 예외가 발생한다")
+    void passwordLengthException() {
+        assertThatThrownBy(() -> new User(
+            1L,
+            "이름",
+            UserRole.USER,
+            "email@email.com",
+            "가".repeat(31))
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
