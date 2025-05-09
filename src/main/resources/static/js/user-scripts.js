@@ -39,7 +39,6 @@ function updateUIBasedOnLogin() {
         })
         .catch(error => {
             // 에러 처리 또는 로그아웃 상태일 때 UI 업데이트
-            alert(error)
             console.error('Error:', error);
             document.getElementById('profile-name').textContent = 'Profile'; // 기본 텍스트로 재설정
             document.querySelector('.nav-item.dropdown').style.display = 'none'; // 드롭다운 메뉴 숨김
