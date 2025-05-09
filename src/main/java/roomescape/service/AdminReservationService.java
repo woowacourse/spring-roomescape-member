@@ -42,6 +42,6 @@ public class AdminReservationService {
         long reservationId = reservationDao.create(reservationWithoutId);
 
         Reservation reservation = reservationWithoutId.copyWithId(reservationId);
-        return ReservationResponse.from(reservation);
+        return new ReservationResponse(reservation);
     }
 }

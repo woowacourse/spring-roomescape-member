@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import roomescape.config.LoginMember;
@@ -32,7 +33,16 @@ public class ReservationService {
 
     public List<ReservationResponse> findAllReservations() {
         return reservationDao.findAll().stream()
-                .map(ReservationResponse::from)
+                .map(ReservationResponse::new)
+                .toList();
+    }
+
+    public List<ReservationResponse> searchReservations(Long themeId, Long memberId, LocalDate dateFrom,
+                                                        LocalDate dateTo) {
+        List<Reservation> reservations = reservationDao.findByThemeAndMemberAndDate(themeId, memberId,
+                dateFrom, dateTo);
+        return reservations.stream()
+                .map(ReservationResponse::new)
                 .toList();
     }
 
@@ -50,7 +60,7 @@ public class ReservationService {
         long reservationId = reservationDao.create(reservationWithoutId);
 
         Reservation reservation = reservationWithoutId.copyWithId(reservationId);
-        return ReservationResponse.from(reservation);
+        return new ReservationResponse(reservation);
     }
 
     public void deleteReservation(Long id) {

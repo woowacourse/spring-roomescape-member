@@ -20,6 +20,12 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
+    public List<Reservation> findByThemeAndMemberAndDate(Long themeId, Long memberId, LocalDate dateFrom,
+                                                         LocalDate dateTo) {
+        return List.of();
+    }
+
+    @Override
     public Long create(Reservation reservation) {
         long reservationId = id++;
         fakeMemory.add(reservation.copyWithId(reservationId));

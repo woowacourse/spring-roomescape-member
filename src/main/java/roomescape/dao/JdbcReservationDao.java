@@ -72,6 +72,54 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
+    public List<Reservation> findByThemeAndMemberAndDate(Long themeId, Long memberId, LocalDate dateFrom,
+                                                         LocalDate dateTo) {
+        //TODO : 참조관계가 새로 생길때마다 매번 가져오는 게 맘에 안듦. 어차피 select *인데 필드명 충돌땜에..
+        // 컴파일 에러도 안떠서 제대로 고쳤는지 확신도 없음
+        String sql = """
+                select r.id, r.date, 
+                    member_id, m.name as member_name, m.email, m.password, m.role,
+                    time_id, rt.start_at, 
+                    theme_id, t.name as theme_name, t.description, t.thumbnail
+                from reservation as r 
+                inner join reservation_time as rt on r.time_id = rt.id
+                inner join theme as t on r.theme_id = t.id
+                inner join member as m on r.member_id = m.id
+                where theme_id = ? and member_id = ? and date between ? and ?
+                """;
+        return jdbcTemplate.query(
+                sql,
+                new ReservationMapper(),
+                themeId,
+                memberId,
+                dateFrom,
+                dateTo
+        );
+    }
+
+    @Override
+    public List<Long> findMostReservedThemeIdsBetween(LocalDate startDate, LocalDate endDate) {
+        String sql = """
+                SELECT
+                    t.id AS theme_id
+                FROM
+                    theme t
+                LEFT JOIN reservation r
+                    ON t.id = r.theme_id
+                    AND r.date BETWEEN ? AND ?
+                GROUP BY t.id
+                ORDER BY COUNT(r.id) DESC
+                LIMIT 10;
+                """;
+        return jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> rs.getLong("theme_id"),
+                startDate,
+                endDate
+        );
+    }
+
+    @Override
     public boolean existByTimeId(Long timeId) {
         String sql = "select exists(select 1 from reservation where time_id = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
@@ -112,27 +160,5 @@ public class JdbcReservationDao implements ReservationDao {
                 time.getId(),
                 themeId
         ));
-    }
-
-    @Override
-    public List<Long> findMostReservedThemeIdsBetween(LocalDate startDate, LocalDate endDate) {
-        String sql = """
-                SELECT
-                    t.id AS theme_id
-                FROM
-                    theme t
-                LEFT JOIN reservation r
-                    ON t.id = r.theme_id
-                    AND r.date BETWEEN ? AND ?
-                GROUP BY t.id
-                ORDER BY COUNT(r.id) DESC
-                LIMIT 10;
-                """;
-        return jdbcTemplate.query(
-                sql,
-                (rs, rowNum) -> rs.getLong("theme_id"),
-                startDate,
-                endDate
-        );
     }
 }

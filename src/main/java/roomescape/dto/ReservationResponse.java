@@ -6,8 +6,8 @@ import roomescape.entity.Reservation;
 public record ReservationResponse(
         Long id, LocalDate date, MemberResponse member, ReservationTimeResponse time, ThemeResponse theme
 ) {
-    public static ReservationResponse from(Reservation reservation) {
-        return new ReservationResponse(
+    public ReservationResponse(Reservation reservation) {
+        this(
                 reservation.getId(),
                 reservation.getDate(),
                 new MemberResponse(reservation.getMember()),
