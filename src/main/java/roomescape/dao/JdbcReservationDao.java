@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.member.LoginMember;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.roomtheme.RoomTheme;
@@ -20,13 +21,23 @@ public class JdbcReservationDao implements ReservationDao {
 
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("reservation_id"),
-            resultSet.getString("name"),
             resultSet.getDate("date").toLocalDate(),
-            new ReservationTime(resultSet.getLong("time_id"),
+            new ReservationTime(
+                    resultSet.getLong("time_id"),
                     resultSet.getTime("time_value").toLocalTime()),
-            new RoomTheme(resultSet.getString("theme_name"),
+
+            new RoomTheme(
+                    resultSet.getString("theme_name"),
                     resultSet.getString("description"),
-                    resultSet.getString("thumbnail"))
+                    resultSet.getString("thumbnail")),
+
+            new LoginMember(
+                    resultSet.getLong("member_id"),
+                    resultSet.getString("role"),
+                    resultSet.getString("name"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password")
+            )
     );
 
     private final JdbcTemplate jdbcTemplate;
@@ -42,10 +53,10 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public long insert(final Reservation reservation) {
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
                 .addValue("date", Date.valueOf(reservation.getDate()))
                 .addValue("time_id", reservation.getTime().getId())
-                .addValue("theme_id", reservation.getTheme().getId());
+                .addValue("theme_id", reservation.getTheme().getId())
+                .addValue("member_id", reservation.getMember().getId());
         Number newId = simpleJdbcInsert.executeAndReturnKey(parameters);
         return newId.longValue();
     }
@@ -61,18 +72,24 @@ public class JdbcReservationDao implements ReservationDao {
         final String query = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
                     r.date,
                     rt.id AS time_id,
                     rt.start_at AS time_value,
                     t.theme_name,
                     t.description,
-                    t.thumbnail
+                    t.thumbnail,
+                    m.id AS member_id,
+                    m.role,
+                    m.name,
+                    m.email,
+                    m.password
                 FROM reservation AS r
                 JOIN reservation_time AS rt
                 ON r.time_id = rt.id
                 JOIN theme AS t
                 ON r.theme_id = t.id
+                JOIN member AS m
+                ON r.member_id = m.id
                 """;
         return jdbcTemplate.query(query, RESERVATION_ROW_MAPPER);
     }
@@ -82,18 +99,24 @@ public class JdbcReservationDao implements ReservationDao {
         final String query = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
                     r.date,
                     rt.id AS time_id,
                     rt.start_at AS time_value,
                     t.theme_name,
                     t.description,
-                    t.thumbnail
+                    t.thumbnail,
+                    m.id AS member_id,
+                    m.role,
+                    m.name,
+                    m.email,
+                    m.password
                 FROM reservation AS r
                 JOIN reservation_time AS rt
                 ON r.time_id = rt.id
                 JOIN theme AS t
                 ON r.theme_id = t.id
+                JOIN member AS m
+                ON r.member_id = m.id
                 WHERE r.id = ?
                 """;
         List<Reservation> reservations = jdbcTemplate.query(query, RESERVATION_ROW_MAPPER, id);

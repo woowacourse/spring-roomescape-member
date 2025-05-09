@@ -2,9 +2,11 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.RoomThemeDao;
+import roomescape.domain.member.LoginMember;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.roomtheme.RoomTheme;
@@ -19,19 +21,23 @@ public class ReservationService {
     private final ReservationDao reservationDAO;
     private final ReservationTimeDao reservationTimeDAO;
     private final RoomThemeDao themeDAO;
+    private final MemberDao memberDao;
 
     public ReservationService(final ReservationDao reservationDAO,
                               final ReservationTimeDao reservationTimeDAO,
-                              final RoomThemeDao themeDAO) {
+                              final RoomThemeDao themeDAO,
+                              final MemberDao memberDao) {
         this.reservationDAO = reservationDAO;
         this.reservationTimeDAO = reservationTimeDAO;
         this.themeDAO = themeDAO;
+        this.memberDao = memberDao;
     }
 
     public Reservation addReservation(final CreateReservationServiceRequest creation) {
         final ReservationTime reservationTime = findReservationTimeByTimeId(creation.timeId());
         final RoomTheme theme = findThemeByThemeId(creation.themeId());
-        final Reservation reservation = new Reservation(creation.name(), creation.date(), reservationTime, theme);
+        final LoginMember member = findMemberByMemberId(creation.memberId());
+        final Reservation reservation = new Reservation(creation.date(), reservationTime, theme, member);
 
         validatePastDateAndTime(reservation);
         validateDuplicateReservation(reservation);
@@ -48,6 +54,11 @@ public class ReservationService {
     private RoomTheme findThemeByThemeId(final long themeId) {
         return themeDAO.findById(themeId)
                 .orElseThrow(() -> new NotExistedValueException("존재하지 않는 테마 입니다"));
+    }
+
+    private LoginMember findMemberByMemberId(final long memberId) {
+        return memberDao.findById(memberId)
+                .orElseThrow(() -> new NotExistedValueException("존재하지 않는 멤버 입니다"));
     }
 
     private void validatePastDateAndTime(final Reservation reservation) {

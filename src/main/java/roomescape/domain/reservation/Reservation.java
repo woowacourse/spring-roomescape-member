@@ -1,6 +1,7 @@
 package roomescape.domain.reservation;
 
 import java.time.LocalDate;
+import roomescape.domain.member.LoginMember;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.roomtheme.RoomTheme;
 import roomescape.exception.custom.InvalidInputException;
@@ -8,51 +9,46 @@ import roomescape.exception.custom.InvalidInputException;
 public class Reservation {
 
     private static final int NON_SAVED_STATUS = 0;
-    private static final int MAX_LENGTH = 255;
 
     private final long id;
-    private final String name;
     private final LocalDate date;
     private final ReservationTime time;
     private final RoomTheme theme;
+    private final LoginMember member;
 
     public Reservation(final long id,
-                       final String name,
                        final LocalDate date,
                        final ReservationTime time,
-                       final RoomTheme theme) {
-        validateInvalidInput(name, date, time, theme);
+                       final RoomTheme theme,
+                       final LoginMember member) {
+        validateInvalidInput(date, time, theme, member);
 
         this.id = id;
-        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.member = member;
     }
 
-    public Reservation(final String name,
-                       final LocalDate date,
+    public Reservation(final LocalDate date,
                        final ReservationTime reservationTime,
-                       final RoomTheme theme) {
-        this(NON_SAVED_STATUS, name, date, reservationTime, theme);
+                       final RoomTheme theme,
+                       final LoginMember member) {
+        this(NON_SAVED_STATUS, date, reservationTime, theme, member);
     }
 
     public Reservation(final long id, final Reservation savedReservation) {
-        this(id, savedReservation.getName(), savedReservation.getDate(),
-                savedReservation.getTime(), savedReservation.getTheme());
+        this(id, savedReservation.getDate(), savedReservation.getTime(),
+                savedReservation.getTheme(), savedReservation.getMember());
     }
 
-    private void validateInvalidInput(final String name, final LocalDate date,
-                                      final ReservationTime reservationTime, final RoomTheme theme) {
-        validateNotNull(name, date, reservationTime, theme);
-        validateValidLength(name);
+    private void validateInvalidInput(final LocalDate date, final ReservationTime reservationTime,
+                                      final RoomTheme theme, final LoginMember member) {
+        validateNotNull(date, reservationTime, theme, member);
     }
 
-    private void validateNotNull(final String name, final LocalDate date,
-                                 final ReservationTime reservationTime, final RoomTheme theme) {
-        if (name == null || name.isBlank()) {
-            throw new InvalidInputException("예약자 명은 빈 값이 입력될 수 없습니다");
-        }
+    private void validateNotNull(final LocalDate date, final ReservationTime reservationTime,
+                                 final RoomTheme theme, final LoginMember member) {
         if (date == null) {
             throw new InvalidInputException("예약 날짜는 빈 값이 입력될 수 없습니다");
         }
@@ -62,11 +58,8 @@ public class Reservation {
         if (theme == null) {
             throw new InvalidInputException("예약 테마는 빈 값이 입력될 수 없습니다");
         }
-    }
-
-    private void validateValidLength(final String name) {
-        if (name.length() > MAX_LENGTH) {
-            throw new InvalidInputException("예약자 명은 255자를 초과할 수 없습니다.");
+        if (member == null) {
+            throw new InvalidInputException("멤버는 빈 값이 입력될 수 없습니다");
         }
     }
 
@@ -83,10 +76,6 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public LocalDate getDate() {
         return date;
     }
@@ -97,5 +86,9 @@ public class Reservation {
 
     public RoomTheme getTheme() {
         return theme;
+    }
+
+    public LoginMember getMember() {
+        return member;
     }
 }
