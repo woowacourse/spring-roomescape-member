@@ -97,9 +97,6 @@ class ReservationTimeServiceTest {
         reservationRepository.create(reservation1);
 
         // when & then
-        for (ReservationTime reservationTime : reservationTimeRepository.findAll()) {
-            System.out.println(reservationTime.getId());
-        }
         assertThatThrownBy(() -> reservationTimeService.delete(1L))
                 .isInstanceOf(ExistedReservationException.class);
     }
