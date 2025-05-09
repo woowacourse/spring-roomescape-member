@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -13,7 +13,6 @@ import roomescape.dto.reservation.ThemeRequest;
 import roomescape.dto.reservation.ThemeResponse;
 import roomescape.exceptions.EntityNotFoundException;
 import roomescape.exceptions.reservation.ThemeDuplicateException;
-import roomescape.service.reservation.ThemeService;
 
 @SpringBootTest
 class ThemeServiceTest {

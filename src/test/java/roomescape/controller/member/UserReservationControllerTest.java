@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.member;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
@@ -15,7 +15,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.controller.member.UserReservationController;
 import roomescape.dto.reservation.ReservationAvailableTimeResponse;
 import roomescape.service.memeber.UserReservationTimeService;
 

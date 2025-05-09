@@ -1,4 +1,4 @@
-package roomescape.exceptions;
+package roomescape.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -10,7 +10,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import roomescape.controller.GlobalExceptionHandler;
+import roomescape.exceptions.EntityDuplicateException;
+import roomescape.exceptions.EntityNotFoundException;
 
 class GlobalExceptionHandlerTest {
 

@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.reservation;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -13,7 +13,6 @@ import roomescape.dto.reservation.ReservationTimeRequest;
 import roomescape.dto.reservation.ReservationTimeResponse;
 import roomescape.exceptions.EntityNotFoundException;
 import roomescape.exceptions.reservation.ReservationTimeDuplicateException;
-import roomescape.service.reservation.ReservationTimeService;
 
 @SpringBootTest
 class ReservationTimeServiceTest {

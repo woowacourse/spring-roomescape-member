@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.member;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 

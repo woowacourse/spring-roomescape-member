@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.reservation;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -20,7 +20,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.controller.reservation.ReservationTimeController;
 import roomescape.dto.reservation.ReservationTimeRequest;
 import roomescape.dto.reservation.ReservationTimeResponse;
 import roomescape.exceptions.EntityNotFoundException;

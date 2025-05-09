@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.reservation;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
@@ -20,8 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.controller.reservation.ReservationController;
-import roomescape.dto.auth.LoginRequest;
+import roomescape.dto.MemberRequest;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservation.ReservationTimeResponse;
@@ -48,7 +47,7 @@ class ReservationControllerTest {
     void readReservation() {
         ReservationTimeResponse givenTime = new ReservationTimeResponse(1L, LocalTime.MAX);
         ThemeResponse givenTheme = new ThemeResponse(1L, "테스트", "테스트", "테스트");
-        LoginRequest givenMember = new LoginRequest(1L, "테스트", "test@example.com", "테스트");
+        MemberRequest givenMember = new MemberRequest(1L, "테스트", "test@example.com", "테스트");
         ReservationResponse response1 = new ReservationResponse(1L,
                 givenMember.name(),
                 LocalDate.now().plusDays(1),
@@ -88,7 +87,7 @@ class ReservationControllerTest {
         ReservationRequest dto = new ReservationRequest(fixedDate, expectedTimeId, expectedThemeId, expectedMemberId);
         ReservationTimeResponse givenTime = new ReservationTimeResponse(expectedTimeId, LocalTime.MAX);
         ThemeResponse givenTheme = new ThemeResponse(expectedThemeId, "테스트", "테스트", "테스트");
-        LoginRequest givenMember = new LoginRequest(expectedMemberId, "테스트", "test@example.com", "테스트");
+        MemberRequest givenMember = new MemberRequest(expectedMemberId, "테스트", "test@example.com", "테스트");
         ReservationResponse response = new ReservationResponse(expectedId,
                 givenMember.name(),
                 fixedDate,
