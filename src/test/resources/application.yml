@@ -21,4 +21,4 @@ security:
   jwt:
     access-token:
       secret-key: since-jjwt-api-0.11-secret-key-must-be-longer-than-32-bytes
-      validity-in-milliseconds: 900000
+      validity-in-milliseconds: 900000 # 15 minutes
