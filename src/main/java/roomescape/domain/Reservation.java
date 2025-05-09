@@ -35,7 +35,7 @@ public class Reservation {
 
     private static void validateNull(Member member, LocalDate date, ReservationTime reservationTime, Theme theme) {
         if (member == null) {
-            throw new ArgumentNullException("name");
+            throw new ArgumentNullException("member");
         }
         if (date == null) {
             throw new ArgumentNullException("date");
