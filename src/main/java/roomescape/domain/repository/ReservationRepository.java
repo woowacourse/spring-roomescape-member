@@ -19,6 +19,8 @@ public interface ReservationRepository {
 
     List<Reservation> findByThemeId(long id);
 
+    List<Reservation> findBySearchFilter(ReservationSearchFilter filter);
+
     List<Reservation> findByDateAndThemeId(LocalDate date, long themeId);
 
     Optional<Reservation> findByDateAndTimeSlotAndThemeId(LocalDate date, long timeSlotId, long themeId);

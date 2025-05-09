@@ -37,7 +37,11 @@ class MissionStepTest {
 
     @Test
     void 일단계() {
+        insertOneUser();
+        var token = authenticationService.issueToken("email@email.com", "password");
+
         RestAssured.given().log().all()
+            .cookie("token", token)
             .when().get("/admin")
             .then().log().all()
             .statusCode(HttpStatus.OK.value());
@@ -45,7 +49,11 @@ class MissionStepTest {
 
     @Test
     void 이단계() {
+        insertOneUser();
+        var token = authenticationService.issueToken("email@email.com", "password");
+
         RestAssured.given().log().all()
+            .cookie("token", token)
             .when().get("/admin/reservation")
             .then().log().all()
             .statusCode(HttpStatus.OK.value());

@@ -8,6 +8,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
 import roomescape.domain.User;
 import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.repository.ReservationSearchFilter;
 import roomescape.domain.repository.ThemeRepository;
 import roomescape.domain.repository.TimeSlotRepository;
 
@@ -40,6 +41,10 @@ public class ReservationService {
 
     public List<Reservation> findAllReservations() {
         return reservationRepository.findAll();
+    }
+
+    public List<Reservation> findAllReservations(ReservationSearchFilter filter) {
+        return reservationRepository.findBySearchFilter(filter);
     }
 
     public boolean removeById(final long id) {

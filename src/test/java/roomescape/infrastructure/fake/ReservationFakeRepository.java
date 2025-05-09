@@ -2,6 +2,7 @@ package roomescape.infrastructure.fake;
 
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -9,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Reservation;
 import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.repository.ReservationSearchFilter;
 
 public class ReservationFakeRepository implements ReservationRepository {
 
@@ -57,6 +59,24 @@ public class ReservationFakeRepository implements ReservationRepository {
         return reservations.values().stream()
             .filter(reservation -> reservation.theme().id() == id)
             .toList();
+    }
+
+    @Override
+    public List<Reservation> findBySearchFilter(final ReservationSearchFilter filter) {
+        var reservations = new ArrayList<>(this.reservations.values());
+        if (filter.themeId() != null) {
+            reservations.removeIf(reservation -> !reservation.theme().id().equals(filter.themeId()));
+        }
+        if (filter.userId() != null) {
+            reservations.removeIf(reservation -> !reservation.user().id().equals(filter.userId()));
+        }
+        if (filter.dateFrom() != null) {
+            reservations.removeIf(reservation -> reservation.date().isBefore(filter.dateFrom()));
+        }
+        if (filter.dateTo() != null) {
+            reservations.removeIf(reservation -> reservation.date().isAfter(filter.dateTo()));
+        }
+        return List.copyOf(reservations);
     }
 
     @Override

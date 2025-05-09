@@ -2,7 +2,6 @@ package roomescape.presentation;
 
 import static java.util.stream.Collectors.toMap;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
@@ -69,9 +68,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return problemDetail;
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(code = INTERNAL_SERVER_ERROR)
-    public ProblemDetail handleException(final Exception ex) {
-        return ProblemDetail.forStatusAndDetail(INTERNAL_SERVER_ERROR, "예기치 못한 오류가 발생했습니다.");
-    }
+//    @ExceptionHandler(Exception.class)
+//    @ResponseStatus(code = INTERNAL_SERVER_ERROR)
+//    public ProblemDetail handleException(final Exception ex) {
+//        return ProblemDetail.forStatusAndDetail(INTERNAL_SERVER_ERROR, "예기치 못한 오류가 발생했습니다.");
+//    }
 }
