@@ -24,7 +24,7 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
-        if (cookieUtils.containsCookieForToken(request)) {
+        if (!cookieUtils.containsCookieForToken(request)) {
             response.setStatus(401);
             return false;
         }

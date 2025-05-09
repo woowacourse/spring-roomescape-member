@@ -19,8 +19,8 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.dto.response.MemberResponseDto;
 import roomescape.model.LoginMember;
 import roomescape.model.Role;
-import roomescape.service.AuthService;
 import roomescape.presentation.support.CookieUtils;
+import roomescape.service.AuthService;
 
 @ExtendWith(MockitoExtension.class)
 class LoginMemberArgumentResolverTest {
