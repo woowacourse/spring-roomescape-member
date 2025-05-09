@@ -11,4 +11,6 @@ public interface ReservationRepository {
     void delete(Long id);
 
     boolean existsByTimeId(Long id);
+
+    List<Reservation> readAllWithFilter(Long themeId, Long memberId, String dateFrom, String dateTo);
 }

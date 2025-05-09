@@ -44,6 +44,18 @@ public class ReservationController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    // TODO: 관리자 전용 API - 분리 필요
+    @GetMapping("admin/reservations/lists")
+    public ResponseEntity<List<ReservationResponse>> readAllWithFilter(
+            @RequestParam(required = false) Long themeId,
+            @RequestParam(required = false) Long memberId,
+            @RequestParam(required = false) String dateFrom,
+            @RequestParam(required = false) String dateTo
+    ) {
+        List<ReservationResponse> responses = reservationService.readAllWithFilter(themeId, memberId, dateFrom, dateTo);
+        return ResponseEntity.ok(responses);
+    }
+
     @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponse>> readAll() {
         List<ReservationResponse> responses = reservationService.readReservations();

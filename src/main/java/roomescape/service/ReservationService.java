@@ -85,4 +85,9 @@ public class ReservationService {
     public void deleteReservation(Long id) {
         reservationRepository.delete(id);
     }
+
+    public List<ReservationResponse> readAllWithFilter(Long themeId, Long memberId, String dateFrom, String dateTo) {
+        List<Reservation> reservations = reservationRepository.readAllWithFilter(themeId, memberId, dateFrom, dateTo);
+        return reservations.stream().map(ReservationResponse::from).toList();
+    }
 }

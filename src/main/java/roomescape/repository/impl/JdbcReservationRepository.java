@@ -78,6 +78,65 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.queryForObject(query, Boolean.class, timeId);
     }
 
+    @Override
+    public List<Reservation> readAllWithFilter(Long themeId, Long memberId, String dateFrom, String dateTo) {
+        StringBuilder query = new StringBuilder("""
+                SELECT
+                    r.id,
+                    m.id AS member_id, m.name AS member_name, m.email AS member_email, m.role AS member_role,
+                    r.date,
+                    t.id AS time_id, t.start_at,
+                    th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail
+                FROM reservation r
+                JOIN member m ON r.member_id = m.id
+                JOIN reservation_time t ON r.time_id = t.id
+                JOIN theme th ON r.theme_id = th.id
+                """);
+
+        if (themeId != null) {
+            query.append("WHERE th.id = ").append(themeId).append(" ");
+        }
+        if (memberId != null) {
+            if (query.toString().contains("WHERE")) {
+                query.append("AND m.id = ").append(memberId).append(" ");
+            } else {
+                query.append("WHERE m.id = ").append(memberId).append(" ");
+            }
+        }
+        if (dateFrom != null && dateTo != null) {
+            if (query.toString().contains("WHERE")) {
+                query.append("AND r.date BETWEEN '").append(dateFrom).append("' AND '").append(dateTo).append("' ");
+            } else {
+                query.append("WHERE r.date BETWEEN '").append(dateFrom).append("' AND '").append(dateTo).append("' ");
+            }
+        }
+
+        // TODO: Mapper 분리
+        return jdbcTemplate.query(
+                query.toString(),
+                (resultSet, rowNum) -> new Reservation(
+                        resultSet.getLong("id"),
+                        new Member(
+                                resultSet.getLong("member_id"),
+                                resultSet.getString("member_name"),
+                                resultSet.getString("member_email"),
+                                Role.valueOf(resultSet.getString("member_role"))
+                        ),
+                        resultSet.getDate("date").toLocalDate(),
+                        new ReservationTime(
+                                resultSet.getLong("time_id"),
+                                resultSet.getTime("start_at").toLocalTime()
+                        ),
+                        new Theme(
+                                resultSet.getLong("theme_id"),
+                                resultSet.getString("theme_name"),
+                                resultSet.getString("theme_description"),
+                                resultSet.getString("theme_thumbnail")
+                        )
+                )
+        );
+    }
+
     public Reservation save(Reservation reservation) {
         Map<String, Object> parameters = Map.ofEntries(
                 Map.entry("member_id", reservation.getMember().getId()),
