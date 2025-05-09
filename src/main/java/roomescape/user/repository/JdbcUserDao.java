@@ -33,4 +33,12 @@ public class JdbcUserDao implements UserDao {
         User user = jdbcTemplate.queryForObject(sql, parameters, userMapper);
         return Optional.ofNullable(user);
     }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        final String sql = "SELECT * FROM users WHERE email = :email";
+        SqlParameterSource parameters = new MapSqlParameterSource("email", email);
+        User user = jdbcTemplate.queryForObject(sql, parameters, userMapper);
+        return Optional.ofNullable(user);
+    }
 }

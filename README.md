@@ -359,7 +359,12 @@ host: localhost:8080
 
 ```
 HTTP/1.1 200 OK
+Connection: keep-alive
 Content-Type: application/json
+Date: Sun, 03 Mar 2024 19:16:56 GMT
 Keep-Alive: timeout=60
-Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+Transfer-Encoding: chunked
+{
+    "name": "어드민"
+}
 ```

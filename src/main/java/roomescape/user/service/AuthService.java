@@ -9,6 +9,7 @@ import roomescape.user.domain.User;
 import roomescape.user.repository.UserDao;
 import roomescape.user.service.dto.LoginInfo;
 import roomescape.user.service.dto.TokenResponse;
+import roomescape.user.service.dto.UserInfo;
 
 @Service
 public class AuthService {
@@ -32,6 +33,13 @@ public class AuthService {
         return new TokenResponse(createToken(email));
     }
 
+    public UserInfo getUserInfoByToken(String token) {
+        String email = parsePayload(token);
+        User user = userDao.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원 정보입니다."));
+        return new UserInfo(user);
+    }
+
     private String createToken(String payload) {
         final Date now = new Date();
         final Date expirationDate = new Date(now.getTime() + EXPIRATION_TERM);
@@ -41,5 +49,9 @@ public class AuthService {
                 .setExpiration(expirationDate)
                 .signWith(SIGN_ALGORITHM, SECRET_KEY)
                 .compact();
+    }
+
+    private String parsePayload(String token) {
+        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject();
     }
 }
