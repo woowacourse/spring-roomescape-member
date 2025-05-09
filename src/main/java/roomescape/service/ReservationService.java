@@ -9,6 +9,7 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dto.request.ReservationRegisterDto;
+import roomescape.dto.request.ReservationSearchFilter;
 import roomescape.dto.response.MemberResponseDto;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.dto.response.ReservationTimeResponseDto;
@@ -53,8 +54,8 @@ public class ReservationService {
         );
     }
 
-    public List<ReservationResponseDto> getAllReservations() {
-        return reservationDao.findAll().stream()
+    public List<ReservationResponseDto> getAllReservations(final ReservationSearchFilter reservationSearchFilter) {
+        return reservationDao.findAll(reservationSearchFilter).stream()
                 .map(ReservationResponseDto::from)
                 .toList();
     }

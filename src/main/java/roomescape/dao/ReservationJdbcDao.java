@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.dto.request.ReservationSearchFilter;
 import roomescape.model.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
@@ -66,10 +68,17 @@ public class ReservationJdbcDao implements ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Reservation> findAll() {
-        return jdbcTemplate.query(SELECT_RESERVATION, RESERVATION_ROW_MAPPER);
+    @Override
+    public List<Reservation> findAll(ReservationSearchFilter reservationSearchFilter) {
+        WhereClause whereClause = toWhereClause(reservationSearchFilter);
+
+        if (whereClause == null) {
+            return jdbcTemplate.query(SELECT_RESERVATION, RESERVATION_ROW_MAPPER);
+        }
+        return jdbcTemplate.query(SELECT_RESERVATION + whereClause.clause, RESERVATION_ROW_MAPPER, whereClause.params);
     }
 
+    @Override
     public Long saveReservation(Reservation reservation) {
         String sql = "INSERT INTO reservation (date, time_id, theme_id, member_id) values (?,?,?,?)";
 
@@ -87,11 +96,13 @@ public class ReservationJdbcDao implements ReservationDao {
         return keyHolder.getKey().longValue();
     }
 
+    @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
+    @Override
     public Optional<Reservation> findByDateAndTime(Reservation reservation) {
         String sql = SELECT_RESERVATION + " WHERE r.date = ? AND rt.id = ?";
 
@@ -101,5 +112,46 @@ public class ReservationJdbcDao implements ReservationDao {
                         reservation.getDate(),
                         reservation.getTime().getId()).stream()
                 .findFirst();
+    }
+
+    private WhereClause toWhereClause(ReservationSearchFilter reservationSearchFilter) {
+        List<String> clauses = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
+
+        if (reservationSearchFilter.themeId() != null) {
+            clauses.add("theme_id = ?");
+            params.add(reservationSearchFilter.themeId());
+        }
+
+        if (reservationSearchFilter.memberId() != null) {
+            clauses.add("member_id = ?");
+            params.add(reservationSearchFilter.memberId());
+        }
+
+        if (reservationSearchFilter.startDate() != null) {
+            clauses.add("r.date >= ?");
+            params.add(reservationSearchFilter.startDate());
+        }
+
+        if (reservationSearchFilter.endDate() != null) {
+            clauses.add("r.date <= ?");
+            params.add(reservationSearchFilter.endDate());
+        }
+
+        if (clauses.isEmpty()) {
+            return null;
+        }
+        String clause = "WHERE " + String.join(" AND ", clauses);
+        return new WhereClause(params.toArray(), clause);
+    }
+
+    private static class WhereClause {
+        private final Object[] params;
+        private final String clause;
+
+        public WhereClause(Object[] params, String clause) {
+            this.params = params;
+            this.clause = clause;
+        }
     }
 }

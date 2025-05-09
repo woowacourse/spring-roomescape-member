@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.dao.ReservationDao;
+import roomescape.dto.request.ReservationSearchFilter;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -51,5 +52,10 @@ public class FakeReservationDao implements ReservationDao {
                 .filter(reservation1 -> reservation1.getDate().equals(reservation.getDate()))
                 .filter(reservation1 -> reservation1.getTime().getId().equals(reservation.getTime().getId()))
                 .findAny();
+    }
+
+    @Override
+    public List<Reservation> findAll(ReservationSearchFilter reservationSearchFilter) {
+        return List.of();
     }
 }
