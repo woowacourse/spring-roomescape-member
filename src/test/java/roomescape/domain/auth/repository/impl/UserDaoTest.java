@@ -28,7 +28,6 @@ class UserDaoTest {
         userRepository.save(user);
 
         // when
-
         final User result = userRepository.findByEmail(email)
                 .get();
 

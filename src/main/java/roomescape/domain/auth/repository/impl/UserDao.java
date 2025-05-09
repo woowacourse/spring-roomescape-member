@@ -100,11 +100,7 @@ public class UserDao implements UserRepository {
                 update %s set name=:name, email=:email, password=:password role=:role where id=:id
                 """, TABLE_NAME);
 
-        final MapSqlParameterSource params = new MapSqlParameterSource().addValue("name", user.getName())
-                .addValue("email", user.getEmail())
-                .addValue("password", user.getPassword())
-                .addValue("id", user.getId());
-
+        final MapSqlParameterSource params = updateSqlParameter(user);
         final int updatedRowCount = jdbcTemplate.update(updateSql, params);
 
         if (updatedRowCount == 0) {
@@ -114,16 +110,27 @@ public class UserDao implements UserRepository {
         return user;
     }
 
-    private User create(final User user) {
-        final MapSqlParameterSource params = new MapSqlParameterSource().addValue("name", user.getName())
+    private MapSqlParameterSource updateSqlParameter(final User user) {
+        return new MapSqlParameterSource().addValue("name", user.getName())
                 .addValue("email", user.getEmail())
                 .addValue("password", user.getPassword())
-                .addValue("role", user.getRole()
-                        .getRoleName());
+                .addValue("id", user.getId());
+    }
+
+    private User create(final User user) {
+        final MapSqlParameterSource params = createSqlParameter(user);
 
         final long id = jdbcInsert.executeAndReturnKey(params)
                 .longValue();
 
         return new User(id, user.getUsername(), user.getEmail(), user.getPassword(), user.getRole());
+    }
+
+    private MapSqlParameterSource createSqlParameter(final User user) {
+        return new MapSqlParameterSource().addValue("name", user.getName())
+                .addValue("email", user.getEmail())
+                .addValue("password", user.getPassword())
+                .addValue("role", user.getRole()
+                        .getRoleName());
     }
 }

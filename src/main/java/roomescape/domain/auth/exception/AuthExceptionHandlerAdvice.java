@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class AuthExceptionHandlerAdvice {
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFoundForTokenException(final UserNotFoundException e) {
+    public ResponseEntity<String> handleUserNotFoundForTokenException() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body("유효하지 않은 계정입니다.");
     }
 
     @ExceptionHandler(InvalidAuthorizationException.class)
-    public ResponseEntity<String> handleInvalidAuthorizationException(final InvalidAuthorizationException e) {
+    public ResponseEntity<String> handleInvalidAuthorizationException() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body("유효하지 않은 인증입니다.");
     }

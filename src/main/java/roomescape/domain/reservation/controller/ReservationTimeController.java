@@ -46,5 +46,4 @@ public class ReservationTimeController {
 
         return ResponseEntity.noContent().build();
     }
-
 }

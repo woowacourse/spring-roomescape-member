@@ -41,5 +41,4 @@ public class UserService {
 
         return UserInfoResponse.from(savedUser);
     }
-
 }
