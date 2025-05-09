@@ -16,6 +16,7 @@ spring:
     init:
       mode: embedded
       schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
 
 security:
   jwt:
