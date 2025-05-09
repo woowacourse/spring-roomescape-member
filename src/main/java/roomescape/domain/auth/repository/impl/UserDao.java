@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -18,6 +19,7 @@ import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.repository.UserRepository;
 
+@Slf4j
 @Repository
 public class UserDao implements UserRepository {
 
@@ -40,14 +42,6 @@ public class UserDao implements UserRepository {
         }
 
         return create(user);
-    }
-
-    @Override
-    public boolean existsByEmail(final String email) {
-        final String sql = "select exists(select 1 from " + TABLE_NAME + " where email = :email)";
-        final Map<String, Object> params = Map.of("email", email);
-
-        return jdbcTemplate.queryForObject(sql, params, Boolean.class);
     }
 
     @Override
@@ -83,6 +77,14 @@ public class UserDao implements UserRepository {
         }
     }
 
+    @Override
+    public boolean existsByEmail(final String email) {
+        final String sql = "select exists(select 1 from " + TABLE_NAME + " where email = :email)";
+        final Map<String, Object> params = Map.of("email", email);
+
+        return jdbcTemplate.queryForObject(sql, params, Boolean.class);
+    }
+
     private User userOf(final ResultSet resultSet) throws SQLException {
         return User.builder()
                 .id(resultSet.getLong("id"))
@@ -116,7 +118,8 @@ public class UserDao implements UserRepository {
         final MapSqlParameterSource params = new MapSqlParameterSource().addValue("name", user.getName())
                 .addValue("email", user.getEmail())
                 .addValue("password", user.getPassword())
-                .addValue("role", user.getRole().getRoleName());
+                .addValue("role", user.getRole()
+                        .getRoleName());
 
         final long id = jdbcInsert.executeAndReturnKey(params)
                 .longValue();

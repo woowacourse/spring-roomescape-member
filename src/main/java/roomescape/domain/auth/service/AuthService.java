@@ -35,7 +35,7 @@ public class AuthService {
 
         user.login(loginRequest.email(), loginRequest.password());
 
-        final String token = jwtManager.createToken(user.getId(), user.getRole());
+        final String token = jwtManager.createToken(user);
 
         return new TokenResponse(token);
     }
@@ -57,7 +57,7 @@ public class AuthService {
                 .map(Cookie::getValue)
                 .findFirst()
                 .map(this::getLoginUser)
-                .orElse(null);
+                .orElseThrow(() -> new InvalidAuthorizationException("토큰이 존재하지 않습니다."));
     }
 
     @Transactional(readOnly = true)

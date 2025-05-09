@@ -74,7 +74,6 @@ public class ReservationService {
         if (reservationRepository.existsByDateAndTimeId(request.date(), request.timeId())) {
             throw new AlreadyInUseException("해당 예약은 이미 존재합니다!");
         }
-        log.info("유저 아이디 : {}", userId);
 
         final User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 유저가 존재하지 않습니다!"));
