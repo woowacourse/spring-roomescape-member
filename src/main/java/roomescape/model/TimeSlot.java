@@ -24,10 +24,6 @@ public class TimeSlot {
         this(null, startAt);
     }
 
-    public boolean isBefore(final LocalTime time) {
-        return this.startAt.isBefore(time);
-    }
-
     public boolean isSameTimeSlot(final TimeSlot timeSlot) {
         return this.id.equals(timeSlot.id());
     }

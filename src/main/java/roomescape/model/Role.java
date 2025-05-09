@@ -8,7 +8,6 @@ public enum Role {
     ADMIN, USER;
 
     public static Role findByName(final String name) {
-        System.out.println("Role.findByName: " + name);
         return Arrays.stream(Role.values())
                 .filter(role -> role.name().equals(name))
                 .findAny()

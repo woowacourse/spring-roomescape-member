@@ -14,11 +14,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<String> handleAuthorizationException(AuthorizationException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(RoomescapeException.class)
-    public ResponseEntity<String> handleReservationConflict(RoomescapeException ex) {
+    public ResponseEntity<String> handleReservationException(RoomescapeException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
@@ -35,6 +40,6 @@ public class GlobalExceptionHandler {
                     .append("\n")
                     .append(errorMessage);
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessages);
+        return new ResponseEntity<>(errorMessages, HttpStatus.BAD_REQUEST);
     }
 }

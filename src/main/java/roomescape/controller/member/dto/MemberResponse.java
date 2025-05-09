@@ -11,6 +11,7 @@ public record MemberResponse(
 ) {
 
     public static MemberResponse from(final Member member) {
-        return new MemberResponse(member.id(), member.name(), member.email(), member.password(), member.role().toString());
+        return new MemberResponse(member.id(), member.name(), member.email(), member.password(),
+                member.role().toString());
     }
 }

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.Member;
@@ -26,12 +28,20 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public List<Member> findAll() {
-        return List.of();
+        final String sql = "SELECT * FROM MEMBER";
+
+        return jdbcTemplate.query(sql, this::mapToMember);
     }
 
     @Override
     public Long save(final Member member) {
-        return 0L;
+        final SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("ID", member.id())
+                .addValue("NAME", member.name())
+                .addValue("EMAIL", member.email())
+                .addValue("ROLE", member.role());
+
+        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
     @Override
@@ -45,12 +55,19 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findByEmail(final String email) {
-        return Optional.empty();
+        final String sql = "SELECT * FROM MEMBER WHERE EMAIL = ?";
+
+        return jdbcTemplate.query(sql, this::mapToMember, email)
+                .stream()
+                .findAny();
     }
 
     @Override
     public Boolean removeById(final Long id) {
-        return null;
+        final String sql = "DELETE FROM MEMBER WHERE ID = ?";
+
+        int removedRowsCount = jdbcTemplate.update(sql, id);
+        return removedRowsCount > 0;
     }
 
     private Member mapToMember(ResultSet rs, int rowNum) throws SQLException {

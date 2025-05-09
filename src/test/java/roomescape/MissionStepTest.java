@@ -102,7 +102,7 @@ public class MissionStepTest {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             assertAll(
                     () -> assertThat(connection).isNotNull(),
-                    () -> assertThat(connection.getCatalog()).isEqualTo("DATABASE-TEST"),
+                    () -> assertThat(connection.getCatalog()).isEqualTo("DATABASE"),
                     () -> assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null)
                             .next()).isTrue()
             );
