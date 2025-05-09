@@ -39,7 +39,7 @@ public class MemberService {
     public List<LoginCheckResponse> findAll() {
         List<LoginMember> allMembers = memberDao.findAll();
         return allMembers.stream()
-            .map(member -> LoginCheckResponse.from(member.getName()))
+            .map(member -> LoginCheckResponse.from(member.getId(), member.getName()))
             .toList();
     }
 }

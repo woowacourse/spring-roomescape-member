@@ -38,7 +38,7 @@ public class MemberController {
 
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> loginCheck(LoginCheckRequest loginCheckRequest) {
-        return ResponseEntity.ok(LoginCheckResponse.from(loginCheckRequest.name()));
+        return ResponseEntity.ok(LoginCheckResponse.from(loginCheckRequest.id(), loginCheckRequest.name()));
     }
 
     @GetMapping("/members")

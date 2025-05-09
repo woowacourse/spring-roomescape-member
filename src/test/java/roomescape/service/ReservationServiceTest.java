@@ -7,6 +7,7 @@ import roomescape.dto.request.LoginCheckRequest;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.*;
 import roomescape.entity.*;
+import roomescape.repository.MemberDao;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.repository.ThemeDao;
@@ -25,13 +26,15 @@ class ReservationServiceTest {
     private ReservationTimeDao reservationTimeDao;
     private ThemeDao themeDao;
     private ReservationService reservationService;
+    private MemberDao memberDao;
 
     @BeforeEach
     void setUp() {
         this.reservationDao = Mockito.mock(ReservationDao.class);
         this.reservationTimeDao = Mockito.mock(ReservationTimeDao.class);
         this.themeDao = Mockito.mock(ThemeDao.class);
-        this.reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao);
+        this.memberDao = Mockito.mock(MemberDao.class);
+        this.reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao, memberDao);
     }
 
     @Test
@@ -44,8 +47,8 @@ class ReservationServiceTest {
 
         assertThat(reservationService.findAll()).isEqualTo(
             List.of(
-                new ReservationResponse(1L, LoginCheckResponse.from("어드민"), LocalDate.of(2025, 1, 1), new ReservationTimeResponse(1L, LocalTime.of(10, 0)), new ThemeResponse(1L, "테마1", "", "")),
-                new ReservationResponse(2L, LoginCheckResponse.from("브라운"), LocalDate.of(2025, 1, 2), new ReservationTimeResponse(1L, LocalTime.of(10, 0)), new ThemeResponse(1L, "테마1", "", ""))
+                new ReservationResponse(1L, LoginCheckResponse.from(1L, "어드민"), LocalDate.of(2025, 1, 1), new ReservationTimeResponse(1L, LocalTime.of(10, 0)), new ThemeResponse(1L, "테마1", "", "")),
+                new ReservationResponse(2L, LoginCheckResponse.from(2L, "브라운"), LocalDate.of(2025, 1, 2), new ReservationTimeResponse(1L, LocalTime.of(10, 0)), new ThemeResponse(1L, "테마1", "", ""))
             )
         );
     }
@@ -71,7 +74,7 @@ class ReservationServiceTest {
         assertThat(reservationService.add(request, LoginCheckRequest.of(1L, "어드민", "email@email.com", Role.ADMIN)))
             .isEqualTo(new ReservationResponse(
                 1L,
-                LoginCheckResponse.from("어드민"),
+                LoginCheckResponse.from(1L, "어드민"),
                 LocalDate.now().plusDays(1),
                 new ReservationTimeResponse(1L, LocalTime.of(10, 0)),
                 new ThemeResponse(1L, "인터스텔라", "", "")

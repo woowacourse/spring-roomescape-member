@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.dto.request.AdminReservationRequest;
 import roomescape.dto.request.LoginCheckRequest;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.AvailableReservationTimeResponse;
@@ -9,9 +10,11 @@ import roomescape.entity.LoginMember;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
+import roomescape.exception.AuthenticationException;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.exception.PastReservationException;
 import roomescape.exception.ReservationTimeConflictException;
+import roomescape.repository.MemberDao;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.repository.ThemeDao;
@@ -28,11 +31,17 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
+    private final MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
+    public ReservationService(
+        ReservationDao reservationDao,
+        ReservationTimeDao reservationTimeDao,
+        ThemeDao themeDao,
+        MemberDao memberDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
+        this.memberDao = memberDao;
     }
 
     public List<ReservationResponse> findAll() {
@@ -42,16 +51,26 @@ public class ReservationService {
             .toList();
     }
 
+    public ReservationResponse addByAdmin(AdminReservationRequest request) {
+        LoginMember loginMember = memberDao.findById(request.memberId())
+            .orElseThrow(() -> new AuthenticationException("로그인 정보가 존재하지 않습니다."));
+        return createReservation(request.date(), request.timeId(), request.themeId(), loginMember);
+    }
+
     public ReservationResponse add(ReservationRequest requestDto, LoginCheckRequest loginCheckRequest) {
-        ReservationTime reservationTime = getReservationTime(requestDto);
-        Theme theme = getTheme(requestDto);
         LoginMember loginMember = createLoginMember(loginCheckRequest);
-        List<Reservation> sameTimeReservations = reservationDao.findByDateAndThemeId(requestDto.date(), requestDto.themeId());
+        return createReservation(requestDto.date(), requestDto.timeId(), requestDto.themeId(), loginMember);
+    }
+
+    private ReservationResponse createReservation(LocalDate date, Long timeId, Long themeId, LoginMember loginMember) {
+        ReservationTime reservationTime = getReservationTime(timeId);
+        Theme theme = getTheme(themeId);
+        List<Reservation> sameTimeReservations = reservationDao.findByDateAndThemeId(date, themeId);
 
         validateIsBooked(sameTimeReservations, reservationTime, theme);
-        validatePastDateTime(requestDto.date(), reservationTime.getStartAt());
+        validatePastDateTime(date, reservationTime.getStartAt());
 
-        Reservation reservation = new Reservation(loginMember, requestDto.date(), reservationTime, theme);
+        Reservation reservation = new Reservation(loginMember, date, reservationTime, theme);
         Reservation saved = reservationDao.save(reservation);
         return ReservationResponse.of(saved);
     }
@@ -74,13 +93,13 @@ public class ReservationService {
             loginCheckRequest.id(), loginCheckRequest.name(), loginCheckRequest.email(), loginCheckRequest.role());
     }
 
-    private ReservationTime getReservationTime(ReservationRequest requestDto) {
-        return reservationTimeDao.findById(requestDto.timeId())
+    private ReservationTime getReservationTime(Long timeId) {
+        return reservationTimeDao.findById(timeId)
             .orElseThrow(() -> new EntityNotFoundException("선택한 예약 시간이 존재하지 않습니다."));
     }
 
-    private Theme getTheme(ReservationRequest requestDto) {
-        return themeDao.findById(requestDto.themeId())
+    private Theme getTheme(Long themeId) {
+        return themeDao.findById(themeId)
             .orElseThrow(() -> new EntityNotFoundException("선택한 테마가 존재하지 않습니다."));
     }
 

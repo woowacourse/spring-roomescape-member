@@ -28,6 +28,7 @@ class ReservationApiTest {
     @Test
     void 어드민_페이지로_접근할_수_있다() {
         RestAssured.given().log().all()
+            .cookie("token", TOKEN)
             .when().get("/admin")
             .then().log().all()
             .statusCode(200);
@@ -36,6 +37,7 @@ class ReservationApiTest {
     @Test
     void 어드민이_예약_관리_페이지에_접근한다() {
         RestAssured.given().log().all()
+            .cookie("token", TOKEN)
             .when().get("/admin/reservation")
             .then().log().all()
             .statusCode(200);
