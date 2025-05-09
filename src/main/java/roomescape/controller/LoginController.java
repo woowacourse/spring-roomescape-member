@@ -6,13 +6,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.domain.Member;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.MemberLoginCheckResponse;
 import roomescape.service.AuthService;
 
 @RestController
-@RequestMapping("/login")
 public class LoginController {
     private final AuthService authService;
     private final AuthorizationExtractor authorizationExtractor;
@@ -22,7 +20,7 @@ public class LoginController {
         this.authorizationExtractor = authorizationExtractor;
     }
 
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<Void> login(HttpServletResponse response, @RequestBody @Valid LoginRequest request) {
         String token = authService.tokenLogin(request);
         Cookie cookie = new Cookie("token", token);
@@ -32,12 +30,19 @@ public class LoginController {
         return ResponseEntity.ok().build();
     }
 
-
-    @GetMapping("/check")
+    @GetMapping("/login/check")
     public ResponseEntity<MemberLoginCheckResponse> loginCheck(HttpServletRequest request) {
         String token = authorizationExtractor.extractTokenFromCookie(request);
         MemberLoginCheckResponse response = authService.findMemberByToken(token);
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
+    }
 }
