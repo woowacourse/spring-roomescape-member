@@ -10,7 +10,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.user.domain.User;
+import roomescape.member.domain.Member;
 
 class JwtTokenProviderTest {
 
@@ -27,10 +27,10 @@ class JwtTokenProviderTest {
         String email = "woowa@woowa.com";
         String password = "woowa123";
 
-        User user = new User(id, name, email, password);
+        Member member = new Member(id, name, email, password);
 
         // when
-        String token = jwtTokenProvider.createToken(user);
+        String token = jwtTokenProvider.createToken(member);
 
         // then
         Claims claims = Jwts.parser()
@@ -55,8 +55,8 @@ class JwtTokenProviderTest {
         String email = "woowa@woowa.com";
         String password = "woowa123";
 
-        User user = new User(id, name, email, password);
-        String token = jwtTokenProvider.createToken(user);
+        Member member = new Member(id, name, email, password);
+        String token = jwtTokenProvider.createToken(member);
 
         // when
         String subject = jwtTokenProvider.getSubject(token);

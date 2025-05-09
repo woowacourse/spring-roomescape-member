@@ -9,20 +9,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.user.domain.User;
-import roomescape.user.repository.JdbcUserDao;
+import roomescape.member.domain.Member;
+import roomescape.member.repository.JdbcMemberDao;
 import roomescape.util.repository.TestDataSourceFactory;
 
-class JdbcUserDaoTest {
+class JdbcMemberDaoTest {
 
-    private JdbcUserDao jdbcUserDao;
+    private JdbcMemberDao jdbcMemberDao;
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setup() {
         DataSource dataSource = TestDataSourceFactory.getEmbeddedDataSource();
         jdbcTemplate = new JdbcTemplate(dataSource);
-        jdbcUserDao = new JdbcUserDao(jdbcTemplate);
+        jdbcMemberDao = new JdbcMemberDao(jdbcTemplate);
     }
 
     @AfterEach
@@ -38,13 +38,13 @@ class JdbcUserDaoTest {
         String email = "rookie@woowa.com";
 
         // when
-        User findUser = jdbcUserDao.findByEmail(email).get();
+        Member findMember = jdbcMemberDao.findByEmail(email).get();
 
         // then
         assertAll(
-                () -> assertThat(findUser.getId()).isEqualTo(1L),
-                () -> assertThat(findUser.getEmail()).isEqualTo("rookie@woowa.com"),
-                () -> assertThat(findUser.getName()).isEqualTo("루키")
+                () -> assertThat(findMember.getId()).isEqualTo(1L),
+                () -> assertThat(findMember.getEmail()).isEqualTo("rookie@woowa.com"),
+                () -> assertThat(findMember.getName()).isEqualTo("루키")
         );
     }
 

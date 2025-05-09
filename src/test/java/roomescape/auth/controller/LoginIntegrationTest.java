@@ -15,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.auth.dto.TokenRequest;
-import roomescape.auth.dto.UserResponse;
+import roomescape.auth.dto.MemberResponse;
 import roomescape.auth.service.AuthService;
 import roomescape.global.config.TestConfig;
 
@@ -78,14 +78,14 @@ class LoginIntegrationTest {
         String token = getValidToken();
 
         // when
-        UserResponse response = RestAssured.given().log().all()
+        MemberResponse response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .cookie(LoginController.TOKEN_COOKIE_NAME, token)
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(200)
                 .extract()
-                .as(UserResponse.class);
+                .as(MemberResponse.class);
 
         // then
         assertThat(response.name()).isEqualTo("루키");
