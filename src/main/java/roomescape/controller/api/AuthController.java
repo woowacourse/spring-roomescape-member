@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.LoginResponse;
@@ -44,13 +43,16 @@ public class AuthController {
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
+        if (cookies == null) {
+            throw new AuthenticatedException("please login");
+        }
+
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();
             }
         }
-
-        throw new AuthenticatedException();
+        throw new AuthenticatedException("token error");
     }
 
     @PostMapping("/logout")
