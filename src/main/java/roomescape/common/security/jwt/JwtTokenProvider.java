@@ -2,36 +2,49 @@ package roomescape.common.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
-    private final String secretKey;
+    private final SecretKey secretKey;
     private final long expirationTime;
 
     public JwtTokenProvider(
-            @Value("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=") String secretKey,
-            @Value("360000") long expirationTime
+            @Value("${jwt.secret}") String secretKey,
+            @Value("${jwt.expiration}") long expirationTime
     ) {
-        this.secretKey = secretKey;
+        this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         this.expirationTime = expirationTime;
     }
 
-    public String createToken(String payload) {
-        Claims claims = Jwts.claims().setSubject(payload);
+    public String createToken(String email) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + expirationTime);
-
         return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .subject(email)
+                .issuedAt(now)
+                .expiration(validity)
+                .signWith(secretKey)
                 .compact();
     }
+
+    public String getEmail(String token) {
+        return parseClaim(token).getSubject();
+    }
+
+    private Claims parseClaim(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
 }
