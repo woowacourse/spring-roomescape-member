@@ -6,6 +6,7 @@ import roomescape.auth.TokenRequestDto;
 import roomescape.auth.TokenResponseDto;
 import roomescape.user.domain.dto.User;
 import roomescape.user.domain.dto.UserRequestDto;
+import roomescape.user.exception.NotFoundUserException;
 import roomescape.user.repository.UserRepository;
 
 @Service
@@ -20,7 +21,9 @@ public class UserService {
     }
 
     public TokenResponseDto login(TokenRequestDto tokenRequestDto) {
-        userRepository.findUserByEmailAndPassword(tokenRequestDto.email(), tokenRequestDto.password());
+        userRepository.findUserByEmailAndPassword(tokenRequestDto.email(), tokenRequestDto.password())
+                .orElseThrow(() -> new NotFoundUserException("해당 유저를 찾을 수 없습니다."));
+
         return authService.createToken(tokenRequestDto);
     }
 

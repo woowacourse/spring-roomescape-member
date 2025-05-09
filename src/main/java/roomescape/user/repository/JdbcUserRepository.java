@@ -58,12 +58,16 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    public User findUserByEmailAndPassword(String email, String password) {
+    public Optional<User> findUserByEmailAndPassword(String email, String password) {
         String sql = "SELECT id, name, email, password "
                 + "FROM users "
                 + "WHERE email = ? AND password = ?";
 
-        return jdbcTemplate.queryForObject(sql, userRowMapper, email, password);
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, userRowMapper, email, password));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     private Long insertWithKeyHolder(User user) {

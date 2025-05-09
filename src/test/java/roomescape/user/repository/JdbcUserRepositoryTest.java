@@ -24,7 +24,8 @@ class JdbcUserRepositoryTest {
 
         // when
         User actual = jdbcUserRepository.findUserByEmailAndPassword(user.getEmail(),
-                user.getPassword());
+                        user.getPassword())
+                .get();
 
         // then
         Assertions.assertThat(actual).isEqualTo(expected);

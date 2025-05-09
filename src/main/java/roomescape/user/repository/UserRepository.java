@@ -5,7 +5,7 @@ import roomescape.user.domain.dto.User;
 
 public interface UserRepository {
 
-    User findUserByEmailAndPassword(String email, String password);
+    Optional<User> findUserByEmailAndPassword(String email, String password);
 
     User save(User user);
 
