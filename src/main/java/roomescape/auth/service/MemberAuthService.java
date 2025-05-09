@@ -13,6 +13,7 @@ import roomescape.exception.notFound.MemberNotFoundException;
 import roomescape.exception.unauthorized.MemberUnauthorizedException;
 import roomescape.infrastructure.JwtTokenProvider;
 
+// TODO: findByXXX - DataAccessException 핸들링
 @Service
 public class MemberAuthService {
     private final MemberRepository memberRepository;

@@ -25,6 +25,7 @@ public class JdbcMemberRepository implements MemberRepository {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
     }
 
+    // TODO: (모든 Repository, Service에 적용) try-catch 삭제 및 Service에서 DataAccessException 핸들링하도록
     @Override
     public Optional<Member> findById(Long memberId) {
         String query = "SELECT * FROM member WHERE id = :memberId";
@@ -38,6 +39,7 @@ public class JdbcMemberRepository implements MemberRepository {
         }
     }
 
+    // TODO: (모든 Repository, Service에 적용) try-catch 삭제 및 Service에서 DataAccessException 핸들링하도록
     @Override
     public Optional<Member> findByEmailAndPassword(String email, String password) {
         String query = "SELECT * FROM member WHERE email = :email AND password = :password";
@@ -52,6 +54,7 @@ public class JdbcMemberRepository implements MemberRepository {
         }
     }
 
+    // TODO: (모든 Repository, Service에 적용) try-catch 삭제 및 Service에서 DataAccessException 핸들링하도록
     @Override
     public Optional<Member> findByEmail(String email) {
         String query = "SELECT * FROM member WHERE email = :email";
