@@ -11,6 +11,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import roomescape.auth.UserId;
+import roomescape.dto.SignupRequest;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.LoginCheckResponse;
 import roomescape.service.UserService;
@@ -39,5 +40,11 @@ public class UserController {
     @GetMapping("/login/check")
     public LoginCheckResponse loginCheck(@UserId Long id) {
         return userService.loginCheck(id);
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/signup")
+    public void signup(@RequestBody SignupRequest request) {
+        userService.signup(request);
     }
 }

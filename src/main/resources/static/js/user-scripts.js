@@ -22,6 +22,7 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
       });
 });
 
+// TODO: 회원가입은 성공하는데 자동으로 로그인되게 해야 에러가 안나려나??
 function updateUIBasedOnLogin() {
   fetch('/login/check') // 로그인 상태 확인 API 호출
       .then(response => {
@@ -113,7 +114,7 @@ function register(event) {
   };
 
   // AJAX 요청 생성 및 전송
-  fetch('/members', {
+  fetch('/signup', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

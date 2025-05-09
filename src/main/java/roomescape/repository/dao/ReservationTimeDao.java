@@ -43,6 +43,7 @@ public class ReservationTimeDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insertQuery, new String[] {"id"});
+            // TODO: LocalTime은 setObject로 변경할 수 있지 않나? 왜 toString()을 사용해야 하지?
             ps.setString(1, reservationTime.startAt().toString());
             return ps;
         }, keyHolder);

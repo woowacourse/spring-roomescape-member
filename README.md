@@ -95,6 +95,17 @@ GET /login
 templates/login.html (로그인 페이지)
 ```
 ---
+
+### [회원가입 페이지]
+
+```text
+### 요청 예시
+GET /signup
+
+### 응답 예시
+templates/signup.html (회원가입 페이지)
+```
+---
 # API
 
 ## Reservation

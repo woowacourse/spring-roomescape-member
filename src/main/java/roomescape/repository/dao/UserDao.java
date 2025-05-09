@@ -27,7 +27,7 @@ public class UserDao {
     private final JdbcTemplate jdbcTemplate;
 
     public User insertAndGet(User user) {
-        String insertQuery = "INSERT INTO users (name, email, time) VALUES (?, ?, ?)";
+        String insertQuery = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {

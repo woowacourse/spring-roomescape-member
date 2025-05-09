@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import roomescape.auth.JwtProvider;
 import roomescape.domain.User;
+import roomescape.dto.SignupRequest;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.LoginCheckResponse;
 import roomescape.repository.UserRepository;
@@ -30,5 +31,12 @@ public class UserService {
     public LoginCheckResponse loginCheck(Long id) {
         User user = userRepository.getById(id);
         return LoginCheckResponse.from(user);
+    }
+
+    public void signup(SignupRequest request) {
+        if (userRepository.findByEmail(request.email()).isPresent()) {
+            throw new IllegalArgumentException("이미 사용중인 이메일입니다.");
+        }
+        userRepository.save(new User(request.name(), request.email(), request.password()));
     }
 }

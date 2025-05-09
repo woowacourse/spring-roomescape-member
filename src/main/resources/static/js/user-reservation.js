@@ -109,7 +109,6 @@ function renderAvailableTimes(times) {
   times.forEach(time => {
     const startAt = time.startAt;
     const timeId = time.id;
-    // TODO: [3단계] api 명세에 필드 추가해야함
     const alreadyBooked = time.isBooked;
 
     const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
