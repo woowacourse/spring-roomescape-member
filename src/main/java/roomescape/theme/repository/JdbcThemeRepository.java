@@ -59,15 +59,50 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public boolean deleteById(Long id) {
-        String query = "delete from theme where id = :id";
+    public List<Theme> findPopularDescendingUpTo(
+            LocalDate startDate,
+            LocalDate endDate,
+            final int limit
+    ) {
+        String query = """
+                SELECT
+                    t.id as theme_id,
+                    t.name,
+                    t.description,
+                    t.thumbnail,
+                    r_stats.cnt
+                FROM theme as t
+                LEFT JOIN (
+                    SELECT
+                        theme_id,
+                        COUNT(*) as cnt
+                    FROM reservation
+                    WHERE date BETWEEN :startDate AND :endDate
+                    GROUP BY theme_id
+                ) as r_stats
+                ON t.id = r_stats.theme_id
+                ORDER BY cnt DESC, theme_id DESC
+                FETCH FIRST :limit ROWS ONLY
+                """;
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", id);
+                .addValue("startDate", startDate)
+                .addValue("endDate", endDate)
+                .addValue("limit", limit);
 
-        final int updated = jdbcTemplate.update(query, params);
+        return jdbcTemplate.query(query, params, (resultSet, rowNum) -> {
+            long id = resultSet.getLong("theme_id");
+            String name = resultSet.getString("name");
+            String description = resultSet.getString("description");
+            String thumbnail = resultSet.getString("thumbnail");
 
-        return updated > 0;
+            return new Theme(
+                    id,
+                    name,
+                    description,
+                    thumbnail
+            );
+        });
     }
 
     @Override
@@ -123,49 +158,14 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularDescendingUpTo(
-            LocalDate startDate,
-            LocalDate endDate,
-            final int limit
-    ) {
-        String query = """
-                SELECT
-                    t.id as theme_id,
-                    t.name,
-                    t.description,
-                    t.thumbnail,
-                    r_stats.cnt
-                FROM theme as t
-                LEFT JOIN (
-                    SELECT
-                        theme_id,
-                        COUNT(*) as cnt
-                    FROM reservation
-                    WHERE date BETWEEN :startDate AND :endDate
-                    GROUP BY theme_id
-                ) as r_stats
-                ON t.id = r_stats.theme_id
-                ORDER BY cnt DESC, theme_id DESC
-                FETCH FIRST :limit ROWS ONLY
-                """;
+    public boolean deleteById(Long id) {
+        String query = "delete from theme where id = :id";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("startDate", startDate)
-                .addValue("endDate", endDate)
-                .addValue("limit", limit);
+                .addValue("id", id);
 
-        return jdbcTemplate.query(query, params, (resultSet, rowNum) -> {
-            long id = resultSet.getLong("theme_id");
-            String name = resultSet.getString("name");
-            String description = resultSet.getString("description");
-            String thumbnail = resultSet.getString("thumbnail");
+        final int updated = jdbcTemplate.update(query, params);
 
-            return new Theme(
-                    id,
-                    name,
-                    description,
-                    thumbnail
-            );
-        });
+        return updated > 0;
     }
 }

@@ -18,6 +18,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
+    @Override
     public Reservation save(Reservation reservation) {
         String query = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (:name, :date, :time_id, :theme_id)";
 
@@ -40,43 +41,16 @@ public class JdbcReservationRepository implements ReservationRepository {
         );
     }
 
-    public boolean deleteById(final Long id) {
-        String query = "DELETE FROM reservation WHERE id = :id";
-
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", id);
-
-        final int updated = jdbcTemplate.update(query, params);
-
-        return updated > 0;
-    }
-
     @Override
-    public boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
-        String query = """
-                SELECT COUNT(*)
-                FROM reservation
-                WHERE date = :date
-                AND time_id = :timeId
-                """;
-
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("date", date)
-                .addValue("timeId", timeId);
-
-        Integer count = jdbcTemplate.queryForObject(query, params, Integer.class);
-        return count != null && count > 0;
-    }
-
     public List<Reservation> findAll() {
         String query = """
                 SELECT 
-                r.id as reservation_id, 
-                r.name, 
-                r.date, 
-                t.id as time_id, 
-                t.start_at as time_value, 
-                r.theme_id 
+                    r.id as reservation_id, 
+                    r.name, 
+                    r.date, 
+                    t.id as time_id, 
+                    t.start_at as time_value, 
+                    r.theme_id 
                 FROM reservation as r 
                 inner join reservation_time as t 
                 on r.time_id = t.id
@@ -104,7 +78,12 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAllByTimeId(Long id) {
         String query = """
-                SELECT r.id, r.name, r.date, rt.start_at, r.theme_id
+                SELECT 
+                    r.id, 
+                    r.name, 
+                    r.date, 
+                    rt.start_at,
+                    r.theme_id
                 FROM reservation as r
                 INNER JOIN reservation_time as rt
                 ON r.time_id = rt.id
@@ -130,5 +109,34 @@ public class JdbcReservationRepository implements ReservationRepository {
                     themeId
             );
         });
+    }
+
+    @Override
+    public boolean deleteById(final Long id) {
+        String query = "DELETE FROM reservation WHERE id = :id";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        final int updated = jdbcTemplate.update(query, params);
+
+        return updated > 0;
+    }
+
+    @Override
+    public boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
+        String query = """
+                SELECT COUNT(*)
+                FROM reservation
+                WHERE date = :date
+                AND time_id = :timeId
+                """;
+
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("timeId", timeId);
+
+        Integer count = jdbcTemplate.queryForObject(query, params, Integer.class);
+        return count != null && count > 0;
     }
 }

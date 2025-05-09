@@ -52,40 +52,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean deleteById(final Long id) {
-        String sql = "DELETE FROM reservation_time WHERE id = :id";
-
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", id);
-
-        final int updated = jdbcTemplate.update(sql, params);
-
-        return updated > 0;
-    }
-
-    @Override
-    public Optional<ReservationTime> findById(final Long id) {
-        String sql = "SELECT id, start_at FROM reservation_time WHERE id = :id";
-
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", id);
-
-        try {
-            ReservationTime time = jdbcTemplate.queryForObject(sql, params, (resultSet, rowNum) -> {
-                LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
-
-                return new ReservationTime(
-                        id,
-                        startAt
-                );
-            });
-            return Optional.of(time);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    @Override
     public List<AvailableReservationTimeResponse> findAvailableTimes(LocalDate date, final Long themeId) {
         String query = """
                 SELECT
@@ -116,5 +82,39 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                     alreadyBooked
             );
         });
+    }
+
+    @Override
+    public Optional<ReservationTime> findById(final Long id) {
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id = :id";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        try {
+            ReservationTime time = jdbcTemplate.queryForObject(sql, params, (resultSet, rowNum) -> {
+                LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
+
+                return new ReservationTime(
+                        id,
+                        startAt
+                );
+            });
+            return Optional.of(time);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public boolean deleteById(final Long id) {
+        String sql = "DELETE FROM reservation_time WHERE id = :id";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        final int updated = jdbcTemplate.update(sql, params);
+
+        return updated > 0;
     }
 }

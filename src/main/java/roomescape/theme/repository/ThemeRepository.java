@@ -11,11 +11,11 @@ public interface ThemeRepository {
 
     List<Theme> findAll();
 
-    boolean deleteById(Long id);
+    List<Theme> findPopularDescendingUpTo(LocalDate startDate, LocalDate endDate, int limit);
 
     Optional<Theme> findById(Long id);
 
     Optional<Theme> findByName(String name);
 
-    List<Theme> findPopularDescendingUpTo(LocalDate startDate, LocalDate endDate, int limit);
+    boolean deleteById(Long id);
 }
