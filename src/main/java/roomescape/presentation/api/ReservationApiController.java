@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.application.ReservationService;
-import roomescape.common.Authenticated;
 import roomescape.domain.User;
+import roomescape.presentation.Authenticated;
 import roomescape.presentation.request.CreateReservationRequest;
 import roomescape.presentation.response.ReservationResponse;
 

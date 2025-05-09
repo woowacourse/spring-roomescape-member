@@ -448,3 +448,9 @@
     }
     ```
 
+## 6단계
+
+접근 권한 제어
+- [x] Member의 Role이 ADMIN 인 사람만 /admin 으로 시작하는 페이지에 접근할 수 있습니다.
+  - HandlerInterceptor 활용
+  - 권한이 없는 경우 요청에 대한 거부 응답

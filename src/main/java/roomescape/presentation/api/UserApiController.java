@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.application.AuthorizationException;
 import roomescape.application.UserService;
-import roomescape.common.Authenticated;
 import roomescape.domain.User;
+import roomescape.presentation.Authenticated;
 import roomescape.presentation.response.UserResponse;
 
 @Controller
