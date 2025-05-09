@@ -1,0 +1,62 @@
+package roomescape.repository;
+
+import java.util.List;
+import java.util.Optional;
+import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
+import roomescape.domain.ReservationTime;
+
+@Repository
+public class RoomescapeTimeRepositoryImpl implements RoomescapeTimeRepository {
+
+    private static final int SUCCESS_COUNT = 1;
+
+    private final NamedParameterJdbcTemplate template;
+    private final SimpleJdbcInsert insert;
+    private final RowMapper<ReservationTime> timeRowMapper;
+
+    public RoomescapeTimeRepositoryImpl(final DataSource dataSource) {
+        this.template = new NamedParameterJdbcTemplate(dataSource);
+        this.insert = new SimpleJdbcInsert(dataSource).withTableName("reservation_time").usingGeneratedKeyColumns("id");
+        this.timeRowMapper = (rs, rowNum) -> new ReservationTime(rs.getLong("id"),
+                rs.getTime("start_at").toLocalTime());
+    }
+
+    @Override
+    public Optional<ReservationTime> findById(final Long id) {
+        String sql = "select * from reservation_time where id=:id";
+        try {
+            SqlParameterSource param = new MapSqlParameterSource("id", id);
+            ReservationTime reservationTime = template.queryForObject(sql, param, timeRowMapper);
+            return Optional.of(reservationTime);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<ReservationTime> findAll() {
+        String sql = "select * from reservation_time";
+        return template.query(sql, timeRowMapper);
+    }
+
+    @Override
+    public ReservationTime save(final ReservationTime reservationTime) {
+        SqlParameterSource param = new MapSqlParameterSource("start_at", reservationTime.getStartAt());
+        Number key = insert.executeAndReturnKey(param);
+        return reservationTime.assignId(key.longValue());
+    }
+
+    @Override
+    public boolean deleteById(final Long id) {
+        String sql = "delete from reservation_time where id = :id";
+        SqlParameterSource param = new MapSqlParameterSource("id", id);
+        return template.update(sql, param) == SUCCESS_COUNT;
+    }
+}
