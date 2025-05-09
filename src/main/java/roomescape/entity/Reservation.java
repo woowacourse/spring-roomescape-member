@@ -2,6 +2,7 @@ package roomescape.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Reservation {
 
@@ -26,47 +27,12 @@ public class Reservation {
         return new Reservation(id, name, date, time, theme);
     }
 
-
     public static Reservation createIfDateTimeValid(String name, LocalDate date, ReservationTime time, Theme theme) {
         validateName(name);
         validateTheme(theme);
         validateDateTimeIsAfterNow(date, time);
         return new Reservation(null, name, date, time, theme);
 
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public ReservationTime getTime() {
-        return time;
-    }
-
-    public Theme getTheme() {
-        return theme;
-    }
-
-    public Long getTimeId() {
-        if (time == null) {
-            return null;
-        }
-        return time.id();
-    }
-
-    public Long getThemeId() {
-        if (theme == null) {
-            return null;
-        }
-        return theme.id();
     }
 
     private static void validateName(String name) {
@@ -106,9 +72,57 @@ public class Reservation {
     private static void validateDateTimeIsAfterNow(LocalDate date, ReservationTime time) {
         validateDate(date);
         validateTime(time);
-        LocalDateTime dateTime = LocalDateTime.of(date, time.startAt());
+        LocalDateTime dateTime = LocalDateTime.of(date, time.getStartAt());
         if (dateTime.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("[ERROR] 예약이 불가능한 시간입니다: " + date);
         }
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public ReservationTime getTime() {
+        return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
+    }
+
+    public Long getTimeId() {
+        if (time == null) {
+            return null;
+        }
+        return time.getId();
+    }
+
+    public Long getThemeId() {
+        if (theme == null) {
+            return null;
+        }
+        return theme.getId();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Reservation that = (Reservation) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
