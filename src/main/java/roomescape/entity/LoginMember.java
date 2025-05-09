@@ -8,19 +8,11 @@ public class LoginMember {
     private final String password;
     private final Role role;
 
-    public LoginMember(Long id, String name, String email, String password, Role role) {
+    public LoginMember(Long id, String name, String email, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.password = password;
-        this.role = role;
-    }
-
-    public LoginMember(String name, String email, String password, Role role) {
-        this.id = null;
-        this.name = name;
-        this.email = email;
-        this.password = password;
+        this.password = null;
         this.role = role;
     }
 

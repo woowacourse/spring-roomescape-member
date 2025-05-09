@@ -1,7 +1,6 @@
 package roomescape.controller;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -9,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import roomescape.dto.request.LoginCheckRequest;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.LoginCheckResponse;
 import roomescape.dto.response.LoginResponse;
@@ -37,10 +37,8 @@ public class MemberController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<LoginCheckResponse> loginCheck(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
-        return ResponseEntity.ok(memberService.findByToken(token));
+    public ResponseEntity<LoginCheckResponse> loginCheck(LoginCheckRequest loginCheckRequest) {
+        return ResponseEntity.ok(LoginCheckResponse.from(loginCheckRequest.name()));
     }
 
     private static void createCookie(HttpServletResponse response, LoginResponse loginResponse) {
@@ -48,15 +46,5 @@ public class MemberController {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-
-        return "";
     }
 }

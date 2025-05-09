@@ -38,7 +38,7 @@ public class H2MemberDao implements MemberDao {
     @Override
     public Optional<LoginMember> findById(Long memberId) {
         String sql = """
-            SELECT *
+            SELECT id, name, email, role
             FROM member
             WHERE id = :id
             """;
@@ -52,7 +52,6 @@ public class H2MemberDao implements MemberDao {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
-            resultSet.getString("password"),
             Role.valueOf(resultSet.getString("role"))
         );
     }

@@ -44,11 +44,11 @@ public class LoginMemberApiTest {
     void 인증_정보를_조회_할_수_있다() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM";
 
-        RestAssured.given()
+        RestAssured.given().log().all()
             .cookie("token", token)
             .when()
             .get("/login/check")
-            .then()
+            .then().log().all()
             .statusCode(200)
             .contentType(ContentType.JSON)
             .body("name", equalTo("어드민"));
