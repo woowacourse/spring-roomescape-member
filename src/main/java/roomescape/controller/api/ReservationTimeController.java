@@ -64,10 +64,10 @@ public class ReservationTimeController {
                 .toList();
     }
 
+    @AdminOnly
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservationTime(@PathVariable long id, LoginMember member) {
-        memberService.validAdminRole(member);
         reservationTimeService.deleteById(id);
     }
 }
