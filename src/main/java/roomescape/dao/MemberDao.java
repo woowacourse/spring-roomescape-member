@@ -5,4 +5,6 @@ import roomescape.domain.Member;
 public interface MemberDao {
 
     Member findMemberByEmail(String email);
+
+    Member findMemberById(Long id);
 }

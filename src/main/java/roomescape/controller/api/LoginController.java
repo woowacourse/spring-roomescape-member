@@ -1,14 +1,18 @@
 package roomescape.controller.api;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.service.AuthService;
 import roomescape.dto.request.LoginRequest;
+import roomescape.dto.response.LoginResponse;
+import roomescape.exception.custom.AuthenticatedException;
+import roomescape.service.AuthService;
 
 @RestController
 @RequestMapping("/login")
@@ -21,7 +25,8 @@ public class LoginController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createToken(@RequestBody LoginRequest request, HttpServletResponse response) {
+    public ResponseEntity<Void> createToken(@RequestBody LoginRequest request,
+        HttpServletResponse response) {
         String token = authService.createToken(request);
 
         Cookie cookie = new Cookie("token", token);
@@ -30,5 +35,22 @@ public class LoginController {
         response.addCookie(cookie);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/check")
+    public ResponseEntity<LoginResponse> checkLogin(HttpServletRequest request) {
+        String token = extractTokenFromCookie(request.getCookies());
+
+        return ResponseEntity.ok(LoginResponse.from(authService.findMemberByToken(token)));
+    }
+
+    private String extractTokenFromCookie(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+
+        throw new AuthenticatedException();
     }
 }

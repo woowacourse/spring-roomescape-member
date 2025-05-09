@@ -22,4 +22,13 @@ public class JwtTokenProvider {
             .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
             .compact();
     }
+
+    public Long getMemberIdFromToken(String token) {
+        return Long.valueOf(Jwts.parser()
+            .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .getSubject());
+    }
 }

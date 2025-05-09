@@ -30,4 +30,9 @@ public class AuthService {
             throw new AuthenticatedException();
         }
     }
+
+    public Member findMemberByToken(String token) {
+        Long memberId = jwtTokenProvider.getMemberIdFromToken(token);
+        return memberDao.findMemberById(memberId);
+    }
 }

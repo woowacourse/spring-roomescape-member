@@ -34,4 +34,21 @@ class JdbcMemberDaoTest {
             .isInstanceOf(NotFoundException.class)
             .hasMessageContaining("member");
     }
+
+    @Test
+    @DisplayName("사용자 ID가 존재한다면 조회할 수 있다.")
+    void findMemberByExistedId() {
+        Long id = 1L;
+        Member expected = jdbcMemberDao.findMemberById(id);
+
+        assertThat(expected.getId()).isEqualTo(id);
+    }
+
+    @Test
+    @DisplayName("사용자 ID가 존재하지 않는다면 예외가 발생한다.")
+    void findMemberByNotExistedId() {
+        assertThatThrownBy(() -> jdbcMemberDao.findMemberById(100L))
+            .isInstanceOf(NotFoundException.class)
+            .hasMessageContaining("member");
+    }
 }

@@ -26,6 +26,15 @@ public class JdbcMemberDao implements MemberDao {
         }
     }
 
+    public Member findMemberById(Long id) {
+        String sql = "SELECT id, name, email, password FROM member WHERE id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, createMemberMapper(), id);
+        } catch (DataAccessException e) {
+            throw new NotFoundException("member");
+        }
+    }
+
     private RowMapper<Member> createMemberMapper() {
         return (rs, rowNum) -> new Member(
             rs.getLong("id"),
