@@ -1,7 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.domain.Member;
+import roomescape.domain.member.Member;
 import roomescape.dto.auth.LoginRequestDto;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.MemberRepository;

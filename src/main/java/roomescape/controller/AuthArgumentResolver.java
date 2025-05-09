@@ -7,8 +7,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.domain.LoginMember;
-import roomescape.domain.Member;
+import roomescape.domain.member.Member;
+import roomescape.dto.auth.LoginInfo;
 import roomescape.service.MemberService;
 import roomescape.util.JwtTokenProvider;
 
@@ -24,7 +24,7 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(LoginMember.class);
+        return parameter.getParameterType().equals(LoginInfo.class);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
         jwtTokenProvider.validateToken(token);
         Long id = jwtTokenProvider.extractId(token);
         Member loginMember = memberService.findLoginMemberById(id);
-        return new LoginMember(loginMember.getId(), loginMember.getName(), loginMember.getEmail(), loginMember.getRole());
+        return new LoginInfo(loginMember.getId(), loginMember.getName(), loginMember.getEmail(), loginMember.getRole());
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {

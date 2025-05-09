@@ -1,4 +1,4 @@
-package roomescape.domain;
+package roomescape.domain.member;
 
 import java.util.Objects;
 
@@ -28,32 +28,32 @@ public class Member {
         return new Member(null, name, email, role, password);
     }
 
-    private void validateName(String name){
+    private void validateName(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 이름은 1글자 이상으로 이루어져야 합니다. ");
         }
 
-        if(name.length() > MAX_NAME_LENGTH){
+        if (name.length() > MAX_NAME_LENGTH) {
             throw new IllegalArgumentException("[ERROR] 이름은 255자를 초과할 수 없습니다. 이름 길이 : " + name.length());
         }
     }
 
-    private void validateEamil(String email){
+    private void validateEamil(String email) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 이메일은 1글자 이상으로 이루어져야 합니다. ");
         }
 
-        if(email.length() > MAX_NAME_LENGTH){
+        if (email.length() > MAX_NAME_LENGTH) {
             throw new IllegalArgumentException("[ERROR] 이메일은 255자를 초과할 수 없습니다. 이메일 길이 : " + email.length());
         }
     }
 
-    private void validatePassword(String password){
+    private void validatePassword(String password) {
         if (password == null || password.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 비밀번호는 1글자 이상으로 이루어져야 합니다. ");
         }
 
-        if(password.length() > MAX_NAME_LENGTH){
+        if (password.length() > MAX_NAME_LENGTH) {
             throw new IllegalArgumentException("[ERROR] 비밀번호는 255자를 초과할 수 없습니다. 비밀번호 길이 : " + password.length());
         }
     }

@@ -1,6 +1,6 @@
 package roomescape.repository;
 
-import roomescape.domain.Member;
+import roomescape.domain.member.Member;
 
 import java.util.Optional;
 
