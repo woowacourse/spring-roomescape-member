@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.common.exception.AuthException.LoginAuthException;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
+import roomescape.service.JwtProvider.JwtPayload;
 import roomescape.service.param.LoginParam;
 import roomescape.service.result.LoginResult;
 
@@ -24,6 +25,10 @@ public class AuthService {
         if (member.isNotPassword(loginParam.password())) {
             throw new LoginAuthException(loginParam.email() + " 사용자의 비밀번호가 같지 않습니다.");
         }
-        return new LoginResult(jwtProvider.issue(member.getId()));
+        return new LoginResult(jwtProvider.issue(new JwtPayload(member.getId(), member.getName())));
+    }
+
+    public JwtPayload extractToken(String token) {
+        return jwtProvider.extractPayload(token);
     }
 }

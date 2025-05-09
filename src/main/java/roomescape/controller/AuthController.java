@@ -4,20 +4,24 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.request.LoginRequest;
+import roomescape.controller.response.LoginCheckResponse;
 import roomescape.service.AuthService;
+import roomescape.service.JwtProvider.JwtPayload;
 import roomescape.service.result.LoginResult;
 
 @RestController
 public class AuthController {
 
+    private final AuthService authService;
+    
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
-
-    private final AuthService authService;
 
     public AuthController(AuthService authService) {
         this.authService = authService;
@@ -31,6 +35,12 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie)
                 .build();
+    }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<LoginCheckResponse> loginCheck(@CookieValue("token") String token) {
+        JwtPayload jwtPayload = authService.extractToken(token);
+        return ResponseEntity.ok().body(new LoginCheckResponse(jwtPayload.name()));
     }
 
     private String createCookie(String name, String value) {
