@@ -35,7 +35,7 @@ class AdminControllerTest {
         ExtractableResponse<Response> response = RestAssured.given()
                 .log().all()
                 .cookie("token", token)
-                .when().get("admin")
+                .when().get("/admin")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value()).extract();
 
@@ -43,5 +43,27 @@ class AdminControllerTest {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
             assertThat(response.asString()).contains("<title>방탈출 어드민</title>");
         });
+    }
+
+    @Test
+    void 어드민이_아니라면_접근할_수_없다() {
+        LoginRequest request = new LoginRequest(
+                "test@test.com",
+                "test"
+        );
+
+        String token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/login")
+                .then().log().all()
+                .extract().cookie("token");
+
+        RestAssured.given()
+                .log().all()
+                .cookie("token", token)
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
     }
 }

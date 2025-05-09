@@ -25,7 +25,7 @@ import roomescape.dto.request.LoginRequest;
 class AvailableReservationTimeTest {
 
     private final String EMAIL = "test@test.com";
-    private final String PASSWORD = "pwd";
+    private final String PASSWORD = "test";
 
     private String token;
 

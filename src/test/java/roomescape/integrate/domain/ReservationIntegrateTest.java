@@ -33,7 +33,7 @@ import roomescape.repository.ReservationRepository;
 class ReservationIntegrateTest {
 
     private final String EMAIL = "test@test.com";
-    private final String PASSWORD = "pwd";
+    private final String PASSWORD = "test";
 
     private String token;
 
