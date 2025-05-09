@@ -36,13 +36,34 @@ public class JwtProvider {
                 .compact();
     }
 
+    public String createToken(String payload, Date now) {
+        Claims claims = Jwts.claims().setSubject(payload);
+        Date expiredDate = new Date(now.getTime() + validityInMilliseconds);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(expiredDate)
+                .signWith(SIGNATURE_ALGORITHM, secretKey)
+                .compact();
+    }
+
     public String getPayload(String token) {
+
+        validateToken(token);
+
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
+    public void validateToken(String token) {
         try {
-            return Jwts.parser()
+            Jwts.parser()
                     .setSigningKey(secretKey)
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .getSubject();
+                    .parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
             throw new UnauthorizedException("토큰이 만료되었습니다.");
         } catch (MalformedJwtException | SignatureException | UnsupportedJwtException e) {
@@ -50,5 +71,6 @@ public class JwtProvider {
         } catch (IllegalArgumentException e) {
             throw new UnauthorizedException("토큰이 비어 있습니다.");
         }
+
     }
 }
