@@ -74,7 +74,7 @@ public class JdbcMemberDao implements MemberDao {
     }
 
     @Override
-    public Optional<Object> findByEmail(final String email) {
+    public Optional<Member> findByEmail(final String email) {
         String sql = "SELECT * FROM member WHERE email = :email";
 
         try {
