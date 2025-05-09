@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.annotation.AuthenticationPrinciple;
 import roomescape.domain.Reservation;
 import roomescape.dto.other.AuthenticationInformation;
+import roomescape.dto.other.ReservationCreationContent;
 import roomescape.dto.request.ReservationCreationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
@@ -24,10 +25,11 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> createReservation(
-            @AuthenticationPrinciple AuthenticationInformation authenticationInformation,
+            @AuthenticationPrinciple AuthenticationInformation authInformation,
             @Valid @RequestBody ReservationCreationRequest request
     ) {
-        long id = reservationService.saveReservation(authenticationInformation.id(), request);
+        ReservationCreationContent content = new ReservationCreationContent(authInformation.id(), request);
+        long id = reservationService.saveReservation(content);
         Reservation savedReservation = reservationService.getReservationById(id);
         return ResponseEntity
                 .created(URI.create("/reservations/" + id))

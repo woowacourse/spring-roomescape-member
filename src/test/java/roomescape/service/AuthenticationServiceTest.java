@@ -17,26 +17,29 @@ import roomescape.utility.JwtTokenProvider;
 
 class AuthenticationServiceTest {
 
-    private final MemberRepository memberRepository = mock(H2MemberRepository.class);
-    private final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider("test_secret_key", 7200);
-    private final AuthenticationService authenticationService =
+    private MemberRepository memberRepository = mock(H2MemberRepository.class);
+    private JwtTokenProvider jwtTokenProvider = new JwtTokenProvider("test_secret_key", 7200);
+    private AuthenticationService authenticationService =
             new AuthenticationService(memberRepository, jwtTokenProvider);
 
     @DisplayName("로그인을 할 수 있다")
     @Test
     void canLogin() {
         // given
+        jwtTokenProvider = new JwtTokenProvider("test_secret_key", 0);
+        authenticationService = new AuthenticationService(memberRepository, jwtTokenProvider);
+
         String email = "test@test.com";
         String password = "test_password";
         Member member = new Member(1L, "이름", email, password, MemberRole.GENERAL);
         when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
 
         // when
-        String expectedToken = authenticationService.login(email, password);
+        String actualToken = authenticationService.login(email, password);
 
         // then
-        String actualToken = jwtTokenProvider.makeAccessToken(member.getId(), member.getName(), MemberRole.GENERAL);
-        assertThat(expectedToken).isEqualTo(actualToken);
+        String expectedToken = jwtTokenProvider.makeAccessToken(member.getId(), member.getName(), MemberRole.GENERAL);
+        assertThat(actualToken).isEqualTo(expectedToken);
     }
 
     @DisplayName("로그인할 때, 이메일에 해당하는 회원이 없는 경우 예외를 발생시킨다")

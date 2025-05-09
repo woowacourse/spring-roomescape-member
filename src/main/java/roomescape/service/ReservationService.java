@@ -7,7 +7,7 @@ import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.request.ReservationCreationRequest;
+import roomescape.dto.other.ReservationCreationContent;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.member.MemberRepository;
@@ -43,12 +43,12 @@ public class ReservationService {
         return loadReservationById(id);
     }
 
-    public long saveReservation(long memberId, ReservationCreationRequest request) {
-        Member member = loadMemberById(memberId);
-        Theme theme = loadThemeById(request.themeId());
-        ReservationTime reservationTime = loadReservationTimeById(request.timeId());
+    public long saveReservation(ReservationCreationContent content) {
+        Member member = loadMemberById(content.memberId());
+        Theme theme = loadThemeById(content.themeId());
+        ReservationTime reservationTime = loadReservationTimeById(content.timeId());
         Reservation reservation = Reservation.createWithoutId(
-                member, request.date(), reservationTime, theme);
+                member, content.date(), reservationTime, theme);
 
         reservation.validatePastDateTime();
         validateAlreadyReserved(reservation);
