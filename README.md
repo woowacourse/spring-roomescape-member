@@ -62,7 +62,7 @@ Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZ
 
 ### 인증 정보 조회 API
 
-- [ ] 인증 정보 조회 API 구현
+- [x] 인증 정보 조회 API 구현
 
 #### Request
 

@@ -10,6 +10,7 @@ import roomescape.user.infrastructure.JwtTokenProvider;
 import roomescape.user.infrastructure.fake.FakeUserDao;
 import roomescape.user.presentation.dto.LoginRequest;
 import roomescape.user.presentation.dto.TokenResponse;
+import roomescape.user.presentation.dto.UserResponse;
 
 class AuthServiceTest {
 
@@ -36,4 +37,22 @@ class AuthServiceTest {
         // then
         assertThat(token.accessToken()).isNotEmpty();
     }
+
+    @Test
+    @DisplayName("유저 정보 조회 테스트")
+    void getUserTest() {
+        // given
+        String email = "email@email.com";
+        String password = "password";
+        userRepository.insert(new User(0L, "name", email, password, Role.USER));
+        LoginRequest loginRequest = new LoginRequest(email, password);
+        TokenResponse token = authService.login(loginRequest);
+
+        // when
+        UserResponse user = authService.getUser(token.accessToken());
+
+        // then
+        assertThat(user.name()).isEqualTo("name");
+    }
+
 }

@@ -36,4 +36,12 @@ public class JwtTokenProvider {
 
         return new TokenResponse(accessToken);
     }
+
+    public String resolveToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
 }

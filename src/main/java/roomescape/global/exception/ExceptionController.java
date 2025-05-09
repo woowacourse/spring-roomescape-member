@@ -7,6 +7,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.user.InvalidTokenException;
 import roomescape.user.InvalidUserException;
 
 @RestControllerAdvice
@@ -53,6 +54,11 @@ public class ExceptionController {
 
     @ExceptionHandler(InvalidUserException.class)
     public ResponseEntity<String> handleInvalidUserException(InvalidUserException e) {
+        return ResponseEntity.status(e.getStatusCode()).body(PREFIX + e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<String> handleInvalidTokenException(InvalidTokenException e) {
         return ResponseEntity.status(e.getStatusCode()).body(PREFIX + e.getMessage());
     }
 
