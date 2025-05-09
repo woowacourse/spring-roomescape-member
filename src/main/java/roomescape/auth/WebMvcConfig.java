@@ -11,18 +11,24 @@ import roomescape.infrastructure.JwtTokenProvider;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final AuthorizationExtractor authorizationExtractor;
 
-    public WebMvcConfig(JwtTokenProvider jwtTokenProvider) {
+    public WebMvcConfig(
+            JwtTokenProvider jwtTokenProvider,
+            AuthorizationExtractor authorizationExtractor
+    ) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.authorizationExtractor = authorizationExtractor;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AuthorizationHandlerInterceptor(jwtTokenProvider));
+        registry.addInterceptor(new AdminAuthorizationInterceptor(jwtTokenProvider, authorizationExtractor))
+                .addPathPatterns("/admin/**");
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new AuthenticationArgumentResolver(jwtTokenProvider));
+        resolvers.add(new AuthenticationArgumentResolver(jwtTokenProvider, authorizationExtractor));
     }
 }

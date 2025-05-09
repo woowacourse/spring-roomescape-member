@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.Authenticated;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.AuthenticatedUserResponse;
 import roomescape.service.AuthService;
@@ -39,7 +40,7 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public AuthenticatedUserResponse getAuthenticatedUser(Long memberId) {
+    public AuthenticatedUserResponse getAuthenticatedUser(@Authenticated Long memberId) {
         return authService.getAuthenticatedUser(memberId);
     }
 }
