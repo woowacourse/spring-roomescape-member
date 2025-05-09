@@ -4,10 +4,13 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
@@ -20,6 +23,7 @@ import roomescape.domain.MemberRoleType;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
+import roomescape.repository.criteria.ReservationCriteria;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -130,5 +134,38 @@ class JdbcReservationRepositoryTest {
 
         //then
         assertThat(actual).isEqualTo(expected);
+    }
+
+    private static Stream<Arguments> provideCriteria() {
+        return Stream.of(
+                Arguments.of(new ReservationCriteria(1L, 1L,
+                        LocalDate.of(2025, 1, 1), LocalDate.of(2025, 2, 1)), 2),
+
+                Arguments.of(new ReservationCriteria(null, 1L,
+                        LocalDate.of(2025, 1, 1), LocalDate.of(2025, 2, 1)), 5),
+
+                Arguments.of(new ReservationCriteria(1L, null,
+                        LocalDate.of(2025, 1, 1), LocalDate.of(2025, 2, 1)), 5),
+                Arguments.of(new ReservationCriteria(1L, 1L, null, LocalDate.of(2025, 1, 2)), 2),
+                Arguments.of(new ReservationCriteria(1L, 1L, LocalDate.of(2025, 1, 2), null), 1),
+                Arguments.of(new ReservationCriteria(null, null, null, null), 10),
+                Arguments.of(new ReservationCriteria(null, null,
+                        LocalDate.of(2025, 1, 2), LocalDate.of(2025, 1, 3)), 4),
+                Arguments.of(new ReservationCriteria(2L, 1L,
+                        LocalDate.of(2025, 1, 1), LocalDate.of(2025, 2, 1)), 3)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideCriteria")
+    @Sql(scripts = {"/schema.sql", "/reservation-criteria-test.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @DisplayName("필터 기준을 기반으로 예약 데이터를 조회한다")
+    void findAllByCriteria(ReservationCriteria criteria, int expectedSize) {
+        //when
+        List<Reservation> actual = reservationRepository.findAllByCriteria(criteria);
+
+        //then
+        assertThat(actual).hasSize(expectedSize);
     }
 }
