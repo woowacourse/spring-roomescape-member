@@ -4,12 +4,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.user.application.UserService;
+import roomescape.user.domain.User;
 import roomescape.user.dto.LoginRequest;
 import roomescape.user.application.AuthService;
 import roomescape.user.dto.LoginResponse;
@@ -26,11 +26,9 @@ public class UserApiController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginResponse> findLoginUser(@CookieValue(name = "token") String token) {
-        String userId = authService.getPayload(token);
-        String name = userService.findNameById(Long.parseLong(userId));
+    public ResponseEntity<LoginResponse> findLoginUser(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok()
-                .body(new LoginResponse(name));
+                .body(new LoginResponse(user.name()));
     }
 
     @PostMapping("/login")

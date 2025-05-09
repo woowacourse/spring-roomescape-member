@@ -1,6 +1,7 @@
 package roomescape.user.application;
 
 import org.springframework.stereotype.Service;
+import roomescape.user.domain.User;
 import roomescape.user.dto.LoginRequest;
 import roomescape.user.infrastructure.UserRepository;
 
@@ -17,8 +18,8 @@ public class UserService {
                 .orElseThrow(AuthorizationException::new);
     }
 
-    public String findNameById(Long id) {
-        return userRepository.findNameById(id)
+    public User findById(Long id) {
+        return userRepository.findById(id)
                 .orElseThrow(UserNotFoundException::new);
     }
 }

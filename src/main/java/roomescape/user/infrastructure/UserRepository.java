@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import roomescape.user.domain.User;
 
 @Repository
 public class UserRepository {
@@ -31,8 +32,8 @@ public class UserRepository {
         }
     }
 
-    public Optional<String> findNameById(Long id) {
-        String sql = "SELECT name FROM users WHERE id = :id";
+    public Optional<User> findById(Long id) {
+        String sql = "SELECT * FROM users WHERE id = :id";
 
         Map<String, Object> parameter = Map.of("id", id);
 
@@ -40,7 +41,11 @@ public class UserRepository {
             return Optional.of(namedParameterJdbcTemplate.queryForObject(
                     sql,
                     parameter,
-                    (resultSet, rowNum) -> resultSet.getString("name")));
+                    (resultSet, rowNum) -> new User(
+                            resultSet.getLong("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("email"),
+                            resultSet.getString("password"))));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
