@@ -21,7 +21,6 @@ public class ReservationJdbcDao implements ReservationDao {
     private static final String SELECT_RESERVATION = """
             SELECT 
                 r.id, 
-                r.name, 
                 r.date,
                 rt.id AS time_id, 
                 rt.start_at AS time_start_at,
@@ -43,7 +42,6 @@ public class ReservationJdbcDao implements ReservationDao {
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) ->
             new Reservation(
                     resultSet.getLong("id"),
-                    resultSet.getString("name"),
                     resultSet.getDate("date").toLocalDate(),
                     new ReservationTime(
                             resultSet.getLong("time_id"),
@@ -73,17 +71,16 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     public Long saveReservation(Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, time_id, theme_id, member_id) values (?,?,?,?,?)";
+        String sql = "INSERT INTO reservation (date, time_id, theme_id, member_id) values (?,?,?,?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservation.getName());
-            ps.setDate(2, Date.valueOf(reservation.getDate()));
-            ps.setLong(3, reservation.getTime().getId());
-            ps.setLong(4, reservation.getTheme().getId());
-            ps.setLong(5, reservation.getMember().getId());
+            ps.setDate(1, Date.valueOf(reservation.getDate()));
+            ps.setLong(2, reservation.getTime().getId());
+            ps.setLong(3, reservation.getTheme().getId());
+            ps.setLong(4, reservation.getMember().getId());
             return ps;
         }, keyHolder);
 

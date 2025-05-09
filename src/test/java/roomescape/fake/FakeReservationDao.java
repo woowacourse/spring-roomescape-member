@@ -25,7 +25,6 @@ public class FakeReservationDao implements ReservationDao {
         // TODO: 추후 수정
         Reservation savedReservation = new Reservation(
                 id,
-                reservation.getName(),
                 reservation.getDate(),
                 new ReservationTime(time.getId(), time.getStartAt()),
                 new Theme(theme.getId(), theme.getName(),

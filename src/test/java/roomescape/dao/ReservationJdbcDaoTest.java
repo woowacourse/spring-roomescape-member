@@ -31,7 +31,6 @@ public class ReservationJdbcDaoTest {
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER_WITHOUT_JOIN = (resultSet, rowNum) ->
             new Reservation(
                     resultSet.getLong("id"),
-                    resultSet.getString("name"),
                     resultSet.getDate("date").toLocalDate(),
                     null,
                     null,
@@ -68,32 +67,16 @@ public class ReservationJdbcDaoTest {
         this.member = new Member(memberId, tempMember.getName(), tempMember.getEmail(), tempMember.getPassword(),
                 tempMember.getRole());
 
-        this.savedReservation = new Reservation("히로", date, reservationTime, theme, member);
+        this.savedReservation = new Reservation(date, reservationTime, theme, member);
         this.savedId = saveNewReservation(savedReservation);
 
-    }
-
-    @Test
-    @DisplayName("모든 예약을 조회한다")
-    void test1() {
-        // when
-        List<Reservation> reservations = reservationDao.findAll();
-
-        // then
-        List<String> names = reservations.stream()
-                .map(Reservation::getName).toList();
-
-        assertAll(
-                () -> assertThat(reservations).hasSize(1),
-                () -> assertThat(names).containsExactly("히로")
-        );
     }
 
     @Test
     @DisplayName("예약을 저장한다")
     void test2() {
         // given
-        Reservation reservation = new Reservation("히로", date, reservationTime, theme, member);
+        Reservation reservation = new Reservation(date, reservationTime, theme, member);
 
         // when
         Long savedId = reservationDao.saveReservation(reservation);
@@ -107,7 +90,6 @@ public class ReservationJdbcDaoTest {
 
         assertAll(
                 () -> assertThat(foundReservations).hasSize(1),
-                () -> assertThat(foundReservations.getFirst().getName()).isEqualTo("히로"),
                 () -> assertThat(foundReservations.getFirst().getDate()).isEqualTo(date)
         );
 
@@ -118,13 +100,12 @@ public class ReservationJdbcDaoTest {
     void test3() {
         // when
         Optional<Reservation> foundReservation = reservationDao.findByDateAndTime(
-                new Reservation("히로", this.date, this.reservationTime, this.theme, member)
+                new Reservation(this.date, this.reservationTime, this.theme, member)
         );
 
         // then
         assertAll(
                 () -> assertThat(foundReservation.isPresent()).isTrue(),
-                () -> assertThat(foundReservation.get().getName()).isEqualTo("히로"),
                 () -> assertThat(foundReservation.get().getDate()).isEqualTo(this.date)
         );
     }
@@ -147,17 +128,16 @@ public class ReservationJdbcDaoTest {
     }
 
     private Long saveNewReservation(Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, time_id, theme_id, member_id) values (?,?,?,?,?)";
+        String sql = "INSERT INTO reservation (date, time_id, theme_id, member_id) values (?,?,?,?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservation.getName());
-            ps.setDate(2, Date.valueOf(reservation.getDate()));
-            ps.setLong(3, reservation.getTime().getId());
-            ps.setLong(4, reservation.getTheme().getId());
-            ps.setLong(5, reservation.getMember().getId());
+            ps.setDate(1, Date.valueOf(reservation.getDate()));
+            ps.setLong(2, reservation.getTime().getId());
+            ps.setLong(3, reservation.getTheme().getId());
+            ps.setLong(4, reservation.getMember().getId());
             return ps;
         }, keyHolder);
 

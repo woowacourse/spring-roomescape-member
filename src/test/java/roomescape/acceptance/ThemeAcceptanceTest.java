@@ -132,11 +132,10 @@ class ThemeAcceptanceTest {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
-                    "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", new String[]{"id"});
-            ps.setString(1, "히로");
-            ps.setDate(2, Date.valueOf(tomorrow));
-            ps.setLong(3, timeId);
-            ps.setLong(4, themeId);
+                    "INSERT INTO reservation (date, time_id, theme_id) VALUES (?, ?, ?)", new String[]{"id"});
+            ps.setDate(1, Date.valueOf(tomorrow));
+            ps.setLong(2, timeId);
+            ps.setLong(3, themeId);
             return ps;
         }, keyHolder);
 

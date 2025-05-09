@@ -82,7 +82,6 @@ public class MissionStepTest {
     @Test
     void 삼단계() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", String.valueOf(LocalDate.now().plusDays(1)));
         params.put("timeId", "1");
         params.put("themeId", "1");
@@ -130,8 +129,8 @@ public class MissionStepTest {
     @Test
     void 오단계() {
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?, ?)",
-                "브라운", String.valueOf(LocalDate.now().plusDays(1)), "1", "1", "1");
+                "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+                 String.valueOf(LocalDate.now().plusDays(1)), "1", "1", "1");
 
         List<ReservationResponseDto> reservations = RestAssured.given().log().all()
                 .cookie("token", createToken())
@@ -149,7 +148,6 @@ public class MissionStepTest {
     @Test
     void 육단계() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", String.valueOf(LocalDate.now().plusDays(1)));
         params.put("timeId", "1");
         params.put("themeId", "1");
@@ -202,7 +200,6 @@ public class MissionStepTest {
     @Test
     void 팔단계() {
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", String.valueOf(LocalDate.now().plusDays(1)));
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);

@@ -28,7 +28,8 @@ class ReservationRegisterDtoTest {
     @DisplayName("날짜 형식이 올바르지 않은 경우 예외 처리한다.")
     void test(String input) {
         //given
-        ReservationRegisterDto reservationRegisterDto = new ReservationRegisterDto("name", input, 1L, 1L);
+        ReservationRegisterDto reservationRegisterDto = new ReservationRegisterDto(input, 1L, 1L);
+
         // when & then
         assertThatThrownBy(
                 () -> reservationRegisterDto.convertToReservation(new ReservationTime(1L, LocalTime.of(12, 30)),
@@ -39,20 +40,11 @@ class ReservationRegisterDtoTest {
 
     }
 
-    @DisplayName("예약자명은 null 일 수 없다.")
-    @Test
-    void test1() {
-        assertThatThrownBy(() -> new ReservationRegisterDto(
-                null, "2024-12-11", 1L, 1L))
-                .isInstanceOf(IllegalArgumentException.class);
-
-    }
-
     @DisplayName("예약 날짜는 null 일 수 없다.")
     @Test
     void test2() {
         assertThatThrownBy(() -> new ReservationRegisterDto(
-                "aa", null, 1L, 1L))
+                null, 1L, 1L))
                 .isInstanceOf(IllegalArgumentException.class);
 
     }
@@ -61,7 +53,7 @@ class ReservationRegisterDtoTest {
     @Test
     void test3() {
         assertThatThrownBy(() -> new ReservationRegisterDto(
-                "aa", "2024-12-12", null, 1L))
+                "2024-12-12", null, 1L))
                 .isInstanceOf(IllegalArgumentException.class);
 
     }
@@ -70,16 +62,7 @@ class ReservationRegisterDtoTest {
     @Test
     void test4() {
         assertThatThrownBy(() -> new ReservationRegisterDto(
-                "aa", "2024-12-12", 1L, null))
-                .isInstanceOf(IllegalArgumentException.class);
-
-    }
-
-    @DisplayName("예약자명은 공백일 수 없다.")
-    @Test
-    void test5() {
-        assertThatThrownBy(() -> new ReservationRegisterDto(
-                " ", "2024-12-12", 1L, 1L))
+                "2024-12-12", 1L, null))
                 .isInstanceOf(IllegalArgumentException.class);
 
     }
@@ -88,7 +71,7 @@ class ReservationRegisterDtoTest {
     @Test
     void test6() {
         assertThatThrownBy(() -> new ReservationRegisterDto(
-                "히로", " ", 1L, 1L))
+                " ", 1L, 1L))
                 .isInstanceOf(IllegalArgumentException.class);
 
     }

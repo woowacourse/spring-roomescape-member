@@ -188,13 +188,12 @@ class ReservationAcceptanceTest {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
-                    "INSERT INTO reservation (name, date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?, ?)",
+                    "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
                     new String[]{"id"});
-            ps.setString(1, "히로");
-            ps.setDate(2, Date.valueOf(tomorrow));
-            ps.setLong(3, timeId);
-            ps.setLong(4, themeId);
-            ps.setLong(5, 1L);
+            ps.setDate(1, Date.valueOf(tomorrow));
+            ps.setLong(2, timeId);
+            ps.setLong(3, themeId);
+            ps.setLong(4, 1L);
             return ps;
         }, keyHolder);
 

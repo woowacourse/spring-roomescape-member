@@ -5,24 +5,22 @@ import java.time.LocalDate;
 public class Reservation {
 
     private final Long id;
-    private final String name;
     private final LocalDate date;
     private final ReservationTime reservationTime;
     private final Theme theme;
     private final Member member;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme,
+    public Reservation(Long id, LocalDate date, ReservationTime reservationTime, Theme theme,
                        Member member) {
         this.id = id;
-        this.name = "temp";
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
         this.member = member;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime reservationTime, Theme theme, Member member) {
-        this(null, name, date, reservationTime, theme, member);
+    public Reservation(LocalDate date, ReservationTime reservationTime, Theme theme, Member member) {
+        this(null, date, reservationTime, theme, member);
         validateReservationDateInFuture();
     }
 
@@ -34,10 +32,6 @@ public class Reservation {
 
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public LocalDate getDate() {

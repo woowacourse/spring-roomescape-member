@@ -9,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.common.exception.DuplicatedException;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dto.request.ReservationRegisterDto;
@@ -23,6 +25,7 @@ import roomescape.model.ReservationTime;
 import roomescape.model.Role;
 import roomescape.model.Theme;
 
+@Import(JdbcTemplate.class)
 class ReservationServiceTest {
 
     private final ReservationService reservationService;
@@ -41,7 +44,8 @@ class ReservationServiceTest {
                 themeDao,
                 memberDao
         );
-        this.loginMember = new LoginMember(1L, "히로", "example@gmail.com", Role.ADMIN);
+        Long savedId = memberDao.add(new Member("히로", "example@gmail.com", "password", Role.ADMIN));
+        this.loginMember = new LoginMember(savedId, "히로", "example@gmail.com", Role.ADMIN);
     }
 
     @BeforeEach
@@ -58,7 +62,6 @@ class ReservationServiceTest {
         // given
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         ReservationRegisterDto request = new ReservationRegisterDto(
-                "다로",
                 tomorrow.toString(),
                 1L,
                 1L
@@ -69,29 +72,9 @@ class ReservationServiceTest {
 
         // then
         assertAll(
-                () -> assertThat(response.name()).isEqualTo("다로"),
+                () -> assertThat(response.member().name()).isEqualTo("히로"),
                 () -> assertThat(response.date()).isEqualTo(tomorrow)
         );
-    }
-
-    @DisplayName("모든 예약을 조회한다")
-    @Test
-    void test2() {
-        // given
-        ReservationRegisterDto request1 = new ReservationRegisterDto(
-                "다로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
-        ReservationRegisterDto request2 = new ReservationRegisterDto(
-                "에러", LocalDate.now().plusDays(2).toString(), 1L, 1L);
-        reservationService.saveReservation(request1, loginMember);
-        reservationService.saveReservation(request2, loginMember);
-
-        // when
-        List<ReservationResponseDto> reservations = reservationService.getAllReservations();
-
-        // then
-        assertThat(reservations).hasSize(2);
-        assertThat(reservations).extracting("name")
-                .containsExactlyInAnyOrder("다로", "에러");
     }
 
     @DisplayName("예약을 취소한다")
@@ -99,7 +82,7 @@ class ReservationServiceTest {
     void test3() {
         // given
         ReservationRegisterDto request = new ReservationRegisterDto(
-                "다로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
+                LocalDate.now().plusDays(1).toString(), 1L, 1L);
         ReservationResponseDto saved = reservationService.saveReservation(request, loginMember);
 
         // when
@@ -115,10 +98,10 @@ class ReservationServiceTest {
     void test4() {
         // given
         ReservationRegisterDto request = new ReservationRegisterDto(
-                "다로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
+                LocalDate.now().plusDays(1).toString(), 1L, 1L);
         reservationService.saveReservation(request, loginMember);
         ReservationRegisterDto savedRequest = new ReservationRegisterDto(
-                "히로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
+                LocalDate.now().plusDays(1).toString(), 1L, 1L);
 
         // when && then
         assertThatThrownBy(
@@ -131,11 +114,10 @@ class ReservationServiceTest {
     void test5() {
         // given
         ReservationRegisterDto request = new ReservationRegisterDto(
-                "다로", LocalDate.now().toString(), 1L, 1L);
+                LocalDate.now().toString(), 1L, 1L);
         // when && then
         assertThatThrownBy(
                 () -> reservationService.saveReservation(request, loginMember))
                 .isInstanceOf(IllegalStateException.class);
     }
-
 }

@@ -128,8 +128,8 @@ class ReservationTimeDaoTest {
         LocalDate date = LocalDate.now().plusDays(1);
 
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "히로", date, this.savedId, 1
+                "INSERT INTO reservation (date, time_id, theme_id) VALUES (?, ?, ?)",
+                date, this.savedId, 1
         );
 
         // when

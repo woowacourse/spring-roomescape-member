@@ -34,7 +34,7 @@ public class ReservationAdminService {
         ReservationTime reservationTime = findReservationTimeById(registerDto.timeId());
         Theme theme = findThemeById(registerDto.themeId());
 
-        Reservation reservation = new Reservation("임시 예약 이름", registerDto.date(), reservationTime, theme, member);
+        Reservation reservation = new Reservation(registerDto.date(), reservationTime, theme, member);
 
         reservationDao.saveReservation(reservation);
     }

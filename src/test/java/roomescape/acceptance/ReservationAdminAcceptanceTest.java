@@ -120,6 +120,4 @@ class ReservationAdminAcceptanceTest {
 
         return keyHolder.getKey().longValue();
     }
-
-
 }
