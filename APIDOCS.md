@@ -233,6 +233,40 @@
       ]
       ```
 
+- GET /reservations
+    - 설명 : 모든 예약 조회
+    - 요청 파라미터 :
+      ```
+      Long "themId" : 1,
+      Long "memberId" : 1,
+      Long "dateFrom" : "2025-05-10",
+      Long "dateTo" : "2025-05-10",
+      ```
+    - 정상 응답 (200)
+      ```
+      [
+          {
+              Long "id": 1,
+              Member "member" : {
+                  Long "id" : 1,
+                  String "name" : "회원1"
+              },
+              LocalDate "date": "2023-01-01",
+              ReservationTime "time": {
+                  Long "id": 1,
+                  LocalTime "startAt" : "10:00"
+              },
+              Theme "theme" : {
+                  Long "id" : 1,
+                  String "name" : "테마1",
+                  String "description" : "재밌어요!",
+                  String "thumbnail" : "url"
+              }
+          },
+          ...
+      ]
+      ```
+
 - POST /admin/reservations
     - 설명 : 예약 추가
     - 요청 파라미터

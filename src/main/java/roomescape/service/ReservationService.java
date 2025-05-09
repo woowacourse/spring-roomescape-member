@@ -8,6 +8,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.other.ReservationCreationContent;
+import roomescape.dto.other.ReservationSearchCondition;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.member.MemberRepository;
@@ -37,6 +38,10 @@ public class ReservationService {
 
     public List<Reservation> getAllReservations() {
         return reservationRepository.findAll();
+    }
+
+    public List<Reservation> getAllReservationsByFilter(ReservationSearchCondition condition) {
+        return reservationRepository.findAllByFilter(condition);
     }
 
     public Reservation getReservationById(long id) {

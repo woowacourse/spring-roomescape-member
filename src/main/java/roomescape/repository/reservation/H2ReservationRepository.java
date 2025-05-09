@@ -16,6 +16,7 @@ import roomescape.domain.MemberRole;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.dto.other.ReservationSearchCondition;
 
 @Repository
 public class H2ReservationRepository implements ReservationRepository {
@@ -69,6 +70,27 @@ public class H2ReservationRepository implements ReservationRepository {
                 ORDER BY r.id DESC
                 """;
         return template.query(sql, mapper);
+    }
+
+    @Override
+    public List<Reservation> findAllByFilter(ReservationSearchCondition condition) {
+        String sql = """
+                SELECT r.id AS reservation_id, r.date,
+                       m.id AS member_id, m.name AS member_name, m.email AS member_email, m.password AS member_password, m.role As member_role,
+                       rt.id AS time_id, rt.start_at,
+                       t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail
+                FROM reservation AS r
+                INNER JOIN member AS m ON r.member_id = m.id
+                INNER JOIN reservation_time AS rt ON r.time_id = rt.id
+                INNER JOIN theme AS t ON r.theme_id = t.id
+                WHERE r.theme_id = ?
+                AND r.member_id = ?
+                AND r.date >= ?
+                AND r.date <= ?
+                ORDER BY r.id DESC
+                """;
+        return template.query(sql, mapper,
+                condition.themeId(), condition.memberId(), condition.dateFrom(), condition.dateTo());
     }
 
     @Override

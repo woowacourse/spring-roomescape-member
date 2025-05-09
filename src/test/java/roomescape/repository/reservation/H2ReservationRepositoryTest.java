@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.test.fixture.DateFixture.NEXT_DAY;
 import static roomescape.test.fixture.DateFixture.TODAY;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,7 @@ import roomescape.domain.MemberRole;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.dto.other.ReservationSearchCondition;
 
 @JdbcTest
 @Import(H2ReservationRepository.class)
@@ -59,6 +61,99 @@ class H2ReservationRepositoryTest {
 
         // then
         assertThat(actualReservations).hasSize(3);
+    }
+
+    @DisplayName("필터를 통해 특정 회원의 예약을 검색할 수 있다")
+    @Test
+    void canFindAllByMemberFilter() {
+        // given
+        template.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)",
+                "회원1", "test1@test.com", "zdsa123!", MemberRole.GENERAL.toString());
+        template.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)",
+                "회원2", "test2@test.com", "fghf123!", MemberRole.GENERAL.toString());
+
+        template.update("INSERT INTO reservation_time (start_at) VALUES (?)",
+                LocalTime.of(10, 0));
+        template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                "테마1", "설명1", "썸네일1");
+
+        template.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, NEXT_DAY.toString(), 1L, 1L);
+        template.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                2L, NEXT_DAY.toString(), 1L, 1L);
+        template.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                2L, NEXT_DAY.toString(), 1L, 1L);
+
+        // when & then
+        assertAll(
+                () -> assertThat(reservationRepository.findAllByFilter(
+                        new ReservationSearchCondition(1L, 1L, LocalDate.now(), NEXT_DAY)))
+                        .hasSize(1),
+                () -> assertThat(reservationRepository.findAllByFilter(
+                        new ReservationSearchCondition(1L, 2L, LocalDate.now(), NEXT_DAY)))
+                        .hasSize(2)
+        );
+    }
+
+    @DisplayName("필터를 통해 특정 테마의 예약을 검색할 수 있다")
+    @Test
+    void canFindAllByThemeFilter() {
+        // given
+        template.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)",
+                "회원1", "test1@test.com", "zdsa123!", MemberRole.GENERAL.toString());
+        template.update("INSERT INTO reservation_time (start_at) VALUES (?)",
+                LocalTime.of(10, 0));
+
+        template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                "테마1", "설명1", "썸네일1");
+        template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                "테마2", "설명2", "썸네일2");
+
+        template.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, NEXT_DAY.toString(), 1L, 1L);
+        template.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, NEXT_DAY.toString(), 1L, 2L);
+        template.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, NEXT_DAY.toString(), 1L, 2L);
+
+        // when & then
+        assertAll(
+                () -> assertThat(reservationRepository.findAllByFilter(
+                        new ReservationSearchCondition(1L, 1L, LocalDate.now(), NEXT_DAY)))
+                        .hasSize(1),
+                () -> assertThat(reservationRepository.findAllByFilter(
+                        new ReservationSearchCondition(2L, 1L, LocalDate.now(), NEXT_DAY)))
+                        .hasSize(2)
+        );
+    }
+
+    @DisplayName("필터를 통해 특정 날짜 기간의 예약을 검색할 수 있다")
+    @Test
+    void canFindAllByDateFilter() {
+        // given
+        template.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)",
+                "회원1", "test1@test.com", "zdsa123!", MemberRole.GENERAL.toString());
+        template.update("INSERT INTO reservation_time (start_at) VALUES (?)",
+                LocalTime.of(10, 0));
+        template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                "테마1", "설명1", "썸네일1");
+
+        template.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, TODAY.toString(), 1L, 1L);
+        template.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, NEXT_DAY.toString(), 1L, 1L);
+        template.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, NEXT_DAY.plusDays(1).toString(), 1L, 1L);
+
+        // when & then
+        assertAll(
+                () -> assertThat(reservationRepository.findAllByFilter(
+                        new ReservationSearchCondition(1L, 1L, LocalDate.now(), NEXT_DAY)))
+                        .hasSize(2),
+                () -> assertThat(reservationRepository.findAllByFilter(
+                        new ReservationSearchCondition(1L, 1L, LocalDate.now(), NEXT_DAY.plusDays(1))))
+                        .hasSize(3)
+        );
     }
 
     @DisplayName("ID를 기반으로 예약을 조회할 수 있다")

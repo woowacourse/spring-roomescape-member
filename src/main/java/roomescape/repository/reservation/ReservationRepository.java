@@ -4,10 +4,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.Reservation;
+import roomescape.dto.other.ReservationSearchCondition;
 
 public interface ReservationRepository {
 
     List<Reservation> findAll();
+
+    List<Reservation> findAllByFilter(ReservationSearchCondition condition);
 
     Optional<Reservation> findById(long id);
 
