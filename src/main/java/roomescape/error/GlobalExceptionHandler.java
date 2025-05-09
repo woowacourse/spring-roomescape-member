@@ -25,4 +25,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 null, request);
         return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Object> handleUnauthorizedException(final Exception ex, final WebRequest request) {
+        final ProblemDetail body = super.createProblemDetail(ex, HttpStatus.UNAUTHORIZED, ex.getMessage(), null,
+                null, request);
+        return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
+    }
 }
