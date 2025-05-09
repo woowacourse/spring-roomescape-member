@@ -1,6 +1,5 @@
 package roomescape.member.repository;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -67,5 +66,18 @@ public class JdbcMemberRepository implements MemberRepository {
         ).longValue();
         return Member.of(generatedId, member.getName(), member.getEmail(), member.getPassword(),
                 member.getMemberRole());
+    }
+
+    @Override
+    public boolean existsById(final Long id) {
+        try {
+            return Boolean.TRUE.equals(
+                    jdbcTemplate.queryForObject("SELECT EXISTS (SELECT 1 FROM member WHERE id = ?)",
+                            Boolean.class,
+                            id
+                    ));
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
     }
 }
