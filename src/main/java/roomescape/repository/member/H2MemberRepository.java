@@ -1,5 +1,6 @@
 package roomescape.repository.member;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,6 +27,12 @@ public class H2MemberRepository implements MemberRepository {
 
     public H2MemberRepository(JdbcTemplate template) {
         this.template = template;
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String sql = "SELECT * FROM member";
+        return template.query(sql, mapper);
     }
 
     @Override

@@ -3,6 +3,7 @@ package roomescape.repository.member;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,9 +29,25 @@ class H2MemberRepositoryTest {
         template.execute("ALTER TABLE member ALTER COLUMN id RESTART WITH 1");
     }
 
+    @DisplayName("전체 회원들을 조회할 수 있다")
+    @Test
+    void canFindAll() {
+        // given
+        template.update("INSERT INTO member (name, email, password, role) VALUES (?,?,?,?)",
+                "회원1", "test1@test.com", "ecxewqe!23", MemberRole.GENERAL.toString());
+        template.update("INSERT INTO member (name, email, password, role) VALUES (?,?,?,?)",
+                "회원2", "test2@test.com", "ecxewqe!23", MemberRole.GENERAL.toString());
+
+        // when
+        List<Member> members = memberRepository.findAll();
+
+        // then
+        assertThat(members).hasSize(2);
+    }
+
     @DisplayName("id로 회원을 조회할 수 있다")
     @Test
-    void testMethodNameHere() {
+    void canFindById() {
         // given
         template.update("INSERT INTO member (name, email, password, role) VALUES (?,?,?,?)",
                 "회원", "test@test.com", "ecxewqe!23", MemberRole.GENERAL.toString());
@@ -48,7 +65,7 @@ class H2MemberRepositoryTest {
 
     @DisplayName("이메일로 회원을 조회할 수 있다")
     @Test
-    void findByEmail() {
+    void canFindByEmail() {
         // given
         String email = "test@test.com";
         template.update("INSERT INTO member (name, email, password, role) VALUES (?,?,?,?)",
