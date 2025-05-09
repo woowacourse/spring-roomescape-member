@@ -5,12 +5,14 @@
 - [X] 시간 관리, 예약 관리 API가 적절한 응답을 하도록 변경
 - [X] 어드민의 시간 관리 페이지, 방탈출 예약 페이지에서 모든 기능이 정상적으로 동작하는지 확인합니다.
 
-## 사용자 예약
+## 예약
 - [X] 사용자는 원하는 시간에 예약을 할 수 있다.
 - [X] 사용자는 날짜와 테마를 선택하면 예약 가능한 시간을 확인할 수 있다.
 - [X] `/reservation` 요청 시 사용자 예약 페이지를 응답한다.
   - 페이지는 `templates/reservation.html` 파일을 이용
-
+- [ ] 사용자는 쿠키에 담긴 정보를 이용하여 예약할 수 있다.
+- [ ] 관리자는 사용자의 ID를 이용하여 예약할 수 있다.
+  
 ## 로그인
  - [X] `GET /login` 요청 시 로그인 폼이 있는 페이지를 응답한다.
  - `templates/login.html` 파일을 이용
@@ -171,3 +173,38 @@
     }
   ]
   ```
+  
+### 사용자 예약 생성 API
+
+- Request
+  ```
+  POST /reservations HTTP/1.1
+  content-type: application/json
+  cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+  host: localhost:8080
+  
+  {
+    "date": "2024-03-01",
+    "themeId": 1,
+    "timeId": 1
+  }
+  ```
+
+### 관리자 예약 생성 API
+
+- Request
+  ```
+  POST /admin/reservations HTTP/1.1
+  content-type: application/json
+  cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+  host: localhost:8080
+  
+  {
+    "date": "2024-03-01",
+    "themeId": 1,
+    "timeId": 1,
+    "memberId": 1
+  }
+  ```
+
+  
