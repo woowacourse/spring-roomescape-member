@@ -15,4 +15,9 @@ public class UserViewController {
     public String getReservationPage() {
         return "reservation";
     }
+
+    @GetMapping("/signup")
+    public String getSignUpPage() {
+        return "signup";
+    }
 }
