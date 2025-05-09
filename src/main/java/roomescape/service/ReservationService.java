@@ -9,6 +9,7 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dto.request.ReservationRegisterDto;
+import roomescape.dto.response.MemberResponseDto;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.dto.response.ReservationTimeResponseDto;
 import roomescape.dto.response.ThemeResponseDto;
@@ -45,7 +46,7 @@ public class ReservationService {
         Theme theme = reservation.getTheme();
         return new ReservationResponseDto(
                 reservationId,
-                reservation.getName(),
+                new MemberResponseDto(reservation.getMember()),
                 reservation.getDate(),
                 new ReservationTimeResponseDto(time.getId(), time.getStartAt()),
                 new ThemeResponseDto(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail())
