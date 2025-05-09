@@ -6,7 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.custom.InvalidInputException;
 
-public class LoginRequestTest {
+class LoginRequestTest {
 
     @Test
     @DisplayName("이메일은 빈 값이 들어올 수 없다.")

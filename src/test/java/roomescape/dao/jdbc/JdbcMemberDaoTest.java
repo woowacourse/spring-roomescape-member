@@ -13,7 +13,7 @@ import roomescape.exception.custom.NotFoundException;
 
 @JdbcTest
 @Import(JdbcMemberDao.class)
-public class JdbcMemberDaoTest {
+class JdbcMemberDaoTest {
 
     @Autowired
     private JdbcMemberDao jdbcMemberDao;

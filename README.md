@@ -58,8 +58,8 @@
 - [x] 사용자는 name, email, password를 가진다.
   - [x] email을 로그인 ID로, password를 비밀번호로 사용
 - [x] `GET /login` 요청 시 로그인 폼이 있는 페이지를 응답한다.
-- [ ] `POST /login` 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함한다.
-  - [ ] 응답은 Cookie에 token 값으로 토큰이 포함되어야 한다.
+- [x] `POST /login` 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함한다.
+  - [x] 응답은 Cookie에 token 값으로 토큰이 포함되어야 한다.
 - [ ] 상단바 우측 로그인 상태를 표현해주기 위해 사용자 정보를 조회할 수 있다.
   - [ ] Cookie를 이용하여 로그인 사용자의 정보를 확인
 
@@ -89,11 +89,13 @@
 | `/themes/{id}`    | DELETE | 테마 삭제           |
 
 ### 사용자(User)
-| URL                       | 메서드  | 기능               |
-|---------------------------|------|------------------|
-| `/reservation`            | GET  | 사용자 예약 페이지 보기    |
-| `/reservations`           | POST | 사용자 페이지에서 예약 추가  |
+| URL                       | 메서드  | 기능              |
+|---------------------------|------|-----------------|
+| `/reservation`            | GET  | 사용자 예약 페이지 보기   |
+| `/reservations`           | POST | 사용자 페이지에서 예약 추가 |
 | `/times/{date}/{themeId}` | GET  | 예약 가능한 상태의 시간 조회 |
+| `/login`                  | GET  | 사용자 로그인 페이지 보기  |
+| `/login`                  | POST | 사용자 로그인 후 토큰 생성 |
 
 ### Common
 | URL             | 메서드    | 기능       |
