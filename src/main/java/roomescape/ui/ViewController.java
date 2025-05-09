@@ -40,4 +40,9 @@ public class ViewController {
     public String getLoginPage() {
         return "login";
     }
+
+    @GetMapping("/signup")
+    public String getSignUpPage() {
+        return "signup";
+    }
 }
