@@ -18,7 +18,7 @@ import roomescape.domain.repository.MemberRepository;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
-import roomescape.dto.request.ReservationCreateRequest;
+import roomescape.dto.request.ReservationCondition;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.ExistedReservationException;
 import roomescape.exception.ReservationNotFoundException;
@@ -59,7 +59,8 @@ class ReservationServiceTest {
                 reservationTime1, theme1);
         reservationRepository.create(reservation1);
         // when
-        List<ReservationResponse> all = reservationService.findReservations(null);
+        List<ReservationResponse> all = reservationService.findReservations(
+                new ReservationCondition(null, null, null, null));
 
         // then
         assertThat(all.size()).isEqualTo(1);
@@ -81,7 +82,8 @@ class ReservationServiceTest {
         reservationRepository.create(reservation1);
 
         // then
-        List<ReservationResponse> all = reservationService.findReservations(null);
+        List<ReservationResponse> all = reservationService.findReservations(
+                new ReservationCondition(null, null, null, null));
         assertThat(all.size()).isEqualTo(1);
         assertThat(all.getLast().memberName()).isEqualTo("name1");
     }
@@ -102,7 +104,8 @@ class ReservationServiceTest {
         reservationService.delete(savedReservation.getId());
 
         // then
-        List<ReservationResponse> all = reservationService.findReservations(null);
+        List<ReservationResponse> all = reservationService.findReservations(
+                new ReservationCondition(null, null, null, null));
         assertThat(all.size()).isEqualTo(0);
     }
 
@@ -116,19 +119,18 @@ class ReservationServiceTest {
     @Test
     void 중복_예약하면_예외가_발생한다() {
         // given
-        ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
-        reservationTimeRepository.create(reservationTime1);
-        Theme theme1 = new Theme(1L, "themeName1", "des", "th");
-        themeRepository.create(theme1);
-        Member member1 = new Member(1L, "name1", "email1@domain.com", "password1", Role.MEMBER);
-        memberRepository.save(member1);
-        Reservation reservation1 = Reservation.of(null, member1, LocalDate.of(2025, 7, 25),
-                reservationTime1, theme1);
+        ReservationTime savedTime = reservationTimeRepository.create(
+                new ReservationTime(1L, LocalTime.of(10, 0)));
+        Theme savedTheme = themeRepository.create(new Theme(null, "themeName1", "des", "th"));
+        Member savedMember = memberRepository.save(
+                new Member(1L, "name1", "email1@domain.com", "password1", Role.MEMBER));
+        Reservation reservation1 = Reservation.of(null, savedMember, LocalDate.of(2025, 7, 25),
+                savedTime, savedTheme);
         reservationRepository.create(reservation1);
-        ReservationCreateRequest request = new ReservationCreateRequest(LocalDate.of(2025, 7, 25), 1L, 1L);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(1L, request.timeId(), request.themeId(), request.date()))
+        assertThatThrownBy(
+                () -> reservationService.create(1L, savedTime.getId(), savedTheme.getId(), LocalDate.of(2025, 7, 25)))
                 .isInstanceOf(ExistedReservationException.class);
     }
 }

@@ -55,7 +55,7 @@ public class ReservationService {
         Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
         Reservation reservation = Reservation.createWithoutId(member, date, reservationTime, theme);
         reservation.validateDateTime();
-        validateDuplicate(date, reservationTime.getStartAt());
+        validateDuplicate(date, reservationTime.getStartAt(), theme);
         Reservation savedReservation = reservationRepository.create(reservation);
         return new ReservationResponse(
                 savedReservation.getId(),
@@ -68,8 +68,8 @@ public class ReservationService {
         );
     }
 
-    private void validateDuplicate(LocalDate date, LocalTime startAt) {
-        if (reservationRepository.findByDateTime(date, startAt).isPresent()) {
+    private void validateDuplicate(LocalDate date, LocalTime startAt, Theme theme) {
+        if (reservationRepository.findByDateTimeAndTheme(date, startAt, theme).isPresent()) {
             throw new ExistedReservationException();
         }
     }

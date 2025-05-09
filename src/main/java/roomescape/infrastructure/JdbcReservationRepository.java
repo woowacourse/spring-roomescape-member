@@ -181,7 +181,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findByDateTime(LocalDate date, LocalTime time) {
+    public Optional<Reservation> findByDateTimeAndTheme(LocalDate date, LocalTime time, Theme theme) {
         String sql = """
                 SELECT
                     r.id,
@@ -204,11 +204,14 @@ public class JdbcReservationRepository implements ReservationRepository {
                 ON r.theme_id = t.id
                 JOIN member AS m
                 ON r.member_id = m.id
-                WHERE r.date = :date AND rt.start_at = :startAt
+                WHERE r.date = :date AND 
+                      rt.start_at = :startAt AND
+                      t.id = :themeId
                 """;
         SqlParameterSource parameter = new MapSqlParameterSource()
                 .addValue("date", date)
-                .addValue("startAt", time);
+                .addValue("startAt", time)
+                .addValue("themeId", theme.getId());
         try {
             Reservation reservation = jdbcTemplate.queryForObject(sql, parameter, RESERVATION_ROW_MAPPER);
             return Optional.ofNullable(reservation);

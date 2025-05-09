@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Reservation;
+import roomescape.domain.Theme;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.dto.request.ReservationCondition;
 
@@ -53,10 +54,11 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findByDateTime(LocalDate date, LocalTime time) {
+    public Optional<Reservation> findByDateTimeAndTheme(LocalDate date, LocalTime time, Theme theme) {
         return fakeReservations.stream()
-                .filter(reservation -> reservation.getDate().equals(date) && reservation.getReservationTime()
-                        .getStartAt().equals(time))
+                .filter(reservation -> reservation.getDate().equals(date))
+                .filter(reservation -> reservation.getReservationTime().getStartAt().equals(time))
+                .filter(reservation -> reservation.getTheme().equals(theme))
                 .findFirst();
     }
 
