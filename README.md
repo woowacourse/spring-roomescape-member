@@ -56,3 +56,16 @@
         - templates/login.html 파일을 이용하세요.
     - POST /login 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함하세요.
         - 응답 Cookie에 "token"값으로 토큰이 포함되도록 하세요.
+
+## 5단계
+
+- 사용자의 정보를 조회하는 로직을 리팩터링
+    - Cookie에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 로직을 분리
+        - HandlerMethodArgumentResolver을 활용하여 회원정보 객체를 컨트롤러 메서드에 주입
+- 예약 생성 API 및 기능을 리팩터링
+    - 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용하도록 리팩터링
+    - reservation.html, user-reservation.js 파일의 TODO 주석을 참고하여 변경된 명세에 맞게 클라이언트가 동작하도록 변경
+- 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링 합니다.
+    - admin/reservation-new.html 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경합니다.
+      AS-IS: /js/reservation-new.js
+      TO-BE: /js/reservation-with-member.js
