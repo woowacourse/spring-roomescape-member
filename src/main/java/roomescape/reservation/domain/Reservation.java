@@ -36,7 +36,7 @@ public class Reservation {
         return new Reservation(null, name, reservationDate, time, theme);
     }
 
-    private static void validateReservationDateTime(final LocalDateTime now,final LocalDate reservationDate,
+    private static void validateReservationDateTime(final LocalDateTime now, final LocalDate reservationDate,
                                                     final ReservationTime time) {
         LocalDate nowDate = now.toLocalDate();
         if (reservationDate.isBefore(nowDate)) {
@@ -49,8 +49,8 @@ public class Reservation {
         }
     }
 
-    private static void validateName(final String name){
-        if(name == null || name.isBlank() || name.length() > MAX_NAME){
+    private static void validateName(final String name) {
+        if (name == null || name.isBlank() || name.length() > MAX_NAME) {
             throw new IllegalArgumentException("이름은 1글자 이상, 255글자 이하여야합니다.");
         }
     }

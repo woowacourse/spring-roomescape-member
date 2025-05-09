@@ -56,7 +56,7 @@ public class ReservationTimeService {
         List<ReservationTime> times = reservationTimeRepository.findAll();
 
         return times.stream()
-                .map(time -> toTimeConditionResponse(time,reservations))
+                .map(time -> toTimeConditionResponse(time, reservations))
                 .toList();
     }
 

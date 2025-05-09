@@ -9,7 +9,7 @@ public class ReservationPeriod {
     private final int endOffset;
 
     public ReservationPeriod(LocalDate standardDate, int startOffset, int endOffset) {
-        validateOffset(startOffset,endOffset);
+        validateOffset(startOffset, endOffset);
         this.standardDate = standardDate;
         this.startOffset = startOffset;
         this.endOffset = endOffset;
@@ -23,7 +23,7 @@ public class ReservationPeriod {
         return standardDate.minusDays(endOffset);
     }
 
-    private void validateOffset(int startOffset, int endOffset){
+    private void validateOffset(int startOffset, int endOffset) {
         if (startOffset < 0 || endOffset < 0) {
             throw new IllegalArgumentException("Offset은 0 이상이어야 합니다.");
         }
