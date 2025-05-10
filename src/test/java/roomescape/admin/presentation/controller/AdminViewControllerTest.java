@@ -55,4 +55,14 @@ class AdminViewControllerTest {
                 .statusCode(200);
     }
 
+    @Test
+    @DisplayName("관리자가 아닐 경우 관리자 페이지에 접근할 수 없다.")
+    void getAdminPageFailedTest() {
+        String token = ApiHelper.getUserToken();
+        RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(403);
+    }
 }
