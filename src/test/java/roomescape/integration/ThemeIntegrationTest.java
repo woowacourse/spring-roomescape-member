@@ -20,7 +20,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Sql({"/test-schema.sql", "/test-data.sql"})
+@Sql({"/schema.sql", "/data.sql"})
 public class ThemeIntegrationTest {
 
     @Autowired
@@ -68,11 +68,11 @@ public class ThemeIntegrationTest {
         final LocalDate beforeEightDay = LocalDate.now().minusDays(8);
         final String themeSql = "INSERT INTO theme (name, description, thumbnail) VALUES ('test', 'test', 'test')";
         final String reservationTimeSql = "INSERT INTO reservation_time (start_at) VALUES ('10:10')";
-        final String reservationSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('test', ?, ?, ?)";
+        final String reservationSql = "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(themeSql);
         jdbcTemplate.update(reservationTimeSql);
-        jdbcTemplate.update(reservationSql, beforeOneDay.toString(), 1L, 1L);
-        jdbcTemplate.update(reservationSql, beforeEightDay.toString(), 1L, 1L);
+        jdbcTemplate.update(reservationSql, beforeOneDay.toString(), 1L, 1L, 1L);
+        jdbcTemplate.update(reservationSql, beforeEightDay.toString(), 1L, 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

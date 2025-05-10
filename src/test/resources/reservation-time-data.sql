@@ -6,7 +6,7 @@ VALUES ('10:00'),
 INSERT INTO theme(name, description, thumbnail)
 VALUES ('test', 'test', 'test');
 
-INSERT INTO membeR(name, email, password, role)
+INSERT INTO member(name, email, password, role)
 VALUES ('test', 'email@email.com', 'password', 'USER');
 
 INSERT INTO reservation(date, time_id, theme_id, member_id)

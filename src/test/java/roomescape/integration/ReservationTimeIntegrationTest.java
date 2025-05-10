@@ -18,7 +18,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Sql({"/test-schema.sql", "/test-data.sql"})
+@Sql({"/schema.sql", "/data.sql"})
 public class ReservationTimeIntegrationTest {
 
     @LocalServerPort
