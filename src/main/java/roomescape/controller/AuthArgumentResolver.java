@@ -31,19 +31,10 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = nativeRequest.getCookies();
-        String token = extractTokenFromCookie(cookies);
+        String token = jwtTokenProvider.extractTokenFromCookie(cookies);
         jwtTokenProvider.validateToken(token);
         Long id = jwtTokenProvider.extractId(token);
         Member loginMember = memberService.findMemberById(id);
         return new LoginInfo(loginMember.getId(), loginMember.getName(), loginMember.getEmail(), loginMember.getRole());
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
     }
 }
