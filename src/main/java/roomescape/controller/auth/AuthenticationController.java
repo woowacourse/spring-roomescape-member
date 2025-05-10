@@ -26,8 +26,11 @@ public class AuthenticationController {
     @PostMapping("/login")
     public void login(@RequestBody LoginRequest request,
                       HttpServletResponse response) {
-        String token = authenticationService.createToken(request);
-        Cookie cookie = authenticationService.createCookie(token);
+        String token = authenticationService.login(request);
+        Cookie cookie = new Cookie("token", token);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+
         response.setContentType("application/json");
         response.setHeader("Keep-Alive", "timeout=60");
         response.addCookie(cookie);

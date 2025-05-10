@@ -42,12 +42,8 @@ class AuthenticationControllerTest {
         String password = "user1123";
         String expectedToken = "generated-jwt-token";
         LoginRequest request = new LoginRequest(email, password);
-        Cookie expectedCookie = new Cookie("token", expectedToken);
-        expectedCookie.setPath("/");
-        expectedCookie.setHttpOnly(true);
 
-        when(service.createToken(request)).thenReturn(expectedToken);
-        when(service.createCookie(expectedToken)).thenReturn(expectedCookie);
+        when(service.login(request)).thenReturn(expectedToken);
         // when & then
         MockMvcResponse response = RestAssuredMockMvc.given()
                 .contentType(ContentType.JSON)

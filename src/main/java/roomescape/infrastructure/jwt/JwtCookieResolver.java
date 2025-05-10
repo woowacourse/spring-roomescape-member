@@ -1,17 +1,23 @@
 package roomescape.infrastructure.jwt;
 
 import jakarta.servlet.http.Cookie;
-import org.springframework.stereotype.Component;
+import jakarta.servlet.http.HttpServletRequest;
 
-@Component
 public class JwtCookieResolver {
 
     private static final String COOKIE_KEY = "token";
 
-    public Cookie createCookie(String token) {
-        Cookie cookie = new Cookie(COOKIE_KEY, token);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        return cookie;
+    public static String getTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        return extractTokenFromCookie(cookies);
+    }
+
+    private static String extractTokenFromCookie(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(COOKIE_KEY)) {
+                return cookie.getValue();
+            }
+        }
+        return "";
     }
 }
