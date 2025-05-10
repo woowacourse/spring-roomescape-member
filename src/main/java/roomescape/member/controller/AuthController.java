@@ -1,0 +1,44 @@
+package roomescape.member.controller;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.global.auth.AuthenticationPrincipal;
+import roomescape.global.auth.CookieUtil;
+import roomescape.member.dto.request.AuthRequest.LoginRequest;
+import roomescape.member.dto.request.LoginMember;
+import roomescape.member.dto.response.AuthResponse.LoginResponse;
+import roomescape.member.service.AuthService;
+
+@RestController
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final AuthService authService;
+    private final CookieUtil cookieUtil;
+
+    @PostMapping("/login")
+    public ResponseEntity<Void> login(
+            @RequestBody LoginRequest request,
+            HttpServletResponse response
+    ) {
+        String token = authService.login(request);
+        Cookie cookie = cookieUtil.createCookie("token", token);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<LoginResponse> checkLogin(
+            @AuthenticationPrincipal LoginMember loginMember
+    ) {
+        LoginResponse response = LoginResponse.from(loginMember);
+        return ResponseEntity.ok().body(response);
+    }
+}
