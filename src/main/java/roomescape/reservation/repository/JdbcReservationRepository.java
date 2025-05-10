@@ -20,7 +20,7 @@ import java.util.Optional;
 public class JdbcReservationRepository implements ReservationRepository {
     private final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> {
         final long id = resultSet.getLong("id");
-        String name = resultSet.getString("name");
+        final long memberId = resultSet.getLong("member_id");
         LocalDate date = resultSet.getObject("date", LocalDate.class);
         final long timeId = resultSet.getLong("time_id");
         LocalTime timeValue = resultSet.getObject("start_at", LocalTime.class);
@@ -28,7 +28,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         final long themeId = resultSet.getLong("theme_id");
         return Reservation.of(
                 id,
-                name,
+                memberId,
                 date,
                 timeEntity,
                 themeId
@@ -41,9 +41,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     public Reservation save(Reservation newReservation) {
-        String query = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (:name, :date, :time_id, :theme_id)";
+        String query = "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (:memberId, :date, :time_id, :theme_id)";
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", newReservation.getName())
+                .addValue("memberId", newReservation.getMemberId())
                 .addValue("date", newReservation.getDate())
                 .addValue("time_id", newReservation.getTimeId())
                 .addValue("theme_id", newReservation.getThemeId());
@@ -52,7 +52,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         final long id = keyHolder.getKey().longValue();
         return Reservation.of(
                 id,
-                newReservation.getName(),
+                newReservation.getMemberId(),
                 newReservation.getDate(),
                 newReservation.getTime(),
                 newReservation.getThemeId()
@@ -71,7 +71,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         String query = """
                 SELECT 
                     r.id, 
-                    r.name, 
+                    r.member_id, 
                     r.date, 
                     t.id as time_id, 
                     t.start_at, 
@@ -88,7 +88,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         String query = """
                 SELECT 
                     r.id, 
-                    r.name, 
+                    r.member_id, 
                     r.date, 
                     rt.start_at, 
                     r.theme_id, 
@@ -109,7 +109,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         String query = """
                 SELECT
                     r.id,
-                    r.name,
+                    r.member_id,
                     r.date,
                     rt.start_at,
                     r.theme_id,

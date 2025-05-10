@@ -22,7 +22,7 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> {
-            Reservation.create("test", date, time, 1L);
+            Reservation.create(1L, date, time, 1L);
         }).isInstanceOf(BadRequestException.class);
     }
 
@@ -36,7 +36,7 @@ class ReservationTest {
 
         // when & then
         assertThatCode(() -> {
-            Reservation.of(1L, "test", date, time, 1L);
+            Reservation.of(1L, 1L, date, time, 1L);
         }).doesNotThrowAnyException();
     }
 }

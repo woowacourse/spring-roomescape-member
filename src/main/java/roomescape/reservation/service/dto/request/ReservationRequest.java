@@ -1,6 +1,5 @@
 package roomescape.reservation.service.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import roomescape.reservation.entity.Reservation;
 import roomescape.time.entity.ReservationTime;
@@ -10,14 +9,14 @@ import java.time.LocalDate;
 public record ReservationRequest(
         @NotNull(message = "날짜가 입력되지 않았습니다.")
         LocalDate date,
-        @NotBlank(message = "예약자명이 입력되지 않았습니다.")
-        String name,
+        @NotNull(message = "예약자 식별자가 입력되지 않았습니다.")
+        Long memberId,
         @NotNull(message = "시간이 선택되지 않았습니다.")
         Long timeId,
         @NotNull(message = "테마가 선택되지 않았습니다.")
         Long themeId
 ) {
     public Reservation toEntity(ReservationTime timeEntity) {
-        return Reservation.create(name, date, timeEntity, themeId);
+        return Reservation.create(memberId, date, timeEntity, themeId);
     }
 }

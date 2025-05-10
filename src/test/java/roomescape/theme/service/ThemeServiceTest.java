@@ -112,9 +112,9 @@ class ThemeServiceTest {
         themeRepository.save(new Theme(2L, "theme2", "t", "t"));
         themeRepository.save(new Theme(3L, "theme3", "t", "t"));
 
-        reservationRepository.save(Reservation.of(1L, "reservation1", now.minusDays(1), time, 1L));
-        reservationRepository.save(Reservation.of(2L, "reservation2", now.minusDays(2), time, 1L));
-        reservationRepository.save(Reservation.of(3L, "reservation3", now.minusDays(2), time, 2L));
+        reservationRepository.save(Reservation.of(1L, 1L, now.minusDays(1), time, 1L));
+        reservationRepository.save(Reservation.of(2L, 1L, now.minusDays(2), time, 1L));
+        reservationRepository.save(Reservation.of(3L, 1L, now.minusDays(2), time, 2L));
 
         List<ThemeResponse> expect = List.of(
                 new ThemeResponse(1L, "theme1", "t", "t"),

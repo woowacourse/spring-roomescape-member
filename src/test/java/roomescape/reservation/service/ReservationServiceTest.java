@@ -3,6 +3,9 @@ package roomescape.reservation.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.auth.entity.Member;
+import roomescape.auth.repository.FakeMemberRepository;
+import roomescape.auth.repository.MemberRepository;
 import roomescape.exception.badRequest.BadRequestException;
 import roomescape.exception.conflict.ReservationConflictException;
 import roomescape.exception.notFound.ReservationTimeNotFoundException;
@@ -26,15 +29,19 @@ class ReservationServiceTest {
     private final ReservationRepository reservationRepository = new FakeReservationRepository();
     private final ReservationTimeRepository timeRepository = new FakeTimeRepository();
     private final ThemeRepository themeRepository = new FakeThemeRepository(reservationRepository);
+    private final MemberRepository memberRepository = new FakeMemberRepository();
     private final ReservationService service = new ReservationService(
             reservationRepository,
             timeRepository,
             themeRepository
     );
 
+    private final Long memberId = 1L;
+
     @BeforeEach
     void setupTheme() {
         themeRepository.save(new Theme(1L, "theme", "hello", "hi"));
+        memberRepository.save(new Member(memberId, "test", "USER", "test@example.com", "password"));
     }
 
     @DisplayName("존재하지 않는 timeId로 생성할 수 없다.")
@@ -42,7 +49,7 @@ class ReservationServiceTest {
     void notExistTimeId() {
         // given
         LocalDate now = LocalDate.now();
-        ReservationRequest requestDto = new ReservationRequest(now.plusDays(1), "test", 1L, 1L);
+        ReservationRequest requestDto = new ReservationRequest(now.plusDays(1), memberId, 1L, 1L);
 
         // when & then
         assertThatThrownBy(() -> {
@@ -58,7 +65,7 @@ class ReservationServiceTest {
         timeRepository.save(timeEntity);
 
         LocalDate now = LocalDate.now();
-        ReservationRequest requestDto = new ReservationRequest(now.minusDays(1), "test", 1L, 1L);
+        ReservationRequest requestDto = new ReservationRequest(now.minusDays(1), memberId, 1L, 1L);
 
         // when & then
         assertThatThrownBy(() -> {
@@ -74,11 +81,11 @@ class ReservationServiceTest {
         LocalDate date = now.plusDays(1);
 
         ReservationTime timeEntity = ReservationTime.of(1L, LocalTime.of(12, 0));
-        Reservation reservation = Reservation.of(1L, "test", date, timeEntity, 1L);
+        Reservation reservation = Reservation.of(1L, memberId, date, timeEntity, 1L);
         timeRepository.save(timeEntity);
         reservationRepository.save(reservation);
 
-        ReservationRequest requestDto = new ReservationRequest(date, "test", timeEntity.getId(), 1L);
+        ReservationRequest requestDto = new ReservationRequest(date, memberId, timeEntity.getId(), 1L);
 
         // when & then
         assertThatThrownBy(() -> {

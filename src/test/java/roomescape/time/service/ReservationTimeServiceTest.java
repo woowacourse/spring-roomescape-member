@@ -90,7 +90,7 @@ class ReservationTimeServiceTest {
         ReservationTime timeEntity = ReservationTime.of(1L, time);
         timeRepository.save(timeEntity);
         LocalDate date = LocalDate.of(2025, 1, 2);
-        reservationRepository.save(Reservation.of(1L, "test1", date, timeEntity, 1L));
+        reservationRepository.save(Reservation.of(1L, 1L, date, timeEntity, 1L));
 
         // when & then
         assertThatThrownBy(() -> {
