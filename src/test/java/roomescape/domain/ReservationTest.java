@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.BadRequestException;
+import roomescape.exception.InternalServerException;
 
 class ReservationTest {
 
@@ -23,7 +24,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(
                 () -> new Reservation(nullId, member, LocalDate.now(), EXAMPLE_RESERVATION_TIME, EXAMPLE_THEME))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InternalServerException.class)
                 .hasMessage("[ERROR] 비어있는 ID로 예약을 생성할 수 없습니다.");
     }
 
@@ -33,7 +34,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(
                 () -> new Reservation(1L, null, LocalDate.now(), EXAMPLE_RESERVATION_TIME, EXAMPLE_THEME))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InternalServerException.class)
                 .hasMessage("[ERROR] 비어있는 멤버로는 예약을 생성할 수 없습니다.");
     }
 
@@ -46,7 +47,7 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> new Reservation(1L, member, nullDate, EXAMPLE_RESERVATION_TIME, EXAMPLE_THEME))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InternalServerException.class)
                 .hasMessage("[ERROR] 비어있는 예약날짜로 예약을 생성할 수 없습니다.");
     }
 
@@ -59,7 +60,7 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> new Reservation(1L, member, LocalDate.now(), nullTime, EXAMPLE_THEME))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InternalServerException.class)
                 .hasMessage("[ERROR] 비어있는 예약시간으로는 예약을 생성할 수 없습니다.");
     }
 
@@ -73,7 +74,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(
                 () -> new Reservation(1L, member, LocalDate.now(), EXAMPLE_RESERVATION_TIME, nullTheme))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InternalServerException.class)
                 .hasMessage("[ERROR] 비어있는 테마로는 예약을 생성할 수 없습니다.");
     }
 

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.exception.InternalServerException;
 
 class MemberTest {
 
@@ -17,7 +18,7 @@ class MemberTest {
     void cannotCreateBecauseNullId() {
         // when & then
         assertThatThrownBy(() -> new Member(null, "이름", "test@test.com", "비밀번호", MemberRole.GENERAL))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InternalServerException.class)
                 .hasMessage("[ERROR] 비어있는 ID로 멤버를 생성할 수 없습니다.");
     }
 
@@ -27,7 +28,7 @@ class MemberTest {
     void cannotCreateBecauseNullName(String name) {
         // when & then
         assertThatThrownBy(() -> new Member(1L, name, "test@test.com", "비밀번호", MemberRole.GENERAL))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InternalServerException.class)
                 .hasMessage("[ERROR] 비어있는 이름로 멤버를 생성할 수 없습니다.");
     }
 
@@ -39,7 +40,7 @@ class MemberTest {
 
         // when & then
         assertThatThrownBy(() -> new Member(1L, tooLongName, "test@test.com", "비밀번호", MemberRole.GENERAL))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InternalServerException.class)
                 .hasMessage("[ERROR] 최대길이를 초과한 이름으로는 멤버를 생성할 수 없습니다.");
     }
 
@@ -49,7 +50,7 @@ class MemberTest {
     void cannotCreateBecauseNullEmail(String email) {
         // when & then
         assertThatThrownBy(() -> new Member(1L, "이름", email, "비밀번호", MemberRole.GENERAL))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InternalServerException.class)
                 .hasMessage("[ERROR] 비어있는 이메일로 멤버를 생성할 수 없습니다.");
     }
 
@@ -61,7 +62,7 @@ class MemberTest {
 
         // when & then
         assertThatThrownBy(() -> new Member(1L, "이름", tooLongEmail, "비밀번호", MemberRole.GENERAL))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InternalServerException.class)
                 .hasMessage("[ERROR] 최대길이를 초과한 이메일로는 멤버를 생성할 수 없습니다.");
     }
 
@@ -73,7 +74,7 @@ class MemberTest {
 
         // when & then
         assertThatThrownBy(() -> new Member(1L, "이름", invalidEmail, "비밀번호", MemberRole.GENERAL))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InternalServerException.class)
                 .hasMessage("[ERROR] 올바르지 않은 형식의 이메일로는 멤버를 생성할 수 없습니다.");
     }
 
@@ -83,7 +84,7 @@ class MemberTest {
     void cannotCreateBecauseNullPassword(String password) {
         // when & then
         assertThatThrownBy(() -> new Member(1L, "이름", "test@test.com", password, MemberRole.GENERAL))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InternalServerException.class)
                 .hasMessage("[ERROR] 비어있는 비밀번호로 멤버를 생성할 수 없습니다.");
     }
 
@@ -93,7 +94,7 @@ class MemberTest {
     void cannotCreateBecauseInvalidPassword(String invalidPassword) {
         // when & then
         assertThatThrownBy(() -> new Member(1L, "이름", "test@test.com", invalidPassword, MemberRole.GENERAL))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InternalServerException.class)
                 .hasMessage("[ERROR] 올바르지 않은 형식의 비밀번호로는 멤버를 생성할 수 없습니다.");
     }
 
@@ -115,7 +116,7 @@ class MemberTest {
     void can() {
         // when & then
         assertThatThrownBy(() -> new Member(1L, "이름", "test@test.com", "asdfe123!", null))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InternalServerException.class)
                 .hasMessage("[ERROR] 비어있는 권한으로 멤버를 생성할 수 없습니다.");
     }
 }

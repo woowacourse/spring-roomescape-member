@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ForbiddenException;
+import roomescape.exception.InternalServerException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.UnauthorizedException;
 
@@ -61,8 +62,8 @@ public class GlobalAdvice {
         return ResponseEntity.badRequest().body("형식이 적절하지 않은 요청메세지 입니다.");
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> illegalArgumentExceptionHandler(IllegalArgumentException exception) {
+    @ExceptionHandler(InternalServerException.class)
+    public ResponseEntity<String> InternalServerExceptionHandler(InternalServerException exception) {
         System.out.println("exception = " + exception);
         return ResponseEntity.internalServerError().body("서버 내부에서 로직 예외 발생헸습니다.");
     }
