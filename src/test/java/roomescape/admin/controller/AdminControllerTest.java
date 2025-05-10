@@ -64,6 +64,6 @@ class AdminControllerTest {
                 .cookie("token", token)
                 .when().get("/admin")
                 .then().log().all()
-                .statusCode(HttpStatus.UNAUTHORIZED.value());
+                .statusCode(HttpStatus.FORBIDDEN.value());
     }
 }

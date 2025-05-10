@@ -22,7 +22,7 @@ public class AuthService {
 
     public LoginMember getLoginMemberByToken(String token) {
         Claims claims = jwtTokenProvider.getClaimsFromToken(token);
-        long memberId = Long.parseLong(claims.getSubject());
+        Long memberId = Long.valueOf(claims.getSubject());
         String name = claims.get("name", String.class);
         String role = claims.get("role", String.class);
 

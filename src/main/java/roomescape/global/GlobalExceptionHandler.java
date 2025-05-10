@@ -1,5 +1,6 @@
 package roomescape.global;
 
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException e) {
         ErrorResponse response = ErrorResponse.from(e.getMessage());
 
-        return ResponseEntity.status(UNAUTHORIZED)
+        return ResponseEntity.status(FORBIDDEN)
                 .body(response);
     }
 
