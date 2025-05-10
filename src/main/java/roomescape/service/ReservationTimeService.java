@@ -45,6 +45,17 @@ public class ReservationTimeService {
             .toList();
     }
 
+    public List<ReservationAvailableTimeResponse> findAvailableTimes(Long themeId, LocalDate date) {
+        List<ReservationTime> times = reservationTimeDao.findAll();
+        List<Long> bookedTimeIds = reservationDao.findTimeIdsByThemeIdAndDate(themeId, date);
+        return times.stream()
+            .map(time -> {
+                Long timeId = time.getId();
+                boolean isBooked = bookedTimeIds.contains(timeId);
+                return ReservationAvailableTimeResponse.from(time, isBooked);
+            }).toList();
+    }
+
     public void deleteReservationTime(Long id) {
         int deleteCount;
         try {
@@ -55,17 +66,6 @@ public class ReservationTimeService {
         if (deleteCount == 0) {
             throw new ResourceNotExistException();
         }
-    }
-
-    public List<ReservationAvailableTimeResponse> findAvailableTimes(Long themeId, LocalDate date) {
-        List<ReservationTime> times = reservationTimeDao.findAll();
-        List<Long> bookedTimeIds = reservationDao.findTimeIdsByThemeIdAndDate(themeId, date);
-        return times.stream()
-            .map(time -> {
-                Long timeId = time.getId();
-                boolean isBooked = bookedTimeIds.contains(timeId);
-                return ReservationAvailableTimeResponse.from(time, isBooked);
-            }).toList();
     }
 
 }

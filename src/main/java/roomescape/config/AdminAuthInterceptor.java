@@ -20,7 +20,7 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
         Object handler) throws Exception {
         String token = JwtExtractor.getTokenFromRequest(webRequest);
         Member member = loginService.getLoginMemberByToken(token);
-        if (member == null || !member.getRole().equals(Role.ADMIN)) {
+        if (member == null || member.isNotAdmin()) {
             response.setStatus(401);
             return false;
         }

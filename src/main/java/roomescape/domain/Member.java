@@ -43,4 +43,12 @@ public class Member {
     public boolean isPasswordNotEqual(String password) {
         return !isPasswordEqual(password);
     }
+
+    public boolean isAdmin() {
+        return role.isAdmin();
+    }
+
+    public boolean isNotAdmin() {
+        return !isAdmin();
+    }
 }

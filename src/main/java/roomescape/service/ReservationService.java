@@ -46,6 +46,15 @@ public class ReservationService {
             .toList();
     }
 
+    public List<ReservationResponse> findFiltered(Long themeId, Long memberId, LocalDate dateFrom,
+        LocalDate dateTo) {
+        List<Reservation> reservations = reservationDao.findByFilters(themeId, memberId, dateFrom,
+            dateTo);
+        return reservations.stream()
+            .map(ReservationResponse::from)
+            .toList();
+    }
+
     public void deleteReservation(Long id) {
         int deleteCount = reservationDao.deleteById(id);
         if(deleteCount == 0) {
@@ -101,14 +110,5 @@ public class ReservationService {
         } catch (DataAccessException e) {
             throw new IllegalArgumentException("[ERROR] 예약 생성에 실패하였습니다");
         }
-    }
-
-    public List<ReservationResponse> findFiltered(Long themeId, Long memberId, LocalDate dateFrom,
-        LocalDate dateTo) {
-        List<Reservation> reservations = reservationDao.findByFilters(themeId, memberId, dateFrom,
-            dateTo);
-        return reservations.stream()
-            .map(ReservationResponse::from)
-            .toList();
     }
 }
