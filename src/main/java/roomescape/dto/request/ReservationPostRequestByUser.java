@@ -16,7 +16,6 @@ public record ReservationPostRequestByUser(
     }
 
     private void validateNotNull(LocalDate date, Long timeId, Long themeId) {
-        //todo : long으로 가능하면 바꾸기
         if (date == null) {
             throw new IllegalArgumentException("잘못된 date 입력입니다.");
         }

@@ -75,8 +75,6 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public List<Reservation> findByThemeAndMemberAndDate(Long themeId, Long memberId, LocalDate dateFrom,
                                                          LocalDate dateTo) {
-        //TODO : 참조관계가 새로 생길때마다 매번 가져오는 게 맘에 안듦. 어차피 select *인데 필드명 충돌땜에..
-        // 컴파일 에러도 안떠서 제대로 고쳤는지 확신도 없음
         String sql = """
                 select r.id, r.date, 
                     member_id, m.name as member_name, m.email, m.password, m.role,

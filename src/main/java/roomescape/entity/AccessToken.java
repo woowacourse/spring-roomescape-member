@@ -1,5 +1,6 @@
 package roomescape.entity;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -35,26 +36,22 @@ public class AccessToken {
     }
 
     public long findSubject() {
-        try {
-            return Long.parseLong(Jwts.parser().setSigningKey(SECRET_KEY)
-                    .parseClaimsJws(value)
-                    .getBody()
-                    .getSubject());
-        } catch (NumberFormatException | JwtException e) {
-            //TODO 파싱 자체에 실패한 경우
-            throw new InvalidAccessTokenException();
-        }
+        return Long.parseLong(
+                getTokenBody().getSubject());
     }
 
-    public MemberRole findRole() {
+    public MemberRole findMemberRole() {
+        String roleName = getTokenBody()
+                .get("role", String.class);
+        return MemberRole.from(roleName);
+    }
+
+    private Claims getTokenBody() {
         try {
-            String roleName = Jwts.parser().setSigningKey(SECRET_KEY)
+            return Jwts.parser().setSigningKey(SECRET_KEY)
                     .parseClaimsJws(value)
-                    .getBody()
-                    .get("role", String.class);
-            return MemberRole.from(roleName);
+                    .getBody();
         } catch (NumberFormatException | JwtException e) {
-            //TODO 파싱 자체에 실패한 경우
             throw new InvalidAccessTokenException();
         }
     }

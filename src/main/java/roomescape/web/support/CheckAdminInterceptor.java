@@ -31,7 +31,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         }
 
         AccessToken accessToken = new AccessToken(tokenCookie.getValue());
-        if (accessToken.findRole() != MemberRole.ADMIN) {
+        if (accessToken.findMemberRole() != MemberRole.ADMIN) {
             response.setStatus(401);
             return false;
         }
