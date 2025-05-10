@@ -32,11 +32,10 @@ class ReservationTimeServiceTest {
     private ReservationRepository reservationRepository;
 
     @InjectMocks
-    private ReservationTimeService reservationTimeService;
+    private ReservationTimeService sut;
 
     @Test
-    @DisplayName("예약 시간을 추가하고 반환한다")
-    void addAndGet_ReturnsReservationTime() {
+    void 예약_시간을_추가하고_반환한다() {
         // given
         LocalTime time = LocalTime.of(10, 0);
 
@@ -44,7 +43,7 @@ class ReservationTimeServiceTest {
         when(reservationTimeRepository.existBetween(any(LocalTime.class), any(LocalTime.class))).thenReturn(false);
 
         // when
-        ReservationTime result = reservationTimeService.addAndGet(time);
+        ReservationTime result = sut.addAndGet(time);
 
         // then
         assertThat(result).isNotNull();
@@ -55,15 +54,14 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("중복된 시간으로 예약 시간 추가 시 예외가 발생한다")
-    void addAndGet_DuplicateTime_ThrowsException() {
+    void 중복된_시간으로_예약_시간_추가_시_예외가_발생한다() {
         // given
         LocalTime time = LocalTime.of(10, 0);
 
         when(reservationTimeRepository.existByTime(time)).thenReturn(true);
 
-        // when & then
-        assertThatThrownBy(() -> reservationTimeService.addAndGet(time))
+        // when, then
+        assertThatThrownBy(() -> sut.addAndGet(time))
                 .isInstanceOf(InvalidCreateArgumentException.class);
 
         verify(reservationTimeRepository).existByTime(time);
@@ -80,8 +78,8 @@ class ReservationTimeServiceTest {
         when(reservationTimeRepository.existByTime(time)).thenReturn(false);
         when(reservationTimeRepository.existBetween(any(LocalTime.class), any(LocalTime.class))).thenReturn(true);
 
-        // when & then
-        assertThatThrownBy(() -> reservationTimeService.addAndGet(time))
+        // when, then
+        assertThatThrownBy(() -> sut.addAndGet(time))
                 .isInstanceOf(InvalidCreateArgumentException.class);
 
         verify(reservationTimeRepository).existByTime(time);
@@ -101,7 +99,7 @@ class ReservationTimeServiceTest {
         when(reservationTimeRepository.findAll()).thenReturn(expectedTimes);
 
         // when
-        List<ReservationTime> result = reservationTimeService.getAll();
+        List<ReservationTime> result = sut.getAll();
 
         // then
         assertThat(result).isEqualTo(expectedTimes);
@@ -123,7 +121,7 @@ class ReservationTimeServiceTest {
                 .thenReturn(expectedTimes);
 
         // when
-        List<ReservationTime> result = reservationTimeService.getAvailableReservationTimesByDateAndThemeId(date, themeId);
+        List<ReservationTime> result = sut.getAvailableReservationTimesByDateAndThemeId(date, themeId);
 
         // then
         assertThat(result).isEqualTo(expectedTimes);
@@ -140,7 +138,7 @@ class ReservationTimeServiceTest {
         when(reservationTimeRepository.existById(timeId)).thenReturn(true);
 
         // when
-        reservationTimeService.delete(timeId);
+        sut.delete(timeId);
 
         // then
         verify(reservationRepository).existByTimeId(timeId);
@@ -157,8 +155,8 @@ class ReservationTimeServiceTest {
         when(reservationRepository.existByTimeId(timeId)).thenReturn(false);
         when(reservationTimeRepository.existById(timeId)).thenReturn(false);
 
-        // when & then
-        assertThatThrownBy(() -> reservationTimeService.delete(timeId))
+        // when, then
+        assertThatThrownBy(() -> sut.delete(timeId))
                 .isInstanceOf(NotFoundException.class);
 
         verify(reservationRepository).existByTimeId(timeId);
@@ -174,8 +172,8 @@ class ReservationTimeServiceTest {
 
         when(reservationRepository.existByTimeId(timeId)).thenReturn(true);
 
-        // when & then
-        assertThatThrownBy(() -> reservationTimeService.delete(timeId))
+        // when, then
+        assertThatThrownBy(() -> sut.delete(timeId))
                 .isInstanceOf(RelatedEntityExistException.class);
 
         verify(reservationRepository).existByTimeId(timeId);

@@ -37,7 +37,7 @@ class JdbcUserRepositoryTest {
         // given
         final User user = User.create("테스트유저", "test@example.com", "password123");
 
-        // when & then
+        // when, then
         assertThatCode(() -> sut.save(user))
                 .doesNotThrowAnyException();
     }

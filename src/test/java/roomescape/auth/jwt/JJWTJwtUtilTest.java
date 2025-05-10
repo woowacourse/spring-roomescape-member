@@ -19,13 +19,13 @@ class JJWTJwtUtilTest {
 
     private static final String SECRET_KEY = "thisisasecretkeyfortestingpurposesonly12345678901234567890";
     private static final long expirationMinute = 15L;
-    private JJWTJwtUtil jwtUtil;
     private SecretKey key;
+    private JJWTJwtUtil sut;
 
     @BeforeEach
     void setUp() {
-        jwtUtil = new JJWTJwtUtil(SECRET_KEY, expirationMinute);
         key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+        sut = new JJWTJwtUtil(SECRET_KEY, expirationMinute);
     }
 
     @Test
@@ -34,7 +34,7 @@ class JJWTJwtUtilTest {
         User user = User.restore("1", UserRole.USER.name(), "dompoo", "dompoo@email.com", "password");
 
         // when
-        AuthToken authToken = jwtUtil.createToken(user);
+        AuthToken authToken = sut.createToken(user);
 
         // then
         assertThat(authToken).isNotNull();
@@ -47,7 +47,7 @@ class JJWTJwtUtilTest {
         String token = createToken(UserRole.USER.name());
 
         // when
-        LoginInfo loginInfo = jwtUtil.validateAndResolveToken(token);
+        LoginInfo loginInfo = sut.validateAndResolveToken(token);
 
         // then
         assertThat(loginInfo).isNotNull();
@@ -60,8 +60,8 @@ class JJWTJwtUtilTest {
         // given
         String token = createToken(UserRole.USER.name());
 
-        // when & then
-        assertThatCode(() -> jwtUtil.validateAndResolveToken(token))
+        // when, then
+        assertThatCode(() -> sut.validateAndResolveToken(token))
                 .doesNotThrowAnyException();
     }
 
@@ -71,17 +71,17 @@ class JJWTJwtUtilTest {
         String invalidToken = "invalid.value.value";
 
         // when
-        assertThatThrownBy(() -> jwtUtil.validateAndResolveToken(invalidToken))
+        assertThatThrownBy(() -> sut.validateAndResolveToken(invalidToken))
                 .isInstanceOf(NotAuthenticatedException.class);
     }
 
     @Test
-    void 널_토큰을_검증하면_예외를_던진다() {
+    void null_토큰을_검증하면_예외를_던진다() {
         // given
         String invalidToken = null;
 
         // when
-        assertThatThrownBy(() -> jwtUtil.validateAndResolveToken(invalidToken))
+        assertThatThrownBy(() -> sut.validateAndResolveToken(invalidToken))
                 .isInstanceOf(NotAuthenticatedException.class);
     }
 
@@ -91,8 +91,8 @@ class JJWTJwtUtilTest {
         User user = User.restore("1", UserRole.ADMIN.name(), "dompoo", "dompoo@email.com", "password");
 
         // when
-        AuthToken authToken = jwtUtil.createToken(user);
-        LoginInfo loginInfo = jwtUtil.validateAndResolveToken(authToken.value());
+        AuthToken authToken = sut.createToken(user);
+        LoginInfo loginInfo = sut.validateAndResolveToken(authToken.value());
 
         // then
         assertThat(loginInfo.userRole()).isEqualTo(UserRole.ADMIN);

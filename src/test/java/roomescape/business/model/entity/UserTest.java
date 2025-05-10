@@ -17,7 +17,7 @@ class UserTest {
     private static final String VALID_ID = "1";
 
     @Nested
-    class 사용자_생성_테스트 {
+    class 생성_테스트 {
 
         @Test
         void 유효한_정보로_사용자를_생성할_수_있다() {
@@ -30,24 +30,6 @@ class UserTest {
             assertThat(user.email()).isEqualTo(VALID_EMAIL);
             assertThat(user.role()).isEqualTo(UserRole.USER.name());
         }
-
-        @Test
-        void 저장_후_사용자_객체를_생성할_수_있다() {
-            // when
-            User user = User.restore(VALID_ID, UserRole.ADMIN.name(), VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
-
-            // then
-            assertThat(user).isNotNull();
-            assertThat(user.id()).isEqualTo(VALID_ID);
-            assertThat(user.name()).isEqualTo(VALID_NAME);
-            assertThat(user.email()).isEqualTo(VALID_EMAIL);
-            assertThat(user.password()).isEqualTo(VALID_PASSWORD);
-            assertThat(user.role()).isEqualTo(UserRole.ADMIN.name());
-        }
-    }
-
-    @Nested
-    class 이름_유효성_검증_테스트 {
 
         @Test
         void 이름이_10자_초과이면_예외가_발생한다() {
@@ -66,25 +48,25 @@ class UserTest {
                     .isInstanceOf(InvalidCreateArgumentException.class);
         }
 
-        @Test
-        void 이름은_정확히_10자까지_허용된다() {
-            // when
-            final String exactlyTenChars = "열자까지만됩니다";
-            User user = User.create(exactlyTenChars, VALID_EMAIL, VALID_PASSWORD);
-
-            // then
-            assertThat(user.name()).isEqualTo(exactlyTenChars);
-        }
-    }
-
-    @Nested
-    class 이메일_유효성_검증_테스트 {
-
         @ParameterizedTest
         @ValueSource(strings = {"dompoo", "dompoo@", "dompoo@gmail", "dompoo.com"})
         void 이메일_형식이_아니면_예외가_발생한다(String invalidEmail) {
             assertThatThrownBy(() -> User.create(VALID_NAME, invalidEmail, VALID_PASSWORD))
                     .isInstanceOf(InvalidCreateArgumentException.class);
+        }
+
+        @Test
+        void 저장_후_사용자_객체를_생성할_수_있다() {
+            // when
+            User user = User.restore(VALID_ID, UserRole.ADMIN.name(), VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
+
+            // then
+            assertThat(user).isNotNull();
+            assertThat(user.id()).isEqualTo(VALID_ID);
+            assertThat(user.name()).isEqualTo(VALID_NAME);
+            assertThat(user.email()).isEqualTo(VALID_EMAIL);
+            assertThat(user.password()).isEqualTo(VALID_PASSWORD);
+            assertThat(user.role()).isEqualTo(UserRole.ADMIN.name());
         }
     }
 
@@ -129,26 +111,12 @@ class UserTest {
         }
 
         @Test
-        void afterSave_메서드로_ADMIN_역할의_사용자를_생성할_수_있다() {
+        void 복구시에는_메서드로_ADMIN_역할의_사용자를_생성할_수_있다() {
             // when
             User adminUser = User.restore(VALID_ID, UserRole.ADMIN.name(), VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
 
             // then
             assertThat(adminUser.role()).isEqualTo(UserRole.ADMIN.name());
-        }
-    }
-
-    @Nested
-    class 사용자_정보_접근_테스트 {
-
-        @Test
-        void 사용자_정보에_접근할_수_있다() {
-            // given
-            User user = User.create(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
-
-            // when, then
-            assertThat(user.name()).isEqualTo(VALID_NAME);
-            assertThat(user.email()).isEqualTo(VALID_EMAIL);
         }
     }
 }

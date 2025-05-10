@@ -3,8 +3,11 @@ package roomescape.auth.config;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.method.HandlerMethod;
 import roomescape.auth.Role;
 import roomescape.auth.jwt.JwtUtil;
@@ -16,30 +19,31 @@ import roomescape.exception.auth.NotAuthenticatedException;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class AuthorizationInterceptorTest {
 
+    @Mock
     private HttpServletRequest request;
-    private HttpServletResponse response;
-    private HandlerMethod handlerMethod;
-    private JwtUtil jwtUtil;
-    private AuthorizationInterceptor interceptor;
 
-    @BeforeEach
-    void setUp() {
-        request = mock(HttpServletRequest.class);
-        response = mock(HttpServletResponse.class);
-        handlerMethod = mock(HandlerMethod.class);
-        jwtUtil = mock(JwtUtil.class);
-        interceptor = new AuthorizationInterceptor(jwtUtil);
-    }
+    @Mock
+    private HttpServletResponse response;
+
+    @Mock
+    private HandlerMethod handlerMethod;
+
+    @Mock
+    private JwtUtil jwtUtil;
+
+    @InjectMocks
+    private AuthorizationInterceptor sut;
 
     @Test
-    void HandlerMethod가_아닌_경우_true를_반환한다() throws Exception {
+    void 핸들러_메서드가_아닌_경우_true를_반환한다() throws Exception {
         // given
         Object handler = new Object();
 
         // when
-        boolean result = interceptor.preHandle(request, response, handler);
+        boolean result = sut.preHandle(request, response, handler);
 
         // then
         assertThat(result).isTrue();
@@ -51,7 +55,7 @@ class AuthorizationInterceptorTest {
         given(handlerMethod.getMethodAnnotation(Role.class)).willReturn(null);
 
         // when
-        boolean result = interceptor.preHandle(request, response, handlerMethod);
+        boolean result = sut.preHandle(request, response, handlerMethod);
 
         // then
         assertThat(result).isTrue();
@@ -70,7 +74,7 @@ class AuthorizationInterceptorTest {
         given(jwtUtil.validateAndResolveToken(token)).willReturn(loginInfo);
 
         // when
-        boolean result = interceptor.preHandle(request, response, handlerMethod);
+        boolean result = sut.preHandle(request, response, handlerMethod);
 
         // then
         assertThat(result).isTrue();
@@ -78,7 +82,7 @@ class AuthorizationInterceptorTest {
     }
 
     @Test
-    void 허용되지_않은_역할의_사용자는_ForbiddenException을_던진다() throws Exception {
+    void 허용되지_않은_역할의_사용자는_예외를_던진다() {
         // given
         String token = "valid.value";
         Cookie cookie = new Cookie("authToken", token);
@@ -90,24 +94,24 @@ class AuthorizationInterceptorTest {
         given(jwtUtil.validateAndResolveToken(token)).willReturn(loginInfo);
 
         // when, then
-        assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))
+        assertThatThrownBy(() -> sut.preHandle(request, response, handlerMethod))
                 .isInstanceOf(ForbiddenException.class);
     }
 
     @Test
-    void 쿠키가_없는_경우_null을_반환한다() throws Exception {
+    void 쿠키가_없는_경우_예외를_던진다() {
         // given
         Role role = createRoleAnnotation(UserRole.ADMIN);
         given(handlerMethod.getMethodAnnotation(Role.class)).willReturn(role);
         given(request.getCookies()).willReturn(null);
 
         // when, then
-        assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))
+        assertThatThrownBy(() -> sut.preHandle(request, response, handlerMethod))
                 .isInstanceOf(NotAuthenticatedException.class);
     }
 
     @Test
-    void authToken_쿠키가_없는_경우_null을_반환한다() throws Exception {
+    void authToken_쿠키가_없는_경우_예외를_던진다() {
         // given
         Role role = createRoleAnnotation(UserRole.ADMIN);
         Cookie cookie = new Cookie("otherCookie", "value");
@@ -116,7 +120,7 @@ class AuthorizationInterceptorTest {
         given(request.getCookies()).willReturn(new Cookie[]{cookie});
 
         // when, then
-        assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))
+        assertThatThrownBy(() -> sut.preHandle(request, response, handlerMethod))
                 .isInstanceOf(NotAuthenticatedException.class);
     }
 

@@ -1,7 +1,10 @@
 package roomescape.auth.config;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
@@ -11,18 +14,17 @@ import roomescape.exception.auth.NotAuthenticatedException;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class AuthorizationArgumentResolverTest {
 
-    private AuthorizationArgumentResolver resolver;
+    @Mock
     private MethodParameter parameter;
+
+    @Mock
     private NativeWebRequest webRequest;
 
-    @BeforeEach
-    void setUp() {
-        resolver = new AuthorizationArgumentResolver();
-        parameter = mock(MethodParameter.class);
-        webRequest = mock(NativeWebRequest.class);
-    }
+    @InjectMocks
+    private AuthorizationArgumentResolver sut;
 
     @Test
     void LoginInfo_파라미터를_지원하면_true를_반환한다() {
@@ -30,7 +32,7 @@ class AuthorizationArgumentResolverTest {
         given(parameter.getParameterType()).willReturn((Class) LoginInfo.class);
 
         // when
-        boolean result = resolver.supportsParameter(parameter);
+        boolean result = sut.supportsParameter(parameter);
 
         // then
         assertThat(result).isTrue();
@@ -42,7 +44,7 @@ class AuthorizationArgumentResolverTest {
         given(parameter.getParameterType()).willReturn((Class) String.class);
 
         // when
-        boolean result = resolver.supportsParameter(parameter);
+        boolean result = sut.supportsParameter(parameter);
 
         // then
         assertThat(result).isFalse();
@@ -56,7 +58,7 @@ class AuthorizationArgumentResolverTest {
                 .willReturn(loginInfo);
 
         // when
-        Object result = resolver.resolveArgument(parameter, null, webRequest, null);
+        Object result = sut.resolveArgument(parameter, null, webRequest, null);
 
         // then
         assertThat(result).isEqualTo(loginInfo);
@@ -69,7 +71,7 @@ class AuthorizationArgumentResolverTest {
                 .willReturn(null);
 
         // when, then
-        assertThatThrownBy(() -> resolver.resolveArgument(parameter, null, webRequest, null))
+        assertThatThrownBy(() -> sut.resolveArgument(parameter, null, webRequest, null))
                 .isInstanceOf(NotAuthenticatedException.class);
     }
 }

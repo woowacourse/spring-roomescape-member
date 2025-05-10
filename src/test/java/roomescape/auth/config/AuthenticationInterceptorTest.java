@@ -3,8 +3,11 @@ package roomescape.auth.config;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.method.HandlerMethod;
 import roomescape.auth.AuthRequired;
 import roomescape.auth.jwt.JwtUtil;
@@ -14,36 +17,48 @@ import roomescape.exception.auth.NotAuthenticatedException;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class AuthenticationInterceptorTest {
 
+    @Mock
     private HttpServletRequest request;
-    private HttpServletResponse response;
-    private JwtUtil jwtUtil;
-    private AuthenticationInterceptor interceptor;
 
-    @BeforeEach
-    void setUp() {
-        request = mock(HttpServletRequest.class);
-        response = mock(HttpServletResponse.class);
-        jwtUtil = mock(JwtUtil.class);
-        interceptor = new AuthenticationInterceptor(jwtUtil);
-    }
+    @Mock
+    private HttpServletResponse response;
+
+    @Mock
+    private JwtUtil jwtUtil;
+
+    @InjectMocks
+    private AuthenticationInterceptor sut;
 
     @Test
-    void 인증이_필요하지_않은_핸들러_메소드는_true를_반환한다() throws Exception {
+    void 핸들러_메서드가_아니면_true를_반환한다() {
         // given
-        HandlerMethod handlerMethod = mock(HandlerMethod.class);
-        given(handlerMethod.getMethodAnnotation(AuthRequired.class)).willReturn(null);
+        Object handler = new Object();
 
         // when
-        boolean result = interceptor.preHandle(request, response, handlerMethod);
+        boolean result = sut.preHandle(request, response, handler);
 
         // then
         assertThat(result).isTrue();
     }
 
     @Test
-    void 유효한_토큰으로_인증에_성공하면_true를_반환한다() throws Exception {
+    void 인증이_필요하지_않은_핸들러_메서드는_true를_반환한다() {
+        // given
+        HandlerMethod handlerMethod = mock(HandlerMethod.class);
+        given(handlerMethod.getMethodAnnotation(AuthRequired.class)).willReturn(null);
+
+        // when
+        boolean result = sut.preHandle(request, response, handlerMethod);
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void 유효한_토큰으로_인증에_성공하면_true를_반환한다() {
         // given
         String token = "valid.jwt.value";
         Cookie cookie = new Cookie("authToken", token);
@@ -55,7 +70,7 @@ class AuthenticationInterceptorTest {
         given(jwtUtil.validateAndResolveToken(token)).willReturn(loginInfo);
 
         // when
-        boolean result = interceptor.preHandle(request, response, handlerMethod);
+        boolean result = sut.preHandle(request, response, handlerMethod);
 
         // then
         assertThat(result).isTrue();
@@ -63,20 +78,19 @@ class AuthenticationInterceptorTest {
     }
 
     @Test
-    void 쿠키가_없으면_NotAuthenticatedException을_던진다() {
+    void 쿠키가_없으면_예외를_던진다() {
         // given
         HandlerMethod handlerMethod = mock(HandlerMethod.class);
         given(handlerMethod.getMethodAnnotation(AuthRequired.class)).willReturn(mock(AuthRequired.class));
         given(request.getCookies()).willReturn(null);
-        given(jwtUtil.validateAndResolveToken(null)).willThrow(NotAuthenticatedException.class);
 
         // when, then
-        assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))
+        assertThatThrownBy(() -> sut.preHandle(request, response, handlerMethod))
                 .isInstanceOf(NotAuthenticatedException.class);
     }
 
     @Test
-    void 유효하지_않은_토큰으로_NotAuthenticatedException을_던진다() {
+    void 유효하지_않은_토큰이면_예외를_던진다() {
         // given
         String token = "invalid.jwt.value";
         Cookie cookie = new Cookie("authToken", token);
@@ -87,19 +101,7 @@ class AuthenticationInterceptorTest {
         given(jwtUtil.validateAndResolveToken(token)).willThrow(NotAuthenticatedException.class);
 
         // when, then
-        assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))
+        assertThatThrownBy(() -> sut.preHandle(request, response, handlerMethod))
                 .isInstanceOf(NotAuthenticatedException.class);
-    }
-
-    @Test
-    void HandlerMethod가_아닌_handler는_true를_반환한다() throws Exception {
-        // given
-        Object handler = new Object();
-
-        // when
-        boolean result = interceptor.preHandle(request, response, handler);
-
-        // then
-        assertThat(result).isTrue();
     }
 }

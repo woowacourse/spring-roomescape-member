@@ -12,7 +12,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 class ReservationTimeTest {
 
     @Nested
-    class 생성_검증_테스트 {
+    class 생성_테스트 {
 
         @ParameterizedTest
         @CsvSource({"09:59", "23:01"})

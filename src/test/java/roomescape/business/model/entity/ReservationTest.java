@@ -19,7 +19,7 @@ class ReservationTest {
     private static final String PASSWORD = "password1234!";
 
     @Nested
-    class 신규_예약_생성_검증_테스트 {
+    class 생성_테스트 {
 
         @Test
         void 정상적인_예약을_생성할_수_있다() {

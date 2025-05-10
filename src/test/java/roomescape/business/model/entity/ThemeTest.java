@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.*;
 class ThemeTest {
 
     @Nested
-    class 생성_검증_테스트 {
+    class 생성_테스트 {
 
         @Test
         void 이름은_최대_20자이다() {

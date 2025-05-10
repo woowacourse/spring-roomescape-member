@@ -1,6 +1,5 @@
 package roomescape.business.service;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,18 +29,17 @@ class ThemeServiceTest {
     private ReservationRepository reservationRepository;
 
     @InjectMocks
-    private ThemeService themeService;
+    private ThemeService sut;
 
     @Test
-    @DisplayName("테마를 추가하고 반환한다")
-    void addAndGet_ReturnsTheme() {
+    void 테마를_추가하고_반환한다() {
         // given
         String name = "주홍색 연구";
         String description = "셜록 홈즈의 첫 번째 사건";
         String thumbnail = "thumbnail.jpg";
 
         // when
-        Theme result = themeService.addAndGet(name, description, thumbnail);
+        Theme result = sut.addAndGet(name, description, thumbnail);
 
         // then
         assertThat(result).isNotNull();
@@ -52,8 +50,7 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("모든 테마를 조회할 수 있다")
-    void getAll_ReturnsAllThemes() {
+    void 모든_테마를_조회할_수_있다() {
         // given
         List<Theme> expectedThemes = Arrays.asList(
                 Theme.restore("theme-id-1", "Theme One", "Description One", "thumbnail1.jpg"),
@@ -63,7 +60,7 @@ class ThemeServiceTest {
         when(themeRepository.findAll()).thenReturn(expectedThemes);
 
         // when
-        List<Theme> result = themeService.getAll();
+        List<Theme> result = sut.getAll();
 
         // then
         assertThat(result).isEqualTo(expectedThemes);
@@ -71,8 +68,7 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("인기 테마를 조회할 수 있다")
-    void getPopular_ReturnsPopularThemes() {
+    void 인기_테마를_조회할_수_있다() {
         // given
         int size = 3;
         List<Theme> expectedThemes = Arrays.asList(
@@ -85,7 +81,7 @@ class ThemeServiceTest {
                 .thenReturn(expectedThemes);
 
         // when
-        List<Theme> result = themeService.getPopular(size);
+        List<Theme> result = sut.getPopular(size);
 
         // then
         assertThat(result).isEqualTo(expectedThemes);
@@ -93,8 +89,7 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("테마를 삭제할 수 있다")
-    void delete_ExistingTheme_DeletesTheme() {
+    void 테마를_삭제할_수_있다() {
         // given
         String themeId = "theme-id";
 
@@ -102,7 +97,7 @@ class ThemeServiceTest {
         when(themeRepository.existById(themeId)).thenReturn(true);
 
         // when
-        themeService.delete(themeId);
+        sut.delete(themeId);
 
         // then
         verify(reservationRepository).existByThemeId(themeId);
@@ -111,16 +106,15 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 테마 삭제 시 예외가 발생한다")
-    void delete_NonExistingTheme_ThrowsException() {
+    void 존재하지_않는_테마_삭제_시_예외가_발생한다() {
         // given
         String themeId = "non-existing-id";
 
         when(reservationRepository.existByThemeId(themeId)).thenReturn(false);
         when(themeRepository.existById(themeId)).thenReturn(false);
 
-        // when & then
-        assertThatThrownBy(() -> themeService.delete(themeId))
+        // when, then
+        assertThatThrownBy(() -> sut.delete(themeId))
                 .isInstanceOf(NotFoundException.class);
 
         verify(reservationRepository).existByThemeId(themeId);
@@ -129,15 +123,14 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("예약이 연결된 테마 삭제 시 예외가 발생한다")
-    void delete_ThemeWithReservations_ThrowsException() {
+    void 예약이_연결된_테마_삭제_시_예외가_발생한다() {
         // given
         String themeId = "theme-with-reservations";
 
         when(reservationRepository.existByThemeId(themeId)).thenReturn(true);
 
-        // when & then
-        assertThatThrownBy(() -> themeService.delete(themeId))
+        // when, then
+        assertThatThrownBy(() -> sut.delete(themeId))
                 .isInstanceOf(RelatedEntityExistException.class);
 
         verify(reservationRepository).existByThemeId(themeId);

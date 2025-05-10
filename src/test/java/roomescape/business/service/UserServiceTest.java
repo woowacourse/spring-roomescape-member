@@ -1,6 +1,5 @@
 package roomescape.business.service;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,11 +25,10 @@ class UserServiceTest {
     private UserRepository userRepository;
 
     @InjectMocks
-    private UserService userService;
+    private UserService sut;
 
     @Test
-    @DisplayName("사용자 등록이 성공적으로 이루어진다")
-    void register_Success() {
+    void 사용자_등록이_성공적으로_이루어진다() {
         // given
         String name = "테스트유저";
         String email = "test@example.com";
@@ -39,7 +37,7 @@ class UserServiceTest {
         when(userRepository.existByEmail(email)).thenReturn(false);
 
         // when
-        userService.register(name, email, password);
+        sut.register(name, email, password);
 
         // then
         verify(userRepository).existByEmail(email);
@@ -47,8 +45,7 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("이미 존재하는 이메일로 사용자 등록 시 예외가 발생한다")
-    void register_DuplicateEmail_ThrowsException() {
+    void 이미_존재하는_이메일로_사용자_등록_시_예외가_발생한다() {
         // given
         String name = "테스트유저";
         String email = "test@example.com";
@@ -56,8 +53,8 @@ class UserServiceTest {
 
         when(userRepository.existByEmail(email)).thenReturn(true);
 
-        // when & then
-        assertThatThrownBy(() -> userService.register(name, email, password))
+        // when, then
+        assertThatThrownBy(() -> sut.register(name, email, password))
                 .isInstanceOf(InvalidCreateArgumentException.class);
 
         verify(userRepository).existByEmail(email);
@@ -65,8 +62,7 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("이메일로 사용자를 조회할 수 있다")
-    void getByEmail_ExistingEmail_ReturnsUser() {
+    void 이메일로_사용자를_조회할_수_있다() {
         // given
         String email = "test@example.com";
         User expectedUser = User.restore("user-id", "USER", "Test User", email, "password123");
@@ -74,7 +70,7 @@ class UserServiceTest {
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(expectedUser));
 
         // when
-        User result = userService.getByEmail(email);
+        User result = sut.getByEmail(email);
 
         // then
         assertThat(result).isEqualTo(expectedUser);
@@ -82,23 +78,21 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 이메일로 사용자 조회 시 예외가 발생한다")
-    void getByEmail_NonExistingEmail_ThrowsException() {
+    void 존재하지_않는_이메일로_사용자_조회_시_예외가_발생한다() {
         // given
         String email = "nonexistent@example.com";
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-        // when & then
-        assertThatThrownBy(() -> userService.getByEmail(email))
+        // when, then
+        assertThatThrownBy(() -> sut.getByEmail(email))
                 .isInstanceOf(NotFoundException.class);
 
         verify(userRepository).findByEmail(email);
     }
 
     @Test
-    @DisplayName("모든 사용자를 조회할 수 있다")
-    void getAll_ReturnsAllUsers() {
+    void 모든_사용자를_조회할_수_있다() {
         // given
         List<User> expectedUsers = Arrays.asList(
                 User.restore("user-id-1", "USER", "User One", "user1@example.com", "password1"),
@@ -108,7 +102,7 @@ class UserServiceTest {
         when(userRepository.findAll()).thenReturn(expectedUsers);
 
         // when
-        List<User> result = userService.getAll();
+        List<User> result = sut.getAll();
 
         // then
         assertThat(result).isEqualTo(expectedUsers);

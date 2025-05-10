@@ -65,7 +65,7 @@ class JdbcReservationRepositoryTest {
         themeRepository.save(theme);
         userRepository.save(user);
 
-        // when & then
+        // when, then
         assertThatCode(() -> sut.save(Reservation.create(user, DATE1, time, theme)))
                 .doesNotThrowAnyException();
     }

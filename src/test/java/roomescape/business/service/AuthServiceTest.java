@@ -1,6 +1,5 @@
 package roomescape.business.service;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,11 +27,10 @@ class AuthServiceTest {
     private JwtUtil jwtUtil;
 
     @InjectMocks
-    private AuthService authService;
+    private AuthService sut;
 
     @Test
-    @DisplayName("올바른 이메일과 비밀번호로 인증에 성공한다")
-    void authenticate_ValidCredentials_ReturnsAuthentication() {
+    void 올바른_이메일과_비밀번호로_인증에_성공한다() {
         // given
         String email = "test@example.com";
         String password = "password123";
@@ -44,7 +42,7 @@ class AuthServiceTest {
         when(jwtUtil.createToken(user)).thenReturn(expectedAuth);
 
         // when
-        AuthToken result = authService.authenticate(email, password);
+        AuthToken result = sut.authenticate(email, password);
 
         // then
         assertThat(result).isEqualTo(expectedAuth);
@@ -53,16 +51,15 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 이메일로 인증 시 예외가 발생한다")
-    void authenticate_NonExistingEmail_ThrowsException() {
+    void 존재하지_않는_이메일로_인증_시_예외가_발생한다() {
         // given
         String email = "nonexistent@example.com";
         String password = "password123";
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-        // when & then
-        assertThatThrownBy(() -> authService.authenticate(email, password))
+        // when, then
+        assertThatThrownBy(() -> sut.authenticate(email, password))
                 .isInstanceOf(LoginFailException.class);
 
         verify(userRepository).findByEmail(email);
@@ -70,8 +67,7 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("잘못된 비밀번호로 인증 시 예외가 발생한다")
-    void authenticate_InvalidPassword_ThrowsException() {
+    void 잘못된_비밀번호로_인증_시_예외가_발생한다() {
         // given
         String email = "test@example.com";
         String password = "wrongPassword";
@@ -79,8 +75,8 @@ class AuthServiceTest {
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
-        // when & then
-        assertThatThrownBy(() -> authService.authenticate(email, password))
+        // when, then
+        assertThatThrownBy(() -> sut.authenticate(email, password))
                 .isInstanceOf(LoginFailException.class);
 
         verify(userRepository).findByEmail(email);
