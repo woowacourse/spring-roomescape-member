@@ -8,21 +8,26 @@ public class User {
     private final String email;
     private final String password;
 
+    private final Role role;
+
     public User(
             final String name,
             final String email,
-            final String password
+            final String password,
+            final Role role
     ) {
-        this(null, name, email, password);
+        this(null, name, email, password, role);
     }
 
     private User(
             final Long id,
             final String name,
             final String email,
-            final String password
+            final String password,
+            final Role role
     ) {
-        validateNonNull(name, email, password);
+        this.role = role;
+        validateNonNull(name, email, password, role);
         validateNotBlank(name, email, password);
 
         this.id = id;
@@ -35,19 +40,21 @@ public class User {
             final Long id,
             final String name,
             final String email,
-            final String password
+            final String password,
+            final Role role
     ) {
         if (id == null) {
             throw new IllegalArgumentException("id가 null 입니다.");
         }
 
-        return new User(id, name, email, password);
+        return new User(id, name, email, password, role);
     }
 
     private void validateNonNull(
             final String name,
             final String email,
-            final String password
+            final String password,
+            final Role role
     ) {
         if (name == null) {
             throw new IllegalArgumentException("name이 null 입니다.");
@@ -57,6 +64,9 @@ public class User {
         }
         if (password == null) {
             throw new IllegalArgumentException("password가 null 입니다.");
+        }
+        if (role == null) {
+            throw new IllegalArgumentException("role이 null 입니다.");
         }
     }
 
@@ -90,5 +100,9 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public Role getRole() {
+        return role;
     }
 }
