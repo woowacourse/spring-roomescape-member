@@ -93,6 +93,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     select 1
                     from reservation r
                     inner join reservation_time rt
+                    on r.time_id = t.id
                     where r.date = ? 
                         and rt.start_at = ?
                         and r.theme_id = ?
