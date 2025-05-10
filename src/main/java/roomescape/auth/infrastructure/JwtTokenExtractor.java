@@ -21,6 +21,6 @@ public class JwtTokenExtractor implements AuthTokenExtractor<String> {
                 .filter(cookie -> AUTH_TOKEN_NAME.equals(cookie.getName()))
                 .findFirst()
                 .map(Cookie::getValue)
-                .orElseGet(null);
+                .orElse(null);
     }
 }
