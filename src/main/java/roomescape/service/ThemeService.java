@@ -2,7 +2,6 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.DuplicatedException;
@@ -27,7 +26,7 @@ public class ThemeService {
         this.reservationDao = reservationDao;
     }
 
-    public List<ThemeResponseDto> getAllThemes() {
+    public List<ThemeResponseDto> findAllThemes() {
         return themeDao.findAll().stream()
                 .map(ThemeResponseDto::from)
                 .collect(Collectors.toList());

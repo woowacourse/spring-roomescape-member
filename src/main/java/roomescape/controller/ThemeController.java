@@ -29,7 +29,7 @@ public class ThemeController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ThemeResponseDto> themes() {
-        return themeService.getAllThemes();
+        return themeService.findAllThemes();
     }
 
     @PostMapping
