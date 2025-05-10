@@ -34,10 +34,16 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         final TokenInfo tokenInfo = tokenProvider.getInfo(token);
 
         if (!AuthChecker.checkAuthorization(handlerMethod.getMethod(), tokenInfo.getRole())) {
+            log();
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }
 
         return true;
+    }
+
+    private static void log() {
+        Logger logger = LoggerFactory.getLogger(AuthorizationInterceptor.class);
+        logger.warn("Authorization failed");
     }
 }
