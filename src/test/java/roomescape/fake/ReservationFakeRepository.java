@@ -1,6 +1,8 @@
 package roomescape.fake;
 
 import roomescape.common.exception.EntityNotFoundException;
+import roomescape.member.entity.Member;
+import roomescape.member.entity.Role;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.entity.Theme;
@@ -17,11 +19,15 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ReservationFakeRepository implements ReservationRepository {
 
     private final Map<Long, Reservation> reservations = new HashMap<>();
-    private final Map<Long, Theme> themes = new HashMap<>();
+    private final Map<Long, Member> members = new HashMap<>();
     private final Map<Long, ReservationTime> reservationTimes = new HashMap<>();
+    private final Map<Long, Theme> themes = new HashMap<>();
     private final AtomicLong idGenerator = new AtomicLong(1);
 
     public ReservationFakeRepository() {
+        Member defaultMember = new Member(1L, "abcd@email.com", "12345", "회원1", Role.USER);
+        members.put(1L, defaultMember);
+
         ReservationTime defaultTime = new ReservationTime(1L, LocalTime.MAX);
         reservationTimes.put(1L, defaultTime);
 
@@ -35,7 +41,7 @@ public class ReservationFakeRepository implements ReservationRepository {
         long reservationId = idGenerator.getAndIncrement();
         Reservation defaultReservation = new Reservation(
                 reservationId,
-                "브라운",
+                defaultMember,
                 LocalDate.MAX,
                 defaultTime,
                 defaultTheme);
@@ -49,6 +55,13 @@ public class ReservationFakeRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
+        Member member = reservation.getMember();
+        if (!members.containsKey(member.getId())) {
+            throw new EntityNotFoundException("회원을 찾을 수 없습니다: " + member.getId());
+        }
+
+        Member savedMember = members.get(member.getId());
+
         Long timeId = reservation.getTime().getId();
         if (!reservationTimes.containsKey(timeId)) {
             throw new EntityNotFoundException("예약 시간을 찾을 수 없습니다: " + timeId);
@@ -66,7 +79,7 @@ public class ReservationFakeRepository implements ReservationRepository {
 
         Reservation savedReservation = new Reservation(
                 newId,
-                reservation.getName(),
+                savedMember,
                 reservation.getDate(),
                 time,
                 theme);
