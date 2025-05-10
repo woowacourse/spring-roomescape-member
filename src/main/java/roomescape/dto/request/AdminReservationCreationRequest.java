@@ -2,23 +2,17 @@ package roomescape.dto.request;
 
 import java.time.LocalDate;
 
-public record ReservationCreationRequest(String name, LocalDate date, Long timeId, Long themeId) {
+public record AdminReservationCreationRequest(LocalDate date, Long timeId, Long themeId, Long memberId) {
 
-    public ReservationCreationRequest {
-        validate(name, date, timeId, themeId);
+    public AdminReservationCreationRequest {
+        validate(date, timeId, themeId, memberId);
     }
 
-    private void validate(String name, LocalDate date, Long timeId, Long themeId) {
-        validateName(name);
+    private void validate(LocalDate date, Long timeId, Long themeId, Long memberId) {
         validateDate(date);
         validateTime(timeId);
         validateTheme(themeId);
-    }
-
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 이름은 빈 값이나 공백값을 허용하지 않습니다.");
-        }
+        validateMember(memberId);
     }
 
     private void validateDate(LocalDate date) {
@@ -36,6 +30,12 @@ public record ReservationCreationRequest(String name, LocalDate date, Long timeI
     private void validateTheme(Long themeId) {
         if (themeId == null) {
             throw new IllegalArgumentException("[ERROR] 테마는 빈 값을 허용하지 않습니다.");
+        }
+    }
+
+    private void validateMember(Long memberId) {
+        if (memberId == null) {
+            throw new IllegalArgumentException("[ERROR] 회원은 빈 값이나 공백값을 허용하지 않습니다.");
         }
     }
 }

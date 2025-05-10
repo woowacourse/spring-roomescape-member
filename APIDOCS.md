@@ -52,27 +52,19 @@
 
 - GET /reservations
     - 설명 : 예약 조회
-    - 정상 응답 (200)
-      ```
-      [
-          {
-             "id": 1,
-             "name": "랜디",
-             "date": "2025-04-30",
-             "time": {
-                "id": 1,
-                "startAt": "10:00:00"
-             },
-             "theme": {
-                "id": 12,
-                "name": "테마12",
-                "description": "서커스의신",
-                "thumbnail": "http://localhost:8080/image/theme.jpg"
-             }
-          },
-          ...
-      ]
-      ```
+        - 정상 응답 (200)
+          ```
+          [
+              {
+                  "id":1,
+                  "member":{"id":1,"name":"아마"},
+                  "date":"2025-04-30",
+                  "time":{"id":1,"startAt":"10:00:00"},
+                  "theme":{"id":12,"name":"테마12","description":"서커스의신","thumbnail":"http://localhost:8080/image/theme.jpg"}
+              }
+              ...
+          ]
+          ```
 - POST /reservations
     - 설명 : 사용자 예약 추가
     - 요청 파라미터
