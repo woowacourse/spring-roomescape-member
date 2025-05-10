@@ -43,6 +43,18 @@ public class MemberController {
         return memberService.search(token);
     }
 
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        extractTokenFromCookie(cookies).ifPresent(token -> {
+            Cookie expiredCookie = new Cookie("token", null);
+            expiredCookie.setMaxAge(0);
+            expiredCookie.setHttpOnly(true);
+            expiredCookie.setPath("/");
+            response.addCookie(expiredCookie);
+        });
+    }
+
     private Optional<String> extractTokenFromCookie(Cookie[] cookies) {
         return Arrays.stream(cookies)
                 .filter(cookie -> "token".equals(cookie.getName()))
