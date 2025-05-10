@@ -11,6 +11,11 @@ public class UserReservationViewController {
         return "index";
     }
 
+    @GetMapping("/login")
+    public String showLogin() {
+        return "login";
+    }
+
     @GetMapping("/reservation")
     public String showReservations() {
         return "reservation";
