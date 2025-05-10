@@ -10,18 +10,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenManager {
 
-    private final static int EXPIRATION_TIME = 60 * 30;
+    private final static int EXPIRATION_TIME = 60 * 30 * 1000;
 
-    @Value("${secret.key}")
     private static String SECRET_KEY;
 
     public static String crateToken(final Long id, final String role) {
+        SecretKeySpec key = new SecretKeySpec(SECRET_KEY.getBytes(), "HmacSHA256");
+
         return Jwts.builder()
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .subject(id.toString())
                 .claim("role", role)
                 .issuedAt(new Date())
-                .signWith(new SecretKeySpec(SECRET_KEY.getBytes(), "HmacSHA256"), SIG.HS256)
+                .signWith(key, SIG.HS256)
                 .compact();
     }
 
@@ -51,5 +52,10 @@ public class JwtTokenManager {
         if (token == null) {
             throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
         }
+    }
+
+    @Value("${secret.key}")
+    public void setSecretKey(String secretKey) {
+        SECRET_KEY = secretKey;
     }
 }
