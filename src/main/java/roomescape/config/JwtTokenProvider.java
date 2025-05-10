@@ -6,6 +6,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
 import roomescape.exception.UnauthorizedException;
@@ -13,8 +14,11 @@ import roomescape.exception.UnauthorizedException;
 @Component
 public class JwtTokenProvider {
 
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-    private static final int EXPIRE_DURATION = 3600000;
+    @Value("${jwt.secret-key}")
+    private String SECRET_KEY;
+
+    @Value("${jwt.expire-duration}")
+    private int EXPIRE_DURATION;
 
     public String createTokenByMember(Member member) {
         Date now = new Date();
