@@ -1,8 +1,12 @@
 package roomescape.reservation.service;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.common.util.DateTime;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRepository;
+import roomescape.member.dto.LoginMember;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.dto.ReservationRequest;
@@ -19,24 +23,31 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(
             final DateTime dateTime,
             final ReservationRepository reservationRepository,
             final ReservationTimeRepository reservationTimeRepository,
-            final ThemeRepository themeRepository
+            final ThemeRepository themeRepository, MemberRepository memberRepository
     ) {
         this.dateTime = dateTime;
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
-    public ReservationResponse createReservation(final ReservationRequest request) {
+    public ReservationResponse createReservation(final ReservationRequest request, final LoginMember loginMember) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId());
         Theme theme = themeRepository.findById(request.themeId());
 
-        Reservation reservation = Reservation.createWithoutId(dateTime.now(), request.name(), request.date(), time,
+        Optional<Member> findMember = memberRepository.findById(loginMember.id());
+        if (findMember.isEmpty()) {
+            throw new IllegalArgumentException("존재 하지 않는 유저입니다.");
+        }
+
+        Reservation reservation = Reservation.createWithoutId(dateTime.now(), findMember.get(), request.date(), time,
                 theme);
 
         if (reservationRepository.hasSameReservation(reservation)) {

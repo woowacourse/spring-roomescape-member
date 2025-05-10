@@ -44,7 +44,7 @@ public class JdbcMemberRepository implements MemberRepository {
         parameters.put("name", member.getName());
         parameters.put("email", member.getEmail());
         parameters.put("password", member.getPassword());
-        parameters.put("role",member.getRole());
+        parameters.put("role", member.getRole());
 
         return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
