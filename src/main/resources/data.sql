@@ -25,14 +25,14 @@ values (3, '테마3', '테마3 입니다.',
 
 -- 유저 관련
 
-insert into users (id, email, name, password, role)
-values (1, 'admin@naver.com', '어드민', '1234', 'ROLE_ADMIN');
+insert into users (email, name, password, role)
+values ('admin@naver.com', '어드민', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 'ROLE_ADMIN');
 
-insert into users (id, email, name, password, role)
-values (2, 'brown@naver.com', '브라운', '1234', 'ROLE_USER');
+insert into users ( email, name, password, role)
+values ('brown@naver.com', '브라운', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 'ROLE_USER');
 
-insert into users (id, email, name, password, role)
-values (3, 'kkuk@naver.com', '꾹이', '1234', 'ROLE_USER');
+insert into users ( email, name, password, role)
+values ('kkuk@naver.com', '꾹이', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 'ROLE_USER');
 
 -- 예약 관련
 

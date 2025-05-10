@@ -3,6 +3,7 @@ package roomescape.domain.auth.service;
 import jakarta.servlet.http.Cookie;
 import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.auth.config.JwtProperties;
@@ -21,12 +22,15 @@ public class AuthService {
 
     private final JwtManager jwtManager;
     private final UserRepository userRepository;
+    private final PasswordEncryptor passwordEncryptor;
     private final String cookieKey;
 
+    @Autowired
     public AuthService(final JwtManager jwtManager, final UserRepository userRepository,
-                       final JwtProperties jwtProperties) {
+                       final PasswordEncryptor passwordEncryptor, final JwtProperties jwtProperties) {
         this.jwtManager = jwtManager;
         this.userRepository = userRepository;
+        this.passwordEncryptor = passwordEncryptor;
         this.cookieKey = jwtProperties.getCookieKey();
     }
 
@@ -35,7 +39,7 @@ public class AuthService {
         final User user = userRepository.findByEmail(loginRequest.email())
                 .orElseThrow(() -> new UserNotFoundException("해당 계정이 존재하지 않습니다."));
 
-        user.login(loginRequest.email(), loginRequest.password());
+        user.login(loginRequest.email(), loginRequest.password(), passwordEncryptor);
 
         final String token = jwtManager.createToken(user);
 

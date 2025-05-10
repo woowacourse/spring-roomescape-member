@@ -18,8 +18,10 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
@@ -42,6 +44,7 @@ import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
 import roomescape.domain.reservation.dto.ThemeResponse;
 import roomescape.domain.reservation.service.ReservationService;
+import roomescape.utils.PasswordFixture;
 
 @WebMvcTest(ReservationController.class)
 @Import({JwtConfig.class, JwtProperties.class})
@@ -69,6 +72,11 @@ public class ReservationControllerTest {
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
         return time.format(formatter);
+    }
+
+    @BeforeEach
+    void init() {
+        Mockito.reset();
     }
 
     @DisplayName("모든 예약 정보를 가져온다.")
@@ -116,7 +124,7 @@ public class ReservationControllerTest {
 
         final String requestContent = objectMapper.writeValueAsString(request);
 
-        final User user = new User(1L, new Name(name), "2321@naver.com", "1234", Roles.USER);
+        final User user = new User(1L, new Name(name), "2321@naver.com", PasswordFixture.generate(), Roles.USER);
         final String token = jwtManager.createToken(user);
         final Cookie cookie = new Cookie("token", token);
         final LoginUserDto loginUserDto = mock(LoginUserDto.class);
@@ -148,7 +156,7 @@ public class ReservationControllerTest {
 
         final String requestContent = objectMapper.writeValueAsString(request);
         final String name = "꾹이";
-        final User user = new User(1L, new Name(name), "2321@naver.com", "1234", Roles.USER);
+        final User user = new User(1L, new Name(name), "2321@naver.com", PasswordFixture.generate(), Roles.USER);
         final String token = jwtManager.createToken(user);
         final Cookie cookie = new Cookie("token", token);
         final LoginUserDto loginUserDto = mock(LoginUserDto.class);

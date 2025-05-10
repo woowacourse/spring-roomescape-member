@@ -16,10 +16,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.auth.dto.LoginRequest;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Password;
 import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.repository.UserRepository;
-import roomescape.domain.reservation.utils.JdbcTemplateUtils;
+import roomescape.domain.auth.service.PasswordEncryptor;
+import roomescape.utils.JdbcTemplateUtils;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LoginApiTest {
@@ -33,6 +35,9 @@ public class LoginApiTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncryptor passwordEncryptor;
+
     @BeforeEach
     void init() {
         RestAssured.port = port;
@@ -44,10 +49,11 @@ public class LoginApiTest {
     void loginTest1() {
         // given
         final String email = "testuser@naver.com";
-        final String password = "testpassword";
+        final String rawPassword = "testpassword";
+        final Password password = Password.encrypt(rawPassword, passwordEncryptor);
         userRepository.save(User.withoutId(new Name("꾹"), email, password, Roles.USER));
 
-        final LoginRequest loginRequest = new LoginRequest(email, password);
+        final LoginRequest loginRequest = new LoginRequest(email, rawPassword);
 
         // when & then
         RestAssured.given()
@@ -93,7 +99,7 @@ public class LoginApiTest {
         // given
         final String name = "테스트유저";
         final String email = "testuser3@naver.com";
-        final String password = "testpassword";
+        final Password password = Password.encrypt("testpassword", passwordEncryptor);
         userRepository.save(User.withoutId(new Name(name), email, password, Roles.USER));
 
         final Map<String, String> request = new HashMap<>();
@@ -142,12 +148,14 @@ public class LoginApiTest {
         // given
         final String name = "테스트유저";
         final String email = "testuser4@naver.com";
-        final String password = "testpassword";
+        final String rawPassword = "testpassword";
+        final Password password = Password.encrypt(rawPassword, passwordEncryptor);
+
         userRepository.save(User.withoutId(new Name(name), email, password, Roles.USER));
 
         final Map<String, String> loginRequest = new HashMap<>();
         loginRequest.put("email", email);
-        loginRequest.put("password", password);
+        loginRequest.put("password", rawPassword);
 
         // 로그인하여 토큰 쿠키 획득
         final String token = RestAssured.given()

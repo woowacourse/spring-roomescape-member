@@ -11,10 +11,12 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Password;
 import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.service.JwtManager;
-import roomescape.domain.reservation.utils.JdbcTemplateUtils;
+import roomescape.infrastructure.security.Sha256PasswordEncryptor;
+import roomescape.utils.JdbcTemplateUtils;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ReservationAdminApiTest {
@@ -24,13 +26,15 @@ public class ReservationAdminApiTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
     @LocalServerPort
     private int port;
 
     @BeforeAll
     static void setUp(@Autowired final JwtManager jwtManager) {
-        final User admin = new User(1L, new Name("꾹"), "tizm@naver.com", "1234", Roles.ADMIN);
-        final User user = new User(1L, new Name("꾹"), "user@naver.com", "1234", Roles.USER);
+        final Password password = Password.encrypt("1234", new Sha256PasswordEncryptor());
+        final User admin = new User(1L, new Name("꾹"), "tizm@naver.com", password, Roles.ADMIN);
+        final User user = new User(1L, new Name("꾹"), "user@naver.com", password, Roles.USER);
 
         adminToken = jwtManager.createToken(admin);
         userToken = jwtManager.createToken(user);

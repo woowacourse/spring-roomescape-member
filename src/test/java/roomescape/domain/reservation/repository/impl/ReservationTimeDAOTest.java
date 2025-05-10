@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
-import roomescape.domain.reservation.utils.JdbcTemplateUtils;
+import roomescape.utils.JdbcTemplateUtils;
 
 @Transactional
 @JdbcTest

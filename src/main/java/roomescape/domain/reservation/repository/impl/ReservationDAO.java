@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Password;
 import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.reservation.entity.Reservation;
@@ -169,8 +170,8 @@ public class ReservationDAO implements ReservationRepository {
                 where id =:id
                 """;
 
-        final MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("date", reservation.getReservationDate())
+        final MapSqlParameterSource params = new MapSqlParameterSource().addValue("date",
+                        reservation.getReservationDate())
                 .addValue("time_id", reservation.getReservationTimeId())
                 .addValue("theme_id", reservation.getThemeId())
                 .addValue("user_id", reservation.getUser()
@@ -187,8 +188,8 @@ public class ReservationDAO implements ReservationRepository {
     }
 
     private Reservation create(final Reservation reservation) {
-        final MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("date", reservation.getReservationDate())
+        final MapSqlParameterSource params = new MapSqlParameterSource().addValue("date",
+                        reservation.getReservationDate())
                 .addValue("time_id", reservation.getReservationTimeId())
                 .addValue("theme_id", reservation.getThemeId())
                 .addValue("user_id", reservation.getUser()
@@ -238,7 +239,7 @@ public class ReservationDAO implements ReservationRepository {
                 .id(resultSet.getLong("user_id"))
                 .email(resultSet.getString("email"))
                 .username(new Name(resultSet.getString("user_name")))
-                .password(resultSet.getString("password"))
+                .password(Password.of(resultSet.getString("password")))
                 .role(Roles.from(resultSet.getString("role")))
                 .build();
     }

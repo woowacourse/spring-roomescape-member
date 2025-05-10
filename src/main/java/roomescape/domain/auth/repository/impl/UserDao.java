@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Password;
 import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.repository.UserRepository;
@@ -90,7 +91,7 @@ public class UserDao implements UserRepository {
                 .id(resultSet.getLong("id"))
                 .email(resultSet.getString("email"))
                 .username(new Name(resultSet.getString("name")))
-                .password(resultSet.getString("password"))
+                .password(Password.of(resultSet.getString("password")))
                 .role(Roles.from(resultSet.getString("role")))
                 .build();
     }
@@ -113,7 +114,8 @@ public class UserDao implements UserRepository {
     private MapSqlParameterSource updateSqlParameter(final User user) {
         return new MapSqlParameterSource().addValue("name", user.getName())
                 .addValue("email", user.getEmail())
-                .addValue("password", user.getPassword())
+                .addValue("password", user.getPassword()
+                        .getEncryptedPassword())
                 .addValue("id", user.getId());
     }
 
@@ -129,7 +131,8 @@ public class UserDao implements UserRepository {
     private MapSqlParameterSource createSqlParameter(final User user) {
         return new MapSqlParameterSource().addValue("name", user.getName())
                 .addValue("email", user.getEmail())
-                .addValue("password", user.getPassword())
+                .addValue("password", user.getPassword()
+                        .getEncryptedPassword())
                 .addValue("role", user.getRole()
                         .getRoleName());
     }

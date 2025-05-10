@@ -7,24 +7,24 @@ import static org.mockito.Mockito.mock;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import roomescape.common.exception.InvalidArgumentException;
 import roomescape.domain.auth.entity.User;
 
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class ReservationTest {
 
     @DisplayName("아이디 존재 여부")
     @ParameterizedTest
-    @CsvSource(value = {"1,true", "null,false"}, delimiter = ',', nullValues = "null")
+    @CsvSource(value = {"1,true", "null,false"}, nullValues = "null")
     void test1(final Long id, final boolean expected) {
         // given
-        final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
-        final Theme theme = new Theme(1L, "공포", "우테코 공포",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        final ReservationTime reservationTime =mock(ReservationTime.class);
+        final Theme theme = mock(Theme.class);
         final User user = mock(User.class);
 
         final Reservation reservation = new Reservation(id, user, LocalDate.now(), reservationTime, theme);
@@ -43,8 +43,7 @@ class ReservationTest {
         final LocalDateTime now = LocalDateTime.now();
         final LocalDateTime future = now.plusDays(1);
 
-        final Theme theme = new Theme(1L, "공포", "우테코 공포",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        final Theme theme = mock(Theme.class);
         final ReservationTime reservationTime = new ReservationTime(1L, future.toLocalTime());
         final User user = mock(User.class);
 
@@ -61,8 +60,7 @@ class ReservationTest {
         final LocalDateTime now = LocalDateTime.now();
         final LocalDateTime pastDay = now.minusDays(1);
 
-        final Theme theme = new Theme(1L, "공포", "우테코 공포",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        final Theme theme = mock(Theme.class);
         final ReservationTime reservationTime = new ReservationTime(1L, pastDay.toLocalTime());
         final User user = mock(User.class);
 
@@ -72,4 +70,6 @@ class ReservationTest {
         assertThatThrownBy(() -> reservation.validateNotPastReservation(now)).isInstanceOf(
                 InvalidArgumentException.class);
     }
+
+
 }

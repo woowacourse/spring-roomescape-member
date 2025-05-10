@@ -1,12 +1,14 @@
 package roomescape.domain.auth.service;
 
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.domain.auth.dto.UserCreateRequest;
 import roomescape.domain.auth.dto.UserInfoResponse;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Password;
 import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.repository.UserRepository;
@@ -15,9 +17,12 @@ import roomescape.domain.auth.repository.UserRepository;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncryptor passwordEncryptor;
 
-    public UserService(final UserRepository userRepository) {
+    @Autowired
+    public UserService(final UserRepository userRepository, final PasswordEncryptor passwordEncryptor) {
         this.userRepository = userRepository;
+        this.passwordEncryptor = passwordEncryptor;
     }
 
     @Transactional(readOnly = true)
@@ -36,7 +41,8 @@ public class UserService {
         }
 
         final Name name = new Name(request.name());
-        final User user = User.withoutId(name, request.email(), request.password(), Roles.USER);
+        final Password password = Password.encrypt(request.password(), passwordEncryptor);
+        final User user = User.withoutId(name, request.email(), password, Roles.USER);
         final User savedUser = userRepository.save(user);
 
         return UserInfoResponse.from(savedUser);

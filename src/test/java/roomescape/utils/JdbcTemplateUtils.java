@@ -1,4 +1,4 @@
-package roomescape.domain.reservation.utils;
+package roomescape.utils;
 
 import java.time.LocalTime;
 import org.springframework.dao.DataAccessException;

@@ -17,16 +17,18 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Password;
 import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.repository.UserRepository;
+import roomescape.domain.auth.service.PasswordEncryptor;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.repository.ThemeRepository;
-import roomescape.domain.reservation.utils.JdbcTemplateUtils;
+import roomescape.utils.JdbcTemplateUtils;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ReservationTimeApiTest {
@@ -45,6 +47,9 @@ public class ReservationTimeApiTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncryptor passwordEncryptor;
 
     @LocalServerPort
     private int port;
@@ -168,8 +173,9 @@ public class ReservationTimeApiTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         final Theme savedTheme = themeRepository.save(theme);
         final Name name = new Name("꾹");
+        final Password password = Password.encrypt("1234", passwordEncryptor);
 
-        final User user = userRepository.save(User.withoutId(name, "admin@naver.com", "1234", Roles.USER));
+        final User user = userRepository.save(User.withoutId(name, "admin@naver.com", password, Roles.USER));
 
         final Reservation reservation = Reservation.withoutId(user, LocalDate.now(), savedTime, savedTheme);
         reservationRepository.save(reservation);

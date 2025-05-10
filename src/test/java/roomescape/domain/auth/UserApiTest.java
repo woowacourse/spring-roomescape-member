@@ -15,10 +15,13 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Password;
 import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.repository.UserRepository;
-import roomescape.domain.reservation.utils.JdbcTemplateUtils;
+import roomescape.domain.auth.service.PasswordEncryptor;
+import roomescape.utils.JdbcTemplateUtils;
+import roomescape.utils.PasswordFixture;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class UserApiTest {
@@ -28,6 +31,9 @@ public class UserApiTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncryptor passwordEncryptor;
 
     @LocalServerPort
     private int port;
@@ -70,14 +76,15 @@ public class UserApiTest {
     void registerTest2() {
         final String name = "테스트유저";
         final String email = "testuser@naver.com";
-        final String password = "testpassword";
+        final String rawPassword = "testpassword";
 
+        final Password password = Password.encrypt(rawPassword, passwordEncryptor);
         userRepository.save(User.withoutId(new Name(name), email, password, Roles.USER));
 
         final Map<String, String> request = new HashMap<>();
         request.put("name", name);
         request.put("email", email);
-        request.put("password", password);
+        request.put("password", rawPassword);
 
         // when & then
         RestAssured.given()
@@ -119,8 +126,8 @@ public class UserApiTest {
     @Test
     void getAllUsersTest() {
         // given
-        userRepository.save(User.withoutId(new Name("유저1"), "user1@naver.com", "pw1", Roles.USER));
-        userRepository.save(User.withoutId(new Name("유저2"), "user2@naver.com", "pw2", Roles.USER));
+        userRepository.save(User.withoutId(new Name("유저1"), "user1@naver.com", PasswordFixture.generate(), Roles.USER));
+        userRepository.save(User.withoutId(new Name("유저2"), "user2@naver.com", PasswordFixture.generate(), Roles.USER));
 
         // when & then
         RestAssured.given()

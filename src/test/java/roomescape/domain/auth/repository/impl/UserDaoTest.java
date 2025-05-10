@@ -10,6 +10,7 @@ import roomescape.domain.auth.entity.Name;
 import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.repository.UserRepository;
+import roomescape.utils.PasswordFixture;
 
 @JdbcTest
 @Import(UserDao.class)
@@ -23,7 +24,7 @@ class UserDaoTest {
     void findByEmailTest1() {
         // given
         final String email = "test@example.com";
-        final User user = User.withoutId(new Name("test"), email, "password", Roles.USER);
+        final User user = User.withoutId(new Name("test"), email, PasswordFixture.generate(), Roles.USER);
 
         userRepository.save(user);
 

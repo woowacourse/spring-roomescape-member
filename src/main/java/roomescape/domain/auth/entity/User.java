@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import roomescape.common.exception.InvalidArgumentException;
 import roomescape.domain.auth.exception.InvalidAuthorizationException;
+import roomescape.domain.auth.service.PasswordEncryptor;
 
 @Getter
 public class User {
@@ -15,26 +16,30 @@ public class User {
     private final Long id;
     private final Name username;
     private final String email;
-    private final String password;
+    private final Password password;
     private final Roles role;
 
     @Builder
-    public User(final Long id, final Name username, final String email, final String password, final Roles role) {
+    public User(final Long id, final Name username, final String email, final Password password, final Roles role) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.role = role;
+
         validate();
     }
 
+    public static User withoutId(final Name name, final String email, final Password password, final Roles role) {
+        return new User(null, name, email, password, role);
+    }
+
     private void validate() {
-        if (username == null || role == null) {
+        if (username == null || role == null || password == null) {
             throw new InvalidArgumentException("User 필드는 null일 수 없습니다. (id 필드 제외)");
         }
 
         validateEmail();
-        validatePassword();
     }
 
     private void validateEmail() {
@@ -43,20 +48,10 @@ public class User {
         }
     }
 
-    private void validatePassword() {
-        if (password == null || password.isBlank() || password.length() > PASSWORD_MAX_LENGTH) {
-            throw new InvalidArgumentException("유효하지 않은 패스워드입니다.");
-        }
-    }
-
-    public void login(final String email, final String password) {
-        if (!Objects.equals(email, this.email) || !Objects.equals(password, this.password)) {
+    public void login(final String email, final String rawPassword, final PasswordEncryptor passwordEncryptor) {
+        if (!Objects.equals(email, this.email) || !password.matches(rawPassword, passwordEncryptor)) {
             throw new InvalidAuthorizationException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
-    }
-
-    public static User withoutId(final Name name, final String email, final String password, final Roles role) {
-        return new User(null, name, email, password, role);
     }
 
     public boolean existId() {

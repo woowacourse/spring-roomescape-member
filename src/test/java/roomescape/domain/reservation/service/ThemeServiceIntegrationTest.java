@@ -31,6 +31,7 @@ import roomescape.domain.reservation.repository.ThemeRepository;
 import roomescape.domain.reservation.repository.impl.ReservationDAO;
 import roomescape.domain.reservation.repository.impl.ReservationTimeDAO;
 import roomescape.domain.reservation.repository.impl.ThemeDAO;
+import roomescape.utils.PasswordFixture;
 
 @JdbcTest
 @Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class, UserDao.class})
@@ -139,7 +140,8 @@ class ThemeServiceIntegrationTest {
 
         final LocalDate date = LocalDate.of(2024, 4, 29);
         final Name name = new Name("꾹");
-        final User user = userRepository.save(User.withoutId(name, "admin@naver.com", "1234", Roles.USER));
+        final User user = userRepository.save(
+                User.withoutId(name, "admin@naver.com", PasswordFixture.generate(), Roles.USER));
 
         reservationRepository.save(Reservation.withoutId(user, date, savedTime, savedTheme));
 
@@ -159,7 +161,8 @@ class ThemeServiceIntegrationTest {
         final Theme theme2 = themeRepository.save(Theme.withoutId("테마2", "테마2", "www.m.com"));
         final Theme theme3 = themeRepository.save(Theme.withoutId("테마3", "테마3", "www.m.com"));
         final Name name = new Name("꾹");
-        final User user = userRepository.save(User.withoutId(name, "admin@naver.com", "1234", Roles.USER));
+        final User user = userRepository.save(
+                User.withoutId(name, "admin@naver.com", PasswordFixture.generate(), Roles.USER));
 
         reservationRepository.save(Reservation.withoutId(user, date.minusDays(2), reservationTime, theme1));
         reservationRepository.save(Reservation.withoutId(user, date.minusDays(3), reservationTime, theme1));

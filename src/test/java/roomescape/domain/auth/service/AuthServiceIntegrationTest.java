@@ -12,14 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.auth.config.JwtProperties;
+import roomescape.domain.auth.dto.LoginRequest;
 import roomescape.domain.auth.dto.LoginUserDto;
+import roomescape.domain.auth.dto.TokenResponse;
 import roomescape.domain.auth.dto.UserInfoResponse;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Password;
 import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.exception.InvalidAuthorizationException;
 import roomescape.domain.auth.exception.UserNotFoundException;
 import roomescape.domain.auth.repository.UserRepository;
+import roomescape.utils.PasswordFixture;
 
 @SpringBootTest
 @Transactional
@@ -36,6 +40,9 @@ public class AuthServiceIntegrationTest {
 
     @Autowired
     private JwtProperties jwtProperties;
+
+    @Autowired
+    private PasswordEncryptor passwordEncryptor;
 
     private String cookieKey;
 
@@ -54,7 +61,8 @@ public class AuthServiceIntegrationTest {
             final Name name = new Name("꾹");
             final String email = "asdad@naver.com";
 
-            final User savedUser = userRepository.save(User.withoutId(name, email, "1234", Roles.USER));
+            final Password password = PasswordFixture.generate();
+            final User savedUser = userRepository.save(User.withoutId(name, email, password, Roles.USER));
             final UserInfoResponse expected = UserInfoResponse.from(savedUser);
             final LoginUserDto loginUserDto = new LoginUserDto(savedUser.getId(), savedUser.getRole());
 
@@ -86,7 +94,8 @@ public class AuthServiceIntegrationTest {
             final Name name = new Name("꾹");
             final String email = "asdad@naver.com";
 
-            final User savedUser = userRepository.save(User.withoutId(name, email, "1234", Roles.USER));
+            final Password password = PasswordFixture.generate();
+            final User savedUser = userRepository.save(User.withoutId(name, email, password, Roles.USER));
             final String token = jwtManager.createToken(savedUser);
             final LoginUserDto expected = LoginUserDto.from(savedUser);
 
@@ -104,7 +113,8 @@ public class AuthServiceIntegrationTest {
             final String invalidToken = "213123213214sdadcxzcxz";
 
             // when & then
-            assertThatThrownBy(() -> authService.getLoginUser(invalidToken)).isInstanceOf(InvalidAuthorizationException.class);
+            assertThatThrownBy(() -> authService.getLoginUser(invalidToken)).isInstanceOf(
+                    InvalidAuthorizationException.class);
         }
 
         @DisplayName("쿠키를 통해 로그인 정보를 검증한다.")
@@ -113,7 +123,8 @@ public class AuthServiceIntegrationTest {
             // given
             final Name name = new Name("쿠키유저");
             final String email = "cookie@naver.com";
-            final User savedUser = userRepository.save(User.withoutId(name, email, "pw", Roles.USER));
+            final Password password = PasswordFixture.generate();
+            final User savedUser = userRepository.save(User.withoutId(name, email, password, Roles.USER));
             final String token = jwtManager.createToken(savedUser);
             final Cookie[] cookies = {new Cookie(cookieKey, token)};
             final LoginUserDto expected = LoginUserDto.from(savedUser);
@@ -134,6 +145,52 @@ public class AuthServiceIntegrationTest {
             // when & then
             assertThatThrownBy(() -> authService.getLoginUser(cookies)).isInstanceOf(
                     InvalidAuthorizationException.class);
+        }
+    }
+
+    @DisplayName("로그인")
+    @Nested
+    class login {
+        @DisplayName("이메일과 비밀번호가 일치하면 로그인이 성공한다.")
+        @Test
+        void login_success() {
+            // given
+            final Name name = new Name("로그인유저");
+            final String email = "login@test.com";
+            final Password password = Password.encrypt("password123", passwordEncryptor);
+            userRepository.save(User.withoutId(name, email, password, Roles.USER));
+            final LoginRequest loginRequest = new LoginRequest(email, "password123");
+
+            // when
+            final TokenResponse result = authService.login(loginRequest);
+
+            // then
+            assertThat(result).isNotNull();
+            assertThat(result.token()).isNotBlank();
+        }
+
+        @DisplayName("비밀번호가 다르면 예외가 발생한다.")
+        @Test
+        void login_wrongPassword() {
+            // given
+            final Name name = new Name("로그인유저");
+            final String email = "login@test.com";
+            final Password password = Password.encrypt("password123", passwordEncryptor);
+            userRepository.save(User.withoutId(name, email, password, Roles.USER));
+            final LoginRequest loginRequest = new LoginRequest(email, "wrongpassword");
+
+            // when & then
+            assertThatThrownBy(() -> authService.login(loginRequest)).isInstanceOf(InvalidAuthorizationException.class);
+        }
+
+        @DisplayName("존재하지 않는 이메일이면 예외가 발생한다.")
+        @Test
+        void login_userNotFound() {
+            // given
+            final LoginRequest loginRequest = new LoginRequest("notfound@test.com", "password123");
+
+            // when & then
+            assertThatThrownBy(() -> authService.login(loginRequest)).isInstanceOf(UserNotFoundException.class);
         }
     }
 }

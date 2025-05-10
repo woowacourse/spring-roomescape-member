@@ -38,6 +38,7 @@ import roomescape.domain.reservation.repository.ThemeRepository;
 import roomescape.domain.reservation.repository.impl.ReservationDAO;
 import roomescape.domain.reservation.repository.impl.ReservationTimeDAO;
 import roomescape.domain.reservation.repository.impl.ThemeDAO;
+import roomescape.utils.PasswordFixture;
 
 @JdbcTest
 @Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class, UserDao.class, ReservationService.class})
@@ -82,7 +83,7 @@ public class ReservationServiceIntegrationTest {
         final LocalDate date = LocalDate.of(2024, 4, 29);
 
         final Name name = new Name("꾹");
-        final User user = User.withoutId(name, "admin@naver.com", "1234", Roles.USER);
+        final User user = User.withoutId(name, "admin@naver.com", PasswordFixture.generate(), Roles.USER);
         final User savedUser = userRepository.save(user);
 
         reservationRepository.save(Reservation.withoutId(savedUser, date, savedTime, savedTheme));
@@ -115,7 +116,7 @@ public class ReservationServiceIntegrationTest {
         final Long timeId = savedTime.getId();
 
         final Name name = new Name("꾹");
-        final User user = User.withoutId(name, "admin@naver.com", "1234", Roles.USER);
+        final User user = User.withoutId(name, "admin@naver.com", PasswordFixture.generate(), Roles.USER);
         final Long userId = userRepository.save(user)
                 .getId();
 
@@ -155,7 +156,7 @@ public class ReservationServiceIntegrationTest {
         final LocalDate date = nextDay();
 
         final Name name = new Name("꾹");
-        final User user = User.withoutId(name, "admin@naver.com", "1234", Roles.USER);
+        final User user = User.withoutId(name, "admin@naver.com", PasswordFixture.generate(), Roles.USER);
         final Long userId = userRepository.save(user)
                 .getId();
 
@@ -182,7 +183,7 @@ public class ReservationServiceIntegrationTest {
         final Long timeId = savedTime.getId();
 
         final Name name = new Name("꾹");
-        final User user = User.withoutId(name, "admin@naver.com", "1234", Roles.USER);
+        final User user = User.withoutId(name, "admin@naver.com", PasswordFixture.generate(), Roles.USER);
         final Long userId = userRepository.save(user)
                 .getId();
 
@@ -205,7 +206,7 @@ public class ReservationServiceIntegrationTest {
         final ReservationCreateRequest requestDto = new ReservationCreateRequest(date, notExistId, themeId);
 
         final Name name = new Name("꾹");
-        final User user = User.withoutId(name, "admin@naver.com", "1234", Roles.USER);
+        final User user = User.withoutId(name, "admin@naver.com", PasswordFixture.generate(), Roles.USER);
         final Long userId = userRepository.save(user)
                 .getId();
 
@@ -243,7 +244,7 @@ public class ReservationServiceIntegrationTest {
         final Long timeId = savedTime.getId();
 
         final Name name = new Name("꾹");
-        final User user = User.withoutId(name, "admin@naver.com", "1234", Roles.USER);
+        final User user = User.withoutId(name, "admin@naver.com", PasswordFixture.generate(), Roles.USER);
         final Long userId = userRepository.save(user)
                 .getId();
 
@@ -266,7 +267,8 @@ public class ReservationServiceIntegrationTest {
         final LocalDate date = nextDay();
         final Name name = new Name("꾹");
 
-        final User user = userRepository.save(User.withoutId(name, "admin@naver.com", "1234", Roles.USER));
+        final User user = userRepository.save(
+                User.withoutId(name, "admin@naver.com", PasswordFixture.generate(), Roles.USER));
 
         final Reservation savedReservation = reservationRepository.save(
                 Reservation.withoutId(user, date, savedTime, savedTheme));
@@ -300,7 +302,8 @@ public class ReservationServiceIntegrationTest {
         final Long themeId = savedTheme.getId();
 
         final Name name = new Name("꾹");
-        final User user = userRepository.save(User.withoutId(name, "admin@naver.com", "1234", Roles.USER));
+        final User user = userRepository.save(
+                User.withoutId(name, "admin@naver.com", PasswordFixture.generate(), Roles.USER));
 
         reservationRepository.save(Reservation.withoutId(user, date, reservationTime1, savedTheme));
 
@@ -344,8 +347,10 @@ public class ReservationServiceIntegrationTest {
         final LocalDate today = LocalDate.now();
         final LocalDate tomorrow = today.plusDays(1);
 
-        final User user1 = userRepository.save(User.withoutId(new Name("사용자1"), "user1@mail.com", "1234", Roles.USER));
-        final User user2 = userRepository.save(User.withoutId(new Name("사용자2"), "user2@mail.com", "1234", Roles.USER));
+        final User user1 = userRepository.save(
+                User.withoutId(new Name("사용자1"), "user1@mail.com", PasswordFixture.generate(), Roles.USER));
+        final User user2 = userRepository.save(
+                User.withoutId(new Name("사용자2"), "user2@mail.com", PasswordFixture.generate(), Roles.USER));
 
         // 테마1, 사용자1, 오늘 예약
         reservationRepository.save(Reservation.withoutId(user1, today, savedTime, theme1));

@@ -20,17 +20,19 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Password;
 import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.repository.UserRepository;
 import roomescape.domain.auth.service.JwtManager;
+import roomescape.domain.auth.service.PasswordEncryptor;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.repository.ThemeRepository;
-import roomescape.domain.reservation.utils.JdbcTemplateUtils;
+import roomescape.utils.JdbcTemplateUtils;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ReservationApiTest {
@@ -53,6 +55,11 @@ class ReservationApiTest {
     @Autowired
     private JwtManager jwtManager;
 
+    @Autowired
+    private PasswordEncryptor passwordEncryptor;
+
+    private Password password;
+
     @LocalServerPort
     private int port;
 
@@ -66,6 +73,7 @@ class ReservationApiTest {
     void init() {
         RestAssured.port = port;
         JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
+        password = Password.encrypt("1234", passwordEncryptor);
     }
 
     @DisplayName("모든 예약 정보를 반환한다.")
@@ -80,7 +88,7 @@ class ReservationApiTest {
         final Theme savedTheme = themeRepository.save(theme);
 
         final Name name = new Name("브라운");
-        final User user = User.withoutId(name, "admin@naver.com", "1234", Roles.USER);
+        final User user = User.withoutId(name, "admin@naver.com", password, Roles.USER);
         final User savedUser = userRepository.save(user);
 
         final Reservation reservation = Reservation.withoutId(savedUser, LocalDate.now(), savedReservationTime,
@@ -113,7 +121,7 @@ class ReservationApiTest {
         final Theme savedTheme = themeRepository.save(theme);
         final LocalDate now = LocalDate.now();
 
-        final User user = userRepository.save(User.withoutId(new Name("브라운"), "dsa@naver.com", "1234", Roles.USER));
+        final User user = userRepository.save(User.withoutId(new Name("브라운"), "dsa@naver.com", password, Roles.USER));
         final String token = jwtManager.createToken(user);
 
         final Map<String, Object> reservation = new HashMap<>();
@@ -151,7 +159,7 @@ class ReservationApiTest {
         reservation.put("timeId", 1);
         reservation.put("themeId", savedTheme.getId());
 
-        final User user = userRepository.save(User.withoutId(new Name("브라운"), "dsa@naver.com", "1234", Roles.USER));
+        final User user = userRepository.save(User.withoutId(new Name("브라운"), "dsa@naver.com", password, Roles.USER));
         final String token = jwtManager.createToken(user);
 
         // when & then
@@ -183,7 +191,7 @@ class ReservationApiTest {
         reservation.put("timeId", savedReservationTime.getId());
         reservation.put("themeId", 1L);
 
-        final User user = userRepository.save(User.withoutId(new Name("브라운"), "dsa@naver.com", "1234", Roles.USER));
+        final User user = userRepository.save(User.withoutId(new Name("브라운"), "dsa@naver.com", password, Roles.USER));
         final String token = jwtManager.createToken(user);
 
         // when & then
@@ -215,7 +223,7 @@ class ReservationApiTest {
         final Theme savedTheme = themeRepository.save(theme);
 
         final Name name = new Name("브라운");
-        final User user = User.withoutId(name, "admin@naver.com", "1234", Roles.USER);
+        final User user = User.withoutId(name, "admin@naver.com", password, Roles.USER);
         final User savedUser = userRepository.save(user);
 
         final Reservation reservation = Reservation.withoutId(savedUser, now, savedReservationTime, savedTheme);
@@ -258,7 +266,7 @@ class ReservationApiTest {
         final LocalDate date = LocalDate.now();
 
         final Name name = new Name("브라운");
-        final User user = User.withoutId(name, "admin@naver.com", "1234", Roles.USER);
+        final User user = User.withoutId(name, "admin@naver.com", password, Roles.USER);
         final User savedUser = userRepository.save(user);
 
         reservationRepository.save(Reservation.withoutId(savedUser, date, time1, theme));
@@ -289,8 +297,8 @@ class ReservationApiTest {
         final ReservationTime time = reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(10, 0)));
         final Theme theme1 = themeRepository.save(Theme.withoutId("테마1", "설명1", "img1"));
         final Theme theme2 = themeRepository.save(Theme.withoutId("테마2", "설명2", "img2"));
-        final User user1 = userRepository.save(User.withoutId(new Name("유저1"), "user1@a.com", "pw", Roles.USER));
-        final User user2 = userRepository.save(User.withoutId(new Name("유저2"), "user2@a.com", "pw", Roles.USER));
+        final User user1 = userRepository.save(User.withoutId(new Name("유저1"), "user1@a.com", password, Roles.USER));
+        final User user2 = userRepository.save(User.withoutId(new Name("유저2"), "user2@a.com", password, Roles.USER));
         final LocalDate today = LocalDate.now();
 
         // 예약 3개 생성
