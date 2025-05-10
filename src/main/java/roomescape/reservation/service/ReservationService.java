@@ -11,6 +11,7 @@ import roomescape.exception.notFound.ThemeNotFoundException;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.request.CreateReservationRequest;
+import roomescape.reservation.repository.dto.ReservationWithFilterRequest;
 import roomescape.reservation.service.dto.response.ReservationResponse;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.ThemeRepository;
@@ -39,8 +40,8 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public List<ReservationResponse> getAllReservation() {
-        return reservationRepository.findAll()
+    public List<ReservationResponse> getAllReservation(ReservationWithFilterRequest request) {
+        return reservationRepository.findAllByFilter(request)
                 .stream()
                 .map(this::convertToResponse)
                 .toList();

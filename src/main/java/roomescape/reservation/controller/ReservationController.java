@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
@@ -9,8 +10,10 @@ import roomescape.auth.entity.LoginMember;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.dto.request.CreateReservationRequest;
 import roomescape.reservation.service.dto.request.ReservationRequest;
+import roomescape.reservation.repository.dto.ReservationWithFilterRequest;
 import roomescape.reservation.service.dto.response.ReservationResponse;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -23,8 +26,14 @@ public class ReservationController {
     }
 
     @GetMapping
-    public List<ReservationResponse> getAllReservation() {
-        return service.getAllReservation();
+    public List<ReservationResponse> getAllReservation(
+            @RequestParam("memberId") @Nullable Long memberId,
+            @RequestParam("themeId") @Nullable Long themeId,
+            @RequestParam("from") @Nullable LocalDate from,
+            @RequestParam("to") @Nullable LocalDate to
+    ) {
+        ReservationWithFilterRequest request = new ReservationWithFilterRequest(memberId, themeId, from, to);
+        return service.getAllReservation(request);
     }
 
     @PostMapping

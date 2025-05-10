@@ -1,6 +1,7 @@
 package roomescape.reservation.repository;
 
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.repository.dto.ReservationWithFilterRequest;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +25,12 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         return Collections.unmodifiableList(entities);
+    }
+
+    @Override
+    public List<Reservation> findAllByFilter(ReservationWithFilterRequest filterRequest) {
+        // TODO: 로직 작성
+        return null;
     }
 
     @Override

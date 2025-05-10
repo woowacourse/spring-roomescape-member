@@ -9,10 +9,12 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.repository.dto.ReservationWithFilterRequest;
 import roomescape.time.entity.ReservationTime;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,6 +83,48 @@ public class JdbcReservationRepository implements ReservationRepository {
                 on r.time_id = t.id
                 """;
         return jdbcTemplate.query(query, ROW_MAPPER);
+    }
+
+    @Override
+    public List<Reservation> findAllByFilter(ReservationWithFilterRequest filterRequest) {
+        String selectQuery =
+                """
+                SELECT
+                    r.id,
+                    r.member_id,
+                    r.date,
+                    rt.start_at,
+                    r.theme_id,
+                    rt.id as time_id
+                FROM reservation as r
+                INNER JOIN reservation_time as rt
+                ON r.time_id = rt.id
+                """;
+        List<String> filters = new ArrayList<>();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        if (filterRequest.memberId() != null) {
+            filters.add("member_id = :member_id");
+            params.addValue("member_id", filterRequest.memberId());
+        }
+        if (filterRequest.themeId() != null) {
+            filters.add("theme_id = :theme_id");
+            params.addValue("theme_id", filterRequest.themeId());
+        }
+        if (filterRequest.from() != null) {
+            filters.add("date >= :from");
+            params.addValue("from", filterRequest.from());
+        }
+        if (filterRequest.to() != null) {
+            filters.add("date <= :to");
+            params.addValue("to", filterRequest.to());
+        }
+
+        if (filters.isEmpty()) {
+            return jdbcTemplate.query(selectQuery, ROW_MAPPER);
+        }
+        String filterQuery = String.join(" AND ", filters);
+        String query = selectQuery + " WHERE " + filterQuery;
+        return jdbcTemplate.query(query, params, ROW_MAPPER);
     }
 
     @Override
