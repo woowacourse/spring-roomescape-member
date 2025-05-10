@@ -3,7 +3,7 @@ package roomescape.service.auth;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.entity.member.Member;
+import roomescape.domain.member.Member;
 import roomescape.infrastructure.jwt.JwtTokenProvider;
 import roomescape.repository.member.MemberRepository;
 

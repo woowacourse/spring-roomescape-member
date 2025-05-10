@@ -1,6 +1,6 @@
 package roomescape.repository.member;
 
-import roomescape.entity.member.Member;
+import roomescape.domain.member.Member;
 
 public interface MemberRepository {
 

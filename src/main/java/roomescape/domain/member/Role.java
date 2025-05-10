@@ -1,4 +1,4 @@
-package roomescape.entity.member;
+package roomescape.domain.member;
 
 public enum Role {
     USER, ADMIN

@@ -6,8 +6,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
-import roomescape.entity.member.Member;
-import roomescape.entity.member.Role;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.exceptions.EntityNotFoundException;
 
 @Repository

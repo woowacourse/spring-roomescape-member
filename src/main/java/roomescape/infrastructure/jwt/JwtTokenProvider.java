@@ -5,8 +5,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.RequiredTypeException;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
-import roomescape.entity.member.Member;
-import roomescape.entity.member.Role;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.exceptions.auth.AuthenticationException;
 import roomescape.infrastructure.member.MemberInfo;
 

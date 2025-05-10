@@ -1,4 +1,4 @@
-package roomescape.entity.member;
+package roomescape.domain.member;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;

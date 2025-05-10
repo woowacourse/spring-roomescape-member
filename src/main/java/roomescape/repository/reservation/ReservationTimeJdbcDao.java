@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.entity.reservation.ReservationTime;
+import roomescape.domain.reservation.ReservationTime;
 import roomescape.exceptions.EntityNotFoundException;
 
 @Repository

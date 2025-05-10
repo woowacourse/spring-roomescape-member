@@ -1,7 +1,7 @@
 package roomescape.repository.reservation;
 
 import java.util.List;
-import roomescape.entity.reservation.Theme;
+import roomescape.domain.reservation.Theme;
 
 public interface ThemeRepository {
 

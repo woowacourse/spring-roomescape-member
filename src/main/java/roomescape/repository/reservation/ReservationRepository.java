@@ -2,10 +2,10 @@ package roomescape.repository.reservation;
 
 import java.time.LocalDate;
 import java.util.List;
-import roomescape.entity.member.Member;
-import roomescape.entity.reservation.Reservation;
-import roomescape.entity.reservation.ReservationTime;
-import roomescape.entity.reservation.Theme;
+import roomescape.domain.member.Member;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.reservation.Theme;
 
 public interface ReservationRepository {
 

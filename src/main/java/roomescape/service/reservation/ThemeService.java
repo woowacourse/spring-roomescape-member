@@ -3,9 +3,9 @@ package roomescape.service.reservation;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.reservation.Theme;
 import roomescape.dto.reservation.ThemeRequest;
 import roomescape.dto.reservation.ThemeResponse;
-import roomescape.entity.reservation.Theme;
 import roomescape.exceptions.reservation.ThemeDuplicateException;
 import roomescape.repository.reservation.ThemeRepository;
 

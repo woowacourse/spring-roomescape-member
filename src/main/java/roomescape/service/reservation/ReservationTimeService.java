@@ -3,9 +3,9 @@ package roomescape.service.reservation;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.reservation.ReservationTime;
 import roomescape.dto.reservation.ReservationTimeRequest;
 import roomescape.dto.reservation.ReservationTimeResponse;
-import roomescape.entity.reservation.ReservationTime;
 import roomescape.exceptions.reservation.ReservationTimeDuplicateException;
 import roomescape.repository.reservation.ReservationTimeRepository;
 
