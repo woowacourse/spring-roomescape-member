@@ -3,6 +3,7 @@ package roomescape.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 
 public record MemberSignUpRequest(
         @NotBlank(message = "이름은 빈 값이 올 수 없습니다")
@@ -14,6 +15,6 @@ public record MemberSignUpRequest(
         String password
 ) {
     public Member toMember() {
-        return new Member(null, name, email, password);
+        return new Member(null, name, email, MemberRole.USER, password);
     }
 }

@@ -38,8 +38,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             throw new AuthorizationException("인증 정보가 올바르지 않습니다.");
         };
 
-        String payload = jwtTokenProvider.getPayload(token);
-        Long memberId = Long.parseLong(payload);
+        String id = jwtTokenProvider.getSub(token);
+        Long memberId = Long.parseLong(id);
         Member member = memberService.findMemberById(memberId);
         return new LoginMemberRequest(member.getId(), member.getName());
     }

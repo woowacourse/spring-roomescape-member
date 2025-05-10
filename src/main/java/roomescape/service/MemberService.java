@@ -37,6 +37,10 @@ public class MemberService {
                 orElseThrow(() -> new NotFoundMemberException("회원 정보가 존재하지 않습니다."));
     }
 
+    public boolean isExistMemberById(Long id) {
+        return memberRepository.findById(id).isPresent();
+    }
+
     public List<MemberNameSelectResponse> findMemberNames() {
         List<Member> members = memberRepository.findAll();
         return members.stream()

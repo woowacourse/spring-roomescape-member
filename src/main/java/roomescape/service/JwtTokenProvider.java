@@ -3,6 +3,8 @@ package roomescape.service;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 
 import java.util.Date;
 
@@ -13,8 +15,12 @@ public class JwtTokenProvider {
     @Value("3600000")
     private long validityInMilliseconds;
 
-    public String createToken(String payload) {
-        Claims claims = Jwts.claims().setSubject(payload);
+    public String createToken(Member member) {
+        Claims claims = Jwts.claims();
+        claims.setSubject(member.getId().toString());
+        claims.put("name", member.getName());
+        claims.put("role", member.getRole().toString());
+
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
@@ -26,8 +32,16 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getPayload(String token) {
+    public String getSub(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public String getPayloadByKey(String token, String key) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get(key, String.class);
     }
 
     public boolean validateToken(String token) {

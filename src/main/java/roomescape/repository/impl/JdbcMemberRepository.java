@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.repository.MemberRepository;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class JdbcMemberRepository implements MemberRepository {
         Map<String, Object> parameters = Map.ofEntries(
                 Map.entry("name", member.getName()),
                 Map.entry("email", member.getEmail()),
+                Map.entry("member_role", member.getRole().toString()),
                 Map.entry("password", member.getPassword())
         );
 
@@ -40,13 +42,14 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findByEmail(String email) {
-        String query = "SELECT id, name, email, password FROM member WHERE email = ?";
+        String query = "SELECT id, name, email, member_role, password FROM member WHERE email = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query,
                     (resultSet, rowNum) -> new Member(
                             resultSet.getLong("id"),
                             resultSet.getString("name"),
                             resultSet.getString("email"),
+                            MemberRole.valueOf(resultSet.getString("member_role")),
                             resultSet.getString("password")
                     ), email));
         } catch (DataAccessException exception) {
@@ -56,13 +59,14 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findById(Long id) {
-        String query = "SELECT id, name, email, password FROM member WHERE id = ?";
+        String query = "SELECT id, name, email, member_role, password FROM member WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query,
                     (resultSet, rowNum) -> new Member(
                             resultSet.getLong("id"),
                             resultSet.getString("name"),
                             resultSet.getString("email"),
+                            MemberRole.valueOf(resultSet.getString("member_role")),
                             resultSet.getString("password")
                     ), id));
         } catch (DataAccessException exception) {
@@ -72,14 +76,15 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public List<Member> findAll() {
-        String query = "SELECT id, name, email, password FROM member";
+        String query = "SELECT id, name, email, member_role, password FROM member";
         return jdbcTemplate.query(
                 query,
                 (resultSet, rowNum) -> new Member(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("email"),
-                resultSet.getString("password")
-        ));
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        MemberRole.valueOf(resultSet.getString("member_role")),
+                        resultSet.getString("password")
+                ));
     }
 }

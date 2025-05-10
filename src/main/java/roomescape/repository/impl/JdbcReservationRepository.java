@@ -5,10 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.common.exception.NotAbleDeleteException;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.*;
 import roomescape.repository.ReservationRepository;
 
 import java.util.List;
@@ -52,6 +49,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     m.id as member_id,
                     m.name as member_name,
                     m.email as member_email,
+                    m.member_role as member_role,
                     m.password as member_password,
                     th.id as theme_id,
                     th.name as theme_name,
@@ -85,6 +83,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                                 resultSet.getLong("member_id"),
                                 resultSet.getString("member_name"),
                                 resultSet.getString("member_email"),
+                                MemberRole.valueOf(resultSet.getString("member_role")),
                                 resultSet.getString("member_password")
                         )
                 )
