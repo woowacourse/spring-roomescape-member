@@ -34,6 +34,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         // TODO: util로 중복 제거 고민
+        RequestMember annotation = parameter.getParameterAnnotation(RequestMember.class);
         if (request == null || request.getCookies() == null) {
             throw new IllegalArgumentException();
         }
@@ -45,13 +46,16 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
             }
         }
 
-        try {
-            Long memberId = Long.valueOf(jwtProvider.getPayload(token));
-            return memberRepository.getById(memberId);
-        } catch (ExpiredJwtException e) {
-            throw new InvalidTokenException(e);
-        } catch (IllegalArgumentException e) {
-            throw new AuthenticationException("로그인 정보가 잘못되었습니다.");
+        if (token == null && !annotation.required()) {
+            return null;
+        }
+            try {
+                Long memberId = Long.valueOf(jwtProvider.getPayload(token));
+                return memberRepository.getById(memberId);
+            } catch (ExpiredJwtException e) {
+                throw new InvalidTokenException(e);
+            } catch (IllegalArgumentException e) {
+                throw new AuthenticationException("로그인 정보가 잘못되었습니다.");
+            }
         }
     }
-}

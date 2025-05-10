@@ -50,10 +50,9 @@ public class MemberController {
         return memberService.getAll();
     }
 
-    // TODO: 비로그인 상태인 경우 UserId(required=false)와 같이 변경(현재는 비로그인 상태 시 400 에러 발생: [ERROR] JWT String argument cannot be null or empty.)
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/login/check")
-    public LoginCheckResponse loginCheck(@RequestMember Member member) {
+    public LoginCheckResponse loginCheck(@RequestMember(required = false) Member member) {
         return memberService.loginCheck(member);
     }
 

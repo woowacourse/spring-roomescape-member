@@ -22,7 +22,6 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
       });
 });
 
-// TODO: 회원가입은 성공하는데 자동으로 로그인되게 해야 에러가 안나려나??
 function updateUIBasedOnLogin() {
   fetch('/login/check') // 로그인 상태 확인 API 호출
       .then(response => {
@@ -32,10 +31,16 @@ function updateUIBasedOnLogin() {
         return response.json(); // 응답 본문을 JSON으로 파싱
       })
       .then(data => {
-        // 응답에서 사용자 이름을 추출하여 UI 업데이트
-        document.getElementById('profile-name').textContent = data.name; // 프로필 이름 설정
-        document.querySelector('.nav-item.dropdown').style.display = 'block'; // 드롭다운 메뉴 표시
-        document.querySelector('.nav-item a[href="/login"]').parentElement.style.display = 'none'; // 로그인 버튼 숨김
+          if (data.name.contains("비로그인")) {
+              document.getElementById('profile-name').textContent = 'Profile'; // 기본 텍스트로 재설정
+              document.querySelector('.nav-item.dropdown').style.display = 'none'; // 드롭다운 메뉴 숨김
+              document.querySelector('.nav-item a[href="/login"]').parentElement.style.display = 'block'; // 로그인 버튼 표시
+          } else {
+              // 응답에서 사용자 이름을 추출하여 UI 업데이트
+              document.getElementById('profile-name').textContent = data.name; // 프로필 이름 설정
+              document.querySelector('.nav-item.dropdown').style.display = 'block'; // 드롭다운 메뉴 표시
+              document.querySelector('.nav-item a[href="/login"]').parentElement.style.display = 'none'; // 로그인 버튼 숨김
+          }
       })
       .catch(error => {
         // 에러 처리 또는 로그아웃 상태일 때 UI 업데이트
