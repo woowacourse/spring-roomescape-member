@@ -34,7 +34,7 @@ public class MemberController {
     }
 
     @PostMapping
-    public ResponseEntity<MemberProfileResponse> getMember(
+    public ResponseEntity<MemberProfileResponse> addMember(
             @Valid @RequestBody MemberCreationRequest request
     ) {
         long memberId = memberService.addMember(request);
