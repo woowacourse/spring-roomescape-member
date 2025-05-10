@@ -43,6 +43,8 @@ class JdbcTimeRepositoryTest {
                 statement.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
                 statement.execute("TRUNCATE TABLE theme");
                 statement.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+                statement.execute("TRUNCATE TABLE member");
+                statement.execute("ALTER TABLE member ALTER COLUMN id RESTART WITH 1");
                 statement.execute("SET REFERENTIAL_INTEGRITY TRUE");
             }
             return null;
@@ -111,7 +113,8 @@ class JdbcTimeRepositoryTest {
     void error_when_delete_referencedTime() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1L, '10:00:00')");
-        jdbcTemplate.update("INSERT INTO reservation (name, date,time_id) VALUES ('브라운', '2025-01-01', 1)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (date ,time_id) VALUES ('2025-01-01', 1L)");
 
         // when & then
         assertThatThrownBy(() -> timeRepository.deleteById(1L))

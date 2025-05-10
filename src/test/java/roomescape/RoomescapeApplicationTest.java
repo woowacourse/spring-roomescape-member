@@ -3,6 +3,7 @@ package roomescape;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.testFixture.Fixture.MEMBER1;
 import static roomescape.testFixture.Fixture.RESERVATION_1;
 import static roomescape.testFixture.Fixture.RESERVATION_TIME_1;
 import static roomescape.testFixture.Fixture.RESERVATION_TIME_2;
@@ -30,6 +31,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.auth.dto.MemberAuthResponse;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.domain.repository.dto.TimeDataWithBookingInfo;
+import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.testFixture.JdbcHelper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -40,6 +42,9 @@ class RoomescapeApplicationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @BeforeEach
     void cleanDatabase() {
@@ -132,6 +137,7 @@ class RoomescapeApplicationTest {
     void getTimesWithBookingInfo() {
         JdbcHelper.insertTheme(jdbcTemplate, THEME_1);
         JdbcHelper.insertReservationTimes(jdbcTemplate, RESERVATION_TIME_1, RESERVATION_TIME_2, RESERVATION_TIME_3);
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER1);
         JdbcHelper.insertReservation(jdbcTemplate, RESERVATION_1);
 
         String date = RESERVATION_1.getReservationDate().toString();

@@ -2,6 +2,7 @@ package roomescape.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.testFixture.Fixture.MEMBER1;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -44,6 +45,8 @@ class JdbcReservationRepositoryTest {
                 statement.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
                 statement.execute("TRUNCATE TABLE theme");
                 statement.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+                statement.execute("TRUNCATE TABLE member");
+                statement.execute("ALTER TABLE member ALTER COLUMN id RESTART WITH 1");
                 statement.execute("SET REFERENTIAL_INTEGRITY TRUE");
             }
             return null;
@@ -57,9 +60,11 @@ class JdbcReservationRepositoryTest {
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00')");
         jdbcTemplate.update(
                 "INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '테마1', '테마 1입니다.', '썸네일입니다.')");
+        jdbcTemplate.update(
+                "INSERT INTO member (id, name, email, password) VALUES (1, '어드민', 'admin@email.com', 'password')");
 
         Reservation reservation = Reservation.withoutId(
-                "테스트행님",
+                MEMBER1,
                 Theme.of(1L, "테마1", "테마 1입니다.", "썸네일"),
                 LocalDate.of(2025, 4, 30),
                 ReservationTime.of(1L, LocalTime.of(10, 0))
@@ -75,7 +80,7 @@ class JdbcReservationRepositoryTest {
         assertAll(
                 () -> assertThat(savedId).isNotNull(),
 
-                () -> assertThat(result).containsEntry("name", "테스트행님"),
+                () -> assertThat(result).containsEntry("member_id", 1L),
                 () -> assertThat(result).containsEntry("date", Date.valueOf(LocalDate.of(2025, 4, 30))),
                 () -> assertThat(result).containsEntry("time_id", 1L)
         );
@@ -88,13 +93,20 @@ class JdbcReservationRepositoryTest {
         jdbcTemplate.update(
                 "INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '테마1', '테마 1입니다.', '썸네일입니다.')");
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00:00')");
+        jdbcTemplate.update("""
+                INSERT INTO member (name, email, password)
+                VALUES ('어드민', 'admin@email.com', 'password'),
+                       ('브라운', 'brown@email.com', 'brown'),
+                       ('브리', 'brie@email.com', 'brie'),
+                       ('솔라', 'solar@email.com', 'solar')
+                """);
 
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', '2025-01-01', 1, 1)");
+                "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (2, '2025-01-01', 1, 1)");
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('솔라', '2025-01-01', 1, 1)");
+                "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (3, '2025-01-01', 1, 1)");
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브리', '2025-01-01', 1, 1)");
+                "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (4, '2025-01-01', 1, 1)");
 
         // when
         List<Reservation> reservations = reservationRepository.findAll();
@@ -102,8 +114,8 @@ class JdbcReservationRepositoryTest {
         // then
         assertThat(reservations).hasSize(3);
         assertThat(reservations)
-                .extracting(Reservation::getName)
-                .containsExactly("브라운", "솔라", "브리");
+                .extracting(reservation -> reservation.getMember().getName())
+                .containsExactly("브라운", "브리", "솔라");
     }
 
     @DisplayName("id로 예약을 삭제할 수 있다.")
@@ -115,7 +127,9 @@ class JdbcReservationRepositoryTest {
                 "INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '테마1', '테마 1입니다.', '썸네일입니다.')");
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00:00')");
         jdbcTemplate.update(
-                "INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (1, '브라운', '2025-01-01', 1, 1)");
+                "INSERT INTO member (id, name, email, password) VALUES (1, '어드민', 'admin@email.com', 'password')");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (id, member_id, date, time_id, theme_id) VALUES (1, 1, '2025-01-01', 1, 1)");
         assertThat(reservationRepository.findAll()).hasSize(1);
 
         // when

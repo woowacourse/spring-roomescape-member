@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.application.dto.ReservationCreateDto;
 import roomescape.application.dto.ReservationDto;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -17,22 +18,26 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final TimeService timeService;
     private final ThemeService themeService;
+    private final MemberService memberService;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             TimeService timeService,
-            ThemeService themeService
+            ThemeService themeService,
+            MemberService memberService
     ) {
         this.reservationRepository = reservationRepository;
         this.timeService = timeService;
         this.themeService = themeService;
+        this.memberService = memberService;
     }
 
     @Transactional
-    public ReservationDto registerReservation(ReservationCreateDto request) {
+    public ReservationDto registerReservation(ReservationCreateDto request, Long memberId) {
         Theme theme = themeService.getThemeById(request.themeId()).toEntity();
         ReservationTime reservationTime = timeService.getTimeById(request.timeId()).toEntity();
-        Reservation reservation = Reservation.withoutId(request.name(), theme, request.date(), reservationTime);
+        Member member = memberService.getMemberById(memberId).toEntity();
+        Reservation reservation = Reservation.withoutId(member, theme, request.date(), reservationTime);
         validateNotPast(reservation);
         validateNotDuplicate(reservation);
         Long id = reservationRepository.save(reservation);

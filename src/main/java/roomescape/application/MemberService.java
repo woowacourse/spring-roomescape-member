@@ -1,6 +1,7 @@
 package roomescape.application;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.MemberCreateDto;
 import roomescape.application.dto.MemberDto;
@@ -34,5 +35,11 @@ public class MemberService {
         Member member = memberRepository.findBy(email, password)
                 .orElseThrow(() -> new NotFoundException("이메일과 비밀번호가 일치하는 사용자가 없습니다."));
         return MemberDto.from(member);
+    }
+
+    public List<MemberDto> getAllMembers() {
+        List<Member> members = memberRepository.findAll();
+        return MemberDto.from(members);
+
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -20,7 +21,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER =
             (rs, rowNum) -> {
                 Long id = rs.getLong("reservation_id");
-                String name = rs.getString("reservation_name");
+                Long memberId = rs.getLong("member_id");
+                String memberName = rs.getString("member_name");
+                String email = rs.getString("member_email");
+                String password = rs.getString("member_password");
                 LocalDate date = rs.getObject("reservation_date", LocalDate.class);
                 Long timeId = rs.getLong("time_id");
                 LocalTime time = rs.getObject("time_value", LocalTime.class);
@@ -30,7 +34,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 String themeThumbnail = rs.getString("theme_thumbnail");
                 return Reservation.of(
                         id,
-                        name,
+                        Member.of(memberId, memberName, email, password),
                         Theme.of(themeId, themeName, themeDescription, themeThumbnail),
                         date,
                         ReservationTime.of(timeId, time)
@@ -47,7 +51,10 @@ public class JdbcReservationRepository implements ReservationRepository {
         String findAllSql = """
                 SELECT
                     r.id as reservation_id,
-                    r.name as reservation_name,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email as member_email,
+                    m.password as member_password,
                     r.date as reservation_date,
                     t.id as time_id,
                     t.start_at as time_value,
@@ -60,6 +67,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                     on r.time_id = t.id
                 join theme as th 
                     on r.theme_id = th.id
+                join member as m
+                    on r.member_id = m.id
                 """;
         return jdbcTemplate.query(findAllSql, RESERVATION_ROW_MAPPER);
     }
@@ -71,7 +80,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .usingGeneratedKeyColumns("id");
 
         Map<String, Object> parameters = Map.of(
-                "name", reservation.getName(),
+                "member_id", reservation.getMember().getId(),
                 "date", Date.valueOf(reservation.getReservationDate()),
                 "time_id", reservation.getReservationTime().getId(),
                 "theme_id", reservation.getTheme().getId()

@@ -37,6 +37,8 @@ class JdbcThemeRepositoryTest {
                 statement.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
                 statement.execute("TRUNCATE TABLE theme");
                 statement.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+                statement.execute("TRUNCATE TABLE member");
+                statement.execute("ALTER TABLE member ALTER COLUMN id RESTART WITH 1");
                 statement.execute("SET REFERENTIAL_INTEGRITY TRUE");
             }
             return null;

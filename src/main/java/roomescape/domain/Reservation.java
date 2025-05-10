@@ -5,30 +5,31 @@ import java.time.LocalDateTime;
 
 public class Reservation {
     private final Long id;
-    private final String name;
+    private final Member member;
     private final Theme theme;
     private final LocalDate reservationDate;
     private final ReservationTime reservationTime;
 
-    private Reservation(Long id, String name, Theme theme, LocalDate reservationDate, ReservationTime reservationTime) {
+    private Reservation(Long id, Member member, Theme theme, LocalDate reservationDate,
+                        ReservationTime reservationTime) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.theme = theme;
         this.reservationDate = reservationDate;
         this.reservationTime = reservationTime;
     }
 
-    public static Reservation of(Long id, String name, Theme theme, LocalDate date, ReservationTime time) {
-        return new Reservation(id, name, theme, date, time);
+    public static Reservation of(Long id, Member member, Theme theme, LocalDate date, ReservationTime time) {
+        return new Reservation(id, member, theme, date, time);
     }
 
-    public static Reservation withoutId(String name, Theme theme, LocalDate reservationDate,
+    public static Reservation withoutId(Member member, Theme theme, LocalDate reservationDate,
                                         ReservationTime reservationTime) {
-        return new Reservation(null, name, theme, reservationDate, reservationTime);
+        return new Reservation(null, member, theme, reservationDate, reservationTime);
     }
 
     public static Reservation assignId(Long id, Reservation reservation) {
-        return new Reservation(id, reservation.getName(), reservation.getTheme(), reservation.getReservationDate(),
+        return new Reservation(id, reservation.getMember(), reservation.getTheme(), reservation.getReservationDate(),
                 reservation.getReservationTime());
     }
 
@@ -48,8 +49,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public Theme getTheme() {

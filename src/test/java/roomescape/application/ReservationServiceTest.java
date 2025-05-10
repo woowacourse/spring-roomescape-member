@@ -3,6 +3,10 @@ package roomescape.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.testFixture.Fixture.MEMBER1;
+import static roomescape.testFixture.Fixture.MEMBER2;
+import static roomescape.testFixture.Fixture.MEMBER3;
+import static roomescape.testFixture.Fixture.MEMBER4;
 import static roomescape.testFixture.Fixture.THEME_1;
 
 import java.time.LocalDate;
@@ -11,12 +15,14 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.application.dto.MemberDto;
 import roomescape.application.dto.ReservationCreateDto;
 import roomescape.application.dto.ReservationDto;
 import roomescape.application.dto.TimeDto;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.NotFoundException;
+import roomescape.testRepository.FakeMemberRepository;
 import roomescape.testRepository.FakeReservationRepository;
 import roomescape.testRepository.FakeThemeRepository;
 import roomescape.testRepository.FakeTimeRepository;
@@ -27,15 +33,18 @@ class ReservationServiceTest {
     private FakeReservationRepository reservationRepository;
     private FakeTimeRepository timeRepository;
     private FakeThemeRepository themeRepository;
+    private FakeMemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
         reservationRepository = new FakeReservationRepository();
         timeRepository = new FakeTimeRepository();
         themeRepository = new FakeThemeRepository();
+        memberRepository = new FakeMemberRepository();
         TimeService timeService = new TimeService(timeRepository);
         ThemeService themeService = new ThemeService(themeRepository);
-        reservationService = new ReservationService(reservationRepository, timeService, themeService);
+        MemberService memberService = new MemberService(memberRepository);
+        reservationService = new ReservationService(reservationRepository, timeService, themeService, memberService);
     }
 
     @DisplayName("예약을 정상적으로 등록한다.")
@@ -45,19 +54,19 @@ class ReservationServiceTest {
         LocalTime time = LocalTime.of(10, 0);
         timeRepository.save(ReservationTime.withoutId(time));
         themeRepository.save(THEME_1);
+        memberRepository.save(MEMBER1);
         LocalDate date = LocalDate.now().plusDays(1);
-        String name = "멍구";
         Long timeId = 1L;
 
-        ReservationCreateDto reservationCreateDto = new ReservationCreateDto(1L, date, name, timeId);
+        ReservationCreateDto reservationCreateDto = new ReservationCreateDto(1L, date, timeId);
 
         // when
-        ReservationDto reservationDto = reservationService.registerReservation(reservationCreateDto);
+        ReservationDto reservationDto = reservationService.registerReservation(reservationCreateDto, 1L);
 
         // then
         assertAll(
                 () -> assertThat(reservationDto.id()).isEqualTo(1),
-                () -> assertThat(reservationDto.name()).isEqualTo("멍구"),
+                () -> assertThat(reservationDto.member()).isEqualTo(MemberDto.from(MEMBER1)),
                 () -> assertThat(reservationDto.date()).isEqualTo(date),
                 () -> assertThat(reservationDto.time()).isEqualTo(new TimeDto(1L, time))
         );
@@ -68,13 +77,12 @@ class ReservationServiceTest {
     void error_when_timeId_notExist() {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
-        String name = "멍구";
         Long timeId = 999L;
 
-        ReservationCreateDto reservationCreateDto = new ReservationCreateDto(1L, date, name, timeId);
+        ReservationCreateDto reservationCreateDto = new ReservationCreateDto(1L, date, timeId);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.registerReservation(reservationCreateDto))
+        assertThatThrownBy(() -> reservationService.registerReservation(reservationCreateDto, MEMBER1.getId()))
                 .isInstanceOf(NotFoundException.class);
     }
 
@@ -86,18 +94,17 @@ class ReservationServiceTest {
         timeRepository.save(ReservationTime.withoutId(time));
 
         LocalDate date = LocalDate.now().plusDays(1);
-        String name = "멍구";
         Long timeId = 1L;
 
         ReservationTime reservationTime = ReservationTime.of(1L, time);
-        Reservation reservation = Reservation.of(1L, name, THEME_1, date, reservationTime);
+        Reservation reservation = Reservation.of(1L, MEMBER1, THEME_1, date, reservationTime);
         reservationRepository.save(reservation);
 
         // when
-        ReservationCreateDto reservationCreateDto = new ReservationCreateDto(1L, date, "아이나", timeId);
+        ReservationCreateDto reservationCreateDto = new ReservationCreateDto(1L, date, timeId);
 
         // then
-        assertThatThrownBy(() -> reservationService.registerReservation(reservationCreateDto))
+        assertThatThrownBy(() -> reservationService.registerReservation(reservationCreateDto, MEMBER2.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -108,9 +115,9 @@ class ReservationServiceTest {
         ReservationTime time1 = ReservationTime.of(1L, LocalTime.of(10, 0));
         ReservationTime time2 = ReservationTime.of(2L, LocalTime.of(11, 0));
 
-        reservationRepository.save(Reservation.of(1L, "브라운", THEME_1, LocalDate.of(2024, 4, 1), time1));
-        reservationRepository.save(Reservation.of(2L, "솔라", THEME_1, LocalDate.of(2024, 4, 1), time2));
-        reservationRepository.save(Reservation.of(3L, "브리", THEME_1, LocalDate.of(2024, 4, 2), time1));
+        reservationRepository.save(Reservation.of(1L, MEMBER2, THEME_1, LocalDate.of(2024, 4, 1), time1));
+        reservationRepository.save(Reservation.of(2L, MEMBER3, THEME_1, LocalDate.of(2024, 4, 1), time2));
+        reservationRepository.save(Reservation.of(3L, MEMBER4, THEME_1, LocalDate.of(2024, 4, 2), time1));
 
         // when
         List<ReservationDto> allReservations = reservationService.getAllReservations();
@@ -119,8 +126,8 @@ class ReservationServiceTest {
         assertAll(
                 () -> assertThat(allReservations).hasSize(3),
                 () -> assertThat(allReservations)
-                        .extracting(ReservationDto::name)
-                        .containsExactly("브라운", "솔라", "브리")
+                        .extracting(ReservationDto::member)
+                        .containsExactly(MemberDto.from(MEMBER2), MemberDto.from(MEMBER3), MemberDto.from(MEMBER4))
         );
     }
 
@@ -130,7 +137,7 @@ class ReservationServiceTest {
         // given
         ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
         timeRepository.save(time);
-        reservationRepository.save(Reservation.of(1L, "브라운", THEME_1, LocalDate.of(2024, 4, 1), time));
+        reservationRepository.save(Reservation.of(1L, MEMBER1, THEME_1, LocalDate.of(2024, 4, 1), time));
         assertThat(reservationRepository.findAll()).hasSize(1);
 
         // when
@@ -148,10 +155,10 @@ class ReservationServiceTest {
         Long timeId = timeRepository.save(ReservationTime.withoutId(LocalTime.of(10, 0)));
 
         // when
-        ReservationCreateDto request = new ReservationCreateDto(1L, date, "멍구", timeId);
+        ReservationCreateDto request = new ReservationCreateDto(1L, date, timeId);
 
         // then
-        assertThatThrownBy(() -> reservationService.registerReservation(request))
+        assertThatThrownBy(() -> reservationService.registerReservation(request, MEMBER1.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -162,14 +169,14 @@ class ReservationServiceTest {
         LocalDate date = LocalDate.now().plusDays(1);
         Long timeId = timeRepository.save(ReservationTime.withoutId(LocalTime.of(10, 0)));
         ReservationTime reservationTime = ReservationTime.of(timeId, LocalTime.of(10, 0));
-        Reservation reservation = Reservation.of(1L, "아이나", THEME_1, date, reservationTime);
+        Reservation reservation = Reservation.of(1L, MEMBER1, THEME_1, date, reservationTime);
         reservationRepository.save(reservation);
 
         // when
-        ReservationCreateDto request = new ReservationCreateDto(1L, date, "멍구", timeId);
+        ReservationCreateDto request = new ReservationCreateDto(1L, date, timeId);
 
         // then
-        assertThatThrownBy(() -> reservationService.registerReservation(request))
+        assertThatThrownBy(() -> reservationService.registerReservation(request, MEMBER1.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
