@@ -19,4 +19,12 @@ public class MemberService {
         String password = request.password();
         return memberRepository.save(name, email, password);
     }
+
+    public Member findById(Long id) {
+        return memberRepository.findMemberById(id);
+    }
+
+    public Member findByName(String name) {
+        return memberRepository.findMemberByName(name);
+    }
 }

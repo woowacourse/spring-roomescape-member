@@ -16,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.common.BaseTest;
+import roomescape.member.controller.request.SignUpRequest;
+import roomescape.member.service.MemberRepository;
+import roomescape.member.service.MemberService;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeRepository;
@@ -28,6 +31,9 @@ public class ReservationTest extends BaseTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     private Theme theme;
 
     private Map<String, Object> reservation;
@@ -38,11 +44,14 @@ public class ReservationTest extends BaseTest {
     void setUp() {
         RestAssured.port = port;
         theme = themeRepository.save("테마1", "설명1", "썸네일1");
+        memberRepository.save(
+                "matt", "matt.kakao", "1234"
+        );
         reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", "2025-08-05");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
+        reservation.put("user_id", 1);
         reservationTime = Map.of("startAt", "10:00");
     }
 
@@ -61,12 +70,12 @@ public class ReservationTest extends BaseTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("admin/reservations")
                 .then().log().all()
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));

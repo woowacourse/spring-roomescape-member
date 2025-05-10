@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -16,6 +17,14 @@ public class MemberJdbcRepository implements MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+
+    private final RowMapper<Member> memberRowMapper = (result, rowNum) -> new Member(
+            result.getLong("id"),
+            result.getString("name"),
+            result.getString("email"),
+            result.getString("password")
+    );
+
 
     public MemberJdbcRepository(JdbcTemplate jdbcTemplate,
                                 @Qualifier("userJdbcInsert") SimpleJdbcInsert simpleJdbcInsert) {
@@ -46,15 +55,32 @@ public class MemberJdbcRepository implements MemberRepository {
     public Member findUserByEmail(String payload) {
         String sql = "SELECT * FROM users WHERE email = ?";
         Member member;
-
         try {
-            member = jdbcTemplate.queryForObject(sql, (resultSet, rowNum) ->
-                    new Member(
-                            resultSet.getLong("id"),
-                            resultSet.getString("name"),
-                            resultSet.getString("email"),
-                            resultSet.getString("password")
-                    ), payload);
+            member = jdbcTemplate.queryForObject(sql, memberRowMapper, payload);
+        } catch (EmptyResultDataAccessException e) {
+            throw new IllegalArgumentException("[ERROR] 존재하지 않는 회원입니다.");
+        }
+        return member;
+    }
+
+    @Override
+    public Member findMemberById(Long id) {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        Member member;
+        try {
+            member = jdbcTemplate.queryForObject(sql, memberRowMapper, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new IllegalArgumentException("[ERROR] 존재하지 않는 회원입니다.");
+        }
+        return member;
+    }
+
+    @Override
+    public Member findMemberByName(String name) {
+        String sql = "SELECT * FROM users WHERE name = ?";
+        Member member;
+        try {
+            member = jdbcTemplate.queryForObject(sql, memberRowMapper, name);
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException("[ERROR] 존재하지 않는 회원입니다.");
         }

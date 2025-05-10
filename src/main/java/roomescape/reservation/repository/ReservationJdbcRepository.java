@@ -10,10 +10,10 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationDateTime;
-import roomescape.reservation.domain.ReserverName;
 import roomescape.reservation.service.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
@@ -33,7 +33,6 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         String sql = """
                 select r.id as reservation_id, 
-                       r.name,
                        r.date, 
                        t.id as time_id, 
                        t.start_at as time_value, 
@@ -41,15 +40,19 @@ public class ReservationJdbcRepository implements ReservationRepository {
                        th.name as theme_name, 
                        th.description as theme_description, 
                        th.thumbnail as theme_thumbnail
+                       u.id as user_id
+                       u.name as user_name
+                       u.email as user_email
+                       u.password as user_password
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on r.theme_id = th.id
+                inner join users as u on r.user_id = u.id
                 """;
 
         return jdbcTemplate.query(sql, (resultSet, rowNum) ->
                 new Reservation(
                         resultSet.getLong("reservation_id"),
-                        resultSet.getString("name"),
                         LocalDate.parse(resultSet.getString("date")),
                         new ReservationTime(
                                 resultSet.getLong("time_id"),
@@ -60,29 +63,34 @@ public class ReservationJdbcRepository implements ReservationRepository {
                                 resultSet.getString("theme_name"),
                                 resultSet.getString("theme_description"),
                                 resultSet.getString("theme_thumbnail")
+                        ),
+                        new Member(
+                                resultSet.getLong("user_id"),
+                                resultSet.getString("name"),
+                                resultSet.getString("email"),
+                                resultSet.getString("password")
                         )));
     }
 
     @Override
-    public Reservation save(ReserverName reserverName, ReservationDateTime reservationDateTime, Theme theme) {
+    public Reservation save(Member member, ReservationDateTime reservationDateTime, Theme theme) {
 
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", reserverName.getName())
                 .addValue("date", reservationDateTime.getReservationDate().getDate())
                 .addValue("time_id", reservationDateTime.getReservationTime().getId())
-                .addValue("theme_id", theme.getId());
+                .addValue("theme_id", theme.getId())
+                .addValue("user_id", member.getId());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new Reservation(id, reserverName.getName(), reservationDateTime.getReservationDate().getDate(),
+        return new Reservation(id, reservationDateTime.getReservationDate().getDate(),
                 new ReservationTime(reservationDateTime.getReservationTime().getId(),
                         reservationDateTime.getReservationTime().getStartAt()),
-                theme);
+                theme, member);
     }
 
     public Optional<Reservation> findById(Long id) {
         String sql = """
                 select r.id as reservation_id, 
-                       r.name,
                        r.date, 
                        t.id as time_id, 
                        t.start_at as time_value, 
@@ -90,16 +98,20 @@ public class ReservationJdbcRepository implements ReservationRepository {
                        th.name as theme_name, 
                        th.description as theme_description, 
                        th.thumbnail as theme_thumbnail
+                       u.id as user_id
+                       u.name as user_name
+                       u.email as user_email
+                       u.password as user_password
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on r.theme_id = th.id
+                inner join users as u on r.user_id  = u.id
                 where r.id = ?
                 """;
 
         return jdbcTemplate.query(sql, (resultSet, rowNum) ->
                         new Reservation(
                                 resultSet.getLong("reservation_id"),
-                                resultSet.getString("name"),
                                 LocalDate.parse(resultSet.getString("date")),
                                 new ReservationTime(
                                         resultSet.getLong("time_id"),
@@ -110,6 +122,12 @@ public class ReservationJdbcRepository implements ReservationRepository {
                                         resultSet.getString("theme_name"),
                                         resultSet.getString("theme_description"),
                                         resultSet.getString("theme_thumbnail")
+                                ),
+                                new Member(
+                                        resultSet.getLong("user_id"),
+                                        resultSet.getString("user_name"),
+                                        resultSet.getString("user_email"),
+                                        resultSet.getString("user_password")
                                 )), id)
                 .stream()
                 .findFirst();

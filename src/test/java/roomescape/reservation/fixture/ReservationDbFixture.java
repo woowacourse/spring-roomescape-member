@@ -1,5 +1,7 @@
 package roomescape.reservation.fixture;
 
+import static roomescape.reservation.fixture.MemberFixture.MATT;
+
 import java.time.LocalDate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -24,17 +26,17 @@ public class ReservationDbFixture {
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
 
-        String name = ReserverNameFixture.한스.getName();
         LocalDate date = ReservationDateFixture.예약날짜_내일.getDate();
 
         Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
-                .addValue("name", name)
                 .addValue("date", date)
                 .addValue("time_id", reservationTime.getId())
                 .addValue("theme_id", theme.getId())
+                .addValue("user_id", MATT.getId())
+
         ).longValue();
 
-        return new Reservation(id, name, date, reservationTime, theme);
+        return new Reservation(id, date, reservationTime, theme, MATT);
     }
 
     public Reservation 예약_생성_한스(ReservationDate reservationDate, ReservationTime reservationTime, Theme theme) {
@@ -46,13 +48,13 @@ public class ReservationDbFixture {
         LocalDate date = reservationDate.getDate();
 
         Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
-                .addValue("name", name)
                 .addValue("date", date)
                 .addValue("time_id", reservationTime.getId())
                 .addValue("theme_id", theme.getId())
+                .addValue("user_id", MATT.getId())
         ).longValue();
 
-        return new Reservation(id, name, date, reservationTime, theme);
+        return new Reservation(id, date, reservationTime, theme, MATT);
     }
 
 

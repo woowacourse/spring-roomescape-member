@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.reservation.fixture.MemberFixture.MATT;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -17,6 +18,7 @@ import roomescape.reservation.fixture.ThemeDbFixture;
 import roomescape.theme.domain.Theme;
 import roomescape.time.controller.response.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
+import roomescape.user.controller.dto.ReservationRequest;
 
 public class ReservationServiceTest extends BaseTest {
 
@@ -34,14 +36,13 @@ public class ReservationServiceTest extends BaseTest {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
 
-        ReservationCreateRequest request = new ReservationCreateRequest(
-                ReserverNameFixture.한스.getName(),
+        ReservationRequest reservationRequest = new ReservationRequest(
                 ReservationDateFixture.예약날짜_내일.getDate(),
                 reservationTime.getId(),
                 theme.getId()
         );
 
-        ReservationResponse response = reservationService.create(request);
+        ReservationResponse response = reservationService.create(MATT.getId(), reservationRequest);
 
         assertThat(response.id()).isEqualTo(1L);
         assertThat(response.name()).isEqualTo(ReserverNameFixture.한스.getName());
@@ -55,21 +56,19 @@ public class ReservationServiceTest extends BaseTest {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
 
-        reservationService.create(new ReservationCreateRequest(
-                ReserverNameFixture.한스.getName(),
+        reservationService.create(MATT.getId(), new ReservationRequest(
                 ReservationDateFixture.예약날짜_내일.getDate(),
                 reservationTime.getId(),
                 theme.getId()
         ));
 
-        ReservationCreateRequest request = new ReservationCreateRequest(
-                ReserverNameFixture.한스.getName(),
+        ReservationRequest request = new ReservationRequest(
                 ReservationDateFixture.예약날짜_내일.getDate(),
                 reservationTime.getId(),
                 theme.getId()
         );
 
-        assertThatThrownBy(() -> reservationService.create(request))
+        assertThatThrownBy(() -> reservationService.create(MATT.getId(), request))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -78,12 +77,12 @@ public class ReservationServiceTest extends BaseTest {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
 
-        reservationService.create(new ReservationCreateRequest(
-                ReserverNameFixture.한스.getName(),
+        reservationService.create(MATT.getId(), new ReservationRequest(
                 ReservationDateFixture.예약날짜_내일.getDate(),
                 reservationTime.getId(),
                 theme.getId()
         ));
+
         List<ReservationResponse> responses = reservationService.getAll();
         ReservationResponse response = responses.get(0);
 
@@ -99,12 +98,12 @@ public class ReservationServiceTest extends BaseTest {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
 
-        reservationService.create(new ReservationCreateRequest(
-                ReserverNameFixture.한스.getName(),
+        reservationService.create(MATT.getId(), new ReservationRequest(
                 ReservationDateFixture.예약날짜_내일.getDate(),
                 reservationTime.getId(),
                 theme.getId()
         ));
+
         reservationService.deleteById(1L);
 
         List<ReservationResponse> responses = reservationService.getAll();
