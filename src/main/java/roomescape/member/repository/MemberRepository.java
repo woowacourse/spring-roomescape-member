@@ -14,4 +14,6 @@ public interface MemberRepository {
     void save(Member member);
 
     List<Member> findAll();
+
+    boolean existsByEmail(final String email);
 }

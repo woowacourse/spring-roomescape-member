@@ -22,6 +22,12 @@ public class FakeMemberRepository implements MemberRepository {
     }
 
     @Override
+    public boolean existsByEmail(final String email) {
+        return data.stream()
+                .anyMatch(member -> member.getEmail().equals(email));
+    }
+
+    @Override
     public Optional<Member> findById(final Long id) {
         return data.stream()
                 .filter(m -> m.getId().equals(id))

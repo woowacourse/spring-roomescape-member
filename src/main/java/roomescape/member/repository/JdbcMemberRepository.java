@@ -48,6 +48,12 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
+    public boolean existsByEmail(final String email) {
+        final String sql = "select exists ( select 1 from member where email = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, email);
+    }
+
+    @Override
     public void save(final Member member) {
         final MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", member.getName())
