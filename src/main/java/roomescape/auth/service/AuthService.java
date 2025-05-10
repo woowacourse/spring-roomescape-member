@@ -2,7 +2,7 @@ package roomescape.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.auth.service.in.TokenProvider;
+import roomescape.auth.service.out.TokenProvider;
 import roomescape.auth.web.controller.request.LoginRequest;
 import roomescape.auth.web.controller.response.MemberNameResponse;
 import roomescape.member.domain.Member;
@@ -22,7 +22,7 @@ public class AuthService {
         return tokenProvider.issue(member);
     }
 
-    public MemberNameResponse check(Long memberId) {
+    public MemberNameResponse checkLogin(Long memberId) {
         Member member = memberService.getMember(memberId);
 
         return new MemberNameResponse(member.getName());

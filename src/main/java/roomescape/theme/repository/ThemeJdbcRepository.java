@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.service.ThemeRepository;
+import roomescape.theme.service.out.ThemeRepository;
 
 @Repository
 public class ThemeJdbcRepository implements ThemeRepository {

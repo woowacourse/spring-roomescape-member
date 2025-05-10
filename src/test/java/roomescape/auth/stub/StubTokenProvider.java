@@ -1,6 +1,6 @@
 package roomescape.auth.stub;
 
-import roomescape.auth.service.in.TokenProvider;
+import roomescape.auth.service.out.TokenProvider;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 

@@ -1,6 +1,7 @@
 package roomescape.admin.controller;
 
 import static roomescape.reservation.controller.response.ReservationSuccessCode.RESERVE;
+import static roomescape.reservation.controller.response.ReservationSuccessCode.SEARCH_RESERVATION;
 
 import jakarta.validation.Valid;
 import java.time.LocalDate;
@@ -40,13 +41,14 @@ public class AdminApiController {
     }
 
     @GetMapping("/reservations/search")
-    public ResponseEntity<List<ReservationResponse>> searchReservations(
+    public ResponseEntity<ApiResponse<List<ReservationResponse>>> searchReservations(
             @RequestParam(required = false) Long themeId,
             @RequestParam(required = false) Long memberId,
             @RequestParam(required = false) LocalDate from,
             @RequestParam(required = false) LocalDate to
     ) {
         List<ReservationResponse> responses = reservationService.getFilteredReservations(themeId, memberId, from, to);
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(
+                ApiResponse.success(SEARCH_RESERVATION, responses));
     }
 }

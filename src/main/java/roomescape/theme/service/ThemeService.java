@@ -4,10 +4,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.service.ReservationRepository;
+import roomescape.reservation.service.out.ReservationRepository;
 import roomescape.theme.controller.request.ThemeCreateRequest;
 import roomescape.theme.controller.response.ThemeResponse;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.service.out.ThemeRepository;
 
 @Service
 public class ThemeService {

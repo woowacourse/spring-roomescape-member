@@ -39,7 +39,8 @@ public class ReservationApiController {
             @Authenticated Long memberId
     ) {
         ReservationResponse response = reservationService.reserve(
-                ReserveCommand.byUser(request, memberId));
+                ReserveCommand.byUser(request, memberId)
+        );
 
         return ResponseEntity
                 .status(CREATED)

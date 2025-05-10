@@ -4,7 +4,7 @@ import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TokenCookieProvider {
+public class CookieProvider {
 
     private static final String TOKEN_COOKIE_NAME = "token";
     private static final int ONE_DAY_SECONDS = 60 * 60 * 24;

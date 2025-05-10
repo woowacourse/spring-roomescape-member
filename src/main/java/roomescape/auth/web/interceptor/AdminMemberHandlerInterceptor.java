@@ -7,14 +7,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.service.AuthService;
-import roomescape.auth.web.cookie.TokenCookieProvider;
+import roomescape.auth.web.cookie.CookieProvider;
+import roomescape.auth.web.exception.NotAdminException;
 
 @RequiredArgsConstructor
 @Component
 public class AdminMemberHandlerInterceptor implements HandlerInterceptor {
 
     private final AuthService authService;
-    private final TokenCookieProvider tokenCookieProvider;
+    private final CookieProvider cookieProvider;
 
     @Override
     public boolean preHandle(
@@ -23,12 +24,11 @@ public class AdminMemberHandlerInterceptor implements HandlerInterceptor {
             Object handler
     ) {
         Cookie[] cookies = request.getCookies();
-        String token = tokenCookieProvider.extractTokenFromCookie(cookies);
+        String token = cookieProvider.extractTokenFromCookie(cookies);
 
         boolean isAdmin = authService.isAdmin(token);
         if (!isAdmin) {
-            response.setStatus(401);
-            return false;
+            throw new NotAdminException("[ERROR] 관리자 권한이 없습니다.");
         }
         return true;
     }

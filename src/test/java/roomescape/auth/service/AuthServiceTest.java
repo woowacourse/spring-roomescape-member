@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.auth.service.in.TokenProvider;
+import roomescape.auth.service.out.TokenProvider;
 import roomescape.auth.stub.StubTokenProvider;
 import roomescape.auth.web.controller.request.LoginRequest;
 import roomescape.auth.web.controller.response.MemberNameResponse;
@@ -49,7 +49,7 @@ public class AuthServiceTest {
     void 로그인한_사용자인지_확인한다() {
         Member user = memberDbFixture.유저1_생성();
 
-        MemberNameResponse response = authService.check(user.getId());
+        MemberNameResponse response = authService.checkLogin(user.getId());
 
         assertThat(response.name()).isEqualTo(user.getName());
     }
