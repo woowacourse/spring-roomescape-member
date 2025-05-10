@@ -17,7 +17,7 @@ import roomescape.domain.ReservationTime;
 
 @JdbcTest
 @Import({JdbcReservationTimeDao.class, JdbcReservationDao.class, JdbcThemeDao.class})
-@Sql({"/test-schema.sql", "/test-data.sql"})
+@Sql({"/schema.sql", "/reservation-time-data.sql"})
 class JdbcReservationTimeDaoTest {
 
     @Autowired
@@ -53,7 +53,7 @@ class JdbcReservationTimeDaoTest {
     void deleteIfNoExistReservationReturnTrueTest() {
 
         // when
-        final boolean result = jdbcReservationTimeDao.deleteIfNoReservation(3L);
+        final boolean result = jdbcReservationTimeDao.deleteIfNoReservation(2L);
 
         // then
         assertThat(result).isTrue();
@@ -64,7 +64,7 @@ class JdbcReservationTimeDaoTest {
     void deleteIfExistReservationReturnFalseTest() {
 
         // when
-        final boolean result = jdbcReservationTimeDao.deleteIfNoReservation(1L);
+        final boolean result = jdbcReservationTimeDao.deleteIfNoReservation(999L);
 
         // then
         assertThat(result).isFalse();
