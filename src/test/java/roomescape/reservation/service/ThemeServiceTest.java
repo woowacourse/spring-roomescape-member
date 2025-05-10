@@ -5,11 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -67,8 +64,7 @@ class ThemeServiceTest {
                 new Reservation(null, LocalDate.now().plusDays(3), reservationTimeRepository.findById(3L).get(),
                         themeRepository.findById(3L).get(), memberRepository.findById(3L).get()));
 
-        themeService = new ThemeService(themeRepository, reservationRepository,
-                Clock.fixed(Instant.parse("2025-04-03T23:59:59Z"), ZoneOffset.UTC));
+        themeService = new ThemeService(themeRepository, reservationRepository);
     }
 
     @DisplayName("테마 정보를 추가한다")

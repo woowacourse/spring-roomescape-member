@@ -19,18 +19,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.auth.controller.LoginController;
 import roomescape.auth.service.AuthService;
-import roomescape.global.config.TestConfig;
 import roomescape.reservation.controller.dto.AvailableTimeResponse;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.util.fixture.AuthFixture;
 
-@Import(TestConfig.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationIntegrationTest {
@@ -120,7 +117,7 @@ class ReservationIntegrationTest {
     void get_available_times_test() {
         // when
         List<AvailableTimeResponse> availableTimes = RestAssured.given().log().all()
-                .queryParam("date", "2025-04-25")
+                .queryParam("date", LocalDate.now().minusDays(5).toString())
                 .queryParam("themeId", "1")
                 .when().get("/reservations/available")
                 .then().log().all()

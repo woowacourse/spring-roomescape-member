@@ -18,15 +18,12 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.global.config.TestConfig;
 import roomescape.reservation.controller.dto.ThemeRankingResponse;
 import roomescape.reservation.controller.dto.ThemeResponse;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.repository.ThemeRepository;
 
-@Import(TestConfig.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ThemeIntegrationTest {

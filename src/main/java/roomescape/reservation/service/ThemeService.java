@@ -1,6 +1,5 @@
 package roomescape.reservation.service;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -23,12 +22,10 @@ public class ThemeService {
     private static final int RANKING_LIMIT = 10;
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
-    private final Clock clock;
 
-    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository, Clock clock) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
-        this.clock = clock;
     }
 
     public ThemeResponse add(ThemeRequest request) {

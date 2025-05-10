@@ -4,11 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +33,6 @@ class ReservationServiceTest {
 
     private ReservationService reservationService;
     private ReservationRepository reservationRepository;
-    private Clock clock;
 
     @BeforeEach
     void setup() {
@@ -44,7 +40,6 @@ class ReservationServiceTest {
         ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
         ThemeRepository themeRepository = new ThemeFakeRepository(reservationRepository);
         MemberFakeRepository memberRepository = new MemberFakeRepository();
-        clock = Clock.fixed(Instant.parse("2025-03-28T23:59:59Z"), ZoneOffset.UTC);
 
         reservationTimeRepository.saveAndReturnId(new ReservationTime(null, LocalTime.of(0, 0)));
         reservationTimeRepository.saveAndReturnId(new ReservationTime(null, LocalTime.of(11, 33)));
@@ -73,7 +68,7 @@ class ReservationServiceTest {
                         themeRepository.findById(3L).get(), memberRepository.findById(3L).get()));
 
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
-                memberRepository, clock);
+                memberRepository);
     }
 
     @DisplayName("전체 예약 정보를 조회한다")
