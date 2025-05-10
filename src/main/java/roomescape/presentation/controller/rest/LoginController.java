@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.business.service.AuthService;
 import roomescape.exception.InvalidCredentialsException;
@@ -16,7 +15,6 @@ import roomescape.presentation.dto.LoginCheckResponse;
 import roomescape.presentation.dto.LoginRequest;
 
 @RestController
-@RequestMapping("/login")
 public class LoginController {
 
     private final AuthService authService;
@@ -25,13 +23,21 @@ public class LoginController {
         this.authService = authService;
     }
 
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<Void> login(
             @RequestBody final LoginRequest loginRequest,
             final HttpServletResponse response
     ) {
         final String accessToken = authService.createToken(loginRequest);
         final Cookie cookieWithAccessToken = createCookieWithAccessToken(accessToken);
+        response.addCookie(cookieWithAccessToken);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(path = "/logout")
+    public ResponseEntity<Void> logout(final HttpServletResponse response) {
+        final Cookie cookieWithAccessToken = createCookieWithAccessToken(null);
         response.addCookie(cookieWithAccessToken);
 
         return ResponseEntity.ok().build();
@@ -44,7 +50,7 @@ public class LoginController {
         return cookie;
     }
 
-    @GetMapping("/check")
+    @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> checkLogin(final HttpServletRequest request) {
         final Cookie tokenCookie = findCookieByName(request.getCookies(), "token");
         final LoginCheckResponse response = authService.checkLoginByToken(tokenCookie.getValue());
