@@ -14,7 +14,6 @@ import roomescape.entity.Theme;
 public class ReservationMapper implements RowMapper<Reservation> {
 
     @Override
-    //TODO : member,time,theme은 각각의 mapper로 매핑 못하나?
     public Reservation mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new Reservation(
                 rs.getLong("id"),
