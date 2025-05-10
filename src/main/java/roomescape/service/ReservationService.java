@@ -9,7 +9,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.request.AdminReservationRequest;
+import roomescape.dto.request.AdminReservationRequestDto;
 import roomescape.dto.request.ReservationRequestDto;
 import roomescape.dto.response.AdminReservationResponse;
 import roomescape.dto.response.ReservationResponseDto;
@@ -29,7 +29,8 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private final CurrentDateTime currentDateTime;
 
-    public ReservationService(MemberRepository memberRepository,
+    public ReservationService(
+        MemberRepository memberRepository,
         ReservationRepository reservationRepository,
         ReservationTimeRepository reservationTimeRepository,
         ThemeRepository themeRepository,
@@ -51,57 +52,44 @@ public class ReservationService {
         reservationRepository.delete(id);
     }
 
-    public ReservationResponseDto saveReservation(ReservationRequestDto reservationRequestDto,
-        Member member) {
-        Reservation reservation = createReservationFrom(reservationRequestDto, member);
-        reservation.validateDateTime(currentDateTime.get());
-        validateAlreadyExistDateTime(reservationRequestDto, reservation.getReservationDate());
-        reservationRepository.save(reservation);
+    public ReservationResponseDto saveReservationOfMember(ReservationRequestDto request,
+        long memberId) {
+        Reservation reservation = saveReservation(
+            request.date(), memberId, request.timeId(), request.themeId());
         return ReservationResponseDto.from(reservation);
     }
 
-    public AdminReservationResponse saveReservation(
-        AdminReservationRequest adminReservationRequest) {
-        Reservation reservation = createReservationFrom(adminReservationRequest);
-        reservation.validateDateTime(currentDateTime.get());
-        validateAlreadyExistDateTime(adminReservationRequest, reservation.getReservationDate());
-        reservationRepository.save(reservation);
+    public AdminReservationResponse saveReservationOfAdmin(AdminReservationRequestDto request,
+        long memberId) {
+        Reservation reservation = saveReservation(
+            request.date(), memberId, request.timeId(), request.themeId());
         return new AdminReservationResponse(reservation.getId());
     }
 
-    private Reservation createReservationFrom(ReservationRequestDto reservationRequestDto,
-        Member member) {
-        LocalDateTime currentDateTimeInfo = currentDateTime.get();
-        ReservationDate date = new ReservationDate(LocalDate.parse(reservationRequestDto.date()));
-        date.validateDate(currentDateTimeInfo.toLocalDate());
-        ReservationTime reservationTime = reservationTimeRepository.findById(
-            reservationRequestDto.timeId());
-        Theme theme = themeRepository.findById(reservationRequestDto.themeId());
-        return new Reservation(member, date, reservationTime, theme);
-    }
-
-    private Reservation createReservationFrom(AdminReservationRequest adminReservationRequest) {
-        LocalDateTime currentDateTimeInfo = currentDateTime.get();
-        Long memberId = adminReservationRequest.memberId();
+    private Reservation saveReservation(String date, long memberId, long timeId, long themeId) {
         Member member = memberRepository.findById(memberId);
-        ReservationDate date = new ReservationDate(LocalDate.parse(adminReservationRequest.date()));
-        date.validateDate(currentDateTimeInfo.toLocalDate());
-        ReservationTime reservationTime = reservationTimeRepository.findById(
-            adminReservationRequest.timeId());
-        Theme theme = themeRepository.findById(adminReservationRequest.themeId());
-        return new Reservation(member, date, reservationTime, theme);
+        Reservation reservation = createReservation(member, date, timeId, themeId);
+        validateDateTimeAndSaveReservation(reservation, themeId);
+        return reservation;
     }
 
-    private void validateAlreadyExistDateTime(ReservationRequestDto reservationRequestDto,
-        ReservationDate date) {
-        if (reservationRepository.hasAnotherReservation(date, reservationRequestDto.timeId())) {
-            throw new InvalidReservationException("중복된 날짜와 시간을 예약할 수 없습니다.");
-        }
+    private Reservation createReservation(Member member, String date, long timeId, long themeId) {
+        LocalDateTime currentDateTimeInfo = currentDateTime.get();
+        ReservationDate reservationDate = new ReservationDate(LocalDate.parse(date));
+        reservationDate.validateDate(currentDateTimeInfo.toLocalDate());
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId);
+        Theme theme = themeRepository.findById(themeId);
+        return new Reservation(member, reservationDate, reservationTime, theme);
     }
 
-    private void validateAlreadyExistDateTime(AdminReservationRequest adminReservationRequest,
-        ReservationDate date) {
-        if (reservationRepository.hasAnotherReservation(date, adminReservationRequest.timeId())) {
+    private void validateDateTimeAndSaveReservation(Reservation reservation, long timeId) {
+        reservation.validateDateTime(currentDateTime.get());
+        validateAlreadyExistDateTime(reservation.getReservationDate(), timeId);
+        reservationRepository.save(reservation);
+    }
+
+    private void validateAlreadyExistDateTime(ReservationDate date, long timeId) {
+        if (reservationRepository.hasAnotherReservation(date, timeId)) {
             throw new InvalidReservationException("중복된 날짜와 시간을 예약할 수 없습니다.");
         }
     }
