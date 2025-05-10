@@ -6,7 +6,9 @@
 - [x] 로그인을 한다.
     - [x] 로그인에 성공하면 토큰을 포함한 Cookie와 HTTP status code 200을 응답한다.
     - [x] 로그인에 실패하면 HTTP status code 401을 응답한다.
-- [ ] 인증 정보를 조회한다.
+- [x] 인증 정보를 조회한다.
+  - [x] 인증 정보 조회에 성공하면 HTTP status code 200을 응답한다.
+  - [x] 인증 정보 조회에 실패하면 HTTP status code 401을 응답한다.
 
 ### 어드인 메인 페이지
 
