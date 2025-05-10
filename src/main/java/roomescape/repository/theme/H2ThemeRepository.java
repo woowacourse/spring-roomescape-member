@@ -57,12 +57,9 @@ public class H2ThemeRepository implements ThemeRepository {
         String sql = """
                 SELECT t.id, t.name, t.description, t.thumbnail
                 FROM theme AS t
-                ORDER BY (
-                    SELECT COUNT(*)
-                    FROM reservation AS r
-                    WHERE r.theme_id = t.id 
-                    AND r.date >= ? AND r.date <= ?
-                ) DESC 
+                LEFT JOIN reservation AS r
+                ON t.id = r.theme_id AND r.date >= ? AND r.date <= ?
+                GROUP BY t.id
                 LIMIT ?;
                 """;
 
