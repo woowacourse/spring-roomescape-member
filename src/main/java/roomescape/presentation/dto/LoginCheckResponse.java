@@ -1,4 +1,4 @@
 package roomescape.presentation.dto;
 
-public record LoginCheckResponse(Long userId) {
+public record LoginCheckResponse(String name) {
 }

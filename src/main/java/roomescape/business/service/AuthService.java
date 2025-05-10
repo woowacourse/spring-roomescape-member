@@ -50,13 +50,14 @@ public class AuthService {
 
     public LoginCheckResponse checkLoginByToken(final String token) {
         try {
-            final Long userId = Long.valueOf(Jwts.parserBuilder()
+            final String name = Jwts.parserBuilder()
                     .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                     .build()
                     .parseClaimsJws(token)
-                    .getBody().getSubject());
+                    .getBody()
+                    .get("name", String.class);
 
-            return new LoginCheckResponse(userId);
+            return new LoginCheckResponse(name);
         } catch (JwtException e) {
             throw new InvalidCredentialsException();
         }
