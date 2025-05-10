@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 public class PastTimeReservationException extends BusinessException {
 
     public PastTimeReservationException(final ReservationTime time, final LocalDateTime now) {
-        super(buildLoggingMessage(time, now), buildUserMessage());
+        super(buildLogMessage(time, now), buildUserMessage());
     }
 
-    private static String buildLoggingMessage(final ReservationTime time, final LocalDateTime now) {
+    private static String buildLogMessage(final ReservationTime time, final LocalDateTime now) {
         return "Attempted to reserve with past time. input=" + time + ", now=" + now;
     }
 

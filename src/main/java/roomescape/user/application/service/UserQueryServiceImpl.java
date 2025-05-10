@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.common.domain.DomainTerm;
 import roomescape.common.exception.NotFoundException;
+import roomescape.user.domain.User;
 import roomescape.user.domain.UserRepository;
 
 @Service
@@ -13,8 +14,8 @@ public class UserQueryServiceImpl implements UserQueryService {
     private final UserRepository userRepository;
 
     @Override
-    public String getPasswordByEmail(final String email) {
-        return userRepository.findPasswordByEmail(email)
+    public User getByEmail(final String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException(DomainTerm.USER, email));
     }
 }

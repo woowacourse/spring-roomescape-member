@@ -2,11 +2,11 @@ package roomescape.user.ui.dto;
 
 import roomescape.user.application.dto.CreateUserServiceRequest;
 
-public record CreateUserWebRequest(String email,
-                                   String password,
-                                   String name) {
+public record CreateUserWebRequest(String name,
+                                   String email,
+                                   String password) {
 
     public CreateUserServiceRequest toServiceRequest() {
-        return new CreateUserServiceRequest(email, password, name);
+        return new CreateUserServiceRequest(name, email, password);
     }
 }

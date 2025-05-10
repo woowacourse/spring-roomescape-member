@@ -13,9 +13,11 @@ import roomescape.user.domain.UserRepository;
 public class UserCommandServiceImpl implements UserCommandService {
 
     private final UserRepository userRepository;
+    private final SignUpUseCase signUpUseCase;
 
     @Override
     public User create(final CreateUserServiceRequest request) {
-        return userRepository.save(request.toDomain());
+        return userRepository.save(
+                signUpUseCase.execute(request));
     }
 }

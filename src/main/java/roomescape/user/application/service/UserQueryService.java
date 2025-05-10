@@ -1,6 +1,8 @@
 package roomescape.user.application.service;
 
+import roomescape.user.domain.User;
+
 public interface UserQueryService {
 
-    String getPasswordByEmail(String email);
+    User getByEmail(String email);
 }

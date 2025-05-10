@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
         log.error("IllegalStateException: {} at {}", ex.getMessage(), getPath(request), ex);
         return createProblemDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "잘못된 객체 상태",
+                "잘못된 서버 상태",
                 "서버 내부 오류가 발생했습니다.", request);
     }
 

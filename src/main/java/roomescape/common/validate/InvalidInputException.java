@@ -11,14 +11,14 @@ public class InvalidInputException extends BusinessException {
                                  final String fieldName,
                                  final String fieldDescription) {
         super(
-                buildLoggingMessage(type, className, fieldName),
+                buildLogMessage(type, className, fieldName),
                 buildUserMessage(fieldDescription)
         );
     }
 
-    private static String buildLoggingMessage(final ValidationType type,
-                                              final String className,
-                                              final String fieldName) {
+    private static String buildLogMessage(final ValidationType type,
+                                          final String className,
+                                          final String fieldName) {
         return "Validation failed [" + type.getDescription() + "]: " + className + "." + fieldName;
     }
 

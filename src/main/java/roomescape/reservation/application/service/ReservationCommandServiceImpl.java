@@ -48,7 +48,6 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
                 request.themeId());
 
         final Reservation reservation = request.toDomain(reservationTime, theme);
-        System.out.println(timeProvider.now());
         reservation.validatePast(timeProvider.now());
 
         return reservationRepository.save(reservation);

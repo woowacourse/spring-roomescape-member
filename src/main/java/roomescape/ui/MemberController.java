@@ -11,8 +11,13 @@ public class MemberController {
         return "reservation";
     }
 
-    @GetMapping("/login")
-    public String getLoginPage() {
-        return "login";
+    @GetMapping("/sign-in")
+    public String getSignInPage() {
+        return "signin";
+    }
+
+    @GetMapping("/sign-up")
+    public String getSignUpPage() {
+        return "signup";
     }
 }

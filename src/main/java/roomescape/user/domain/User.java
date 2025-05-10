@@ -11,7 +11,7 @@ import roomescape.common.validate.Validator;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@FieldNameConstants(level = AccessLevel.PRIVATE)
+@FieldNameConstants(level = AccessLevel.PUBLIC)
 @EqualsAndHashCode(of = "id")
 @ToString
 public class User {
