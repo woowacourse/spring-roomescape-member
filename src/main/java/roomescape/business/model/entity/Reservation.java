@@ -1,7 +1,7 @@
 package roomescape.business.model.entity;
 
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.ToString;
 import roomescape.business.model.vo.Id;
 import roomescape.business.model.vo.ReservationDate;
@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @ToString
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Reservation {
 
     private final Id id;
