@@ -9,10 +9,11 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationDateTime;
-import roomescape.reservation.domain.ReserverName;
 import roomescape.reservation.service.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
@@ -30,10 +31,14 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         String sql = """
                 select r.id as id, 
-                       r.name,
+                       m.id as member_id,
+                       m.name as member_name,
+                       m.role as role,
+                       m.email as email,
+                       m.password as password,
                        r.date, 
                        t.id as time_id, 
-                       t.start_at as time_value, 
+                       t.start_at as start_at,
                        th.id as theme_id, 
                        th.name as theme_name, 
                        th.description as theme_description, 
@@ -41,17 +46,28 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on r.theme_id = th.id
+                inner join member as m on r.member_id = m.id
                 """;
 
         return jdbcTemplate.query(sql, (resultSet, rowNum) ->
-                new Reservation(
+                Reservation.load(
                         resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        LocalDate.parse(resultSet.getString("date")),
-                        new ReservationTime(
-                                resultSet.getLong("time_id"),
-                                LocalTime.parse(resultSet.getString("time_value"))
+                        Member.load(
+                                resultSet.getLong("member_id"),
+                                resultSet.getString("member_name"),
+                                Role.valueOf(resultSet.getString("role")),
+                                resultSet.getString("email"),
+                                resultSet.getString("password")
                         ),
+                        ReservationDateTime.load(
+                                new ReservationDate(
+                                        LocalDate.parse(resultSet.getString("date")
+                                        )),
+                                ReservationTime.load(
+                                        resultSet.getLong("time_id"),
+                                        LocalTime.parse(resultSet.getString("start_at")
+                                        )
+                                )),
                         new Theme(
                                 resultSet.getLong("theme_id"),
                                 resultSet.getString("theme_name"),
@@ -61,32 +77,38 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation save(ReserverName reserverName, ReservationDateTime reservationDateTime, Theme theme) {
+    public Reservation save(Reservation reservation) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
 
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", reserverName.getName())
-                .addValue("date", reservationDateTime.getReservationDate().getDate())
-                .addValue("time_id", reservationDateTime.getReservationTime().getId())
-                .addValue("theme_id", theme.getId());
+                .addValue("member_id", reservation.getReserver().getId())
+                .addValue("date", reservation.getDate())
+                .addValue("time_id", reservation.getTimeId())
+                .addValue("theme_id", reservation.getTheme().getId());
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new Reservation(id, reserverName.getName(), reservationDateTime.getReservationDate().getDate(),
-                new ReservationTime(reservationDateTime.getReservationTime().getId(),
-                        reservationDateTime.getReservationTime().getStartAt()),
-                theme);
+        return Reservation.load(
+                id,
+                reservation.getReserver(),
+                reservation.getReservationDatetime(),
+                reservation.getTheme()
+        );
     }
 
     @Override
     public Optional<Reservation> findById(Long id) {
         String sql = """
                 select r.id as id, 
-                       r.name,
+                       m.id as member_id,
+                       m.name as member_name,
+                       m.role as role,
+                       m.email as email,
+                       m.password as password,
                        r.date, 
                        t.id as time_id, 
-                       t.start_at as time_value, 
+                       t.start_at as start_at,
                        th.id as theme_id, 
                        th.name as theme_name, 
                        th.description as theme_description, 
@@ -94,18 +116,28 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on r.theme_id = th.id
+                inner join member as m on r.member_id = m.id
                 where r.id = ?
                 """;
 
         return jdbcTemplate.query(sql, (resultSet, rowNum) ->
-                        new Reservation(
+                        Reservation.load(
                                 resultSet.getLong("id"),
-                                resultSet.getString("name"),
-                                LocalDate.parse(resultSet.getString("date")),
-                                new ReservationTime(
-                                        resultSet.getLong("time_id"),
-                                        LocalTime.parse(resultSet.getString("time_value"))
+                                Member.load(
+                                        resultSet.getLong("member_id"),
+                                        resultSet.getString("member_name"),
+                                        Role.valueOf(resultSet.getString("role")),
+                                        resultSet.getString("email"),
+                                        resultSet.getString("password")
                                 ),
+                                ReservationDateTime.load(
+                                        new ReservationDate(
+                                                LocalDate.parse(resultSet.getString("date")
+                                                )),
+                                        ReservationTime.load(
+                                                resultSet.getLong("time_id"),
+                                                LocalTime.parse(resultSet.getString("start_at"))
+                                        )),
                                 new Theme(
                                         resultSet.getLong("theme_id"),
                                         resultSet.getString("theme_name"),
@@ -123,7 +155,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existSameDateTime(ReservationDate reservationDate, Long timeId) {
+    public boolean existsSameDateTime(LocalDate date, Long timeId) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1
@@ -131,7 +163,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     WHERE date = ? AND time_id = ?
                 )
                 """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, reservationDate.getDate(), timeId);
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId);
     }
 
     @Override

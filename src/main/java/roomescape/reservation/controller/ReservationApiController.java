@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.global.response.ApiResponse;
-import roomescape.reservation.controller.request.ReservationCreateRequest;
+import roomescape.member.resolver.Authenticated;
+import roomescape.reservation.controller.request.ReserveByUserRequest;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 
@@ -33,8 +34,10 @@ public class ReservationApiController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<ReservationResponse>> createReservation(
-            @RequestBody @Valid ReservationCreateRequest request) {
-        ReservationResponse response = reservationService.create(request);
+            @RequestBody @Valid ReserveByUserRequest request,
+            @Authenticated Long memberId
+    ) {
+        ReservationResponse response = reservationService.reserve(request, memberId);
 
         return ResponseEntity
                 .status(CREATED)
@@ -43,7 +46,7 @@ public class ReservationApiController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<ReservationResponse>>> getReservations() {
-        List<ReservationResponse> responses = reservationService.getAll();
+        List<ReservationResponse> responses = reservationService.getAllReservations();
 
         return ResponseEntity.ok(
                 ApiResponse.success(GET_RESERVATIONS, responses)

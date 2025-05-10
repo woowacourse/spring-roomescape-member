@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.common.CleanUp;
 import roomescape.member.domain.Member;
 import roomescape.member.infrastructure.repository.MemberRepository;
-import roomescape.reservation.controller.request.ReservationCreateRequest;
+import roomescape.reservation.controller.request.ReserveByUserRequest;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.fixture.ReservationDateFixture;
@@ -59,7 +59,7 @@ class ReservationServiceTest {
 
         LocalDate now = LocalDate.now();
 
-        ReservationCreateRequest request = new ReservationCreateRequest(
+        ReserveByUserRequest request = new ReserveByUserRequest(
                 now.plusDays(1),
                 reservationTime.getId(),
                 theme.getId(),
@@ -82,14 +82,14 @@ class ReservationServiceTest {
         Theme theme = themeDbFixture.공포();
         Member member = memberRepository.save(Member.createUser("폰트", "email@email.com", "1234"));
 
-        reservationService.reserve(new ReservationCreateRequest(
+        reservationService.reserve(new ReserveByUserRequest(
                 ReservationDateFixture.예약날짜_내일.getDate(),
                 reservationTime.getId(),
                 theme.getId(),
                 member.getId()
         ));
 
-        ReservationCreateRequest request = new ReservationCreateRequest(
+        ReserveByUserRequest request = new ReserveByUserRequest(
                 ReservationDateFixture.예약날짜_내일.getDate(),
                 reservationTime.getId(),
                 theme.getId(),
@@ -107,7 +107,7 @@ class ReservationServiceTest {
         Theme theme = themeDbFixture.공포();
         Reservation reservation = reservationDbFixture.예약_한스_내일_10시_공포(reservationTime, theme);
 
-        List<ReservationResponse> responses = reservationService.getAll();
+        List<ReservationResponse> responses = reservationService.getAllReservations();
         ReservationResponse response = responses.get(0);
 
         assertThat(response.id()).isNotNull();
@@ -125,7 +125,7 @@ class ReservationServiceTest {
 
         reservationService.deleteById(reservation.getId());
 
-        List<ReservationResponse> responses = reservationService.getAll();
+        List<ReservationResponse> responses = reservationService.getAllReservations();
 
         assertThat(responses).hasSize(0);
     }

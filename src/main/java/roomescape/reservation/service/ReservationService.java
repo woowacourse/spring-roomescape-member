@@ -1,56 +1,76 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.controller.request.ReservationCreateRequest;
+import roomescape.admin.ReserveByAdminRequest;
+import roomescape.member.domain.Member;
+import roomescape.member.service.MemberService;
+import roomescape.reservation.controller.request.ReserveByUserRequest;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationDateTime;
-import roomescape.reservation.domain.ReserverName;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.service.ReservationTimeService;
 
+@RequiredArgsConstructor
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
+    private final MemberService memberService;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeService reservationTimeService,
-                              ThemeService themeService
-    ) {
-        this.reservationRepository = reservationRepository;
-        this.reservationTimeService = reservationTimeService;
-        this.themeService = themeService;
-    }
-
-    public List<ReservationResponse> getAll() {
+    public List<ReservationResponse> getAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
 
         return ReservationResponse.from(reservations);
     }
 
-    public ReservationResponse create(ReservationCreateRequest request) {
+    public ReservationResponse reserve(ReserveByUserRequest request, Long memberId) {
         Long timeId = request.timeId();
-        ReservationDate reservationDate = new ReservationDate(request.date());
-
-        if (reservationRepository.existSameDateTime(reservationDate, timeId)) {
-            throw new IllegalArgumentException("[ERROR] 이미 예약이 찼습니다.");
+        LocalDate date = request.date();
+        if (reservationRepository.existsSameDateTime(date, timeId)) {
+            throw new IllegalArgumentException("[ERROR] 이미 예약이 존재합니다.");
         }
-
-        ReserverName reserverName = new ReserverName(request.name());
-        ReservationTime reservationTime = reservationTimeService.getReservationTime(request.timeId());
+        ReservationDate reservationDate = new ReservationDate(date);
+        ReservationTime reservationTime = reservationTimeService.getReservationTime(timeId);
         ReservationDateTime reservationDateTime = new ReservationDateTime(reservationDate, reservationTime);
-        Theme theme = themeService.getTheme(request.themeId());
-        Reservation created = reservationRepository.save(reserverName, reservationDateTime, theme);
 
-        return ReservationResponse.from(created);
+        Theme theme = themeService.getTheme(request.themeId());
+
+        Member reserver = memberService.getMember(memberId);
+
+        Reservation reserved = Reservation.reserve(reserver, reservationDateTime, theme);
+        Reservation saved = reservationRepository.save(reserved);
+
+        return ReservationResponse.from(saved);
+    }
+
+    public ReservationResponse reserve(ReserveByAdminRequest request) {
+        Long timeId = request.timeId();
+        LocalDate date = request.date();
+        if (reservationRepository.existsSameDateTime(date, timeId)) {
+            throw new IllegalArgumentException("[ERROR] 이미 예약이 존재합니다.");
+        }
+        ReservationDate reservationDate = new ReservationDate(date);
+        ReservationTime reservationTime = reservationTimeService.getReservationTime(timeId);
+        ReservationDateTime reservationDateTime = new ReservationDateTime(reservationDate, reservationTime);
+
+        Theme theme = themeService.getTheme(request.themeId());
+
+        Member reserver = memberService.getMember(request.memberId());
+
+        Reservation reserved = Reservation.reserve(reserver, reservationDateTime, theme);
+        Reservation saved = reservationRepository.save(reserved);
+
+        return ReservationResponse.from(saved);
     }
 
     public void deleteById(Long id) {

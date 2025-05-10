@@ -1,5 +1,6 @@
 package roomescape.member.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.member.controller.request.LoginRequest;
@@ -21,14 +22,12 @@ public class MemberService {
         Member member = memberRepository.findByEmailAndPassword(request.email(), request.password())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 가입되지 않은 회원입니다."));
 
-        return jwtHandler.createToken(member.getId());
+        return jwtHandler.createToken(member);
     }
 
-    public MemberNameResponse check(String token) {
-        Long memberId = jwtHandler.getMemberId(token);
-
+    public MemberNameResponse check(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow();
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 가입되지 않은 회원입니다."));
 
         return new MemberNameResponse(member.getName());
     }
@@ -41,5 +40,15 @@ public class MemberService {
         }
         Member signed = memberRepository.save(member);
         return MemberResponse.from(signed);
+    }
+
+    public Member getMember(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 멤버입니다."));
+    }
+
+    public List<MemberResponse> getMembers() {
+        List<Member> members = memberRepository.findAll();
+        return MemberResponse.from(members);
     }
 }

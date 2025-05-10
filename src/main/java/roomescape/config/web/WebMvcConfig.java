@@ -14,10 +14,15 @@ import roomescape.member.resolver.AuthenticatedMemberArgumentResolver;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     private final AuthenticatedMemberArgumentResolver authenticatedMemberArgumentResolver;
+    private final AdminMemberHandlerInterceptor adminMemberHandlerInterceptor;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(authenticatedMemberArgumentResolver);
     }
 
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(adminMemberHandlerInterceptor).addPathPatterns("/admin/**");
+    }
 }

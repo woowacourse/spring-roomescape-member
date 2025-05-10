@@ -1,5 +1,6 @@
 package roomescape.member.infrastructure.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -7,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 @Repository
 public class MemberRepository {
@@ -24,16 +26,17 @@ public class MemberRepository {
 
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("email", member.getEmail())
+                .addValue("role", member.getRole())
                 .addValue("password", member.getPassword())
                 .addValue("name", member.getName());
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return Member.load(id, member.getName(), member.getEmail(), member.getPassword());
+        return Member.load(id, member.getName(), member.getRole(), member.getEmail(), member.getPassword());
     }
 
     public Optional<Member> findByEmailAndPassword(String email, String password) {
         String sql = """
-                SELECT id, name, email, password
+                SELECT id, name, role, email, password
                 FROM member
                 WHERE email = ? AND password = ?
                 """;
@@ -41,6 +44,7 @@ public class MemberRepository {
                         (rs, rowNum) -> Member.load(
                                 rs.getLong("id"),
                                 rs.getString("name"),
+                                Role.valueOf(rs.getString("role")),
                                 rs.getString("email"),
                                 rs.getString("password")
                         ),
@@ -51,7 +55,7 @@ public class MemberRepository {
 
     public Optional<Member> findById(Long memberId) {
         String sql = """
-                SELECT id, name, email, password
+                SELECT id, name, role, email, password
                 FROM member
                 WHERE id = ?
                 """;
@@ -59,6 +63,7 @@ public class MemberRepository {
                         (rs, rowNum) -> Member.load(
                                 rs.getLong("id"),
                                 rs.getString("name"),
+                                Role.valueOf(rs.getString("role")),
                                 rs.getString("email"),
                                 rs.getString("password")
                         ), memberId)
@@ -75,5 +80,20 @@ public class MemberRepository {
                 )
                 """;
         return jdbcTemplate.queryForObject(sql, Boolean.class, email);
+    }
+
+    public List<Member> findAll() {
+        String sql = """
+                SELECT id, name, role, email, password
+                FROM member
+                """;
+        return jdbcTemplate.query(sql,
+                (rs, rowNum) -> Member.load(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        Role.valueOf(rs.getString("role")),
+                        rs.getString("email"),
+                        rs.getString("password")
+                ));
     }
 }

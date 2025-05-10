@@ -3,6 +3,7 @@ package roomescape.member.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,5 +58,12 @@ public class MemberApiController {
         response.addCookie(expiredCookie);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity<List<MemberResponse>> getMembers() {
+        List<MemberResponse> responses = memberService.getMembers();
+
+        return ResponseEntity.ok(responses);
     }
 }

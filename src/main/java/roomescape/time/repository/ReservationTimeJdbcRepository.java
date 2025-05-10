@@ -31,13 +31,13 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
                 .addValue("start_at", reservationTime.getStartAt());
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new ReservationTime(id, reservationTime.getStartAt());
+        return ReservationTime.load(id, reservationTime.getStartAt());
     }
 
     public List<ReservationTime> findAll() {
         String sql = "select * from reservation_time";
         return jdbcTemplate.query(sql, (resultSet, rowNum) ->
-                new ReservationTime(
+                ReservationTime.load(
                         resultSet.getLong("id"),
                         LocalTime.parse(resultSet.getString("start_at"))
                 ));
@@ -54,7 +54,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
         ReservationTime reservationTime;
         try {
             reservationTime = jdbcTemplate.queryForObject(sql, (resultSet, rowNum) ->
-                    new ReservationTime(
+                    ReservationTime.load(
                             resultSet.getLong("id"),
                             LocalTime.parse(resultSet.getString("start_at"))
                     ), id);
