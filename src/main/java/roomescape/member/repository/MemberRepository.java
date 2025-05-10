@@ -2,6 +2,7 @@ package roomescape.member.repository;
 
 import roomescape.member.entity.Member;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepository {
@@ -11,4 +12,6 @@ public interface MemberRepository {
     Optional<Member> findByEmail(String email);
 
     Optional<Member> findById(Long id);
+
+    List<Member> findAll();
 }
