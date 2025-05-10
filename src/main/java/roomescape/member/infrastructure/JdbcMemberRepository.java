@@ -28,7 +28,9 @@ public class JdbcMemberRepository implements MemberRepository {
 
     public JdbcMemberRepository(final NamedParameterJdbcTemplate namedParameterJdbcTemplate, final DataSource dataSource) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(dataSource);
+        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
