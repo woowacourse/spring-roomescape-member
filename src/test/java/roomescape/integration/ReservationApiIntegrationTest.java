@@ -26,7 +26,7 @@ public class ReservationApiIntegrationTest {
 
     @BeforeEach
     void setUpData() {
-        String memberSetUp = "insert into member (name, email, password) values ('moda', 'moda_email', 'moda_password')";
+        String memberSetUp = "insert into member (name, email, password, role) values ('moda', 'moda_email', 'moda_password', 'ADMIN')";
         String reservationTimeSetUp = "insert into reservation_time (start_at) values ('10:00')";
         String themeSetUp = "insert into theme (name, description, thumbnail) values ('theme_name', 'theme_description', 'theme_thumbnail')";
         String reservationSetUp = "insert into reservation (date, member_id, time_id, theme_id) values ('2025-08-04', 1, 1, 1)";
@@ -47,7 +47,7 @@ public class ReservationApiIntegrationTest {
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
-        Member member = new Member(1L, "moda", "moda_email", "moda_password", MemberRole.USER);
+        Member member = new Member(1L, "moda", "moda_email", "moda_password", MemberRole.ADMIN);
         AccessToken accessToken = new AccessToken(member);
 
         //when
@@ -72,8 +72,12 @@ public class ReservationApiIntegrationTest {
     @Test
     @DisplayName("전체 예약을 조회한다.")
     void readAllReservations() {
+        Member member = new Member(1L, "moda", "moda_email", "moda_password", MemberRole.ADMIN);
+        AccessToken accessToken = new AccessToken(member);
+
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .cookie("token", accessToken.getValue())
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));

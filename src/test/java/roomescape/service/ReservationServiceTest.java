@@ -28,7 +28,13 @@ class ReservationServiceTest {
     private final MemberDao memberDao = new FakeMemberDao();
     private final ReservationTimeDao timeDao = new FakeReservationTimeDao();
     private final ThemeDao themeDao = new FakeThemeDao();
-    private final ReservationService reservationService = new ReservationService(reservationDao, memberDao, timeDao,
+    private final ReservationQueryService reservationQueryService = new ReservationQueryService(reservationDao,
+            memberDao,
+            timeDao,
+            themeDao);
+    private final ReservationCommandService reservationCommandService = new ReservationCommandService(reservationDao,
+            memberDao,
+            timeDao,
             themeDao);
 
     @Test
@@ -37,9 +43,10 @@ class ReservationServiceTest {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0, 0));
         timeDao.create(time);
 
-        ReservationResponse reservation = reservationService.createReservation(new ReservationRequest(
-                LocalDate.of(2025, 4, 27), 1L, 1L
-        ), new LoginMember(1L));
+        ReservationResponse reservation = reservationCommandService.createReservationOfLoginMember(
+                new ReservationRequest(
+                        LocalDate.of(2025, 4, 27), 1L, 1L
+                ), new LoginMember(1L));
 
         assertAll(
                 () -> assertThat(reservation.id()).isEqualTo(1),
@@ -53,7 +60,7 @@ class ReservationServiceTest {
     void findAllReservations() {
         createReservation();
 
-        List<ReservationResponse> reservations = reservationService.findAllReservations();
+        List<ReservationResponse> reservations = reservationQueryService.findAllReservations();
 
         assertThat(reservations).hasSize(1);
     }
@@ -63,7 +70,7 @@ class ReservationServiceTest {
     void deleteReservation() {
         createReservation();
 
-        reservationService.deleteReservation(1L);
+        reservationCommandService.deleteReservation(1L);
 
         assertThat(reservationDao.findAll()).hasSize(0);
     }

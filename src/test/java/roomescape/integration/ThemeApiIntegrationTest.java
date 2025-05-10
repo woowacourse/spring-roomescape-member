@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.entity.AccessToken;
+import roomescape.entity.Member;
+import roomescape.entity.MemberRole;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -20,11 +23,17 @@ public class ThemeApiIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    private AccessToken accessToken;
 
     @BeforeEach
     void setUpData() {
+        String memberSetUp = "insert into member (name, email, password, role) values ('moda', 'moda_email', 'moda_password', 'ADMIN')";
         String themeSetUp = "insert into theme (name, description, thumbnail) values ('theme_name', 'theme_description', 'theme_thumbnail')";
+        jdbcTemplate.update(memberSetUp);
         jdbcTemplate.update(themeSetUp);
+
+        Member member = new Member(1L, "moda", "moda_email", "moda_password", MemberRole.ADMIN);
+        accessToken = new AccessToken(member);
     }
 
     @Test
@@ -58,7 +67,8 @@ public class ThemeApiIntegrationTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/themes")
+                .cookie("token", accessToken.getValue())
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(2),
@@ -72,7 +82,8 @@ public class ThemeApiIntegrationTest {
     @DisplayName("테마 데이터를 삭제한다.")
     void deleteTheme() {
         RestAssured.given().log().all()
-                .when().delete("/themes/1")
+                .cookie("token", accessToken.getValue())
+                .when().delete("/admin/themes/1")
                 .then().log().all()
                 .statusCode(204);
     }

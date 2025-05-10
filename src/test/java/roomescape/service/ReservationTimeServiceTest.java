@@ -18,12 +18,15 @@ class ReservationTimeServiceTest {
 
     private final ReservationTimeDao reservationTimeDao = new FakeReservationTimeDao();
     private final ReservationDao reservationDao = new FakeReservationDao();
-    private final ReservationTimeService timeService = new ReservationTimeService(reservationDao, reservationTimeDao);
+    private final ReservationTimeQueryService timeQueryService = new ReservationTimeQueryService(reservationDao,
+            reservationTimeDao);
+    private final ReservationTimeCommandService timeCommandService = new ReservationTimeCommandService(reservationDao,
+            reservationTimeDao);
 
     @Test
     void createReservationTime() {
         LocalTime startAt = LocalTime.of(10, 0, 0);
-        ReservationTimeResponse time = timeService.createTime(
+        ReservationTimeResponse time = timeCommandService.createTime(
                 new ReservationTimeRequest(startAt)
         );
 
@@ -34,7 +37,7 @@ class ReservationTimeServiceTest {
     void findAllReservationTimes() {
         createReservationTime();
 
-        List<ReservationTimeResponse> times = timeService.findAllTimes();
+        List<ReservationTimeResponse> times = timeQueryService.findAllTimes();
 
         assertThat(times).hasSize(1);
     }
@@ -44,7 +47,7 @@ class ReservationTimeServiceTest {
     void deleteTime() {
         createReservationTime();
 
-        timeService.deleteTime(1L);
+        timeCommandService.deleteTime(1L);
 
         assertThatThrownBy(() -> reservationTimeDao.findById(1L))
                 .isInstanceOf(IllegalArgumentException.class);

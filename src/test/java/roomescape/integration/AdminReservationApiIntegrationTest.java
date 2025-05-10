@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.entity.AccessToken;
+import roomescape.entity.Member;
+import roomescape.entity.MemberRole;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -23,7 +26,7 @@ public class AdminReservationApiIntegrationTest {
 
     @BeforeEach
     void setUpData() {
-        String memberSetUp = "insert into member (name, email, password, role) values ('moda', 'moda_email', 'moda_password', 'USER')";
+        String memberSetUp = "insert into member (name, email, password, role) values ('moda', 'moda_email', 'moda_password', 'ADMIN')";
         String reservationTimeSetUp = "insert into reservation_time (start_at) values ('10:00')";
         String themeSetUp = "insert into theme (name, description, thumbnail) values ('theme_name', 'theme_description', 'theme_thumbnail')";
         String reservationSetUp = "insert into reservation (date, member_id, time_id, theme_id) values ('2025-08-04', 1, 1, 1)";
@@ -34,7 +37,7 @@ public class AdminReservationApiIntegrationTest {
     }
 
     @Test
-    @DisplayName("예약을 생성한다.")
+    @DisplayName("사용자가 예약을 생성한다.")
     void createReservation() {
         //given
         String date = "2025-08-05";
@@ -45,15 +48,15 @@ public class AdminReservationApiIntegrationTest {
         reservation.put("themeId", 1);
         reservation.put("memberId", 1);
 
-//        Member member = new Member(1L, "moda", "moda_email", "moda_password", MemberRole.USER);
-//        AccessToken accessToken = new AccessToken(member);
+        Member member = new Member(1L, "moda", "moda_email", "moda_password", MemberRole.ADMIN);
+        AccessToken accessToken = new AccessToken(member);
 
         //when
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-//                .cookie("token", accessToken.getValue())
+                .cookie("token", accessToken.getValue())
                 .body(reservation)
-                .when().post("/admin/reservations")
+                .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(2),

@@ -23,7 +23,7 @@ public class MemberApiIntegrationTest {
 
     @BeforeEach
     void setUpData() {
-        String memberSetUp = "insert into member (name, email, password) values ('moda', 'moda_email', 'moda_password')";
+        String memberSetUp = "insert into member (name, email, password, role) values ('moda', 'moda_email', 'moda_password', 'ADMIN')";
         jdbcTemplate.update(memberSetUp);
     }
 
