@@ -8,7 +8,6 @@ import roomescape.member.application.dto.CreateMemberRequest;
 import roomescape.member.application.dto.GetMemberResponse;
 import roomescape.member.application.repository.MemberRepository;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.Role;
 import roomescape.member.infrastructure.JwtTokenProvider;
 import roomescape.member.presentation.dto.LoginRequest;
 import roomescape.member.presentation.dto.MemberNameResponse;
@@ -44,7 +43,7 @@ public class AuthService {
                 registerRequest.name(),
                 registerRequest.email(),
                 registerRequest.password(),
-                Role.USER
+                registerRequest.role()
         );
         Member member = memberRepository.insert(request);
         return new MemberNameResponse(member.getName());
