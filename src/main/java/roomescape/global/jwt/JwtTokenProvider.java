@@ -39,11 +39,7 @@ public class JwtTokenProvider implements TokenProvider {
 
     @Override
     public TokenInfo getInfo(String token) {
-        validateToken(token);
-        Claims claims = Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims = validateToken(token);
 
         return new TokenInfo(
                 claims.get("id", Long.class),
@@ -51,13 +47,14 @@ public class JwtTokenProvider implements TokenProvider {
         );
     }
 
-    private void validateToken(String token) {
+    private Claims validateToken(String token) {
         if (token == null || token.trim().isEmpty()) {
             throw new JwtException("JWT 토큰이 존재하지 않습니다.");
         }
 
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
             throw new JwtException("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
         } catch (ExpiredJwtException e) {
