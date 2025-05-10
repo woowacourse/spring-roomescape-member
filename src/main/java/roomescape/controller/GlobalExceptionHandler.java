@@ -5,7 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.dto.ErrorResponse;
-import roomescape.exception.*;
+import roomescape.exception.BadRequestException;
+import roomescape.exception.NotFoundException;
+import roomescape.exception.UnAuthorizationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -28,8 +30,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(UnauthorizationException.class)
-    public ResponseEntity<ErrorResponse> handleAuthorizationException(UnauthorizationException ex) {
+    @ExceptionHandler(UnAuthorizationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthorizationException(UnAuthorizationException ex) {
         ErrorResponse errorResponse = new ErrorResponse(
                 ex.getMessage(),
                 HttpStatus.UNAUTHORIZED
@@ -41,8 +43,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception ex) {
         ErrorResponse errorResponse = new ErrorResponse(
                 ex.getMessage(),
-                HttpStatus.INTERNAL_SERVER_ERROR)
-        ;
+                HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

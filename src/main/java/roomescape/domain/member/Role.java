@@ -1,10 +1,10 @@
 package roomescape.domain.member;
 
-import roomescape.exception.UnauthorizationException;
+import roomescape.exception.UnAuthorizationException;
 
 public enum Role {
     USER(() -> {
-        throw new UnauthorizationException("[ERROR] 관리자만 접근 가능합니다.");
+        throw new UnAuthorizationException("[ERROR] 관리자만 접근 가능합니다.");
     }),
     ADMIN(() -> {
     });
