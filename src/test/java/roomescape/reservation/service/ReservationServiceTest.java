@@ -55,7 +55,7 @@ class ReservationServiceTest {
         ReservationResponse response = reservationService.create(futureDate, 1L, 1L, 1L, afterOneHour);
 
         Assertions.assertAll(
-                () -> assertThat(response.name()).isEqualTo("Mint"),
+                () -> assertThat(response.member().name()).isEqualTo("Mint"),
                 () -> assertThat(response.date()).isEqualTo(futureDate),
                 () -> assertThat(response.time().startAt()).isEqualTo(LocalTime.of(10, 0))
         );
