@@ -23,6 +23,7 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.reservation.repository.ThemeRepository;
+import roomescape.reservation.repository.fake.MemberFakeRepository;
 import roomescape.reservation.repository.fake.ReservationFakeRepository;
 import roomescape.reservation.repository.fake.ReservationTimeFakeRepository;
 import roomescape.reservation.repository.fake.ThemeFakeRepository;
@@ -34,64 +35,53 @@ class ThemeServiceTest {
 
     @BeforeEach
     void setup() {
-        ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
         ReservationRepository reservationRepository = new ReservationFakeRepository();
+        ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
         themeRepository = new ThemeFakeRepository(reservationRepository);
-        Clock clock = Clock.fixed(Instant.parse("2025-04-03T23:59:59Z"), ZoneOffset.UTC);
+        MemberFakeRepository memberRepository = new MemberFakeRepository();
 
-        List<ReservationTime> times = List.of(
-                new ReservationTime(null, LocalTime.of(3, 12)),
-                new ReservationTime(null, LocalTime.of(11, 33)),
-                new ReservationTime(null, LocalTime.of(16, 54)),
-                new ReservationTime(null, LocalTime.of(23, 53))
-        );
+        reservationTimeRepository.saveAndReturnId(new ReservationTime(null, LocalTime.of(3, 12)));
+        reservationTimeRepository.saveAndReturnId(new ReservationTime(null, LocalTime.of(11, 33)));
+        reservationTimeRepository.saveAndReturnId(new ReservationTime(null, LocalTime.of(16, 54)));
+        reservationTimeRepository.saveAndReturnId(new ReservationTime(null, LocalTime.of(23, 53)));
 
-        List<Theme> themes = List.of(
-                new Theme(null, "레벨1 탈출", "우테코 레벨1를 탈출하는 내용입니다.",
-                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
-                new Theme(null, "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
-                new Theme(null, "레벨3 탈출", "우테코 레벨3를 탈출하는 내용입니다.",
-                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
-                new Theme(null, "레벨4 탈출", "우테코 레벨4를 탈출하는 내용입니다.",
-                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        themeRepository.saveAndReturnId(new Theme(null, "레벨1 탈출", "우테코 레벨1를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        themeRepository.saveAndReturnId(new Theme(null, "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        themeRepository.saveAndReturnId(new Theme(null, "레벨3 탈출", "우테코 레벨3를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
-        for (ReservationTime time : times) {
-            reservationTimeRepository.saveAndReturnId(time);
-        }
+        memberRepository.save("루키", "rookie123@woowa.com", "rookierookie123");
+        memberRepository.save("하루", "haru123@woowa.com", "haruharu123");
+        memberRepository.save("베루스", "verus@woowa.com", "verusverus123");
 
-        for (Theme theme : themes) {
-            themeRepository.saveAndReturnId(theme);
-        }
+        reservationRepository.saveAndReturnId(
+                new Reservation(null, LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L).get(),
+                        themeRepository.findById(1L).get(), memberRepository.findById(1L).get()));
+        reservationRepository.saveAndReturnId(
+                new Reservation(null, LocalDate.of(2025, 4, 2), reservationTimeRepository.findById(2L).get(),
+                        themeRepository.findById(2L).get(), memberRepository.findById(2L).get()));
+        reservationRepository.saveAndReturnId(
+                new Reservation(null, LocalDate.of(2025, 5, 15), reservationTimeRepository.findById(3L).get(),
+                        themeRepository.findById(3L).get(), memberRepository.findById(3L).get()));
 
-        List<Reservation> reservations = List.of(
-                new Reservation(null, "루키", LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L).get(),
-                        themeRepository.findById(1L).get()),
-                new Reservation(null, "슬링키", LocalDate.of(2025, 4, 2), reservationTimeRepository.findById(2L).get(),
-                        themeRepository.findById(2L).get()),
-                new Reservation(null, "범블비", LocalDate.of(2025, 5, 15), reservationTimeRepository.findById(3L).get(),
-                        themeRepository.findById(3L).get())
-        );
-
-        for (Reservation reservation : reservations) {
-            reservationRepository.saveAndReturnId(reservation);
-        }
-
-        themeService = new ThemeService(themeRepository, reservationRepository, clock);
+        themeService = new ThemeService(themeRepository, reservationRepository,
+                Clock.fixed(Instant.parse("2025-04-03T23:59:59Z"), ZoneOffset.UTC));
     }
 
     @DisplayName("테마 정보를 추가한다")
     @Test
     void add_theme() {
         // given
-        ThemeRequest request = new ThemeRequest("레벨5 탈출", "우테코 레벨5를 탈출하는 내용입니다.",
+        ThemeRequest request = new ThemeRequest("레벨4 탈출", "우테코 레벨4를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         // when
         ThemeResponse response = themeService.add(request);
 
         // then
-        Theme savedTheme = themeRepository.findById(5L).get();
+        Theme savedTheme = themeRepository.findById(4L).get();
         assertAll(
                 () -> assertThat(response.id()).isEqualTo(savedTheme.getId()),
                 () -> assertThat(response.name()).isEqualTo(savedTheme.getName()),
@@ -108,11 +98,11 @@ class ThemeServiceTest {
 
         // then
         assertAll(
-                () -> assertThat(themes).hasSize(4),
+                () -> assertThat(themes).hasSize(3),
                 () -> assertThat(themes).extracting(ThemeResponse::name)
-                        .containsExactlyInAnyOrder("레벨1 탈출", "레벨2 탈출", "레벨3 탈출", "레벨4 탈출"),
+                        .containsExactlyInAnyOrder("레벨1 탈출", "레벨2 탈출", "레벨3 탈출"),
                 () -> assertThat(themes).extracting(ThemeResponse::id)
-                        .containsExactlyInAnyOrder(1L, 2L, 3L, 4L)
+                        .containsExactlyInAnyOrder(1L, 2L, 3L)
         );
     }
 
