@@ -10,13 +10,17 @@ import roomescape.domain.theme.ThemeThumbnail;
 
 public interface ThemeRepository {
 
-    Theme save(ThemeName name, ThemeDescription description, ThemeThumbnail thumbnail);
+    Theme save(
+            final ThemeName name,
+            final ThemeDescription description,
+            final ThemeThumbnail thumbnail
+    );
 
-    void deleteById(Long id);
+    void deleteById(final Long id);
 
     List<Theme> findAll();
 
-    Optional<Theme> findById(Long id);
+    Optional<Theme> findById(final Long id);
 
-    List<Theme> findPopularThemeDuringAWeek(long limit, DateRange dateRange);
+    List<Theme> findPopularThemeDuringAWeek(final long limit, final DateRange dateRange);
 }

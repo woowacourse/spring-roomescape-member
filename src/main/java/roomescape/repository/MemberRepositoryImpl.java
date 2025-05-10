@@ -21,7 +21,12 @@ public class MemberRepositoryImpl implements MemberRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Member save(MemberEmail email, MemberName name, MemberEncodedPassword password, MemberRole role) {
+    public Member save(
+            final MemberEmail email,
+            final MemberName name,
+            final MemberEncodedPassword password,
+            final MemberRole role
+    ) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("member")
                 .usingGeneratedKeyColumns("id");
@@ -35,7 +40,7 @@ public class MemberRepositoryImpl implements MemberRepository {
         return new Member(id, name, email, password, role);
     }
 
-    public Optional<Member> findByEmail(MemberEmail email) {
+    public Optional<Member> findByEmail(final MemberEmail email) {
         String sql = "select * from member where email = ? limit 1";
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Member(
                 resultSet.getLong("id"),

@@ -24,20 +24,14 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(final ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<ReservationResponse>> getReservations() {
-//        List<ReservationResponse> responses = reservationService.findAllReservations();
-//        return ResponseEntity.ok(responses);
-//    }
-
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
-            @RequestBody @Valid ReservationCreateRequest request,
-            @Auth Long memberId
+            @RequestBody @Valid final ReservationCreateRequest request,
+            @Auth final Long memberId
     ) {
         ReservationResponse response = reservationService.createReservation(request, memberId);
         return ResponseEntity
@@ -46,17 +40,17 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable final Long id) {
         reservationService.deleteReservationById(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservationsWithFilter(
-            @RequestParam(required = false) Long memberId,
-            @RequestParam(required = false) Long themeId,
-            @RequestParam(required = false) LocalDate fromDate,
-            @RequestParam(required = false) LocalDate toDate
+            @RequestParam(required = false) final Long memberId,
+            @RequestParam(required = false) final Long themeId,
+            @RequestParam(required = false) final LocalDate fromDate,
+            @RequestParam(required = false) final LocalDate toDate
     ) {
         List<ReservationResponse> responses = reservationService.findAllReservationsWithFilter(
                 memberId,

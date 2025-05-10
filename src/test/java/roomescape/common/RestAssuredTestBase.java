@@ -50,7 +50,7 @@ public class RestAssuredTestBase {
         return generateLogin(MemberRole.ADMIN);
     }
 
-    private RestLoginMember generateLogin(MemberRole memberRole) {
+    private RestLoginMember generateLogin(final MemberRole memberRole) {
         PasswordEncoder encoder = new BCryptPasswordEncoder();
         Member member = memberRepository.save(
                 new MemberEmail("leenyeonsu4888@gmail.com"),

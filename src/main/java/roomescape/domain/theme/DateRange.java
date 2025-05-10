@@ -11,7 +11,7 @@ public class DateRange {
     private final LocalDate start;
     private final LocalDate end;
 
-    private DateRange(LocalDate start, LocalDate end) {
+    private DateRange(final LocalDate start, final LocalDate end) {
         this.start = start;
         this.end = end;
     }

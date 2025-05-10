@@ -23,14 +23,14 @@ public class LoginController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpSession session) {
+    public ResponseEntity<Void> login(@RequestBody final LoginRequest request, final HttpSession session) {
         Member member = loginService.login(request);
         session.setAttribute("LOGIN_MEMBER", member);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/check")
-    public ResponseEntity<LoginCheckResponse> loginCheck(HttpSession httpSession) {
+    public ResponseEntity<LoginCheckResponse> loginCheck(final HttpSession httpSession) {
         Member member = (Member) httpSession.getAttribute("LOGIN_MEMBER");
         LoginCheckResponse loginCheckResponse = new LoginCheckResponse(member.getName().name());
         return ResponseEntity.ok(loginCheckResponse);

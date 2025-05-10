@@ -33,7 +33,11 @@ public class FakeReservationRepository implements ReservationRepository {
     private final AtomicLong increment = new AtomicLong(1);
 
     @Override
-    public Reservation save(Member member, ReservationDateTime reservationDateTime, Theme theme) {
+    public Reservation save(
+            final Member member,
+            final ReservationDateTime reservationDateTime,
+            final Theme theme
+    ) {
         Reservation reservation = new Reservation(
                 increment.getAndIncrement(),
                 member,
@@ -46,7 +50,7 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findById(Long id) {
+    public Optional<Reservation> findById(final Long id) {
         return values.stream().filter(reservation -> reservation.getId().equals(id)).findFirst();
     }
 
@@ -56,12 +60,12 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         values.removeIf(reservation -> reservation.getId().equals(id));
     }
 
     @Override
-    public boolean existSameDateTime(ReservationDate reservationDate, Long timeId) {
+    public boolean existSameDateTime(final ReservationDate reservationDate, final Long timeId) {
         return values.stream().anyMatch(reservation ->
                 reservation.getReservationDate().equals(reservationDate) &&
                         reservation.getReservationTime().getId().equals(timeId)
@@ -69,17 +73,22 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existReservationByTimeId(Long timeId) {
+    public boolean existReservationByTimeId(final Long timeId) {
         return values.stream().anyMatch(reservation -> reservation.getReservationTime().getId().equals(timeId));
     }
 
     @Override
-    public boolean existReservationByThemeId(Long themeId) {
+    public boolean existReservationByThemeId(final Long themeId) {
         return values.stream().anyMatch(reservation -> reservation.getTheme().getId().equals(themeId));
     }
 
     @Override
-    public List<Reservation> findAllWithCondition(Long memberId, Long themeId, LocalDate fromDate, LocalDate toDate) {
+    public List<Reservation> findAllWithCondition(
+            final Long memberId,
+            final Long themeId,
+            final LocalDate fromDate,
+            final LocalDate toDate
+    ) {
         return findAll();
     }
 }

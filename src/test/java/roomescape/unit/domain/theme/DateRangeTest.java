@@ -11,7 +11,7 @@ class DateRangeTest {
 
     @Test
     void clock은_null일_수_없다() {
-        assertThatThrownBy(() -> new DateRange(null))
+        assertThatThrownBy(() -> DateRange.createLastWeekRange(null))
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -19,7 +19,7 @@ class DateRangeTest {
     void 시작일은_현재_기준_7일_전이다() {
         // given
         LocalDate beforeSevenDays = LocalDate.now(FIXED_CLOCK);
-        DateRange dateRange = new DateRange(FIXED_CLOCK);
+        DateRange dateRange = DateRange.createLastWeekRange(FIXED_CLOCK);
 
         // when
         LocalDate start = dateRange.getStartDate();
@@ -32,7 +32,7 @@ class DateRangeTest {
     void 종료일은_현재_기준_하루_전이다() {
         // given
         LocalDate beforeSevenDays = LocalDate.now(FIXED_CLOCK);
-        DateRange dateRange = new DateRange(FIXED_CLOCK);
+        DateRange dateRange = DateRange.createLastWeekRange(FIXED_CLOCK);
 
         // when
         LocalDate end = dateRange.getEndDate();

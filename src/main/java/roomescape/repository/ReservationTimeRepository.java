@@ -9,15 +9,15 @@ import roomescape.domain.time.ReservationTime;
 
 public interface ReservationTimeRepository {
 
-    ReservationTime save(LocalTime time);
+    ReservationTime save(final LocalTime time);
 
     List<ReservationTime> findAll();
 
-    void deleteById(Long id);
+    void deleteById(final Long id);
 
-    Optional<ReservationTime> findById(Long id);
+    Optional<ReservationTime> findById(final Long id);
 
-    boolean existByStartAt(LocalTime startAt);
+    boolean existByStartAt(final LocalTime startAt);
 
-    List<AvailableReservationTime> findAllAvailableReservationTimes(LocalDate date, Long themeId);
+    List<AvailableReservationTime> findAllAvailableReservationTimes(final LocalDate date, final Long themeId);
 }

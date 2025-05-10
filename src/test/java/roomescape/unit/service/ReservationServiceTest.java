@@ -37,10 +37,10 @@ import roomescape.unit.fake.FakeThemeRepository;
 
 public class ReservationServiceTest {
 
-    private ReservationRepository reservationRepository = new FakeReservationRepository();
-    private ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
-    private ThemeRepository themeRepository = new FakeThemeRepository();
-    private MemberRepository memberRepository = new FakeMemberRepository();
+    private final ReservationRepository reservationRepository = new FakeReservationRepository();
+    private final ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
+    private final ThemeRepository themeRepository = new FakeThemeRepository();
+    private final MemberRepository memberRepository = new FakeMemberRepository();
 
     private final LocalDate today = LocalDate.now();
 

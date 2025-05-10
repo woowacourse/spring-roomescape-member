@@ -11,19 +11,31 @@ import roomescape.domain.theme.Theme;
 
 public interface ReservationRepository {
 
-    Reservation save(Member member, ReservationDateTime reservationDateTime, Theme theme);
+    Reservation save(
+            final Member member,
+            final ReservationDateTime reservationDateTime,
+            final Theme theme
+    );
 
-    Optional<Reservation> findById(Long id);
+    Optional<Reservation> findById(final Long id);
 
     List<Reservation> findAll();
 
-    void deleteById(Long id);
+    void deleteById(final Long id);
 
-    boolean existSameDateTime(ReservationDate reservationDate, Long timeId);
+    boolean existSameDateTime(
+            final ReservationDate reservationDate,
+            final Long timeId
+    );
 
-    boolean existReservationByTimeId(Long timeId);
+    boolean existReservationByTimeId(final Long timeId);
 
-    boolean existReservationByThemeId(Long themeId);
+    boolean existReservationByThemeId(final Long themeId);
 
-    List<Reservation> findAllWithCondition(Long memberId, Long themeId, LocalDate fromDate, LocalDate toDate);
+    List<Reservation> findAllWithCondition(
+            final Long memberId,
+            final Long themeId,
+            final LocalDate fromDate,
+            final LocalDate toDate
+    );
 }

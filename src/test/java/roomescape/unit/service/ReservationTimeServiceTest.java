@@ -34,10 +34,10 @@ import roomescape.unit.fake.FakeReservationTimeRepository;
 
 class ReservationTimeServiceTest {
 
-    private ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
-    private ReservationRepository reservationRepository = new FakeReservationRepository();
+    private final ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
+    private final ReservationRepository reservationRepository = new FakeReservationRepository();
 
-    private ReservationTimeService service = new ReservationTimeService(
+    private final ReservationTimeService service = new ReservationTimeService(
             reservationTimeRepository,
             reservationRepository
     );

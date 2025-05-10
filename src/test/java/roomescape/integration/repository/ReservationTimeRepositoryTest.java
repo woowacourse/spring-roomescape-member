@@ -29,7 +29,7 @@ import roomescape.repository.ReservationTimeRepository;
 class ReservationTimeRepositoryTest extends RepositoryBaseTest {
 
     @Autowired
-    private ReservationTimeRepository repository;
+    private ReservationTimeRepository reservationTimeRepository;
 
     private static final String SELECT_BY_ID = "SELECT * FROM reservation_time WHERE id = ?";
     private static final String COUNT_BY_ID = "SELECT COUNT(*) FROM reservation_time WHERE id = ?";
@@ -52,7 +52,7 @@ class ReservationTimeRepositoryTest extends RepositoryBaseTest {
         LocalTime time = LocalTime.of(10, 0);
 
         // when
-        ReservationTime saved = repository.save(time);
+        ReservationTime saved = reservationTimeRepository.save(time);
 
         // then
         Map<String, Object> row = jdbcTemplate.queryForMap(SELECT_BY_ID, saved.getId());
@@ -65,11 +65,11 @@ class ReservationTimeRepositoryTest extends RepositoryBaseTest {
         LocalTime time1 = LocalTime.of(10, 0);
         LocalTime time2 = LocalTime.of(14, 30);
 
-        ReservationTime saved1 = repository.save(time1);
-        ReservationTime saved2 = repository.save(time2);
+        ReservationTime saved1 = reservationTimeRepository.save(time1);
+        ReservationTime saved2 = reservationTimeRepository.save(time2);
 
         // when
-        List<ReservationTime> all = repository.findAll();
+        List<ReservationTime> all = reservationTimeRepository.findAll();
 
         // then
         assertSoftly(softly -> {
@@ -86,10 +86,10 @@ class ReservationTimeRepositoryTest extends RepositoryBaseTest {
     @Test
     void 예약시간을_ID로_조회할_수_있다() {
         // given
-        ReservationTime saved = repository.save(LocalTime.of(11, 0));
+        ReservationTime saved = reservationTimeRepository.save(LocalTime.of(11, 0));
 
         // when
-        Optional<ReservationTime> found = repository.findById(saved.getId());
+        Optional<ReservationTime> found = reservationTimeRepository.findById(saved.getId());
 
         // then
         assertSoftly(softly -> {
@@ -101,7 +101,7 @@ class ReservationTimeRepositoryTest extends RepositoryBaseTest {
     @Test
     void 존재하지_않는_ID로_조회하면_빈값을_반환한다() {
         // when
-        Optional<ReservationTime> found = repository.findById(999L);
+        Optional<ReservationTime> found = reservationTimeRepository.findById(999L);
 
         // then
         assertThat(found).isNotPresent();
@@ -110,10 +110,10 @@ class ReservationTimeRepositoryTest extends RepositoryBaseTest {
     @Test
     void 예약시간을_삭제할_수_있다() {
         // given
-        ReservationTime saved = repository.save(LocalTime.of(15, 0));
+        ReservationTime saved = reservationTimeRepository.save(LocalTime.of(15, 0));
 
         // when
-        repository.deleteById(saved.getId());
+        reservationTimeRepository.deleteById(saved.getId());
 
         // then
         Integer count = jdbcTemplate.queryForObject(COUNT_BY_ID, Integer.class, saved.getId());
@@ -123,11 +123,11 @@ class ReservationTimeRepositoryTest extends RepositoryBaseTest {
     @Test
     void 특정_시간이_존재하는지_확인할_수_있다() {
         // given
-        repository.save(LocalTime.of(16, 0));
+        reservationTimeRepository.save(LocalTime.of(16, 0));
 
         // when
-        boolean exists = repository.existByStartAt(LocalTime.of(16, 0));
-        boolean notExists = repository.existByStartAt(LocalTime.of(17, 0));
+        boolean exists = reservationTimeRepository.existByStartAt(LocalTime.of(16, 0));
+        boolean notExists = reservationTimeRepository.existByStartAt(LocalTime.of(17, 0));
 
         // then
         assertSoftly(softly -> {
@@ -146,7 +146,7 @@ class ReservationTimeRepositoryTest extends RepositoryBaseTest {
         reservationDbFixture.예약_25_4_22(예약시간, 공포, member);
 
         // when
-        List<AvailableReservationTime> available = repository.findAllAvailableReservationTimes(
+        List<AvailableReservationTime> available = reservationTimeRepository.findAllAvailableReservationTimes(
                 ReservationDateFixture.예약날짜_25_4_22.getDate(), 공포.getId());
 
         // then

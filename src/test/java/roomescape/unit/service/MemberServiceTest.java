@@ -17,8 +17,8 @@ import roomescape.unit.fake.FakeMemberRepository;
 
 class MemberServiceTest {
 
-    private MemberRepository memberRepository = new FakeMemberRepository();
-    private MemberService memberService = new MemberService(memberRepository);
+    private final MemberRepository memberRepository = new FakeMemberRepository();
+    private final MemberService memberService = new MemberService(memberRepository);
 
     @Test
     void 모든_멤버를_조회한다() {

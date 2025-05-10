@@ -146,7 +146,7 @@ class ThemeRepositoryTest extends RepositoryBaseTest {
         }
 
         // when
-        DateRange range = new DateRange(FIXED_CLOCK);
+        DateRange range = DateRange.createLastWeekRange(FIXED_CLOCK);
         List<Theme> popularThemes = themeRepository.findPopularThemeDuringAWeek(10, range);
 
         // then

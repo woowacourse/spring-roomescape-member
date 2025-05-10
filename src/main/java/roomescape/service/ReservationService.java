@@ -46,12 +46,12 @@ public class ReservationService {
         return ReservationResponse.from(reservations);
     }
 
-    public void deleteReservationById(Long id) {
+    public void deleteReservationById(final Long id) {
         Reservation reservation = getReservation(id);
         reservationRepository.deleteById(reservation.getId());
     }
 
-    public ReservationResponse createReservation(ReservationCreateRequest request, Long memberId) {
+    public ReservationResponse createReservation(final ReservationCreateRequest request, final Long memberId) {
         Reservation created = createReservation(
                 new ReservationDate(request.date()),
                 request.timeId(),
@@ -90,13 +90,13 @@ public class ReservationService {
         return reservationRepository.save(member, dateTime, theme);
     }
 
-    private void validateReservationAvailability(ReservationDateTime dateTime) {
+    private void validateReservationAvailability(final ReservationDateTime dateTime) {
         if (reservationRepository.existSameDateTime(dateTime.getReservationDate(), dateTime.getTimeId())) {
             throw new IllegalStateException("이미 예약이 찼습니다.");
         }
     }
 
-    private Reservation getReservation(Long id) {
+    private Reservation getReservation(final Long id) {
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("예약을 찾을 수 없습니다."));
     }

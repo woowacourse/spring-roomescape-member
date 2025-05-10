@@ -28,7 +28,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ReservationRepositoryImpl(JdbcTemplate jdbcTemplate) {
+    public ReservationRepositoryImpl(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -76,7 +76,11 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                         )));
     }
 
-    public Reservation save(Member member, ReservationDateTime reservationDateTime, Theme theme) {
+    public Reservation save(
+            final Member member,
+            final ReservationDateTime reservationDateTime,
+            final Theme theme
+    ) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
@@ -94,7 +98,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                 theme);
     }
 
-    public Optional<Reservation> findById(Long id) {
+    public Optional<Reservation> findById(final Long id) {
         String sql = """
                 select r.id as reservation_id, 
                        r.date, 
@@ -141,22 +145,22 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                 .findFirst();
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id);
     }
 
-    public boolean existSameDateTime(ReservationDate reservationDate, Long timeId) {
+    public boolean existSameDateTime(final ReservationDate reservationDate, final Long timeId) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND time_id = ?)";
         return jdbcTemplate.queryForObject(sql, boolean.class, reservationDate.getDate(), timeId);
     }
 
-    public boolean existReservationByTimeId(Long timeId) {
+    public boolean existReservationByTimeId(final Long timeId) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ?)";
         return jdbcTemplate.queryForObject(sql, boolean.class, timeId);
     }
 
-    public boolean existReservationByThemeId(Long themeId) {
+    public boolean existReservationByThemeId(final Long themeId) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE theme_id = ?)";
         return jdbcTemplate.queryForObject(sql, boolean.class, themeId);
     }

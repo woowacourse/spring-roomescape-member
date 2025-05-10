@@ -18,11 +18,14 @@ public class ThemeRepositoryImpl implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ThemeRepositoryImpl(JdbcTemplate jdbcTemplate) {
+    public ThemeRepositoryImpl(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Theme save(ThemeName name, ThemeDescription description, ThemeThumbnail thumbnail) {
+    public Theme save(
+            final ThemeName name,
+            final ThemeDescription description,
+            final ThemeThumbnail thumbnail) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
@@ -37,7 +40,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
         return new Theme(id, name, description, thumbnail);
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         String sql = "delete from theme where id = ?";
         jdbcTemplate.update(sql, id);
     }
@@ -52,7 +55,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
         ));
     }
 
-    public Optional<Theme> findById(Long id) {
+    public Optional<Theme> findById(final Long id) {
         String sql = "select * from theme where id = ?";
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Theme(
                         resultSet.getLong("id"),
@@ -64,7 +67,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
                 .findFirst();
     }
 
-    public List<Theme> findPopularThemeDuringAWeek(long limit, DateRange dateRange) {
+    public List<Theme> findPopularThemeDuringAWeek(final long limit, final DateRange dateRange) {
         String sql = """
                 SELECT
                     t.id,

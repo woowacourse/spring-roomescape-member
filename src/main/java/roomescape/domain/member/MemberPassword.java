@@ -11,15 +11,16 @@ public record MemberPassword(String password) {
 
     public MemberPassword(final String password) {
         this.password = Objects.requireNonNull(password, "password은 null일 수 없습니다.");
-
         if (password.isBlank()) {
             throw new IllegalStateException("비밀번호는 공백일 수 없습니다.");
         }
-
         if (password.length() > 30) {
             throw new IllegalStateException("비밀번호는 30자를 초과할 수 없습니다.");
         }
+        validatePasswordPattern(password);
+    }
 
+    private static void validatePasswordPattern(final String password) {
         long digitCount = DIGIT_PATTERN.matcher(password).results().count();
         long specialCharCount = SPECIAL_CHAR_PATTERN.matcher(password).results().count();
         long letterCount = LETTER_PATTERN.matcher(password).results().count();

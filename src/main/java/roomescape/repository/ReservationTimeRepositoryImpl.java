@@ -19,11 +19,11 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ReservationTimeRepositoryImpl(JdbcTemplate jdbcTemplate) {
+    public ReservationTimeRepositoryImpl(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public ReservationTime save(LocalTime time) {
+    public ReservationTime save(final LocalTime time) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
@@ -44,12 +44,12 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
                 ));
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         String sql = "delete from reservation_time where id = ?";
         jdbcTemplate.update(sql, id);
     }
 
-    public Optional<ReservationTime> findById(Long id) {
+    public Optional<ReservationTime> findById(final Long id) {
         String sql = "select * from reservation_time where id = ?";
 
         ReservationTime reservationTime;
@@ -66,12 +66,12 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
         return Optional.of(Objects.requireNonNull(reservationTime));
     }
 
-    public boolean existByStartAt(LocalTime startAt) {
+    public boolean existByStartAt(final LocalTime startAt) {
         String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
     }
 
-    public List<AvailableReservationTime> findAllAvailableReservationTimes(LocalDate date, Long themeId) {
+    public List<AvailableReservationTime> findAllAvailableReservationTimes(final LocalDate date, final Long themeId) {
         String sql = """
                 SELECT
                     rt.id,

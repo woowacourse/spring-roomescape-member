@@ -34,7 +34,12 @@ public class MemberDbFixture {
     }
 
 
-    public Member createMember(MemberName name, MemberEmail email, MemberEncodedPassword password, MemberRole role) {
+    public Member createMember(
+            final MemberName name,
+            final MemberEmail email,
+            final MemberEncodedPassword password,
+            final MemberRole role
+    ) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", name.name())
                 .addValue("email", email.email())

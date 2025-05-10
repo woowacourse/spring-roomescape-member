@@ -10,11 +10,16 @@ import roomescape.domain.member.MemberRole;
 
 public interface MemberRepository {
 
-    Member save(MemberEmail email, MemberName name, MemberEncodedPassword password, MemberRole role);
+    Member save(
+            final MemberEmail email,
+            final MemberName name,
+            final MemberEncodedPassword password,
+            final MemberRole role
+    );
 
-    Optional<Member> findByEmail(MemberEmail email);
+    Optional<Member> findByEmail(final MemberEmail email);
 
-    Optional<Member> findById(Long id);
+    Optional<Member> findById(final Long id);
 
     List<Member> findAll();
 }

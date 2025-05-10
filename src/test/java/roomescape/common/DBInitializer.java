@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 public class DBInitializer {
 
-    public static void truncate(JdbcTemplate jdbcTemplate) {
+    public static void truncate(final JdbcTemplate jdbcTemplate) {
         String sql = """
                 select TABLE_NAME
                 from INFORMATION_SCHEMA.TABLES

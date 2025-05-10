@@ -13,7 +13,7 @@ import roomescape.domain.theme.ThemeThumbnail;
 public class ThemeDbFixture {
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public ThemeDbFixture(JdbcTemplate jdbcTemplate) {
+    public ThemeDbFixture(final JdbcTemplate jdbcTemplate) {
         simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
@@ -27,11 +27,15 @@ public class ThemeDbFixture {
         return createTheme("로멘스", "로멘스 테마", "로멭스.jpg");
     }
 
-    public Theme 커스텀_테마(String name) {
+    public Theme 커스텀_테마(final String name) {
         return createTheme(name, name + "테마", name + ".jpg");
     }
 
-    public Theme createTheme(String name, String description, String thumbnail) {
+    public Theme createTheme(
+            final String name,
+            final String description,
+            final String thumbnail
+    ) {
         Long id = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
                 .addValue("name", name)
                 .addValue("description", description)

@@ -54,7 +54,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getWeeklyPopularThemes() {
-        DateRange dateRange = new DateRange(clock);
+        DateRange dateRange = DateRange.createLastWeekRange(clock);
         List<Theme> themes = themeRepository.findPopularThemeDuringAWeek(10L, dateRange);
         return ThemeResponse.from(themes);
     }

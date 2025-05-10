@@ -87,21 +87,21 @@ public class DynamicReservationSelectQuery {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public DynamicReservationSelectQuery addMemberCondition(Long memberId) {
+    public DynamicReservationSelectQuery addMemberCondition(final Long memberId) {
         if (memberId != null) {
             conditions.add(new Condition("mb.id = ?", memberId));
         }
         return this;
     }
 
-    public DynamicReservationSelectQuery addThemeCondition(Long themeId) {
+    public DynamicReservationSelectQuery addThemeCondition(final Long themeId) {
         if (themeId != null) {
             conditions.add(new Condition("th.id = ?", themeId));
         }
         return this;
     }
 
-    public DynamicReservationSelectQuery addFromDateCondition(LocalDate startDate) {
+    public DynamicReservationSelectQuery addFromDateCondition(final LocalDate startDate) {
         if (startDate != null) {
             conditions.add(new Condition(
                     "PARSEDATETIME(r.date, 'yyyy-MM-dd') >= PARSEDATETIME(?, 'yyyy-MM-dd')",
@@ -111,7 +111,7 @@ public class DynamicReservationSelectQuery {
         return this;
     }
 
-    public DynamicReservationSelectQuery addToDateCondition(LocalDate endDate) {
+    public DynamicReservationSelectQuery addToDateCondition(final LocalDate endDate) {
         if (endDate != null) {
             conditions.add(new Condition(
                     "PARSEDATETIME(r.date, 'yyyy-MM-dd') <= PARSEDATETIME(?, 'yyyy-MM-dd')",
