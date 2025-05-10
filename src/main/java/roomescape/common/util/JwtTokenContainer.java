@@ -71,14 +71,12 @@ public class JwtTokenContainer {
 
     public Role getMemberRole(String token){
         try {
-            System.out.println("시작");
             String role = Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload()
                     .get("role").toString();
-            System.out.println("끝");
             return Role.findRole(role);
         } catch (JwtException e) {
             throw new LoginException("올바르지 않은 토큰 형태입니다.");
