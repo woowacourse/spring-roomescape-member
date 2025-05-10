@@ -31,6 +31,12 @@ public final class GlobalExceptionHandler {
                 .body(new ErrorResponseDto(exception.getMessage()));
     }
 
+    @ExceptionHandler(value = UnAuthorizedException.class)
+    public ResponseEntity<ErrorResponseDto> handleUnAuthorizedException(UnAuthorizedException exception) {
+        return ResponseEntity.status(401)
+                .body(new ErrorResponseDto(exception.getMessage()));
+    }
+
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDto> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException exception) {

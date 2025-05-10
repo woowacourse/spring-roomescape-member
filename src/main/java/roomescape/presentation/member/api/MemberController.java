@@ -46,7 +46,7 @@ public final class MemberController {
 
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponseDto> checkLogin(LoginMember loginMember) {
-        return ResponseEntity.ok(new LoginCheckResponseDto(loginMember.name()));
+        return ResponseEntity.ok(new LoginCheckResponseDto(memberService.checkLogin(loginMember)));
     }
 
     @PostMapping("/logout")

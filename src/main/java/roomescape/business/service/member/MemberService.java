@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.AccessToken;
 import roomescape.business.domain.member.Member;
 import roomescape.config.LoginMember;
+import roomescape.exception.UnAuthorizedException;
 import roomescape.persistence.MemberRepository;
 import roomescape.presentation.member.dto.LoginRequestDto;
 import roomescape.presentation.member.dto.MemberRequestDto;
@@ -55,5 +56,12 @@ public class MemberService {
                 .stream()
                 .map(MemberResponseDto::toResponse)
                 .toList();
+    }
+
+    public String checkLogin(LoginMember loginMember) {
+        if (loginMember == null) {
+            throw new UnAuthorizedException("로그인이 필요합니다.");
+        }
+        return loginMember.name();
     }
 }
