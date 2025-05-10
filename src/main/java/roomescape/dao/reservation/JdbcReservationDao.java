@@ -119,7 +119,8 @@ public class JdbcReservationDao implements ReservationDao {
                     me.id as member_id,
                     me.name as member_name,
                     me.email as member_email,
-                    me.password as member_password
+                    me.password as member_password,
+                    me.role as member_role
                 FROM reservation as r 
                 inner join reservation_time as t
                 on r.time_id = t.id
