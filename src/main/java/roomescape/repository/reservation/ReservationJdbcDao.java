@@ -52,7 +52,7 @@ public class ReservationJdbcDao implements ReservationRepository {
         namedJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return Reservation.create(id,
+        return Reservation.of(id,
                 reservation.getDate(),
                 reservation.getTime(),
                 reservation.getTheme(),
@@ -101,7 +101,7 @@ public class ReservationJdbcDao implements ReservationRepository {
     }
 
     private RowMapper<Reservation> getReservationRowMapper() {
-        return (resultSet, rowNum) -> Reservation.create(
+        return (resultSet, rowNum) -> Reservation.of(
                 resultSet.getLong("reservation_id"),
                 resultSet.getDate("date").toLocalDate(),
                 new ReservationTime(

@@ -8,8 +8,9 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.infrastructure.intercepter.AdminRequestMapper;
+import roomescape.infrastructure.intercepter.AuthPreHandlerInterceptor;
 import roomescape.infrastructure.intercepter.AuthenticationPrincipalResolver;
-import roomescape.infrastructure.intercepter.PreHandlerInterceptor;
+import roomescape.infrastructure.intercepter.ResponseHeaderInterceptor;
 import roomescape.infrastructure.jwt.JwtTokenProvider;
 
 @Configuration
@@ -29,7 +30,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new PreHandlerInterceptor(jwtTokenProvider, List.of(new AdminRequestMapper())));
+        registry.addInterceptor(new AuthPreHandlerInterceptor(jwtTokenProvider, List.of(new AdminRequestMapper())));
+        registry.addInterceptor(new ResponseHeaderInterceptor())
+                .addPathPatterns("/auth/**");
     }
 
     @Override

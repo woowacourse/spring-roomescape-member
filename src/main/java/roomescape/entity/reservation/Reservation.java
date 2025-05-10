@@ -21,20 +21,20 @@ public class Reservation {
         this.member = member;
     }
 
-    public static Reservation create(Long id,
-                                     LocalDate date,
-                                     ReservationTime time,
-                                     Theme theme,
-                                     Member member
+    public static Reservation of(Long id,
+                                 LocalDate date,
+                                 ReservationTime time,
+                                 Theme theme,
+                                 Member member
     ) {
         validate(date, time, theme, member);
         return new Reservation(id, date, time, theme, member);
     }
 
-    public static Reservation createIfDateTimeValid(LocalDate date,
-                                                    ReservationTime time,
-                                                    Theme theme,
-                                                    Member member
+    public static Reservation createNew(LocalDate date,
+                                        ReservationTime time,
+                                        Theme theme,
+                                        Member member
     ) {
         validateTheme(theme);
         validateMember(member);

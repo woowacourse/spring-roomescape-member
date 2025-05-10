@@ -31,8 +31,6 @@ public class AuthenticationController {
         cookie.setPath("/");
         cookie.setHttpOnly(true);
 
-        response.setContentType("application/json");
-        response.setHeader("Keep-Alive", "timeout=60");
         response.addCookie(cookie);
     }
 
@@ -40,8 +38,6 @@ public class AuthenticationController {
     public LoginCheckResponse loginCheck(@AuthenticationPrincipal MemberInfo memberInfo,
                                          HttpServletResponse response) {
         response.setHeader("Connection", "keep-alive");
-        response.setContentType("application/json");
-        response.setHeader("Keep-Alive", "timeout=60");
         return new LoginCheckResponse(memberInfo.name());
     }
 }

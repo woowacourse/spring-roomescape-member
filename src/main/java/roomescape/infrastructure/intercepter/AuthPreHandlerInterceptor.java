@@ -9,12 +9,12 @@ import roomescape.infrastructure.jwt.JwtCookieResolver;
 import roomescape.infrastructure.jwt.JwtTokenProvider;
 import roomescape.infrastructure.member.MemberInfo;
 
-public class PreHandlerInterceptor implements HandlerInterceptor {
+public class AuthPreHandlerInterceptor implements HandlerInterceptor {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final List<RequestMatcher> requestMatcher;
 
-    public PreHandlerInterceptor(JwtTokenProvider jwtTokenProvider, List<RequestMatcher> requestMatcher) {
+    public AuthPreHandlerInterceptor(JwtTokenProvider jwtTokenProvider, List<RequestMatcher> requestMatcher) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.requestMatcher = requestMatcher;
     }

@@ -19,7 +19,7 @@ class ReservationTest {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(15, 0));
         Member member = new Member(1L, "테스트", "test@example.com", "테스트");
         // when & then
-        assertThatCode(() -> Reservation.create(1L, date, time, theme, member)).doesNotThrowAnyException();
+        assertThatCode(() -> Reservation.of(1L, date, time, theme, member)).doesNotThrowAnyException();
     }
 
     @Test
@@ -31,7 +31,7 @@ class ReservationTest {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(15, 0));
         Member member = new Member(1L, "테스트", "test@example.com", "테스트");
         //when & then
-        assertThatThrownBy(() -> Reservation.create(1L, date, time, theme, member))
+        assertThatThrownBy(() -> Reservation.of(1L, date, time, theme, member))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 유효하지 않은 예약 날짜입니다.");
     }
@@ -45,7 +45,7 @@ class ReservationTest {
         LocalDate date = LocalDate.now();
         Member member = null;
         //when & then
-        assertThatThrownBy(() -> Reservation.create(1L, date, time, theme, member))
+        assertThatThrownBy(() -> Reservation.of(1L, date, time, theme, member))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 유효하지 않은 사용자입니다.");
     }
@@ -59,21 +59,21 @@ class ReservationTest {
         LocalDate date = LocalDate.now();
         Member member = new Member(1L, "테스트", "test@example.com", "테스트");
         //when & then
-        assertThatThrownBy(() -> Reservation.create(1L, date, time, theme, member))
+        assertThatThrownBy(() -> Reservation.of(1L, date, time, theme, member))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 유효하지 않은 예약 시간입니다.");
     }
 
     @Test
     @DisplayName("DateTime 값이 과거일 경우, 예외가 발생한다.")
-    void createIfDateTimeValid() {
+    void ofIfDateTimeValid() {
         //given
         LocalDate date = LocalDate.MIN;
         ReservationTime time = new ReservationTime(1L, LocalTime.MIN);
         Theme theme = new Theme(1L, "테스트", "테스트", "테스트");
         Member member = new Member(1L, "테스트", "test@example.com", "테스트");
         //when & then
-        assertThatThrownBy(() -> Reservation.createIfDateTimeValid(date, time, theme, member))
+        assertThatThrownBy(() -> Reservation.createNew(date, time, theme, member))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("[ERROR] 예약이 불가능한 시간입니다: ");
     }
