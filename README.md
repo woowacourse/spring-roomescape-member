@@ -145,3 +145,8 @@
 
 - 사용자 예약 시 LoginResolver를 통해 LoginResolver를 통해 LoginMember를 만들고 쓰는 게 맞나 - 이걸 쓰면 미리 멤버서비스에서 찾아주기에
 - controller와 entity를 분리하자. entity의 변경이 controller가 속한 계층에까지 영향 끼치는 걸 막고 싶다. 캡슐화
+
+## 6단계
+
+- [ ] 어드민 페이지 진입은 admin권한이 있는 사람만 할 수 있도록 제한
+- [ ] 관리자가 조건에 따라 예약을 검색할 수 있도록 기능을 추가
