@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
-import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationDateTime;
@@ -165,8 +164,51 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<ReservationResponse> searchReservations() {
-        return List.of();
+    public List<Reservation> searchReservations(Long memberId, Long themeId, LocalDate start, LocalDate end) {
+        String sql = """
+            select r.id as reservation_id, 
+                   r.date, 
+                   t.id as time_id, 
+                   t.start_at as time_value, 
+                   th.id as theme_id, 
+                   th.name as theme_name, 
+                   th.description as theme_description, 
+                   th.thumbnail as theme_thumbnail,
+                   u.id as user_id,
+                   u.name as user_name,
+                   u.email as user_email,
+                   u.password as user_password,
+                   u.role as user_role
+            from reservation as r
+            inner join reservation_time as t on r.time_id = t.id
+            inner join theme as th on r.theme_id = th.id
+            inner join users as u on r.user_id = u.id
+            where r.user_id = ? 
+              and r.theme_id = ? 
+              and r.date between ? and ?
+            """;
+
+        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
+                new Reservation(
+                        resultSet.getLong("reservation_id"),
+                        LocalDate.parse(resultSet.getString("date")),
+                        new ReservationTime(
+                                resultSet.getLong("time_id"),
+                                LocalTime.parse(resultSet.getString("time_value"))
+                        ),
+                        new Theme(
+                                resultSet.getLong("theme_id"),
+                                resultSet.getString("theme_name"),
+                                resultSet.getString("theme_description"),
+                                resultSet.getString("theme_thumbnail")
+                        ),
+                        new Member(
+                                resultSet.getLong("user_id"),
+                                resultSet.getString("user_name"),
+                                resultSet.getString("user_email"),
+                                resultSet.getString("user_password"),
+                                resultSet.getString("user_role")
+                        )), memberId, themeId, start.toString(), end.toString());
     }
 
 }

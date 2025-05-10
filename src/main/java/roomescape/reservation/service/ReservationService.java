@@ -80,14 +80,11 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> searchReservations(Long memberId, Long themeId, LocalDate start, LocalDate end) {
-        Member member = memberService.findById(memberId);
-
-        return getAll().stream()
-                .filter(reservation -> memberId == null || reservation.name().equals(member.getName()))
-                .filter(reservation -> themeId == null || reservation.theme().id().equals(themeId))
-                .filter(reservation -> start == null || reservation.date().isAfter(start))
-                .filter(reservation -> end == null || reservation.date().isBefore(end))
-                .toList();
+        return ReservationResponse.from(
+                reservationRepository.searchReservations(
+                        memberId, themeId, start, end
+                )
+        );
     }
 
     private Reservation getReservation(Long id) {

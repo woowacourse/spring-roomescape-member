@@ -1,9 +1,9 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import roomescape.member.domain.Member;
-import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationDateTime;
@@ -25,5 +25,5 @@ public interface ReservationRepository {
 
     boolean existReservationByThemeId(Long themeId);
 
-    List<ReservationResponse> searchReservations();
+    List<Reservation> searchReservations(Long memberId, Long themeId, LocalDate start, LocalDate end);
 }

@@ -87,20 +87,20 @@ public class ReservationTest extends BaseTest {
 
         RestAssured.given().log().all()
                 .cookie("token", token)
-                .when().get("admin/reservations")
+                .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
                 .cookie("token", token)
-                .when().delete("admin/reservations/1")
+                .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
                 .cookie("token", token)
-                .when().get("admin/reservations")
+                .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
@@ -221,7 +221,7 @@ public class ReservationTest extends BaseTest {
 
         RestAssured.given().log().all()
                 .cookie("token", token)
-                .when().delete("admin/reservations/1")
+                .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
