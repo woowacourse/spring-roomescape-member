@@ -11,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import roomescape.common.exception.LoginException;
 import roomescape.common.util.JwtTokenContainer;
+import roomescape.common.util.SystemDateTime;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
 import roomescape.member.domain.Role;
@@ -22,7 +23,8 @@ class LoginServiceTest {
     private MemberRepository memberRepository = new FakeMemberRepository(new ArrayList<>());
     private LoginService loginService = new LoginService(
             new JwtTokenContainer("sadasdsasdfasdfasdfsaddsadsadsadadsaasdasdasd"),
-            memberRepository);
+            memberRepository,
+            new SystemDateTime());
 
     @BeforeEach
     void beforeEach() {
