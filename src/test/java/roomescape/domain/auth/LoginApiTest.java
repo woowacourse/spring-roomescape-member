@@ -4,6 +4,8 @@ import static org.hamcrest.Matchers.containsString;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -87,16 +89,117 @@ public class LoginApiTest {
                 .statusCode(401);
     }
 
-    @DisplayName("로그인 정보를 확인하여 반환한다.")
+    @DisplayName("비밀번호가 다르다면 401 예외를 반환한다.")
+    @Test
+    void loginTest3() {
+        // given
+        final String name = "테스트유저";
+        final String email = "testuser3@naver.com";
+        final String password = "testpassword";
+        userRepository.save(User.withoutId(new Name(name), email, password, Roles.USER));
+
+        final Map<String, String> request = new HashMap<>();
+        request.put("email", email);
+        request.put("password", "wrongpassword");
+
+        // when & then
+        RestAssured.given()
+                .log()
+                .all()
+                .contentType("application/json")
+                .body(request)
+                .when()
+                .post("/login")
+                .then()
+                .log()
+                .all()
+                .statusCode(401);
+    }
+
+    @DisplayName("로그인 시 이메일 형식이 잘못되면 400 예외를 반환한다.")
+    @Test
+    void loginInvalidEmailFormatTest() {
+        // given
+        final Map<String, String> request = new HashMap<>();
+        request.put("email", "invalid-email");
+        request.put("password", "password");
+
+        // when & then
+        RestAssured.given()
+                .log()
+                .all()
+                .contentType("application/json")
+                .body(request)
+                .when()
+                .post("/login")
+                .then()
+                .log()
+                .all()
+                .statusCode(400);
+    }
+
+    @DisplayName("쿠키를 통해 인증 정보를 조회할 수 있다.")
     @Test
     void checkTest1() {
         // given
+        final String name = "테스트유저";
+        final String email = "testuser4@naver.com";
+        final String password = "testpassword";
+        userRepository.save(User.withoutId(new Name(name), email, password, Roles.USER));
 
-        // when
+        final Map<String, String> loginRequest = new HashMap<>();
+        loginRequest.put("email", email);
+        loginRequest.put("password", password);
 
-        // then
+        // 로그인하여 토큰 쿠키 획득
+        final String token = RestAssured.given()
+                .contentType("application/json")
+                .body(loginRequest)
+                .when()
+                .post("/login")
+                .then()
+                .extract()
+                .cookie("token");
+
+        // when & then
+        RestAssured.given()
+                .cookie("token", token)
+                .when()
+                .get("/login/check")
+                .then()
+                .log()
+                .all()
+                .statusCode(200);
     }
 
+    @DisplayName("잘못된 쿠키는 401 예외를 반환한다.")
+    @Test
+    void checkTest2() {
+        // when & then
+        RestAssured.given()
+                .cookie("token", "invalidtoken")
+                .when()
+                .get("/login/check")
+                .then()
+                .log()
+                .all()
+                .statusCode(401);
+    }
+
+    @DisplayName("회원 정보를 조회할 때 인증되지 않은 사용자는 401 예외를 반환한다.")
+    @Test
+    void getUserInfoUnauthorizedTest() {
+        // when & then
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .get("/login/check")
+                .then()
+                .log()
+                .all()
+                .statusCode(401);
+    }
 }
 
 
