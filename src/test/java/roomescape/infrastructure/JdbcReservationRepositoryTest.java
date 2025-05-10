@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Role;
-import roomescape.domain.Theme;
+import roomescape.domain.member.Member;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.member.Role;
+import roomescape.domain.reservation.Theme;
 import roomescape.infrastructure.persistance.JdbcReservationRepository;
 
 class JdbcReservationRepositoryTest extends JdbcSupportTest {

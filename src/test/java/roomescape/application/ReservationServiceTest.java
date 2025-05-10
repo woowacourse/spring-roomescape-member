@@ -7,18 +7,18 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import roomescape.application.param.CreateReservationParam;
-import roomescape.application.result.MemberResult;
-import roomescape.application.result.ReservationResult;
-import roomescape.application.result.ReservationTimeResult;
-import roomescape.application.result.ThemeResult;
+import roomescape.application.reservation.dto.CreateReservationParam;
+import roomescape.application.member.MemberResult;
+import roomescape.application.reservation.dto.ReservationResult;
+import roomescape.application.reservation.dto.ReservationTimeResult;
+import roomescape.application.reservation.dto.ThemeResult;
 import roomescape.common.exception.BusinessRuleViolationException;
 import roomescape.common.exception.NotFoundEntityException;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Role;
-import roomescape.domain.Theme;
+import roomescape.domain.member.Member;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.member.Role;
+import roomescape.domain.reservation.Theme;
 
 class ReservationServiceTest extends ServiceIntegrationTest {
 

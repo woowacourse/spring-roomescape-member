@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.reservation.ReservationTime;
 import roomescape.infrastructure.persistance.JdbcReservationTimeRepository;
 
 class JdbcReservationTimeRepositoryTest extends JdbcSupportTest {

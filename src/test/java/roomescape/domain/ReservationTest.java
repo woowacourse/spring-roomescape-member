@@ -6,6 +6,11 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import roomescape.common.exception.BusinessRuleViolationException;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.reservation.Theme;
 
 class ReservationTest {
 

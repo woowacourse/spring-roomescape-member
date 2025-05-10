@@ -9,9 +9,9 @@ import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.application.JwtPayload;
+import roomescape.application.auth.dto.JwtPayload;
 import roomescape.common.exception.UnauthorizedException;
-import roomescape.domain.Role;
+import roomescape.domain.member.Role;
 
 @Component
 public class JwtProvider {

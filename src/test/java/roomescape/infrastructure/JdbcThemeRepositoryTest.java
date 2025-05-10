@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import roomescape.domain.Theme;
+import roomescape.domain.reservation.Theme;
 import roomescape.infrastructure.persistance.JdbcThemeRepository;
 
 class JdbcThemeRepositoryTest extends JdbcSupportTest {

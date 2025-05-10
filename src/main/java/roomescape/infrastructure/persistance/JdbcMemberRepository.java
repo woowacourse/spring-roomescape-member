@@ -7,9 +7,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Member;
-import roomescape.domain.MemberRepository;
-import roomescape.domain.Role;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberRepository;
+import roomescape.domain.member.Role;
 
 @Repository
 public class JdbcMemberRepository implements MemberRepository {
