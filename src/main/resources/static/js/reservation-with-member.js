@@ -159,11 +159,14 @@ function saveRow(event) {
   const themeSelect = row.querySelector('#theme-select');
   const timeSelect = row.querySelector('#time-select');
 
+  const selectedMemberOption = memberSelect.options[memberSelect.selectedIndex];
+
   const reservation = {
     date: dateInput.value,
     themeId: themeSelect.value,
     timeId: timeSelect.value,
     memberId: memberSelect.value,
+    memberName: selectedMemberOption.textContent, // 여기서 이름 추출
   };
 
   requestCreate(reservation)

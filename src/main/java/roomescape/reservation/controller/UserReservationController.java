@@ -22,7 +22,6 @@ public class UserReservationController {
 
     private final UserReservationService userReservationService;
 
-    // TODO : Admin과 API를 공유하고 있다. 분리를 고민해보자.
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ReservationResponse create(
