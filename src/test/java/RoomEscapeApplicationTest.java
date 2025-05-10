@@ -1,10 +1,8 @@
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import roomescape.infrastructure.config.WebMvcConfig;
+import roomescape.RoomEscapeApplication;
 
-@SpringBootTest
-@Import(WebMvcConfig.class)
+@SpringBootTest(classes = RoomEscapeApplication.class)
 class RoomEscapeApplicationTest {
 
     @Test

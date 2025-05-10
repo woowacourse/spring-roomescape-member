@@ -15,7 +15,7 @@ import roomescape.infrastructure.jwt.JwtTokenProvider;
 
 @SpringBootTest
 @Transactional
-@Sql({"/schema.sql", "/fixtures/member.sql"})
+@Sql({"/fixtures/schema-test.sql", "/fixtures/member.sql"})
 class AuthenticationServiceTest {
 
     @Autowired

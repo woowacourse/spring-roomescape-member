@@ -18,7 +18,7 @@ import roomescape.exceptions.reservation.ReservationTimeDuplicateException;
 
 @SpringBootTest
 @Transactional
-@Sql({"/schema.sql", "/fixtures/reservationTime.sql"})
+@Sql({"/fixtures/schema-test.sql", "/fixtures/reservationTime.sql"})
 class ReservationTimeServiceTest {
 
     @Autowired
