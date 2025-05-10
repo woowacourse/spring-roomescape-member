@@ -26,13 +26,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             final FilterChain filterChain
     ) throws ServletException, IOException {
         final String token = extractTokenFromCookies(request.getCookies());
-
-        if (StringUtils.hasText(token)) {
-            final String subject = jwtTokenProvider.getSubject(token);
-            final Long memberId = Long.valueOf(subject);
-
-            request.setAttribute("memberId", memberId);
+        if (!StringUtils.hasText(token)) {
+            filterChain.doFilter(request, response);
+            return;
         }
+
+        final String subject = jwtTokenProvider.getSubject(token);
+        final Long memberId = Long.valueOf(subject);
+        request.setAttribute("memberId", memberId);
+
         filterChain.doFilter(request, response);
     }
 
