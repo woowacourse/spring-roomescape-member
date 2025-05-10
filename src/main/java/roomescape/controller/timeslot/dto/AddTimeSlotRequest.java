@@ -1,5 +1,6 @@
 package roomescape.controller.timeslot.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
 import roomescape.model.TimeSlot;
@@ -7,6 +8,7 @@ import roomescape.model.TimeSlot;
 public record AddTimeSlotRequest(
 
         @NotNull(message = "시간은 필수입니다.")
+        @JsonFormat(pattern = "HH:mm")
         LocalTime startAt
 ) {
 
