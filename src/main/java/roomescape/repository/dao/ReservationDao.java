@@ -56,7 +56,7 @@ public class ReservationDao {
                         rt.start_at, th.name AS th_name,
                         th.description AS th_description, th.thumbnail AS th_thumbnail
                 FROM reservation r
-                INNER JOIN members u ON r.member_id = m.id
+                INNER JOIN member m ON r.member_id = m.id
                 INNER JOIN reservation_time rt ON r.time_id = rt.id
                 INNER JOIN theme th ON r.theme_id = th.id
                 """;
@@ -87,7 +87,7 @@ public class ReservationDao {
                         rt.start_at, th.name AS th_name,
                         th.description AS th_description, th.thumbnail AS th_thumbnail
                 FROM reservation r
-                INNER JOIN members u ON r.member_id = m.id
+                INNER JOIN member m ON r.member_id = m.id
                 INNER JOIN reservation_time rt ON r.time_id = rt.id
                 INNER JOIN theme th ON r.theme_id = th.id
                 WHERE r.id = ?
@@ -124,7 +124,7 @@ public class ReservationDao {
                         rt.start_at, th.name AS th_name,
                         th.description AS th_description, th.thumbnail AS th_thumbnail
                 FROM reservation r
-                INNER JOIN members u ON r.member_id = m.id
+                INNER JOIN member m ON r.member_id = m.id
                 INNER JOIN reservation_time rt ON r.time_id = rt.id
                 INNER JOIN theme th ON r.theme_id = th.id
                 """;
