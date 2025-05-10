@@ -14,12 +14,11 @@ import roomescape.error.NotFoundException;
 import roomescape.error.ReservationException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRole;
-import roomescape.member.service.MemberService;
+import roomescape.member.fake.FakeMemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationSearchRequest;
-import roomescape.reservation.fake.FakeMemberRepository;
 import roomescape.reservation.fake.FakeReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.fake.FakeReservationTimeRepository;
@@ -44,7 +43,6 @@ class ReservationServiceTest {
     private FakeThemeRepository themeRepo;
     private FakeMemberRepository memberRepo;
     private ReservationService service;
-    private MemberService memberService;
 
     @BeforeEach
     void setUp() {
