@@ -8,19 +8,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.resolver.AuthenticationPrincipal;
 import roomescape.member.domain.Member;
-import roomescape.reservation.controller.dto.CreateReservationRequest;
+import roomescape.reservation.controller.dto.CreateAdminReservationRequest;
+import roomescape.reservation.controller.dto.CreateUserReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.dto.CreateReservationServiceRequest;
 
-@RequestMapping("/reservations")
 @RestController
 public class ReservationController {
 
@@ -30,20 +29,32 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping
+    @PostMapping("/reservations")
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponse addReservation(
-            @RequestBody CreateReservationRequest request,
+            @RequestBody CreateUserReservationRequest request,
             @AuthenticationPrincipal Member member) {
 
         final CreateReservationServiceRequest creation =
-                CreateReservationServiceRequest.fromRequestAndMember(request, member);
+                CreateReservationServiceRequest.fromUserRequestAndMember(request, member);
         Reservation savedReservation = reservationService.addReservation(creation);
 
         return ReservationResponse.from(savedReservation);
     }
 
-    @GetMapping
+    @PostMapping("admin/reservations")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ReservationResponse addReservation(
+            @RequestBody CreateAdminReservationRequest request) {
+
+        final CreateReservationServiceRequest creation =
+                CreateReservationServiceRequest.fromAdminRequestAndMember(request);
+        Reservation savedReservation = reservationService.addReservation(creation);
+
+        return ReservationResponse.from(savedReservation);
+    }
+
+    @GetMapping("/reservations")
     @ResponseStatus(HttpStatus.OK)
     public List<ReservationResponse> findReservations(
             @RequestParam(required = false) Long themeId,
@@ -57,7 +68,7 @@ public class ReservationController {
                 .toList();
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/reservations/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeReservation(@PathVariable long id) {
         reservationService.removeReservationById(id);

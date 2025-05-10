@@ -16,7 +16,7 @@ import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
 import roomescape.member.domain.Member;
-import roomescape.reservation.controller.dto.CreateReservationRequest;
+import roomescape.reservation.controller.dto.CreateUserReservationRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.service.dto.CreateReservationServiceRequest;
 
@@ -47,8 +47,8 @@ class ReservationServiceTest {
     @DisplayName("테마, 날짜, 시간이 같은 예약이 존재하면 예외를 던진다")
     void addReservationTest_WhenDuplicatedReservationExists() {
         // given
-        reservationService.addReservation(CreateReservationServiceRequest.fromRequestAndMember(
-                new CreateReservationRequest(FUTURE_DATE, 1L, 1L),
+        reservationService.addReservation(CreateReservationServiceRequest.fromUserRequestAndMember(
+                new CreateUserReservationRequest(FUTURE_DATE, 1L, 1L),
                 new Member(2L, "User", "사용자", "user@email.com", "password")));
 
         final CreateReservationServiceRequest duplicated = new CreateReservationServiceRequest(FUTURE_DATE, 1L,
