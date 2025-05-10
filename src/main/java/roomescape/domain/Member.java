@@ -1,28 +1,43 @@
 package roomescape.domain;
 
+import org.springframework.lang.Nullable;
+
 public class Member {
     private final Long id;
     private final String name;
     private final String email;
     private final String password;
 
-    private Member(Long id, String name, String email, String password) {
+    @Nullable
+    private final Role role;
+
+    private Member(Long id, String name, String email, String password, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
+    }
+
+    public static Member of(Long id, String name, String email, String password, Role role) {
+        return new Member(id, name, email, password, role);
     }
 
     public static Member of(Long id, String name, String email, String password) {
-        return new Member(id, name, email, password);
+        return of(id, name, email, password, Role.USER);
+    }
+
+    public static Member withoutId(String name, String email, String password, Role role) {
+        return new Member(null, name, email, password, role);
     }
 
     public static Member withoutId(String name, String email, String password) {
-        return new Member(null, name, email, password);
+        return withoutId(name, email, password, Role.USER);
     }
 
     public static Member assignId(Long id, Member memberWithoutId) {
-        return new Member(id, memberWithoutId.getName(), memberWithoutId.getEmail(), memberWithoutId.getPassword());
+        return new Member(id, memberWithoutId.getName(), memberWithoutId.getEmail(), memberWithoutId.getPassword(),
+                memberWithoutId.getRole());
     }
 
     public Long getId() {
@@ -39,5 +54,9 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public Role getRole() {
+        return role;
     }
 }
