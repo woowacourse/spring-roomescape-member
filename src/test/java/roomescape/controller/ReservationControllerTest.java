@@ -29,17 +29,17 @@ public class ReservationControllerTest {
     @Test
     void createReservation() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "히스타");
         params.put("date", "2025-05-01");
         params.put("themeId", "1");
         params.put("timeId", "1");
+        params.put("memberId", "1");
 
         RestAssured.given().log().all()
                 .contentType("application/json")
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .body("name", equalTo("히스타"))
+                .body("member.name", equalTo("히스타"))
                 .body("date", equalTo("2025-05-01"))
                 .body("theme.id", equalTo(1))
                 .body("time.id", equalTo(1))
@@ -55,7 +55,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
-                .body("[0].name", equalTo("히스타"))
+                .body("[0].member.name", equalTo("히스타"))
                 .body("[0].date", equalTo("2025-05-01"))
                 .body("[0].theme.id", equalTo(1))
                 .body("[0].time.id", equalTo(1))

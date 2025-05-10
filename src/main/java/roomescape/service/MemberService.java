@@ -3,12 +3,14 @@ package roomescape.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.AlreadyExistMemberException;
-import roomescape.common.exception.AuthorizationException;
 import roomescape.common.exception.NotFoundMemberException;
 import roomescape.domain.Member;
 import roomescape.dto.request.MemberSignUpRequest;
+import roomescape.dto.response.MemberNameSelectResponse;
 import roomescape.dto.response.MemberSignUpResponse;
 import roomescape.repository.MemberRepository;
+
+import java.util.List;
 
 @Service
 public class MemberService {
@@ -35,4 +37,10 @@ public class MemberService {
                 orElseThrow(() -> new NotFoundMemberException("회원 정보가 존재하지 않습니다."));
     }
 
+    public List<MemberNameSelectResponse> findMemberNames() {
+        List<Member> members = memberRepository.findAll();
+        return members.stream()
+                .map(MemberNameSelectResponse::from)
+                .toList();
+    }
 }

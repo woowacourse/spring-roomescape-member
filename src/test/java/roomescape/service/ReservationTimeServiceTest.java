@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import roomescape.common.exception.DeleteReservationException;
 import roomescape.common.exception.NotAbleDeleteException;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.request.LoginMemberRequest;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.request.ReservationTimeCreateRequest;
 import roomescape.dto.request.ThemeCreateRequest;
@@ -99,7 +100,7 @@ public class ReservationTimeServiceTest {
         reservationTimeService.createReservationTime(request);
         ThemeCreateRequest themeCreateRequest = new ThemeCreateRequest("테마1","테마 설명", "테마 사진");
         themeService.createTheme(themeCreateRequest);
-        reservationService.createReservation(new ReservationCreateRequest("히스타",LocalDate.now().plusDays(1),1L, 1L));
+        reservationService.createReservation(new ReservationCreateRequest(LocalDate.now().plusDays(1),1L, 1L,1L), new LoginMemberRequest(1L, "히스타"));
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(1L)).isInstanceOf(DeleteReservationException.class);
     }

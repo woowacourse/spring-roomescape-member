@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.common.exception.NotAbleDeleteException;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -29,10 +30,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         Map<String, Object> parameters = Map.ofEntries(
-                Map.entry("name", reservation.getName()),
                 Map.entry("date", reservation.getDate()),
                 Map.entry("time_id", reservation.getTime().getId()),
-                Map.entry("theme_id", reservation.getTheme().getId())
+                Map.entry("theme_id", reservation.getTheme().getId()),
+                Map.entry("member_id", reservation.getMember().getId())
         );
 
         Long generatedKey = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
@@ -45,10 +46,13 @@ public class JdbcReservationRepository implements ReservationRepository {
         final String query = """
                 SELECT
                     r.id as reservation_id,
-                    r.name as reservation_name,
                     r.date as reservation_date,
                     t.id as time_id,
                     t.start_at as time_start_at,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email as member_email,
+                    m.password as member_password,
                     th.id as theme_id,
                     th.name as theme_name,
                     th.description as theme_description,
@@ -58,13 +62,14 @@ public class JdbcReservationRepository implements ReservationRepository {
                 on r.time_id = t.id
                 inner join theme as th
                 on r.theme_id = th.id
+                inner join member as m
+                on r.member_id = m.id
                 """;
 
         return jdbcTemplate.query(
                 query,
                 (resultSet, rowNum) -> new Reservation(
                         resultSet.getLong("reservation_id"),
-                        resultSet.getString("reservation_name"),
                         resultSet.getDate("reservation_date").toLocalDate(),
                         new ReservationTime(
                                 resultSet.getLong("time_id"),
@@ -75,6 +80,12 @@ public class JdbcReservationRepository implements ReservationRepository {
                                 resultSet.getString("theme_name"),
                                 resultSet.getString("theme_description"),
                                 resultSet.getString("theme_thumbnail")
+                        ),
+                        new Member(
+                                resultSet.getLong("member_id"),
+                                resultSet.getString("member_name"),
+                                resultSet.getString("member_email"),
+                                resultSet.getString("member_password")
                         )
                 )
         );

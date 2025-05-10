@@ -32,7 +32,7 @@ public class ReservationCreateRequestValidationTest {
     @Test
     @DisplayName("ReservationCreateRequest 정상 생성 테스트")
     void generateReservationCreateRequest() {
-        ReservationCreateRequest request = new ReservationCreateRequest("홍길동", LocalDate.now(), 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest(LocalDate.now(), 1L, 1L, 1L);
         Set<ConstraintViolation<ReservationCreateRequest>> violations = validator.validate(request);
         assertThat(violations.size()).isEqualTo(0);
     }
@@ -49,16 +49,16 @@ public class ReservationCreateRequestValidationTest {
 
     static Stream<Arguments> getEmptyNameReservationCreateRequests() {
         return Stream.of(
-                Arguments.arguments(new ReservationCreateRequest(null, LocalDate.now(), 1L, 1L)),
-                Arguments.arguments(new ReservationCreateRequest("", LocalDate.now(), 1L, 1L)),
-                Arguments.arguments(new ReservationCreateRequest(" ", LocalDate.now(), 1L, 1L))
+                Arguments.arguments(new ReservationCreateRequest(LocalDate.now(), 1L, 1L, 1L)),
+                Arguments.arguments(new ReservationCreateRequest(LocalDate.now(), 1L, 1L, 1L)),
+                Arguments.arguments(new ReservationCreateRequest(LocalDate.now(), 1L, 1L, 1L))
         );
     }
 
     @Test
     @DisplayName("ReservationCreateRequest Date 빈 값인 경우 예외 처리")
     void invalidDate() {
-        ReservationCreateRequest request = new ReservationCreateRequest("홍길동", null, 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest(null, 1L, 1L, 1L);
         Set<ConstraintViolation<ReservationCreateRequest>> violations = validator.validate(request);
         for (ConstraintViolation<ReservationCreateRequest> violation : violations) {
             assertThat(violation.getMessage()).isEqualTo("예약 날짜는 빈 값이 올 수 없습니다");
@@ -68,7 +68,7 @@ public class ReservationCreateRequestValidationTest {
     @Test
     @DisplayName("ReservationCreateRequest time 빈 값인 경우 예외 처리")
     void invalidTime() {
-        ReservationCreateRequest request = new ReservationCreateRequest("홍길동", LocalDate.now(), null, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest(LocalDate.now(), null, 1L, 1L);
         Set<ConstraintViolation<ReservationCreateRequest>> violations = validator.validate(request);
         for (ConstraintViolation<ReservationCreateRequest> violation : violations) {
             assertThat(violation.getMessage()).isEqualTo("예약 시간이 올바르지 않습니다");
@@ -78,7 +78,7 @@ public class ReservationCreateRequestValidationTest {
     @Test
     @DisplayName("ReservationCreateRequest theme 빈 값인 경우 예외 처리")
     void invalidTheme() {
-        ReservationCreateRequest request = new ReservationCreateRequest("홍길동", LocalDate.now(), 1L, null);
+        ReservationCreateRequest request = new ReservationCreateRequest(LocalDate.now(), 1L, null, 1L);
         Set<ConstraintViolation<ReservationCreateRequest>> violations = validator.validate(request);
         for (ConstraintViolation<ReservationCreateRequest> violation : violations) {
             assertThat(violation.getMessage()).isEqualTo("예약 테마가 올바르지 않습니다");

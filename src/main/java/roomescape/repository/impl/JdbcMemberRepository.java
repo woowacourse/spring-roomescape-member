@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.repository.MemberRepository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -67,5 +68,18 @@ public class JdbcMemberRepository implements MemberRepository {
         } catch (DataAccessException exception) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String query = "SELECT id, name, email, password FROM member";
+        return jdbcTemplate.query(
+                query,
+                (resultSet, rowNum) -> new Member(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("email"),
+                resultSet.getString("password")
+        ));
     }
 }
