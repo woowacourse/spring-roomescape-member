@@ -1,11 +1,18 @@
 package roomescape.business.model.entity;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import roomescape.business.model.vo.Email;
 import roomescape.business.model.vo.Id;
 import roomescape.business.model.vo.Password;
 import roomescape.business.model.vo.UserRole;
 import roomescape.exception.business.InvalidCreateArgumentException;
 
+@ToString(exclude = "password")
+@EqualsAndHashCode(exclude = "id")
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class User {
 
     private static final int MAX_NAME_LENGTH = 10;
@@ -16,36 +23,30 @@ public class User {
     private final Email email;
     private final Password password;
 
-    private User(final Id id, final UserRole userRole, final String name, final Email email, final Password password) {
+    public static User create(final String name, final String email, final String password) {
         validateMaxNameLength(name);
         validateNameDoesNotContainsNumber(name);
-        this.id = id;
-        this.userRole = userRole;
-        this.name = name;
-        this.email = email;
-        this.password = password;
+        return new User(Id.issue(), UserRole.USER, name, new Email(email), Password.encode(password));
     }
 
-    private void validateMaxNameLength(final String name) {
+    public static User restore(final String id, final String userRole, final String name, final String email, final String password) {
+        validateMaxNameLength(name);
+        validateNameDoesNotContainsNumber(name);
+        return new User(Id.create(id), UserRole.valueOf(userRole), name, new Email(email), Password.plain(password));
+    }
+
+    private static void validateMaxNameLength(final String name) {
         if (name.length() > MAX_NAME_LENGTH) {
             throw new InvalidCreateArgumentException("이름은 %d자를 넘길 수 없습니다.".formatted(MAX_NAME_LENGTH));
         }
     }
 
-    private void validateNameDoesNotContainsNumber(final String name) {
+    private static void validateNameDoesNotContainsNumber(final String name) {
         for (char c : name.toCharArray()) {
             if (Character.isDigit(c)) {
                 throw new InvalidCreateArgumentException("이름에 숫자는 포함될 수 없습니다.");
             }
         }
-    }
-
-    public static User create(final String name, final String email, final String password) {
-        return new User(Id.issue(), UserRole.USER, name, new Email(email), Password.encode(password));
-    }
-
-    public static User restore(final String id, final String userRole, final String name, final String email, final String password) {
-        return new User(Id.create(id), UserRole.valueOf(userRole), name, new Email(email), Password.plain(password));
     }
 
     public boolean isPasswordCorrect(final String password) {

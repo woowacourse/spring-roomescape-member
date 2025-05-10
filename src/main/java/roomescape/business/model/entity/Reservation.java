@@ -1,11 +1,18 @@
 package roomescape.business.model.entity;
 
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import roomescape.business.model.vo.Id;
 import roomescape.exception.business.InvalidCreateArgumentException;
 
 import java.time.LocalDate;
 import java.time.Period;
 
+@ToString
+@EqualsAndHashCode(exclude = "id")
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class Reservation {
 
     private static final int DAY_INTERVAL_FROM_NOW = 7;
@@ -15,20 +22,6 @@ public class Reservation {
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
-
-    private Reservation(
-            final Id id,
-            final User user,
-            final LocalDate date,
-            final ReservationTime time,
-            final Theme theme
-    ) {
-        this.id = id;
-        this.user = user;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-    }
 
     public static Reservation create(final User user, final LocalDate date, final ReservationTime time, final Theme theme) {
         validateDateIsNotPast(date);
