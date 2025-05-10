@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.global.auth.AuthChecker;
@@ -13,6 +14,7 @@ import roomescape.global.jwt.TokenInfo;
 import roomescape.global.jwt.TokenProvider;
 import roomescape.member.domain.Role;
 
+@Component
 public class AuthorizationInterceptor implements HandlerInterceptor {
     private final AuthorizationExtractor authorizationExtractor;
     private final TokenProvider tokenProvider;

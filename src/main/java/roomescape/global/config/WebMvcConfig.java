@@ -7,18 +7,18 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.global.interceptor.AuthorizationInterceptor;
 import roomescape.global.interceptor.LogInterceptor;
-import roomescape.global.jwt.CookieAuthorizationExtractor;
-import roomescape.global.jwt.JwtTokenProvider;
-import roomescape.global.jwt.TokenProvider;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
-    private final TokenProvider tokenProvider;
     private final HandlerMethodArgumentResolver handlerMethodArgumentResolver;
+    private final AuthorizationInterceptor authorizationInterceptor;
+    private final LogInterceptor logInterceptor;
 
-    public WebMvcConfig(JwtTokenProvider jwtTokenProvider, HandlerMethodArgumentResolver handlerMethodArgumentResolver) {
-        this.tokenProvider = jwtTokenProvider;
+    public WebMvcConfig(HandlerMethodArgumentResolver handlerMethodArgumentResolver,
+                        AuthorizationInterceptor authorizationInterceptor, LogInterceptor logInterceptor) {
         this.handlerMethodArgumentResolver = handlerMethodArgumentResolver;
+        this.authorizationInterceptor = authorizationInterceptor;
+        this.logInterceptor = logInterceptor;
     }
 
     @Override
@@ -28,12 +28,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new LogInterceptor())
+        registry.addInterceptor(logInterceptor)
                 .order(1)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/h2-console", "/js/**", "/image/**", "/css/**");
 
-        registry.addInterceptor(new AuthorizationInterceptor(new CookieAuthorizationExtractor(), tokenProvider))
+        registry.addInterceptor(authorizationInterceptor)
                 .order(2)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/h2-console", "/js/**", "/image/**", "/css/**", // h2, view api
