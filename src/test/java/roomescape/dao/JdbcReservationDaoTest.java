@@ -146,16 +146,16 @@ public class JdbcReservationDaoTest {
     @Test
     void count_reservation_by_id() {
         long savedId = reservationDao.save(reservation);
-        int result = reservationDao.countExistReservationByTime(savedId);
-        assertThat(result).isEqualTo(1);
+        boolean result = reservationDao.existReservationByTime(savedId);
+        assertThat(result).isTrue();
     }
 
     @DisplayName("주어진 날짜+시간에 예약이 존재하는 지 셀 수 있어야 한다.")
     @Test
     void count_reservation_of_date_and_time() {
         reservationDao.save(reservation);
-        int result = reservationDao.countAlreadyReservationOf(reservation.getReservationDate(),
+        boolean result = reservationDao.existReservationOf(reservation.getReservationDate(),
             reservation.getTimeId());
-        assertThat(result).isEqualTo(1);
+        assertThat(result).isTrue();
     }
 }

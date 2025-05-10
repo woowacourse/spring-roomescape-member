@@ -13,11 +13,11 @@ public interface ReservationDao {
 
     void delete(Long id);
 
-    int countExistReservationByTime(Long id);
+    boolean existReservationByTime(Long id);
 
-    int countExistReservationByTheme(Long id);
+    boolean existReservationByTheme(Long id);
 
-    int countAlreadyReservationOf(ReservationDate date, Long timeId);
+    boolean existReservationOf(ReservationDate date, Long timeId);
 
     Optional<Reservation> findById(Long id);
 }

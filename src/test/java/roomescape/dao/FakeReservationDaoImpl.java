@@ -26,7 +26,8 @@ public class FakeReservationDaoImpl implements ReservationDao {
 
     @Override
     public void delete(Long id) {
-        Reservation reservation = findById(id).orElseThrow(() -> new IllegalArgumentException());
+        Reservation reservation = findById(id)
+            .orElseThrow(() -> new IllegalArgumentException());
         reservations.remove(reservation);
     }
 
@@ -38,24 +39,21 @@ public class FakeReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public int countExistReservationByTime(Long id) {
-        return (int) reservations.stream()
-            .filter(reservation -> reservation.getId().equals(id))
-            .count();
+    public boolean existReservationByTime(Long id) {
+        return reservations.stream()
+            .anyMatch(reservation -> reservation.getId().equals(id));
     }
 
     @Override
-    public int countExistReservationByTheme(Long id) {
-        return (int) reservations.stream()
-            .filter(reservation -> reservation.getId().equals(id))
-            .count();
+    public boolean existReservationByTheme(Long id) {
+        return reservations.stream()
+            .anyMatch(reservation -> reservation.getId().equals(id));
     }
 
     @Override
-    public int countAlreadyReservationOf(ReservationDate date, Long timeId) {
-        return (int) reservations.stream()
-            .filter(reservation -> reservation.getReservationDate().equals(date))
-            .filter(reservation -> reservation.getTimeId() == timeId)
-            .count();
+    public boolean existReservationOf(ReservationDate date, Long timeId) {
+        return reservations.stream()
+            .anyMatch(reservation -> reservation.getReservationDate().equals(date)
+                && reservation.getTimeId() == timeId);
     }
 }

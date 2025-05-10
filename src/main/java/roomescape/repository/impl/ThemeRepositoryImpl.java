@@ -34,7 +34,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     @Override
     public void delete(Long id) {
         findById(id);
-        if (reservationDao.countExistReservationByTheme(id) != 0) {
+        if (reservationDao.existReservationByTheme(id)) {
             throw new InvalidReservationException("이미 예약된 테마를 삭제할 수 없습니다.");
         }
         themeDao.delete(id);

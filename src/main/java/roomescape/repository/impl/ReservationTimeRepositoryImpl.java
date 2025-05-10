@@ -35,7 +35,7 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     @Override
     public void delete(Long id) {
         findById(id);
-        if (reservationDao.countExistReservationByTime(id) != 0) {
+        if (reservationDao.existReservationByTime(id)) {
             throw new InvalidReservationException("이미 예약된 예약 시간을 삭제할 수 없습니다.");
         }
         reservationTimeDao.delete(id);
