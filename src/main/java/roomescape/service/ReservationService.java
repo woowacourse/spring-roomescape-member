@@ -11,6 +11,7 @@ import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.request.SearchReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
@@ -58,10 +59,12 @@ public class ReservationService {
                 .ifPresent(reservationRepository::remove);
     }
 
-    public List<ReservationResponse> search(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
-        ReservationTheme theme = getNullableTheme(themeId);
-        Member member = getNullableMember(memberId);
-        return reservationRepository.findAllByThemeAndMemberInDateRange(theme, member, dateFrom, dateTo).stream()
+    public List<ReservationResponse> search(SearchReservationRequest request) {
+        ReservationTheme theme = getNullableTheme(request.themeId());
+        Member member = getNullableMember(request.memberId());
+        List<Reservation> searchResult = reservationRepository.findAllByThemeAndMemberInDateRange(
+                theme, member, request.dateFrom(), request.dateTo());
+        return searchResult.stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
