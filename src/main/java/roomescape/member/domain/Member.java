@@ -37,4 +37,8 @@ public class Member {
         this.password = password;
         this.role = MemberRole.MEMBER;
     }
+
+    public boolean matchesPassword(final String password) {
+        return this.password.equals(password);
+    }
 }

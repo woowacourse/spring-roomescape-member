@@ -22,18 +22,12 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
 
-    public boolean checkInvalidLogin(final String principal, final String credentials) {
-        final Member member = memberRepository.findByEmail(principal)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 email입니다."));
-        return !member.getEmail().equals(principal) || !member.getPassword().equals(credentials);
-    }
-
     public String createToken(final LoginRequest loginRequest) {
-        if (checkInvalidLogin(loginRequest.email(), loginRequest.password())) {
+        final Member member = memberRepository.findByEmail(loginRequest.email())
+                .orElseThrow(() -> new UnauthorizedException("존재하지 않는 이메일입니다."));
+        if (!member.matchesPassword(loginRequest.password())) {
             throw new UnauthorizedException("이메일 또는 패스워드가 올바르지 않습니다.");
         }
-        final Member member = memberRepository.findByEmail(loginRequest.email())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 멤버입니다."));
         return jwtTokenProvider.createToken(createClaims(member));
     }
 
