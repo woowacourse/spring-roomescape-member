@@ -31,9 +31,8 @@ public class MemberRestController {
             @RequestBody @Valid final CreateMemberRequest request
     ) {
         memberService.create(request);
-
-        // TODO: 프론트에서 OK 응답을 받도록 해놓아서 일단 OK로 처리. 다른 API와 일관되게 처리하려면 CREATED로 변경 필요
-        return ResponseEntity.status(HttpStatus.OK)
+        
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .build();
     }
 

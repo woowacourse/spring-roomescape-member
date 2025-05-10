@@ -122,7 +122,7 @@ function register(event) {
         body: JSON.stringify(formData)
     })
         .then(response => {
-            if (!response.ok) {
+            if (!response.status == 201) {
                 alert('Signup request failed');
                 throw new Error('Signup request failed');
             }
