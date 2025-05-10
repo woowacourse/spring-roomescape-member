@@ -1,4 +1,4 @@
-package roomescape.config;
+package roomescape.infrastructure.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;

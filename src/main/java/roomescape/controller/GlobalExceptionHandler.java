@@ -9,24 +9,30 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exceptions.EntityDuplicateException;
 import roomescape.exceptions.EntityNotFoundException;
-import roomescape.exceptions.auth.AuthorizationMemberNotFoundException;
+import roomescape.exceptions.auth.AuthenticationException;
+import roomescape.exceptions.auth.AuthorizationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(AuthorizationMemberNotFoundException.class)
-    public ProblemDetail handleDataIntegrityViolation(AuthorizationMemberNotFoundException e) {
-        return createErrorResponse(e, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(AuthorizationException.class)
+    public ProblemDetail handleAuthorizationException(AuthorizationException e) {
+        return createErrorResponse(e, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public ProblemDetail handleAuthenticationException(AuthenticationException e) {
+        return createErrorResponse(e, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ProblemDetail handleJsonParseException(HttpMessageNotReadableException e) {
+        return createErrorResponse(e, HttpStatus.BAD_REQUEST, "요청된 JSON의 형태가 잘못되었습니다.");
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ProblemDetail handleEntityNotFound(EntityNotFoundException e) {
         return createErrorResponse(e, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ProblemDetail handleIllegalArgument(IllegalArgumentException e) {
-        return createErrorResponse(e, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(EntityDuplicateException.class)
@@ -39,14 +45,14 @@ public class GlobalExceptionHandler {
         return createErrorResponse(e, HttpStatus.BAD_REQUEST, "데이터 무결성 위반이 발생했습니다.");
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ProblemDetail handleIllegalArgument(IllegalArgumentException e) {
+        return createErrorResponse(e, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleException(Exception e) {
         return createErrorResponse(e, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
-    }
-
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ProblemDetail handleJsonParseException(HttpMessageNotReadableException e) {
-        return createErrorResponse(e, HttpStatus.BAD_REQUEST, "요청된 JSON의 형태가 잘못되었습니다.");
     }
 
     private ProblemDetail createErrorResponse(Exception e, HttpStatus status) {
