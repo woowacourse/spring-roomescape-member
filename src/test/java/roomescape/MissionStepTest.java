@@ -4,13 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static roomescape.testFixture.Fixture.MEMBER1;
 import static roomescape.testFixture.Fixture.RESERVATION_BODY;
+import static roomescape.testFixture.Fixture.resetH2TableIds;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -59,22 +59,7 @@ public class MissionStepTest {
     void cleanDatabase() {
         RestAssured.port = port;
 
-        jdbcTemplate.execute((Connection connection) -> {
-            try (Statement statement = connection.createStatement()) {
-                statement.execute("SET REFERENTIAL_INTEGRITY FALSE");
-                statement.execute("TRUNCATE TABLE reservation");
-                statement.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-                statement.execute("TRUNCATE TABLE reservation_time");
-                statement.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-                statement.execute("TRUNCATE TABLE theme");
-                statement.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-                statement.execute("TRUNCATE TABLE member");
-                statement.execute("ALTER TABLE member ALTER COLUMN id RESTART WITH 1");
-                statement.execute("SET REFERENTIAL_INTEGRITY TRUE");
-            }
-            return null;
-        });
-
+        resetH2TableIds(jdbcTemplate);
         tokenForMember1 = jwtTokenProvider.createToken(MemberDto.from(MEMBER1));
     }
 
