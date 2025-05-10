@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.auth.infrastructure;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
