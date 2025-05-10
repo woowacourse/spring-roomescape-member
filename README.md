@@ -203,6 +203,48 @@ HTTP/1.1 204
 Content-Length: 0
 ```
 
+### [예약 검색 API]
+
+- 아래 조건을 선택적으로 적용하여 검색이 가능하다.
+  - memberId: 예약자 id
+  - themeId: 테마 id
+  - dateFrom: 검색 시작 일자
+  - dateTo: 검색 종료 일자
+- 존재하지 않는 memberId 혹은 themeId으로 검색을 시도할 경우 예외를 반환한다.
+
+```text
+### 요청 예시
+
+GET http://localhost:8080/reservations/search?
+    themeId=1&
+    memberId=1&
+    dateFrom=2025-05-01&
+    dateTo=2025-05-10
+
+### 응답 예시
+
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+  {
+    "id": 1,
+    "name": "웨이드",
+    "date": "2025-05-01",
+    "time": {
+      "id": 1,
+      "startAt": "10:00"
+    },
+    "theme": {
+      "id": 2,
+      "name": "시간 도둑",
+      "description": "스릴 넘치는 우테코 미션",
+      "thumbnail": "/image/time.png"
+    }
+  }
+]
+```
+
 ## Time
 
 ### [시간 추가 API]

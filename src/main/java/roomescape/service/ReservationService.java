@@ -57,4 +57,26 @@ public class ReservationService {
         reservationRepository.findById(id)
                 .ifPresent(reservationRepository::remove);
     }
+
+    public List<ReservationResponse> search(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        ReservationTheme theme = getNullableTheme(themeId);
+        User user = getNullableMember(memberId);
+        return reservationRepository.findAllByThemeAndUserInDateRange(theme, user, dateFrom, dateTo).stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    private ReservationTheme getNullableTheme(Long themeId) {
+        if (themeId == null) {
+            return null;
+        }
+        return reservationThemeRepository.getById(themeId);
+    }
+
+    private User getNullableMember(Long userId) {
+        if (userId == null) {
+            return null;
+        }
+        return userRepository.getById(userId);
+    }
 }

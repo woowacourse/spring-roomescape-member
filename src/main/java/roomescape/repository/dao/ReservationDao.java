@@ -2,7 +2,10 @@ package roomescape.repository.dao;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -79,8 +82,8 @@ public class ReservationDao {
 
     public Optional<Reservation> selectById(Long id) {
         String selectQuery = """
-                SELECT r.id, r.name, r.date, r.time_id, r.theme_id,
-                        u.id AS user_id, u.name AS user_name, u.email AS user_email, u.password AS user_password,
+                SELECT r.id, r.date, r.time_id, r.theme_id,
+                        u.id AS user_id, u.name AS user_name, u.email AS user_email, u.password AS user_password, u.role AS user_role,
                         rt.start_at, th.name AS th_name,
                         th.description AS th_description, th.thumbnail AS th_thumbnail
                 FROM reservation r
@@ -102,14 +105,53 @@ public class ReservationDao {
     }
 
     public boolean existDuplicatedDateTime(LocalDate date, Long timeId, Long themeId) {
-        String query = """
+        String existQuery = """
                 SELECT EXISTS (
                         SELECT 1
                         FROM reservation
                         WHERE time_id = ? AND date = ? AND theme_id = ?)
                 """;
         return Optional.ofNullable(
-                        jdbcTemplate.queryForObject(query, Boolean.class, timeId, date, themeId))
+                        jdbcTemplate.queryForObject(existQuery, Boolean.class, timeId, date, themeId))
                 .orElse(false);
+    }
+
+    public List<Reservation> selectAllByThemeIdAndUserIdInDateRange(Long themeId, Long userId, LocalDate dateFrom,
+            LocalDate dateTo) {
+        String baseQuery = """
+                SELECT r.id, r.date, r.time_id, r.theme_id,
+                        u.id AS user_id, u.name AS user_name, u.email AS user_email, u.password AS user_password, u.role AS user_role,
+                        rt.start_at, th.name AS th_name,
+                        th.description AS th_description, th.thumbnail AS th_thumbnail
+                FROM reservation r
+                INNER JOIN users u ON r.user_id = u.id
+                INNER JOIN reservation_time rt ON r.time_id = rt.id
+                INNER JOIN theme th ON r.theme_id = th.id
+                """;
+        Map<String, Object> whereParams = new HashMap<>();
+        whereParams.put("r.theme_id = ?", themeId);
+        whereParams.put("r.user_id = ?", userId);
+        whereParams.put("? <= r.date", dateFrom);
+        whereParams.put("r.date <= ?", dateTo);
+        List<Object> params = new ArrayList<>();
+        String selectQuery = generateQueryAndParameters(baseQuery, whereParams, params);
+
+        return jdbcTemplate.query(selectQuery, DEFAULT_ROW_MAPPER, params.toArray());
+    }
+
+    private String generateQueryAndParameters(String baseQuery, Map<String, Object> whereParams,
+            List<Object> outputParams) {
+        List<String> whereClauses = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : whereParams.entrySet()) {
+            if (entry.getValue() != null) {
+                whereClauses.add(entry.getKey());
+                outputParams.add(entry.getValue());
+            }
+        }
+        if (whereClauses.isEmpty()) {
+            return baseQuery;
+        }
+        String whereClause = "WHERE " + String.join(" AND ", whereClauses);
+        return baseQuery + "\n" + whereClause;
     }
 }
