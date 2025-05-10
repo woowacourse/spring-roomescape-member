@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.reservation.fixture.MemberFixture.MATT;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.common.BaseTest;
+import roomescape.member.repository.MemberJdbcRepository;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.fixture.ReservationDateFixture;
 import roomescape.reservation.fixture.ReservationDbFixture;
@@ -31,8 +33,12 @@ public class ThemeServiceTest extends BaseTest {
 
     @Autowired
     private ThemeDbFixture themeDbFixture;
+
     @Autowired
     private ThemeService themeService;
+
+    @Autowired
+    private MemberJdbcRepository memberJdbcRepository;
 
     @Test
     void 테마를_생성한다() {
@@ -68,6 +74,7 @@ public class ThemeServiceTest extends BaseTest {
 
     @Test
     void 이미_해당_테마의_예약이_존재한다면_삭제할_수_없다() {
+        memberJdbcRepository.save(MATT.getName(), MATT.getEmail(), MATT.getPassword());
         Theme theme = themeDbFixture.공포();
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         reservationDbFixture.예약_한스_25_4_22_10시_공포(reservationTime, theme);
@@ -84,6 +91,8 @@ public class ThemeServiceTest extends BaseTest {
 
     @Test
     void 지난_일주일_간_인기_테마_10개를_조회한다() {
+        memberJdbcRepository.save(MATT.getName(), MATT.getEmail(), MATT.getPassword());
+
         List<Theme> themes = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
             themes.add(themeDbFixture.커스텀_테마("테마" + i));

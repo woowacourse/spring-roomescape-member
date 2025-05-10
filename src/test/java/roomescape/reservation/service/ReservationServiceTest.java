@@ -9,11 +9,10 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.common.BaseTest;
-import roomescape.reservation.controller.request.ReservationCreateRequest;
+import roomescape.member.repository.MemberJdbcRepository;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.fixture.ReservationDateFixture;
 import roomescape.reservation.fixture.ReservationTimeDbFixture;
-import roomescape.reservation.fixture.ReserverNameFixture;
 import roomescape.reservation.fixture.ThemeDbFixture;
 import roomescape.theme.domain.Theme;
 import roomescape.time.controller.response.ReservationTimeResponse;
@@ -29,10 +28,14 @@ public class ReservationServiceTest extends BaseTest {
     private ReservationTimeDbFixture reservationTimeDbFixture;
 
     @Autowired
+    private MemberJdbcRepository memberJdbcRepository;
+
+    @Autowired
     private ThemeDbFixture themeDbFixture;
 
     @Test
     void 예약을_생성한다() {
+        memberJdbcRepository.save(MATT.getName(), MATT.getEmail(), MATT.getPassword());
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
 
@@ -45,7 +48,7 @@ public class ReservationServiceTest extends BaseTest {
         ReservationResponse response = reservationService.create(MATT.getId(), reservationRequest);
 
         assertThat(response.id()).isEqualTo(1L);
-        assertThat(response.name()).isEqualTo(ReserverNameFixture.한스.getName());
+        assertThat(response.name()).isEqualTo(MATT.getName());
         assertThat(response.date()).isEqualTo(ReservationDateFixture.예약날짜_내일.getDate());
         assertThat(response.time()).isEqualTo(
                 new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt().toString()));
@@ -53,6 +56,7 @@ public class ReservationServiceTest extends BaseTest {
 
     @Test
     void 예약이_존재하면_예약을_생성할_수_없다() {
+        memberJdbcRepository.save(MATT.getName(), MATT.getEmail(), MATT.getPassword());
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
 
@@ -74,6 +78,7 @@ public class ReservationServiceTest extends BaseTest {
 
     @Test
     void 예약을_모두_조회한다() {
+        memberJdbcRepository.save(MATT.getName(), MATT.getEmail(), MATT.getPassword());
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
 
@@ -87,7 +92,7 @@ public class ReservationServiceTest extends BaseTest {
         ReservationResponse response = responses.get(0);
 
         assertThat(response.id()).isEqualTo(1L);
-        assertThat(response.name()).isEqualTo(ReserverNameFixture.한스.getName());
+        assertThat(response.name()).isEqualTo(MATT.getName());
         assertThat(response.date()).isEqualTo(ReservationDateFixture.예약날짜_내일.getDate());
         assertThat(response.time()).isEqualTo(
                 new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt().toString()));
@@ -95,6 +100,7 @@ public class ReservationServiceTest extends BaseTest {
 
     @Test
     void 예약을_삭제한다() {
+        memberJdbcRepository.save(MATT.getName(), MATT.getEmail(), MATT.getPassword());
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
 

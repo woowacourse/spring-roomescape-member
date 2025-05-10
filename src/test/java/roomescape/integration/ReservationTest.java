@@ -2,6 +2,7 @@ package roomescape.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
+import static roomescape.reservation.fixture.MemberFixture.MATT;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -16,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.common.BaseTest;
-import roomescape.member.controller.request.SignUpRequest;
-import roomescape.member.service.MemberRepository;
-import roomescape.member.service.MemberService;
+import roomescape.member.repository.MemberJdbcRepository;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeRepository;
@@ -32,7 +31,7 @@ public class ReservationTest extends BaseTest {
     private ThemeRepository themeRepository;
 
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberJdbcRepository memberJdbcRepository;
 
     private Theme theme;
 
@@ -44,14 +43,12 @@ public class ReservationTest extends BaseTest {
     void setUp() {
         RestAssured.port = port;
         theme = themeRepository.save("테마1", "설명1", "썸네일1");
-        memberRepository.save(
-                "matt", "matt.kakao", "1234"
-        );
+        memberJdbcRepository.save(MATT.getName(), MATT.getEmail(), MATT.getPassword());
         reservation = new HashMap<>();
         reservation.put("date", "2025-08-05");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
-        reservation.put("user_id", 1);
+        reservation.put("memberId", 1);
         reservationTime = Map.of("startAt", "10:00");
     }
 
@@ -81,12 +78,12 @@ public class ReservationTest extends BaseTest {
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("admin/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
@@ -140,25 +137,6 @@ public class ReservationTest extends BaseTest {
     }
 
     @Test
-    void 방탈출_예약_생성시_예약자_이름이_비어있으면_예외를_응답한다() {
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTime)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-
-        reservation.remove("name");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
-    }
-
-    @Test
     void 예약_삭제시_존재하지_않는_예약이면_예외를_응답한다() {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
@@ -192,8 +170,8 @@ public class ReservationTest extends BaseTest {
     void 방탈출_예약_목록을_조회한다() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)",
                 "10:00");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2025-08-05", 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation (date, time_id, theme_id, user_id) VALUES (?, ?, ?, ?)",
+                "2025-08-05", 1, 1, 1);
 
         List<ReservationResponse> response = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -214,7 +192,7 @@ public class ReservationTest extends BaseTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("admin/reservations")
                 .then().log().all()
                 .statusCode(201);
 
@@ -222,7 +200,7 @@ public class ReservationTest extends BaseTest {
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("admin/reservations/1")
                 .then().log().all()
                 .statusCode(204);
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
@@ -239,7 +217,7 @@ public class ReservationTest extends BaseTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationFail)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(400);
     }
