@@ -9,15 +9,22 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class ControllerConfiguration implements WebMvcConfigurer {
 
+    private final AuthorizationArgumentResolver authorizationArgumentResolver;
+    private final CheckAdminInterceptor checkAdminInterceptor;
+
+    public ControllerConfiguration(AuthorizationArgumentResolver authorizationArgumentResolver,
+                                   CheckAdminInterceptor checkAdminInterceptor) {
+        this.authorizationArgumentResolver = authorizationArgumentResolver;
+        this.checkAdminInterceptor = checkAdminInterceptor;
+    }
+
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new AuthorizationArgumentResolver());
+        resolvers.add(authorizationArgumentResolver);
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        //TODO : 빈으로 주입
-        //현재 : 의존성이 숨겨져 있다.
-        registry.addInterceptor(new CheckAdminInterceptor()).addPathPatterns("/admin/**");
+        registry.addInterceptor(checkAdminInterceptor).addPathPatterns("/admin/**");
     }
 }
