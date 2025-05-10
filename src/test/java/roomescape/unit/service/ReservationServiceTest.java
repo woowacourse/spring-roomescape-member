@@ -35,7 +35,7 @@ import roomescape.unit.fake.FakeReservationRepository;
 import roomescape.unit.fake.FakeReservationTimeRepository;
 import roomescape.unit.fake.FakeThemeRepository;
 
-public class ReservationServiceTest {
+class ReservationServiceTest {
 
     private final ReservationRepository reservationRepository = new FakeReservationRepository();
     private final ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
