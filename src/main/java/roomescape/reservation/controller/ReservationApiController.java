@@ -21,6 +21,7 @@ import roomescape.global.response.ApiResponse;
 import roomescape.reservation.controller.request.ReserveByUserRequest;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
+import roomescape.reservation.service.dto.ReserveCommand;
 
 @RestController
 @RequestMapping("/reservations")
@@ -37,7 +38,8 @@ public class ReservationApiController {
             @RequestBody @Valid ReserveByUserRequest request,
             @Authenticated Long memberId
     ) {
-        ReservationResponse response = reservationService.reserve(request, memberId);
+        ReservationResponse response = reservationService.reserve(
+                ReserveCommand.byUser(request, memberId));
 
         return ResponseEntity
                 .status(CREATED)

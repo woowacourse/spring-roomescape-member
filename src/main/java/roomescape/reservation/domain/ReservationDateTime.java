@@ -9,7 +9,7 @@ public class ReservationDateTime {
     private final ReservationDate reservationDate;
     private final ReservationTime reservationTime;
 
-    public ReservationDateTime(ReservationDate reservationDate, ReservationTime reservationTime) {
+    private ReservationDateTime(ReservationDate reservationDate, ReservationTime reservationTime) {
         this.reservationDate = reservationDate;
         this.reservationTime = reservationTime;
     }

@@ -5,17 +5,15 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.admin.controller.request.ReserveByAdminRequest;
 import roomescape.member.domain.Member;
 import roomescape.member.service.MemberService;
-import roomescape.reservation.controller.request.ReserveByUserRequest;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationDateTime;
+import roomescape.reservation.service.dto.ReserveCommand;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
-import roomescape.time.domain.ReservationTime;
 import roomescape.time.service.ReservationTimeService;
 
 @RequiredArgsConstructor
@@ -33,19 +31,17 @@ public class ReservationService {
         return ReservationResponse.from(reservations);
     }
 
-    public ReservationResponse reserve(ReserveByUserRequest request, Long memberId) {
-        Long timeId = request.timeId();
-        LocalDate date = request.date();
-        if (reservationRepository.existsSameDateTime(date, timeId)) {
-            throw new IllegalArgumentException("[ERROR] 이미 예약이 존재합니다.");
-        }
-        ReservationDate reservationDate = new ReservationDate(date);
-        ReservationTime reservationTime = reservationTimeService.getReservationTime(timeId);
-        ReservationDateTime reservationDateTime = new ReservationDateTime(reservationDate, reservationTime);
+    public ReservationResponse reserve(ReserveCommand reserveCommand) {
+        Long timeId = reserveCommand.timeId();
+        LocalDate date = reserveCommand.date();
 
-        Theme theme = themeService.getTheme(request.themeId());
+        isAlreadyReservedTime(date, timeId);
 
-        Member reserver = memberService.getMember(memberId);
+        ReservationDateTime reservationDateTime = ReservationDateTime.create(
+                new ReservationDate(date), reservationTimeService.getReservationTime(timeId)
+        );
+        Theme theme = themeService.getTheme(reserveCommand.themeId());
+        Member reserver = memberService.getMember(reserveCommand.memberId());
 
         Reservation reserved = Reservation.reserve(reserver, reservationDateTime, theme);
         Reservation saved = reservationRepository.save(reserved);
@@ -53,24 +49,10 @@ public class ReservationService {
         return ReservationResponse.from(saved);
     }
 
-    public ReservationResponse reserve(ReserveByAdminRequest request) {
-        Long timeId = request.timeId();
-        LocalDate date = request.date();
+    private void isAlreadyReservedTime(LocalDate date, Long timeId) {
         if (reservationRepository.existsSameDateTime(date, timeId)) {
             throw new IllegalArgumentException("[ERROR] 이미 예약이 존재합니다.");
         }
-        ReservationDate reservationDate = new ReservationDate(date);
-        ReservationTime reservationTime = reservationTimeService.getReservationTime(timeId);
-        ReservationDateTime reservationDateTime = new ReservationDateTime(reservationDate, reservationTime);
-
-        Theme theme = themeService.getTheme(request.themeId());
-
-        Member reserver = memberService.getMember(request.memberId());
-
-        Reservation reserved = Reservation.reserve(reserver, reservationDateTime, theme);
-        Reservation saved = reservationRepository.save(reserved);
-
-        return ReservationResponse.from(saved);
     }
 
     public void deleteById(Long id) {

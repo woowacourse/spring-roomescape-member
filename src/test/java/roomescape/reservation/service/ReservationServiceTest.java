@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.common.CleanUp;
 import roomescape.member.domain.Member;
-import roomescape.reservation.controller.request.ReserveByUserRequest;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.fixture.MemberDbFixture;
@@ -21,6 +20,7 @@ import roomescape.reservation.fixture.ReservationDateFixture;
 import roomescape.reservation.fixture.ReservationDbFixture;
 import roomescape.reservation.fixture.ReservationTimeDbFixture;
 import roomescape.reservation.fixture.ThemeDbFixture;
+import roomescape.reservation.service.dto.ReserveCommand;
 import roomescape.theme.domain.Theme;
 import roomescape.time.controller.response.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
@@ -53,10 +53,15 @@ class ReservationServiceTest {
         Member reserver = memberDbFixture.유저1_생성();
         LocalDate date = ReservationDateFixture.예약날짜_내일.getDate();
 
-        ReserveByUserRequest request = new ReserveByUserRequest(date, reservationTime.getId(), theme.getId());
+        ReserveCommand command = new ReserveCommand(
+                date,
+                theme.getId(),
+                reservationTime.getId(),
+                reserver.getId()
+        );
 
         // when
-        ReservationResponse response = reservationService.reserve(request, reserver.getId());
+        ReservationResponse response = reservationService.reserve(command);
 
         assertThat(response.id()).isNotNull();
         assertThat(response.member().name()).isEqualTo(reserver.getName());
@@ -68,13 +73,14 @@ class ReservationServiceTest {
     void 예약이_존재하면_예약을_생성할_수_없다() {
         Reservation reservation = reservationDbFixture.예약_유저1_내일_10시_공포();
 
-        ReserveByUserRequest request = new ReserveByUserRequest(
-                ReservationDateFixture.예약날짜_내일.getDate(),
+        ReserveCommand command = new ReserveCommand(
+                reservation.getDate(),
+                reservation.getTheme().getId(),
                 reservation.getReservationTime().getId(),
-                reservation.getTheme().getId()
+                reservation.getReserver().getId()
         );
 
-        assertThatThrownBy(() -> reservationService.reserve(request, reservation.getReserver().getId()))
+        assertThatThrownBy(() -> reservationService.reserve(command))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 이미 예약이 존재합니다.");
     }

@@ -15,13 +15,13 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     public MemberResponse signUp(SignUpRequest request) {
-        Member member = Member.signUpUser(request.name(), request.email(), request.password());
-        boolean exists = memberRepository.existsByEmail(member.getEmail());
+        boolean exists = memberRepository.existsByEmail(request.email());
         if (exists) {
             throw new IllegalArgumentException("[ERROR] 이미 가입된 이메일입니다.");
         }
-        Member signed = memberRepository.save(member);
-        return MemberResponse.from(signed);
+        Member signed = Member.signUpUser(request.name(), request.email(), request.password());
+        Member saved = memberRepository.save(signed);
+        return MemberResponse.from(saved);
     }
 
     public Member getMember(Long memberId) {

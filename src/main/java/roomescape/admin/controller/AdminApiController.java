@@ -18,6 +18,7 @@ import roomescape.admin.controller.request.ReserveByAdminRequest;
 import roomescape.global.response.ApiResponse;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
+import roomescape.reservation.service.dto.ReserveCommand;
 
 @RequiredArgsConstructor
 @RestController
@@ -30,7 +31,8 @@ public class AdminApiController {
     public ResponseEntity<ApiResponse<ReservationResponse>> reserve(
             @RequestBody @Valid ReserveByAdminRequest request
     ) {
-        ReservationResponse response = reservationService.reserve(request);
+        ReservationResponse response = reservationService.reserve(
+                ReserveCommand.byAdmin(request));
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

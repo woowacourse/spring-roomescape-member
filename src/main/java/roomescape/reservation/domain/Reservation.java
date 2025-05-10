@@ -15,7 +15,7 @@ public class Reservation {
     private final ReservationDateTime reservationDatetime;
     private final Theme theme;
 
-    public Reservation(
+    private Reservation(
             Long id,
             Member reserver,
             ReservationDateTime reservationDateTime,
