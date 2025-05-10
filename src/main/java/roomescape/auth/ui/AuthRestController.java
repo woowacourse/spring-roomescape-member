@@ -1,6 +1,6 @@
 package roomescape.auth.ui;
 
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -28,7 +28,7 @@ public class AuthRestController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> createAccessToken(
-            @RequestBody final CreateAccessTokenRequest request, HttpServletResponse response
+            @RequestBody @Valid final CreateAccessTokenRequest request
     ) {
         final String authToken = authService.createAccessToken(request);
 

@@ -1,5 +1,6 @@
 package roomescape.member.ui;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,9 @@ public class MemberRestController {
     private final MemberService memberService;
 
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody CreateMemberRequest request) {
+    public ResponseEntity<Void> create(
+            @RequestBody @Valid final CreateMemberRequest request
+    ) {
         memberService.create(request);
 
         // TODO: 프론트에서 OK 응답을 받도록 해놓아서 일단 OK로 처리. 다른 API와 일관되게 처리하려면 CREATED로 변경 필요

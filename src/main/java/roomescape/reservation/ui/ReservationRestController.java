@@ -1,5 +1,6 @@
 package roomescape.reservation.ui;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,7 @@ public class ReservationRestController {
     @PostMapping("/reservations")
     @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER})
     public ResponseEntity<ReservationResponse> create(
-            @RequestBody final CreateReservationRequest request,
+            @RequestBody @Valid final CreateReservationRequest request,
             final Member member
     ) {
         final ReservationResponse response = reservationService.create(request, member);
@@ -60,7 +61,7 @@ public class ReservationRestController {
     @GetMapping("/admin/reservations")
     @RequiresRole(authRoles = {AuthRole.ADMIN})
     public ResponseEntity<List<ReservationResponse>> findAllByCriteria(
-            @ModelAttribute final ReservationsByCriteriaRequest request
+            @ModelAttribute @Valid final ReservationsByCriteriaRequest request
     ) {
         log.info(request.toString());
         final List<ReservationResponse> reservationResponses = reservationService.findAllByCriteria(request);
@@ -70,7 +71,7 @@ public class ReservationRestController {
 
     @GetMapping("/reservations/available-times")
     public ResponseEntity<List<AvailableReservationTimeResponse>> findAvailableReservationTimes(
-            @ModelAttribute final AvailableReservationTimeRequest request) {
+            @ModelAttribute @Valid final AvailableReservationTimeRequest request) {
         final List<AvailableReservationTimeResponse> availableReservationTimes
                 = reservationService.findAvailableReservationTimes(request);
 

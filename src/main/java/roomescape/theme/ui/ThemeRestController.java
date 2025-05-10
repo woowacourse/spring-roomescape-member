@@ -1,5 +1,6 @@
 package roomescape.theme.ui;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class ThemeRestController {
     @PostMapping
     @RequiresRole(authRoles = {AuthRole.ADMIN})
     public ResponseEntity<ThemeResponse> create(
-            @RequestBody final CreateThemeRequest request
+            @RequestBody @Valid final CreateThemeRequest request
     ) {
         final ThemeResponse response = themeService.create(request);
 
