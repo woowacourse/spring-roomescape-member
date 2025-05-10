@@ -14,7 +14,7 @@ import roomescape.exception.auth.NotAuthenticatedException;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
-class AuthTokenInterceptorTest {
+class AuthenticationInterceptorTest {
 
     private HttpServletRequest request;
     private HttpServletResponse response;
