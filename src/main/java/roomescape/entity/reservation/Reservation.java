@@ -2,7 +2,6 @@ package roomescape.entity.reservation;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import roomescape.entity.member.Member;
 
 public class Reservation {
@@ -122,19 +121,5 @@ public class Reservation {
             return null;
         }
         return member.getId();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Reservation that = (Reservation) o;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
     }
 }
