@@ -4,10 +4,10 @@ import java.sql.PreparedStatement;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.RowMapperManager;
 import roomescape.user.domain.User;
 import roomescape.user.exception.NotFoundUserException;
 
@@ -15,13 +15,6 @@ import roomescape.user.exception.NotFoundUserException;
 public class JdbcUserRepository implements UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
-
-    private final RowMapper<User> userRowMapper = (rs, rowNum) -> new User(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("email"),
-            rs.getString("password")
-    );
 
     public JdbcUserRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -41,10 +34,10 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findById(Long id) {
-        String sql = "select id, name, email, password from users where id = ?";
+        String sql = "select id AS user_id, name AS user_name, email AS user_email, password AS user_password from users where id = ?";
 
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, userRowMapper, id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, RowMapperManager.userRowMapper, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -59,10 +52,10 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findUseByEmail(String email) {
-        String sql = "select id, name, email, password from users where email = ?";
+        String sql = "select id AS user_id, name AS user_name, email AS user_email, password AS user_password from users where email = ?";
 
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, userRowMapper, email));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, RowMapperManager.userRowMapper, email));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -70,12 +63,12 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findUserByEmailAndPassword(String email, String password) {
-        String sql = "SELECT id, name, email, password "
+        String sql = "select id AS user_id, name AS user_name, email AS user_email, password AS user_password "
                 + "FROM users "
                 + "WHERE email = ? AND password = ?";
 
         try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, userRowMapper, email, password));
+            return Optional.of(jdbcTemplate.queryForObject(sql, RowMapperManager.userRowMapper, email, password));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
