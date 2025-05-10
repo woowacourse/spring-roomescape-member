@@ -33,6 +33,17 @@ public class JdbcMemberRepository implements MemberRepository {
     );
 
     @Override
+    public boolean existsByEmail(MemberEmail email) {
+        final String sql = """
+                select exists
+                    (select 1 from member where email = ?)
+                """;
+
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(sql, Boolean.class, email.getValue()));
+    }
+
+    @Override
     public Optional<Member> findByParams(MemberEmail email, MemberPassword password) {
         final String sql = """
                 SELECT id, name, email, password, role

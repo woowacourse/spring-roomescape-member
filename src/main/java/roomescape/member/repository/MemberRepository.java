@@ -6,9 +6,9 @@ import roomescape.member.domain.MemberEmail;
 import roomescape.member.domain.MemberPassword;
 
 public interface MemberRepository {
+    boolean existsByEmail(MemberEmail email);
+
     Member save(Member member);
 
     Optional<Member> findByParams(MemberEmail email, MemberPassword password);
-
-    // Member findById(Long id);
 }
