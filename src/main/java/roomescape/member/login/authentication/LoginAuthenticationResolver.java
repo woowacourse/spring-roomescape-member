@@ -1,4 +1,4 @@
-package roomescape.common.authentication;
+package roomescape.member.login.authentication;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -7,20 +7,20 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.common.authorization.AuthorizationHandler;
-import roomescape.common.authorization.TokenAuthorizationHandler;
-import roomescape.login.service.LoginService;
+import roomescape.member.login.authorization.AuthorizationHandler;
+import roomescape.member.login.authorization.TokenAuthorizationHandler;
+import roomescape.member.service.MemberService;
 
 @Component
-public class MemberAuthenticationResolver implements HandlerMethodArgumentResolver {
-    private final LoginService loginService;
+public class LoginAuthenticationResolver implements HandlerMethodArgumentResolver {
     private final AuthorizationHandler<String> authorizationHandler;
+    private final MemberService memberService;
 
-    public MemberAuthenticationResolver(
-            LoginService loginService,
+    public LoginAuthenticationResolver(
+            MemberService memberService,
             TokenAuthorizationHandler tokenAuthorizationHandler
     ) {
-        this.loginService = loginService;
+        this.memberService = memberService;
         this.authorizationHandler = tokenAuthorizationHandler;
     }
 
@@ -38,6 +38,6 @@ public class MemberAuthenticationResolver implements HandlerMethodArgumentResolv
     ) {
         HttpServletRequest httpServletRequest = (HttpServletRequest) webRequest.getNativeRequest();
         String token = authorizationHandler.extractToken(httpServletRequest);
-        return loginService.findByToken(token);
+        return memberService.findByToken(token);
     }
 }

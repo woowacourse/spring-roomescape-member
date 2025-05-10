@@ -1,4 +1,4 @@
-package roomescape.common.authorization;
+package roomescape.member.login.authorization;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,8 +22,8 @@ public class TokenAuthorizationHandler implements AuthorizationHandler<String> {
     }
 
     @Override
-    public void createCookie(String tokenRequestContent, HttpServletResponse httpServletResponse) {
-        Cookie cookie = new Cookie("token", tokenRequestContent);
+    public void createCookie(String accessToken, HttpServletResponse httpServletResponse) {
+        Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         httpServletResponse.addCookie(cookie);

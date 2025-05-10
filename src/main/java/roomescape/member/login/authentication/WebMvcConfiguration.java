@@ -1,4 +1,4 @@
-package roomescape.common.authentication;
+package roomescape.member.login.authentication;
 
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
@@ -7,14 +7,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
-    private final MemberAuthenticationResolver memberAuthenticationResolver;
+    private final LoginAuthenticationResolver loginAuthenticationResolver;
 
-    public WebMvcConfiguration(MemberAuthenticationResolver memberAuthenticationResolver) {
-        this.memberAuthenticationResolver = memberAuthenticationResolver;
+    public WebMvcConfiguration(LoginAuthenticationResolver loginAuthenticationResolver) {
+        this.loginAuthenticationResolver = loginAuthenticationResolver;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(memberAuthenticationResolver);
+        resolvers.add(loginAuthenticationResolver);
     }
 }

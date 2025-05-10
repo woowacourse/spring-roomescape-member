@@ -1,17 +1,16 @@
-package roomescape.common.authorization;
+package roomescape.member.login.authorization;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
-import roomescape.login.dto.MemberRequest;
 
 @Component
 public class JwtTokenProvider {
     private static final String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
 
-    public String createToken(MemberRequest memberRequest) {
+    public String createToken(String email) {
         return Jwts.builder()
-                .subject(memberRequest.email())
+                .subject(email)
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
@@ -21,6 +20,7 @@ public class JwtTokenProvider {
                 .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
                 .parseSignedClaims(token)
-                .getPayload().getSubject();
+                .getPayload()
+                .getSubject();
     }
 }
