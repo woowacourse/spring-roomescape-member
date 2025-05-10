@@ -12,6 +12,7 @@ import roomescape.exception.InvalidReservationDateException;
 import roomescape.exception.PlayTimeNotFoundException;
 import roomescape.exception.ReservationNotFoundException;
 import roomescape.exception.ThemeNotFoundException;
+import roomescape.exception.UserNotFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -21,7 +22,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @ExceptionHandler(value = {ReservationNotFoundException.class, PlayTimeNotFoundException.class, ThemeNotFoundException.class})
+    @ExceptionHandler(value = {
+            ReservationNotFoundException.class,
+            PlayTimeNotFoundException.class,
+            ThemeNotFoundException.class,
+            UserNotFoundException.class
+    })
     public ResponseEntity<Void> handleNotFoundException(final NoSuchElementException e) {
         return ResponseEntity.notFound().build();
     }
