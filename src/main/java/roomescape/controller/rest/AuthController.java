@@ -14,11 +14,11 @@ import roomescape.service.LoginService;
 
 @RestController
 @RequestMapping("/login")
-public class LoginController {
+public class AuthController {
 
     private final LoginService loginService;
 
-    public LoginController(LoginService loginService) {
+    public AuthController(LoginService loginService) {
         this.loginService = loginService;
     }
 
