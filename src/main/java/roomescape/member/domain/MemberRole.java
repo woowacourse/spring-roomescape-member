@@ -2,5 +2,10 @@ package roomescape.member.domain;
 
 public enum MemberRole {
     MEMBER,
-    ADMIN
+    ADMIN,
+    ;
+
+    public boolean isAdmin() {
+        return this == ADMIN;
+    }
 }
