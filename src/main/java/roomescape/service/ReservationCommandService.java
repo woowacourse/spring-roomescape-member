@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Component;
-import roomescape.config.LoginMember;
 import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -13,6 +12,7 @@ import roomescape.entity.Member;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
+import roomescape.web.LoginMember;
 
 @Component
 public class ReservationCommandService {

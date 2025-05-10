@@ -1,4 +1,4 @@
-package roomescape.config;
+package roomescape.web.support;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,6 +9,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.entity.AccessToken;
+import roomescape.web.LoginMember;
 
 @Component
 public class AuthorizationArgumentResolver implements HandlerMethodArgumentResolver {

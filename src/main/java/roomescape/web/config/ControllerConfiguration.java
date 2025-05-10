@@ -1,10 +1,12 @@
-package roomescape.config;
+package roomescape.web.config;
 
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import roomescape.web.support.AuthorizationArgumentResolver;
+import roomescape.web.support.CheckAdminInterceptor;
 
 @Configuration
 public class ControllerConfiguration implements WebMvcConfigurer {

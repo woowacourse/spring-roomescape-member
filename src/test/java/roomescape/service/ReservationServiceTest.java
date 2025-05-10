@@ -8,7 +8,6 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import roomescape.config.LoginMember;
 import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -21,6 +20,7 @@ import roomescape.service.fake_dao.FakeMemberDao;
 import roomescape.service.fake_dao.FakeReservationDao;
 import roomescape.service.fake_dao.FakeReservationTimeDao;
 import roomescape.service.fake_dao.FakeThemeDao;
+import roomescape.web.LoginMember;
 
 class ReservationServiceTest {
 

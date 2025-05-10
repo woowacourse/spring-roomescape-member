@@ -21,7 +21,6 @@ import roomescape.service.ReservationQueryService;
 @RequestMapping("/admin/reservations")
 public class AdminReservationController {
 
-    //TODO : 둘을 어떻게 합치거나 분리할지 모르겠다.
     private final ReservationCommandService reservationCommandService;
     private final ReservationQueryService reservationQueryService;
 

@@ -1,4 +1,4 @@
-package roomescape.config;
+package roomescape.web;
 
 public class LoginMember {
     private final Long id;

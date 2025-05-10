@@ -2,17 +2,17 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Component;
-import roomescape.config.LoginMember;
 import roomescape.dao.MemberDao;
-import roomescape.dto.response.MemberNameResponse;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.request.MemberPostRequest;
+import roomescape.dto.response.MemberNameResponse;
 import roomescape.dto.response.MemberSafeResponse;
 import roomescape.entity.AccessToken;
 import roomescape.entity.Member;
 import roomescape.entity.MemberRole;
 import roomescape.exception.InvalidAccessTokenException;
 import roomescape.exception.MemberNotFoundException;
+import roomescape.web.LoginMember;
 
 @Component
 public class MemberService {
