@@ -31,7 +31,7 @@ public class MemberService {
 
     public void delete(final Long id) {
         final Member found = memberQueryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 데이터가 존재하지 않습니다. id = " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("해당 회원 정보가 존재하지 않습니다. id = " + id));
 
         if (found.getRole() == AuthRole.ADMIN) {
             throw new AuthorizationException("관리자는 삭제할 수 없습니다.");
