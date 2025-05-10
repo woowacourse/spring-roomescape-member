@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.member.entity.Member;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -24,19 +25,20 @@ public class JwtTokenProvider {
         this.expirationTime = expirationTime;
     }
 
-    public String createToken(String email) {
+    public String createToken(Member member) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + expirationTime);
         return Jwts.builder()
-                .subject(email)
+                .subject(member.getId().toString())
+                .claim("role", member.getRole())
                 .issuedAt(now)
                 .expiration(validity)
                 .signWith(secretKey)
                 .compact();
     }
 
-    public String getEmail(String token) {
-        return parseClaim(token).getSubject();
+    public Long getMemberId(String token) {
+        return Long.valueOf(parseClaim(token).getSubject());
     }
 
     private Claims parseClaim(String token) {

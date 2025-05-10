@@ -21,8 +21,4 @@ public class MemberService {
         Member registeredUser = memberRepository.save(member);
         return SignUpResponse.from(registeredUser);
     }
-
-    public Member findNameByEmail(String email) {
-        return memberRepository.findByEmail(email);
-    }
 }

@@ -26,7 +26,7 @@ public class LoginController {
 
     @PostMapping
     public ResponseEntity<TokenResponse> login(@RequestBody TokenRequest tokenRequest) {
-        TokenWithCookieResponse tokenWithCookie = authService.createToken(tokenRequest);
+        TokenWithCookieResponse tokenWithCookie = authService.issueToken(tokenRequest);
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, tokenWithCookie.getCookie().toString())
                 .body(new TokenResponse(tokenWithCookie.getAccessToken()));

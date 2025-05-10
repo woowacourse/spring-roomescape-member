@@ -12,47 +12,58 @@ import roomescape.auth.dto.TokenWithCookieResponse;
 import roomescape.auth.exception.UnauthorizedException;
 import roomescape.common.security.jwt.JwtTokenProvider;
 import roomescape.common.util.CookieUtil;
-import roomescape.member.service.MemberService;
+import roomescape.member.entity.Member;
+import roomescape.member.repository.MemberRepository;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 @Service
 public class AuthService {
 
-    private final JwtTokenProvider jwtTokenProvider;
-    private final MemberService memberService;
+    private static final String JWT_COOKIE_NAME = "jwt_token";
 
-    public AuthService(JwtTokenProvider jwtTokenProvider, MemberService memberService) {
+    private final JwtTokenProvider jwtTokenProvider;
+    private final MemberRepository memberRepository;
+
+    public AuthService(JwtTokenProvider jwtTokenProvider, MemberRepository memberRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.memberService = memberService;
+        this.memberRepository = memberRepository;
     }
 
-    public TokenWithCookieResponse createToken(TokenRequest tokenRequest) {
-        String accessToken = jwtTokenProvider.createToken(tokenRequest.getEmail());
+    public TokenWithCookieResponse issueToken(TokenRequest tokenRequest) {
+        Member member = memberRepository.findByEmail(tokenRequest.getEmail())
+                .orElseThrow(() -> new NoSuchElementException("해당 사용자를 찾을 수 없습니다" + tokenRequest.getEmail()));
+
+        String accessToken = jwtTokenProvider.createToken(member);
         ResponseCookie responseCookie = CookieUtil.createJwtCookie(accessToken);
         return new TokenWithCookieResponse(accessToken, responseCookie);
     }
 
     public LoginCheckResponse checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-
-        if (cookies == null) {
-            throw new UnauthorizedException("로그인이 필요합니다.");
-        }
-
-        String token = Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals("jwt_token"))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElseThrow(() -> new UnauthorizedException("유효한 토큰이 존재하지 않습니다."));
+        String token = extractTokenFromCookies(request.getCookies());
 
         try {
-            String email = jwtTokenProvider.getEmail(token);
-            return LoginCheckResponse.from(memberService.findNameByEmail(email));
+            Long memberId = jwtTokenProvider.getMemberId(token);
+            Member member = memberRepository.findById(memberId)
+                    .orElseThrow(() -> new NoSuchElementException("해당 사용자를 찾을 수 없습니다"));
+            return LoginCheckResponse.from(member);
         } catch (ExpiredJwtException e) {
             throw new UnauthorizedException("토큰이 만료되었습니다.");
         } catch (JwtException e) {
             throw new UnauthorizedException("유효하지 않은 토큰입니다.");
         }
+    }
+
+    private String extractTokenFromCookies(Cookie[] cookies) {
+        if (cookies == null) {
+            throw new UnauthorizedException("로그인이 필요합니다.");
+        }
+
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(JWT_COOKIE_NAME))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElseThrow(() -> new UnauthorizedException("유효한 토큰이 존재하지 않습니다."));
     }
 }
