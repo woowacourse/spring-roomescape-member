@@ -7,6 +7,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.member.Email;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;
 import roomescape.domain.member.Role;
@@ -17,7 +18,7 @@ public class JdbcMemberRepository implements MemberRepository {
     private final static RowMapper<Member> MEMBER_ROW_MAPPER = ((rs, rowNum) -> new Member(
             rs.getLong("id"),
             rs.getString("name"),
-            rs.getString("email"),
+            new Email(rs.getString("email")),
             rs.getString("password"),
             Role.valueOf(rs.getString("role"))
     ));

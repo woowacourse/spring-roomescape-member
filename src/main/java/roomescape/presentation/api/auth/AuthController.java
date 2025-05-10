@@ -26,7 +26,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest) {
-
         LoginResult loginResult = authService.login(loginRequest.toServiceParam());
         ResponseCookie jwtCookie = createCookie("token", loginResult.token(), validityInMilliseconds);
         return ResponseEntity.ok()

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import roomescape.common.exception.BusinessRuleViolationException;
+import roomescape.domain.member.Email;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
 import roomescape.domain.reservation.DailyThemeReservations;
@@ -24,13 +25,13 @@ class DailyThemeReservationsTest {
         List<Reservation> reservations = List.of(
                 new Reservation(
                         1L,
-                        new Member(1L, "test1", "email1", "password", Role.NORMAL),
+                        new Member(1L, "test1", new Email("email1@gmail.com"), "password", Role.NORMAL),
                         LocalDate.of(2025, 5, 8),
                         new ReservationTime(1L, LocalTime.of(13, 1)),
                         new Theme(1L, "theme", "test", "url")),
                 new Reservation(
                         2L,
-                        new Member(1L, "test1", "email1", "password", Role.NORMAL),
+                        new Member(1L, "test1", new Email("email1@gmail.com"), "password", Role.NORMAL),
                         LocalDate.of(2025, 5, 8),
                         new ReservationTime(1L, LocalTime.of(13, 3)),
                         new Theme(2L, "theme", "test", "url"))
@@ -48,13 +49,13 @@ class DailyThemeReservationsTest {
         List<Reservation> reservations = List.of(
                 new Reservation(
                         1L,
-                        new Member(1L, "test1", "email1", "password", Role.NORMAL),
+                        new Member(1L, "test1", new Email("email1@gmail.com"), "password", Role.NORMAL),
                         LocalDate.of(2025, 5, 8),
                         new ReservationTime(1L, LocalTime.of(13, 0)),
                         new Theme(1L, "theme", "test", "url")),
                 new Reservation(
                         2L,
-                        new Member(1L, "test1", "email1", "password", Role.NORMAL),
+                        new Member(1L, "test1", new Email("email1@gmail.com"), "password", Role.NORMAL),
                         LocalDate.of(2025, 5, 8),
                         new ReservationTime(2L, LocalTime.of(14, 0)),
                         new Theme(1L, "theme", "test", "url"))

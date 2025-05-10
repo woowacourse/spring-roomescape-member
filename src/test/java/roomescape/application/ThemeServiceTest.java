@@ -11,10 +11,11 @@ import roomescape.application.reservation.dto.CreateThemeParam;
 import roomescape.application.reservation.dto.ThemeResult;
 import roomescape.common.exception.BusinessRuleViolationException;
 import roomescape.common.exception.NotFoundEntityException;
+import roomescape.domain.member.Email;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
-import roomescape.domain.member.Role;
 import roomescape.domain.reservation.Theme;
 
 class ThemeServiceTest extends ServiceIntegrationTest {
@@ -83,11 +84,11 @@ class ThemeServiceTest extends ServiceIntegrationTest {
     @Test
     void id값으로_테마를_삭제할떄_예약에서_id가_사용중이라면_예외를_발생시킨다() {
         //given
-        insertMember("test1", "email1", "password");
+        insertMember("test1", "email1@gmail.com", "password");
         themeRepository.create(new Theme("test1", "description1", "thumbnail1"));
         reservationTimeRepository.create(new ReservationTime(1L, LocalTime.of(12, 0)));
         reservationRepository.create(new Reservation(
-                new Member(1L, "test1", "email1", "password", Role.NORMAL),
+                new Member(1L, "test1", new Email("email1@gmail.com"), "password", Role.NORMAL),
                 LocalDate.of(2025, 5, 1),
                 new ReservationTime(1L, LocalTime.of(12, 0)),
                 new Theme(1L, "test1", "description1", "thumbnail1")));

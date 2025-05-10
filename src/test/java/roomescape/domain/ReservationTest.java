@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import roomescape.common.exception.BusinessRuleViolationException;
+import roomescape.domain.member.Email;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
 import roomescape.domain.reservation.Reservation;
@@ -19,7 +20,7 @@ class ReservationTest {
     void 지난_날짜에_대한_예약이라면_예외가_발생한다(LocalDateTime currentDateTime, LocalDateTime reservationDateTime) {
         //given
         Reservation reservation = new Reservation(
-                new Member(1L, "test1", "email1", "password", Role.NORMAL),
+                new Member(1L, "test1", new Email("email1@gmail.com"), "password", Role.NORMAL),
                 reservationDateTime.toLocalDate(),
                 new ReservationTime(1L, reservationDateTime.toLocalTime()),
                 new Theme(1L, "name", "description", "thumbnail"));
@@ -35,7 +36,7 @@ class ReservationTest {
     void 예약일이_오늘인_경우_예약_시간까지_10분도_남지_않았다면_예외가_발생한다(LocalDateTime currentDateTime, LocalDateTime reservationDateTime) {
         //given
         Reservation reservation = new Reservation(
-                new Member(1L, "test1", "email1", "password", Role.NORMAL),
+                new Member(1L, "test1", new Email("email1@gmail.com"), "password", Role.NORMAL),
                 reservationDateTime.toLocalDate(),
                 new ReservationTime(1L, reservationDateTime.toLocalTime()),
                 new Theme(1L, "name", "description", "thumbnail"));

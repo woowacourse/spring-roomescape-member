@@ -7,15 +7,16 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import roomescape.application.reservation.dto.CreateReservationTimeParam;
 import roomescape.application.reservation.dto.AvailableReservationTimeResult;
+import roomescape.application.reservation.dto.CreateReservationTimeParam;
 import roomescape.application.reservation.dto.ReservationTimeResult;
 import roomescape.common.exception.BusinessRuleViolationException;
 import roomescape.common.exception.NotFoundEntityException;
+import roomescape.domain.member.Email;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
-import roomescape.domain.member.Role;
 import roomescape.domain.reservation.Theme;
 
 class ReservationTimeServiceTest extends ServiceIntegrationTest {
@@ -79,11 +80,11 @@ class ReservationTimeServiceTest extends ServiceIntegrationTest {
     @Test
     void time_id를_사용하는_예약이_존재하면_예외를_던진다() {
         //given
-        insertMember("test1", "email1", "password");
+        insertMember("test1", "email1@gmail.com", "password");
         themeRepository.create(new Theme(1L, "name", "description", "thumbnail"));
         reservationTimeRepository.create(new ReservationTime(1L, LocalTime.of(12, 1)));
         reservationRepository.create(
-                new Reservation(1L, new Member(1L, "test1", "email1", "password", Role.NORMAL),
+                new Reservation(1L, new Member(1L, "test1", new Email("email1@gmail.com"), "password", Role.NORMAL),
                         LocalDate.of(2025, 4, 30),
                         new ReservationTime(1L, LocalTime.of(12, 1)),
                         new Theme(1L, "name", "description", "thumbnail")));
@@ -97,8 +98,8 @@ class ReservationTimeServiceTest extends ServiceIntegrationTest {
     @Test
     void 특정테마의_특정날짜에_예약된_시간_정보를_조회할_수_있다() {
         //given
-        insertMember("test1", "email1", "password");
-        insertMember("test2", "email2", "password");
+        insertMember("test1", "email1@gmail.com", "password");
+        insertMember("test2", "email2@gmail.com", "password");
         themeRepository.create(new Theme(1L, "name", "description", "thumbnail"));
 
         reservationTimeRepository.create(new ReservationTime(1L, LocalTime.of(12, 0)));

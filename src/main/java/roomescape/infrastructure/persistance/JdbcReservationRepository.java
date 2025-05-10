@@ -12,11 +12,12 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.member.Email;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservation.ReservationTime;
-import roomescape.domain.member.Role;
 import roomescape.domain.reservation.Theme;
 
 @Repository
@@ -25,7 +26,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final RowMapper<Reservation> reservationRowMapper = (rs, rowNum) ->
             new Reservation(
                     rs.getLong("reservation_id"),
-                    new Member(rs.getLong("member_id"), rs.getString("member_name"), rs.getString("member_email"),
+                    new Member(rs.getLong("member_id"), rs.getString("member_name"),
+                            new Email(rs.getString("member_email")),
                             rs.getString("member_password"), Role.valueOf(rs.getString("member_role"))),
                     rs.getDate("date").toLocalDate(),
                     new ReservationTime(rs.getLong("time_id"), rs.getTime("time_value").toLocalTime()),
