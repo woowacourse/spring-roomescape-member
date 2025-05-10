@@ -8,16 +8,17 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.auth.dto.TokenRequest;
-import roomescape.auth.dto.MemberResponse;
+import roomescape.auth.dto.MemberProfileResponse;
 import roomescape.auth.service.AuthService;
 import roomescape.global.config.TestConfig;
+import roomescape.util.fixture.AuthFixture;
 
 @Import(TestConfig.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -26,6 +27,13 @@ class LoginIntegrationTest {
 
     @Autowired
     private AuthService authService;
+
+    private String token;
+
+    @BeforeEach
+    void setup() {
+        token = AuthFixture.createUserToken(authService);
+    }
 
     @DisplayName("로그인 후 응답 헤더에 토큰을 반환한다")
     @Test
@@ -74,21 +82,18 @@ class LoginIntegrationTest {
     @DisplayName("사용자의 정보를 가져온다")
     @Test
     void check_member_test() {
-        // given
-        String token = getValidToken();
-
         // when
-        MemberResponse response = RestAssured.given().log().all()
+        MemberProfileResponse response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .cookie(LoginController.TOKEN_COOKIE_NAME, token)
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(200)
                 .extract()
-                .as(MemberResponse.class);
+                .as(MemberProfileResponse.class);
 
         // then
-        assertThat(response.name()).isEqualTo("루키");
+        assertThat(response.name()).isEqualTo("사용자");
     }
 
     @DisplayName("쿠키 내부에 토큰이 존재하지 않으면 예외가 발생한다")
@@ -101,12 +106,6 @@ class LoginIntegrationTest {
                 .then().log().all()
                 .statusCode(400)
                 .body(equalTo("인증 토큰이 쿠키에 존재하지 않습니다."));
-    }
-
-    private String getValidToken() {
-        String email = "rookie@woowa.com";
-        String password = "rookie123";
-        return authService.createToken(new TokenRequest(email, password));
     }
 
 }

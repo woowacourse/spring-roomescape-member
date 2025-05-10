@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -22,16 +21,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.auth.controller.LoginController;
+import roomescape.auth.service.AuthService;
 import roomescape.global.config.TestConfig;
 import roomescape.reservation.controller.dto.AvailableTimeResponse;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.util.fixture.AuthFixture;
 
 @Import(TestConfig.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationIntegrationTest {
+
+    @Autowired
+    private AuthService authService;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -73,6 +78,7 @@ class ReservationIntegrationTest {
         // when
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(LoginController.TOKEN_COOKIE_NAME, token)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -134,9 +140,13 @@ class ReservationIntegrationTest {
     @MethodSource
     @ParameterizedTest
     void add_reservation_null_empty_exception(Map<String, String> requestBody) {
+        // given
+        String token = AuthFixture.createUserToken(authService);
+
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(LoginController.TOKEN_COOKIE_NAME, token)
                 .body(requestBody)
                 .when().post("/reservations")
                 .then().log().all()
@@ -149,6 +159,8 @@ class ReservationIntegrationTest {
     @ParameterizedTest
     void add_reservation_date_format_exception(String inputDateString) {
         // given
+        String token = AuthFixture.createUserToken(authService);
+
         Map<String, String> requestBody = Map.of(
                 "date", inputDateString,
                 "timeId", "1",
@@ -159,6 +171,7 @@ class ReservationIntegrationTest {
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(LoginController.TOKEN_COOKIE_NAME, token)
                 .body(requestBody)
                 .when().post("/reservations")
                 .then().log().all()
@@ -171,6 +184,8 @@ class ReservationIntegrationTest {
     @Test
     void add_reservation_time_id_exception() {
         // given
+        String token = AuthFixture.createUserToken(authService);
+
         Map<String, String> requestBody = Map.of(
                 "date", "2025-05-06",
                 "timeId", "200",
@@ -181,6 +196,7 @@ class ReservationIntegrationTest {
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(LoginController.TOKEN_COOKIE_NAME, token)
                 .body(requestBody)
                 .when().post("/reservations")
                 .then().log().all()
@@ -192,6 +208,8 @@ class ReservationIntegrationTest {
     @Test
     void add_reservation_theme_id_exception() {
         // given
+        String token = AuthFixture.createUserToken(authService);
+
         Map<String, String> requestBody = Map.of(
                 "name", "루키",
                 "date", "2025-05-06",
@@ -203,6 +221,7 @@ class ReservationIntegrationTest {
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(LoginController.TOKEN_COOKIE_NAME, token)
                 .body(requestBody)
                 .when().post("/reservations")
                 .then().log().all()
@@ -214,9 +233,13 @@ class ReservationIntegrationTest {
     @MethodSource
     @ParameterizedTest
     void add_reservation_past_exception(Map<String, String> requestBody, String errorMessage) {
+        // given
+        String token = AuthFixture.createUserToken(authService);
+
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(LoginController.TOKEN_COOKIE_NAME, token)
                 .body(requestBody)
                 .when().post("/reservations")
                 .then().log().all()
