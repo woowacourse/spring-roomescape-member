@@ -1,16 +1,16 @@
-package roomescape.service;
+package roomescape.application;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.application.param.CreateThemeParam;
+import roomescape.application.result.ThemeResult;
 import roomescape.common.exception.BusinessRuleViolationException;
 import roomescape.common.exception.NotFoundEntityException;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.service.param.CreateThemeParam;
-import roomescape.service.result.ThemeResult;
 
 @Service
 public class ThemeService {

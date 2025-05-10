@@ -1,9 +1,12 @@
-package roomescape.service;
+package roomescape.application;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.application.param.CreateReservationParam;
+import roomescape.application.param.ReservationSearchParam;
+import roomescape.application.result.ReservationResult;
 import roomescape.common.exception.BusinessRuleViolationException;
 import roomescape.common.exception.NotFoundEntityException;
 import roomescape.domain.Member;
@@ -14,9 +17,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.service.param.CreateReservationParam;
-import roomescape.service.param.ReservationSearchParam;
-import roomescape.service.result.ReservationResult;
 
 @Service
 public class ReservationService {

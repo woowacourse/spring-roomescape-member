@@ -1,4 +1,4 @@
-package roomescape.service.result;
+package roomescape.application.result;
 
 public record LoginResult(String token) {
 }

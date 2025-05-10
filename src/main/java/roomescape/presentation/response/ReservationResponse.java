@@ -1,7 +1,7 @@
 package roomescape.presentation.response;
 
 import java.time.LocalDate;
-import roomescape.service.result.ReservationResult;
+import roomescape.application.result.ReservationResult;
 
 public record ReservationResponse(
         Long id,

@@ -1,6 +1,6 @@
 package roomescape.presentation.response;
 
-import roomescape.service.result.ThemeResult;
+import roomescape.application.result.ThemeResult;
 
 public record ThemeResponse(Long id, String name, String description, String thumbnail) {
     public static ThemeResponse from(final ThemeResult themeResult) {

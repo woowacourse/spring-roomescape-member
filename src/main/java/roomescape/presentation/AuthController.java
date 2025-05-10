@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.application.AuthService;
+import roomescape.application.result.LoginResult;
 import roomescape.presentation.methodresolver.AuthInfo;
 import roomescape.presentation.request.LoginRequest;
 import roomescape.presentation.response.LoginCheckResponse;
-import roomescape.service.AuthService;
-import roomescape.service.result.LoginResult;
 
 @RestController
 public class AuthController {

@@ -1,10 +1,10 @@
-package roomescape.service;
+package roomescape.application;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.application.result.MemberResult;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
-import roomescape.service.result.MemberResult;
 
 @Service
 public class MemberService {

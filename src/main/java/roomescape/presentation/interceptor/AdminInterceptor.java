@@ -6,11 +6,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.application.JwtProvider;
+import roomescape.application.JwtProvider.JwtPayload;
 import roomescape.common.exception.ForbiddenException;
 import roomescape.common.exception.UnauthorizedException;
 import roomescape.domain.Role;
-import roomescape.service.JwtProvider;
-import roomescape.service.JwtProvider.JwtPayload;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {

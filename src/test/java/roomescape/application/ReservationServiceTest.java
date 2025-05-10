@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -7,6 +7,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import roomescape.application.param.CreateReservationParam;
+import roomescape.application.result.MemberResult;
+import roomescape.application.result.ReservationResult;
+import roomescape.application.result.ReservationTimeResult;
+import roomescape.application.result.ThemeResult;
 import roomescape.common.exception.BusinessRuleViolationException;
 import roomescape.common.exception.NotFoundEntityException;
 import roomescape.domain.Member;
@@ -14,11 +19,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
-import roomescape.service.param.CreateReservationParam;
-import roomescape.service.result.MemberResult;
-import roomescape.service.result.ReservationResult;
-import roomescape.service.result.ReservationTimeResult;
-import roomescape.service.result.ThemeResult;
 
 class ReservationServiceTest extends ServiceIntegrationTest {
 

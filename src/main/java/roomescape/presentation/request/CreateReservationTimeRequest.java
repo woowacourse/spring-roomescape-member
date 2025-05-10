@@ -1,7 +1,7 @@
 package roomescape.presentation.request;
 
 import java.time.LocalTime;
-import roomescape.service.param.CreateReservationTimeParam;
+import roomescape.application.param.CreateReservationTimeParam;
 
 public record CreateReservationTimeRequest(
         LocalTime startAt

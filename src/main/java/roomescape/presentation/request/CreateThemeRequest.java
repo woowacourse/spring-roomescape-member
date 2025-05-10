@@ -1,6 +1,6 @@
 package roomescape.presentation.request;
 
-import roomescape.service.param.CreateThemeParam;
+import roomescape.application.param.CreateThemeParam;
 
 public record CreateThemeRequest(String name, String description, String thumbnail) {
 

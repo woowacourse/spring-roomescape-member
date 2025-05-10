@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.application;
 
 import java.time.Clock;
 import java.time.Instant;

@@ -9,9 +9,9 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.application.JwtProvider;
+import roomescape.application.JwtProvider.JwtPayload;
 import roomescape.common.exception.UnauthorizedException;
-import roomescape.service.JwtProvider;
-import roomescape.service.JwtProvider.JwtPayload;
 
 @Component
 public class AuthInfoArgumentResolver implements HandlerMethodArgumentResolver {

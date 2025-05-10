@@ -1,6 +1,6 @@
 package roomescape.presentation.response;
 
-import roomescape.service.result.MemberResult;
+import roomescape.application.result.MemberResult;
 
 public record MemberResponse(Long id, String name) {
 

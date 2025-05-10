@@ -1,12 +1,12 @@
-package roomescape.service;
+package roomescape.application;
 
 import org.springframework.stereotype.Service;
+import roomescape.application.JwtProvider.JwtPayload;
+import roomescape.application.param.LoginParam;
+import roomescape.application.result.LoginResult;
 import roomescape.common.exception.UnauthorizedException.LoginAuthException;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
-import roomescape.service.JwtProvider.JwtPayload;
-import roomescape.service.param.LoginParam;
-import roomescape.service.result.LoginResult;
 
 @Service
 public class AuthService {
