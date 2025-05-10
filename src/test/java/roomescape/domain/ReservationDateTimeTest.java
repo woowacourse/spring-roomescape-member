@@ -6,10 +6,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.exception.PastReservationException;
 import roomescape.fake.FixedCurrentTimeService;
 
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 public class ReservationDateTimeTest {
 
     @Test

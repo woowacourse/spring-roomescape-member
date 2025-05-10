@@ -7,6 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.common.BaseTest;
@@ -19,6 +22,7 @@ import roomescape.presentation.dto.request.ReservationTimeCreateRequest;
 import roomescape.presentation.dto.response.ReservationTimeResponse;
 import roomescape.domain.ReservationTime;
 
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 public class ReservationTimeServiceTest extends BaseTest {
 
     @Autowired
