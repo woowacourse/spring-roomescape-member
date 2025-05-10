@@ -7,8 +7,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.dto.customer.CustomerResponseDto;
-import roomescape.model.Customer;
+import roomescape.common.annotation.LoginCustomer;
 import roomescape.service.AuthService;
 
 public class LoginCustomerResolver implements HandlerMethodArgumentResolver {
@@ -21,7 +20,8 @@ public class LoginCustomerResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(Customer.class);
+        LoginCustomer auth = parameter.getParameterAnnotation(LoginCustomer.class);
+        return auth != null;
     }
 
     @Override
@@ -44,5 +44,4 @@ public class LoginCustomerResolver implements HandlerMethodArgumentResolver {
         }
         return "";
     }
-
 }

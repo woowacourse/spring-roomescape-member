@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.reservation.ReservationRequestDto;
+import roomescape.common.annotation.LoginCustomer;
+import roomescape.dto.auth.MemberInfoDto;
+import roomescape.dto.reservation.AdminReservationRequestDto;
+import roomescape.dto.reservation.MemberReservationRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.service.ReservationService;
 
 @RestController
-@RequestMapping("/reservations")
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -25,20 +27,28 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
+    @GetMapping("/reservations")
     @ResponseStatus(HttpStatus.OK)
     public List<ReservationResponseDto> reservations() {
         return reservationService.getAllReservations();
     }
 
-    @PostMapping
+    @PostMapping("/reservations")
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponseDto addReservation(
-            @RequestBody @Valid ReservationRequestDto reservationRequestDto) {
-        return reservationService.saveReservation(reservationRequestDto);
+            @RequestBody @Valid MemberReservationRequestDto memberReservationRequestDto,
+            @LoginCustomer MemberInfoDto memberInfoDto) {
+        return reservationService.saveReservation(memberReservationRequestDto, memberInfoDto);
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/admin/reservations")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ReservationResponseDto addReservation(@RequestBody @Valid AdminReservationRequestDto adminReservationRequestDto){
+        return reservationService.saveReservation(adminReservationRequestDto);
+    }
+
+
+    @DeleteMapping("/reservations/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservation(@PathVariable("id") Long id) {
         reservationService.cancelReservation(id);
