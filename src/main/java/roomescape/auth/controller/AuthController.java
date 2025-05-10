@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
-import roomescape.auth.annotation.AuthenticationPrincipal;
+import roomescape.auth.annotation.MemberPrincipal;
 import roomescape.auth.domain.LoginMember;
 import roomescape.auth.dto.CheckLoginResponse;
 import roomescape.auth.dto.LoginRequest;
@@ -35,8 +35,8 @@ public class AuthController {
 
     @PostMapping("/login")
     @ResponseBody
-    public ResponseEntity<Void> login(final HttpServletResponse httpServletResponse,
-                                      final @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<Void> login(final @RequestBody LoginRequest loginRequest,
+                                      final HttpServletResponse httpServletResponse) {
         LoginResponse loginResponse = authService.createToken(loginRequest);
         cookieManager.addCookieToResponse(httpServletResponse, TOKEN, loginResponse.accessToken());
         return ResponseEntity.ok().build();
@@ -44,13 +44,14 @@ public class AuthController {
 
     @GetMapping("/login/check")
     @ResponseBody
-    public ResponseEntity<CheckLoginResponse> checkLogin(final @AuthenticationPrincipal LoginMember loginMember) {
+    public ResponseEntity<CheckLoginResponse> checkLogin(final @MemberPrincipal LoginMember loginMember) {
         return ResponseEntity.ok(CheckLoginResponse.from(loginMember));
     }
 
     @PostMapping("/logout")
     @ResponseBody
-    public ResponseEntity<Void> logout(final HttpServletResponse httpServletResponse) {
+    public ResponseEntity<Void> logout(final @MemberPrincipal LoginMember loginMember,
+                                       final HttpServletResponse httpServletResponse) {
         cookieManager.deleteCookie(httpServletResponse, TOKEN);
         return ResponseEntity.noContent().build();
     }

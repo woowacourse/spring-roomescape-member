@@ -61,6 +61,20 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
+    public boolean existsByIdAndMemberRole(final Long id, final MemberRole memberRole) {
+        try {
+            return Boolean.TRUE.equals(
+                    jdbcTemplate.queryForObject("SELECT EXISTS (SELECT 1 FROM member WHERE (id, role) = (?, ?))",
+                            Boolean.class,
+                            id,
+                            memberRole.name()
+                    ));
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
+    }
+
+    @Override
     public boolean existsById(final Long id) {
         try {
             return Boolean.TRUE.equals(

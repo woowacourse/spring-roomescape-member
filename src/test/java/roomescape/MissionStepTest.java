@@ -40,6 +40,7 @@ public class MissionStepTest {
     private static final String USER_EMAIL = "user@gmail.com";
     private static final String futureDate = LocalDate.now().plusDays(1).toString();
     private static final String ADMIN_EMAIL = "admin@gmail.com";
+    private static final String TOKEN = "token";
 
     @Nested
     class AdminTest {
@@ -67,6 +68,8 @@ public class MissionStepTest {
 
         @Test
         void step3_createAndDeleteReservation() {
+            String authToken = loginAndGetAuthToken(ADMIN_EMAIL, PASSWORD);
+
             createReservationTime();
             createTheme("추리");
             createUserReservation();
@@ -78,6 +81,7 @@ public class MissionStepTest {
                     .body("size()", is(1));
 
             RestAssured.given().log().all()
+                    .cookie(TOKEN, authToken)
                     .when().delete("/reservations/1")
                     .then().log().all()
                     .statusCode(204);
@@ -120,6 +124,8 @@ public class MissionStepTest {
 
         @Test
         void step6_addReservationWithDatabase() {
+            String authToken = loginAndGetAuthToken(ADMIN_EMAIL, PASSWORD);
+
             createReservationTime();
             createTheme("추리");
             createUserReservation();
@@ -128,6 +134,7 @@ public class MissionStepTest {
             assertThat(count).isEqualTo(1);
 
             RestAssured.given().log().all()
+                    .cookie(TOKEN, authToken)
                     .when().delete("/reservations/1")
                     .then().log().all()
                     .statusCode(204);
@@ -138,6 +145,7 @@ public class MissionStepTest {
 
         @Test
         void step7_timeAPIFeature() {
+            String authToken = loginAndGetAuthToken(ADMIN_EMAIL, PASSWORD);
             createReservationTime();
 
             RestAssured.given().log().all()
@@ -147,6 +155,7 @@ public class MissionStepTest {
                     .body("size()", is(1));
 
             RestAssured.given().log().all()
+                    .cookie(TOKEN, authToken)
                     .when().delete("/times/1")
                     .then().log().all()
                     .statusCode(204);
@@ -184,12 +193,15 @@ public class MissionStepTest {
 
         @Test
         void step1_exceptionHandle() {
+            String authToken = loginAndGetAuthToken(ADMIN_EMAIL, PASSWORD);
+
             Map<String, String> reservationTime = new HashMap<>();
             reservationTime.put("startAt", "10 00");
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
                     .body(reservationTime)
+                    .cookie(TOKEN, authToken)
                     .when().post("/times")
                     .then().log().all()
                     .statusCode(400);
@@ -197,10 +209,13 @@ public class MissionStepTest {
 
         @Test
         void step2_createAndDeleteTheme() {
+            String authToken = loginAndGetAuthToken(ADMIN_EMAIL, PASSWORD);
+
             createTheme("추리");
             findThemesBySize(1);
 
             RestAssured.given().log().all()
+                    .cookie(TOKEN, authToken)
                     .when().delete("/themes/1")
                     .then().log().all()
                     .statusCode(204);
@@ -270,7 +285,7 @@ public class MissionStepTest {
             RestAssured.given().log().all()
                     .body(new LoginRequest(USER_EMAIL, PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .cookie("token", authToken)
+                    .cookie(TOKEN, authToken)
                     .when().post("/logout")
                     .then().log().all()
                     .statusCode(204);
@@ -285,7 +300,7 @@ public class MissionStepTest {
             CheckLoginResponse checkLoginResponse = RestAssured.given().log().all()
                     .body(new LoginRequest(USER_EMAIL, PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .cookie("token", authToken)
+                    .cookie(TOKEN, authToken)
                     .when().get("/login/check")
                     .then().log().all()
                     .statusCode(200)
@@ -311,7 +326,7 @@ public class MissionStepTest {
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
                     .body(reservation)
-                    .cookie("token", authToken)
+                    .cookie(TOKEN, authToken)
                     .when().post("/admin/reservations")
                     .then().log().all()
                     .statusCode(201);
@@ -324,7 +339,7 @@ public class MissionStepTest {
 
             List<MemberResponse> memberResponses = RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .cookie("token", authToken)
+                    .cookie(TOKEN, authToken)
                     .when().get("/members")
                     .then().log().all()
                     .statusCode(200)
@@ -355,13 +370,15 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .cookie("token", authToken)
+                .cookie(TOKEN, authToken)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
     }
 
     private void createTheme(final String name) {
+        String authToken = loginAndGetAuthToken(ADMIN_EMAIL, PASSWORD);
+
         Map<String, String> theme = new HashMap<>();
         theme.put("name", name);
         theme.put("description", "셜록 with Danny");
@@ -370,18 +387,22 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(theme)
+                .cookie(TOKEN, authToken)
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201);
     }
 
     private void createReservationTime() {
+        String authToken = loginAndGetAuthToken(ADMIN_EMAIL, PASSWORD);
+
         Map<String, String> reservationTime = new HashMap<>();
         reservationTime.put("startAt", "10:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationTime)
+                .cookie(TOKEN, authToken)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
@@ -403,6 +424,6 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(200)
                 .extract()
-                .cookie("token");
+                .cookie(TOKEN);
     }
 }

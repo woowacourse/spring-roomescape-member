@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
 
 public class FakeMemberRepository implements MemberRepository {
 
@@ -25,6 +26,13 @@ public class FakeMemberRepository implements MemberRepository {
                 .stream()
                 .filter(member -> member.getEmail().equals(email) && member.getPassword().equals(password))
                 .findFirst();
+    }
+
+    @Override
+    public boolean existsByIdAndMemberRole(final Long id, final MemberRole memberRole) {
+        return members.entrySet()
+                .stream()
+                .anyMatch(entry -> entry.getKey().equals(id) && entry.getValue().getMemberRole() == memberRole);
     }
 
     @Override

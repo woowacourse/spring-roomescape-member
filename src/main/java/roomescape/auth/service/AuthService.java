@@ -6,6 +6,7 @@ import roomescape.auth.domain.LoginMember;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.dto.LoginResponse;
 import roomescape.auth.exception.AuthException;
+import roomescape.auth.exception.UnAuthorizedException;
 import roomescape.auth.infrastructure.JwtProvider;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRole;
@@ -38,11 +39,11 @@ public class AuthService {
         return null;
     }
 
-    public LoginMember makeLoginMember(final String token) {
+    public LoginMember makeLoginMember(final String token, final MemberRole memberRole) {
         validateToken(token);
         Claims claims = jwtProvider.getAllClaimsFromToken(token);
         Long memberId = Long.valueOf(claims.getSubject());
-        validateMember(memberId);
+        validateMember(memberId, memberRole);
         return new LoginMember(memberId, (String) claims.get("name"),
                 MemberRole.from((String) claims.get("role")));
     }
@@ -58,9 +59,23 @@ public class AuthService {
                 .orElseThrow(() -> new AuthException("존재하지 않은 사용자입니다."));
     }
 
-    private void validateMember(final Long id) {
+    private void validateMember(final Long id, final MemberRole memberRole) {
+        if (memberRole == MemberRole.USER) {
+            validateExistsById(id);
+            return;
+        }
+        validateExistsByIdAndMemberRole(id, memberRole);
+    }
+
+    private void validateExistsById(final Long id) {
         if (!memberRepository.existsById(id)) {
             throw new AuthException("존재하지 않은 사용자입니다.");
+        }
+    }
+
+    private void validateExistsByIdAndMemberRole(final Long id, final MemberRole memberRole) {
+        if (!memberRepository.existsByIdAndMemberRole(id, memberRole)) {
+            throw new UnAuthorizedException("접근 권한을 벗어났습니다.");
         }
     }
 }
