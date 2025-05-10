@@ -39,7 +39,7 @@ class ReservationTest {
         assertThatThrownBy(() ->
                 new Reservation(
                         1L,
-                        "",
+                        null,
                         dateTime.toLocalDate(),
                         new ReservationTime(dateTime.toLocalTime()),
                         new Theme(1L, "공포", "무서워요", "image"))
@@ -54,7 +54,7 @@ class ReservationTest {
         LocalDateTime dateTime = LocalDateTime.now();
         Reservation reservation = new Reservation(
                 1L,
-                "히로",
+                new Member(1L,"다로","qwe","1234"),
                 dateTime.toLocalDate(),
                 new ReservationTime(dateTime.toLocalTime()),
                 new Theme(1L, "공포", "무서워요", "image"));
@@ -72,7 +72,7 @@ class ReservationTest {
         LocalDateTime dateTime = LocalDateTime.now().minusDays(1);
         Reservation reservation = new Reservation(
                 1L,
-                "히로",
+                new Member(1L,"다로","qwe","1234"),
                 dateTime.toLocalDate(),
                 new ReservationTime(dateTime.toLocalTime()),
                 new Theme(1L, "공포", "무서워요", "image"));

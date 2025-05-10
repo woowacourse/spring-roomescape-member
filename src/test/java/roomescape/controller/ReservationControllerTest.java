@@ -17,7 +17,7 @@ class ReservationControllerTest {
     @DisplayName("예약 등록 시 예외가 발생할 때 400에러를 반환한다.")
     void test1() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
+        params.put("memberId", "1");
         params.put("date", "ㅇㅇㅇㅇ");
         params.put("timeId", "1");
         params.put("themeId", "1");

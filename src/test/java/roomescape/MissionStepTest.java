@@ -14,13 +14,23 @@ import static org.hamcrest.CoreMatchers.is;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import roomescape.common.util.JwtProvider;
+import roomescape.config.LoginCustomerResolver;
+import roomescape.controller.ReservationController;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dto.reservation.ReservationResponseDto;
+import roomescape.model.Member;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
@@ -71,13 +81,16 @@ public class MissionStepTest {
     @Test
     void 삼단계() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", String.valueOf(LocalDate.now().plusDays(1)));
         params.put("timeId", "1");
         params.put("themeId", "1");
 
+        JwtProvider jwtProvider = new JwtProvider();
+        String token = jwtProvider.createToken(new Member(1L, "조로", "emai","1234"));
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -118,8 +131,8 @@ public class MissionStepTest {
     @Test
     void 오단계() {
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", String.valueOf(LocalDate.now().plusDays(1)), "1", "1");
+                "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "1", String.valueOf(LocalDate.now().plusDays(1)), "1", "1");
 
         List<ReservationResponseDto> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -136,13 +149,17 @@ public class MissionStepTest {
     @Test
     void 육단계() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
+        params.put("memberId", "1");
         params.put("date", String.valueOf(LocalDate.now().plusDays(1)));
         params.put("timeId", "1");
         params.put("themeId", "1");
 
+        JwtProvider jwtProvider = new JwtProvider();
+        String token = jwtProvider.createToken(new Member(1L, "조로", "emai","1234"));
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -189,13 +206,17 @@ public class MissionStepTest {
     @Test
     void 팔단계() {
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
+        reservation.put("memberId", "1");
         reservation.put("date", String.valueOf(LocalDate.now().plusDays(1)));
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
+        JwtProvider jwtProvider = new JwtProvider();
+        String token = jwtProvider.createToken(new Member(1L, "조로", "emai","1234"));
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
