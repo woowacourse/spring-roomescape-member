@@ -40,10 +40,19 @@ public class AuthorizationAdminInterceptor implements HandlerInterceptor {
     }
 
     private String extractToken(final HttpServletRequest request) {
-        return Arrays.stream(request.getCookies())
+        final Cookie[] cookies = request.getCookies();
+        validateExistsCookies(cookies);
+
+        return Arrays.stream(cookies)
                 .filter(cookie -> Objects.equals(cookie.getName(), TOKEN_NAME))
                 .map(Cookie::getValue)
                 .findAny()
                 .orElseThrow(() -> new AuthNotExistsCookieException());
+    }
+
+    private static void validateExistsCookies(final Cookie[] cookies) {
+        if(cookies == null){
+            throw new AuthNotExistsCookieException();
+        }
     }
 }
