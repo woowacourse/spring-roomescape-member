@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 import java.time.DateTimeException;
@@ -88,5 +89,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceInUseException.class)
     public ExceptionResponse handleResourceInUseException(ResourceInUseException e) {
         return new ExceptionResponse(CONFLICT.value(), e.getMessage(), LocalDateTime.now());
+    }
+
+    @ResponseStatus(UNAUTHORIZED)
+    @ExceptionHandler(AuthenticationException.class)
+    public ExceptionResponse handleAuthenticationException(AuthenticationException e) {
+        return new ExceptionResponse(UNAUTHORIZED.value(), e.getMessage(), LocalDateTime.now());
     }
 }

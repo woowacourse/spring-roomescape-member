@@ -1,5 +1,7 @@
 package roomescape.auth.web.controller;
 
+import static roomescape.auth.web.constant.AuthConstant.AUTH_COOKIE_KEY;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,7 +34,7 @@ public class AuthController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/login/check")
     public AuthenticatedMember loginCheck(HttpServletRequest request) {
-        Cookie cookie = CookieUtils.findFromCookiesByName(request.getCookies(), "token")
+        Cookie cookie = CookieUtils.findFromCookiesByName(request.getCookies(), AUTH_COOKIE_KEY)
                 .orElseThrow(() -> new AuthenticationException("인증을 위한 쿠키가 존재하지 않습니다."));
         return authService.getAuthenticatedMember(cookie.getValue());
     }
@@ -40,7 +42,7 @@ public class AuthController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) {
-        Cookie cookie = CookieUtils.findFromCookiesByName(request.getCookies(), "token")
+        Cookie cookie = CookieUtils.findFromCookiesByName(request.getCookies(), AUTH_COOKIE_KEY)
                 .orElseThrow(() -> new AuthenticationException("인증을 위한 쿠키가 존재하지 않습니다."));
         //TODO : 토큰 블랙리스트 구현
         response.addCookie(CookieUtils.toExpiredCookie(cookie));

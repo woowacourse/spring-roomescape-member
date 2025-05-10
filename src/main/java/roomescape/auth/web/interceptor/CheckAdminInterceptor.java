@@ -1,5 +1,7 @@
 package roomescape.auth.web.interceptor;
 
+import static roomescape.auth.web.constant.AuthConstant.AUTH_COOKIE_KEY;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,7 +24,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        Cookie cookie = CookieUtils.findFromCookiesByName(request.getCookies(), "token")
+        Cookie cookie = CookieUtils.findFromCookiesByName(request.getCookies(), AUTH_COOKIE_KEY)
                 .orElseThrow(() -> new AuthenticationException("인증을 위한 쿠키가 존재하지 않습니다."));
         AuthenticatedMember authenticatedMember = tokenProvider.resolveAuthenticatedMember(cookie.getValue());
         if (Objects.equals(authenticatedMember.role(), Role.ADMIN)) {
