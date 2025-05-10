@@ -15,15 +15,19 @@ import roomescape.auth.application.AuthService;
 import roomescape.auth.dto.LoginMember;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.dto.TokenResponse;
+import roomescape.auth.infrastructure.CookieProvider;
 import roomescape.member.presentation.dto.response.MemberResponse;
 
 @RestController
 @RequestMapping("/login")
 public class TokenLoginController {
-    private final AuthService authService;
 
-    public TokenLoginController(AuthService authService) {
+    private final AuthService authService;
+    private final CookieProvider cookieProvider;
+
+    public TokenLoginController(AuthService authService, CookieProvider cookieProvider) {
         this.authService = authService;
+        this.cookieProvider = cookieProvider;
     }
 
     @PostMapping
@@ -33,9 +37,7 @@ public class TokenLoginController {
 
         TokenResponse tokenResponse = authService.createToken(tokenRequest);
 
-        Cookie cookie = new Cookie("token", tokenResponse.accessToken());
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
+        Cookie cookie = cookieProvider.createTokenCookie(tokenResponse.accessToken());
         response.addCookie(cookie);
 
         return ResponseEntity.status(HttpStatus.OK)
