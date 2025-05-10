@@ -12,7 +12,7 @@ import roomescape.member.domain.MemberRepository;
 @Repository
 public class JdbcMemberRepository implements MemberRepository {
 
-    private final static RowMapper<Member> ROW_MAPPER = (resultSet, rowNum) -> new Member(
+    private final static RowMapper<Member> ROW_MAPPER = (resultSet, rowNum) -> Member.createWithId(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),

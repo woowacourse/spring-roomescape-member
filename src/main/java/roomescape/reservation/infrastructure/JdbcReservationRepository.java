@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservationTime.domain.ReservationTime;
@@ -25,7 +26,6 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> Reservation.createWithId(
             resultSet.getLong("reservation_id"),
-            resultSet.getString("name"),
             resultSet.getDate("date").toLocalDate(),
             ReservationTime.createWithId(
                     resultSet.getLong("time_id"),
@@ -36,6 +36,12 @@ public class JdbcReservationRepository implements ReservationRepository {
                     resultSet.getString("theme_name"),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail")
+            ),
+            Member.createWithId(
+                    resultSet.getLong("member_id"),
+                    resultSet.getString("member_name"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password")
             )
     );
 
@@ -52,10 +58,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Long save(final Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", reservation.getName());
         parameters.put("date", Date.valueOf(reservation.getDate()));
         parameters.put("time_id", reservation.getTime().getId());
         parameters.put("theme_id", reservation.getTheme().getId());
+        parameters.put("member_id", reservation.getMember().getId());
 
         return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
@@ -65,23 +71,58 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """               
                 SELECT
                     r.id as reservation_id,
-                    r.name,
                     r.date,
                     t.id as time_id,
                     t.start_at as time_value,
                     th.id as theme_id,
                     th.name as theme_name,
                     th.description,
-                    th.thumbnail
+                    th.thumbnail,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email,
+                    m.password
                 FROM reservation as r
                 INNER JOIN reservation_time as t ON r.time_id = t.id 
                 INNER JOIN theme as th ON th.id = r.theme_id
+                INNER JOIN member as m ON m.id = r.member_id
                 WHERE th.id = :themeId AND r.date = :date
                 """;
-
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("themeId", themeId)
                 .addValue("date", Date.valueOf(date));
+
+        return namedParameterJdbcTemplate.query(sql, param, ROW_MAPPER);
+    }
+
+    @Override
+    public List<Reservation> findBy(Long memberId, Long themeId, LocalDate from, LocalDate to) {
+        String sql = """               
+                SELECT
+                    r.id as reservation_id,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description,
+                    th.thumbnail,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email,
+                    m.password
+                FROM reservation as r
+                INNER JOIN reservation_time as t ON r.time_id = t.id
+                INNER JOIN theme as th ON th.id = r.theme_id
+                INNER JOIN member as m ON m.id = r.member_id
+                WHERE m.id = :memberId AND th.id = :themeId AND r.date >= :from AND r.date <= :to
+                """;
+
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("memberId", memberId)
+                .addValue("themeId", themeId)
+                .addValue("from", from)
+                .addValue("to", to);
 
         return namedParameterJdbcTemplate.query(sql, param, ROW_MAPPER);
     }
@@ -102,17 +143,21 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """               
                 SELECT
                     r.id as reservation_id,
-                    r.name,
                     r.date,
                     t.id as time_id,
                     t.start_at as time_value,
                     th.id as theme_id,
                     th.name as theme_name,
                     th.description,
-                    th.thumbnail
+                    th.thumbnail,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email,
+                    m.password
                 FROM reservation as r
                 INNER JOIN reservation_time as t ON r.time_id = t.id 
                 INNER JOIN theme as th ON th.id = r.theme_id
+                INNER JOIN member as m ON m.id = r.member_id
                 """;
 
         return namedParameterJdbcTemplate.query(sql, ROW_MAPPER);
@@ -140,6 +185,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     SELECT 1 FROM reservation as r
                     INNER JOIN reservation_time as t ON r.time_id = t.id
                     INNER JOIN theme as th ON r.theme_id = th.id
+                    INNER JOIN member as m ON m.id = r.member_id
                     WHERE r.date = :date and t.start_at = :startAt and th.id = :themeId
                 )
                 """;

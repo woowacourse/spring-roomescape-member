@@ -7,11 +7,15 @@ public class Member {
     private final String email;
     private final String password;
 
-    public Member(Long id, String name, String email, String password) {
+    private Member(Long id, String name, String email, String password) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+    }
+
+    public static Member createWithId(Long id, String name, String email, String password) {
+        return new Member(id, name, email, password);
     }
 
     public boolean isSamePassword(String password) {
