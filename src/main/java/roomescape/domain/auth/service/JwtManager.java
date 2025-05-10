@@ -14,6 +14,8 @@ import roomescape.domain.auth.entity.User;
 @Slf4j
 public class JwtManager {
 
+    private static final String ROLE_KEY = "role";
+
     private final String secretKey;
     private final int validityInMilliseconds;
 
@@ -27,7 +29,7 @@ public class JwtManager {
                 .setSubject(user.getId()
                         .toString());
 
-        claims.put("role", user.getRole()
+        claims.put(ROLE_KEY, user.getRole()
                 .getRoleName());
 
         final Date now = new Date();
@@ -72,6 +74,6 @@ public class JwtManager {
                 .parseClaimsJws(token);
 
         return Roles.from(claims.getBody()
-                .get("role", String.class));
+                .get(ROLE_KEY, String.class));
     }
 }
