@@ -115,4 +115,19 @@ class ThemeControllerTest {
 
         verify(themeService, times(1)).deleteTheme(nonExistingId);
     }
+
+    @Test
+    @DisplayName("인기 테마 목록을 조회한다.")
+    void readPopularThemesByPeriod() {
+        String givenName = "우테코 레벨1 탈출";
+        List<ThemeResponse> themeResponses = List.of(new ThemeResponse(1L, givenName, "", ""));
+        given(themeService.readPopularThemesByPeriod(7, 10)).willReturn(themeResponses);
+
+        RestAssuredMockMvc.given().log().all()
+                .when().get("/themes/rankings")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1))
+                .body("[0].name", is(givenName));
+    }
 }
