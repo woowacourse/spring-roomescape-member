@@ -1,0 +1,16 @@
+package roomescape.fixture.ui;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class MemberApiFixture {
+
+    public static Map<String, String> createMemberRequestParams() {
+        final Map<String, String> params = new HashMap<>();
+        params.put("email", "test@imtest.com");
+        params.put("password", "impassword");
+        params.put("name", "테스트 이름");
+
+        return params;
+    }
+}
