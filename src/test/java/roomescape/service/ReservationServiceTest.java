@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dao.reservation.ReservationDao;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -32,6 +34,9 @@ class ReservationServiceTest {
     @Mock
     ThemeService themeService;
 
+    @Mock
+    MemberService memberService;
+
     @InjectMocks
     ReservationService reservationService;
 
@@ -42,15 +47,15 @@ class ReservationServiceTest {
         // given
         final ReservationTime time = new ReservationTime(1L, LocalTime.now().plusHours(1));
         final Theme theme = new Theme(1L, "test", "테마1", "설명1");
-        final ReservationCreateRequest request = new ReservationCreateRequest("체체", LocalDate.now(), 1L, 1L);
-
+        final ReservationCreateRequest request = new ReservationCreateRequest(LocalDate.now(), 1L, 1L);
+        final Member member = new Member(1L, "test", "test", "test", MemberRole.USER);
         when(reservationTimeService.findById(1L)).thenReturn(time);
         when(themeService.findById(1L)).thenReturn(theme);
         when(reservationDao.findByThemeAndDateAndTime(any(Reservation.class))).thenReturn(Optional.of(Reservation.load(
-                1L, "체체", LocalDate.now(), time, theme)));
+                1L, LocalDate.now(), time, theme, member)));
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(request))
+        assertThatThrownBy(() -> reservationService.create(request, member))
                 .isInstanceOf(ReservationDuplicateException.class)
                 .hasMessage("이미 존재하는 예약입니다.");
     }
