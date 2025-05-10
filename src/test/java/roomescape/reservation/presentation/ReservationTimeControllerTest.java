@@ -78,6 +78,8 @@ public class ReservationTimeControllerTest {
     @DisplayName("예약 가능 시간 조회 테스트")
     void getAvailableTimesTest() {
         // given
+        String token = ApiHelper.getMemberToken();
+
         ReservationTimeRequest availableReservationTime = reservationFixture.createReservationTime("10:00");
         ReservationTimeRequest unAvailableReservationTime = reservationFixture.createReservationTime("11:00");
         ApiHelper.post(ApiHelper.TIME_ENDPOINT, availableReservationTime);
@@ -88,7 +90,7 @@ public class ReservationTimeControllerTest {
         ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
         MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "2");
-        ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation);
+        ApiHelper.postWithToken(ApiHelper.RESERVATION_ENDPOINT, reservation, token);
 
         // when
         RestAssured.given().log().all()
@@ -116,6 +118,8 @@ public class ReservationTimeControllerTest {
     @DisplayName("예약이 이미 존재하는 시간은 삭제할 수 없다.")
     void deleteTimeExceptionTest() {
         // given
+        String token = ApiHelper.getMemberToken();
+
         ReservationTimeRequest reservationTime = reservationFixture.createReservationTime("10:00");
         ApiHelper.post(ApiHelper.TIME_ENDPOINT, reservationTime);
 
@@ -124,7 +128,7 @@ public class ReservationTimeControllerTest {
         ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
         MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "1");
-        ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation);
+        ApiHelper.postWithToken(ApiHelper.RESERVATION_ENDPOINT, reservation, token);
 
         // when-then
         RestAssured.given().log().all()

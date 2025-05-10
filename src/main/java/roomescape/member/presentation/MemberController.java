@@ -51,6 +51,6 @@ public class MemberController {
     @PostMapping("/members")
     public ResponseEntity<MemberResponse> register(@RequestBody RegisterRequest registerRequest) {
         MemberResponse response = authService.signup(registerRequest);
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.status(201).body(response);
     }
 }

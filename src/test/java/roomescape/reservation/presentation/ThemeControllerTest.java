@@ -69,7 +69,7 @@ public class ThemeControllerTest {
     @DisplayName("예약이 이미 존재하는 테마는 삭제할 수 없다.")
     void deleteThemeExceptionTest() {
         // given
-
+        String token = ApiHelper.getMemberToken();
         ReservationTimeRequest reservationTime = reservationFixture.createReservationTime("10:00");
         ApiHelper.post(ApiHelper.TIME_ENDPOINT, reservationTime);
 
@@ -78,7 +78,7 @@ public class ThemeControllerTest {
         ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
         MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "1");
-        ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation);
+        ApiHelper.postWithToken(ApiHelper.RESERVATION_ENDPOINT, reservation, token);
 
         // when - then
         RestAssured.given().log().all()
