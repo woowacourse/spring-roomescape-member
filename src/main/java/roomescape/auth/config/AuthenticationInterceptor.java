@@ -6,8 +6,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.AuthRequired;
+import roomescape.auth.LoginInfo;
 import roomescape.auth.jwt.JwtUtil;
-import roomescape.business.model.vo.LoginInfo;
 import roomescape.exception.auth.NotAuthenticatedException;
 
 public class AuthenticationInterceptor implements HandlerInterceptor {

@@ -4,9 +4,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.auth.AuthToken;
+import roomescape.auth.LoginInfo;
 import roomescape.business.model.entity.User;
-import roomescape.business.model.vo.AuthToken;
-import roomescape.business.model.vo.LoginInfo;
 import roomescape.business.model.vo.UserRole;
 import roomescape.exception.auth.NotAuthenticatedException;
 

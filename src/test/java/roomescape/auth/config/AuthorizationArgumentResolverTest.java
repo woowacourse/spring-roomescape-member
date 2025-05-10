@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
-import roomescape.business.model.vo.LoginInfo;
+import roomescape.auth.LoginInfo;
 import roomescape.exception.auth.NotAuthenticatedException;
 
 import static org.assertj.core.api.Assertions.*;

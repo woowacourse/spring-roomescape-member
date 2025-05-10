@@ -10,8 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.method.HandlerMethod;
 import roomescape.auth.AuthRequired;
+import roomescape.auth.LoginInfo;
 import roomescape.auth.jwt.JwtUtil;
-import roomescape.business.model.vo.LoginInfo;
 import roomescape.exception.auth.NotAuthenticatedException;
 
 import static org.assertj.core.api.Assertions.*;

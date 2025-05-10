@@ -6,7 +6,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.business.model.vo.LoginInfo;
+import roomescape.auth.LoginInfo;
 import roomescape.exception.auth.NotAuthenticatedException;
 
 public class AuthorizationArgumentResolver implements HandlerMethodArgumentResolver {

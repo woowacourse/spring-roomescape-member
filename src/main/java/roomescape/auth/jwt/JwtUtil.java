@@ -1,8 +1,8 @@
 package roomescape.auth.jwt;
 
+import roomescape.auth.AuthToken;
+import roomescape.auth.LoginInfo;
 import roomescape.business.model.entity.User;
-import roomescape.business.model.vo.AuthToken;
-import roomescape.business.model.vo.LoginInfo;
 
 public interface JwtUtil {
 

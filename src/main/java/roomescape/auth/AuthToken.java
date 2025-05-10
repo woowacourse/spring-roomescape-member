@@ -1,4 +1,4 @@
-package roomescape.business.model.vo;
+package roomescape.auth;
 
 public record AuthToken(
         String value

@@ -6,10 +6,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import roomescape.auth.AuthToken;
 import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.entity.User;
 import roomescape.business.model.repository.UserRepository;
-import roomescape.business.model.vo.AuthToken;
 import roomescape.exception.auth.LoginFailException;
 
 import java.util.Optional;
