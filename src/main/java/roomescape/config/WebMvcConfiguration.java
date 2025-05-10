@@ -6,6 +6,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.infrastructure.AuthenticationPrincipalArgumentResolver;
 import roomescape.infrastructure.JwtTokenProvider;
+import roomescape.infrastructure.MemberAuthRequestExtractor;
 import roomescape.infrastructure.TokenExtractor;
 
 @Configuration
@@ -21,6 +22,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new AuthenticationPrincipalArgumentResolver(tokenExtractor, jwtTokenProvider));
+        resolvers.add(new AuthenticationPrincipalArgumentResolver(
+                new MemberAuthRequestExtractor(tokenExtractor, jwtTokenProvider)));
     }
 }
