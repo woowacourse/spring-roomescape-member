@@ -1,5 +1,6 @@
 package roomescape.member.presentation;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +22,7 @@ public class MemberController {
 
     @PostMapping("/signUp")
     public ResponseEntity<SignUpResponse> signUp(
-            @RequestBody SignUpRequest signUpRequest
+            @RequestBody @Valid SignUpRequest signUpRequest
     ) {
         return ResponseEntity.ok().body(
                 memberService.signUp(signUpRequest)

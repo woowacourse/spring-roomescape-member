@@ -1,6 +1,7 @@
 package roomescape.member.presentation;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +28,7 @@ public class LoginController {
 
     @PostMapping
     public ResponseEntity<Void> login(
-            @RequestBody TokenRequest tokenRequest
+            @RequestBody @Valid TokenRequest tokenRequest
     ) {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, memberService.createToken(tokenRequest))

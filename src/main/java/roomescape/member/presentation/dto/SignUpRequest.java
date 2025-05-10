@@ -5,14 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 
 public class SignUpRequest {
     @Email
-    private String email;
+    private final String email;
     @NotBlank
-    private String password;
+    private final String password;
     @NotBlank
-    private String name;
-
-    public SignUpRequest() {
-    }
+    private final String name;
 
     public SignUpRequest(String email, String password, String name) {
         this.email = email;
