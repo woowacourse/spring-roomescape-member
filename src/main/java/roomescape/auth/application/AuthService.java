@@ -22,7 +22,7 @@ public class AuthService {
                 .orElseThrow(() -> new ResourceNotFoundException("해당 이메일을 가진 사용자가 존재하지 않습니다."));
 
         if (member.isWrongPassword(request.password())) {
-            throw new AuthenticationException("이메일 혹은 비밀번호가 올바르지 않습니다.");
+            throw new AuthenticationException("비밀번호가 올바르지 않습니다.");
         }
 
         return authTokenProvider.createAccessToken(member.getId().toString(), member.getRole());
