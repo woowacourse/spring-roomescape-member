@@ -32,10 +32,10 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
                                   final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         final String token = authorizationExtractor.extract(request);
-        final MemberResponse member = memberService.findByToken(token);
         if (token == null || token.isEmpty()) {
             throw new IllegalArgumentException("인증 정보가 없습니다.");
         }
+        final MemberResponse member = memberService.findByToken(token);
         return new Member(member.id(), member.name(), member.email(), member.memberRole());
     }
 }
