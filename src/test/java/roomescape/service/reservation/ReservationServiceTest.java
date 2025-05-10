@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.dto.member.UserReservationRequest;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
+import roomescape.dto.reservation.ReservationSearchFilter;
 import roomescape.entity.member.Role;
 import roomescape.exceptions.EntityNotFoundException;
 import roomescape.exceptions.reservation.ReservationDuplicateException;
@@ -20,6 +21,8 @@ import roomescape.infrastructure.member.MemberInfo;
 @SpringBootTest
 class ReservationServiceTest {
 
+    private static final ReservationSearchFilter RESERVATION_SEARCH_FILTER = new ReservationSearchFilter(null, null,
+            null, null);
     @Autowired
     private ReservationService reservationService;
 
@@ -27,7 +30,7 @@ class ReservationServiceTest {
     @DisplayName("조회된 엔티티를 DTO로 매핑해 반환한다.")
     void readReservation() {
         //given & when
-        List<ReservationResponse> actual = reservationService.readReservation();
+        List<ReservationResponse> actual = reservationService.readReservation(RESERVATION_SEARCH_FILTER);
         //then
         assertThat(actual.size()).isEqualTo(56);
         assertThat(actual.getFirst().id()).isEqualTo(1);
@@ -37,7 +40,7 @@ class ReservationServiceTest {
     @DisplayName("예약 생성 시, 저장한 엔티티를 DTO로 반환한다.")
     void postReservation() {
         //given
-        List<ReservationResponse> given = reservationService.readReservation();
+        List<ReservationResponse> given = reservationService.readReservation(RESERVATION_SEARCH_FILTER);
         assertThat(given.size()).isEqualTo(56);
         LocalDate givenDate = LocalDate.of(2028, 1, 10);
         long timeId = 1L;
@@ -54,7 +57,7 @@ class ReservationServiceTest {
     @DisplayName("사용자가 예약을 생성할 시, 저장한 엔티티를 DTO로 반환한다.")
     void postReservationWithMemberInfo() {
         //given
-        List<ReservationResponse> given = reservationService.readReservation();
+        List<ReservationResponse> given = reservationService.readReservation(RESERVATION_SEARCH_FILTER);
         assertThat(given.size()).isEqualTo(56);
         LocalDate givenDate = LocalDate.of(2028, 1, 10);
         long timeId = 1L;

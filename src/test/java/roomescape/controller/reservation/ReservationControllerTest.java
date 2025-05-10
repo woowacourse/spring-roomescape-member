@@ -1,6 +1,7 @@
 package roomescape.controller.reservation;
 
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
@@ -44,7 +45,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("예약 목록을 조회한다.")
-    void readReservation() {
+    void getReservations() {
         ReservationTimeResponse givenTime = new ReservationTimeResponse(1L, LocalTime.MAX);
         ThemeResponse givenTheme = new ThemeResponse(1L, "테스트", "테스트", "테스트");
         MemberRequest givenMember = new MemberRequest(1L, "테스트", "test@example.com", "테스트");
@@ -63,7 +64,7 @@ class ReservationControllerTest {
                 response1, response2
         );
 
-        given(reservationService.readReservation()).willReturn(reservations);
+        given(reservationService.readReservation(any())).willReturn(reservations);
 
         RestAssuredMockMvc.given().log().all()
                 .when().get("/reservations")
@@ -78,7 +79,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("예약 관리 페이지 내에서 예약 추가한다.")
-    void postReservation() {
+    void addReservation() {
         LocalDate fixedDate = LocalDate.of(2023, 5, 15);
         long expectedId = 1L;
         long expectedTimeId = 1L;

@@ -4,14 +4,34 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.specification.RequestSpecification;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class RoomEscapeApplicationTest {
+
+    @LocalServerPort
+    private int port;
+
+    private RequestSpecification spec;
+
+    @BeforeEach
+    void setUp() {
+        spec = new RequestSpecBuilder()
+                .setBaseUri("http://localhost")
+                .setPort(port)
+                .build();
+
+        RestAssured.requestSpecification = spec;
+    }
 
     @Test
     @DisplayName("존재하지 않는 ID로 삭제 요청 시 404 응답이 반환되어야 한다")

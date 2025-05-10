@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.member.UserReservationRequest;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
+import roomescape.dto.reservation.ReservationSearchFilter;
 import roomescape.entity.member.Member;
 import roomescape.entity.reservation.Reservation;
 import roomescape.entity.reservation.ReservationTime;
@@ -37,8 +38,17 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public List<ReservationResponse> readReservation() {
-        return reservationRepository.findAll().stream()
+    public List<ReservationResponse> readReservation(ReservationSearchFilter reservationSearchFilter) {
+        List<Reservation> reservations = reservationRepository.findAll();
+
+        if (!reservationSearchFilter.isNeeded()) {
+            return reservations.stream()
+                    .map(ReservationResponse::from)
+                    .toList();
+        }
+
+        return reservationSearchFilter.doFilter(reservations)
+                .stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
