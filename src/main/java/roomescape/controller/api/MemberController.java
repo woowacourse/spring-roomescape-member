@@ -44,7 +44,6 @@ public class MemberController {
         response.addCookie(cookie);
     }
 
-    // TODO: members 독스 추가
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/members")
     public List<MemberResponse> members() {

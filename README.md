@@ -462,3 +462,25 @@ host: localhost:8080
 ### 응답 예시
 HTTP/1.1 201 CREATED
 ```
+
+### [회원 전체 조회 API]
+
+```text
+### 요청 예시
+GET /members HTTP/1.1
+
+### 응답 예시
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+  {
+    "id": 1,
+    "name": "웨이드"
+  },
+  {
+    "id": 2,
+    "name": "모코"
+  }
+]
+```
