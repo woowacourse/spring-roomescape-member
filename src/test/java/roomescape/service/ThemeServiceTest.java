@@ -12,6 +12,7 @@ import roomescape.common.exception.NotFoundEntityException;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.service.param.CreateThemeParam;
 import roomescape.service.result.ThemeResult;
@@ -86,7 +87,7 @@ class ThemeServiceTest extends ServiceIntegrationTest {
         themeRepository.create(new Theme("test1", "description1", "thumbnail1"));
         reservationTimeRepository.create(new ReservationTime(1L, LocalTime.of(12, 0)));
         reservationRepository.create(new Reservation(
-                new Member(1L, "test1", "email1", "password"),
+                new Member(1L, "test1", "email1", "password", Role.NORMAL),
                 LocalDate.of(2025, 5, 1),
                 new ReservationTime(1L, LocalTime.of(12, 0)),
                 new Theme(1L, "test1", "description1", "thumbnail1")));

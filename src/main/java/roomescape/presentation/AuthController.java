@@ -1,6 +1,5 @@
 package roomescape.presentation;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.presentation.methodresolver.AuthInfo;
-import roomescape.presentation.methodresolver.AuthPrincipal;
 import roomescape.presentation.request.LoginRequest;
 import roomescape.presentation.response.LoginCheckResponse;
 import roomescape.service.AuthService;
@@ -39,12 +37,12 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> loginCheck(@AuthPrincipal AuthInfo authInfo) {
+    public ResponseEntity<LoginCheckResponse> loginCheck(AuthInfo authInfo) {
         return ResponseEntity.ok().body(new LoginCheckResponse(authInfo.name()));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
+    public ResponseEntity<Void> logout() {
         ResponseCookie jwtCookie = createCookie("token", "", 0);
         return ResponseEntity.noContent()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())

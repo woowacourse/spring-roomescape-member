@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
+import roomescape.domain.Role;
 
 @Repository
 public class JdbcMemberRepository implements MemberRepository {
@@ -17,7 +18,8 @@ public class JdbcMemberRepository implements MemberRepository {
             rs.getLong("id"),
             rs.getString("name"),
             rs.getString("email"),
-            rs.getString("password")
+            rs.getString("password"),
+            Role.valueOf(rs.getString("role"))
     ));
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -28,7 +30,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findById(Long id) {
-        String sql = "SELECT id, name, email, password FROM member WHERE id = :id";
+        String sql = "SELECT id, name, email, password, role FROM member WHERE id = :id";
         try {
             Member member = namedParameterJdbcTemplate.queryForObject(sql, Map.of("id", id), MEMBER_ROW_MAPPER);
             return Optional.ofNullable(member);
@@ -39,7 +41,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findByEmail(String email) {
-        String sql = "SELECT id, name, email, password FROM member WHERE email = :email";
+        String sql = "SELECT id, name, email, password, role FROM member WHERE email = :email";
         try {
             Member member = namedParameterJdbcTemplate.queryForObject(sql, Map.of("email", email), MEMBER_ROW_MAPPER);
             return Optional.ofNullable(member);
@@ -50,7 +52,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public List<Member> findAll() {
-        String sql = "SELECT id, name, email, password FROM member";
+        String sql = "SELECT id, name, email, password, role FROM member";
         return namedParameterJdbcTemplate.query(sql, MEMBER_ROW_MAPPER);
     }
 }

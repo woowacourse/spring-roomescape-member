@@ -1,5 +1,5 @@
 -- member 테이블에 대한 INSERT
-INSERT INTO member(name, email, password) VALUES ('서프', 'admin@email.com', 'password');
+INSERT INTO member(name, email, password, role) VALUES ('서프', 'admin@email.com', 'password', 'ADMIN');
 
 -- reservation_time 테이블에 대한 INSERT
 INSERT INTO reservation_time(start_at) VALUES ('12:00');

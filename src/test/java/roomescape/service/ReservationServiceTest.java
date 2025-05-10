@@ -12,6 +12,7 @@ import roomescape.common.exception.NotFoundEntityException;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.service.param.CreateReservationParam;
 import roomescape.service.result.MemberResult;
@@ -38,7 +39,8 @@ class ReservationServiceTest extends ServiceIntegrationTest {
 
         //then
         assertThat(reservationRepository.findById(createdId))
-                .hasValue(new Reservation(1L, new Member(1L, "test1", "email1", "password"), RESERVATION_DATE,
+                .hasValue(new Reservation(1L, new Member(1L, "test1", "email1", "password", Role.NORMAL),
+                        RESERVATION_DATE,
                         reservationTime, theme));
     }
 
@@ -64,7 +66,8 @@ class ReservationServiceTest extends ServiceIntegrationTest {
         reservationTimeRepository.create(reservationTime);
         themeRepository.create(theme);
         reservationRepository.create(
-                new Reservation(1L, new Member(1L, "test1", "email1", "password"), RESERVATION_DATE, reservationTime,
+                new Reservation(1L, new Member(1L, "test1", "email1", "password", Role.NORMAL), RESERVATION_DATE,
+                        reservationTime,
                         theme));
 
         //when
@@ -85,10 +88,12 @@ class ReservationServiceTest extends ServiceIntegrationTest {
         reservationTimeRepository.create(reservationTime1);
         reservationTimeRepository.create(reservationTime2);
         reservationRepository.create(
-                new Reservation(1L, new Member(1L, "test1", "email1", "password"), RESERVATION_DATE, reservationTime1,
+                new Reservation(1L, new Member(1L, "test1", "email1", "password", Role.NORMAL), RESERVATION_DATE,
+                        reservationTime1,
                         theme));
         reservationRepository.create(
-                new Reservation(2L, new Member(1L, "test1", "email1", "password"), RESERVATION_DATE, reservationTime2,
+                new Reservation(2L, new Member(1L, "test1", "email1", "password", Role.NORMAL), RESERVATION_DATE,
+                        reservationTime2,
                         theme));
 
         //when
@@ -114,7 +119,8 @@ class ReservationServiceTest extends ServiceIntegrationTest {
         reservationTimeRepository.create(reservationTime);
         themeRepository.create(theme);
         reservationRepository.create(
-                new Reservation(1L, new Member(1L, "test1", "email1", "password"), RESERVATION_DATE, reservationTime,
+                new Reservation(1L, new Member(1L, "test1", "email1", "password", Role.NORMAL), RESERVATION_DATE,
+                        reservationTime,
                         theme));
 
         //when
@@ -137,7 +143,8 @@ class ReservationServiceTest extends ServiceIntegrationTest {
         reservationTimeRepository.create(reservationTime);
         themeRepository.create(theme);
         reservationRepository.create(
-                new Reservation(1L, new Member(1L, "test1", "email1", "password"), RESERVATION_DATE, reservationTime,
+                new Reservation(1L, new Member(1L, "test1", "email1", "password", Role.NORMAL), RESERVATION_DATE,
+                        reservationTime,
                         theme));
 
         //when & then
@@ -155,7 +162,8 @@ class ReservationServiceTest extends ServiceIntegrationTest {
         reservationTimeRepository.create(reservationTime);
         themeRepository.create(theme);
         reservationRepository.create(
-                new Reservation(1L, new Member(1L, "test1", "email1", "password"), RESERVATION_DATE, reservationTime,
+                new Reservation(1L, new Member(1L, "test1", "email1", "password", Role.NORMAL), RESERVATION_DATE,
+                        reservationTime,
                         theme));
 
         //when & then

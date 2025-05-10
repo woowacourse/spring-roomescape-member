@@ -16,6 +16,7 @@ import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 @Repository
@@ -25,7 +26,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             new Reservation(
                     rs.getLong("reservation_id"),
                     new Member(rs.getLong("member_id"), rs.getString("member_name"), rs.getString("member_email"),
-                            rs.getString("member_password")),
+                            rs.getString("member_password"), Role.valueOf(rs.getString("member_role"))),
                     rs.getDate("date").toLocalDate(),
                     new ReservationTime(rs.getLong("time_id"), rs.getTime("time_value").toLocalTime()),
                     new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("theme_description"),
@@ -61,7 +62,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                     m.id as member_id,
                     m.name as member_name,
                     m.email as member_email,
-                    m.password as member_password
+                    m.password as member_password,
+                    m.role as member_role
                 FROM reservation as r
                 INNER JOIN reservation_time as t
                     ON r.time_id = t.id
@@ -104,7 +106,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                         m.id as member_id,
                         m.name as member_name,
                         m.email as member_email,
-                        m.password as member_password
+                        m.password as member_password,
+                        m.role as member_role
                     FROM reservation as r
                     INNER JOIN reservation_time as t
                         ON r.time_id = t.id
@@ -164,7 +167,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                     m.id as member_id,
                     m.name as member_name,
                     m.email as member_email,
-                    m.password as member_password
+                    m.password as member_password,
+                    m.role as member_role
                 FROM reservation as r
                 INNER JOIN reservation_time as t
                     ON r.time_id = t.id

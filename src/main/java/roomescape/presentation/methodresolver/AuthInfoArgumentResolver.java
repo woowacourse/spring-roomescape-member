@@ -24,7 +24,7 @@ public class AuthInfoArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AuthPrincipal.class);
+        return parameter.getParameterType().equals(AuthInfo.class);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class AuthInfoArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie cookie = getTokenCookie(request);
         JwtPayload jwtPayload = jwtProvider.extractPayload(cookie.getValue());
-        return new AuthInfo(jwtPayload.memberId(), jwtPayload.name());
+        return new AuthInfo(jwtPayload.memberId(), jwtPayload.name(), jwtPayload.role());
     }
 
     private static Cookie getTokenCookie(HttpServletRequest request) {

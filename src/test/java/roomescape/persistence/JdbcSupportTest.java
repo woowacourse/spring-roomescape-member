@@ -35,12 +35,13 @@ public abstract class JdbcSupportTest {
 
     public void insertMember(String name, String email, String password) {
         jdbcTemplate.update(
-                "INSERT INTO member(name, email, password) VALUES (?, ?, ?)", name, email, password);
+                "INSERT INTO member(name, email, password, role) VALUES (?, ?, ?, ?)", name, email, password, "NORMAL");
     }
 
     public void insertMember() {
         jdbcTemplate.update(
-                "INSERT INTO member(name, email, password) VALUES (?, ?, ?)", "member1", "email", "password");
+                "INSERT INTO member(name, email, password, role) VALUES (?, ?, ?, ?)", "member1", "email", "password",
+                "NORMAL");
     }
 
 

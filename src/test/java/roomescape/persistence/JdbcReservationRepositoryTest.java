@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 class JdbcReservationRepositoryTest extends JdbcSupportTest {
@@ -34,10 +35,12 @@ class JdbcReservationRepositoryTest extends JdbcSupportTest {
 
         //then
         assertThat(reservations).isEqualTo(List.of(
-                new Reservation(1L, new Member(1L, "test1", "email1", "password"), LocalDate.of(2025, 4, 21),
+                new Reservation(1L, new Member(1L, "test1", "email1", "password", Role.NORMAL),
+                        LocalDate.of(2025, 4, 21),
                         new ReservationTime(1L, LocalTime.of(12, 0)),
                         new Theme(1L, "name", "description", "thumbnail")),
-                new Reservation(2L, new Member(2L, "test2", "email2", "password"), LocalDate.of(2025, 4, 22),
+                new Reservation(2L, new Member(2L, "test2", "email2", "password", Role.NORMAL),
+                        LocalDate.of(2025, 4, 22),
                         new ReservationTime(1L, LocalTime.of(12, 0)),
                         new Theme(1L, "name", "description", "thumbnail"))
         ));
@@ -56,7 +59,8 @@ class JdbcReservationRepositoryTest extends JdbcSupportTest {
 
         //then
         assertThat(reservation).hasValue(
-                new Reservation(1L, new Member(1L, "test1", "email1", "password"), LocalDate.of(2025, 4, 21),
+                new Reservation(1L, new Member(1L, "test1", "email1", "password", Role.NORMAL),
+                        LocalDate.of(2025, 4, 21),
                         new ReservationTime(1L, LocalTime.of(12, 0)),
                         new Theme(1L, "name", "description", "thumbnail")));
     }
@@ -76,7 +80,7 @@ class JdbcReservationRepositoryTest extends JdbcSupportTest {
         insertMember("test1", "email1", "password");
         insertTheme("name", "description", "thumbnail");
         insertReservationTime(LocalTime.of(12, 0));
-        Reservation reservation = new Reservation(new Member(1L, "test1", "email1", "password"),
+        Reservation reservation = new Reservation(new Member(1L, "test1", "email1", "password", Role.NORMAL),
                 LocalDate.of(2025, 4, 21),
                 new ReservationTime(1L, LocalTime.of(12, 0)), new Theme(1L, "name", "description", "thumbnail"));
 
@@ -85,7 +89,8 @@ class JdbcReservationRepositoryTest extends JdbcSupportTest {
 
         //then
         assertThat(reservationRepository.findById(createdId))
-                .hasValue(new Reservation(1L, new Member(1L, "test1", "email1", "password"), LocalDate.of(2025, 4, 21),
+                .hasValue(new Reservation(1L, new Member(1L, "test1", "email1", "password", Role.NORMAL),
+                        LocalDate.of(2025, 4, 21),
                         new ReservationTime(1L, LocalTime.of(12, 0)),
                         new Theme(1L, "name", "description", "thumbnail")));
     }

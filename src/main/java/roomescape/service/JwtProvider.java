@@ -10,6 +10,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.common.exception.UnauthorizedException;
+import roomescape.domain.Role;
 
 @Component
 public class JwtProvider {
@@ -30,6 +31,7 @@ public class JwtProvider {
                 .claims()
                 .add("memberId", jwtPayload.memberId())
                 .add("name", jwtPayload.name())
+                .add("role", jwtPayload.role())
                 .and()
                 .signWith(getSecretKey())
                 .compact();
@@ -39,7 +41,8 @@ public class JwtProvider {
         Claims claims = extractClaims(token);
         return new JwtPayload(
                 claims.get("memberId", Long.class),
-                claims.get("name", String.class)
+                claims.get("name", String.class),
+                Role.valueOf(claims.get("role", String.class))
         );
     }
 
@@ -61,6 +64,6 @@ public class JwtProvider {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    public record JwtPayload(Long memberId, String name) {
+    public record JwtPayload(Long memberId, String name, Role role) {
     }
 }

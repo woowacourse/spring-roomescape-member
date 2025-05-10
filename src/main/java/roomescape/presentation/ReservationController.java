@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.presentation.methodresolver.AuthInfo;
-import roomescape.presentation.methodresolver.AuthPrincipal;
 import roomescape.presentation.request.CreateReservationRequest;
 import roomescape.presentation.response.ReservationResponse;
 import roomescape.service.ReservationService;
@@ -38,7 +37,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
-            @AuthPrincipal AuthInfo authInfo,
+            AuthInfo authInfo,
             @RequestBody CreateReservationRequest createReservationRequest) {
         Long reservationId = reservationService.create(createReservationRequest.toServiceParam(authInfo.memberId()));
         ReservationResult reservationResult = reservationService.findById(reservationId);

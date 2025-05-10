@@ -25,6 +25,6 @@ public class AuthService {
         if (member.isNotPassword(loginParam.password())) {
             throw new LoginAuthException(loginParam.email() + " 사용자의 비밀번호가 같지 않습니다.");
         }
-        return new LoginResult(jwtProvider.issue(new JwtPayload(member.getId(), member.getName())));
+        return new LoginResult(jwtProvider.issue(new JwtPayload(member.getId(), member.getName(), member.getRole())));
     }
 }
