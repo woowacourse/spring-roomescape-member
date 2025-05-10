@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -18,6 +19,11 @@ import roomescape.reservation.entity.ReservationTime;
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final RowMapper<ReservationTime> rowMapper = (resultSet, rowNum) -> {
+        Long id = resultSet.getLong("id");
+        LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
+        return new ReservationTime(id, startAt);
+    };
 
     @Override
     public ReservationTime save(ReservationTime time) {
@@ -27,7 +33,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 .addValue("start_at", time.getStartAt());
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-
         jdbcTemplate.update(sql, params, keyHolder);
 
         return new ReservationTime(
@@ -38,43 +43,34 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        String sql = "SELECT id, start_at FROM reservation_time";
-
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> {
-            Long id = resultSet.getLong("id");
-            LocalTime time = resultSet.getObject("start_at", LocalTime.class);
-
-            return new ReservationTime(
-                    id,
-                    time
-            );
-        });
+        String sql = "SELECT id, start_at FROM reservation_time ORDER BY start_at";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
-    public List<AvailableReservationTimeResponse> findAvailableTimes(LocalDate date, final Long themeId) {
-        String query = """
+    public List<AvailableReservationTimeResponse> findAvailableTimes(LocalDate date, Long themeId) {
+        String sql = """
                 SELECT
-                        rt.id,
-                        rt.start_at,
-                        r.id IS NOT NULL as alreadyBooked
-                FROM reservation_time as rt
+                    rt.id,
+                    rt.start_at,
+                    r.id IS NOT NULL as alreadyBooked
+                FROM reservation_time rt
                 LEFT JOIN (
                     SELECT id, time_id
                     FROM reservation
                     WHERE date = :date AND theme_id = :themeId
-                ) as r
-                on r.time_id = rt.id
+                ) r ON r.time_id = rt.id
+                ORDER BY rt.start_at
                 """;
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date", date.toString())
                 .addValue("themeId", themeId);
 
-        return jdbcTemplate.query(query, params, (resultSet, rowNum) -> {
-            final long id = resultSet.getLong("id");
+        return jdbcTemplate.query(sql, params, (resultSet, rowNum) -> {
+            Long id = resultSet.getLong("id");
             LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
-            final boolean alreadyBooked = resultSet.getBoolean("alreadyBooked");
+            boolean alreadyBooked = resultSet.getBoolean("alreadyBooked");
 
             return new AvailableReservationTimeResponse(
                     id,
@@ -85,36 +81,28 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public Optional<ReservationTime> findById(final Long id) {
+    public Optional<ReservationTime> findById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = :id";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
 
         try {
-            ReservationTime time = jdbcTemplate.queryForObject(sql, params, (resultSet, rowNum) -> {
-                LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
-
-                return new ReservationTime(
-                        id,
-                        startAt
-                );
-            });
-            return Optional.of(time);
+            ReservationTime time = jdbcTemplate.queryForObject(sql, params, rowMapper);
+            return Optional.ofNullable(time);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public boolean deleteById(final Long id) {
+    public boolean deleteById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = :id";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
 
-        final int updated = jdbcTemplate.update(sql, params);
-
+        int updated = jdbcTemplate.update(sql, params);
         return updated > 0;
     }
 }

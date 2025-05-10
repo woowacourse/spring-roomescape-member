@@ -18,7 +18,7 @@ import roomescape.theme.entity.Theme;
 public class JdbcThemeRepository implements ThemeRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
+    private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> new Theme(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("description"),
@@ -51,7 +51,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         String sql = "SELECT * FROM theme";
-        return jdbcTemplate.query(sql, themeRowMapper);
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .addValue("endDate", endDate)
                 .addValue("limit", limit);
 
-        return jdbcTemplate.query(sql, params, themeRowMapper);
+        return jdbcTemplate.query(sql, params, rowMapper);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .addValue("id", id);
 
         try {
-            Theme theme = jdbcTemplate.queryForObject(sql, params, themeRowMapper);
+            Theme theme = jdbcTemplate.queryForObject(sql, params, rowMapper);
             return Optional.of(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -108,7 +108,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .addValue("name", name);
 
         try {
-            Theme theme = jdbcTemplate.queryForObject(sql, params, themeRowMapper);
+            Theme theme = jdbcTemplate.queryForObject(sql, params, rowMapper);
             return Optional.of(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
