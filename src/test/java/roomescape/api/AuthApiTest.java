@@ -131,6 +131,28 @@ public class AuthApiTest {
         }
     }
 
+    @DisplayName("쿠키를 사용하는 api에 대해 쿠키가 존재하지 않는다면, 400을 응답한다.")
+    @Test
+    void interceptor1() {
+        RestAssured.given().log().all().port(port)
+                .when().get("/admin/reservation")
+                .then().log().all().statusCode(400);
+    }
+
+    @DisplayName("쿠키를 사용하는 api에 대해 token 키를 가진 쿠키가 존재하지 않는다면, 400을 응답한다.")
+    @Test
+    void interceptor2() {
+        // given
+        final Cookie notToken = new Builder("not token", "this is not token").build();
+
+        // when & then
+        RestAssured.given().log().all().port(port)
+                .cookie(notToken)
+                .when().get("/admin/reservation")
+                .then().log().all().statusCode(400);
+    }
+
+
     private void givenCreateMember(final String password) {
         final Map<String, Object> body = new HashMap<>(MEMBER_BODY);
         body.put("password", password);
