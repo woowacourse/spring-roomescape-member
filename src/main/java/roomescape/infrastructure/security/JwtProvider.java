@@ -5,6 +5,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import java.time.Duration;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,15 +17,20 @@ import roomescape.domain.member.Role;
 @Component
 public class JwtProvider {
 
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
-    @Value("${security.jwt.token.expire-length}")
-    private long validityInMilliseconds;
+    private final SecretKey secretKey;
+    private final Duration validityDuration;
 
-
+    public JwtProvider(
+            @Value("${security.jwt.token.secret-key}") String secretKey,
+            @Value("${security.jwt.token.expire-length}") Duration validityDuration
+    ) {
+        this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
+        this.validityDuration = validityDuration;
+    }
+    
     public String issue(JwtPayload jwtPayload) {
         Date currentDate = new Date();
-        Date expireDate = new Date(currentDate.getTime() + validityInMilliseconds);
+        Date expireDate = new Date(currentDate.getTime() + validityDuration.toMillis());
 
         return Jwts.builder()
                 .issuedAt(currentDate)
@@ -34,7 +40,7 @@ public class JwtProvider {
                 .add("name", jwtPayload.name())
                 .add("role", jwtPayload.role())
                 .and()
-                .signWith(getSecretKey())
+                .signWith(secretKey)
                 .compact();
     }
 
@@ -50,7 +56,7 @@ public class JwtProvider {
     private Claims extractClaims(String token) {
         try {
             return Jwts.parser()
-                    .verifyWith(getSecretKey())
+                    .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
@@ -59,9 +65,5 @@ public class JwtProvider {
         } catch (JwtException | IllegalArgumentException e) {
             throw new UnauthorizedException("잘못된 형식의 토큰입니다.", e);
         }
-    }
-
-    private SecretKey getSecretKey() {
-        return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 }
