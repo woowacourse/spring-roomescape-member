@@ -16,14 +16,14 @@ import roomescape.member.infrastructure.fake.FakeMemberDao;
 import roomescape.member.presentation.dto.LoginRequest;
 import roomescape.member.presentation.dto.TokenResponse;
 
-class AuthServiceTest {
+class MemberServiceTest {
 
-    private final AuthService authService;
+    private final MemberService memberService;
     private final FakeMemberDao userRepository;
 
-    AuthServiceTest() {
+    MemberServiceTest() {
         this.userRepository = new FakeMemberDao();
-        this.authService = new AuthService(new JwtTokenProvider("secret-key", 360000), userRepository);
+        this.memberService = new MemberService(new JwtTokenProvider("secret-key", 360000), userRepository);
     }
 
     @Test
@@ -36,7 +36,7 @@ class AuthServiceTest {
         LoginRequest loginRequest = new LoginRequest(email, password);
 
         // when
-        TokenResponse token = authService.login(loginRequest);
+        TokenResponse token = memberService.login(loginRequest);
 
         // then
         assertThat(token.accessToken()).isNotEmpty();
@@ -52,7 +52,7 @@ class AuthServiceTest {
         LoginRequest loginRequest = new LoginRequest(email, "wrong password");
 
         // when - then
-        assertThatThrownBy(() -> authService.login(loginRequest))
+        assertThatThrownBy(() -> memberService.login(loginRequest))
                 .isInstanceOf(InvalidMemberException.class)
                 .hasMessage("비밀번호가 틀렸습니다.")
                 .hasFieldOrPropertyWithValue("statusCode", HttpStatus.UNAUTHORIZED);
@@ -66,10 +66,10 @@ class AuthServiceTest {
         String password = "password";
         userRepository.insert(new Member(0L, "name", email, password, Role.USER));
         LoginRequest loginRequest = new LoginRequest(email, password);
-        TokenResponse token = authService.login(loginRequest);
+        TokenResponse token = memberService.login(loginRequest);
 
         // when
-        Member member = authService.getMember(token.accessToken());
+        Member member = memberService.getMember(token.accessToken());
 
         // then
         assertThat(member.getName()).isEqualTo("name");
@@ -84,7 +84,7 @@ class AuthServiceTest {
         userRepository.insert(new Member(2L, "name3", "email3@email.com", "password", Role.USER));
 
         // when
-        List<GetMemberResponse> members = authService.getMembers();
+        List<GetMemberResponse> members = memberService.getMembers();
 
         // then
         assertThat(members).hasSize(3);

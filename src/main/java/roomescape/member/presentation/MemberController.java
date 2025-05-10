@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.application.dto.GetMemberResponse;
-import roomescape.member.application.service.AuthService;
+import roomescape.member.application.service.MemberService;
 import roomescape.member.domain.Member;
 import roomescape.member.presentation.dto.LoginRequest;
 import roomescape.member.presentation.dto.MemberNameResponse;
@@ -21,15 +21,15 @@ public class MemberController {
 
     private static final String SET_COOKIE_KEY = "token";
 
-    private final AuthService authService;
+    private final MemberService memberService;
 
-    public MemberController(AuthService authService) {
-        this.authService = authService;
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        TokenResponse token = authService.login(loginRequest);
+        TokenResponse token = memberService.login(loginRequest);
         Cookie cookie = new Cookie(SET_COOKIE_KEY, token.accessToken());
         cookie.setHttpOnly(true);
         cookie.setPath("/");
@@ -52,13 +52,13 @@ public class MemberController {
 
     @PostMapping("/members")
     public ResponseEntity<MemberNameResponse> register(@RequestBody RegisterRequest registerRequest) {
-        MemberNameResponse response = authService.signup(registerRequest);
+        MemberNameResponse response = memberService.signup(registerRequest);
         return ResponseEntity.status(201).body(response);
     }
 
     @GetMapping("/members")
     public ResponseEntity<List<GetMemberResponse>> getMembers() {
-        List<GetMemberResponse> members = authService.getMembers();
+        List<GetMemberResponse> members = memberService.getMembers();
         return ResponseEntity.ok().body(members);
     }
 }

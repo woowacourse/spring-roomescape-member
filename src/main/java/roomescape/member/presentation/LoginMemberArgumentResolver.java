@@ -8,7 +8,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.member.application.service.AuthService;
+import roomescape.member.application.service.MemberService;
 import roomescape.member.domain.Member;
 import roomescape.member.infrastructure.AuthorizationExtractor;
 import roomescape.member.infrastructure.BearerAuthorizationExtractor;
@@ -17,11 +17,11 @@ import roomescape.member.infrastructure.BearerAuthorizationExtractor;
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthorizationExtractor<String> authorizationExtractor; // TODO : 이게 base, jwt, session 다양하게 적용될 수도 있는건가?
-    private final AuthService authService;
+    private final MemberService memberService;
 
     @Autowired
-    public LoginMemberArgumentResolver(AuthService authService) {
-        this.authService = authService;
+    public LoginMemberArgumentResolver(MemberService memberService) {
+        this.memberService = memberService;
         this.authorizationExtractor = new BearerAuthorizationExtractor();
     }
 
@@ -35,6 +35,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = authorizationExtractor.extract(request);
-        return authService.getMember(token);
+        return memberService.getMember(token);
     }
 }
