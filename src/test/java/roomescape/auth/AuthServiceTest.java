@@ -13,6 +13,7 @@ import roomescape.exception.custom.reason.auth.AuthNotValidPasswordException;
 import roomescape.exception.custom.reason.auth.AuthNotValidTokenException;
 import roomescape.member.FakeMemberRepository;
 import roomescape.member.Member;
+import roomescape.member.MemberRole;
 
 public class AuthServiceTest {
 
@@ -34,7 +35,7 @@ public class AuthServiceTest {
         void generateToken() {
             // given
             final LoginRequest request = new LoginRequest("admin@email.com", "pw1234");
-            fakeMemberRepository.saveMember(new Member("admin@email.com", "pw1234", "부기", "MEMBER"));
+            fakeMemberRepository.saveMember(new Member("admin@email.com", "pw1234", "부기", MemberRole.MEMBER));
 
             // when
             final String actual = authService.generateToken(request);
@@ -60,7 +61,7 @@ public class AuthServiceTest {
         void generateToken2() {
             // given
             final LoginRequest request = new LoginRequest("admin@email.com", "not matches password");
-            fakeMemberRepository.saveMember(new Member("admin@email.com", "pw1234", "부기", "MEMBER"));
+            fakeMemberRepository.saveMember(new Member("admin@email.com", "pw1234", "부기", MemberRole.MEMBER));
 
             // when & then
             assertThatThrownBy(() -> {
@@ -76,21 +77,21 @@ public class AuthServiceTest {
         @Test
         void findLoginMemberByToken() {
             // given
-            fakeMemberRepository.saveMember(new Member("admin@email.com", "pw1234", "부기", "MEMBER"));
+            fakeMemberRepository.saveMember(new Member("admin@email.com", "pw1234", "부기", MemberRole.MEMBER));
             final String token = jwtProvider.provideToken("admin@email.com");
 
             // when
             final LoginMember actual = authService.findLoginMemberByToken(token);
 
             // then
-            assertThat(actual).isEqualTo(new LoginMember(1L, "부기", "admin@email.com", "MEMBER"));
+            assertThat(actual).isEqualTo(new LoginMember(1L, "부기", "admin@email.com", MemberRole.MEMBER));
         }
 
         @DisplayName("토큰이 유효하지 않다면, 예외가 발생한다.")
         @Test
         void findLoginMemberByToken1() {
             // given
-            fakeMemberRepository.saveMember(new Member("admin@email.com", "pw1234", "부기", "MEMBER"));
+            fakeMemberRepository.saveMember(new Member("admin@email.com", "pw1234", "부기", MemberRole.MEMBER));
             final String notValidToken = jwtProvider.provideToken("admin@email.com") + "a";
 
             // when & then

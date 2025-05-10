@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
 import roomescape.member.Member;
+import roomescape.member.MemberRole;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.theme.Theme;
 
@@ -133,7 +134,7 @@ public class FakeReservationRepository implements ReservationRepository {
                 "email",
                 "pass",
                 "boogie",
-                "MEMBER"
+                MemberRole.MEMBER
         );
     }
 }
