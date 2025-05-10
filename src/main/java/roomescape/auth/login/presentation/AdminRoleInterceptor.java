@@ -14,23 +14,25 @@ public class AdminRoleInterceptor implements HandlerInterceptor {
             throws Exception {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
+            response.setStatus(401);
             return false;
         }
 
-        String token = Arrays.stream(cookies)
+        Cookie tokenCookie = Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals("token"))
                 .findAny()
-                .orElse(null)
-                .getValue();
-        if (token == null) {
+                .get();
+        if (tokenCookie == null) {
+            response.setStatus(401);
             return false;
         }
 
-        String role = JwtTokenManager.getRole(token);
-        if (role.equals("ADMIN")) {
-            return true;
+        String role = JwtTokenManager.getRole(tokenCookie.getValue());
+        if (!role.equals("ADMIN")) {
+            response.setStatus(401);
+            return false;
         }
 
-        return false;
+        return true;
     }
 }

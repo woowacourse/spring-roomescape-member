@@ -31,7 +31,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                 .getValue();
 
         String role = JwtTokenManager.getRole(token);
-        if (!role.equals("USER")) {
+        if (!role.equals("MEMBER")) {
             throw new IllegalStateException("인증할 수 없습니다.");
         }
 
