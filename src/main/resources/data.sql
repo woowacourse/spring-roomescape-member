@@ -1,8 +1,8 @@
 INSERT INTO MEMBER (NAME, EMAIL, PASSWORD, ROLE)
 values
-    ('이름1', 'example1@email.com', 'password1', 'ADMIN'),
-    ('이름2', 'example2@email.com', 'password2', 'USER'),
-    ('이름3', 'example3@email.com', 'password3', 'USER');
+    ('이름1', 'ex1@email.com', 'pw1', 'ADMIN'),
+    ('이름2', 'ex2@email.com', 'pw2', 'USER'),
+    ('이름3', 'ex3@email.com', 'pw3', 'USER');
 
 INSERT INTO RESERVATION_TIME (START_AT)
 VALUES
