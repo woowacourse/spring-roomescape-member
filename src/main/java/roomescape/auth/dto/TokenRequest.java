@@ -1,20 +1,5 @@
 package roomescape.auth.dto;
 
-public class TokenRequest {
+public record TokenRequest(String email, String password) {
 
-    private final String email;
-    private final String password;
-
-    public TokenRequest(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
 }
