@@ -205,7 +205,7 @@ Content-Type: application/json
 }
 ```
 
-- [ ] 관리자 예약 추가 API 구현
+- [x] 관리자 예약 추가 API 구현
 
 #### Request
 
