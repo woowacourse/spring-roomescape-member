@@ -13,9 +13,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import roomescape.reservation.controller.dto.request.CreateReservationRequest;
+import roomescape.reservation.controller.dto.request.CreateReservationUserRequest;
 
-class CreateReservationRequestTest {
+class CreateReservationUserRequestTest {
 
     private static ValidatorFactory factory;
     private static Validator validator;
@@ -54,9 +54,9 @@ class CreateReservationRequestTest {
         Long themeId = "null".equals(themeIdStr) ? null : Long.valueOf(themeIdStr);
         if ("null".equals(name)) name = null;
 
-        CreateReservationRequest request = new CreateReservationRequest(name, date, timeId, themeId);
+        CreateReservationUserRequest request = new CreateReservationUserRequest(name, date, timeId, themeId);
 
-        Set<ConstraintViolation<CreateReservationRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<CreateReservationUserRequest>> violations = validator.validate(request);
 
         assertThat(violations).isNotEmpty();
     }
@@ -65,15 +65,14 @@ class CreateReservationRequestTest {
     @Test
     void validCreateFutureReservationReservationRequest() {
         //given
-        CreateReservationRequest request = new CreateReservationRequest(
-                "웨이드",
+        CreateReservationUserRequest request = new CreateReservationUserRequest(
                 LocalDate.now().plusDays(1),
                 1L,
                 1L
         );
 
         //when
-        Set<ConstraintViolation<CreateReservationRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<CreateReservationUserRequest>> violations = validator.validate(request);
 
         //then
         assertThat(violations).isEmpty();

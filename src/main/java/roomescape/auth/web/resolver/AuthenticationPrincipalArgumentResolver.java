@@ -29,6 +29,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie cookie = CookieUtils.extractFromCookiesByName(request.getCookies(), "token");
+        //TODO : 토큰으로 추출한 memberId가 존재하는지 항상 확인하면 db에 매번 접근하게 되는데, 괜찮은걸까?
         return tokenProvider.resolveAuthenticatedMember(cookie.getValue());
     }
 }

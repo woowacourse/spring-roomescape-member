@@ -26,6 +26,7 @@ public class ReservationH2Dao implements ReservationDao {
                     .id(resultSet.getLong("id"))
                     .name(resultSet.getString("name"))
                     .date(resultSet.getDate("date").toLocalDate())
+                    .memberId(resultSet.getLong("member_id"))
                     .time(
                             ReservationTime.builder()
                                     .id(resultSet.getLong("time_id"))
@@ -47,7 +48,7 @@ public class ReservationH2Dao implements ReservationDao {
     @Override
     public List<Reservation> selectAll() {
         String selectAllQuery = """
-                SELECT r.id, r.name, r.date, r.time_id, r.theme_id, rt.start_at, 
+                SELECT r.id, r.name, r.date, r.time_id, r.theme_id, r.member_id, rt.start_at, 
                        th.name AS th_name, th.description AS th_description, th.thumbnail AS th_thumbnail
                 FROM reservation r
                 INNER JOIN reservation_time rt ON r.time_id = rt.id
@@ -59,15 +60,16 @@ public class ReservationH2Dao implements ReservationDao {
     @Override
     public Reservation insertAndGet(Reservation reservation) {
         String insertQuery = """
-                INSERT INTO reservation (name, date, time_id, theme_id)
-                VALUES (:name, :date, :timeId, :themeId)
+                INSERT INTO reservation (name, date, time_id, theme_id, member_id)
+                VALUES (:name, :date, :timeId, :themeId, :memberId)
                 """;
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
                 .addValue("timeId", reservation.getTime().getId())
-                .addValue("themeId", reservation.getTheme().getId());
+                .addValue("themeId", reservation.getTheme().getId())
+                .addValue("memberId", reservation.getMemberId());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(insertQuery, params, keyHolder);
@@ -79,7 +81,7 @@ public class ReservationH2Dao implements ReservationDao {
     @Override
     public Optional<Reservation> selectById(Long id) {
         String selectQuery = """
-                SELECT r.id, r.name, r.date, r.time_id, r.theme_id, rt.start_at, 
+                SELECT r.id, r.name, r.date, r.time_id, r.theme_id, r.member_id, rt.start_at, 
                        th.name AS th_name, th.description AS th_description, th.thumbnail AS th_thumbnail
                 FROM reservation r
                 INNER JOIN reservation_time rt ON r.time_id = rt.id

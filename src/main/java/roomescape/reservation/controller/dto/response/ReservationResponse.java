@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import roomescape.reservation.application.dto.response.ReservationServiceResponse;
 
+//TODO : 요구사항이 변경된다면, memberId까지 반환
 public record ReservationResponse(
         Long id,
         String name,

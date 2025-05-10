@@ -6,7 +6,8 @@ import roomescape.reservation.domain.entity.ReservationTime;
 import roomescape.reservation.domain.vo.ReservationDetails;
 
 public record CreateReservationServiceRequest(
-        String name,
+        String memberName,
+        Long memberId,
         LocalDate date,
         Long timeId,
         Long themeId
@@ -14,7 +15,8 @@ public record CreateReservationServiceRequest(
 
     public ReservationDetails toReservationDetails(ReservationTime reservationTime, ReservationTheme reservationTheme) {
         return ReservationDetails.builder()
-                .name(name)
+                .memberName(memberName)
+                .memberId(memberId)
                 .date(date)
                 .reservationTime(reservationTime)
                 .reservationTheme(reservationTheme)
