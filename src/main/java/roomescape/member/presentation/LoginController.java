@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.global.jwt.AuthorizationExtractor;
-import roomescape.global.jwt.CookieAuthorizationExtractor;
 import roomescape.member.application.service.MemberService;
 import roomescape.member.presentation.dto.MemberResponse;
 import roomescape.member.presentation.dto.TokenRequest;
@@ -21,9 +20,9 @@ public class LoginController {
     private final MemberService memberService;
     private final AuthorizationExtractor authorizationExtractor;
 
-    public LoginController(MemberService memberService) {
+    public LoginController(MemberService memberService, AuthorizationExtractor authorizationExtractor) {
         this.memberService = memberService;
-        this.authorizationExtractor = new CookieAuthorizationExtractor();
+        this.authorizationExtractor = authorizationExtractor;
     }
 
     @PostMapping
