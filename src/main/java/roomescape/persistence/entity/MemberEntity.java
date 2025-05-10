@@ -54,6 +54,9 @@ public final class MemberEntity {
         if (id == null) {
             throw new IllegalArgumentException("사용자 엔티티의 ID가 null이어서 도메인 객체로 변환할 수 없습니다.");
         }
+        if (password == null) {
+            return Member.createWithoutPassword(id, name, email, MemberRole.from(role));
+        }
         return new Member(id, name, email, password, MemberRole.from(role));
     }
 

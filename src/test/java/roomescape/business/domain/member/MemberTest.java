@@ -73,15 +73,15 @@ class MemberTest {
                 .hasMessage("이메일 형식이 올바르지 않습니다.");
     }
 
-//    @DisplayName("사용자의 비밀번호가 null이거나 빈 문자열인 경우에 예외가 발생한다.")
-//    @ParameterizedTest
-//    @NullAndEmptySource
-//    void shouldThrowExceptionWhenPasswordIsNullOrEmpty(String invalidPassword) {
-//        // given
-//        // when
-//        // then
-//        assertThatCode(() -> new Member(1L, VALID_NAME, VALID_EMAIL, invalidPassword))
-//                .isInstanceOf(IllegalArgumentException.class)
-//                .hasMessage("비밀번호는 null이거나 빈 문자열일 수 없습니다.");
-//    }
+    @DisplayName("사용자의 비밀번호가 null이거나 빈 문자열인 경우에 예외가 발생한다.")
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldThrowExceptionWhenPasswordIsNullOrEmpty(String invalidPassword) {
+        // given
+        // when
+        // then
+        assertThatCode(() -> new Member(1L, VALID_NAME, VALID_EMAIL, invalidPassword))
+                .isInstanceOf(MemberException.class)
+                .hasMessage("비밀번호는 null이거나 빈 문자열일 수 없습니다.");
+    }
 }

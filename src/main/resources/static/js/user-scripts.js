@@ -79,7 +79,6 @@ function login() {
             throw new Error(error.message); // 에러 메시지를 실제로 추출
           });
         }
-        return response.json();
       })
       .then(() => {
         updateUIBasedOnLogin(); // UI 업데이트

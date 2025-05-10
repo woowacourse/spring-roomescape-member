@@ -8,12 +8,16 @@ public final class Member {
     private final MemberPassword password;
     private final MemberRole role;
 
-    public Member(Long id, String name, String email, String password, MemberRole role) {
+    public Member(Long id, MemberName name, Email email, MemberPassword password, MemberRole role) {
         this.id = id;
-        this.name = new MemberName(name);
-        this.email = new Email(email);
-        this.password = new MemberPassword(password);
+        this.name = name;
+        this.email = email;
+        this.password = password;
         this.role = role;
+    }
+
+    public Member(Long id, String name, String email, String password, MemberRole role) {
+        this(id, new MemberName(name), new Email(email), new MemberPassword(password), role);
     }
 
     public Member(Long id, String name, String email, String password) {
@@ -26,6 +30,10 @@ public final class Member {
 
     public Member(String name, String email, String password, MemberRole role) {
         this(null, name, email, password, role);
+    }
+    
+    public static Member createWithoutPassword(Long id, String name, String email, MemberRole role) {
+        return new Member(id, new MemberName(name), new Email(email), null, role);
     }
 
     public Long getId() {
