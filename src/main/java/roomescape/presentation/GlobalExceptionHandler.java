@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.common.exception.BusinessRuleViolationException;
 import roomescape.common.exception.CoreException;
+import roomescape.common.exception.ForbiddenException;
 import roomescape.common.exception.NotFoundEntityException;
 import roomescape.common.exception.UnauthorizedException;
 import roomescape.common.exception.UnauthorizedException.LoginAuthException;
@@ -50,5 +51,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiFailResponse> handleLoginAuthException(LoginAuthException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ApiFailResponse("로그인에 실패했습니다. 아이디 또는 비밀번호를 다시 확인하세요"));
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ApiFailResponse> handleForbiddenException(ForbiddenException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiFailResponse("접근권한이 없습니다."));
     }
 }

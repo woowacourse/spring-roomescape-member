@@ -1,39 +1,35 @@
-package roomescape.presentation.methodresolver;
+package roomescape.presentation.interceptor;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
-import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.ModelAndViewContainer;
+import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.common.exception.ForbiddenException;
 import roomescape.common.exception.UnauthorizedException;
+import roomescape.domain.Role;
 import roomescape.service.JwtProvider;
 import roomescape.service.JwtProvider.JwtPayload;
 
 @Component
-public class AuthInfoArgumentResolver implements HandlerMethodArgumentResolver {
+public class AdminInterceptor implements HandlerInterceptor {
 
     private final JwtProvider jwtProvider;
 
-    public AuthInfoArgumentResolver(JwtProvider jwtProvider) {
+    public AdminInterceptor(JwtProvider jwtProvider) {
         this.jwtProvider = jwtProvider;
     }
 
     @Override
-    public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(AuthInfo.class);
-    }
-
-    @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
         Cookie tokenCookie = getTokenCookie(request);
         JwtPayload jwtPayload = jwtProvider.extractPayload(tokenCookie.getValue());
-        return new AuthInfo(jwtPayload.memberId(), jwtPayload.name(), jwtPayload.role());
+        if (jwtPayload.role() != Role.ADMIN) {
+            throw new ForbiddenException("접근 권한이 없습니다.");
+        }
+        return true;
     }
 
     private static Cookie getTokenCookie(HttpServletRequest request) {

@@ -3,7 +3,7 @@ package roomescape.domain;
 import java.util.Objects;
 
 public class Member {
-    private Long id;
+    private final Long id;
     private final String name;
     private final String email;
     private final String password;
