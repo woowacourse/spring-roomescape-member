@@ -23,16 +23,16 @@ public class MemberFakeRepository implements MemberRepository {
         if (emailMembers.isEmpty()) {
             return Optional.empty();
         }
-        if(emailMembers.size() > 1){
+        if (emailMembers.size() > 1) {
             throw new IllegalStateException("조회 결과가 2개 이상입니다.");
         }
 
         return Optional.of(emailMembers.getFirst());
     }
 
-    public Long save(String name, String email, String password) {
+    public Long save(String name, String email, String password, Role role) {
         Long generatedId = idGenerator.incrementAndGet();
-        Member member = new Member(generatedId, name, email, password, Role.USER);
+        Member member = new Member(generatedId, name, email, password, role);
         members.put(generatedId, member);
         return generatedId;
     }
@@ -52,4 +52,11 @@ public class MemberFakeRepository implements MemberRepository {
 
         return Optional.of(members.getFirst());
     }
+
+    @Override
+    public List<Member> findAll() {
+        return members.values().stream()
+                .toList();
+    }
+
 }

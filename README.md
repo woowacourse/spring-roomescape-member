@@ -21,6 +21,8 @@
  - [X] `GET /login/check` 요청 시 Cookie에서 토큰 정보를 추출하여 멤버를 찾아 멤버 정보 응답
  - [X] `Member`의 `ROLE`이 `ADMIN`인 사람만 `/admin`으로 시작하는 페이지에 접근할 수 있다.
 
+### 사용자
+- [X] `GET /members` 요청 시 사용자의 목록을 반환한다
 
 ### 사용자 인기 테마 조회
 - [X] 최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 확인할 수 있다.
@@ -210,4 +212,34 @@
   }
   ```
 
+### 사용자 목록 조회 API
+
+- Request
+  ```
+  GET /members HTTP/1.1
+  content-type: application/json
   
+  {
+    "id": "2024-03-01",
+    "name": 1,
+    "email": 1
+  }
+  ```
+
+- Response
+  ```
+  HTTP/1.1 200
+
+  [
+    {
+      "id": 1,
+      "name": "루키",
+      "email": "rookie123@woowa.com"
+    },
+    {
+      "id": 2,
+      "name": "하루",
+      "email": "haru123@woowa.com"
+    },
+  ]
+  ```

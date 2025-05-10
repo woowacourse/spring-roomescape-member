@@ -1,8 +1,10 @@
 package roomescape.member.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.auth.dto.MemberProfileResponse;
 import roomescape.member.domain.Member;
+import roomescape.member.dto.MemberResponse;
 import roomescape.member.repository.MemberRepository;
 
 @Service
@@ -19,5 +21,12 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         return MemberProfileResponse.from(member);
+    }
+
+    public List<MemberResponse> findAll() {
+        List<Member> members = memberRepository.findAll();
+        return members.stream()
+                .map(MemberResponse::from)
+                .toList();
     }
 }

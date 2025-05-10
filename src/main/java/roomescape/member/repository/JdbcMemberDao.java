@@ -55,4 +55,10 @@ public class JdbcMemberDao implements MemberRepository {
 
         return Optional.of(findMembers.getFirst());
     }
+
+    @Override
+    public List<Member> findAll() {
+        String sql = "SELECT id, name, email, password, role FROM member";
+        return jdbcTemplate.query(sql, rowMapper);
+    }
 }
