@@ -1,5 +1,7 @@
 package roomescape.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -8,6 +10,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public final class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(value = ReservationException.class)
     public ResponseEntity<ErrorResponseDto> handleReservationException(ReservationException exception) {
@@ -43,7 +47,8 @@ public final class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<ErrorResponseDto> handleGeneralException(Exception exception) {
+        log.warn("예외 발생: {}", exception.getMessage(), exception);
         return ResponseEntity.internalServerError()
-                .body(new ErrorResponseDto("서버 오류가 발생했습니다. %s".formatted(exception.getMessage())));
+                .body(new ErrorResponseDto("서버 오류가 발생했습니다"));
     }
 }
