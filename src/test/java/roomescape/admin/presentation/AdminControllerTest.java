@@ -21,7 +21,7 @@ class AdminControllerTest {
     @DisplayName("예약 추가 테스트")
     void createReservationTest() {
         // given
-        String token = ApiHelper.getMemberToken();
+        String token = ApiHelper.getAdminToken();
 
         ReservationTimeRequest reservationTime = reservationFixture.createReservationTime("10:00");
         ApiHelper.post(ApiHelper.TIME_ENDPOINT, reservationTime);

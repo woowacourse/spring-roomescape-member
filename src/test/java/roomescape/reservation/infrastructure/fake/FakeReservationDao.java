@@ -69,4 +69,15 @@ public class FakeReservationDao implements ReservationRepository {
                                 reservation.getReservationTime().getId().equals(timeId) &&
                                 reservation.getTheme().getId().equals(themeId));
     }
+
+    @Override
+    public List<Reservation> findAllByFilters(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        return store.values().stream()
+                .filter(reservation ->
+                        reservation.getTheme().getId().equals(themeId) &&
+                                reservation.getMember().getId().equals(memberId) &&
+                                !(reservation.getDate().getReservationDate().isBefore(dateFrom) ||
+                                        reservation.getDate().getReservationDate().isAfter(dateTo)))
+                .toList();
+    }
 }

@@ -69,7 +69,7 @@ public class ThemeControllerTest {
     @DisplayName("예약이 이미 존재하는 테마는 삭제할 수 없다.")
     void deleteThemeExceptionTest() {
         // given
-        String token = ApiHelper.getMemberToken();
+        String token = ApiHelper.getUserToken();
         ReservationTimeRequest reservationTime = reservationFixture.createReservationTime("10:00");
         ApiHelper.post(ApiHelper.TIME_ENDPOINT, reservationTime);
 

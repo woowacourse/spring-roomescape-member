@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.global.ApiHelper;
+import roomescape.member.domain.Role;
 import roomescape.member.presentation.dto.LoginRequest;
 import roomescape.member.presentation.dto.RegisterRequest;
 import roomescape.member.presentation.fixture.MemberFixture;
@@ -23,7 +24,7 @@ class MemberControllerTest {
     @DisplayName("회원가입 테스트")
     void signupTest() {
         // given
-        RegisterRequest register = memberFixture.registerRequest("name", "email@email.com", "password");
+        RegisterRequest register = memberFixture.registerRequest("name", "email@email.com", "password", Role.USER);
 
         // when - then
         ApiHelper.post(ApiHelper.MEMBER_ENDPOINT, register)
@@ -35,7 +36,7 @@ class MemberControllerTest {
     @DisplayName("로그인 테스트")
     void loginTest() {
         // given
-        RegisterRequest register = memberFixture.registerRequest("name", "email@email.com", "password");
+        RegisterRequest register = memberFixture.registerRequest("name", "email@email.com", "password", Role.USER);
         ApiHelper.post(ApiHelper.MEMBER_ENDPOINT, register);
         LoginRequest login = memberFixture.loginRequest("email@email.com", "password");
 

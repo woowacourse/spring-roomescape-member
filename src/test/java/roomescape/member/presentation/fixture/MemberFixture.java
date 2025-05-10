@@ -1,5 +1,6 @@
 package roomescape.member.presentation.fixture;
 
+import roomescape.member.domain.Role;
 import roomescape.member.presentation.dto.LoginRequest;
 import roomescape.member.presentation.dto.RegisterRequest;
 
@@ -9,7 +10,7 @@ public class MemberFixture {
         return new LoginRequest(email, password);
     }
 
-    public RegisterRequest registerRequest(String name, String email, String password) {
-        return new RegisterRequest(email, password, name);
+    public RegisterRequest registerRequest(String name, String email, String password, Role role) {
+        return new RegisterRequest(email, password, name, role);
     }
 }

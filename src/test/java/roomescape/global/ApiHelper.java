@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import roomescape.member.domain.Role;
 import roomescape.member.presentation.dto.LoginRequest;
 import roomescape.member.presentation.dto.RegisterRequest;
 import roomescape.member.presentation.fixture.MemberFixture;
@@ -32,10 +33,18 @@ public final class ApiHelper {
                 .body(body);
     }
 
-    public static String getMemberToken() {
+    public static String getUserToken() {
+        return getToken(Role.USER);
+    }
+
+    public static String getAdminToken() {
+        return getToken(Role.ADMIN);
+    }
+
+    private static String getToken(final Role role) {
         MemberFixture memberFixture = new MemberFixture();
 
-        RegisterRequest register = memberFixture.registerRequest("name", "email@email.com", "password");
+        RegisterRequest register = memberFixture.registerRequest("name", "email@email.com", "password", role);
         ApiHelper.post(ApiHelper.MEMBER_ENDPOINT, register);
         LoginRequest login = memberFixture.loginRequest("email@email.com", "password");
         return ApiHelper.post("/login", login)
