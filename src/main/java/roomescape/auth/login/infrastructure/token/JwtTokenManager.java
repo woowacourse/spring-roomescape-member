@@ -1,4 +1,4 @@
-package roomescape.auth.login.infrastructure;
+package roomescape.auth.login.infrastructure.token;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
@@ -26,6 +26,8 @@ public class JwtTokenManager {
     }
 
     public static Long getId(final String token) {
+        validateValidToken(token);
+
         return Long.valueOf(Jwts.parser()
                 .verifyWith(new SecretKeySpec(SECRET_KEY.getBytes(), "HmacSHA256"))
                 .build()
@@ -35,11 +37,19 @@ public class JwtTokenManager {
     }
 
     public static String getRole(final String token) {
+        validateValidToken(token);
+
         return Jwts.parser()
                 .verifyWith(new SecretKeySpec(SECRET_KEY.getBytes(), "HmacSHA256"))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
                 .get("role", String.class);
+    }
+
+    private static void validateValidToken(String token) {
+        if (token == null) {
+            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+        }
     }
 }

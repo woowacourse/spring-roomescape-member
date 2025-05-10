@@ -1,11 +1,11 @@
-package roomescape.auth.login.presentation;
+package roomescape.auth.login.infrastructure.interceptor;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.login.infrastructure.JwtTokenManager;
+import roomescape.auth.login.infrastructure.token.JwtTokenManager;
 
 public class AdminRoleInterceptor implements HandlerInterceptor {
 

@@ -1,4 +1,4 @@
-package roomescape.auth.login.presentation;
+package roomescape.auth.login.presentation.dto;
 
 import java.time.LocalDate;
 

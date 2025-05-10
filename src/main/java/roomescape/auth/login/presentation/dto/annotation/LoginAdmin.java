@@ -1,4 +1,4 @@
-package roomescape.auth.login.presentation.controller.dto.annotation;
+package roomescape.auth.login.presentation.dto.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
