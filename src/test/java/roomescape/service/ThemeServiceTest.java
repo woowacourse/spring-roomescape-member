@@ -42,7 +42,7 @@ class ThemeServiceTest {
         when(themeDao.findAll()).thenReturn(List.of(theme1, theme2));
 
         // when
-        List<ThemeResponseDto> themes = themeService.getAllThemes();
+        List<ThemeResponseDto> themes = themeService.findAllThemes();
 
         // then
         assertThat(themes).hasSize(2);
