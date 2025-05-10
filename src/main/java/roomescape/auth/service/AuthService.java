@@ -1,5 +1,6 @@
 package roomescape.auth.service;
 
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.auth.infrastructure.jwt.JwtHandler;
@@ -25,5 +26,22 @@ public class AuthService {
         Member member = memberService.getMember(memberId);
 
         return new MemberNameResponse(member.getName());
+    }
+
+    public boolean isAdmin(String token) {
+        return jwtHandler.isAdmin(token);
+    }
+
+    public Object getMemberId(String token) {
+        return jwtHandler.getMemberId(token);
+    }
+
+    public String extractTokenFromCookie(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+        return "";
     }
 }

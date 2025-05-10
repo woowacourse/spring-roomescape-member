@@ -1,6 +1,5 @@
 package roomescape.auth.web.resolver;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.websocket.AuthenticationException;
@@ -10,13 +9,13 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.auth.infrastructure.jwt.JwtHandler;
+import roomescape.auth.service.AuthService;
 
 @RequiredArgsConstructor
 @Component
 public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final JwtHandler jwtHandler;
+    private final AuthService authService;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -29,25 +28,12 @@ public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumen
                                   NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        String token = extractTokenFromCookie(request);
+        String token = authService.extractTokenFromCookie(request.getCookies());
 
         if (token == null || token.isBlank()) {
             throw new AuthenticationException("[ERROR] 쿠키에 토큰이 존재하지 않습니다.");
         }
 
-        return jwtHandler.getMemberId(token);
-    }
-
-    private String extractTokenFromCookie(HttpServletRequest request) {
-        if (request.getCookies() == null) {
-            return null;
-        }
-
-        for (Cookie cookie : request.getCookies()) {
-            if ("token".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-        return null;
+        return authService.getMemberId(token);
     }
 }

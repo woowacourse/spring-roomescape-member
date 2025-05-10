@@ -6,37 +6,28 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.infrastructure.jwt.JwtHandler;
+import roomescape.auth.service.AuthService;
 
 @RequiredArgsConstructor
 @Component
 public class AdminMemberHandlerInterceptor implements HandlerInterceptor {
 
-    private final JwtHandler jwtHandler;
+    private final AuthService authService;
 
     @Override
     public boolean preHandle(
             HttpServletRequest request,
             HttpServletResponse response,
             Object handler
-    ) throws Exception {
+    ) {
         Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
+        String token = authService.extractTokenFromCookie(cookies);
 
-        boolean isAdmin = jwtHandler.isAdmin(token);
+        boolean isAdmin = authService.isAdmin(token);
         if (!isAdmin) {
             response.setStatus(401);
             return false;
         }
         return true;
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
     }
 }
