@@ -5,9 +5,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.when;
 
 import io.restassured.http.ContentType;
-import io.restassured.http.Cookie;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.module.mockmvc.response.MockMvcResponse;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,13 +38,16 @@ class AuthenticationControllerTest {
     @DisplayName("로그인 성공 시, 쿠키를 반환해야한다")
     void login_ShouldSetTokenCookie() {
         // given
-        String email = "test@example.com";
-        String password = "password123";
+        String email = "user1@example.com";
+        String password = "user1123";
         String expectedToken = "generated-jwt-token";
         LoginRequest request = new LoginRequest(email, password);
+        Cookie expectedCookie = new Cookie("token", expectedToken);
+        expectedCookie.setPath("/");
+        expectedCookie.setHttpOnly(true);
 
-        when(service.createToken(email, password)).thenReturn(expectedToken);
-
+        when(service.createToken(request)).thenReturn(expectedToken);
+        when(service.createCookie(expectedToken)).thenReturn(expectedCookie);
         // when & then
         MockMvcResponse response = RestAssuredMockMvc.given()
                 .contentType(ContentType.JSON)
@@ -57,13 +60,14 @@ class AuthenticationControllerTest {
                 .header("Keep-Alive", "timeout=60")
                 .cookie("token", expectedToken)
                 .extract().response();
-        Cookie tokenCookie = response.getDetailedCookie("token");
+
+        Cookie tokenCookie = response.getMockHttpServletResponse().getCookie("token");
         assertThat(tokenCookie.getPath()).isEqualTo("/");
         assertThat(tokenCookie.isHttpOnly()).isTrue();
     }
 
     @Test
-    @DisplayName("로그인 체크 시, 토큰이 없다면 403 코드를 반환해야한다")
+    @DisplayName("로그인 체크 시, 토큰이 없다면 401 코드를 반환해야한다")
     void loginCheck_ShouldReturnUnauthorizedWhenNoToken() {
         // when & then
         RestAssuredMockMvc.given()

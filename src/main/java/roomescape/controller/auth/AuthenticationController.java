@@ -2,8 +2,6 @@ package roomescape.controller.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.auth.LoginCheckResponse;
 import roomescape.dto.auth.LoginRequest;
+import roomescape.exceptions.auth.AuthorizationException;
 import roomescape.service.auth.AuthenticationService;
 
 @RestController
@@ -19,7 +18,6 @@ import roomescape.service.auth.AuthenticationService;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
-    private static int ONE_HOUR = 3600;
 
     public AuthenticationController(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
@@ -27,31 +25,25 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public void login(@RequestBody LoginRequest request,
-                      HttpServletResponse servletResponse) {
-        String token = authenticationService.createToken(request.email(), request.password());
-
-        servletResponse.setContentType("application/json");
-        servletResponse.setHeader("Keep-Alive", "timeout=60");
-
-        Cookie cookie = new Cookie("token", token);
-        cookie.setMaxAge(ONE_HOUR);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        servletResponse.addCookie(cookie);
+                      HttpServletResponse response) {
+        String token = authenticationService.createToken(request);
+        Cookie cookie = authenticationService.createCookie(token);
+        response.setContentType("application/json");
+        response.setHeader("Keep-Alive", "timeout=60");
+        response.addCookie(cookie);
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> loginCheck(@CookieValue(value = "token", defaultValue = "") String token,
-                                                         HttpServletResponse response) {
+    public LoginCheckResponse loginCheck(@CookieValue(value = "token", defaultValue = "") String token,
+                                         HttpServletResponse response) {
         if (token.isBlank()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new LoginCheckResponse(null));
+            throw new AuthorizationException("로그인이 필요합니다.");
         }
         String name = authenticationService.findNameByToken(token);
 
         response.setHeader("Connection", "keep-alive");
         response.setContentType("application/json");
         response.setHeader("Keep-Alive", "timeout=60");
-        return ResponseEntity.ok(new LoginCheckResponse(name));
+        return new LoginCheckResponse(name);
     }
 }

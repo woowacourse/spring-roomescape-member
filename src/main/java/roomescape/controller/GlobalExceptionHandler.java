@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
         return createErrorResponse(e, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(AuthorizationException.class)
+    @ExceptionHandler(AuthenticationException.class)
     public ProblemDetail handleAuthenticationException(AuthenticationException e) {
         return createErrorResponse(e, HttpStatus.FORBIDDEN);
     }
