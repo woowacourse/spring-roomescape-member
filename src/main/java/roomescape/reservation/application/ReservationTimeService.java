@@ -21,15 +21,12 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse create(final CreateReservationTimeRequest request) {
         final LocalTime startAt = request.startAt();
-
-        final List<ReservationTime> foundReservationTimes = reservationTimeRepository.findAllByStartAt(startAt);
-        if (!foundReservationTimes.isEmpty()) {
+        final List<ReservationTime> founds = reservationTimeRepository.findAllByStartAt(startAt);
+        if (!founds.isEmpty()) {
             throw new AlreadyExistException("해당 예약 시간이 이미 존재합니다. startAt = " + startAt);
         }
 
-        final ReservationTime reservationTimeEntity = new ReservationTime(startAt);
-        final Long id = reservationTimeRepository.save(reservationTimeEntity);
-
+        final Long id = reservationTimeRepository.save(new ReservationTime(startAt));
         final ReservationTime found = reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + id));
 
