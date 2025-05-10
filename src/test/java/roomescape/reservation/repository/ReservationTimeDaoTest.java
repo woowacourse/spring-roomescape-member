@@ -21,7 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.utils.JdbcTemplateUtils;
+import roomescape.utils.JdbcTemplateUtils;
 
 @ActiveProfiles("test")
 @JdbcTest

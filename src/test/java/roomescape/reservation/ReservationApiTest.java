@@ -28,7 +28,7 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.repository.ReservationDao;
 import roomescape.reservation.repository.ReservationTimeDao;
 import roomescape.reservation.repository.ThemeDao;
-import roomescape.reservation.utils.JdbcTemplateUtils;
+import roomescape.utils.JdbcTemplateUtils;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
