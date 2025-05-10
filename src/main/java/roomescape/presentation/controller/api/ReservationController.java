@@ -9,16 +9,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.business.domain.member.Member;
 import roomescape.business.service.ReservationService;
 import roomescape.config.AuthMember;
+import roomescape.presentation.dto.AdminReservationRequest;
 import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
 
 @RestController
-@RequestMapping("/reservations")
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -27,7 +26,7 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping
+    @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> create(
             @RequestBody @Valid final ReservationRequest reservationRequest,
             @AuthMember Member member
@@ -36,13 +35,22 @@ public class ReservationController {
         return ResponseEntity.created(URI.create("/reservations/" + response.id())).body(response);
     }
 
-    @GetMapping
+    @PostMapping("/admin/reservations")
+    public ResponseEntity<ReservationResponse> createByAdmin(
+            @RequestBody @Valid final AdminReservationRequest reservationRequest,
+            @AuthMember Member admin
+    ) {
+        final ReservationResponse response = reservationService.createReservation(reservationRequest);
+        return ResponseEntity.created(URI.create("/reservations/" + response.id())).body(response);
+    }
+
+    @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponse>> findAll() {
         final List<ReservationResponse> responses = reservationService.getReservations();
         return ResponseEntity.ok().body(responses);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
         reservationService.cancelReservationById(id);
         return ResponseEntity.noContent().build();

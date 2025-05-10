@@ -14,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.business.domain.reservation.Reservation;
+import roomescape.fake.FakeMemberDao;
 import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeReservationTimeDao;
 import roomescape.fake.FakeThemeDao;
@@ -26,8 +27,9 @@ class ReservationServiceTest {
     private final FakeReservationTimeDao reservationTimeDao = new FakeReservationTimeDao();
     private final FakeReservationDao reservationDao = new FakeReservationDao();
     private final FakeThemeDao themeDao = new FakeThemeDao();
+    private final FakeMemberDao fakeMemberDao = new FakeMemberDao();
     private final ReservationService reservationService = new ReservationService(reservationDao, reservationTimeDao,
-            themeDao);
+            themeDao, fakeMemberDao);
 
     private static final LocalDate TOMORROW = LocalDate.now().plusDays(1);
 

@@ -25,7 +25,10 @@ Content-Type: application/json
 
 {
     "id": 1,
-    "name": "브라운",
+    "name" : {
+        "id": 1,
+        "name": "브라운",
+    }
     "date": "2023-08-05",
     "time" : {
         "id": 1,
