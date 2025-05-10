@@ -27,7 +27,11 @@ public class Member {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.role = MemberRole.valueOf(role);
+        try {
+            this.role = MemberRole.valueOf(role);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("유효하지 않은 회원 역할입니다.: " + role);
+        }
     }
 
     public Member(@NonNull final String name, @NonNull final String email, @NonNull final String password) {
