@@ -1,15 +1,13 @@
 package roomescape.reservationTime.repository;
 
-import java.sql.PreparedStatement;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.KeyHolderManager;
+import roomescape.common.RowMapperManager;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.exception.NotFoundReservationTimeException;
 
@@ -17,20 +15,18 @@ import roomescape.reservationTime.exception.NotFoundReservationTimeException;
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final KeyHolderManager keyHolderManager;
 
-    private final RowMapper<ReservationTime> reservationTimeRowMapper = (rs, rowNum) -> new ReservationTime(
-            rs.getLong("id"),
-            rs.getTime("start_at").toLocalTime()
-    );
-
-    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate, KeyHolderManager keyHolderManager) {
         this.jdbcTemplate = jdbcTemplate;
+        this.keyHolderManager = keyHolderManager;
     }
-
 
     @Override
     public List<ReservationTime> findAll() {
-        return jdbcTemplate.query("select id, start_at from reservation_time", reservationTimeRowMapper);
+        return jdbcTemplate.query(
+                "select id AS reservation_time_id, start_at AS reservation_time_start_at from reservation_time",
+                RowMapperManager.reservationTimeRowMapper);
     }
 
     @Override
@@ -41,10 +37,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
-        String sql = "select id, start_at from reservation_time where id = ?";
+        String sql = "select id AS reservation_time_id, start_at AS reservation_time_start_at from reservation_time where id = ?";
 
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, RowMapperManager.reservationTimeRowMapper, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -65,17 +61,23 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public Long insertWithKeyHolder(ReservationTime reservationTime) {
         String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+//        KeyHolder keyHolder = new GeneratedKeyHolder();
+//
+//        jdbcTemplate.update(connection -> {
+//            PreparedStatement ps = connection.prepareStatement(
+//                    sql,
+//                    new String[]{"id"});
+//
+//            return ps;
+//        }, keyHolder);
+//
+//        return keyHolder.getKey().longValue();
 
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    sql,
-                    new String[]{"id"});
-            ps.setString(1, reservationTime.getStartAt().toString());
-            return ps;
-        }, keyHolder);
-
-        return keyHolder.getKey().longValue();
+        return keyHolderManager.insertAndReturnId(sql,
+                ps -> {
+                    ps.setString(1, reservationTime.getStartAt().toString());
+                }
+        );
     }
 
     @Override
