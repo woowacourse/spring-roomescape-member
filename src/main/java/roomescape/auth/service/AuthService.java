@@ -32,10 +32,10 @@ public class AuthService {
     }
 
     public TokenWithCookieResponse issueToken(TokenRequest tokenRequest) {
-        Member member = memberRepository.findByEmail(tokenRequest.getEmail())
-                .orElseThrow(() -> new NoSuchElementException("해당 사용자를 찾을 수 없습니다 " + tokenRequest.getEmail()));
+        Member member = memberRepository.findByEmail(tokenRequest.email())
+                .orElseThrow(() -> new NoSuchElementException("해당 사용자를 찾을 수 없습니다 " + tokenRequest.email()));
 
-        if (!member.matchesPassword(tokenRequest.getPassword())) {
+        if (!member.matchesPassword(tokenRequest.password())) {
             throw new UnauthorizedException("비밀번호가 일치하지 않습니다.");
         }
 

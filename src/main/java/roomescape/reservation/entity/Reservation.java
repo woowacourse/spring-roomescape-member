@@ -1,5 +1,6 @@
 package roomescape.reservation.entity;
 
+import roomescape.member.entity.Member;
 import roomescape.theme.entity.Theme;
 import roomescape.time.entity.ReservationTime;
 
@@ -11,15 +12,14 @@ public class Reservation {
     private static final int NAME_LENGTH = 10;
 
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validate(name, date, time, theme);
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -29,8 +29,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
@@ -45,9 +45,9 @@ public class Reservation {
         return theme;
     }
 
-    public static Reservation createIfDateTimeValid(String name, LocalDate date, ReservationTime time, Theme theme) {
+    public static Reservation createIfDateTimeValid(Member member, LocalDate date, ReservationTime time, Theme theme) {
         validateDateTime(date, time);
-        return new Reservation(null, name, date, time, theme);
+        return new Reservation(null, member, date, time, theme);
     }
 
     public boolean isDuplicate(Reservation reservation) {

@@ -7,6 +7,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.common.exception.EntityNotFoundException;
+import roomescape.member.entity.Member;
+import roomescape.member.entity.Role;
 import roomescape.reservation.entity.Reservation;
 import roomescape.theme.entity.Theme;
 import roomescape.time.entity.ReservationTime;
@@ -28,12 +30,23 @@ public class ReservationJDBCDao implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         String sql = """
-                select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at, th.id as theme_id,th.name as theme_name, th.description, th.thumbnail 
+                select 
+                    r.id as reservation_id, 
+                    r.date, 
+                    m.id as member_id,
+                    m.email as member_email,
+                    m.name as member_name,
+                    m.role as member_role,
+                    t.id as time_id, 
+                    t.start_at, 
+                    th.id as theme_id,
+                    th.name as theme_name, 
+                    th.description, 
+                    th.thumbnail 
                 from reservation as r 
-                inner join reservation_time as t 
-                on r.time_id = t.id
-                inner join theme as th
-                on r.theme_id = th.id
+                inner join member as m on r.member_id = m.id
+                inner join reservation_time as t on r.time_id = t.id
+                inner join theme as th on r.theme_id = th.id
                 """;
         return namedJdbcTemplate.query(sql, getReservationRowMapper());
     }
@@ -41,10 +54,10 @@ public class ReservationJDBCDao implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "insert into reservation (name, date, time_id, theme_id) values (:name, :date, :timeId, :themeId)";
+        String sql = "insert into reservation (member_id, date, time_id, theme_id) values (:memberId, :date, :timeId, :themeId)";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
+                .addValue("memberId", reservation.getMember().getId())
                 .addValue("date", Date.valueOf(reservation.getDate()))
                 .addValue("timeId", reservation.getTime().getId())
                 .addValue("themeId", reservation.getTheme().getId());
@@ -52,7 +65,7 @@ public class ReservationJDBCDao implements ReservationRepository {
         namedJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+        return new Reservation(id, reservation.getMember(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
     @Override
@@ -87,7 +100,13 @@ public class ReservationJDBCDao implements ReservationRepository {
     private RowMapper<Reservation> getReservationRowMapper() {
         return (resultSet, rowNum) -> new Reservation(
                 resultSet.getLong("reservation_id"),
-                resultSet.getString("name"),
+                new Member(
+                        resultSet.getLong("member_id"),
+                        resultSet.getString("member_email"),
+                        null,
+                        resultSet.getString("member_name"),
+                        Role.valueOf(resultSet.getString("member_role"))
+                ),
                 resultSet.getDate("date").toLocalDate(),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
