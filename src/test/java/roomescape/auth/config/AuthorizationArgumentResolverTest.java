@@ -9,8 +9,7 @@ import roomescape.business.model.vo.LoginInfo;
 import roomescape.exception.auth.NotAuthenticatedException;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
+import static org.mockito.BDDMockito.*;
 
 class AuthorizationArgumentResolverTest {
 
