@@ -4,10 +4,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.business.domain.LoginUser;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
+import roomescape.business.domain.Role;
 import roomescape.business.domain.Theme;
+import roomescape.business.domain.User;
 import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.InvalidCredentialsException;
 import roomescape.exception.InvalidReservationDateException;
 import roomescape.exception.ReservationNotFoundException;
 import roomescape.persistence.dao.ReservationDao;
@@ -18,31 +22,46 @@ import roomescape.presentation.dto.ReservationResponse;
 @Service
 public class ReservationService {
 
+    private final UserService userService;
     private final PlayTimeService playTimeService;
     private final ThemeService themeService;
+
     private final ReservationDao reservationDao;
 
     public ReservationService(
+            final UserService userService,
             final PlayTimeService playTimeService,
             final ThemeService themeService,
             final ReservationDao reservationDao
     ) {
+        this.userService = userService;
         this.playTimeService = playTimeService;
         this.themeService = themeService;
         this.reservationDao = reservationDao;
     }
 
-    public ReservationResponse create(final ReservationRequest reservationRequest) {
+    public ReservationResponse create(
+            final LoginUser loginUser,
+            final ReservationRequest reservationRequest
+    ) {
+        validateIsUser(loginUser);
+        final User user = userService.find(loginUser.id());
         final PlayTime playTime = playTimeService.find(reservationRequest.timeId());
         final Theme theme = themeService.find(reservationRequest.themeId());
         validateIsDuplicate(reservationRequest.date(), playTime, theme);
 
-        final Reservation reservation = reservationRequest.toDomain(playTime, theme);
+        final Reservation reservation = reservationRequest.toDomain(user, playTime, theme);
         validateIsFuture(reservation);
 
         final Long id = reservationDao.save(reservation);
 
         return ReservationResponse.withId(reservation, id);
+    }
+
+    private void validateIsUser(final LoginUser loginUser) {
+        if (Role.UNKNOWN == loginUser.role()) {
+            throw new InvalidCredentialsException();
+        }
     }
 
     private void validateIsDuplicate(

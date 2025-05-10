@@ -4,10 +4,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import org.springframework.jdbc.core.RowMapper;
 import roomescape.business.domain.Reservation;
+import roomescape.business.domain.Role;
 
 public record ReservationEntity(
         Long id,
-        String name,
+        UserEntity userEntity,
         String date,
         PlayTimeEntity playTimeEntity,
         ThemeEntity themeEntity
@@ -16,17 +17,31 @@ public record ReservationEntity(
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final RowMapper<ReservationEntity> DEFAULT_ROW_MAPPER =
             (rs, rowNum) -> new ReservationEntity(
-                    rs.getLong(1),
-                    rs.getString(2),
-                    rs.getString(3),
-                    new PlayTimeEntity(rs.getLong(4), rs.getString(5)),
-                    new ThemeEntity(rs.getLong(6), rs.getString(7), rs.getString(8), rs.getString(9))
+                    rs.getLong("reservation_id"),
+                    new UserEntity(
+                            rs.getLong("user_id"),
+                            rs.getString("user_name"),
+                            rs.getString("user_email"),
+                            rs.getString("user_password"),
+                            Role.valueOf(rs.getString("user_role"))
+                    ),
+                    rs.getString("date"),
+                    new PlayTimeEntity(
+                            rs.getLong("time_id"),
+                            rs.getString("time_value")
+                    ),
+                    new ThemeEntity(
+                            rs.getLong("theme_id"),
+                            rs.getString("theme_name"),
+                            rs.getString("theme_description"),
+                            rs.getString("theme_thumbnail")
+                    )
             );
 
     public Reservation toDomain() {
         return Reservation.createWithId(
                 id,
-                name,
+                userEntity.toDomain(),
                 LocalDate.parse(date, DATE_FORMATTER),
                 playTimeEntity.toDomain(),
                 themeEntity.toDomain()
@@ -40,7 +55,7 @@ public record ReservationEntity(
     public static ReservationEntity from(final Reservation reservation) {
         return new ReservationEntity(
                 reservation.getId(),
-                reservation.getName(),
+                UserEntity.from(reservation.getUser()),
                 DATE_FORMATTER.format(reservation.getDate()),
                 PlayTimeEntity.from(reservation.getPlayTime()),
                 ThemeEntity.from(reservation.getTheme())

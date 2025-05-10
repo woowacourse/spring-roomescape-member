@@ -27,11 +27,12 @@ CREATE TABLE theme
 CREATE TABLE reservation
 (
     id   BIGINT       NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
+    user_id BIGINT,
     date VARCHAR(255) NOT NULL,
     time_id BIGINT,
     theme_id BIGINT,
     PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );

@@ -15,9 +15,8 @@ INSERT INTO THEME (name, description, thumbnail) values ('레벨13 탈출', '우
 
 INSERT INTO RESERVATION_TIME (start_at) values ('10:10');
 
-INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('user1', '2025-05-04', 1, 1);
-INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('user1', '2025-05-05', 1, 1);
-INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('user1', '2025-05-06', 1, 1);
-INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('user1', '2025-05-07', 1, 1);
-
-INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('user1', '2025-05-03', 1, 2);
+INSERT INTO RESERVATION (user_id, date, time_id, theme_id) values (1, '2025-05-04', 1, 1);
+INSERT INTO RESERVATION (user_id, date, time_id, theme_id) values (1, '2025-05-05', 1, 1);
+INSERT INTO RESERVATION (user_id, date, time_id, theme_id) values (1, '2025-05-06', 1, 1);
+INSERT INTO RESERVATION (user_id, date, time_id, theme_id) values (1, '2025-05-07', 1, 1);
+INSERT INTO RESERVATION (user_id, date, time_id, theme_id) values (1, '2025-05-03', 1, 2);
