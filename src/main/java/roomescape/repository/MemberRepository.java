@@ -31,11 +31,6 @@ public class MemberRepository {
         return memberDao.selectByEmail(email);
     }
 
-    // TODO: id or pw not found 시 커스텀 익셉션 반환하도록 변경
-    public Member getByEmail(String email) {
-        return findByEmail(email).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디 또는 패스워드입니다."));
-    }
-
     public List<Member> findAll() {
         return memberDao.selectAll();
     }

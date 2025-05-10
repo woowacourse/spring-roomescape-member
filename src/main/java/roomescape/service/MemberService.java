@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -23,11 +24,11 @@ public class MemberService {
 
     // TODO: password 암호화
     public String login(LoginRequest request) {
-        Member member = memberRepository.getByEmail(request.email());
-        if (!Objects.equals(member.password(), request.password())) {
-            throw new IllegalArgumentException("잘못된 아이디 또는 패스워드입니다");
+        Optional<Member> member = memberRepository.findByEmail(request.email());
+        if (member.isEmpty() || !Objects.equals(member.get().password(), request.password())) {
+            throw new IllegalArgumentException("잘못된 아이디 또는 비밀번호입니다");
         }
-        return jwtProvider.createToken(member);
+        return jwtProvider.createToken(member.get());
     }
 
     public LoginCheckResponse loginCheck(Member member) {
