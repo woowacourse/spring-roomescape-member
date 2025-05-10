@@ -11,8 +11,14 @@ public enum ExceptionCause {
 
     RESERVATION_EXIST_THEME("이 테마에 대한 예약이 존재합니다."),
     RESERVATION_EXIST_TIME("이 시간에 대한 예약이 존재합니다."),
-
     RESERVATION_DUPLICATE("이미 존재하는 예약입니다."),
+    RESERVATION_NAME_INVALID_LENGTH("예약자명은 10자 이하여야합니다."),
+    RESERVATION_IMPOSSIBLE_FOR_PAST("예약은 미래만 가능합니다."),
+    RESERVATION_NOTFOUND("예약이 존재하지 않습니다."),
+
+    RESERVATION_TIME_NOTFOUND("예약 시간이 존재하지 않습니다."),
+
+    THEME_NOTFOUND("테마가 존재하지 않습니다."),
 
     EMPTY_VALUE_RESERVATION_NAME("예약자 명이 비어있습니다."),
     EMPTY_VALUE_RESERVATION_TIME("예약 시간이 비어있습니다."),

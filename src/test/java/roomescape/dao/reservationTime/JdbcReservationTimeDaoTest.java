@@ -16,11 +16,12 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import roomescape.dao.reservation.JdbcReservationDao;
-import roomescape.dao.theme.JdbcThemeDao;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.reservation.dao.JdbcReservationDao;
+import roomescape.theme.dao.JdbcThemeDao;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservationtime.dao.JdbcReservationTimeDao;
+import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 
 @JdbcTest
 @Import({JdbcReservationTimeDao.class, JdbcReservationDao.class, JdbcThemeDao.class})

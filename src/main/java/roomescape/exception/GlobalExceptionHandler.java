@@ -1,11 +1,5 @@
 package roomescape.exception;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonMappingException.Reference;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -13,56 +7,27 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(InvalidJwtException.class)
-    public ResponseEntity<FailureResponse> handleInvalidJwtException(InvalidJwtException ex) {
-        return createBadRequestResponse(ex.getMessage());
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<FailureResponse> handleBadRequestException(BadRequestException ex) {
+        return ResponseEntity.status(ex.getHttpStatus()).body(getFailureResponse(ex));
     }
 
-    @ExceptionHandler(MemberExistException.class)
-    public ResponseEntity<FailureResponse> handleHttpMessageNotReadableException(MemberExistException ex) {
-        return createBadRequestResponse(ex.getMessage());
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<FailureResponse> handleConflictException(ConflictException ex) {
+        return ResponseEntity.status(ex.getHttpStatus()).body(getFailureResponse(ex));
     }
 
-    @ExceptionHandler(MemberNotFoundException.class)
-    public ResponseEntity<FailureResponse> handleMemberNotFoundException(MemberNotFoundException ex) {
-        return createUnAuthorizedResponse(ex.getMessage());
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<FailureResponse> handleNotFoundException(NotFoundException ex) {
+        return ResponseEntity.status(ex.getHttpStatus()).body(getFailureResponse(ex));
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<FailureResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
-        return createBadRequestResponse(ex.getMessage());
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<FailureResponse> handleUnauthorizedException(UnauthorizedException ex) {
+        return ResponseEntity.status(ex.getHttpStatus()).body(getFailureResponse(ex));
     }
 
-    @ExceptionHandler(ReservationDuplicateException.class)
-    public ResponseEntity<FailureResponse> handleReservationDuplicateException(ReservationDuplicateException ex) {
-        return createBadRequestResponse(ex.getMessage());
-    }
-
-    @ExceptionHandler(ReservationExistException.class)
-    public ResponseEntity<FailureResponse> handleReservationExistException(ReservationExistException ex) {
-        return createBadRequestResponse(ex.getMessage());
-    }
-
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<FailureResponse> handleNoSuchElementException(NoSuchElementException ex) {
-        return createNotFoundResponse(ex.getMessage());
-    }
-
-    private ResponseEntity<FailureResponse> createUnAuthorizedResponse(String message) {
-        return createFailureResponse(HttpStatus.UNAUTHORIZED, message);
-    }
-
-    private ResponseEntity<FailureResponse> createNotFoundResponse(String message) {
-        return createFailureResponse(HttpStatus.NOT_FOUND, message);
-    }
-
-    private ResponseEntity<FailureResponse> createBadRequestResponse(String message) {
-        return createFailureResponse(HttpStatus.BAD_REQUEST, message);
-    }
-
-    private ResponseEntity<FailureResponse> createFailureResponse(HttpStatus httpStatus, String message) {
-        return ResponseEntity.status(httpStatus).body(
-                new FailureResponse(httpStatus, message)
-        );
+    private FailureResponse getFailureResponse(CustomException ex) {
+        return new FailureResponse(ex.getHttpStatus(), ex.getMessage());
     }
 }

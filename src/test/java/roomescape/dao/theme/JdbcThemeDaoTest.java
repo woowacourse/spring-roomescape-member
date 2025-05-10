@@ -14,7 +14,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import roomescape.domain.Theme;
+import roomescape.theme.dao.JdbcThemeDao;
+import roomescape.theme.domain.Theme;
 
 @JdbcTest
 @Import(JdbcThemeDao.class)
