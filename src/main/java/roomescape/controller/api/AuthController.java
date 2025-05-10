@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.dto.auth.LoginInfo;
 import roomescape.dto.auth.LoginRequestDto;
-import roomescape.dto.auth.MemberResponseDto;
+import roomescape.dto.auth.MemberNameResponseDto;
 import roomescape.service.AuthService;
 
 @RestController
@@ -35,8 +35,8 @@ public class AuthController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<MemberResponseDto> checkLogin(LoginInfo loginMember) {
-        MemberResponseDto memberResponse = new MemberResponseDto(loginMember.name());
+    public ResponseEntity<MemberNameResponseDto> checkLogin(LoginInfo loginMember) {
+        MemberNameResponseDto memberResponse = new MemberNameResponseDto(loginMember.name());
         return ResponseEntity.ok(memberResponse);
     }
 }

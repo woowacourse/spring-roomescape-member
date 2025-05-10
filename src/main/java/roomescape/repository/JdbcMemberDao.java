@@ -12,6 +12,7 @@ import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
 
 import javax.sql.DataSource;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -79,6 +80,15 @@ public class JdbcMemberDao implements MemberRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String sql = """
+                SELECT member_id, name, email, role, password
+                FROM member
+                """;
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
