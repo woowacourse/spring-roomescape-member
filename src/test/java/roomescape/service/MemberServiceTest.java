@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dao.meber.MemberDao;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.support.auth.JwtTokenProvider;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,7 +30,7 @@ class MemberServiceTest {
     void findMemberByTokenTest() {
 
         // given
-        final Member member = new Member("체체", "cheche903@naver.com", "password1234");
+        final Member member = new Member("체체", "cheche903@naver.com", "password1234", MemberRole.USER);
         final String token = "token";
         when(jwtTokenProvider.getPayload(token)).thenReturn("cheche903@naver.com");
         when(memberDao.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
