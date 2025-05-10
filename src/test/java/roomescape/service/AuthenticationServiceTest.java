@@ -30,7 +30,7 @@ class AuthenticationServiceTest {
         authenticationService = new AuthenticationService(memberRepository, jwtTokenProvider);
 
         String email = "test@test.com";
-        String password = "test_password";
+        String password = "asdf1234!";
         Member member = new Member(1L, "이름", email, password, MemberRole.GENERAL);
         when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
 
@@ -61,7 +61,7 @@ class AuthenticationServiceTest {
     void cannotLoginBecauseOfInvalidPassword() {
         // given
         String email = "test@test.com";
-        String password = "test_password";
+        String password = "asdf1234!";
         Member member = new Member(1L, "이름", email, password, MemberRole.GENERAL);
         when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
 

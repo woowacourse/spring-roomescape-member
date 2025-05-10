@@ -69,7 +69,7 @@ class MemberServiceTest {
     @Test
     void canAddMember() {
         // given
-        MemberCreationRequest request = new MemberCreationRequest("test@test.coma", "qwe123!", "Member1");
+        MemberCreationRequest request = new MemberCreationRequest("test@test.coma", "asdf1234!", "Member1");
         Member expectedMember = Member.createWithoutId(
                 request.name(), request.email(), request.password(), MemberRole.GENERAL);
         when(memberRepository.findByEmail(request.email())).thenReturn(Optional.empty());
@@ -86,7 +86,7 @@ class MemberServiceTest {
     @Test
     void cannotAddMemberBecauseOfEmailDuplication() {
         // given
-        MemberCreationRequest request = new MemberCreationRequest("test@test.coma", "qwe123!", "Member1");
+        MemberCreationRequest request = new MemberCreationRequest("test@test.coma", "asdf1234!", "Member1");
         Member member = Member.createWithoutId(
                 request.name(), request.email(), request.password(), MemberRole.GENERAL);
         when(memberRepository.findByEmail(request.email())).thenReturn(Optional.of(member));

@@ -103,8 +103,8 @@ public class Member {
         if (password == null || password.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 비어있는 비밀번호로 멤버를 생성할 수 없습니다.");
         }
-        if (password.length() >= MAX_NAME_LENGTH) {
-            throw new IllegalArgumentException("[ERROR] 최대길이를 초과한 비밀번호로는 멤버를 생성할 수 없습니다.");
+        if (!password.matches("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[\\W_]).{8,}$")) {
+            throw new IllegalArgumentException("[ERROR] 올바르지 않은 형식의 비밀번호로는 멤버를 생성할 수 없습니다.");
         }
     }
 

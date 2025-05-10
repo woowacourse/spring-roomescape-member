@@ -3,12 +3,15 @@ package roomescape.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 public record MemberCreationRequest(
         @NotNull(message = "비어있는 이메일로는 회원가입이 불가능합니다.")
         @Email(message = "이메일 형식을 제대로 입력해주세요.")
         String email,
         @NotBlank(message = "비어있는 비밀번호로는 회원가입이 불가능합니다.")
+        @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[\\W_]).{8,}$",
+                message = "영문자, 숫자, 특수기호를 포함한 8자리이상의 비밀번호를 입력해주세요.")
         String password,
         @NotBlank(message = "비어있는 이름로는 회원가입이 불가능합니다.")
         String name
