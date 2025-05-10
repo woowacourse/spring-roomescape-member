@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.common.exception.NotAbleDeleteException;
+import roomescape.common.mapper.ReservationMapper;
 import roomescape.domain.member.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -43,26 +44,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         return jdbcTemplate.query(
                 query,
-                (resultSet, rowNum) -> new Reservation(
-                        resultSet.getLong("id"),
-                        new Member(
-                                resultSet.getLong("member_id"),
-                                resultSet.getString("member_name"),
-                                resultSet.getString("member_email"),
-                                Role.valueOf(resultSet.getString("member_role"))
-                        ),
-                        resultSet.getDate("date").toLocalDate(),
-                        new ReservationTime(
-                                resultSet.getLong("time_id"),
-                                resultSet.getTime("start_at").toLocalTime()
-                        ),
-                        new Theme(
-                                resultSet.getLong("theme_id"),
-                                resultSet.getString("theme_name"),
-                                resultSet.getString("theme_description"),
-                                resultSet.getString("theme_thumbnail")
-                        )
-                )
+                new ReservationMapper()
         );
     }
 
@@ -79,7 +61,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> readAllWithFilter(Long themeId, Long memberId, String dateFrom, String dateTo) {
+    public List<Reservation> readAllWithFilter(Map<String, Object> filter) {
         StringBuilder query = new StringBuilder("""
                 SELECT
                     r.id,
@@ -92,6 +74,12 @@ public class JdbcReservationRepository implements ReservationRepository {
                 JOIN reservation_time t ON r.time_id = t.id
                 JOIN theme th ON r.theme_id = th.id
                 """);
+
+        // 필터 조건: WHERE 절 추가
+        Long themeId = (Long) filter.get("themeId");
+        Long memberId = (Long) filter.get("memberId");
+        String dateFrom = (String) filter.get("dateFrom");
+        String dateTo = (String) filter.get("dateTo");
 
         if (themeId != null) {
             query.append("WHERE th.id = ").append(themeId).append(" ");
@@ -111,29 +99,9 @@ public class JdbcReservationRepository implements ReservationRepository {
             }
         }
 
-        // TODO: Mapper 분리
         return jdbcTemplate.query(
                 query.toString(),
-                (resultSet, rowNum) -> new Reservation(
-                        resultSet.getLong("id"),
-                        new Member(
-                                resultSet.getLong("member_id"),
-                                resultSet.getString("member_name"),
-                                resultSet.getString("member_email"),
-                                Role.valueOf(resultSet.getString("member_role"))
-                        ),
-                        resultSet.getDate("date").toLocalDate(),
-                        new ReservationTime(
-                                resultSet.getLong("time_id"),
-                                resultSet.getTime("start_at").toLocalTime()
-                        ),
-                        new Theme(
-                                resultSet.getLong("theme_id"),
-                                resultSet.getString("theme_name"),
-                                resultSet.getString("theme_description"),
-                                resultSet.getString("theme_thumbnail")
-                        )
-                )
+                new ReservationMapper()
         );
     }
 

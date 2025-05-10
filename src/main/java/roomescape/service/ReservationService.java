@@ -1,7 +1,9 @@
 package roomescape.service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.NotAbleReservationException;
@@ -86,8 +88,8 @@ public class ReservationService {
         reservationRepository.delete(id);
     }
 
-    public List<ReservationResponse> readAllWithFilter(Long themeId, Long memberId, String dateFrom, String dateTo) {
-        List<Reservation> reservations = reservationRepository.readAllWithFilter(themeId, memberId, dateFrom, dateTo);
+    public List<ReservationResponse> readAllWithFilter(Map<String, Object> filter) {
+        List<Reservation> reservations = reservationRepository.readAllWithFilter(filter);
         return reservations.stream().map(ReservationResponse::from).toList();
     }
 }

@@ -1,4 +1,4 @@
-package roomescape.common.handler;
+package roomescape.common.exception.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

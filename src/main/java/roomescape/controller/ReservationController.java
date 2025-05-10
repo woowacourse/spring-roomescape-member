@@ -1,6 +1,8 @@
 package roomescape.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +54,19 @@ public class ReservationController {
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo
     ) {
-        List<ReservationResponse> responses = reservationService.readAllWithFilter(themeId, memberId, dateFrom, dateTo);
+
+        // TODO: 필터 조건을 ENUM 으로 관리하기.
+        // ? 필터 조건이 추가될때마다 Controller -> Service -> Repository 의 파라미터가 늘어나는 걸 막고 싶었다.
+        // ? 따라서 Map 으로 받도록 했는데, 파라미터가 계속 변경되는 문제는 해결했지만 결국엔 필터 조건 추가마다 Controller 와 Repository 를 수정해야 한다.
+        // ? 더 좋은 해결법이 없을까? RequestParam 을 한번에 받아서, 필터 정보를 표현하는 객체로 변환하는 방법은 어떨까?
+
+        Map<String, Object> filter = new HashMap<>();
+        if (themeId != null) filter.put("themeId", themeId);
+        if (memberId != null) filter.put("memberId", memberId);
+        if (dateFrom != null) filter.put("dateFrom", dateFrom);
+        if (dateTo != null) filter.put("dateTo", dateTo);
+
+        List<ReservationResponse> responses = reservationService.readAllWithFilter(filter);
         return ResponseEntity.ok(responses);
     }
 

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.common.mapper.MemberMapper;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
 import roomescape.repository.MemberRepository;
@@ -32,12 +33,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
         return jdbcTemplate.query(
                 query,
-                (resultSet, rowNum) -> new Member(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("email"),
-                        Role.valueOf(resultSet.getString("role"))
-                )
+                new MemberMapper()
         );
     }
 
@@ -81,13 +77,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
         return jdbcTemplate.query(
                 query,
-                (resultSet, rowNum) -> new Member(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("email"),
-                        resultSet.getString("password"),
-                        Role.valueOf(resultSet.getString("role"))
-                ),
+                new MemberMapper(),
                 email,
                 password
                 ).stream().findFirst();
@@ -102,12 +92,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
         return jdbcTemplate.query(
                 query,
-                (resultSet, rowNum) -> new Member(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("email"),
-                        Role.valueOf(resultSet.getString("role"))
-                ),
+                new MemberMapper(),
                 id
         ).stream().findFirst();
     }
