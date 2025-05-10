@@ -319,7 +319,7 @@ Content-Type: application/json
 
 ### 요청
 
-- 메서드 : POST 
+- 메서드 : POST
 - 요청 URL : /themes
 - 설명 : 테마를 추가한다.
 
@@ -367,8 +367,105 @@ DELETE /themes/1 HTTP/1.1
 HTTP/1.1 204
 ```
 
+## 로그인
+
+### 요청
+
+```json
+POST /login HTTP/1.1
+content-type: application/json
+host: localhost: 8080
+
+{
+"password": "password",
+"email": "admin@email.com"
+}
+```
+
+### 응답
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+Keep-Alive: timeout=60
+Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+```
+
+## 회원가입
+
+### 요청
+
+```json
+POST /members HTTP/1.1
+content-type: application/json
+host: localhost: 8080
+
+{
+"email": "admin@email.com"
+"password": "password",
+"name": "admin"
+}
+```
+
+### 응답
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+Keep-Alive: timeout=60
+```
+
+## 로그아웃
+
+### 요청
+
+```json
+POST /logout HTTP/1.1
+content-type: application/json
+host: localhost: 8080
+Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6Im1pbnQiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc0Njg1OTgyNywiZXhwIjoxNzQ2ODYwNzI3fQ.ubJECzC0wq_VP9KUzCyoHkIFpZeN7rVVyXHw0Uac1QE
+```
+
+### 응답
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+Keep-Alive: timeout=60
+
+{
+id
+}
+```
+
+## 인증 정보 조회
+
+### 요청
+
+```json
+GET /login/check HTTP/1.1
+cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+host: localhost: 8080
+```
+
+### 응답
+
+```json
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Type: application/json
+Date: Sun, 03 Mar 2024 19: 16: 56 GMT
+Keep-Alive: timeout=60
+Transfer-Encoding: chunked
+
+{
+"name": "어드민"
+}
+```
+
 ## 예외
-- DateTimeParseException : 날짜(yyyy-MM-dd) & 시간(HH:mm) 파싱 예외시 400 
+
+- DateTimeParseException : 날짜(yyyy-MM-dd) & 시간(HH:mm) 파싱 예외시 400
 - NotFoundException :  예약, 예약 시간이 존재하지 않을 경우 404
 - ReservationTimeInUseException : 해당 예약 시간에 예약이 존재하여 삭제할 수 없는 경우 409
 - AlreadyExistsException : 이미 예약, 예약 시간이 존재하는 경우 400
