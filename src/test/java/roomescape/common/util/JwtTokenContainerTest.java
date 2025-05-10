@@ -90,4 +90,25 @@ class JwtTokenContainerTest {
                 .isInstanceOf(LoginException.class);
     }
 
+    @Test
+    @DisplayName("정상적인 토큰인 경우 맴버 권한을 가져온다.")
+    void getMemberRole_test() {
+        // given
+        Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
+        String jwtToken = jwtTokenContainer.createJwtToken(member);
+        // when
+        Role memberRole = jwtTokenContainer.getMemberRole(jwtToken);
+        // then
+        assertThat(memberRole).isEqualTo(Role.USER);
+    }
+
+    @Test
+    @DisplayName("정상적이지 않은 토큰일 경우 권한을 가져오는 도중 예외를 발생한다.")
+    void getMemberRole_exception() {
+        // given
+        String strangeToken = "asdasdasdsad";
+        // when
+        assertThatThrownBy(() -> jwtTokenContainer.getMemberRole(strangeToken))
+                .isInstanceOf(LoginException.class);
+    }
 }

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.common.exception.LoginException;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 @Component
 public class JwtTokenContainer {
@@ -23,6 +24,7 @@ public class JwtTokenContainer {
         return Jwts.builder()
                 .subject(member.getId().toString())
                 .claim("name", member.getName())
+                .claim("role", member.getRole())
                 .signWith(secretKey)
                 .compact();
     }
@@ -62,6 +64,22 @@ public class JwtTokenContainer {
                     .parseSignedClaims(token)
                     .getPayload()
                     .get("name").toString();
+        } catch (JwtException e) {
+            throw new LoginException("올바르지 않은 토큰 형태입니다.");
+        }
+    }
+
+    public Role getMemberRole(String token){
+        try {
+            System.out.println("시작");
+            String role = Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .get("role").toString();
+            System.out.println("끝");
+            return Role.findRole(role);
         } catch (JwtException e) {
             throw new LoginException("올바르지 않은 토큰 형태입니다.");
         }
