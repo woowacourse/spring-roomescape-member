@@ -62,8 +62,8 @@ public class ExceptionController {
         return ResponseEntity.status(e.getStatusCode()).body(PREFIX + e.getMessage());
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleBasicException(Exception e) {
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleBasicException(RuntimeException e) {
         log.error("error has occurred ) {}", e.getMessage());
         log.error("error class ) {}", e.getClass());
         return ResponseEntity.internalServerError().body(PREFIX + "알 수 없는 에러가 발생했습니다.");
