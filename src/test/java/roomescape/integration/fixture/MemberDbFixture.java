@@ -29,6 +29,11 @@ public class MemberDbFixture {
         return createMember(한스, 이메일_leehyeonsu4888지메일, 비밀번호_gustn111느낌표두개, MemberRole.MEMBER);
     }
 
+    public Member leehyeonsu4888_지메일_gustn111느낌표두개() {
+        return createMember(한스, 이메일_leehyeonsu4888지메일, 비밀번호_gustn111느낌표두개, MemberRole.MEMBER);
+    }
+
+
     public Member createMember(MemberName name, MemberEmail email, MemberEncodedPassword password, MemberRole role) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", name.name())

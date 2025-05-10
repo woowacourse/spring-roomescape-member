@@ -18,7 +18,7 @@ import roomescape.domain.member.MemberRole;
 import roomescape.integration.fixture.MemberDbFixture;
 import roomescape.repository.MemberRepository;
 
-public class MemberRepositoryTest extends RepositoryBaseTest {
+class MemberRepositoryTest extends RepositoryBaseTest {
 
     @Autowired
     private MemberDbFixture memberDbFixture;
@@ -26,7 +26,6 @@ public class MemberRepositoryTest extends RepositoryBaseTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    private static final String SELECT_MEMBER_BY_ID = "SELECT * FROM member WHERE id = ?";
     private static final String COUNT_MEMBER_BY_ID = "SELECT COUNT(*) FROM member WHERE id = ?";
 
     @Test
@@ -41,7 +40,7 @@ public class MemberRepositoryTest extends RepositoryBaseTest {
         Member saved = memberRepository.save(email, name, password, role);
 
         // then
-        assertThat(getMemberCountById(saved.getId())).isEqualTo(1L);
+        assertThat(getMemberCountById(saved.getId())).isEqualTo(1);
     }
 
     @Test
@@ -84,7 +83,7 @@ public class MemberRepositoryTest extends RepositoryBaseTest {
     }
 
     @Test
-    void 모든_유저를_조회한다() {
+    void 모든_멤버를_조회한다() {
         // given
         Member member1 = memberDbFixture.한스_leehyeonsu4888_지메일_일반_멤버();
         Member member2 = memberDbFixture.createMember(

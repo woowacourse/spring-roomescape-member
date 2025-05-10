@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.time.AvailableReservationTime;
 
-public class AvailableReservationTimeTest {
+class AvailableReservationTimeTest {
 
     @Test
     void 시간은_null일_수_없다() {

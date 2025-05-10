@@ -5,7 +5,7 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.time.ReservationTime;
 
-public class ReservationTimeTest {
+class ReservationTimeTest {
 
     @Test
     void id는_null일_수_없다() {

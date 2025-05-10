@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.theme.LastWeekRange;
 
-public class LastWeekRangeTest {
+class LastWeekRangeTest {
 
     @Test
     void clock은_null일_수_없다() {

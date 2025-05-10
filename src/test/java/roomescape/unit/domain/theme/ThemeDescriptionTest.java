@@ -5,7 +5,7 @@ import roomescape.domain.theme.ThemeDescription;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class ThemeDescriptionTest {
+class ThemeDescriptionTest {
 
     @Test
     void null이면_예외를_던진다() {

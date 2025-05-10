@@ -1,6 +1,7 @@
 package roomescape.integration.repository;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.SoftAssertions.*;
 import static roomescape.common.Constant.FIXED_CLOCK;
 
 import java.time.LocalDate;
@@ -29,7 +30,7 @@ import roomescape.integration.fixture.ReservationDbFixture;
 import roomescape.integration.fixture.ReservationTimeDbFixture;
 import roomescape.integration.fixture.ThemeDbFixture;
 
-public class ReservationTimeRepositoryTest extends RepositoryBaseTest {
+class ReservationTimeRepositoryTest extends RepositoryBaseTest {
 
     @Autowired
     private ReservationTimeRepository repository;
@@ -75,13 +76,15 @@ public class ReservationTimeRepositoryTest extends RepositoryBaseTest {
         List<ReservationTime> all = repository.findAll();
 
         // then
-        assertThat(all).hasSize(2);
-        assertThat(all)
-                .extracting(ReservationTime::getId, ReservationTime::getStartAt)
-                .containsExactlyInAnyOrder(
-                        tuple(saved1.getId(), time1),
-                        tuple(saved2.getId(), time2)
-                );
+        assertSoftly(softly -> {
+            softly.assertThat(all).hasSize(2);
+            softly.assertThat(all)
+                    .extracting(ReservationTime::getId, ReservationTime::getStartAt)
+                    .containsExactlyInAnyOrder(
+                            tuple(saved1.getId(), time1),
+                            tuple(saved2.getId(), time2)
+                    );
+        });
     }
 
     @Test
@@ -93,8 +96,10 @@ public class ReservationTimeRepositoryTest extends RepositoryBaseTest {
         Optional<ReservationTime> found = repository.findById(saved.getId());
 
         // then
-        assertThat(found).isPresent();
-        assertThat(found.get().getStartAt()).isEqualTo(LocalTime.of(11, 0));
+        assertSoftly(softly -> {
+            assertThat(found).isPresent();
+            assertThat(found.get().getStartAt()).isEqualTo(LocalTime.of(11, 0));
+        });
     }
 
     @Test
@@ -129,9 +134,10 @@ public class ReservationTimeRepositoryTest extends RepositoryBaseTest {
         boolean notExists = repository.existByStartAt(LocalTime.of(17, 0));
 
         // then
-        SoftAssertions softly = new SoftAssertions();
-        softly.assertThat(exists).isTrue();
-        softly.assertThat(notExists).isFalse();
+        assertSoftly(softly -> {
+            softly.assertThat(exists).isTrue();
+            softly.assertThat(notExists).isFalse();
+        });
     }
 
     @Test
@@ -148,13 +154,14 @@ public class ReservationTimeRepositoryTest extends RepositoryBaseTest {
                 ReservationDateFixture.예약날짜_25_4_22.getDate(), 공포.getId());
 
         // then
-        SoftAssertions softly = new SoftAssertions();
-        softly.assertThat(available).hasSize(2);
-        softly.assertThat(available.get(0).time().getStartAt()).isEqualTo(LocalTime.of(10, 0));
-        softly.assertThat(available.get(0).available()).isTrue();
-        softly.assertThat(available.get(1).time().getStartAt()).isEqualTo(LocalTime.of(11, 0));
-        softly.assertThat(available.get(1).available()).isFalse();
-        softly.assertAll();
+        assertSoftly(softly -> {
+            softly.assertThat(available).hasSize(2);
+            softly.assertThat(available.get(0).time().getStartAt()).isEqualTo(LocalTime.of(10, 0));
+            softly.assertThat(available.get(0).available()).isTrue();
+            softly.assertThat(available.get(1).time().getStartAt()).isEqualTo(LocalTime.of(11, 0));
+            softly.assertThat(available.get(1).available()).isFalse();
+            softly.assertAll();
+        });
     }
 
     @Test
@@ -175,7 +182,7 @@ public class ReservationTimeRepositoryTest extends RepositoryBaseTest {
                 .findAllReservations();
 
         // then
-        SoftAssertions.assertSoftly(softly -> {
+        assertSoftly(softly -> {
             softly.assertThat(allReservations).hasSize(1);
             Reservation reservation = allReservations.getFirst();
             softly.assertThat(reservation.getId()).isEqualTo(예약_오늘.getId());
@@ -221,7 +228,7 @@ public class ReservationTimeRepositoryTest extends RepositoryBaseTest {
                 .findAllReservations();
 
         // then
-        SoftAssertions.assertSoftly(softly -> {
+        assertSoftly(softly -> {
             softly.assertThat(allReservations).hasSize(1);
             Reservation reservation = allReservations.getFirst();
             softly.assertThat(reservation.getId()).isEqualTo(예약_7일전.getId());

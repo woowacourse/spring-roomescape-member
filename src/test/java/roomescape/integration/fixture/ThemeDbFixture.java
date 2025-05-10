@@ -21,7 +21,6 @@ public class ThemeDbFixture {
 
     public Theme 공포() {
         return createTheme("공포", "공포 테마", "공포.jpg");
-
     }
 
     public Theme 로맨스() {

@@ -7,37 +7,27 @@ import io.restassured.http.ContentType;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import roomescape.common.RestAssuredTestBase;
-import roomescape.domain.member.MemberEmail;
-import roomescape.domain.member.MemberEncodedPassword;
-import roomescape.domain.member.MemberName;
-import roomescape.domain.member.MemberRole;
-import roomescape.repository.MemberRepository;
+import roomescape.integration.api.RestLoginMember;
+import roomescape.integration.fixture.MemberDbFixture;
 
 class LoginRestTest extends RestAssuredTestBase {
 
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberDbFixture memberDbFixture;
 
     @Test
     void 로그인을_한다() {
-        PasswordEncoder encoder = new BCryptPasswordEncoder();
-        memberRepository.save(
-                new MemberEmail("leehyeonsu4888@gmail.com"),
-                new MemberName("한스"),
-                new MemberEncodedPassword(encoder.encode("gustn111!!")),
-                MemberRole.MEMBER
-        );
+        // given
+         memberDbFixture.leehyeonsu4888_지메일_gustn111느낌표두개();
 
-        Map<String, Object> request = Map.of(
-                "password", "gustn111!!",
-                "email", "leehyeonsu4888@gmail.com"
-        );
+        // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(request)
+                .body(Map.of(
+                        "email", "leehyeonsu4888@gmail.com",
+                        "password", "gustn111!!"
+                ))
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(200);
@@ -45,34 +35,16 @@ class LoginRestTest extends RestAssuredTestBase {
 
     @Test
     void 현재_로그인된_멤버가_누구인지_조회한다() {
-        PasswordEncoder encoder = new BCryptPasswordEncoder();
-        memberRepository.save(
-                new MemberEmail("leenyeonsu4888@gmail.com"),
-                new MemberName("한스"),
-                new MemberEncodedPassword(encoder.encode("gustn111!!")),
-                MemberRole.MEMBER
-        );
+        // given
+        RestLoginMember restLoginMember = generateLoginMember();
 
-        Map<String, Object> request = Map.of(
-                "password", "gustn111!!",
-                "email", "leenyeonsu4888@gmail.com"
-        );
-
-        String sessionId = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .cookie("JSESSIONID");
-
+        // when & then
         RestAssured.given().log().all()
-                .cookie("JSESSIONID", sessionId)
+                .cookie("JSESSIONID", restLoginMember.sessionId())
                 .contentType(ContentType.JSON)
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(200)
-                .body("name", is("한스"));
+                .body("name", is(restLoginMember.member().getName().name()));
     }
 }

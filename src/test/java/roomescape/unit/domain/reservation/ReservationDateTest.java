@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.ReservationDate;
 
-public class ReservationDateTest {
+class ReservationDateTest {
 
     @Test
     @DisplayName("LocalDate로 생성하는 경우")

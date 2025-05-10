@@ -1,6 +1,7 @@
 package roomescape.integration.repository;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.SoftAssertions.*;
 import static roomescape.common.Constant.FIXED_CLOCK;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import roomescape.domain.time.ReservationTime;
 import roomescape.integration.fixture.ReservationDbFixture;
 import roomescape.integration.fixture.ThemeDbFixture;
 
-public class ThemeRepositoryTest extends RepositoryBaseTest {
+class ThemeRepositoryTest extends RepositoryBaseTest {
 
     @Autowired
     private ThemeRepository themeRepository;
@@ -61,9 +62,11 @@ public class ThemeRepositoryTest extends RepositoryBaseTest {
         Map<String, Object> row = jdbcTemplate.queryForMap(SELECT_THEME_BY_ID, saved.getId());
 
         // then
-        assertThat(row.get("name")).isEqualTo("공포");
-        assertThat(row.get("description")).isEqualTo("무섭다");
-        assertThat(row.get("thumbnail")).isEqualTo("thumb.jpg");
+        assertSoftly(softly -> {
+            softly.assertThat(row.get("name")).isEqualTo("공포");
+            softly.assertThat(row.get("description")).isEqualTo("무섭다");
+            softly.assertThat(row.get("thumbnail")).isEqualTo("thumb.jpg");
+        });
     }
 
     @Test
@@ -89,14 +92,15 @@ public class ThemeRepositoryTest extends RepositoryBaseTest {
         Optional<Theme> found = themeRepository.findById(공포.getId());
 
         // then
-        SoftAssertions softly = new SoftAssertions();
-        softly.assertThat(found).isPresent();
 
-        Theme theme = found.get();
-        softly.assertThat(theme.getId()).isEqualTo(공포.getId());
-        softly.assertThat(theme.getName()).isEqualTo(공포.getName());
-        softly.assertThat(theme.getThumbnail()).isEqualTo(공포.getThumbnail());
-        softly.assertThat(theme.getDescription()).isEqualTo(공포.getDescription());
+        assertSoftly(softly -> {
+            softly.assertThat(found).isPresent();
+            Theme theme = found.get();
+            softly.assertThat(theme.getId()).isEqualTo(공포.getId());
+            softly.assertThat(theme.getName()).isEqualTo(공포.getName());
+            softly.assertThat(theme.getThumbnail()).isEqualTo(공포.getThumbnail());
+            softly.assertThat(theme.getDescription()).isEqualTo(공포.getDescription());
+        });
     }
 
     @Test
@@ -147,14 +151,16 @@ public class ThemeRepositoryTest extends RepositoryBaseTest {
         List<Theme> popularThemes = themeRepository.findPopularThemeDuringAWeek(10, range);
 
         // then
-        assertThat(popularThemes).hasSize(10);
-        assertThat(popularThemes)
-                .extracting(Theme::getId)
-                .containsExactlyElementsOf(
-                        LongStream.rangeClosed(1, 10)
-                                .boxed()
-                                .toList()
-                );
+        assertSoftly(softly -> {
+            softly.assertThat(popularThemes).hasSize(10);
+            softly.assertThat(popularThemes)
+                    .extracting(Theme::getId)
+                    .containsExactlyElementsOf(
+                            LongStream.rangeClosed(1, 10)
+                                    .boxed()
+                                    .toList()
+                    );
+        });
     }
 
     private void addReservation(int count, ReservationDate date, ReservationTime time, Theme theme) {

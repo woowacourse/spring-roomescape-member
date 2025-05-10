@@ -17,7 +17,7 @@ import roomescape.domain.theme.ThemeThumbnail;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.theme.Theme;
 
-public class ReservationTest {
+class ReservationTest {
 
     private final ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
     private final Theme theme = new Theme(

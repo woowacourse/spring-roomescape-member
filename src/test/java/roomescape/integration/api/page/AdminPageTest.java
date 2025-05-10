@@ -20,7 +20,7 @@ class AdminPageTest extends RestAssuredTestBase {
     void 어드민_예약_추가_페이지_조회() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("JSESSIONID", generateSessionId())
+                .cookie("JSESSIONID", generateLoginAdmin().sessionId())
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
@@ -30,7 +30,7 @@ class AdminPageTest extends RestAssuredTestBase {
     void 어드민_예약_시간_관리_페이지_조회() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("JSESSIONID", generateSessionId())
+                .cookie("JSESSIONID", generateLoginAdmin().sessionId())
                 .when().get("/admin/time")
                 .then().log().all()
                 .statusCode(200);
@@ -40,33 +40,9 @@ class AdminPageTest extends RestAssuredTestBase {
     void 어드민_테마_관리_페이지_조회() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("JSESSIONID", generateSessionId())
+                .cookie("JSESSIONID", generateLoginAdmin().sessionId())
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200);
-    }
-
-    private String generateSessionId() {
-        PasswordEncoder encoder = new BCryptPasswordEncoder();
-        memberRepository.save(
-                new MemberEmail("leenyeonsu4888@gmail.com"),
-                new MemberName("한스"),
-                new MemberEncodedPassword(encoder.encode("gustn111!!")),
-                MemberRole.ADMIN
-        );
-
-        Map<String, Object> request = Map.of(
-                "password", "gustn111!!",
-                "email", "leenyeonsu4888@gmail.com"
-        );
-
-        return RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .cookie("JSESSIONID");
     }
 }
