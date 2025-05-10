@@ -71,10 +71,10 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findRankByDate(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = """
-                    SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id)
+                    SELECT t.id, t.name, t.description, t.thumbnail
                     FROM theme t
-                    LEFT JOIN reservation r
-                    ON t.id = r.theme_id AND r.date BETWEEN ? AND ?
+                    INNER JOIN reservation r ON t.id = r.theme_id
+                    WHERE r.date BETWEEN ? AND ?
                     GROUP BY t.id
                     ORDER BY COUNT(r.id) DESC, t.name ASC
                     LIMIT ?;
