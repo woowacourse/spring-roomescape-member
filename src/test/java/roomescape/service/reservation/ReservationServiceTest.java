@@ -9,10 +9,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import roomescape.dto.member.UserReservationRequest;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
+import roomescape.entity.member.Role;
 import roomescape.exceptions.EntityNotFoundException;
 import roomescape.exceptions.reservation.ReservationDuplicateException;
+import roomescape.infrastructure.member.MemberInfo;
 
 @SpringBootTest
 class ReservationServiceTest {
@@ -43,6 +46,23 @@ class ReservationServiceTest {
         //when
         ReservationRequest request = new ReservationRequest(givenDate, timeId, themeId, memberId);
         ReservationResponse actual = reservationService.postReservation(request);
+        //then
+        assertThat(actual.id()).isEqualTo(57);
+    }
+
+    @Test
+    @DisplayName("사용자가 예약을 생성할 시, 저장한 엔티티를 DTO로 반환한다.")
+    void postReservationWithMemberInfo() {
+        //given
+        List<ReservationResponse> given = reservationService.readReservation();
+        assertThat(given.size()).isEqualTo(56);
+        LocalDate givenDate = LocalDate.of(2028, 1, 10);
+        long timeId = 1L;
+        long themeId = 1L;
+        MemberInfo memberInfo = new MemberInfo(1L, "", "", Role.USER);
+        //when
+        UserReservationRequest request = new UserReservationRequest(givenDate, timeId, themeId);
+        ReservationResponse actual = reservationService.postReservation(request, memberInfo);
         //then
         assertThat(actual.id()).isEqualTo(57);
     }

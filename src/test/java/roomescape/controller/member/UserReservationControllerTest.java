@@ -17,6 +17,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.reservation.ReservationAvailableTimeResponse;
 import roomescape.service.memeber.UserReservationTimeService;
+import roomescape.service.reservation.ReservationService;
 
 @WebMvcTest(UserReservationController.class)
 class UserReservationControllerTest {
@@ -27,6 +28,9 @@ class UserReservationControllerTest {
     @MockitoBean
     private UserReservationTimeService userReservationTimeService;
 
+    @MockitoBean
+    private ReservationService reservationService;
+
     @BeforeEach
     void setUp() {
         RestAssuredMockMvc.mockMvc(mockMvc);
@@ -35,10 +39,10 @@ class UserReservationControllerTest {
     @Test
     @DisplayName("사용자가 예약 가능한 시간을 조회한다.")
     void readAvailableReservationTimes() {
-        ReservationAvailableTimeResponse response1 = new ReservationAvailableTimeResponse(1L, LocalTime.of(10, 0),
-                false);
-        ReservationAvailableTimeResponse response2 = new ReservationAvailableTimeResponse(2L, LocalTime.of(11, 0),
-                true);
+        ReservationAvailableTimeResponse response1
+                = new ReservationAvailableTimeResponse(1L, LocalTime.of(10, 0), false);
+        ReservationAvailableTimeResponse response2
+                = new ReservationAvailableTimeResponse(2L, LocalTime.of(11, 0), true);
 
         List<ReservationAvailableTimeResponse> reservationAvailableTimeResponses = List.of(
                 response1, response2

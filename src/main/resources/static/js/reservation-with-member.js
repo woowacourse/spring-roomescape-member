@@ -249,6 +249,7 @@ function requestCreate(reservation) {
 function requestDelete(id) {
     const requestOptions = {
         method: 'DELETE',
+        credentials: 'include',
     };
 
     return fetch(`${RESERVATION_API_ENDPOINT}/${id}`, requestOptions)
