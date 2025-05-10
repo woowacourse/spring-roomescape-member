@@ -10,9 +10,13 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import roomescape.reservation.controller.dto.AvailableTimeResponse;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
@@ -191,6 +195,37 @@ class ReservationServiceTest {
         assertAll(
                 () -> assertThat(availableTimes.get(0).alreadyBooked()).isTrue(),
                 () -> assertThat(availableTimes.get(1).alreadyBooked()).isFalse()
+        );
+    }
+
+    @DisplayName("필터 조건에 해당하는 예약 목록을 반환한다")
+    @MethodSource
+    @ParameterizedTest
+    void get_all_by_filter_test(
+            Long memberId,
+            Long themeId,
+            LocalDate dateFrom,
+            LocalDate dateTo,
+            List<Long> expectedReservationIds
+    ) {
+        // when
+        List<ReservationResponse> reservations = reservationService.getAllByFilter(memberId, themeId, dateFrom, dateTo);
+
+        // then
+        assertThat(reservations).extracting(ReservationResponse::id)
+                .containsExactlyInAnyOrderElementsOf(expectedReservationIds);
+    }
+
+    static Stream<Arguments> get_all_by_filter_test() {
+        return Stream.of(
+                Arguments.of(1L, null, null, null, List.of(1L)),
+                Arguments.of(null, 2L, null, null, List.of(2L)),
+                Arguments.of(null, null, LocalDate.of(2025, 4, 1), null, List.of(2L, 3L)),
+                Arguments.of(null, null, null, LocalDate.of(2025, 4, 1), List.of(1L)),
+                Arguments.of(null, null, LocalDate.of(2025, 3, 29), LocalDate.of(2025, 5, 1), List.of(2L)),
+                Arguments.of(3L, 3L, null, null, List.of(3L)),
+                Arguments.of(1L, 1L, LocalDate.of(2025, 3, 1), LocalDate.of(2025, 3, 30), List.of(1L)),
+                Arguments.of(null, null, null, null, List.of(1L, 2L, 3L))
         );
     }
 

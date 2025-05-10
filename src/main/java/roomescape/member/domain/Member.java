@@ -38,4 +38,8 @@ public class Member {
         return role;
     }
 
+    public boolean isSameId(Long memberId) {
+        return id.equals(memberId);
+    }
+
 }

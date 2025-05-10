@@ -63,8 +63,20 @@ public class Reservation {
         return theme.isSameId(themeId);
     }
 
+    public boolean hasMemberId(Long memberId) {
+        return member.isSameId(memberId);
+    }
+
     public boolean hasSameDate(LocalDate date) {
         return this.date.isEqual(date);
+    }
+
+    public boolean isSameOrAfter(LocalDate from) {
+        return !this.date.isBefore(from);
+    }
+
+    public boolean isSameOrBefore(LocalDate to) {
+        return !this.date.isAfter(to);
     }
 
 }

@@ -4,7 +4,10 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.function.Predicate;
 import org.springframework.stereotype.Service;
+import roomescape.member.domain.Member;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.controller.dto.AvailableTimeResponse;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
@@ -14,8 +17,6 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.reservation.repository.ThemeRepository;
-import roomescape.member.domain.Member;
-import roomescape.member.repository.MemberRepository;
 
 @Service
 public class ReservationService {
@@ -27,7 +28,8 @@ public class ReservationService {
     private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository, MemberRepository memberRepository,
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository,
+                              MemberRepository memberRepository,
                               Clock clock) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
@@ -39,6 +41,29 @@ public class ReservationService {
     public List<ReservationResponse> getAll() {
         return reservationRepository.findAll()
                 .stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    public List<ReservationResponse> getAllByFilter(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        List<Reservation> reservations = reservationRepository.findAll();
+        Predicate<Reservation> predicate = reservation -> true;
+
+        if (memberId != null) {
+            predicate = predicate.and(reservation -> reservation.hasMemberId(memberId));
+        }
+        if (themeId != null) {
+            predicate = predicate.and(reservation -> reservation.hasThemeId(themeId));
+        }
+        if (dateFrom != null) {
+            predicate = predicate.and(reservation -> reservation.isSameOrAfter(dateFrom));
+        }
+        if (dateTo != null) {
+            predicate = predicate.and(reservation -> reservation.isSameOrBefore(dateTo));
+        }
+
+        return reservations.stream()
+                .filter(predicate)
                 .map(ReservationResponse::from)
                 .toList();
     }

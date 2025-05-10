@@ -8,9 +8,15 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -18,6 +24,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.auth.controller.LoginController;
 import roomescape.auth.service.AuthService;
 import roomescape.global.config.TestConfig;
+import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.util.fixture.AuthFixture;
@@ -35,7 +42,7 @@ class AdminReservationIntegrationTest {
 
     @DisplayName("관리자 기능 요청 시 관리자 권한이 없으면 예외가 발생한다")
     @Test
-    void admin_interceptor_test(){
+    void admin_interceptor_test() {
         // given
         String token = AuthFixture.createUserToken(authService);
 
@@ -90,6 +97,69 @@ class AdminReservationIntegrationTest {
                 () -> assertThat(savedReservation.getTimeId()).isEqualTo(5L),
                 () -> assertThat(savedReservation.getThemeId()).isEqualTo(1L)
         );
+    }
+
+
+    @DisplayName("조건에 해당하는 사용자 예약 목록을 반환한다")
+    @MethodSource
+    @ParameterizedTest
+    void get_reservation_by_filter(
+            Long memberId,
+            Long themeId,
+            LocalDate dateFrom,
+            LocalDate dateTo,
+            List<Long> expectedReservationIds
+    ) {
+        // given
+        String token = AuthFixture.createAdminToken(authService);
+
+        Map<String, String> queryParams = new HashMap<>();
+        putIfNotNull(queryParams, "memberId", memberId);
+        putIfNotNull(queryParams, "themeId", themeId);
+        putIfNotNull(queryParams, "dateFrom", dateFrom);
+        putIfNotNull(queryParams, "dateTo", dateTo);
+
+        // when
+        List<ReservationResponse> reservations = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie(LoginController.TOKEN_COOKIE_NAME, token)
+                .params(queryParams)
+                .when().get("/admin/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getList(".", ReservationResponse.class);
+
+        // then
+        assertThat(reservations)
+                .extracting(ReservationResponse::id)
+                .containsExactlyInAnyOrderElementsOf(expectedReservationIds);
+    }
+
+    //TODO : 데이터 날짜에 맞게 조정
+    static Stream<Arguments> get_reservation_by_filter() {
+        return Stream.of(
+                Arguments.of(1L, null, null, null, List.of(1L, 2L, 3L, 8L, 11L)),
+                Arguments.of(1L, 1L, null, null, List.of(1L, 2L, 3L)),
+                Arguments.of(1L, null, LocalDate.of(2025, 4, 25), null, List.of(2L, 3L, 8L, 11L)),
+                Arguments.of(1L, null, null, LocalDate.of(2025, 4, 29), List.of(1L, 2L, 3L, 8L)),
+                Arguments.of(null, 2L, null, null, List.of(4L, 5L, 6L)),
+                Arguments.of(null, 3L, LocalDate.of(2025, 4, 27), null, List.of(7L, 8L, 9L, 10L)),
+                Arguments.of(null, 3L, null, LocalDate.of(2025, 4, 30), List.of(7L, 8L, 9L, 10L)),
+                Arguments.of(null, null, LocalDate.of(2025, 4, 27), null,
+                        List.of(6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L, 16L)),
+                Arguments.of(null, null, null, LocalDate.of(2025, 4, 28), List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L)),
+                Arguments.of(null, null, LocalDate.of(2025, 4, 27), LocalDate.of(2025, 4, 29), List.of(6L, 7L, 8L, 9L)),
+                Arguments.of(null, null, null, null,
+                        List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L, 16L))
+        );
+    }
+
+    private void putIfNotNull(Map<String, String> map, String key, Object value) {
+        if (value != null) {
+            map.put(key, value.toString());
+        }
     }
 
 }
