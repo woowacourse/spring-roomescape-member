@@ -31,6 +31,12 @@ public final class GlobalExceptionHandler {
                 .body(new ErrorResponseDto(exception.getMessage()));
     }
 
+    @ExceptionHandler(value = MemberException.class)
+    public ResponseEntity<ErrorResponseDto> handleMemberException(MemberException exception) {
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponseDto(exception.getMessage()));
+    }
+
     @ExceptionHandler(value = UnAuthorizedException.class)
     public ResponseEntity<ErrorResponseDto> handleUnAuthorizedException(UnAuthorizedException exception) {
         return ResponseEntity.status(401)

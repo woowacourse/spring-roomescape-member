@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.AccessToken;
 import roomescape.business.domain.member.Member;
 import roomescape.config.LoginMember;
+import roomescape.exception.MemberException;
 import roomescape.exception.UnAuthorizedException;
 import roomescape.persistence.MemberRepository;
 import roomescape.presentation.member.dto.LoginRequestDto;
@@ -33,9 +34,9 @@ public class MemberService {
 
     public AccessToken login(LoginRequestDto loginRequestDto) {
         Member member = memberRepository.findByEmail(loginRequestDto.email())
-                .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 잘못되었습니다."));
+                .orElseThrow(() -> new MemberException("이메일 또는 비밀번호가 잘못되었습니다."));
         if (!member.getPassword().equals(loginRequestDto.password())) {
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 잘못되었습니다.");
+            throw new MemberException("이메일 또는 비밀번호가 잘못되었습니다.");
         }
         return AccessToken.create(member);
     }
@@ -43,7 +44,7 @@ public class MemberService {
     public LoginMember getMemberFromToken(AccessToken accessToken) {
         Long memberIdFromToken = accessToken.extractMemberId();
         Member member = memberRepository.findById(memberIdFromToken)
-                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+                .orElseThrow(() -> new MemberException("사용자가 존재하지 않습니다."));
         return new LoginMember(
                 member.getId(),
                 member.getName(),

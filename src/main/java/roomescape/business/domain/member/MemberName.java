@@ -1,5 +1,7 @@
 package roomescape.business.domain.member;
 
+import roomescape.exception.MemberException;
+
 public record MemberName(
         String value
 ) {
@@ -9,10 +11,10 @@ public record MemberName(
 
     public MemberName {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("사용자 이름은 null이거나 빈 문자열일 수 없습니다.");
+            throw new MemberException("사용자 이름은 null이거나 빈 문자열일 수 없습니다.");
         }
         if (value.length() < MIN_LENGTH || MAX_LENGTH < value.length()) {
-            throw new IllegalArgumentException("사용자 이름은 %d자 이상 %d자 이하이어야 합니다.".formatted(MIN_LENGTH, MAX_LENGTH));
+            throw new MemberException("사용자 이름은 %d자 이상 %d자 이하이어야 합니다.".formatted(MIN_LENGTH, MAX_LENGTH));
         }
     }
 }
