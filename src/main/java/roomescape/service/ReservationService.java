@@ -29,7 +29,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public ReservationResponseDto createMemberReservation(ReservationCreateDto dto) {
+    public ReservationResponseDto createReservation(ReservationCreateDto dto) {
         ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
                 .orElseThrow(() -> new NotFoundException("[ERROR] 예약 시간을 찾을 수 없습니다. id : " + dto.timeId()));
 
