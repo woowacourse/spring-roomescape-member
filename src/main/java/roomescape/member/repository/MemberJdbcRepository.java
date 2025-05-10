@@ -22,7 +22,8 @@ public class MemberJdbcRepository implements MemberRepository {
             result.getLong("id"),
             result.getString("name"),
             result.getString("email"),
-            result.getString("password")
+            result.getString("password"),
+            result.getString("role")
     );
 
 
@@ -37,11 +38,12 @@ public class MemberJdbcRepository implements MemberRepository {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", name)
                 .addValue("email", email)
-                .addValue("password", password);
+                .addValue("password", password)
+                .addValue("role", "MEMBER");
 
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new Member(id, name, email, password);
+        return new Member(id, name, email, password, "MEMBER");
     }
 
     @Override

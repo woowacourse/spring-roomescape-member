@@ -32,7 +32,7 @@ public class AutoService {
     public MemberResponse findUserByToken(String token) {
         String payload = jwtTokenProvider.getPayload(token);
         Member member = memberRepository.findUserByEmail(payload);
-        return new MemberResponse(member.getName());
+        return new MemberResponse(member.getName(), member.getRole());
     }
 
 }

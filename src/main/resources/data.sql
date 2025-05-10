@@ -1,5 +1,5 @@
 -- 사용자
-INSERT INTO users (name, email, password) VALUES ('매트', 'matt.woowahan', '1234');
+INSERT INTO users (name, email, password, role) VALUES ('매트', 'matt.kakao', '1234', 'ADMIN');
 
 -- 시간
 INSERT INTO reservation_time (start_at) VALUES ('10:00');

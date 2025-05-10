@@ -5,8 +5,10 @@ public class Member {
     private final String name;
     private final String email;
     private final String password;
+    private final String role;
 
-    public Member(Long id, String name, String email, String passWord) {
+    public Member(Long id, String name, String email, String passWord, String role) {
+        validateRole(role);
         validateName(name);
         validateEmail(email);
         validatePassword(passWord);
@@ -14,6 +16,7 @@ public class Member {
         this.name = name;
         this.email = email;
         this.password = passWord;
+        this.role = role;
     }
 
     private void validateName(String name) {
@@ -34,6 +37,12 @@ public class Member {
         }
     }
 
+    private void validateRole(String role) {
+        if (!role.matches("ADMIN") && !role.matches("MEMBER")) {
+            throw new IllegalArgumentException("[ERROR] Role 은 ADMIN 또는 MEMBER 입니다.");
+        }
+    }
+
     public String getName() {
         return name;
     }
@@ -48,5 +57,9 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getRole() {
+        return role;
     }
 }
