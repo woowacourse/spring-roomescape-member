@@ -1,7 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.util.List;
 import org.springframework.stereotype.Component;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
@@ -10,32 +8,14 @@ import roomescape.dto.ThemeResponse;
 import roomescape.entity.Theme;
 
 @Component
-public class ThemeService {
+public class ThemeCommandService {
 
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
 
-    public ThemeService(ThemeDao themeDao, ReservationDao reservationDao) {
+    public ThemeCommandService(ThemeDao themeDao, ReservationDao reservationDao) {
         this.themeDao = themeDao;
         this.reservationDao = reservationDao;
-    }
-
-    public List<ThemeResponse> findAllThemes() {
-        return themeDao.findAll().stream()
-                .map(ThemeResponse::new)
-                .toList();
-    }
-
-    public List<ThemeResponse> findThemeRank() {
-        LocalDate now = LocalDate.now();
-        LocalDate startDate = now.minusDays(8);
-        LocalDate endDate = now.minusDays(1);
-        List<Long> themeIds = reservationDao.findMostReservedThemeIdsBetween(startDate, endDate);
-        List<Theme> themes = themeDao.findAllById(themeIds);
-
-        return themes.stream()
-                .map(ThemeResponse::new)
-                .toList();
     }
 
     public ThemeResponse createTheme(ThemeRequest themeRequest) {

@@ -11,16 +11,16 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.config.LoginMember;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
-import roomescape.service.ReservationService;
+import roomescape.service.ReservationCommandService;
 
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
 
-    private final ReservationService reservationService;
+    private final ReservationCommandService reservationCommandService;
 
-    public ReservationController(ReservationService reservationService) {
-        this.reservationService = reservationService;
+    public ReservationController(ReservationCommandService reservationCommandService) {
+        this.reservationCommandService = reservationCommandService;
     }
 
     @PostMapping
@@ -29,7 +29,7 @@ public class ReservationController {
             @RequestBody ReservationRequest request,
             LoginMember member
     ) {
-        return reservationService.createReservation(request, member);
+        return reservationCommandService.createReservationOfLoginMember(request, member);
     }
 
     @DeleteMapping("/{id}")
@@ -37,6 +37,6 @@ public class ReservationController {
     public void deleteReservation(
             @PathVariable long id
     ) {
-        reservationService.deleteReservation(id);
+        reservationCommandService.deleteReservation(id);
     }
 }

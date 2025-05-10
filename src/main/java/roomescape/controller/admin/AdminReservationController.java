@@ -14,21 +14,21 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.AdminReservationRequest;
 import roomescape.dto.ReservationResponse;
-import roomescape.service.AdminReservationService;
-import roomescape.service.ReservationService;
+import roomescape.service.ReservationCommandService;
+import roomescape.service.ReservationQueryService;
 
 @RestController
 @RequestMapping("/admin/reservations")
 public class AdminReservationController {
 
     //TODO : 둘을 어떻게 합치거나 분리할지 모르겠다.
-    private final AdminReservationService adminReservationService;
-    private final ReservationService reservationService;
+    private final ReservationCommandService reservationCommandService;
+    private final ReservationQueryService reservationQueryService;
 
-    public AdminReservationController(AdminReservationService adminReservationService,
-                                      ReservationService reservationService) {
-        this.adminReservationService = adminReservationService;
-        this.reservationService = reservationService;
+    public AdminReservationController(ReservationCommandService reservationCommandService,
+                                      ReservationQueryService reservationQueryService) {
+        this.reservationCommandService = reservationCommandService;
+        this.reservationQueryService = reservationQueryService;
     }
 
     @GetMapping
@@ -44,9 +44,9 @@ public class AdminReservationController {
                 || dateFrom != null
                 || dateTo != null
         ) {
-            return reservationService.searchReservations(themeId, memberId, dateFrom, dateTo);
+            return reservationQueryService.searchReservations(themeId, memberId, dateFrom, dateTo);
         }
-        return reservationService.findAllReservations();
+        return reservationQueryService.findAllReservations();
     }
 
     @PostMapping
@@ -54,7 +54,7 @@ public class AdminReservationController {
     public ReservationResponse createReservation(
             @RequestBody AdminReservationRequest request
     ) {
-        return adminReservationService.createReservation(request);
+        return reservationCommandService.createReservationOfRequestMember(request);
     }
 
     @DeleteMapping("/{id}")
@@ -62,6 +62,6 @@ public class AdminReservationController {
     public void deleteReservation(
             @PathVariable long id
     ) {
-        reservationService.deleteReservation(id);
+        reservationCommandService.deleteReservation(id);
     }
 }

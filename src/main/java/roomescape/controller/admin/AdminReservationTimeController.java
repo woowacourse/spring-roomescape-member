@@ -12,23 +12,27 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.service.ReservationTimeService;
+import roomescape.service.ReservationTimeCommandService;
+import roomescape.service.ReservationTimeQueryService;
 
 @RestController
 @RequestMapping("/admin/times")
 public class AdminReservationTimeController {
 
-    private final ReservationTimeService reservationTimeService;
+    private final ReservationTimeCommandService reservationTimeCommandService;
+    private final ReservationTimeQueryService reservationTimeQueryService;
 
-    public AdminReservationTimeController(ReservationTimeService reservationTimeService) {
-        this.reservationTimeService = reservationTimeService;
+    public AdminReservationTimeController(ReservationTimeCommandService reservationTimeCommandService,
+                                          ReservationTimeQueryService reservationTimeQueryService) {
+        this.reservationTimeCommandService = reservationTimeCommandService;
+        this.reservationTimeQueryService = reservationTimeQueryService;
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ReservationTimeResponse> readTimes(
     ) {
-        return reservationTimeService.findAllTimes();
+        return reservationTimeQueryService.findAllTimes();
     }
 
     @PostMapping
@@ -36,7 +40,7 @@ public class AdminReservationTimeController {
     public ReservationTimeResponse createTime(
             @RequestBody ReservationTimeRequest request
     ) {
-        return reservationTimeService.createTime(request);
+        return reservationTimeCommandService.createTime(request);
     }
 
     @DeleteMapping("/{id}")
@@ -44,6 +48,6 @@ public class AdminReservationTimeController {
     public void deleteTime(
             @PathVariable Long id
     ) {
-        reservationTimeService.deleteTime(id);
+        reservationTimeCommandService.deleteTime(id);
     }
 }
