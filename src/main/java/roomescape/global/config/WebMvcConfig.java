@@ -12,13 +12,23 @@ import roomescape.auth.controller.resolver.LoginMemberIdArgumentResolver;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     private final LoginMemberIdArgumentResolver loginMemberIdArgumentResolver;
+    private final AdminAuthInterceptor adminAuthInterceptor;
 
-    public WebMvcConfig(LoginMemberIdArgumentResolver loginMemberIdArgumentResolver) {
+    public WebMvcConfig(LoginMemberIdArgumentResolver loginMemberIdArgumentResolver,
+                        AdminAuthInterceptor adminAuthInterceptor) {
         this.loginMemberIdArgumentResolver = loginMemberIdArgumentResolver;
+        this.adminAuthInterceptor = adminAuthInterceptor;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(loginMemberIdArgumentResolver);
     }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(adminAuthInterceptor)
+                .addPathPatterns("/admin/**");
+    }
+
 }

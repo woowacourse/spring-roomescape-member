@@ -1,6 +1,7 @@
 package roomescape.reservation.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -31,6 +32,31 @@ class AdminReservationIntegrationTest {
 
     @Autowired
     private ReservationRepository reservationRepository;
+
+    @DisplayName("관리자 기능 요청 시 관리자 권한이 없으면 예외가 발생한다")
+    @Test
+    void admin_interceptor_test(){
+        // given
+        String token = AuthFixture.createUserToken(authService);
+
+        Map<String, String> params = Map.of(
+                "date", "2099-08-05",
+                "timeId", "5",
+                "themeId", "1",
+                "memberId", "1"
+        );
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie(LoginController.TOKEN_COOKIE_NAME, token)
+                .body(params)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                // TODO: 임시 500 - 403변경
+                .statusCode(500)
+                .body(equalTo("접근 권한이 없습니다."));
+    }
 
     @DisplayName("관리자 API 경로로 예약을 생성한다")
     @Test
