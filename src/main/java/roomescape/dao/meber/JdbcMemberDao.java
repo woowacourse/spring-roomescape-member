@@ -1,5 +1,6 @@
 package roomescape.dao.meber;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -43,5 +44,11 @@ public class JdbcMemberDao implements MemberDao {
                 """;
         return jdbcTemplate.query(sql, memberMapper, id).stream()
                 .findFirst();
+    }
+
+    @Override
+    public List<Member> findAll() {
+        final String sql = "SELECT * FROM member";
+        return jdbcTemplate.query(sql, memberMapper);
     }
 }
