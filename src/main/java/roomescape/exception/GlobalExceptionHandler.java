@@ -33,6 +33,13 @@ public final class GlobalExceptionHandler {
                 .body(exception.getMessage());
     }
 
+    @ExceptionHandler(value = MemberException.class)
+    public ResponseEntity<String> handleMemberException(MemberException exception) {
+        return ResponseEntity
+                .badRequest()
+                .body(exception.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGeneralException(Exception exception) {
         LOG.error("Unexpected error occurred", exception);
