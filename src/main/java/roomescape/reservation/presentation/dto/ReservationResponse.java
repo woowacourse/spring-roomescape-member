@@ -1,12 +1,12 @@
 package roomescape.reservation.presentation.dto;
 
 import java.time.LocalDate;
-import roomescape.member.presentation.dto.MemberResponse;
+import roomescape.member.presentation.dto.MemberNameResponse;
 import roomescape.reservation.domain.Reservation;
 
 public class ReservationResponse {
     private Long id;
-    private MemberResponse member;
+    private MemberNameResponse member;
     private ThemeResponse theme;
     private LocalDate date;
     private ReservationTimeResponse time;
@@ -16,7 +16,7 @@ public class ReservationResponse {
 
     public ReservationResponse(final Reservation reservation) {
         this.id = reservation.getId();
-        this.member = new MemberResponse(reservation.getMember().getName());
+        this.member = new MemberNameResponse(reservation.getMember().getName());
         this.theme = new ThemeResponse(reservation.getTheme());
         this.date = reservation.getDate().getReservationDate();
         this.time = new ReservationTimeResponse(reservation.getReservationTime());
@@ -26,7 +26,7 @@ public class ReservationResponse {
         return id;
     }
 
-    public MemberResponse getMember() {
+    public MemberNameResponse getMember() {
         return member;
     }
 

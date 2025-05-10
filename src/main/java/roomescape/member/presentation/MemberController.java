@@ -2,15 +2,17 @@ package roomescape.member.presentation;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.member.application.dto.GetMemberResponse;
 import roomescape.member.application.service.AuthService;
 import roomescape.member.domain.Member;
 import roomescape.member.presentation.dto.LoginRequest;
-import roomescape.member.presentation.dto.MemberResponse;
+import roomescape.member.presentation.dto.MemberNameResponse;
 import roomescape.member.presentation.dto.RegisterRequest;
 import roomescape.member.presentation.dto.TokenResponse;
 
@@ -36,8 +38,8 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLogin(Member member) {
-        return ResponseEntity.ok().body(new MemberResponse(member.getName()));
+    public ResponseEntity<MemberNameResponse> checkLogin(Member member) {
+        return ResponseEntity.ok().body(new MemberNameResponse(member.getName()));
     }
 
     @PostMapping("/logout")
@@ -49,8 +51,14 @@ public class MemberController {
     }
 
     @PostMapping("/members")
-    public ResponseEntity<MemberResponse> register(@RequestBody RegisterRequest registerRequest) {
-        MemberResponse response = authService.signup(registerRequest);
+    public ResponseEntity<MemberNameResponse> register(@RequestBody RegisterRequest registerRequest) {
+        MemberNameResponse response = authService.signup(registerRequest);
         return ResponseEntity.status(201).body(response);
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity<List<GetMemberResponse>> getMembers() {
+        List<GetMemberResponse> members = authService.getMembers();
+        return ResponseEntity.ok().body(members);
     }
 }

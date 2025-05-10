@@ -1,5 +1,6 @@
 package roomescape.member.infrastructure.dao;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -7,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.application.dto.CreateMemberRequest;
+import roomescape.member.application.dto.GetMemberResponse;
 import roomescape.member.application.repository.MemberRepository;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
@@ -85,5 +87,16 @@ public class MemberDao implements MemberRepository {
         }
     }
 
-
+    @Override
+    public List<GetMemberResponse> findAll() {
+        String sql = """
+                SELECT id, name
+                FROM member
+                """;
+        return jdbcTemplate.query(sql,
+                (resultSet, rowNum) -> new GetMemberResponse(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name")
+                ));
+    }
 }
