@@ -11,8 +11,7 @@ public class LogInterceptor implements HandlerInterceptor {
     private static final Logger log = Logger.getLogger(LogInterceptor.class.getName());
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String requestURI = request.getRequestURI();
         log.info("[API REQUEST] " + requestURI);
 
@@ -20,8 +19,8 @@ public class LogInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
-            throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,
+                                Exception ex) {
         String requestURI = request.getRequestURI();
         int status = response.getStatus();
         log.info("[API RESPONSE] " + requestURI + ": " + status);
