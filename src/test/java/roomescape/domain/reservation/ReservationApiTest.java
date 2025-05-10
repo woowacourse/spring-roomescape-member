@@ -281,4 +281,62 @@ class ReservationApiTest {
                 .body("size()", is(2))
                 .body("alreadyBooked", containsInAnyOrder(true, false));
     }
+
+    @DisplayName("예약 정보를 themeId, memberId, dataFrom, dataTo로 필터링하여 조회한다.")
+    @Test
+    void filterReservationsByParams() {
+        // given
+        final ReservationTime time = reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(10, 0)));
+        final Theme theme1 = themeRepository.save(Theme.withoutId("테마1", "설명1", "img1"));
+        final Theme theme2 = themeRepository.save(Theme.withoutId("테마2", "설명2", "img2"));
+        final User user1 = userRepository.save(User.withoutId(new Name("유저1"), "user1@a.com", "pw", Roles.USER));
+        final User user2 = userRepository.save(User.withoutId(new Name("유저2"), "user2@a.com", "pw", Roles.USER));
+        final LocalDate today = LocalDate.now();
+
+        // 예약 3개 생성
+        reservationRepository.save(Reservation.withoutId(user1, today, time, theme1));
+        reservationRepository.save(Reservation.withoutId(user2, today.plusDays(1), time, theme1));
+        reservationRepository.save(Reservation.withoutId(user1, today.plusDays(2), time, theme2));
+
+        // when & then
+        // themeId로 필터
+        RestAssured.given()
+                .queryParam("themeId", theme1.getId())
+                .when()
+                .get("/reservations")
+                .then()
+                .statusCode(200)
+                .body("size()", is(2));
+
+        // memberId로 필터
+        RestAssured.given()
+                .queryParam("memberId", user2.getId())
+                .when()
+                .get("/reservations")
+                .then()
+                .statusCode(200)
+                .body("size()", is(1));
+
+        // 날짜 범위로 필터
+        RestAssured.given()
+                .queryParam("dataFrom", formatDateTime(today))
+                .queryParam("dataTo", formatDateTime(today.plusDays(1)))
+                .when()
+                .get("/reservations")
+                .then()
+                .statusCode(200)
+                .body("size()", is(2));
+
+        // themeId + memberId + 날짜 범위 조합
+        RestAssured.given()
+                .queryParam("themeId", theme1.getId())
+                .queryParam("memberId", user2.getId())
+                .queryParam("dataFrom", formatDateTime(today))
+                .queryParam("dataTo", formatDateTime(today.plusDays(2)))
+                .when()
+                .get("/reservations")
+                .then()
+                .statusCode(200)
+                .body("size()", is(1));
+    }
 }
