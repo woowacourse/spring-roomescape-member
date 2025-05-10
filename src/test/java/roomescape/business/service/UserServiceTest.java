@@ -8,8 +8,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.business.model.entity.User;
 import roomescape.business.model.repository.UserRepository;
-import roomescape.exception.business.DuplicatedEmailException;
-import roomescape.exception.business.UserNotFoundException;
+import roomescape.exception.business.InvalidCreateArgumentException;
+import roomescape.exception.business.NotFoundException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -58,7 +58,7 @@ class UserServiceTest {
 
         // when & then
         assertThatThrownBy(() -> userService.register(name, email, password))
-                .isInstanceOf(DuplicatedEmailException.class);
+                .isInstanceOf(InvalidCreateArgumentException.class);
 
         verify(userRepository).existByEmail(email);
         verify(userRepository, never()).save(any(User.class));
@@ -91,7 +91,7 @@ class UserServiceTest {
 
         // when & then
         assertThatThrownBy(() -> userService.getByEmail(email))
-                .isInstanceOf(UserNotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
 
         verify(userRepository).findByEmail(email);
     }

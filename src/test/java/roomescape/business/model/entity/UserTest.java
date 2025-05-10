@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.business.model.vo.UserRole;
-import roomescape.exception.business.NameContainsNumberException;
-import roomescape.exception.business.UserNameLengthExceedException;
+import roomescape.exception.business.InvalidCreateArgumentException;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -56,7 +55,7 @@ class UserTest {
             final String tooLongName = "이름이너무길어서예외가발생합니다";
 
             assertThatThrownBy(() -> User.create(tooLongName, VALID_EMAIL, VALID_PASSWORD))
-                    .isInstanceOf(UserNameLengthExceedException.class);
+                    .isInstanceOf(InvalidCreateArgumentException.class);
         }
 
         @ParameterizedTest
@@ -64,7 +63,7 @@ class UserTest {
         void 이름에_숫자가_포함되면_예외가_발생한다(String nameWithNumber) {
             // when, then
             assertThatThrownBy(() -> User.create(nameWithNumber, VALID_EMAIL, VALID_PASSWORD))
-                    .isInstanceOf(NameContainsNumberException.class);
+                    .isInstanceOf(InvalidCreateArgumentException.class);
         }
 
         @Test

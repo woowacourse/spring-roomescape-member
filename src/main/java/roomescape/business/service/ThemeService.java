@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import roomescape.business.model.entity.Theme;
 import roomescape.business.model.repository.ReservationRepository;
 import roomescape.business.model.repository.ThemeRepository;
-import roomescape.exception.business.ConnectedReservationExistException;
-import roomescape.exception.business.ThemeNotFoundException;
+import roomescape.exception.business.NotFoundException;
+import roomescape.exception.business.RelatedEntityExistException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -45,10 +45,10 @@ public class ThemeService {
 
     public void delete(final String id) {
         if (reservationRepository.existByThemeId(id)) {
-            throw new ConnectedReservationExistException();
+            throw new RelatedEntityExistException("해당 테마의 예약이 존재합니다.");
         }
         if (!themeRepository.existById(id)) {
-            throw new ThemeNotFoundException();
+            throw new NotFoundException("존재하지 않는 테마입니다.");
         }
         themeRepository.deleteById(id);
     }

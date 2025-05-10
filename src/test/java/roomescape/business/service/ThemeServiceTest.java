@@ -9,8 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.business.model.entity.Theme;
 import roomescape.business.model.repository.ReservationRepository;
 import roomescape.business.model.repository.ThemeRepository;
-import roomescape.exception.business.ConnectedReservationExistException;
-import roomescape.exception.business.ThemeNotFoundException;
+import roomescape.exception.business.NotFoundException;
+import roomescape.exception.business.RelatedEntityExistException;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -121,7 +121,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.delete(themeId))
-                .isInstanceOf(ThemeNotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
 
         verify(reservationRepository).existByThemeId(themeId);
         verify(themeRepository).existById(themeId);
@@ -138,7 +138,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.delete(themeId))
-                .isInstanceOf(ConnectedReservationExistException.class);
+                .isInstanceOf(RelatedEntityExistException.class);
 
         verify(reservationRepository).existByThemeId(themeId);
         verify(themeRepository, never()).existById(anyString());

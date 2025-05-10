@@ -2,7 +2,7 @@ package roomescape.business.model.entity;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.business.ThemeNameMaxLengthExceedException;
+import roomescape.exception.business.InvalidCreateArgumentException;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -16,7 +16,7 @@ class ThemeTest {
             final String name = "dompoolemondompoolemon";
 
             assertThatThrownBy(() -> Theme.create(name, "", ""))
-                    .isInstanceOf(ThemeNameMaxLengthExceedException.class);
+                    .isInstanceOf(InvalidCreateArgumentException.class);
         }
     }
 }

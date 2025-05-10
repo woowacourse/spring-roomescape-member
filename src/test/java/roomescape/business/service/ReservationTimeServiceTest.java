@@ -9,10 +9,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.business.model.entity.ReservationTime;
 import roomescape.business.model.repository.ReservationRepository;
 import roomescape.business.model.repository.ReservationTimeRepository;
-import roomescape.exception.business.ConnectedReservationExistException;
-import roomescape.exception.business.HasDuplicatedTimeException;
-import roomescape.exception.business.ReservationTimeIntervalException;
-import roomescape.exception.business.ReservationTimeNotFoundException;
+import roomescape.exception.business.InvalidCreateArgumentException;
+import roomescape.exception.business.NotFoundException;
+import roomescape.exception.business.RelatedEntityExistException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -65,7 +64,7 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.addAndGet(time))
-                .isInstanceOf(HasDuplicatedTimeException.class);
+                .isInstanceOf(InvalidCreateArgumentException.class);
 
         verify(reservationTimeRepository).existByTime(time);
         verify(reservationTimeRepository, never()).existBetween(any(LocalTime.class), any(LocalTime.class));
@@ -83,7 +82,7 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.addAndGet(time))
-                .isInstanceOf(ReservationTimeIntervalException.class);
+                .isInstanceOf(InvalidCreateArgumentException.class);
 
         verify(reservationTimeRepository).existByTime(time);
         verify(reservationTimeRepository).existBetween(any(LocalTime.class), any(LocalTime.class));
@@ -160,7 +159,7 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.delete(timeId))
-                .isInstanceOf(ReservationTimeNotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
 
         verify(reservationRepository).existByTimeId(timeId);
         verify(reservationTimeRepository).existById(timeId);
@@ -177,7 +176,7 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.delete(timeId))
-                .isInstanceOf(ConnectedReservationExistException.class);
+                .isInstanceOf(RelatedEntityExistException.class);
 
         verify(reservationRepository).existByTimeId(timeId);
         verify(reservationTimeRepository, never()).existById(anyString());

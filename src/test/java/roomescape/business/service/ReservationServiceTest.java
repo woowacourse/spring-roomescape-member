@@ -15,10 +15,8 @@ import roomescape.business.model.repository.ReservationTimeRepository;
 import roomescape.business.model.repository.ThemeRepository;
 import roomescape.business.model.repository.UserRepository;
 import roomescape.exception.auth.ForbiddenException;
-import roomescape.exception.business.AlreadyReservedException;
-import roomescape.exception.business.ReservationNotFoundException;
-import roomescape.exception.business.ThemeNotFoundException;
-import roomescape.exception.business.UserNotFoundException;
+import roomescape.exception.business.DuplicatedException;
+import roomescape.exception.business.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -91,7 +89,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.addAndGet(date, timeId, themeId, userId))
-                .isInstanceOf(UserNotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
 
         verify(userRepository).findById(userId);
         verifyNoInteractions(reservationTimeRepository);
@@ -115,7 +113,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.addAndGet(date, timeId, themeId, userId))
-                .isInstanceOf(ReservationNotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
 
         verify(userRepository).findById(userId);
         verify(reservationTimeRepository).findById(timeId);
@@ -141,7 +139,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.addAndGet(date, timeId, themeId, userId))
-                .isInstanceOf(ThemeNotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
 
         verify(userRepository).findById(userId);
         verify(reservationTimeRepository).findById(timeId);
@@ -170,7 +168,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.addAndGet(date, timeId, themeId, userId))
-                .isInstanceOf(AlreadyReservedException.class);
+                .isInstanceOf(DuplicatedException.class);
 
         verify(userRepository).findById(userId);
         verify(reservationTimeRepository).findById(timeId);
@@ -243,7 +241,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.delete(reservationId, user.id()))
-                .isInstanceOf(ReservationNotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
 
         verify(reservationRepository).findById(reservationId);
         verify(reservationRepository, never()).deleteById(anyString());

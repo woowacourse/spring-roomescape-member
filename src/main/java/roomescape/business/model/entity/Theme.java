@@ -1,7 +1,7 @@
 package roomescape.business.model.entity;
 
 import roomescape.business.model.vo.Id;
-import roomescape.exception.business.ThemeNameMaxLengthExceedException;
+import roomescape.exception.business.InvalidCreateArgumentException;
 
 public class Theme {
 
@@ -27,7 +27,7 @@ public class Theme {
 
     private void validateMaxNameLength(final String name) {
         if (name.length() > MAX_NAME_LENGTH) {
-            throw new ThemeNameMaxLengthExceedException();
+            throw new InvalidCreateArgumentException("테마 이름은 10자를 넘길 수 없습니다.");
         }
     }
 

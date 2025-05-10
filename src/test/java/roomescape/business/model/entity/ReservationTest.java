@@ -2,8 +2,7 @@ package roomescape.business.model.entity;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.business.PastDateException;
-import roomescape.exception.business.ReservationBeforeStartException;
+import roomescape.exception.business.InvalidCreateArgumentException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -44,7 +43,7 @@ class ReservationTest {
             final User user = User.create(NAME, EMAIL, PASSWORD);
 
             assertThatThrownBy(() -> Reservation.create(user, pastDate, RESERVATION_TIME, THEME))
-                    .isInstanceOf(PastDateException.class);
+                    .isInstanceOf(InvalidCreateArgumentException.class);
         }
 
         @Test
@@ -53,7 +52,7 @@ class ReservationTest {
             final User user = User.create(NAME, EMAIL, PASSWORD);
 
             assertThatThrownBy(() -> Reservation.create(user, over7DaysDate, RESERVATION_TIME, THEME))
-                    .isInstanceOf(ReservationBeforeStartException.class);
+                    .isInstanceOf(InvalidCreateArgumentException.class);
         }
     }
 }

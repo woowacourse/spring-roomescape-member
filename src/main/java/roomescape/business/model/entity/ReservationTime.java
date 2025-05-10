@@ -1,7 +1,7 @@
 package roomescape.business.model.entity;
 
 import roomescape.business.model.vo.Id;
-import roomescape.exception.business.InvalidReservationTimeException;
+import roomescape.exception.business.InvalidCreateArgumentException;
 
 import java.time.LocalTime;
 
@@ -22,7 +22,7 @@ public class ReservationTime {
 
     private void validateTimeAvailable(final LocalTime time) {
         if (time.isBefore(START_TIME) || time.isAfter(END_TIME)) {
-            throw new InvalidReservationTimeException();
+            throw new InvalidCreateArgumentException("예약은 10시~23시로만 가능합니다.");
         }
     }
 

@@ -3,7 +3,7 @@ package roomescape.business.model.entity;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import roomescape.exception.business.InvalidReservationTimeException;
+import roomescape.exception.business.InvalidCreateArgumentException;
 
 import java.time.LocalTime;
 
@@ -18,7 +18,7 @@ class ReservationTimeTest {
         @CsvSource({"09:59", "23:01"})
         void 예약_가능한_시간이_아닐_때_예약하면_예외가_발생한다(String timeStrValue) {
             assertThatThrownBy(() -> ReservationTime.create(LocalTime.parse(timeStrValue)))
-                    .isInstanceOf(InvalidReservationTimeException.class);
+                    .isInstanceOf(InvalidCreateArgumentException.class);
         }
     }
 }

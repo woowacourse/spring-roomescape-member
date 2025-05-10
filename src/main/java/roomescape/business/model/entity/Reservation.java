@@ -1,9 +1,7 @@
 package roomescape.business.model.entity;
 
 import roomescape.business.model.vo.Id;
-import roomescape.exception.business.PastDateException;
-import roomescape.exception.business.ReservationBeforeStartException;
-import roomescape.exception.business.ReservationTimeNotFoundException;
+import roomescape.exception.business.InvalidCreateArgumentException;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -25,9 +23,6 @@ public class Reservation {
             final ReservationTime time,
             final Theme theme
     ) {
-        if (time == null) {
-            throw new ReservationTimeNotFoundException();
-        }
         this.id = id;
         this.user = user;
         this.date = date;
@@ -43,14 +38,14 @@ public class Reservation {
 
     private static void validateDateIsNotPast(final LocalDate date) {
         if (date.isBefore(LocalDate.now())) {
-            throw new PastDateException();
+            throw new InvalidCreateArgumentException("과거 날짜로 예약할 수 없습니다.");
         }
     }
 
     private static void validateDateInterval(final LocalDate date) {
         long minusDays = Period.between(LocalDate.now(), date).getDays();
         if (minusDays > DAY_INTERVAL_FROM_NOW) {
-            throw new ReservationBeforeStartException();
+            throw new InvalidCreateArgumentException("일주일 전부터 예약할 수 있습니다.");
         }
     }
 

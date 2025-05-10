@@ -3,8 +3,7 @@ package roomescape.business.model.entity;
 import roomescape.business.model.vo.Id;
 import roomescape.business.model.vo.Password;
 import roomescape.business.model.vo.UserRole;
-import roomescape.exception.business.NameContainsNumberException;
-import roomescape.exception.business.UserNameLengthExceedException;
+import roomescape.exception.business.InvalidCreateArgumentException;
 
 public class User {
 
@@ -28,14 +27,14 @@ public class User {
 
     private void validateMaxNameLength(final String name) {
         if (name.length() > MAX_NAME_LENGTH) {
-            throw new UserNameLengthExceedException();
+            throw new InvalidCreateArgumentException("이름은 10자를 넘길 수 없습니다.");
         }
     }
 
     private void validateNameDoesNotContainsNumber(final String name) {
         for (char c : name.toCharArray()) {
             if (Character.isDigit(c)) {
-                throw new NameContainsNumberException();
+                throw new InvalidCreateArgumentException("이름에 숫자는 포함될 수 없습니다.");
             }
         }
     }

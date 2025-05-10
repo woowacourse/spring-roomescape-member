@@ -3,8 +3,8 @@ package roomescape.business.service;
 import org.springframework.stereotype.Service;
 import roomescape.business.model.entity.User;
 import roomescape.business.model.repository.UserRepository;
-import roomescape.exception.business.DuplicatedEmailException;
-import roomescape.exception.business.UserNotFoundException;
+import roomescape.exception.business.InvalidCreateArgumentException;
+import roomescape.exception.business.NotFoundException;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class UserService {
 
     public void register(final String name, final String email, final String password) {
         if (userRepository.existByEmail(email)) {
-            throw new DuplicatedEmailException();
+            throw new InvalidCreateArgumentException("중복된 이메일입니다.");
         }
         User user = User.create(name, email, password);
         userRepository.save(user);
@@ -27,12 +27,12 @@ public class UserService {
 
     public User getById(final String id) {
         return userRepository.findById(id)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new NotFoundException("해당하는 유저가 존재하지 않습니다."));
     }
 
     public User getByEmail(final String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new NotFoundException("해당하는 유저가 존재하지 않습니다."));
     }
 
     public List<User> getAll() {
