@@ -331,4 +331,41 @@ public class ReservationServiceIntegrationTest {
         softly.assertAll();
     }
 
+    @DisplayName("필터 조건에 맞는 예약만 조회한다")
+    @Test
+    void getAll_WithFilters_ReturnsFilteredReservations() {
+        // given
+        final Theme theme1 = themeRepository.save(Theme.withoutId("테마1", "설명1", "url1"));
+        final Theme theme2 = themeRepository.save(Theme.withoutId("테마2", "설명2", "url2"));
+
+        final LocalTime time = LocalTime.of(8, 0);
+        final ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
+
+        final LocalDate today = LocalDate.now();
+        final LocalDate tomorrow = today.plusDays(1);
+
+        final User user1 = userRepository.save(User.withoutId(new Name("사용자1"), "user1@mail.com", "1234", Roles.USER));
+        final User user2 = userRepository.save(User.withoutId(new Name("사용자2"), "user2@mail.com", "1234", Roles.USER));
+
+        // 테마1, 사용자1, 오늘 예약
+        reservationRepository.save(Reservation.withoutId(user1, today, savedTime, theme1));
+        // 테마2, 사용자1, 내일 예약
+        reservationRepository.save(Reservation.withoutId(user1, tomorrow, savedTime, theme2));
+        // 테마1, 사용자2, 내일 예약
+        reservationRepository.save(Reservation.withoutId(user2, tomorrow, savedTime, theme1));
+
+        // when & then
+        // 테마1 필터링
+        assertThat(reservationService.getAll(theme1.getId(), null, null, null)).hasSize(2);
+        // 사용자1 필터링
+        assertThat(reservationService.getAll(null, user1.getId(), null, null)).hasSize(2);
+        // 오늘 날짜 필터링
+        assertThat(reservationService.getAll(null, null, today, today)).hasSize(1);
+        // 테마1 & 내일 필터링
+        assertThat(reservationService.getAll(theme1.getId(), null, tomorrow, tomorrow)).hasSize(1);
+        // 모든 필터 조합
+        assertThat(reservationService.getAll(theme1.getId(), user2.getId(), tomorrow, tomorrow)).hasSize(1);
+        // 일치하는 결과가 없는 필터 조합
+        assertThat(reservationService.getAll(theme2.getId(), user2.getId(), null, null)).isEmpty();
+    }
 }
