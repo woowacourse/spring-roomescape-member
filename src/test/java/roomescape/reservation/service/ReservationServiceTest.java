@@ -63,6 +63,25 @@ class ReservationServiceTest {
         );
     }
 
+    private static Stream<Arguments> getConditionalReservations_test() {
+        return Stream.of(
+                Arguments.of(1L, null, null, null, 3),
+                Arguments.of(2L, null, null, null, 0),
+                Arguments.of(null, 1L, null, null, 1),
+                Arguments.of(null, 2L, null, null, 2),
+                Arguments.of(null, 3L, null, null, 0),
+                Arguments.of(null, null, LocalDate.of(2024, 10, 6), null, 3),
+                Arguments.of(null, null, LocalDate.of(2024, 10, 7), null, 2),
+                Arguments.of(null, null, LocalDate.of(2024, 10, 8), null, 1),
+                Arguments.of(null, null, LocalDate.of(2024, 10, 9), null, 0),
+                Arguments.of(null, null, null, LocalDate.of(2024, 10, 8), 3),
+                Arguments.of(null, null, null, LocalDate.of(2024, 10, 7), 2),
+                Arguments.of(null, null, null, LocalDate.of(2024, 10, 6), 1),
+                Arguments.of(null, null, null, LocalDate.of(2024, 10, 5), 0),
+                Arguments.of(null, null, LocalDate.of(2024, 10, 6), LocalDate.of(2024, 10, 7), 2)
+        );
+    }
+
     @BeforeEach
     void beforeEach() {
         Theme theme1 = Theme.createWithId(1L, "테스트1", "설명", "localhost:8080");
@@ -145,25 +164,6 @@ class ReservationServiceTest {
         List<ReservationResponse> reservations = reservationService.getReservations(request);
         // then
         assertThat(reservations).hasSize(expectedCount);
-    }
-
-    private static Stream<Arguments> getConditionalReservations_test() {
-        return Stream.of(
-                Arguments.of(1L, null, null, null, 3),
-                Arguments.of(2L, null, null, null, 0),
-                Arguments.of(null, 1L, null, null, 1),
-                Arguments.of(null, 2L, null, null, 2),
-                Arguments.of(null, 3L, null, null, 0),
-                Arguments.of(null, null, LocalDate.of(2024, 10, 6), null, 3),
-                Arguments.of(null, null, LocalDate.of(2024, 10, 7), null, 2),
-                Arguments.of(null, null, LocalDate.of(2024, 10, 8), null, 1),
-                Arguments.of(null, null, LocalDate.of(2024, 10, 9), null, 0),
-                Arguments.of(null, null, null, LocalDate.of(2024, 10, 8), 3),
-                Arguments.of(null, null, null, LocalDate.of(2024, 10, 7), 2),
-                Arguments.of(null, null, null, LocalDate.of(2024, 10, 6), 1),
-                Arguments.of(null, null, null, LocalDate.of(2024, 10, 5), 0),
-                Arguments.of(null, null, LocalDate.of(2024, 10, 6), LocalDate.of(2024, 10, 7), 2)
-        );
     }
 
 

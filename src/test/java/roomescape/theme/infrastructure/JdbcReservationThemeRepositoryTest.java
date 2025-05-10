@@ -55,25 +55,28 @@ class JdbcReservationThemeRepositoryTest {
     @DisplayName("삭제 성공 관련 테스트")
     @CsvSource({"0,true", "1,false"})
     void delete_test(Long plus, boolean expected) {
+        // given
         Theme theme = Theme.createWithoutId("a", "a", "a");
         Long save = repository.save(theme);
-
+        // when
         boolean isDeleted = repository.deleteById(save + plus);
-
+        // then
         assertThat(isDeleted).isEqualTo(expected);
     }
 
     @Test
     @DisplayName("전체 조회 테스트")
     void find_all_test() {
+        // given
         Theme theme1 = Theme.createWithoutId("a", "a", "a");
         Theme theme2 = Theme.createWithoutId("b", "b", "b");
         Theme theme3 = Theme.createWithoutId("c", "c", "c");
         repository.save(theme1);
         repository.save(theme2);
         repository.save(theme3);
-
+        // when
         List<Theme> reservations = repository.findAll();
+        // then
         List<String> names = reservations.stream()
                 .map(Theme::getName)
                 .toList();
@@ -83,7 +86,6 @@ class JdbcReservationThemeRepositoryTest {
         List<String> thumbnails = reservations.stream()
                 .map(Theme::getName)
                 .toList();
-
         assertAll(
                 () -> assertThat(reservations).hasSize(3),
                 () -> assertThat(names).contains("a", "b", "c"),
@@ -95,11 +97,12 @@ class JdbcReservationThemeRepositoryTest {
     @Test
     @DisplayName("아이디로 조회 테스트")
     void find_by_id() {
+        // given
         Theme theme = Theme.createWithoutId("a", "a", "a");
         Long save = repository.save(theme);
-
+        // when
         Theme findTheme = repository.findById(save);
-
+        // then
         assertAll(
                 () -> assertThat(findTheme.getName()).isEqualTo(theme.getName()),
                 () -> assertThat(findTheme.getDescription()).isEqualTo(theme.getDescription()),
@@ -110,6 +113,7 @@ class JdbcReservationThemeRepositoryTest {
     @Test
     @DisplayName("인기 많은 테마를 순서대로 반환한다.(시간 조건 미포함, 개수 조건 미포함)")
     void find_popular_theme_no_time_and_count_condition() {
+        // given
         ReservationRepository reservationRepository = new JdbcReservationRepository(dataSource);
         ReservationTimeRepository reservationTimeRepository = new JdbcReservationTimeRepository(dataSource);
         MemberRepository memberRepository = new JdbcMemberRepository(dataSource);
@@ -144,11 +148,12 @@ class JdbcReservationThemeRepositoryTest {
         reservationRepository.save(reservation3);
 
         ReservationPeriod period = new ReservationPeriod(LocalDate.of(2000, 11, 5), 3, 1);
-
+        // when
         List<Theme> popularThemes = repository.findPopularThemes(period, 3);
         List<String> names = popularThemes.stream()
                 .map(Theme::getName)
                 .toList();
+        // then
         assertThat(popularThemes).hasSize(2);
         assertThat(names).containsExactly("a", "b");
     }
@@ -156,6 +161,7 @@ class JdbcReservationThemeRepositoryTest {
     @Test
     @DisplayName("인기 많은 테마를 순서대로 반환한다.(시간 조건 포함, 개수 조건 미포함)")
     void find_popular_theme_no_count_condition() {
+        // given
         ReservationRepository reservationRepository = new JdbcReservationRepository(dataSource);
         ReservationTimeRepository reservationTimeRepository = new JdbcReservationTimeRepository(dataSource);
         MemberRepository memberRepository = new JdbcMemberRepository(dataSource);
@@ -193,11 +199,12 @@ class JdbcReservationThemeRepositoryTest {
         reservationRepository.save(reservation4);
 
         ReservationPeriod period = new ReservationPeriod(LocalDate.of(2000, 11, 5), 2, 1);
-
+        // when
         List<Theme> popularThemes = repository.findPopularThemes(period, 3);
         List<String> names = popularThemes.stream()
                 .map(Theme::getName)
                 .toList();
+        // then
         assertThat(popularThemes).hasSize(2);
         assertThat(names).containsExactly("b", "a");
     }
@@ -205,6 +212,7 @@ class JdbcReservationThemeRepositoryTest {
     @Test
     @DisplayName("인기 많은 테마를 순서대로 반환한다.(시간 조건 포함, 개수 조건 포함)")
     void find_popular_theme() {
+        // given
         ReservationRepository reservationRepository = new JdbcReservationRepository(dataSource);
         ReservationTimeRepository reservationTimeRepository = new JdbcReservationTimeRepository(dataSource);
         MemberRepository memberRepository = new JdbcMemberRepository(dataSource);
@@ -242,11 +250,12 @@ class JdbcReservationThemeRepositoryTest {
         reservationRepository.save(reservation4);
 
         ReservationPeriod period = new ReservationPeriod(LocalDate.of(2000, 11, 5), 2, 1);
-
+        // when
         List<Theme> popularThemes = repository.findPopularThemes(period, 1);
         List<String> names = popularThemes.stream()
                 .map(Theme::getName)
                 .toList();
+        // then
         assertThat(popularThemes).hasSize(1);
         assertThat(names).containsExactly("b");
     }

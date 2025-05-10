@@ -94,10 +94,16 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     private boolean matchDateRange(Reservation reservation, LocalDate dateFrom, LocalDate dateTo) {
-        if (dateFrom == null && dateTo == null) return true;
+        if (dateFrom == null && dateTo == null) {
+            return true;
+        }
         LocalDate reservationDate = reservation.getDate();
-        if (dateFrom != null && reservationDate.isBefore(dateFrom)) return false;
-        if (dateTo != null && reservationDate.isAfter(dateTo)) return false;
+        if (dateFrom != null && reservationDate.isBefore(dateFrom)) {
+            return false;
+        }
+        if (dateTo != null && reservationDate.isAfter(dateTo)) {
+            return false;
+        }
         return true;
     }
 }

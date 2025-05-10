@@ -30,10 +30,11 @@ class ThemeTest {
     @Test
     @DisplayName("아이디 할당 테스트")
     void assignId_Test() {
+        // given
         Theme withoutId = Theme.createWithoutId("a", "b", "c");
-
+        // when
         Theme theme = withoutId.assignId(1L);
-
+        // then
         assertAll(
                 () -> assertThat(theme.getId()).isEqualTo(1L),
                 () -> assertThat(theme.getName()).isEqualTo("a"),

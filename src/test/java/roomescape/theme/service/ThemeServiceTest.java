@@ -71,8 +71,9 @@ class ThemeServiceTest {
     @DisplayName("인기 테마를 가져올 수 있다.")
     @Test
     void can_get_popular_theme() {
+        // given
         List<PopularThemeResponse> popularThemes = themeService.getPopularThemes();
-
+        // when & then
         assertThat(popularThemes).containsExactly(
                 new PopularThemeResponse("테스트1", "썸네일", "설명"),
                 new PopularThemeResponse("테스트3", "썸네일", "설명")

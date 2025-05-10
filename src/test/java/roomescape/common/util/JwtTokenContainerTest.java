@@ -40,9 +40,9 @@ class JwtTokenContainerTest {
 
     @Test
     @DisplayName("토큰 유효기간이 넘은 경우 예외를 발생한다.")
-    void validateToken_expiration_exception(){
+    void validateToken_expiration_exception() {
         // given
-        LocalDateTime dateTime = LocalDateTime.of(2025,5,10,9,10);
+        LocalDateTime dateTime = LocalDateTime.of(2025, 5, 10, 9, 10);
         Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
         String jwtToken = jwtTokenContainer.createJwtToken(member, dateTime);
         // when

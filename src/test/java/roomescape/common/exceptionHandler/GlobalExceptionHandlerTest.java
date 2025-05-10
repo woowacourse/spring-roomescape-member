@@ -29,16 +29,17 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("IllegalArgumentException 처리 테스트")
     void IllegalArgumentException_Handler_Test() {
+        // given
         ExceptionResponse expected = new ExceptionResponse("[ERROR] IllegalArgumentException 예외 테스트",
                 "/illegalArgumentException");
-
+        // when
         Response response = RestAssured.given().log().all()
                 .when().get("/illegalArgumentException")
                 .then().log().all()
                 .statusCode(400)
                 .extract()
                 .response();
-
+        // then
         ExceptionResponse actual = response.as(ExceptionResponse.class);
         assertThat(actual).isEqualTo(expected);
     }
@@ -46,16 +47,17 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("NullPointerException 처리 테스트")
     void NullPointerException_Handler_Test() {
+        // given
         ExceptionResponse expected = new ExceptionResponse("[ERROR] 서버의 오류입니다. 관리자에게 문의해주세요.",
                 "/nullPointerException");
-
+        // when
         Response response = RestAssured.given().log().all()
                 .when().get("/nullPointerException")
                 .then().log().all()
                 .statusCode(500)
                 .extract()
                 .response();
-
+        // then
         ExceptionResponse actual = response.as(ExceptionResponse.class);
         assertThat(actual).isEqualTo(expected);
     }
@@ -63,16 +65,17 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("HttpMessageNotReadableException 처리 테스트")
     void HttpMessageNotReadableException_Handler_Test() {
+        // given
         ExceptionResponse expected = new ExceptionResponse("[ERROR] 요청 입력이 잘못되었습니다.",
                 "/httpMessageNotReadableException");
-
+        // when
         Response response = RestAssured.given().log().all()
                 .when().get("/httpMessageNotReadableException")
                 .then().log().all()
                 .statusCode(400)
                 .extract()
                 .response();
-
+        // then
         ExceptionResponse actual = response.as(ExceptionResponse.class);
         assertThat(actual).isEqualTo(expected);
     }
@@ -80,16 +83,17 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("IllegalArgumentException 감싼 HttpMessageNotReadableException 처리 테스트")
     void IllegalArgumentException_and_HttpMessageNotReadableException_Handler_Test() {
+        // given
         ExceptionResponse expected = new ExceptionResponse("[ERROR] IllegalArgumentException 감싼 예외 테스트",
                 "/httpMessageNotReadableException2");
-
+        // when
         Response response = RestAssured.given().log().all()
                 .when().get("/httpMessageNotReadableException2")
                 .then().log().all()
                 .statusCode(400)
                 .extract()
                 .response();
-
+        // then
         ExceptionResponse actual = response.as(ExceptionResponse.class);
         assertThat(actual).isEqualTo(expected);
     }
@@ -97,16 +101,17 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("예상치 못한 오류 처리 테스트")
     void Exception_Handler_Test() {
+        // given
         ExceptionResponse expected = new ExceptionResponse("[ERROR] 예상치 못한 서버 오류입니다. 서버에 문의해주세요.",
                 "/unknown");
-
+        // when
         Response response = RestAssured.given().log().all()
                 .when().get("/unknown")
                 .then().log().all()
                 .statusCode(500)
                 .extract()
                 .response();
-
+        // then
         ExceptionResponse actual = response.as(ExceptionResponse.class);
         assertThat(actual).isEqualTo(expected);
     }

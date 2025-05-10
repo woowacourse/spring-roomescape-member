@@ -1,11 +1,13 @@
 package roomescape.reservationTime.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,20 +51,21 @@ class ReservationTimeServiceTest {
     @DisplayName("이미 존재하는 예약이 있는 경우 예약 시간을 삭제할 수 없다.")
     @Test
     void can_not_delete_when_reservation_exists() {
-        Assertions.assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(1L))
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("예약 가능 시간 조회 테스트")
     @Test
     void time_condition_test() {
+        // given
         LocalDate localDate = LocalDate.of(2024, 10, 6);
         Long themeId = 1L;
-
+        // when
         List<TimeConditionResponse> responses = reservationTimeService.getTimesWithCondition(
                 new TimeConditionRequest(localDate, themeId));
-
-        Assertions.assertThat(responses).containsExactlyInAnyOrder(
+        // then
+        assertThat(responses).containsExactlyInAnyOrder(
                 new TimeConditionResponse(1L, LocalTime.of(10, 0), true),
                 new TimeConditionResponse(2L, LocalTime.of(11, 0), false)
         );

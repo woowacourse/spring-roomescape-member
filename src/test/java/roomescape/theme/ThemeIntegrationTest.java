@@ -45,11 +45,12 @@ public class ThemeIntegrationTest {
     @DisplayName("테마를 추가 및 삭제 할 수 있다.")
     @Test
     void reservation_time_post_to_add() {
+        // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "테스트1");
         params.put("description", "테스트2");
         params.put("thumbnail", "테스트3");
-
+        // when
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
@@ -58,7 +59,7 @@ public class ThemeIntegrationTest {
                 .statusCode(201)
                 .extract()
                 .response();
-
+        // then
         ThemeResponse expected = new ThemeResponse(1L, "테스트1", "테스트2", "테스트3");
         ThemeResponse actual = response.as(ThemeResponse.class);
         assertThat(actual).isEqualTo(expected);
@@ -73,13 +74,13 @@ public class ThemeIntegrationTest {
     @ParameterizedTest
     @NullAndEmptySource
     void when_given_null_and_empty_theme_name(final String name) {
+        // given
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("description", "hi");
         params.put("thumbnail", "http");
-
         ExceptionResponse expected = new ExceptionResponse("[ERROR] 테마 이름이 비어있을 수 없습니다.", "/themes");
-
+        // when
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
@@ -88,7 +89,7 @@ public class ThemeIntegrationTest {
                 .statusCode(400)
                 .extract()
                 .response();
-
+        // then
         ExceptionResponse actual = response.as(ExceptionResponse.class);
         assertThat(actual).isEqualTo(expected);
     }
@@ -96,13 +97,13 @@ public class ThemeIntegrationTest {
     @DisplayName("테마 설명이 null 또는 빈 상태로 생성 요청 시 400 응답을 준다.")
     @Test
     void when_given_null_and_empty_theme_description() {
+        // given
         Map<String, Object> params = new HashMap<>();
         params.put("name", "제목");
         params.put("description", null);
         params.put("thumbnail", "http");
-
         ExceptionResponse expected = new ExceptionResponse("[ERROR] 테마 설명이 비어있을 수 없습니다.", "/themes");
-
+        // when
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
@@ -111,7 +112,7 @@ public class ThemeIntegrationTest {
                 .statusCode(400)
                 .extract()
                 .response();
-
+        // then
         ExceptionResponse actual = response.as(ExceptionResponse.class);
         assertThat(actual).isEqualTo(expected);
     }
@@ -119,13 +120,13 @@ public class ThemeIntegrationTest {
     @DisplayName("테마 썸네일이 null 또는 빈 상태로 생성 요청 시 400 응답을 준다.")
     @Test
     void when_given_null_and_empty_theme_thumbnail() {
+        // given
         Map<String, Object> params = new HashMap<>();
         params.put("name", "제목");
         params.put("description", "hi");
         params.put("thumbnail", null);
-
         ExceptionResponse expected = new ExceptionResponse("[ERROR] 테마 썸네일이 비어있을 수 없습니다.", "/themes");
-
+        // when
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
@@ -134,7 +135,7 @@ public class ThemeIntegrationTest {
                 .statusCode(400)
                 .extract()
                 .response();
-
+        // then
         ExceptionResponse actual = response.as(ExceptionResponse.class);
         assertThat(actual).isEqualTo(expected);
     }

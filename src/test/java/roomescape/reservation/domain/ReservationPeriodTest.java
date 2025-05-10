@@ -12,20 +12,22 @@ class ReservationPeriodTest {
     @Test
     @DisplayName("시작 날짜 계산 테스트")
     void find_start_date_test() {
+        // given
         ReservationPeriod reservationPeriod = new ReservationPeriod(LocalDate.of(2000, 11, 5), 3, 1);
-
+        // when
         LocalDate startDate = reservationPeriod.findStartDate();
-
+        // then
         assertThat(startDate).isEqualTo(LocalDate.of(2000, 11, 2));
     }
 
     @Test
     @DisplayName("끝 날짜 계산 테스트")
     void find_end_date_test() {
+        // given
         ReservationPeriod reservationPeriod = new ReservationPeriod(LocalDate.of(2000, 11, 5), 3, 1);
-
+        // when
         LocalDate endDate = reservationPeriod.findEndDate();
-
+        // then
         assertThat(endDate).isEqualTo(LocalDate.of(2000, 11, 4));
     }
 
