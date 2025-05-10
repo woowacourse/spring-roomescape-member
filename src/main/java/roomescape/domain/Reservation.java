@@ -35,9 +35,13 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static void validateReservableTime (final LocalDate date, final LocalTime startAt){
+    public static Reservation createWithoutId(String name, LocalDate date, ReservationTime time, Theme theme) {
+        return new Reservation(null, name, date, time, theme);
+    }
+
+    public static void validateReservableTime(final LocalDate date, final LocalTime startAt) {
         LocalDateTime dateTime = LocalDateTime.of(date, startAt);
-        if(dateTime.isBefore(LocalDateTime.now())){
+        if (dateTime.isBefore(LocalDateTime.now())) {
             throw new InvalidRequestException("[ERROR] 현 시점 이후의 날짜와 시간을 선택해주세요.");
         }
     }
@@ -47,7 +51,7 @@ public class Reservation {
             throw new IllegalArgumentException("[ERROR] 예약자의 이름은 1글자 이상으로 이루어져야 합니다. ");
         }
 
-        if(name.length() > MAX_NAME_LENGTH){
+        if (name.length() > MAX_NAME_LENGTH) {
             throw new IllegalArgumentException("[ERROR] 예약자의 이름은 255자를 초과할 수 없습니다. 이름 길이 : " + name.length());
         }
     }

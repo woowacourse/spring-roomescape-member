@@ -1,19 +1,19 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.reservation.ReservationCreateRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.exception.DuplicateContentException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.dto.ReservationCreateDto;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -29,7 +29,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public ReservationResponseDto createReservation(ReservationCreateRequestDto dto) {
+    public ReservationResponseDto createMemberReservation(ReservationCreateDto dto) {
         ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
                 .orElseThrow(() -> new NotFoundException("[ERROR] 예약 시간을 찾을 수 없습니다. id : " + dto.timeId()));
 
@@ -39,7 +39,7 @@ public class ReservationService {
         Theme theme = themeRepository.findById(dto.themeId())
                 .orElseThrow(() -> new NotFoundException("[ERROR] 테마를 찾을 수 없습니다. id : " + dto.themeId()));
 
-        Reservation requestReservation = dto.createWithoutId(reservationTime, theme);
+        Reservation requestReservation = Reservation.createWithoutId(dto.name(), dto.date(), reservationTime, theme);
         Reservation newReservation = reservationRepository.save(requestReservation);
 
         return ReservationResponseDto.of(newReservation, newReservation.getTime(), theme);
