@@ -2,6 +2,7 @@ package roomescape.controller.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,15 +19,18 @@ import roomescape.service.auth.AuthenticationService;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthenticationController(AuthenticationService authenticationService) {
+    public AuthenticationController(AuthenticationService authenticationService, PasswordEncoder passwordEncoder) {
         this.authenticationService = authenticationService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/login")
     public void login(@RequestBody LoginRequest request,
                       HttpServletResponse response) {
-        String token = authenticationService.login(request);
+        String encodedPassword = passwordEncoder.encode(request.password());
+        String token = authenticationService.login(request.email(), encodedPassword);
         Cookie cookie = new Cookie("token", token);
         cookie.setPath("/");
         cookie.setHttpOnly(true);

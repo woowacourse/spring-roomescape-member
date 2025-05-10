@@ -31,11 +31,9 @@ public class MemberJdbcDao implements MemberRepository {
     }
 
     @Override
-    public boolean existsByEmailAndPassword(String email, String password) {
-        String sql = "select exists(select 1 from member where email = :email AND password = :password)";
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("email", email)
-                .addValue("password", password);
+    public boolean existsByEmail(String email) {
+        String sql = "select exists(select 1 from member where email = :email)";
+        SqlParameterSource params = new MapSqlParameterSource("email", email);
         return Boolean.TRUE.equals(namedJdbcTemplate.queryForObject(sql, params, Boolean.class));
     }
 
