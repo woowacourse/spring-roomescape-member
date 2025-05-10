@@ -1,5 +1,6 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -76,6 +77,17 @@ public class ReservationService {
     public void deleteById(Long id) {
         Reservation reservation = getReservation(id);
         reservationRepository.deleteById(reservation.getId());
+    }
+
+    public List<ReservationResponse> searchReservations(Long memberId, Long themeId, LocalDate start, LocalDate end) {
+        Member member = memberService.findById(memberId);
+
+        return getAll().stream()
+                .filter(reservation -> memberId == null || reservation.name().equals(member.getName()))
+                .filter(reservation -> themeId == null || reservation.theme().id().equals(themeId))
+                .filter(reservation -> start == null || reservation.date().isAfter(start))
+                .filter(reservation -> end == null || reservation.date().isBefore(end))
+                .toList();
     }
 
     private Reservation getReservation(Long id) {

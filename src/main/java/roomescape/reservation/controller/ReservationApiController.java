@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.controller.request.ReservationCreateRequest;
 import roomescape.reservation.controller.response.ReservationResponse;
@@ -26,10 +28,20 @@ public class ReservationApiController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<ReservationResponse> responses = reservationService.getAll();
+    public ResponseEntity<List<ReservationResponse>> searchReservations(
+            @RequestParam(required = false) Long memberId,
+            @RequestParam(required = false) Long themeId,
+            @RequestParam(required = false) LocalDate start,
+            @RequestParam(required = false) LocalDate end
+    ) {
 
-        return ResponseEntity.ok(responses);
+        if (memberId == null && themeId == null && start == null && end == null) {
+            return ResponseEntity.ok(reservationService.getAll());
+        }
+
+        List<ReservationResponse> reservationResponses = reservationService.searchReservations(memberId, themeId, start,
+                end);
+        return ResponseEntity.ok(reservationResponses);
     }
 
     @PostMapping

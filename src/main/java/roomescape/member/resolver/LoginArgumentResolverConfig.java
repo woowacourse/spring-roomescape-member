@@ -6,11 +6,11 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class WebConfig implements WebMvcConfigurer {
+public class LoginArgumentResolverConfig implements WebMvcConfigurer {
 
     private final LoginMemberArgumentResolver loginMemberArgumentResolver;
 
-    public WebConfig(LoginMemberArgumentResolver loginMemberArgumentResolver) {
+    public LoginArgumentResolverConfig(LoginMemberArgumentResolver loginMemberArgumentResolver) {
         this.loginMemberArgumentResolver = loginMemberArgumentResolver;
     }
 

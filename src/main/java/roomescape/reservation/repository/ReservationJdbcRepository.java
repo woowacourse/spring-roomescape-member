@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationDateTime;
@@ -43,7 +44,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
                        u.id as user_id,
                        u.name as user_name,
                        u.email as user_email,
-                       u.password as user_password
+                       u.password as user_password,
+                       u.role as user_role
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on r.theme_id = th.id
@@ -68,7 +70,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
                                 resultSet.getLong("user_id"),
                                 resultSet.getString("user_name"),
                                 resultSet.getString("user_email"),
-                                resultSet.getString("user_password")
+                                resultSet.getString("user_password"),
+                                resultSet.getString("user_role")
                         )));
     }
 
@@ -101,7 +104,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
                        u.id as user_id,
                        u.name as user_name,
                        u.email as user_email,
-                       u.password as user_password
+                       u.password as user_password,
+                       u.role as user_role
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on r.theme_id = th.id
@@ -127,7 +131,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
                                         resultSet.getLong("user_id"),
                                         resultSet.getString("user_name"),
                                         resultSet.getString("user_email"),
-                                        resultSet.getString("user_password")
+                                        resultSet.getString("user_password"),
+                                        resultSet.getString("user_role")
                                 )), id)
                 .stream()
                 .findFirst();
@@ -157,6 +162,11 @@ public class ReservationJdbcRepository implements ReservationRepository {
         String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
         return count > 0;
+    }
+
+    @Override
+    public List<ReservationResponse> searchReservations() {
+        return List.of();
     }
 
 }
