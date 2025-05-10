@@ -31,8 +31,15 @@ public class LoginController {
         response.addCookie(cookie);
     }
 
+    @PostMapping("/logout")
+    public void logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
+
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> checkLogin(@CookieValue(name = "token", required = true) String token) {
+    public ResponseEntity<LoginCheckResponse> checkLogin(@CookieValue(name = "token") String token) {
         return ResponseEntity.ok(loginService.checkUserByToken(token));
     }
 }
