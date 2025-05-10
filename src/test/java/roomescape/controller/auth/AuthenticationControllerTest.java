@@ -1,39 +1,41 @@
 package roomescape.controller.auth;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.equalTo;
 
+import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
-import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import io.restassured.module.mockmvc.response.MockMvcResponse;
-import jakarta.servlet.http.Cookie;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.auth.LoginRequest;
-import roomescape.infrastructure.jwt.JwtTokenProvider;
-import roomescape.service.auth.AuthenticationService;
 
-@WebMvcTest(AuthenticationController.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class AuthenticationControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @LocalServerPort
+    private int port;
 
-    @MockitoBean
-    private AuthenticationService service;
-
-    @MockitoBean
-    private JwtTokenProvider jwtTokenProvider;
+    private RequestSpecification spec;
 
     @BeforeEach
     void setUp() {
-        RestAssuredMockMvc.mockMvc(mockMvc);
+        spec = new RequestSpecBuilder()
+                .setBaseUri("http://localhost")
+                .setPort(port)
+                .build();
+
+        RestAssured.requestSpecification = spec;
     }
 
     @Test
@@ -42,25 +44,70 @@ class AuthenticationControllerTest {
         // given
         String email = "user1@example.com";
         String password = "user1123";
-        String expectedToken = "generated-jwt-token";
         LoginRequest request = new LoginRequest(email, password);
 
-        when(service.login(request)).thenReturn(expectedToken);
         // when & then
-        MockMvcResponse response = RestAssuredMockMvc.given()
+        ExtractableResponse<Response> response = RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
                 .post("/auth/login")
                 .then()
-                .status(HttpStatus.OK)
+                .statusCode(HttpStatus.OK.value())
                 .contentType(ContentType.JSON)
                 .header("Keep-Alive", "timeout=60")
-                .cookie("token", expectedToken)
-                .extract().response();
+                .extract();
 
-        Cookie tokenCookie = response.getMockHttpServletResponse().getCookie("token");
-        assertThat(tokenCookie.getPath()).isEqualTo("/");
-        assertThat(tokenCookie.isHttpOnly()).isTrue();
+        // 쿠키의 속성들을 검증합니다
+        String setCookieHeader = response.header("Set-Cookie");
+        assertThat(setCookieHeader).isNotNull();
+        assertThat(setCookieHeader).contains("Path=/");
+        assertThat(setCookieHeader).contains("HttpOnly");
+    }
+
+    @Test
+    @DisplayName("로그인 체크 시 유효한 토큰이 있다면, name 값을 반환해야한다")
+    void loginCheck() {
+        // given
+        String name = "user1";
+        String email = "user1@example.com";
+        String password = "user1123";
+        LoginRequest request = new LoginRequest(email, password);
+
+        ExtractableResponse<Response> response = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/auth/login")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .contentType(ContentType.JSON)
+                .header("Keep-Alive", "timeout=60")
+                .extract();
+        String givenToken = response.cookie("token");
+
+        // when & then
+        RestAssured.given()
+                .cookie("token", givenToken)
+                .when()
+                .get("/auth/login/check")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("name", equalTo(name));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "invalid-token"})
+    @DisplayName("로그인 체크 시, 토큰이 유효하지 않다면 401 코드를 반환해야한다")
+    void loginCheck_ShouldReturnUnauthorizedWhenInvalidToken(String token) {
+        // when & then
+        RestAssured.given()
+                .cookie("token", token)
+                .when()
+                .get("/auth/login/check")
+                .then()
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .contentType(ContentType.JSON)
+                .body("name", org.hamcrest.Matchers.nullValue());
     }
 }

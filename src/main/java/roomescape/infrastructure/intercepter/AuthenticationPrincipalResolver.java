@@ -26,9 +26,6 @@ public class AuthenticationPrincipalResolver implements HandlerMethodArgumentRes
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        if (request == null) {
-            throw new IllegalArgumentException("잘못된 요청입니다.");
-        }
         String token = JwtCookieResolver.getTokenFromCookie(request);
         return jwtTokenProvider.resolveToken(token);
     }
