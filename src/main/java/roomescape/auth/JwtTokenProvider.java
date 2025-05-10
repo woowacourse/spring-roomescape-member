@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.domain.MemberRole;
 import roomescape.exception.UnAuthorizedException;
 import roomescape.service.result.MemberResult;
 
@@ -24,7 +25,8 @@ public class JwtTokenProvider {
         Date expirationDate = new Date(System.currentTimeMillis() + validityInMilliseconds);
 
         return Jwts.builder()
-                .subject(member.id().toString()) //ID와 ROLE이 들어가도록
+                .subject(member.id().toString())
+                .claim("ROLE", member.role())
                 .expiration(expirationDate)
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
@@ -37,6 +39,16 @@ public class JwtTokenProvider {
 
         Claims claims = extractAllClaimsFromToken(token);
         return Long.valueOf(claims.getSubject());
+    }
+
+    public MemberRole extractMemberRoleFromToken(final String token) {
+        if (token == null || token.isBlank()) {
+            throw new UnAuthorizedException();
+        }
+
+        Claims claims = extractAllClaimsFromToken(token);
+        String role = (String) claims.get("ROLE");
+        return MemberRole.of(role);
     }
 
     private Claims extractAllClaimsFromToken(final String token) {
