@@ -22,6 +22,7 @@ public class JwtTokenProvider implements TokenProvider {
                 .subject(member.getId().toString())
                 .claim("email", member.getEmail())
                 .claim("role", member.getRole())
+                .claim("name", member.getName())
                 .issuer(issure)
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();

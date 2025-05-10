@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.entity.Reservation;
 import roomescape.reservation.domain.repository.ReservationRepository;
-import roomescape.reservation.global.exception.ResourceNotFoundException;
+import roomescape.global.exception.ResourceNotFoundException;
 import roomescape.reservation.infrastructure.db.dao.ReservationDao;
 
 @Repository

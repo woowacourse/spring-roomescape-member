@@ -8,8 +8,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.entity.ReservationTime;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
-import roomescape.reservation.global.exception.ResourceInUseException;
-import roomescape.reservation.global.exception.ResourceNotFoundException;
+import roomescape.global.exception.ResourceInUseException;
+import roomescape.global.exception.ResourceNotFoundException;
 import roomescape.reservation.infrastructure.db.dao.ReservationTimeDao;
 
 @Repository

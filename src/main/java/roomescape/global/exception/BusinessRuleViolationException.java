@@ -1,4 +1,4 @@
-package roomescape.reservation.global.exception;
+package roomescape.global.exception;
 
 public class BusinessRuleViolationException extends RuntimeException {
 

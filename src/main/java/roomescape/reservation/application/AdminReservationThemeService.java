@@ -8,7 +8,7 @@ import roomescape.reservation.domain.entity.ReservationTheme;
 import roomescape.reservation.domain.exception.ReservationException;
 import roomescape.reservation.domain.repository.ReservationThemeRepository;
 import roomescape.reservation.domain.service.ReservationThemeValidator;
-import roomescape.reservation.global.exception.BusinessRuleViolationException;
+import roomescape.global.exception.BusinessRuleViolationException;
 
 @Service
 @RequiredArgsConstructor

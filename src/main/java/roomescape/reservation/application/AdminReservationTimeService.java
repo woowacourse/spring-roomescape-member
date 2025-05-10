@@ -9,7 +9,7 @@ import roomescape.reservation.domain.entity.ReservationTime;
 import roomescape.reservation.domain.exception.ReservationException;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.service.ReservationTimeValidator;
-import roomescape.reservation.global.exception.BusinessRuleViolationException;
+import roomescape.global.exception.BusinessRuleViolationException;
 
 @Service
 @RequiredArgsConstructor
