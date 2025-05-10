@@ -21,12 +21,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Void> handleNoSuchElementException(NoSuchElementException e) {
+        log.info(e.getMessage());
         return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
         String message = e.getMessage();
+        log.warn(message);
         ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.CONFLICT, message);
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
@@ -39,6 +41,7 @@ public class GlobalExceptionHandler {
                 .getFieldErrors().stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.joining(", "));
+        log.warn(message);
         ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.BAD_REQUEST, message);
         return ResponseEntity.badRequest().body(errorResponse);
     }
