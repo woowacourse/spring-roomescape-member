@@ -18,7 +18,7 @@
 //import org.springframework.http.HttpStatus;
 //import org.springframework.jdbc.core.JdbcTemplate;
 //import org.springframework.test.annotation.DirtiesContext;
-//import roomescape.reservation.ui.dto.AvailableReservationTimeResponse;
+//import roomescape.reservation.ui.dto.response.AvailableReservationTimeResponse;
 //
 //@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 //@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)

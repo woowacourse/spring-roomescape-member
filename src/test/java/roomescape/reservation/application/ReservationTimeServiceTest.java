@@ -17,7 +17,7 @@ import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.ReservationTimeRepository;
 import roomescape.reservation.infrastructure.JdbcReservationRepository;
 import roomescape.reservation.infrastructure.JdbcReservationTimeRepository;
-import roomescape.reservation.ui.dto.CreateReservationTimeRequest;
+import roomescape.reservation.ui.dto.request.CreateReservationTimeRequest;
 
 @JdbcTest
 class ReservationTimeServiceTest {

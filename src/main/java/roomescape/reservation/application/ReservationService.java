@@ -11,11 +11,11 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.ReservationTimeRepository;
-import roomescape.reservation.ui.dto.AvailableReservationTimeRequest;
-import roomescape.reservation.ui.dto.AvailableReservationTimeResponse;
-import roomescape.reservation.ui.dto.CreateReservationRequest;
-import roomescape.reservation.ui.dto.ReservationResponse;
-import roomescape.reservation.ui.dto.ReservationsByfilterRequest;
+import roomescape.reservation.ui.dto.request.AvailableReservationTimeRequest;
+import roomescape.reservation.ui.dto.response.AvailableReservationTimeResponse;
+import roomescape.reservation.ui.dto.request.CreateReservationRequest;
+import roomescape.reservation.ui.dto.response.ReservationResponse;
+import roomescape.reservation.ui.dto.request.ReservationsByfilterRequest;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 

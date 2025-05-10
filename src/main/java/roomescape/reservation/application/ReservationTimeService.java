@@ -10,8 +10,8 @@ import roomescape.exception.resource.AlreadyExistException;
 import roomescape.exception.resource.ResourceNotFoundException;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.ReservationTimeRepository;
-import roomescape.reservation.ui.dto.CreateReservationTimeRequest;
-import roomescape.reservation.ui.dto.ReservationTimeResponse;
+import roomescape.reservation.ui.dto.request.CreateReservationTimeRequest;
+import roomescape.reservation.ui.dto.response.ReservationTimeResponse;
 
 @Service
 @RequiredArgsConstructor

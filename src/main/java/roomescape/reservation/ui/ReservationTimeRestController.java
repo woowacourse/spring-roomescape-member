@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.domain.AuthRole;
 import roomescape.auth.domain.RequiresRole;
 import roomescape.reservation.application.ReservationTimeService;
-import roomescape.reservation.ui.dto.CreateReservationTimeRequest;
-import roomescape.reservation.ui.dto.ReservationTimeResponse;
+import roomescape.reservation.ui.dto.request.CreateReservationTimeRequest;
+import roomescape.reservation.ui.dto.response.ReservationTimeResponse;
 
 @RestController
 @RequiredArgsConstructor

@@ -17,11 +17,11 @@ import roomescape.auth.domain.AuthRole;
 import roomescape.auth.domain.RequiresRole;
 import roomescape.member.domain.Member;
 import roomescape.reservation.application.ReservationService;
-import roomescape.reservation.ui.dto.AvailableReservationTimeRequest;
-import roomescape.reservation.ui.dto.AvailableReservationTimeResponse;
-import roomescape.reservation.ui.dto.CreateReservationRequest;
-import roomescape.reservation.ui.dto.ReservationResponse;
-import roomescape.reservation.ui.dto.ReservationsByfilterRequest;
+import roomescape.reservation.ui.dto.request.AvailableReservationTimeRequest;
+import roomescape.reservation.ui.dto.request.CreateReservationRequest;
+import roomescape.reservation.ui.dto.request.ReservationsByfilterRequest;
+import roomescape.reservation.ui.dto.response.AvailableReservationTimeResponse;
+import roomescape.reservation.ui.dto.response.ReservationResponse;
 
 @RestController
 @RequiredArgsConstructor
