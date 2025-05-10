@@ -44,6 +44,17 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
+    public Optional<Member> findById(MemberId id) {
+        final String sql = """
+                SELECT id, name, email, password, role
+                FROM member
+                WHERE id = ?
+                """;
+
+        return JdbcUtils.queryForOptional(jdbcTemplate, sql, memberRowMapper, id.getValue());
+    }
+
+    @Override
     public Optional<Member> findByParams(MemberEmail email, MemberPassword password) {
         final String sql = """
                 SELECT id, name, email, password, role

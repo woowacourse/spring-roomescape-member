@@ -1,4 +1,4 @@
-package roomescape.member.service.auth;
+package roomescape.member.auth;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

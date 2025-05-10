@@ -39,7 +39,6 @@ public class AuthController {
         return ResponseEntity.ok(authService.checkLogin(request.getCookies()));
     }
 
-    @ResponseBody
     @PostMapping("/signup")
     public ResponseEntity<Member> signup(@RequestBody SignupRequest signupRequest) {
         return ResponseEntity.ok(memberService.signup(signupRequest));

@@ -12,6 +12,8 @@ import roomescape.common.utils.Validator;
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode
 public class MemberPassword {
+
+    // TODO: Add password encryption logic
     private final String value;
 
     public static MemberPassword from(final String password) {
@@ -24,5 +26,4 @@ public class MemberPassword {
                 .notNullField(MemberPassword.Fields.value, value)
                 .notBlankField(MemberPassword.Fields.value, value.strip());
     }
-
 }

@@ -1,9 +1,12 @@
-package roomescape.member.service.auth;
+package roomescape.member.auth;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.member.domain.MemberId;
+import roomescape.member.domain.MemberName;
 
 @Component
 public class JwtTokenExtractor {
@@ -11,8 +14,16 @@ public class JwtTokenExtractor {
     @Value("${jwt.key}")
     private String SECRET_KEY;
 
-    public String extractMemberNameFromCookie(Cookie[] cookies) {
-        return extractMemberNameFromToken(extractTokenFromCookie(cookies));
+    public MemberName extractMemberNameFromCookie(Cookie[] cookies) {
+        String name = extractClaimsFromToken(extractTokenFromCookie(cookies))
+                .get("name").toString();
+        return MemberName.from(name);
+    }
+
+    public MemberId extractMemberIdFromCookie(Cookie[] cookies) {
+        String token = extractTokenFromCookie(cookies);
+        Long id = Long.valueOf(extractClaimsFromToken(token).getSubject());
+        return MemberId.from(id);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
@@ -29,11 +40,10 @@ public class JwtTokenExtractor {
         throw new IllegalStateException("Cookie에 Token 값이 존재하지 않습니다.");
     }
 
-    private String extractMemberNameFromToken(String token) {
+    private Claims extractClaimsFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token)
-                .getBody()
-                .get("name").toString();
+                .getBody();
     }
 }
