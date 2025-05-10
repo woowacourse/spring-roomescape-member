@@ -77,6 +77,11 @@ public class ReservationService {
 
     public List<ReservationResponse> getReservations(Long memberId, Long themeId, LocalDate dateFrom,
                                                      LocalDate dateTo) {
+
+        if (dateFrom != null && dateTo != null && dateFrom.isAfter(dateTo)) {
+            throw new IllegalArgumentException("dateFrom은 dateTo보다 이전이어야 합니다.");
+        }
+
         return reservationRepository.findReservationsBy(memberId, themeId, dateFrom, dateTo).stream()
                 .map(ReservationResponse::new)
                 .toList();
