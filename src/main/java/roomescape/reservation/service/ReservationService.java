@@ -49,7 +49,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public void deleteReservation(final Long id) {
+    public void deleteReservation(Long id) {
         boolean deleted = reservationRepository.deleteById(id);
         if (!deleted) {
             throw new NotFoundException("존재하지 않는 id 입니다.");

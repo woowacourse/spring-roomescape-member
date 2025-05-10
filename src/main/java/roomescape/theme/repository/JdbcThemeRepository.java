@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -17,10 +18,19 @@ import roomescape.theme.entity.Theme;
 public class JdbcThemeRepository implements ThemeRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getString("thumbnail")
+    );
 
     @Override
     public Theme save(Theme theme) {
-        String query = "insert into theme (name, description, thumbnail) values (:name, :description, :thumbnail)";
+        String sql = """
+                INSERT INTO theme (name, description, thumbnail)
+                VALUES (:name, :description, :thumbnail)
+                """;
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
@@ -28,8 +38,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .addValue("thumbnail", theme.getThumbnail());
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(query, params, keyHolder);
+        jdbcTemplate.update(sql, params, keyHolder);
 
         return new Theme(
                 keyHolder.getKey().longValue(),
@@ -41,21 +50,8 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        String query = "select * from theme";
-
-        return jdbcTemplate.query(query, (resultSet, rowNum) -> {
-            long id = resultSet.getLong("id");
-            String name = resultSet.getString("name");
-            String description = resultSet.getString("description");
-            String thumbnail = resultSet.getString("thumbnail");
-
-            return new Theme(
-                    id,
-                    name,
-                    description,
-                    thumbnail
-            );
-        });
+        String sql = "SELECT * FROM theme";
+        return jdbcTemplate.query(sql, themeRowMapper);
     }
 
     @Override
@@ -64,14 +60,13 @@ public class JdbcThemeRepository implements ThemeRepository {
             LocalDate endDate,
             final int limit
     ) {
-        String query = """
+        String sql = """
                 SELECT
-                    t.id as theme_id,
+                    t.id,
                     t.name,
                     t.description,
-                    t.thumbnail,
-                    r_stats.cnt
-                FROM theme as t
+                    t.thumbnail
+                FROM theme t
                 LEFT JOIN (
                     SELECT
                         theme_id,
@@ -79,8 +74,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                     FROM reservation
                     WHERE date BETWEEN :startDate AND :endDate
                     GROUP BY theme_id
-                ) as r_stats
-                ON t.id = r_stats.theme_id
+                ) r_stats ON t.id = r_stats.theme_id
                 ORDER BY cnt DESC, theme_id DESC
                 FETCH FIRST :limit ROWS ONLY
                 """;
@@ -90,41 +84,17 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .addValue("endDate", endDate)
                 .addValue("limit", limit);
 
-        return jdbcTemplate.query(query, params, (resultSet, rowNum) -> {
-            long id = resultSet.getLong("theme_id");
-            String name = resultSet.getString("name");
-            String description = resultSet.getString("description");
-            String thumbnail = resultSet.getString("thumbnail");
-
-            return new Theme(
-                    id,
-                    name,
-                    description,
-                    thumbnail
-            );
-        });
+        return jdbcTemplate.query(sql, params, themeRowMapper);
     }
 
     @Override
     public Optional<Theme> findById(Long id) {
-        String query = "select * from theme where id = :id";
-
+        String sql = "SELECT * FROM theme WHERE id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
 
         try {
-            Theme theme = jdbcTemplate.queryForObject(query, params, (resultSet, rowNum) -> {
-                String name = resultSet.getString("name");
-                String description = resultSet.getString("description");
-                String thumbnail = resultSet.getString("thumbnail");
-
-                return new Theme(
-                        id,
-                        name,
-                        description,
-                        thumbnail
-                );
-            });
+            Theme theme = jdbcTemplate.queryForObject(sql, params, themeRowMapper);
             return Optional.of(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -133,24 +103,12 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Optional<Theme> findByName(String name) {
-        String query = "SELECT * FROM theme WHERE name = :name";
-
-        MapSqlParameterSource param = new MapSqlParameterSource()
+        String sql = "SELECT * FROM theme WHERE name = :name";
+        MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", name);
 
         try {
-            Theme theme = jdbcTemplate.queryForObject(query, param, (resultSet, rowNum) -> {
-                final long id = resultSet.getLong("id");
-                String description = resultSet.getString("description");
-                String thumbnail = resultSet.getString("thumbnail");
-
-                return new Theme(
-                        id,
-                        name,
-                        description,
-                        thumbnail
-                );
-            });
+            Theme theme = jdbcTemplate.queryForObject(sql, params, themeRowMapper);
             return Optional.of(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -159,13 +117,11 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public boolean deleteById(Long id) {
-        String query = "delete from theme where id = :id";
-
+        String sql = "DELETE FROM theme WHERE id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
 
-        final int updated = jdbcTemplate.update(query, params);
-
+        int updated = jdbcTemplate.update(sql, params);
         return updated > 0;
     }
 }
