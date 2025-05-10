@@ -21,7 +21,7 @@ public class MemberController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<MemberResponse> findAllReservationTimes() {
+    public List<MemberResponse> findAllLoginMembers() {
         return loginMemberService.findAllLoginMembers()
                 .stream()
                 .map(MemberResponse::from)
