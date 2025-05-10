@@ -14,16 +14,18 @@ public class AuthConfig implements WebMvcConfigurer {
 
     private final JwtManager jwtManager;
     private final AuthService authService;
+    private final JwtProperties jwtProperties;
 
     @Autowired
-    public AuthConfig(final JwtManager jwtManager, final AuthService authService) {
+    public AuthConfig(final JwtManager jwtManager, final AuthService authService, final JwtProperties jwtProperties) {
         this.jwtManager = jwtManager;
         this.authService = authService;
+        this.jwtProperties = jwtProperties;
     }
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(new CheckAdminLoginInterceptor(jwtManager))
+        registry.addInterceptor(new CheckAdminLoginInterceptor(jwtManager, jwtProperties))
                 .addPathPatterns("/admin", "/admin/**");
     }
 

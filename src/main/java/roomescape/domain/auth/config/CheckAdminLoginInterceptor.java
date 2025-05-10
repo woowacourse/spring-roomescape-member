@@ -16,12 +16,12 @@ import roomescape.domain.auth.service.JwtManager;
 @Component
 public class CheckAdminLoginInterceptor implements HandlerInterceptor {
 
-    private static final String TOKEN_NAME = "token";
-
     private final JwtManager jwtManager;
+    private final String cookieKey;
 
-    public CheckAdminLoginInterceptor(final JwtManager jwtManager) {
+    public CheckAdminLoginInterceptor(final JwtManager jwtManager, final JwtProperties jwtProperties) {
         this.jwtManager = jwtManager;
+        this.cookieKey = jwtProperties.getCookieKey();
     }
 
     @Override
@@ -41,8 +41,7 @@ public class CheckAdminLoginInterceptor implements HandlerInterceptor {
     }
 
     private boolean isAdmin(final Cookie[] cookies) {
-        return findToken(cookies)
-                .map(jwtManager::getRole)
+        return findToken(cookies).map(jwtManager::getRole)
                 .anyMatch(Roles::isAdmin);
     }
 
@@ -54,7 +53,7 @@ public class CheckAdminLoginInterceptor implements HandlerInterceptor {
 
     private Stream<String> findToken(final Cookie[] cookies) {
         return Arrays.stream(cookies)
-                .filter(cookie -> TOKEN_NAME.equals(cookie.getName()))
+                .filter(cookie -> cookieKey.equals(cookie.getName()))
                 .map(Cookie::getValue);
     }
 }

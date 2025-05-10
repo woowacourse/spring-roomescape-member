@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.auth.config.AuthenticationPrincipal;
+import roomescape.domain.auth.config.JwtProperties;
 import roomescape.domain.auth.dto.LoginRequest;
 import roomescape.domain.auth.dto.LoginUserDto;
 import roomescape.domain.auth.dto.TokenResponse;
@@ -23,18 +24,20 @@ import roomescape.domain.auth.service.AuthService;
 @RequestMapping("/login")
 public class LoginController {
 
+    private final String cookieKey;
     private final AuthService authService;
 
     @Autowired
-    public LoginController(final AuthService authService) {
+    public LoginController(final JwtProperties jwtProperties, final AuthService authService) {
+        this.cookieKey = jwtProperties.getCookieKey();
         this.authService = authService;
     }
 
     @PostMapping
-    public ResponseEntity<Void> login(@Valid  @RequestBody final LoginRequest loginRequest) {
+    public ResponseEntity<Void> login(@Valid @RequestBody final LoginRequest loginRequest) {
         final TokenResponse tokenResponse = authService.login(loginRequest);
 
-        final ResponseCookie cookie = ResponseCookie.from("token", tokenResponse.token())
+        final ResponseCookie cookie = ResponseCookie.from(cookieKey, tokenResponse.token())
                 .httpOnly(true)
                 .maxAge(60 * 60)
                 .path("/")
