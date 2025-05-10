@@ -9,8 +9,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import roomescape.dto.request.LoginRequest;
+import roomescape.dto.request.MemberSignUpRequest;
 import roomescape.service.stub.StubReservationService;
 import roomescape.service.stub.StubReservationTimeService;
 
@@ -35,8 +38,16 @@ public class ReservationControllerTest {
         params.put("memberId", "1");
 
         RestAssured.given().log().all()
+                .body(new MemberSignUpRequest("히스타", "test@test.com", "1234"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/members")
+                .then().log().all();
+
+        RestAssured.given().log().all()
                 .contentType("application/json")
                 .body(params)
+                .cookie("token", getToken("test@test.com", "1234"))
                 .when().post("/reservations")
                 .then().log().all()
                 .body("member.name", equalTo("히스타"))
@@ -72,5 +83,16 @@ public class ReservationControllerTest {
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
+    }
+
+
+    private String getToken(String email, String password) {
+        return RestAssured.given().log().all()
+                .body(new LoginRequest(email, password))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract()
+                .cookie("token");
     }
 }

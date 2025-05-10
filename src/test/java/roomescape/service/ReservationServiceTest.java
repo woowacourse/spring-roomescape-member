@@ -74,7 +74,7 @@ public class ReservationServiceTest {
         ReservationResponse reservationResponse = reservationService.createReservation(reservationCreateRequest, 1L);
         // then
         assertAll(
-                () -> assertThat(reservationResponse.loginMemberResponse()).isEqualTo("히스타"),
+                () -> assertThat(reservationResponse.loginMemberResponse().name()).isEqualTo("히스타"),
                 () -> assertThat(reservationResponse.reservationTimeResponse().id()).isEqualTo(1L),
                 () -> assertThat(reservationResponse.date()).isEqualTo(givenDate),
                 () -> assertThat(reservationResponse.reservationTimeResponse().startAt()).isEqualTo("10:00"),
