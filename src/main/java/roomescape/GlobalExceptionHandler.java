@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import roomescape.exception.DuplicatePlayTimeException;
 import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.InvalidCredentialsException;
 import roomescape.exception.InvalidReservationDateException;
 import roomescape.exception.PlayTimeNotFoundException;
 import roomescape.exception.ReservationNotFoundException;
@@ -14,6 +15,11 @@ import roomescape.exception.ThemeNotFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(value = InvalidCredentialsException.class)
+    public ResponseEntity<Void> handleInvalidCredentialsException(final InvalidCredentialsException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
 
     @ExceptionHandler(value = {ReservationNotFoundException.class, PlayTimeNotFoundException.class, ThemeNotFoundException.class})
     public ResponseEntity<Void> handleNotFoundException(final NoSuchElementException e) {
