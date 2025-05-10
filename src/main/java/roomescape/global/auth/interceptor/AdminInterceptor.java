@@ -27,7 +27,7 @@ public class AdminInterceptor implements HandlerInterceptor {
             final HttpServletRequest request,
             final HttpServletResponse response,
             final Object handler
-    ) throws Exception {
+    ) {
         if (request.getCookies() == null) {
             throw new UnauthorizedException("사용자 인증 정보가 없습니다.");
         }
