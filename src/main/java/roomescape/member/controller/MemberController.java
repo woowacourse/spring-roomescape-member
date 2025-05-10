@@ -15,7 +15,7 @@ import roomescape.member.service.MemberService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("members")
+@RequestMapping("/members")
 public class MemberController {
 
     private final MemberService memberService;
