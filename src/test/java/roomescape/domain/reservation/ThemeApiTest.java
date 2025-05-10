@@ -206,4 +206,31 @@ class ThemeApiTest {
                 .body("size()", is(3))
                 .body("name", contains("공포3", "공포1", "공포2"));
     }
+
+    @DisplayName("가장 인기있는 테마를 최대 10개만 가져온다.")
+    @Test
+    void testPopularThemesLimit10() {
+        // given
+        final ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
+        final ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
+        final Name name = new Name("브라운");
+        final User user = userRepository.save(User.withoutId(name, "admin@naver.com", "1234", Roles.USER));
+
+        // 11개의 테마 생성 및 각각 예약
+        for (int i = 1; i <= 11; i++) {
+            final Theme theme = Theme.withoutId("테마" + i, "설명" + i, "www.m.com/" + i);
+            final Theme savedTheme = themeRepository.save(theme);
+            reservationRepository.save(Reservation.withoutId(user, minusDay(LocalDate.now(), 1), savedTime, savedTheme));
+        }
+
+        // when & then
+        RestAssured.given()
+                .log().all()
+                .when()
+                .get("/themes/popular")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("size()", is(10));
+    }
 }
