@@ -7,10 +7,11 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Person;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
@@ -34,7 +35,13 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     public List<Reservation> findAllReservation() {
         String sql = """
                    select r.id as reservation_id, 
-                          r.name, 
+                
+                          m.id as member_id, 
+                          m.name as member_name,
+                          m.email as member_email,
+                          m.password as member_password,
+                          m.role as member_role,
+                
                           r.date,
                 
                           rt.id as time_id,
@@ -45,21 +52,29 @@ public class JdbcReservationDaoImpl implements ReservationDao {
                           t.description as theme_description,
                           t.thumbnail as theme_thumbnail
                    from reservation as r 
+                   inner join member as m on r.member_id = m.id
                    inner join reservation_time as rt on r.time_id = rt.id
                    inner join theme as t on r.theme_id = t.id 
                 """;
 
         return jdbcTemplate.query(sql, (resultSet, RowNum) ->
-                new Reservation(resultSet.getLong("reservation_id"),
-                        createPerson(resultSet),
+                new Reservation(
+                        resultSet.getLong("reservation_id"),
+                        createMember(resultSet),
                         createReservationDate(resultSet),
                         createReservationTime(resultSet),
                         createTheme(resultSet)
                 ));
     }
 
-    private Person createPerson(ResultSet resultSet) throws SQLException {
-        return new Person(resultSet.getString("name"));
+    private Member createMember(ResultSet resultSet) throws SQLException {
+        long id = resultSet.getLong("member_id");
+        return Member.from(
+                id,
+                resultSet.getString("member_name"),
+                resultSet.getString("member_email"),
+                resultSet.getString("member_password")
+        );
     }
 
     private ReservationDate createReservationDate(ResultSet resultSet) throws SQLException {
@@ -84,13 +99,17 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     @Override
     public void saveReservation(Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>(4);
-        parameters.put("name", reservation.getPersonName());
+        parameters.put("member_id", reservation.getMemberId());
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTimeId());
         parameters.put("theme_id", reservation.getThemeId());
 
-        Number newId = insertActor.executeAndReturnKey(parameters);
-        reservation.setId(newId.longValue());
+        try {
+            Number newId = insertActor.executeAndReturnKey(parameters);
+            reservation.setId(newId.longValue());
+        } catch (DataIntegrityViolationException e) {
+            throw new InvalidReservationException("존재하지 않는 회원, 테마, 시간이 존재합니다.");
+        }
     }
 
     @Override

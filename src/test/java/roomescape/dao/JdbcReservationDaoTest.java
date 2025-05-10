@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import roomescape.domain.Person;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
@@ -23,6 +23,7 @@ public class JdbcReservationDaoTest {
 
     private static final LocalDate NOW_DATE = LocalDate.now().plusDays(1);
 
+    private Member member;
     private ReservationTime reservationTime;
     private DataSource datasource;
     private JdbcTemplate jdbcTemplate;
@@ -39,12 +40,15 @@ public class JdbcReservationDaoTest {
         jdbcTemplate = new JdbcTemplate(datasource);
         reservationDao = new JdbcReservationDaoImpl(jdbcTemplate);
 
+        member = Member.from(1L, "testName", "testEmail", "1234");
         reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         theme = new Theme(1L, "안녕 자두야", "hi", "https://aa");
 
+        String memberInsertQuery = "insert into member (id, name, email, password, role) values (?, ?, ?, ?, ?)";
         String timeInsertQuery = "insert into reservation_time (id, start_at) values (?, ?)";
         String themeInsertQuery = "insert into theme (id, name, description, thumbnail) values (?, ?, ?, ?)";
 
+        jdbcTemplate.update(memberInsertQuery, 1L, "testName", "testEmail", "1234", "basic");
         jdbcTemplate.update(timeInsertQuery, 1L, "10:00");
         jdbcTemplate.update(themeInsertQuery, 1L, "안녕 자두야", "hi", "https://aa");
     }
@@ -60,7 +64,7 @@ public class JdbcReservationDaoTest {
     void given_reservation_then_save_db_and_set_id() {
         //given
         Reservation reservation = new Reservation(
-                new Person("james"),
+                member,
                 new ReservationDate(NOW_DATE),
                 reservationTime,
                 theme);
@@ -77,22 +81,33 @@ public class JdbcReservationDaoTest {
     @Test
     void get_all_reservation() {
         //given
-        Reservation reservation1 = new Reservation(new Person("james"),
+        Reservation reservation1 = new Reservation(
+                member,
                 new ReservationDate(NOW_DATE.plusDays(1)),
-                reservationTime, theme);
+                reservationTime,
+                theme);
         reservationDao.saveReservation(reservation1);
-        Reservation reservation2 = new Reservation(new Person("james"),
+
+        Reservation reservation2 = new Reservation(
+                member,
                 new ReservationDate(NOW_DATE.plusDays(2)),
-                reservationTime, theme);
+                reservationTime,
+                theme);
         reservationDao.saveReservation(reservation2);
-        Reservation reservation3 = new Reservation(new Person("james"),
+
+        Reservation reservation3 = new Reservation(
+                member,
                 new ReservationDate(NOW_DATE.plusDays(3)),
-                reservationTime, theme);
+                reservationTime,
+                theme);
         reservationDao.saveReservation(reservation3);
 
         //when, then
-        assertThat(reservationDao.findAllReservation()).containsExactlyInAnyOrder(reservation1,
-                reservation2, reservation3);
+        assertThat(reservationDao.findAllReservation())
+                .containsExactlyInAnyOrder(
+                        reservation1,
+                        reservation2,
+                        reservation3);
         assertThat(reservationDao.findAllReservation().size()).isEqualTo(3);
     }
 
@@ -100,9 +115,12 @@ public class JdbcReservationDaoTest {
     @Test
     void given_reservation_id_then_delete_data() {
         //given
-        Reservation reservation = new Reservation(new Person("james"),
+        Reservation reservation = new Reservation(
+                member,
                 new ReservationDate(NOW_DATE),
-                reservationTime, theme);
+                reservationTime,
+                theme);
+
         reservationDao.saveReservation(reservation);
 
         //when

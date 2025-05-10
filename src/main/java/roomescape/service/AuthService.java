@@ -1,10 +1,9 @@
 package roomescape.service;
 
-import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
-import roomescape.auth.JwtExtractor;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.dao.MemberDao;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.MemberResponse;
@@ -15,13 +14,11 @@ import roomescape.exception.MemberException;
 public class AuthService {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final JwtExtractor jwtExtractor;
     private final MemberDao memberDao;
 
-    public AuthService(final JwtTokenProvider jwtTokenProvider, final JwtExtractor jwtExtractor,
+    public AuthService(final JwtTokenProvider jwtTokenProvider,
                        final MemberDao memberDao) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.jwtExtractor = jwtExtractor;
         this.memberDao = memberDao;
     }
 
@@ -46,14 +43,14 @@ public class AuthService {
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
-    private MemberResponse findMemberByToken(final String token) {
+    private Member findMemberByToken(final String token) {
         Long id = jwtTokenProvider.getSubjectFromPayloadBy(token);
-        Member member = findMemberById(id);
-        return new MemberResponse(member.getName());
+        return findMemberById(id);
     }
 
     private Member findMemberById(final Long id) {
         return memberDao.findById(id)
                 .orElseThrow(() -> new InvalidAuthException("회원 정보를 찾을 수 없습니다."));
     }
+
 }

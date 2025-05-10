@@ -9,21 +9,27 @@ import roomescape.exception.InvalidReservationException;
 public class Reservation {
 
     private Long id;
-    private final Person person;
+    private final Member member;
     private final ReservationDate date;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
-    public Reservation(Long id, Person person, ReservationDate date, ReservationTime reservationTime, Theme theme) {
+    public Reservation(final Long id, final Member member, final ReservationDate date,
+                       final ReservationTime reservationTime, final Theme theme) {
         this.id = id;
-        this.person = person;
+        this.member = member;
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
     }
 
-    public Reservation(Person person, ReservationDate date, ReservationTime reservationTime, Theme theme) {
-        this(null, person, date, reservationTime, theme);
+    public Reservation(final Member member, final ReservationDate date, final ReservationTime reservationTime,
+                       final Theme theme) {
+        this.id = null;
+        this.member = member;
+        this.date = date;
+        this.reservationTime = reservationTime;
+        this.theme = theme;
     }
 
     public void validateDateTime(ReservationDate date, ReservationTime time, LocalDateTime currentDateTime) {
@@ -42,8 +48,12 @@ public class Reservation {
         this.id = id;
     }
 
-    public String getPersonName() {
-        return person.getName();
+    public Long getMemberId() {
+        return getMember().getId();
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
@@ -79,4 +89,5 @@ public class Reservation {
     public int hashCode() {
         return Objects.hashCode(getId());
     }
+
 }

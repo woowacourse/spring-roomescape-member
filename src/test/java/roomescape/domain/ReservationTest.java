@@ -19,9 +19,12 @@ class ReservationTest {
     void when_current_date_and_past_hour_then_throw_exception() {
 
         //given
+        Member member = Member.from(1L, "testName", "testEmail", "1234");
+
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(9, 19));
         ReservationDate reservationDate = new ReservationDate(LocalDate.of(2025, 2, 5));
-        Reservation reservation = new Reservation(new Person("james"), reservationDate, reservationTime, theme);
+        Reservation reservation = new Reservation(
+                member, reservationDate, reservationTime, theme);
 
         LocalDateTime currentDateTime = LocalDateTime.of(2025, 2, 5, 9, 20);
 
@@ -36,9 +39,11 @@ class ReservationTest {
     void when_current_date_and_past_hour_then_success() {
 
         //given
+        Member member = Member.from(1L, "testName", "testEmail", "1234");
+
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(9, 23));
         ReservationDate reservationDate = new ReservationDate(LocalDate.of(2025, 2, 5));
-        Reservation reservation = new Reservation(new Person("james"), reservationDate,
+        Reservation reservation = new Reservation(member, reservationDate,
                 reservationTime, theme);
         LocalDateTime currentDateTime = LocalDateTime.of(2025, 2, 5, 9, 22);
 

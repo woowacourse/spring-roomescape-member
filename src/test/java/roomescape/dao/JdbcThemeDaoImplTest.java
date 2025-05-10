@@ -96,6 +96,7 @@ class JdbcThemeDaoImplTest {
         //given
         createTheme();
         createReservationTime();
+        createMember();
         createReservation();
 
         LocalDate currentDate = LocalDate.of(2025, 4, 8);
@@ -121,34 +122,46 @@ class JdbcThemeDaoImplTest {
         }
     }
 
+    private void createMember() {
+        for (int i = 1; i < 21; i++) {
+            jdbcTemplate.update("INSERT INTO member (id, name, email, password, role) VALUES (?, ?, ?, ?, ?)",
+                    i,
+                    "도기",
+                    "testEmail" + i,
+                    "1234",
+                    "basic"
+            );
+        }
+    }
+
     private void createReservation() {
         Object[][] reservations = {
-                {1, "2025-04-01", 1},
-                {2, "2025-04-02", 1},
-                {3, "2025-04-03", 1},
-                {4, "2025-04-04", 1},
-                {5, "2025-04-05", 2},
-                {6, "2025-04-06", 2},
-                {7, "2025-04-07", 3},
-                {8, "2025-04-01", 3},
-                {9, "2025-04-02", 3},
-                {10, "2025-04-03", 4},
-                {11, "2025-04-04", 5},
-                {12, "2025-04-05", 6},
-                {13, "2025-04-06", 7},
-                {14, "2025-04-07", 8},
-                {15, "2025-04-01", 9},
-                {16, "2025-04-02", 9},
-                {17, "2025-04-03", 11},
-                {18, "2025-04-04", 12},
-                {19, "2025-04-05", 2},
-                {20, "2025-04-06", 3}
+                {1, 1, "2025-04-01", 1},
+                {2, 2, "2025-04-02", 1},
+                {3, 3, "2025-04-03", 1},
+                {4, 4, "2025-04-04", 1},
+                {5, 5, "2025-04-05", 2},
+                {6, 6, "2025-04-06", 2},
+                {7, 7, "2025-04-07", 3},
+                {8, 8, "2025-04-01", 3},
+                {9, 9, "2025-04-02", 3},
+                {10, 10, "2025-04-03", 4},
+                {11, 11, "2025-04-04", 5},
+                {12, 12, "2025-04-05", 6},
+                {13, 13, "2025-04-06", 7},
+                {14, 14, "2025-04-07", 8},
+                {15, 15, "2025-04-01", 9},
+                {16, 16, "2025-04-02", 9},
+                {17, 17, "2025-04-03", 11},
+                {18, 18, "2025-04-04", 12},
+                {19, 19, "2025-04-05", 2},
+                {20, 20, "2025-04-06", 3}
         };
 
         for (Object[] reservation : reservations) {
             jdbcTemplate.update(
-                    "INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (?, ?, ?, ?, ?)",
-                    reservation[0], "도기", reservation[1], 1, reservation[2]
+                    "INSERT INTO reservation (id, member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?, ?)",
+                    reservation[0], reservation[1], reservation[2], 1, reservation[3]
             );
         }
     }

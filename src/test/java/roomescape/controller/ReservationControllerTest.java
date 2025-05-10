@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
+import jakarta.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -18,11 +19,14 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import roomescape.auth.CookieProvider;
+import roomescape.auth.JwtTokenProvider;
+import roomescape.dao.FakeMemberDaoImpl;
 import roomescape.dao.FakeReservationDaoImpl;
 import roomescape.dao.FakeReservationTimeDaoImpl;
 import roomescape.dao.FakeThemeDaoImpl;
 import roomescape.dao.TestDaoConfiguration;
-import roomescape.domain.Person;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
@@ -51,6 +55,15 @@ class ReservationControllerTest {
     @Autowired
     private FakeThemeDaoImpl themeDao;
 
+    @Autowired
+    private FakeMemberDaoImpl memberDao;
+
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+
+    @Autowired
+    private CookieProvider cookieProvider;
+
     @LocalServerPort
     int port;
 
@@ -63,15 +76,22 @@ class ReservationControllerTest {
     @Test
     void createReservation() {
         //given
-        reservationTimeDao.saveReservationTime(new ReservationTime(LocalTime.of(10, 0)));
+        Member member = Member.from(1L, "testName", "testEmail", "1234");
+        memberDao.save(member);
+        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
+        reservationTimeDao.saveReservationTime(reservationTime);
         themeDao.saveTheme(new Theme("테마", "설명", "썸네일"));
-        ReservationRequestDto request = new ReservationRequestDto("도기", NOW_DATE.toString(), 1L, 1L);
+        ReservationRequestDto request = new ReservationRequestDto(NOW_DATE.toString(), 1L, 1L);
+
+        String token = tokenProvider.createToken(member);
+        Cookie cookie = cookieProvider.createCookie("token", token);
 
         //when
         ReservationResponseDto actual = RestAssured
                 .given()
                 .log().all()
                 .contentType(ContentType.JSON)
+                .cookie(cookie.getName(), cookie.getValue())
                 .body(request)
                 .when()
                 .post("/reservations")
@@ -86,7 +106,7 @@ class ReservationControllerTest {
                 .extracting("id", "name", "date", "time", "theme")
                 .containsExactly(
                         1L,
-                        "도기",
+                        "testName",
                         NOW_DATE.toString(),
                         new ReservationTimeResponseDto(
                                 1L,
@@ -103,20 +123,20 @@ class ReservationControllerTest {
     @Test
     void readAllReservations() {
         //given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
-        reservationTimeDao.saveReservationTime(reservationTime);
+        Member member1 = Member.from(1L, "testName1", "testEmail1", "1234");
+        Member member2 = Member.from(2L, "testName2", "testEmail2", "1234");
 
-        Theme theme = new Theme("테마", "설명", "썸네일");
-        themeDao.saveTheme(theme);
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        Theme theme = new Theme(1L, "테마", "설명", "썸네일");
 
         reservationDao.saveReservation(new Reservation(
-                new Person("도기"),
+                member1,
                 new ReservationDate(NOW_DATE),
                 reservationTime,
                 theme));
 
         reservationDao.saveReservation(new Reservation(
-                new Person("도기"),
+                member2,
                 new ReservationDate(NOW_DATE.plusDays(1)),
                 reservationTime,
                 theme));
@@ -139,14 +159,14 @@ class ReservationControllerTest {
         List<ReservationResponseDto> compareList = List.of(
                 new ReservationResponseDto(
                         1L,
-                        "도기",
+                        "testName1",
                         NOW_DATE.toString(),
                         new ReservationTimeResponseDto(1L, "10:00"),
                         new ThemeResponseDto(1L, "테마", "설명", "썸네일")
                 ),
                 new ReservationResponseDto(
                         2L,
-                        "도기",
+                        "testName2",
                         NOW_DATE.plusDays(1).toString(),
                         new ReservationTimeResponseDto(1L, "10:00"),
                         new ThemeResponseDto(1L, "테마", "설명", "썸네일")
@@ -161,14 +181,11 @@ class ReservationControllerTest {
     @Test
     void deleteReservation() {
         //given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
-        reservationTimeDao.saveReservationTime(reservationTime);
-
-        Theme theme = new Theme("테마", "설명", "썸네일");
-        themeDao.saveTheme(theme);
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        Theme theme = new Theme(1L, "테마", "설명", "썸네일");
 
         reservationDao.saveReservation(new Reservation(
-                new Person("도기"),
+                Member.from(1L, "testName", "testEmail", "1234"),
                 new ReservationDate(NOW_DATE),
                 reservationTime,
                 theme));
@@ -203,7 +220,7 @@ class ReservationControllerTest {
         themeDao.saveTheme(theme);
 
         reservationDao.saveReservation(new Reservation(
-                new Person("도기"),
+                Member.from(1L, "testName", "testEmail", "1234"),
                 new ReservationDate(NOW_DATE),
                 reservationTime,
                 theme));
