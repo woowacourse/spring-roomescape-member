@@ -61,9 +61,6 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findByEmailAndPassword(String email, String password) {
-        System.out.println("왔다.");
-        System.out.println(email);
-        System.out.println(password);
         String sql = "SELECT * FROM member WHERE email = ? and password = ?";
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, email, password));
