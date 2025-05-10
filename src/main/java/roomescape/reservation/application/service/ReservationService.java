@@ -7,12 +7,12 @@ import roomescape.global.exception.DuplicateReservationException;
 import roomescape.global.exception.GetThemeException;
 import roomescape.global.exception.GetTimeException;
 import roomescape.global.exception.PastTimeException;
+import roomescape.member.domain.Member;
 import roomescape.reservation.application.dto.CreateReservationRequest;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.application.repository.ThemeRepository;
 import roomescape.reservation.domain.ReservationDate;
-import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.presentation.dto.ReservationRequest;
@@ -33,14 +33,14 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public ReservationResponse createReservation(final ReservationRequest reservationRequest) {
+    public ReservationResponse createReservation(final Member member, final ReservationRequest reservationRequest) {
         ReservationDate reservationDate = new ReservationDate(reservationRequest.getDate());
         ReservationTime reservationTime = getReservationTime(reservationRequest.getTimeId());
         Theme theme = getTheme(reservationRequest.getThemeId());
         validateReservationDateTime(reservationDate, reservationTime);
 
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                new ReservationName(reservationRequest.getName()),
+                member,
                 theme,
                 reservationDate,
                 reservationTime
@@ -77,14 +77,14 @@ public class ReservationService {
         validateIsDuplicate(reservationDateTime);
     }
 
-    private static void validateIsPast(LocalDateTime reservationDateTime) {
+    private void validateIsPast(LocalDateTime reservationDateTime) {
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
             throw new PastTimeException("[ERROR] 지난 일시에 대한 예약 생성은 불가능합니다.");
         }
     }
 
     private void validateIsDuplicate(LocalDateTime reservationDateTime) {
-        if(reservationRepository.existsByDateTime(reservationDateTime)){
+        if (reservationRepository.existsByDateTime(reservationDateTime)) {
             throw new DuplicateReservationException("[ERROR] 중복된 일시의 예약은 불가능합니다.");
         }
     }
