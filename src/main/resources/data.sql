@@ -24,6 +24,9 @@ VALUES ('리사', 'email3@naver.com', '1234', 'USER');
 INSERT INTO member (name, email, password, role)
 VALUES ('검프', 'email4@naver.com', '1234', 'USER');
 
+INSERT INTO member (name, email, password, role)
+VALUES ('어드민', 'admin@naver.com', '1234', 'ADMIN');
+
 -- reservation 테이블 초기 데이터
 INSERT INTO reservation (name, date, time_id, theme_id, member_id)
 VALUES ('웨이드', '2025-05-01', 1, 2, 1),

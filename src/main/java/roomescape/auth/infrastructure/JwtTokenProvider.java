@@ -41,7 +41,6 @@ public class JwtTokenProvider implements TokenProvider {
                 .compact();
     }
 
-    //TODO : JWT 유효성 예외 처리
     @Override
     public AuthenticatedMember resolveAuthenticatedMember(String token) {
         Claims payload = extracClaims(token);
