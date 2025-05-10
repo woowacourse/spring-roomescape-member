@@ -1,6 +1,7 @@
 package roomescape.presentation.api;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,13 +22,10 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class ThemeApiController {
 
     private final ThemeService themeService;
-
-    public ThemeApiController(final ThemeService themeService) {
-        this.themeService = themeService;
-    }
 
     @PostMapping("/themes")
     @AuthRequired

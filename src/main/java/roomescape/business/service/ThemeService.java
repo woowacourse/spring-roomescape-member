@@ -1,5 +1,6 @@
 package roomescape.business.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.business.model.entity.Theme;
 import roomescape.business.model.repository.ReservationRepository;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ThemeService {
 
     private static final int AGGREGATE_START_DATE_INTERVAL = 7;
@@ -18,12 +20,7 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
-
-    public ThemeService(ThemeRepository themeRepository, final ReservationRepository reservationRepository) {
-        this.themeRepository = themeRepository;
-        this.reservationRepository = reservationRepository;
-    }
-
+    
     public Theme addAndGet(final String name, final String description, final String thumbnail) {
         Theme theme = Theme.create(name, description, thumbnail);
         themeRepository.save(theme);

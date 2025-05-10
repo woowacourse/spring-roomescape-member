@@ -1,6 +1,7 @@
 package roomescape.presentation.api;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.server.Cookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -19,15 +20,11 @@ import roomescape.presentation.dto.request.LoginRequest;
 import roomescape.presentation.dto.response.UserResponse;
 
 @RestController
+@RequiredArgsConstructor
 public class AuthApiController {
 
     private final AuthService authService;
     private final UserService userService;
-
-    public AuthApiController(final AuthService authService, final UserService userService) {
-        this.authService = authService;
-        this.userService = userService;
-    }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest request) {

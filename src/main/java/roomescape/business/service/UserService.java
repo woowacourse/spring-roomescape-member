@@ -1,5 +1,6 @@
 package roomescape.business.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.business.model.entity.User;
 import roomescape.business.model.repository.UserRepository;
@@ -9,13 +10,10 @@ import roomescape.exception.business.NotFoundException;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
-
-    public UserService(final UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public User register(final String name, final String email, final String password) {
         if (userRepository.existByEmail(email)) {

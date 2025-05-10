@@ -16,13 +16,12 @@ import java.util.Optional;
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
 
-    private static final RowMapper<Theme> ROW_MAPPER = (resultSet, rowNum) -> {
-        String id = resultSet.getString("id");
-        String name = resultSet.getString("name");
-        String description = resultSet.getString("description");
-        String thumbnail = resultSet.getString("thumbnail");
-        return Theme.restore(id, name, description, thumbnail);
-    };
+    private static final RowMapper<Theme> ROW_MAPPER = (resultSet, rowNum) -> Theme.restore(
+            resultSet.getString("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getString("thumbnail")
+    );
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insert;

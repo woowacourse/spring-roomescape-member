@@ -1,6 +1,7 @@
 package roomescape.presentation.api;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,13 +23,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class ReservationTimeApiController {
 
     private final ReservationTimeService reservationTimeService;
-
-    public ReservationTimeApiController(final ReservationTimeService reservationTimeService) {
-        this.reservationTimeService = reservationTimeService;
-    }
 
     @PostMapping("/times")
     @AuthRequired

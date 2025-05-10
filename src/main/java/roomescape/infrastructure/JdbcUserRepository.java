@@ -15,14 +15,13 @@ import java.util.Optional;
 @Repository
 public class JdbcUserRepository implements UserRepository {
 
-    private static final RowMapper<User> ROW_MAPPER = (resultSet, rowNum) -> {
-        String id = resultSet.getString("id");
-        String userRole = resultSet.getString("role");
-        String name = resultSet.getString("name");
-        String email = resultSet.getString("email");
-        String password = resultSet.getString("password");
-        return User.restore(id, userRole, name, email, password);
-    };
+    private static final RowMapper<User> ROW_MAPPER = (resultSet, rowNum) -> User.restore(
+            resultSet.getString("id"),
+            resultSet.getString("role"),
+            resultSet.getString("name"),
+            resultSet.getString("email"),
+            resultSet.getString("password")
+    );
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insert;

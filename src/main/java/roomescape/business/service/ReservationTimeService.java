@@ -1,5 +1,6 @@
 package roomescape.business.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.business.model.entity.ReservationTime;
 import roomescape.business.model.repository.ReservationRepository;
@@ -13,18 +14,11 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
-
-    public ReservationTimeService(
-            final ReservationTimeRepository reservationTimeRepository,
-            final ReservationRepository reservationRepository
-    ) {
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.reservationRepository = reservationRepository;
-    }
 
     public ReservationTime addAndGet(final LocalTime time) {
         ReservationTime reservationTime = ReservationTime.create(time);
