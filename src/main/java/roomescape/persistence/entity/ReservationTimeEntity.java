@@ -18,16 +18,16 @@ public final class ReservationTimeEntity {
         this(null, startAt);
     }
 
-    public ReservationTimeEntity copyWithId(Long id) {
-        return new ReservationTimeEntity(id, startAt);
-    }
-
     public static ReservationTimeEntity fromDomain(ReservationTime reservationTime) {
         String formattedStartAt = ReservationDateTimeFormatter.formatTime(reservationTime.getStartAt());
         if (reservationTime.getId() != null) {
             return new ReservationTimeEntity(reservationTime.getId(), formattedStartAt);
         }
         return new ReservationTimeEntity(formattedStartAt);
+    }
+
+    public ReservationTimeEntity copyWithId(Long id) {
+        return new ReservationTimeEntity(id, startAt);
     }
 
     public ReservationTime toDomain() {

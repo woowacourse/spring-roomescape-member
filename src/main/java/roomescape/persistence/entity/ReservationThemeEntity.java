@@ -21,10 +21,6 @@ public final class ReservationThemeEntity {
         this(null, name, description, thumbnail);
     }
 
-    public ReservationThemeEntity copyWithId(Long id) {
-        return new ReservationThemeEntity(id, name, description, thumbnail);
-    }
-
     public static ReservationThemeEntity fromDomain(ReservationTheme reservationTheme) {
         if (reservationTheme.getId() != null) {
             return new ReservationThemeEntity(
@@ -38,6 +34,10 @@ public final class ReservationThemeEntity {
                 reservationTheme.getDescription(),
                 reservationTheme.getThumbnail()
         );
+    }
+
+    public ReservationThemeEntity copyWithId(Long id) {
+        return new ReservationThemeEntity(id, name, description, thumbnail);
     }
 
     public ReservationTheme toDomain() {

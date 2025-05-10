@@ -31,7 +31,7 @@ public final class Member {
     public Member(String name, String email, String password, MemberRole role) {
         this(null, name, email, password, role);
     }
-    
+
     public static Member createWithoutPassword(Long id, String name, String email, MemberRole role) {
         return new Member(id, new MemberName(name), new Email(email), null, role);
     }

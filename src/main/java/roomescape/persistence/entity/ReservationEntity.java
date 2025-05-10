@@ -31,16 +31,6 @@ public final class ReservationEntity {
         this(null, memberEntity, date, timeEntity, themeEntity);
     }
 
-    public ReservationEntity copyWithId(Long id) {
-        return new ReservationEntity(id, memberEntity, date, timeEntity, themeEntity);
-    }
-
-    public boolean isSameReservation(ReservationEntity otherReservationEntity) {
-        return this.date.equals(otherReservationEntity.date)
-                && this.timeEntity.getId().equals(otherReservationEntity.timeEntity.getId())
-                && this.themeEntity.getId().equals(otherReservationEntity.themeEntity.getId());
-    }
-
     public static ReservationEntity fromDomain(Reservation reservation) {
         String reservationDate = reservation.getDate().toString();
         ReservationTimeEntity timeEntity = ReservationTimeEntity.fromDomain(reservation.getTime());
@@ -55,6 +45,16 @@ public final class ReservationEntity {
                     themeEntity);
         }
         return new ReservationEntity(memberEntity, reservationDate, timeEntity, themeEntity);
+    }
+
+    public ReservationEntity copyWithId(Long id) {
+        return new ReservationEntity(id, memberEntity, date, timeEntity, themeEntity);
+    }
+
+    public boolean isSameReservation(ReservationEntity otherReservationEntity) {
+        return this.date.equals(otherReservationEntity.date)
+                && this.timeEntity.getId().equals(otherReservationEntity.timeEntity.getId())
+                && this.themeEntity.getId().equals(otherReservationEntity.themeEntity.getId());
     }
 
     public Reservation toDomain() {

@@ -28,10 +28,6 @@ public final class MemberEntity {
         this(id, name, email, null, role);
     }
 
-    public MemberEntity copyWithId(Long id) {
-        return new MemberEntity(id, name, email, password, role);
-    }
-
     public static MemberEntity fromDomain(Member member) {
         if (member.getId() != null) {
             return new MemberEntity(
@@ -48,6 +44,10 @@ public final class MemberEntity {
                 member.getPassword(),
                 member.getRole().value()
         );
+    }
+
+    public MemberEntity copyWithId(Long id) {
+        return new MemberEntity(id, name, email, password, role);
     }
 
     public Member toDomain() {

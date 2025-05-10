@@ -14,9 +14,8 @@ import roomescape.business.service.member.MemberService;
  */
 public final class AuthenticationInterceptor implements HandlerInterceptor {
 
-    private static final String ACCESS_TOKEN_COOKIE_NAME = "token";
     public static final String LOGIN_MEMBER_ATTRIBUTE_NAME = "loginMember";
-
+    private static final String ACCESS_TOKEN_COOKIE_NAME = "token";
     private final MemberService memberService;
 
     public AuthenticationInterceptor(MemberService memberService) {
@@ -32,7 +31,7 @@ public final class AuthenticationInterceptor implements HandlerInterceptor {
             LoginMember loginMember = memberService.getMemberFromToken(accessToken);
             request.setAttribute(LOGIN_MEMBER_ATTRIBUTE_NAME, loginMember);
         } catch (Exception ignored) {
-            request.setAttribute(LOGIN_MEMBER_ATTRIBUTE_NAME,  LoginMember.ANONYMOUS);
+            request.setAttribute(LOGIN_MEMBER_ATTRIBUTE_NAME, LoginMember.ANONYMOUS);
         }
         return true;
     }

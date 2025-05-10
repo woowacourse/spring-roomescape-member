@@ -13,14 +13,14 @@ public enum MemberRole {
         this.value = value;
     }
 
-    public String value() {
-        return value;
-    }
-
     public static MemberRole from(String value) {
         return Stream.of(values())
                 .filter(role -> role.value.equals(value))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("잘못된 계정입니다. 관리자에게 문의하세요."));
+    }
+
+    public String value() {
+        return value;
     }
 }
