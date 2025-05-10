@@ -61,7 +61,8 @@ public class UserApiTest {
                 .then()
                 .log()
                 .all()
-                .statusCode(201);
+                .statusCode(201)
+                .body("name", is(name));
     }
 
     @DisplayName("이미 존재하는 이메일로 등록할 시 409 예외를 반환한다.")
