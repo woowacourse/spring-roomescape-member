@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.global.exception.DeleteTimeException;
+import roomescape.reservation.application.exception.DeleteTimeException;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.ReservationTime;
 
@@ -28,7 +28,7 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     sql,
-                    new String[] {"id"}
+                    new String[]{"id"}
             );
             ps.setString(1, reservationTime.toString());
             return ps;

@@ -3,10 +3,10 @@ package roomescape.admin.presentation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.admin.application.exception.NotAdminException;
 import roomescape.auth.application.service.AuthService;
 import roomescape.auth.presentation.AuthorizationExtractor;
 import roomescape.auth.presentation.BearerAuthorizationExtractor;
-import roomescape.global.exception.NotAdminException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 

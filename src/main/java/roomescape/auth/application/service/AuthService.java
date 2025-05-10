@@ -2,10 +2,10 @@ package roomescape.auth.application.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import roomescape.auth.application.exception.InvalidMemberException;
 import roomescape.auth.presentation.JwtTokenProvider;
 import roomescape.auth.presentation.dto.LoginRequest;
 import roomescape.auth.presentation.dto.TokenResponse;
-import roomescape.global.exception.InvalidMemberException;
 import roomescape.member.application.repository.MemberRepository;
 import roomescape.member.domain.Member;
 

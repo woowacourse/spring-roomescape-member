@@ -7,6 +7,17 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.admin.application.exception.NotAdminException;
+import roomescape.auth.application.exception.InvalidMemberException;
+import roomescape.auth.application.exception.InvalidTokenException;
+import roomescape.reservation.application.exception.DeleteReservationException;
+import roomescape.reservation.application.exception.DeleteThemeException;
+import roomescape.reservation.application.exception.DeleteTimeException;
+import roomescape.reservation.application.exception.DuplicateReservationException;
+import roomescape.reservation.application.exception.DuplicateTimeException;
+import roomescape.reservation.application.exception.GetThemeException;
+import roomescape.reservation.application.exception.GetTimeException;
+import roomescape.reservation.application.exception.PastTimeException;
 
 @RestControllerAdvice
 public class ExceptionController {
