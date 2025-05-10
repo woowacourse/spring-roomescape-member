@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import roomescape.domain.Member;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.ReservationCreateResponse;
 import roomescape.dto.response.ReservationResponse;
@@ -65,8 +66,9 @@ public class ReservationController {
             }
     )
     public ResponseEntity<ReservationCreateResponse> create(
-            @RequestBody @Valid final ReservationCreateRequest reservationCreateRequest) {
-        final ReservationCreateResponse reservationCreateResponse = reservationService.create(reservationCreateRequest);
+            @RequestBody @Valid final ReservationCreateRequest reservationCreateRequest, final Member member) {
+        final ReservationCreateResponse reservationCreateResponse = reservationService.create(reservationCreateRequest,
+                member);
 
         final URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 
 @Repository
 public class JdbcMemberDao implements MemberDao {
@@ -14,7 +15,8 @@ public class JdbcMemberDao implements MemberDao {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
-            resultSet.getString("password")
+            resultSet.getString("password"),
+            resultSet.getObject("role", MemberRole.class)
     );
 
     public JdbcMemberDao(JdbcTemplate jdbcTemplate) {
@@ -29,6 +31,17 @@ public class JdbcMemberDao implements MemberDao {
                 WHERE email = ?
                 """;
         return jdbcTemplate.query(sql, memberMapper, email).stream()
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Member> findById(final Long id) {
+        final String sql = """
+                SELECT *
+                FROM member
+                WHERE id = ?
+                """;
+        return jdbcTemplate.query(sql, memberMapper, id).stream()
                 .findFirst();
     }
 }

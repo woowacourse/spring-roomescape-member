@@ -26,12 +26,20 @@ public class MemberService {
         return new TokenResponse(accessToken);
     }
 
-    public MemberResponse findMemberByToken(final String token) {
+    public MemberResponse findByToken(final String token) {
         final String email = jwtTokenProvider.getPayload(token);
         final Optional<Member> member = memberDao.findByEmail(email);
         if (member.isEmpty()) {
             throw new NoSuchElementException("멤버 정보를 찾을 수 없습니다.");
         }
-        return new MemberResponse(member.get().getName());
+        return MemberResponse.from(member.get());
+    }
+
+    public Member findById(final Long id) {
+        final Optional<Member> member = memberDao.findById(id);
+        if (member.isEmpty()) {
+            throw new NoSuchElementException("멤버 정보를 찾을 수 없습니다.");
+        }
+        return member.get();
     }
 }
