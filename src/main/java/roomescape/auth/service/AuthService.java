@@ -40,9 +40,14 @@ public class AuthService {
     }
 
     public LoginCheckResponse checkLogin(final String token) {
-        final Long memberId = Long.valueOf(jwtTokenProvider.extractPrincipal(token));
-        final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
-        return new LoginCheckResponse(member);
+        try {
+            final Long memberId = Long.valueOf(jwtTokenProvider.extractPrincipal(token));
+            final Member member = memberRepository.findById(memberId)
+                    .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
+            return new LoginCheckResponse(member);
+        } catch (NumberFormatException e) {
+            throw new UnauthorizedException("유효하지 않은 토큰입니다.");
+        }
+
     }
 }
