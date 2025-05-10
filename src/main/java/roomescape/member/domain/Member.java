@@ -22,6 +22,16 @@ public class Member {
 
     public Member(final Long id, @NonNull final String name, @NonNull final String email,
                   @NonNull final String password,
+                  @NonNull final MemberRole role) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
+    public Member(final Long id, @NonNull final String name, @NonNull final String email,
+                  @NonNull final String password,
                   @NonNull final String role) {
         this.id = id;
         this.name = name;

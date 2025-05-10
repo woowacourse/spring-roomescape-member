@@ -54,7 +54,7 @@ public class ReservationService {
         }
 
         final Member member = new Member(loginMember.getId(), loginMember.getName(), loginMember.getEmail(),
-                loginMember.getPassword(), loginMember.getRole().name());
+                loginMember.getPassword(), loginMember.getRole());
         final Reservation reservation = new Reservation(request.date(), reservationTime, theme, member);
         final Reservation newReservation = reservationRepository.save(reservation);
         return new ReservationResponse(newReservation);

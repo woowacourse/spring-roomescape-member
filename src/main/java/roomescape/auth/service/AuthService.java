@@ -35,7 +35,7 @@ public class AuthService {
         return Jwts.claims()
                 .subject(member.getId().toString())
                 .add(CLAIM_NAME, member.getName())
-                .add(CLAIM_ROLE, member.getRole().name())
+                .add(CLAIM_ROLE, member.getRole())
                 .build();
     }
 
