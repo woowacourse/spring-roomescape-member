@@ -102,4 +102,13 @@ public class ReservationService {
             throw new IllegalArgumentException("[ERROR] 예약 생성에 실패하였습니다");
         }
     }
+
+    public List<ReservationResponse> findFiltered(Long themeId, Long memberId, LocalDate dateFrom,
+        LocalDate dateTo) {
+        List<Reservation> reservations = reservationDao.findByFilters(themeId, memberId, dateFrom,
+            dateTo);
+        return reservations.stream()
+            .map(ReservationResponse::from)
+            .toList();
+    }
 }
