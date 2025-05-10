@@ -68,7 +68,7 @@ public class MissionStepTest {
                 .statusCode(200);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
@@ -80,7 +80,7 @@ public class MissionStepTest {
         Test_Theme_Post();
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
+        params.put("memberId", 1);
         params.put("date", "2025-08-05");
         params.put("timeId", 1);
         params.put("themeId", 1);
@@ -89,24 +89,24 @@ public class MissionStepTest {
                 .contentType(ContentType.JSON)
                 .body(params)
 
-                .when().post("/reservations")
+                .when().post("admin/reservations")
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(1));
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
@@ -128,11 +128,11 @@ public class MissionStepTest {
         Test_ReservationTime_Post();
         Test_Theme_Post();
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id,theme_id) VALUES (?, ?, ?,?)", "브라운",
-                "2025-08-05", 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation ( date,member_id, time_id,theme_id) VALUES (?, ?, ?,?)",
+                "2025-08-05", 1, 1, 1);
 
         List<Reservation> reservations = RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", Reservation.class);
@@ -148,7 +148,7 @@ public class MissionStepTest {
         Test_Theme_Post();
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
+        params.put("memberId", 1);
         params.put("date", "2025-08-05");
         params.put("timeId", 1);
         params.put("themeId", 1);
@@ -156,7 +156,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201);
 
@@ -164,7 +164,7 @@ public class MissionStepTest {
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
@@ -193,21 +193,21 @@ public class MissionStepTest {
         Test_ReservationTime_Post();
         Test_Theme_Post();
 
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", "2025-08-05");
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
+        Map<String, Object> params = new HashMap<>();
+        params.put("memberId", 1);
+        params.put("date", "2025-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
+                .body(params)
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));

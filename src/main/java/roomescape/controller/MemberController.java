@@ -15,7 +15,7 @@ import roomescape.service.AuthenticationService;
 import roomescape.service.MemberService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/auth")
 public class MemberController {
     private final AuthenticationService authenticationService;
     private final MemberService memberService;
@@ -43,7 +43,7 @@ public class MemberController {
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> loginCheck(@CurrentMember LoginMember member) {
-        return ResponseEntity.ok(new MemberResponse(member.name().getName()));
+        return ResponseEntity.ok(new MemberResponse(member.id(), member.name().getName()));
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {

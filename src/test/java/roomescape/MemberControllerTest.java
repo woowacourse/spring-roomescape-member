@@ -29,7 +29,7 @@ public class MemberControllerTest {
                 .given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("api/login")
+                .when().post("auth/login")
                 .then().log().all()
                 .statusCode(200)
                 .extract().response();
@@ -48,7 +48,7 @@ public class MemberControllerTest {
         Response loginResp = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/api/login")
+                .when().post("/auth/login")
                 .then().log().all()
                 .statusCode(200)
                 .extract().response();
@@ -58,7 +58,7 @@ public class MemberControllerTest {
 
         RestAssured.given().log().all()
                 .cookie("token", token)
-                .when().get("/api/login/check")
+                .when().get("/auth/login/check")
                 .then().log().all()
                 .statusCode(200)
                 .body("name", is("vector"));
