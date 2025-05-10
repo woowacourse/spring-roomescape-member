@@ -30,8 +30,8 @@ public class ExceptionController {
         return ResponseEntity.badRequest().body(PREFIX + "요청 데이터 형식이 잘못되었습니다.");
     }
 
-    @ExceptionHandler(DuplicateTimeException.class)
-    public ResponseEntity<String> handleDuplicateTimeException(DuplicateTimeException e) {
+    @ExceptionHandler({DuplicateTimeException.class, DuplicateReservationException.class})
+    public ResponseEntity<String> handleDuplicateTimeException(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
@@ -47,11 +47,6 @@ public class ExceptionController {
 
     @ExceptionHandler(PastTimeException.class)
     public ResponseEntity<String> handlePastTimeException(PastTimeException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(DuplicateReservationException.class)
-    public ResponseEntity<String> handleDuplicateReservationException(DuplicateReservationException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
