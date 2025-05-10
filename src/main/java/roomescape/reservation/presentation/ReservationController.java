@@ -31,7 +31,8 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
-            final @RequestBody @Valid ReservationRequest reservationRequest, Member member
+            final @RequestBody @Valid ReservationRequest reservationRequest,
+            Member member
     ) {
         ReservationResponse reservation = reservationService.createReservation(reservationRequest, member);
 

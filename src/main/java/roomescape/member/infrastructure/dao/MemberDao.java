@@ -44,7 +44,8 @@ public class MemberDao implements MemberRepository {
         params.put("role", Role.USER);
 
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return new Member(id, signUpRequest.getEmail(), signUpRequest.getPassword(), signUpRequest.getName(), Role.USER);
+        return new Member(id, signUpRequest.getEmail(), signUpRequest.getPassword(), signUpRequest.getName(),
+                Role.USER);
     }
 
     @Override

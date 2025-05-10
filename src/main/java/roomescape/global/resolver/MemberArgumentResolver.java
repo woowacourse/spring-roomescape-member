@@ -20,7 +20,9 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final TokenProvider tokenProvider;
     private final MemberService memberService;
 
-    public MemberArgumentResolver(TokenProvider tokenProvider, CookieAuthorizationExtractor cookieAuthorizationExtractor, MemberService memberService) {
+    public MemberArgumentResolver(TokenProvider tokenProvider,
+                                  CookieAuthorizationExtractor cookieAuthorizationExtractor,
+                                  MemberService memberService) {
         this.tokenProvider = tokenProvider;
         this.authorizationExtractor = cookieAuthorizationExtractor;
         this.memberService = memberService;
