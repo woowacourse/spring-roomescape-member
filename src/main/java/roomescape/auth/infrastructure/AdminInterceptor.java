@@ -30,7 +30,7 @@ public class AdminInterceptor implements HandlerInterceptor {
 
         final Long memberId = (Long) request.getAttribute("memberId");
         if (memberId == null) {
-            return true;
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
         }
 
         final Member member = memberRepository.findById(memberId)
