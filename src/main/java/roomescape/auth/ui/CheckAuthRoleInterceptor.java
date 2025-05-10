@@ -11,6 +11,7 @@ import roomescape.auth.domain.AuthTokenExtractor;
 import roomescape.auth.domain.AuthTokenProvider;
 import roomescape.auth.domain.RequiresRole;
 import roomescape.exception.auth.AuthenticationException;
+import roomescape.exception.auth.AuthorizationException;
 
 @RequiredArgsConstructor
 public class CheckAuthRoleInterceptor implements HandlerInterceptor {
@@ -38,7 +39,7 @@ public class CheckAuthRoleInterceptor implements HandlerInterceptor {
         final AuthRole role = authTokenProvider.getRole(accessToken);
         if (Arrays.stream(requiresRole.authRoles())
                 .noneMatch(authRole -> authRole == role)) {
-            throw new AuthenticationException("권한이 없습니다.");
+            throw new AuthorizationException("권한이 없습니다.");
         }
         return true;
     }
