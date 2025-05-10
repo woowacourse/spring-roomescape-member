@@ -7,6 +7,7 @@ import roomescape.auth.infrastructure.jwt.TokenProvider;
 import roomescape.auth.web.controller.request.LoginRequest;
 import roomescape.auth.web.controller.response.MemberNameResponse;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.service.MemberService;
 
 @RequiredArgsConstructor
@@ -29,7 +30,8 @@ public class AuthService {
     }
 
     public boolean isAdmin(String token) {
-        return tokenProvider.isAdmin(token);
+        Role role = tokenProvider.getRole(token);
+        return role.isAdmin();
     }
 
     public Long getMemberId(String token) {

@@ -7,6 +7,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 @Component
 public class JwtProvider implements TokenProvider {
@@ -42,7 +43,7 @@ public class JwtProvider implements TokenProvider {
         return Long.parseLong(sub);
     }
 
-    public boolean isAdmin(String token) {
+    public Role getRole(String token) {
         SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
 
         String role = Jwts.parser()
@@ -51,7 +52,6 @@ public class JwtProvider implements TokenProvider {
                 .parseSignedClaims(token)
                 .getPayload()
                 .get("role", String.class);
-
-        return role.equals("ADMIN");
+        return Role.valueOf(role);
     }
 }

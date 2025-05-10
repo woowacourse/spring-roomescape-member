@@ -7,18 +7,23 @@ import roomescape.member.domain.Role;
 public class StubTokenProvider implements TokenProvider {
 
     public static final Long STUB_MEMBER_ID = 1L;
+    private static final String USER_STUB_TOKEN = "user_stub_token";
+    private static final String ADMIN_STUB_TOKEN = "admin_stub_token";
 
     @Override
     public String issue(Member member) {
         if (member.getRole() == Role.USER) {
-            return "user_stub_token";
+            return USER_STUB_TOKEN;
         }
-        return "admin_stub_token";
+        return ADMIN_STUB_TOKEN;
     }
 
     @Override
-    public boolean isAdmin(String token) {
-        return token.equals("admin_stub_token");
+    public Role getRole(String token) {
+        if (token.equals(USER_STUB_TOKEN)) {
+            return Role.USER;
+        }
+        return Role.ADMIN;
     }
 
     @Override
