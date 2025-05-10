@@ -19,13 +19,13 @@ import roomescape.reservationTime.fixture.ReservationTimeFixture;
 import roomescape.reservationTime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.dto.PopularThemeRequestDto;
-import roomescape.user.UserTestDataConfig;
+import roomescape.user.MemberTestDataConfig;
 import roomescape.user.domain.User;
 import roomescape.user.repository.JdbcUserRepository;
 
 @JdbcTest
 @Import({JdbcThemeRepository.class, JdbcReservationRepository.class, JdbcReservationTimeRepository.class,
-        UserTestDataConfig.class, KeyHolderManager.class, JdbcUserRepository.class})
+        MemberTestDataConfig.class, KeyHolderManager.class, JdbcUserRepository.class})
 class JdbcThemeRepositoryTest {
 
     @Autowired
@@ -35,11 +35,11 @@ class JdbcThemeRepositoryTest {
     @Autowired
     private JdbcReservationRepository reservationRepository;
     @Autowired
-    private UserTestDataConfig userTestDataConfig;
+    private MemberTestDataConfig memberTestDataConfig;
 
     @BeforeEach
     public void beforeEach() {
-        User savedUser = userTestDataConfig.getSavedUser();
+        User savedUser = memberTestDataConfig.getSavedUser();
 
         Theme savedTheme1 = repository.save(new Theme("name1", "dd1", "tt1"));
         Theme savedTheme2 = repository.save(new Theme("name2", "dd2", "tt2"));

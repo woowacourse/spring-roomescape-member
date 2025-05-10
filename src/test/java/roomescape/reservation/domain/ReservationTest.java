@@ -18,7 +18,7 @@ import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.fixture.ReservationTimeFixture;
 import roomescape.theme.ThemeTestDataConfig;
 import roomescape.theme.repository.JdbcThemeRepository;
-import roomescape.user.UserTestDataConfig;
+import roomescape.user.MemberTestDataConfig;
 import roomescape.user.repository.JdbcUserRepository;
 
 @ExtendWith(SpringExtension.class)
@@ -27,18 +27,18 @@ import roomescape.user.repository.JdbcUserRepository;
         JdbcThemeRepository.class,
         JdbcUserRepository.class,
         ThemeTestDataConfig.class,
-        UserTestDataConfig.class
+        MemberTestDataConfig.class
 })
 class ReservationTest {
 
     @Autowired
     private ThemeTestDataConfig themeTestDataConfig;
     @Autowired
-    private UserTestDataConfig userTestDataConfig;
+    private MemberTestDataConfig memberTestDataConfig;
 
     private Reservation createReservation(LocalDate date, ReservationTime time) {
         return ReservationFixture.create(date, time, themeTestDataConfig.getSavedTheme(),
-                userTestDataConfig.getSavedUser());
+                memberTestDataConfig.getSavedUser());
     }
 
     @Nested

@@ -3,23 +3,29 @@ package roomescape.user.domain;
 public class User {
 
     private final Long id;
+    private final Role role;
     private final String name;
     private final String email;
     private final String password;
 
-    public User(Long id, String name, String email, String password) {
+    public User(Long id, Role role, String name, String email, String password) {
         this.id = id;
+        this.role = role;
         this.name = name;
         this.email = email;
         this.password = password;
     }
 
-    public User(String name, String email, String password) {
-        this(null, name, email, password);
+    public User(String name, String roleName, String email, String password) {
+        this(null, Role.findByName(roleName), name, email, password);
     }
 
     public Long getId() {
         return id;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     public String getName() {

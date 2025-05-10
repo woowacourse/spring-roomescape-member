@@ -16,7 +16,7 @@ import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.ThemeTestDataConfig;
 import roomescape.theme.repository.JdbcThemeRepository;
-import roomescape.user.UserTestDataConfig;
+import roomescape.user.MemberTestDataConfig;
 import roomescape.user.repository.JdbcUserRepository;
 
 @JdbcTest
@@ -24,7 +24,7 @@ import roomescape.user.repository.JdbcUserRepository;
         JdbcReservationTimeRepository.class,
         JdbcThemeRepository.class,
         ThemeTestDataConfig.class,
-        UserTestDataConfig.class,
+        MemberTestDataConfig.class,
         KeyHolderManager.class,
         JdbcUserRepository.class
 })
@@ -37,12 +37,12 @@ class JdbcReservationRepositoryTest {
     @Autowired
     private ThemeTestDataConfig themeTestDataConfig;
     @Autowired
-    private UserTestDataConfig userTestDataConfig;
+    private MemberTestDataConfig memberTestDataConfig;
 
     private Reservation createReservation(int plusDays, ReservationTime time) {
         LocalDate date = LocalDate.now().plusDays(plusDays);
         return ReservationFixture.create(date, time, themeTestDataConfig.getSavedTheme(),
-                userTestDataConfig.getSavedUser());
+                memberTestDataConfig.getSavedUser());
     }
 
     @DisplayName("예약 시간에 해당하는 예약의 존재 여부를 알 수 있다.")
