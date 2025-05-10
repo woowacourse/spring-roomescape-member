@@ -12,7 +12,6 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.business.domain.LoginUser;
 import roomescape.business.service.AuthService;
-import roomescape.exception.InvalidCredentialsException;
 
 public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -44,7 +43,7 @@ public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentR
             );
             return authService.verifyTokenAndGetLoginUser(tokenCookie.getValue());
         } catch (NoSuchElementException e) {
-            throw new InvalidCredentialsException();
+            return LoginUser.unknown();
         }
     }
 

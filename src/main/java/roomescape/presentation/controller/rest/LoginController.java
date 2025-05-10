@@ -2,12 +2,14 @@ package roomescape.presentation.controller.rest;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.business.domain.LoginUser;
+import roomescape.business.domain.Role;
 import roomescape.business.service.AuthService;
 import roomescape.presentation.AuthenticatedUser;
 import roomescape.presentation.dto.LoginRequest;
@@ -50,6 +52,12 @@ public class LoginController {
 
     @GetMapping("/login/check")
     public ResponseEntity<LoginUser> checkLogin(@AuthenticatedUser LoginUser loginUser) {
+        if (Role.UNKNOWN == loginUser.role()) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(loginUser);
+        }
+
         return ResponseEntity.ok(loginUser);
     }
 }
