@@ -44,10 +44,21 @@ public class ReservationRestController {
 
     @DeleteMapping("/reservations/{id}")
     @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER})
-    public ResponseEntity<Void> delete(@PathVariable final Long id) {
-        reservationService.delete(id);
+    public ResponseEntity<Void> delete(
+            @PathVariable final Long id,
+            final Member member
+    ) {
+        if(member.getRole() == AuthRole.MEMBER) {
+            reservationService.deleteIfOwner(id, member);
+            return ResponseEntity.noContent().build();
+        }
 
-        return ResponseEntity.noContent().build();
+        if(member.getRole() == AuthRole.ADMIN) {
+            reservationService.delete(id);
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.badRequest().build();
     }
 
     @GetMapping("/reservations")

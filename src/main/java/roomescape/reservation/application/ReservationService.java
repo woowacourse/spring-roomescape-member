@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.exception.auth.AuthorizationException;
 import roomescape.exception.resource.AlreadyExistException;
 import roomescape.exception.resource.ResourceNotFoundException;
 import roomescape.member.domain.Member;
@@ -44,6 +45,17 @@ public class ReservationService {
                 .orElseThrow(() -> new ResourceNotFoundException("해당 예약 데이터가 존재하지 않습니다. id = " + id));
 
         return ReservationResponse.from(found);
+    }
+
+    public void deleteIfOwner(final Long id, final Member member) {
+        final Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 데이터가 존재하지 않습니다. id = " + id));
+
+        if(reservation.getMember() != member) {
+            throw new AuthorizationException("삭제할 권한이 없습니다.");
+        }
+
+        reservationRepository.deleteById(id);
     }
 
     public void delete(final Long id) {
