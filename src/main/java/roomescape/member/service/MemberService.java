@@ -1,9 +1,11 @@
 package roomescape.member.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
 import roomescape.member.domain.Role;
+import roomescape.member.dto.MemberResponse;
 import roomescape.member.dto.SignupRequest;
 import roomescape.member.dto.SignupResponse;
 
@@ -24,5 +26,12 @@ public class MemberService {
         Member member = Member.createWithoutId(request.name(), request.email(), request.password(), Role.USER);
         Long id = memberRepository.save(member);
         return SignupResponse.from(member.assignId(id));
+    }
+
+    public List<MemberResponse> findAllMember() {
+        List<Member> members = memberRepository.findAll();
+        return members.stream()
+                .map(MemberResponse::from)
+                .toList();
     }
 }
