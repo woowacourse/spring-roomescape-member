@@ -11,11 +11,12 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.common.utils.JdbcUtils;
+import roomescape.member.domain.Account;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberEmail;
 import roomescape.member.domain.MemberId;
 import roomescape.member.domain.MemberName;
-import roomescape.member.domain.MemberPassword;
+import roomescape.member.domain.Password;
 import roomescape.member.domain.Role;
 
 @Repository
@@ -28,8 +29,17 @@ public class JdbcMemberRepository implements MemberRepository {
             MemberId.from(resultSet.getLong("id")),
             MemberName.from(resultSet.getString("name")),
             MemberEmail.from(resultSet.getString("email")),
-            MemberPassword.from(resultSet.getString("password")),
             Role.valueOf(resultSet.getString("role"))
+    );
+
+    private final RowMapper<Account> accountRowMapper = (resultSet, rowNum) -> Account.of(
+            Member.withId(
+                    MemberId.from(resultSet.getLong("id")),
+                    MemberName.from(resultSet.getString("name")),
+                    MemberEmail.from(resultSet.getString("email")),
+                    Role.valueOf(resultSet.getString("role"))
+            ),
+            Password.from(resultSet.getString("password"))
     );
 
     @Override
@@ -46,7 +56,7 @@ public class JdbcMemberRepository implements MemberRepository {
     @Override
     public Optional<Member> findById(MemberId id) {
         final String sql = """
-                SELECT id, name, email, password, role
+                SELECT id, name, email, role
                 FROM member
                 WHERE id = ?
                 """;
@@ -55,28 +65,30 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findByParams(MemberEmail email, MemberPassword password) {
+    public Optional<Account> findAccountByEmail(MemberEmail email) {
         final String sql = """
                 SELECT id, name, email, password, role
                 FROM member
-                WHERE email = ? AND password = ?
+                WHERE email = ?
                 """;
 
-        return JdbcUtils.queryForOptional(jdbcTemplate, sql, memberRowMapper, email.getValue(), password.getValue());
+        return JdbcUtils.queryForOptional(jdbcTemplate, sql, accountRowMapper, email.getValue());
     }
 
     @Override
-    public Member save(Member member) {
+    public Member save(Account account) {
         final String sql = """
                 INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)
                 """;
         final KeyHolder keyHolder = new GeneratedKeyHolder();
+        final Member member = account.getMember();
 
         jdbcTemplate.update(connection -> {
-            final PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            final PreparedStatement preparedStatement = connection.prepareStatement(sql,
+                    Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, member.getName().getValue());
             preparedStatement.setString(2, member.getEmail().getValue());
-            preparedStatement.setString(3, member.getPassword().getValue());
+            preparedStatement.setString(3, account.getPassword().getValue());
             preparedStatement.setString(4, member.getRole().name());
 
             return preparedStatement;
@@ -88,7 +100,7 @@ public class JdbcMemberRepository implements MemberRepository {
                 MemberId.from(generatedId),
                 member.getName(),
                 member.getEmail(),
-                member.getPassword(),
-                member.getRole());
+                member.getRole()
+        );
     }
 }

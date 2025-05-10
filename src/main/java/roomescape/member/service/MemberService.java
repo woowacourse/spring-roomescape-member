@@ -5,11 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.member.controller.dto.LoginRequest;
 import roomescape.member.controller.dto.SignupRequest;
+import roomescape.member.domain.Account;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberEmail;
 import roomescape.member.domain.MemberId;
 import roomescape.member.domain.MemberName;
-import roomescape.member.domain.MemberPassword;
+import roomescape.member.domain.Password;
 import roomescape.member.domain.Role;
 import roomescape.member.repository.MemberRepository;
 
@@ -25,20 +26,20 @@ public class MemberService {
         }
 
         return memberRepository.save(
-                Member.withoutId(
-                        MemberName.from(signupRequest.name()),
-                        MemberEmail.from(signupRequest.email()),
-                        MemberPassword.from(signupRequest.password()),
-                        Role.MEMBER
+                Account.of(
+                        Member.withoutId(
+                                MemberName.from(signupRequest.name()),
+                                MemberEmail.from(signupRequest.email()),
+                                Role.MEMBER
+                        ),
+                        Password.from(signupRequest.password())
                 )
         );
     }
 
-    public Member findMember(LoginRequest loginRequest) {
-        return memberRepository.findByParams(
-                MemberEmail.from(loginRequest.email()),
-                MemberPassword.from(loginRequest.password())
-        ).orElseThrow(() -> new NoSuchElementException("등록된 이메일이 없거나 비밀번호를 잘못 입력하였습니다.:"));
+    public Account findAccount(LoginRequest loginRequest) {
+        return memberRepository.findAccountByEmail(MemberEmail.from(loginRequest.email())
+        ).orElseThrow(() -> new NoSuchElementException("등록된 이메일이 존재하지 않습니다."));
     }
 
     public Member findMemberById(MemberId id) {

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.member.controller.dto.LoginCheckResponse;
 import roomescape.member.controller.dto.LoginRequest;
 import roomescape.member.auth.dto.MemberInfoResponse;
+import roomescape.member.domain.Account;
 import roomescape.member.domain.Member;
 import roomescape.member.auth.JwtTokenExtractor;
 import roomescape.member.auth.JwtTokenProvider;
@@ -20,8 +21,11 @@ public class AuthService {
     private final JwtTokenExtractor jwtTokenExtractor;
 
     public String login(LoginRequest loginRequest) {
-        Member member = memberService.findMember(loginRequest);
-        return jwtTokenProvider.generateToken(member);
+        Account account = memberService.findAccount(loginRequest);
+        if (!account.isSamePassword(loginRequest.password())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+        return jwtTokenProvider.generateToken(account);
     }
 
     public LoginCheckResponse checkLogin(Cookie[] cookies) {

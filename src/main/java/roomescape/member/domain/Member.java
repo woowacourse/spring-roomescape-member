@@ -16,32 +16,30 @@ public class Member {
     private final MemberId id;
     private final MemberName name;
     private final MemberEmail email;
-    private final MemberPassword password;
+    // TODO: consider moving role to Account
     private final Role role;
 
-    private static Member of(final MemberId id, final MemberName name, final MemberEmail email, final MemberPassword password, final Role role) {
-        validate(id, name, email, password, role);
-        return new Member(id, name, email, password, role);
+    private static Member of(final MemberId id, final MemberName name, final MemberEmail email, final Role role) {
+        validate(id, name, email, role);
+        return new Member(id, name, email, role);
     }
 
-    public static Member withId(final MemberId id, final MemberName name, final MemberEmail email, final MemberPassword password, final Role role) {
-        return of(id, name, email, password, role);
+    public static Member withId(final MemberId id, final MemberName name, final MemberEmail email, final Role role) {
+        return of(id, name, email, role);
     }
 
-    public static Member withoutId(final MemberName name, final MemberEmail email, final MemberPassword password, final Role role) {
-        return of(MemberId.unassigned(), name, email, password, role);
+    public static Member withoutId(final MemberName name, final MemberEmail email, final Role role) {
+        return of(MemberId.unassigned(), name, email, role);
     }
 
     public static void validate(final MemberId id,
                                 final MemberName name,
                                 final MemberEmail email,
-                                final MemberPassword password,
                                 final Role role) {
         Validator.of(Member.class)
                 .notNullField(Member.Fields.id, id)
                 .notNullField(Member.Fields.name, name)
                 .notNullField(Member.Fields.email, email)
-                .notNullField(Member.Fields.password, password)
                 .notNullField(Member.Fields.role, role);
     }
 }
