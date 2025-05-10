@@ -9,7 +9,7 @@ public interface MemberRepository {
 
     Optional<Member> findByMember(final String email, final String password);
 
-    Member save(Member member);
+    Optional<Member> findById(final Long id);
 
-    boolean existsById(Long id);
+    Member save(Member member);
 }

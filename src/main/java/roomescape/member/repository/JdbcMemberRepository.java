@@ -59,6 +59,19 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
+    public Optional<Member> findById(final Long id) {
+        try {
+            MemberEntity memberEntity = jdbcTemplate.queryForObject(
+                    "SELECT id, name, email, password, role FROM member WHERE id = ?",
+                    MEMBER_ENTITY_ROW_MAPPER, id);
+            return Optional.ofNullable(memberEntity)
+                    .map(MemberEntity::toMember);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Member save(final Member member) {
         Long generatedId = simpleJdbcInsert.executeAndReturnKey(
                 Map.of("name", member.getName(), "email", member.getEmail(), "password",

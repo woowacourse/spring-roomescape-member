@@ -2,13 +2,13 @@ package roomescape.auth.service;
 
 import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Component;
-import roomescape.auth.dto.CheckLoginResponse;
+import roomescape.auth.domain.LoginMember;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.dto.LoginResponse;
 import roomescape.auth.exception.AuthException;
 import roomescape.auth.infrastructure.JwtProvider;
 import roomescape.member.domain.Member;
-import roomescape.member.exception.MemberNotFoundException;
+import roomescape.member.domain.MemberRole;
 import roomescape.member.repository.MemberRepository;
 
 @Component
@@ -23,21 +23,30 @@ public class AuthService {
     }
 
     public LoginResponse createToken(final LoginRequest loginRequest) {
-        Member member = getByMember(loginRequest);
-
+        Member member = getMemberByEmailAndPassword(loginRequest.email(), loginRequest.password());
         String accessToken = jwtProvider.createToken(member);
         return new LoginResponse(accessToken);
     }
 
-    public CheckLoginResponse findNameByToken(final String token) {
-        validateToken(token);
-        Claims claims = jwtProvider.getAllClaimsFromToken(token);
-        validateMemberExists(claims);
-        return new CheckLoginResponse((String) claims.get("name"));
+    public String extractTokenFromCookie(final String cookieHeader) {
+        String[] cookies = cookieHeader.split(";");
+        for (String cookie : cookies) {
+            if (cookie.startsWith("token=")) {
+                return cookie.substring(6);
+            }
+        }
+        return null;
     }
 
-    private Member getByMember(final LoginRequest loginRequest) {
-        return memberRepository.findByMember(loginRequest.email(), loginRequest.password())
+    public LoginMember makeLoginMember(final String token) {
+        validateToken(token);
+        Claims claims = jwtProvider.getAllClaimsFromToken(token);
+        return new LoginMember(Long.valueOf(claims.getSubject()), (String) claims.get("name"),
+                MemberRole.from((String) claims.get("role")));
+    }
+
+    private Member getMemberByEmailAndPassword(final String email, final String password) {
+        return memberRepository.findByMember(email, password)
                 .orElseThrow(() -> new AuthException("존재하지 않은 email 또는 비밀번호입니다."));
     }
 
@@ -47,9 +56,4 @@ public class AuthService {
         }
     }
 
-    private void validateMemberExists(final Claims claims) {
-        if (!memberRepository.existsById(Long.valueOf(claims.getSubject()))) {
-            throw new MemberNotFoundException("존재하지 않은 사용자입니다.");
-        }
-    }
 }
