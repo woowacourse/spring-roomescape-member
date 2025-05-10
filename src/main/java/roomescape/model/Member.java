@@ -17,12 +17,12 @@ public class Member {
         this.role = role;
     }
 
-    public Member(String email, String password, Role role) {
+    public Member(String email, String password) {
         this.id = null;
         this.email = email;
         this.name = null;
         this.password = password;
-        this.role = role;
+        this.role = null;
     }
 
     public String getName() {

@@ -23,7 +23,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         String token = extractTokenFromCookie(cookies);
         MemberInfoDto memberInfoDto = authService.findByToken(token);
         if (!memberInfoDto.role().equals(Role.ADMIN)) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN); // 403
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }
         return true;

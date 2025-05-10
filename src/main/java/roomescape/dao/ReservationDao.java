@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.Role;
 import roomescape.model.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
@@ -32,7 +33,8 @@ public class ReservationDao {
                 m.id,
                 m.email,
                 m.name,
-                m.password
+                m.password,
+                m.role
             FROM reservation AS r
             INNER JOIN reservation_time AS rt ON r.time_id = rt.id
             INNER JOIN member AS m ON m.id = r.member_id
@@ -47,7 +49,8 @@ public class ReservationDao {
                         resultSet.getLong("member_id"),
                         resultSet.getString("email"),
                         resultSet.getString("name"),
-                        resultSet.getString("password")
+                        resultSet.getString("password"),
+                        Role.getMemberRole(resultSet.getString("role"))
                         ),
                 resultSet.getDate("date").toLocalDate(),
                 new ReservationTime(
