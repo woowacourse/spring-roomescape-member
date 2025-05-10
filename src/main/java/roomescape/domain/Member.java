@@ -22,7 +22,7 @@ public class Member {
         this.role = role;
     }
 
-    public static Member createWithoutId(Long id, String name, String email, String password, MemberRole role) {
+    public static Member createWithoutId(String name, String email, String password, MemberRole role) {
         return new Member(DEFAULT_ID, name, email, password, role);
     }
 

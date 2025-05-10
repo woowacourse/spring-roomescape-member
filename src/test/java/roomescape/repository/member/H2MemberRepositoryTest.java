@@ -82,4 +82,23 @@ class H2MemberRepositoryTest {
                         .isEqualTo(new Member(1L, "회원", email, "ecxewqe!23", MemberRole.GENERAL))
         );
     }
+
+    @DisplayName("회원을 추가할 수 있다")
+    @Test
+    void testMethodNameHere() {
+        // given
+        Member member = Member.createWithoutId("member1", "test@test.com", "asdf1234!", MemberRole.GENERAL);
+
+        // when
+        long savedId = memberRepository.add(member);
+
+        // then
+        Optional<Member> savedMember = memberRepository.findById(savedId);
+        Member expectedMember = new Member(
+                1L, member.getName(), member.getEmail(), member.getPassword(), member.getRole());
+        assertAll(
+                () -> assertThat(savedMember.isPresent()).isTrue(),
+                () -> assertThat(savedMember.get()).isEqualTo(expectedMember)
+        );
+    }
 }

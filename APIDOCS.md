@@ -128,7 +128,7 @@
       ]
       ```
 
-### 인증 API
+### 회원 API
 
 - POST /login
     - 설명 : 로그인
@@ -167,6 +167,27 @@
 - POST /logout
     - 설명 : 로그인 아웃
     - 정상 응답 (200)
+
+- POST /members
+    - 설명 : 회원가입
+        - 요청 페이로드
+          ```
+          {
+              String "email": "admin@email.com",  // NotNull, 이메일 형식 준수
+              String "password": "password",      // NotNull
+              String "name": "MemberName"         // NotNUll
+          }
+          ```
+    - 정상 응답 (201)
+      ```
+      {
+              Long "id": 1,                  // NotNull, 이메일 형식 준수
+              String "name": "Member1",      // NotNull
+      }
+      ```
+    - 예외 응답 (401)
+        - 유효하지 않은 값이 입력된 경우
+        - 이미 계정이 존재하는 회원인 경우
 
 ## 관리자 API
 
@@ -351,7 +372,7 @@
       String "description": "우테코 레벨2를 탈출하는 내용입니다.",     // NotNull, 최대 255자
       String "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg" // NotNull, 최대 255자
       ```
-    - 정상 응답 (200)
+    - 정상 응답 (201)
       ```
         {
           Long "id": 1,

@@ -1,10 +1,16 @@
 package roomescape.controller.admin;
 
+import jakarta.validation.Valid;
+import java.net.URI;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
+import roomescape.dto.request.MemberCreationRequest;
 import roomescape.dto.response.MemberProfileResponse;
 import roomescape.service.MemberService;
 
@@ -23,5 +29,15 @@ public class MemberController {
         return members.stream()
                 .map(MemberProfileResponse::new)
                 .toList();
+    }
+
+    @PostMapping("/members")
+    public ResponseEntity<MemberProfileResponse> getMember(
+            @Valid @RequestBody MemberCreationRequest request
+    ) {
+        long memberId = memberService.addMember(request);
+        Member member = memberService.getById(memberId);
+        return ResponseEntity.created(URI.create("/member/" + memberId))
+                .body(new MemberProfileResponse(member));
     }
 }

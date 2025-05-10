@@ -1,10 +1,14 @@
 package roomescape.repository.member;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
@@ -14,6 +18,7 @@ public class H2MemberRepository implements MemberRepository {
 
     private static final RowMapper<Member> mapper;
     private final JdbcTemplate template;
+    private final SimpleJdbcInsert insertActor;
 
     static {
         mapper = (resultSet, resultNumber) -> new Member(
@@ -25,7 +30,10 @@ public class H2MemberRepository implements MemberRepository {
         );
     }
 
-    public H2MemberRepository(JdbcTemplate template) {
+    public H2MemberRepository(DataSource dataSource, JdbcTemplate template) {
+        this.insertActor = new SimpleJdbcInsert(dataSource)
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id");
         this.template = template;
     }
 
@@ -46,6 +54,7 @@ public class H2MemberRepository implements MemberRepository {
                 SELECT *
                 FROM member
                 WHERE member.id = ?
+                ORDER BY member.id ASC
                 """;
         try {
             Member member = template.queryForObject(sql, mapper, id);
@@ -57,12 +66,26 @@ public class H2MemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findByEmail(String email) {
-        String sql = "SELECT * FROM member WHERE member.email = ?";
+        String sql = """
+                SELECT * FROM member
+                WHERE member.email = ?
+                ORDER BY member.id ASC
+                """;
         try {
             Member member = template.queryForObject(sql, mapper, email);
             return Optional.of(member);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public long add(Member member) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("name", member.getName());
+        parameters.put("email", member.getEmail());
+        parameters.put("password", member.getPassword());
+        parameters.put("role", member.getRole());
+        return insertActor.executeAndReturnKey(parameters).longValue();
     }
 }
