@@ -53,7 +53,7 @@ public class ReservationService {
         final Long memberId = reservation.getMemberId();
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
-        return ReservationResponse.from(reservation, theme, member.getName());
+        return ReservationResponse.of(reservation, theme, member.getName());
     }
 
     public ReservationResponse createReservation(CreateReservationRequest request) {
@@ -68,7 +68,7 @@ public class ReservationService {
         validateDuplicated(newReservation);
 
         Reservation saved = reservationRepository.save(newReservation);
-        return ReservationResponse.from(saved, theme, member.getName());
+        return ReservationResponse.of(saved, theme, member.getName());
     }
 
     private void validateDuplicated(Reservation newReservation) {

@@ -28,13 +28,13 @@ public class ThemeService {
                     throw new ThemeNameConflictException();
                 });
         Theme saved = themeRepository.save(newTheme);
-        return ThemeResponse.from(saved);
+        return ThemeResponse.of(saved);
     }
 
     public List<ThemeResponse> getAllThemes() {
         return themeRepository.findAll()
                 .stream()
-                .map(ThemeResponse::from)
+                .map(ThemeResponse::of)
                 .toList();
     }
 
@@ -56,7 +56,7 @@ public class ThemeService {
         LocalDate startDate = yesterday.minusWeeks(1);
         return themeRepository.findPopularThemesByDateRangeAndLimit(startDate, yesterday, limit)
                 .stream()
-                .map(ThemeResponse::from)
+                .map(ThemeResponse::of)
                 .toList();
     }
 }

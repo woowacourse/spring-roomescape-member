@@ -33,7 +33,7 @@ public class ReservationTimeService {
         ReservationTime entity = requestDto.toEntity();
         validateDuplicated(entity);
         ReservationTime saved = timeRepository.save(entity);
-        return ReservationTimeResponse.from(saved);
+        return ReservationTimeResponse.of(saved);
     }
 
     private void validateDuplicated(ReservationTime entity) {
@@ -48,7 +48,7 @@ public class ReservationTimeService {
 
     public List<ReservationTimeResponse> getAllTimes() {
         return timeRepository.findAll().stream()
-                .map(ReservationTimeResponse::from)
+                .map(ReservationTimeResponse::of)
                 .toList();
     }
 
@@ -66,7 +66,7 @@ public class ReservationTimeService {
     public List<ReservationTimeWithBookedResponse> getAllTimesWithBooked(LocalDate date, final Long themeId) {
         return timeRepository.findAllWithBooked(date, themeId)
                 .stream()
-                .map(ReservationTimeWithBookedResponse::from)
+                .map(ReservationTimeWithBookedResponse::of)
                 .toList();
     }
 }
