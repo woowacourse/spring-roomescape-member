@@ -3,7 +3,11 @@ package roomescape.reservation.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.member.controller.dto.MemberInfo;
+import roomescape.member.domain.MemberId;
 import roomescape.reservation.controller.dto.CreateReservationByAdminWebRequest;
+import roomescape.reservation.controller.dto.ReservationSearchWebRequest;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.service.converter.ReservationConverter;
 import roomescape.reservation.service.dto.AvailableReservationTimeServiceRequest;
 import roomescape.reservation.service.dto.CreateReservationServiceRequest;
@@ -50,7 +54,8 @@ public class ReservationService {
                                 createReservationByAdminWebRequest.themeId())));
     }
 
-    public ReservationWebResponse create(final CreateReservationWebRequest createReservationWebRequest, final MemberInfo memberInfo) {
+    public ReservationWebResponse create(final CreateReservationWebRequest createReservationWebRequest,
+                                         final MemberInfo memberInfo) {
         return ReservationConverter.toDto(
                 reservationCommandUseCase.create(
                         new CreateReservationServiceRequest(
@@ -62,5 +67,16 @@ public class ReservationService {
 
     public void delete(final Long id) {
         reservationCommandUseCase.delete(ReservationId.from(id));
+    }
+
+    public List<ReservationWebResponse> search(ReservationSearchWebRequest reservationSearchWebRequest) {
+        return reservationQueryUseCase.search(
+                        MemberId.from(reservationSearchWebRequest.memberId()),
+                        ThemeId.from(reservationSearchWebRequest.themeId()),
+                        ReservationDate.from(reservationSearchWebRequest.from()),
+                        ReservationDate.from(reservationSearchWebRequest.to()))
+                .stream()
+                .map(ReservationConverter::toDto)
+                .toList();
     }
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import roomescape.member.controller.dto.MemberInfo;
 import roomescape.reservation.controller.dto.AvailableReservationTimeWebResponse;
 import roomescape.reservation.controller.dto.CreateReservationByAdminWebRequest;
 import roomescape.reservation.controller.dto.CreateReservationWebRequest;
+import roomescape.reservation.controller.dto.ReservationSearchWebRequest;
 import roomescape.reservation.controller.dto.ReservationWebResponse;
 import roomescape.reservation.service.ReservationService;
 
@@ -55,12 +57,17 @@ public class ReservationController {
 
     @PostMapping("/admin" + BASE_PATH)
     public ResponseEntity<ReservationWebResponse> createReservationByAdmin(
-            @RequestBody final CreateReservationByAdminWebRequest createReservationByAdminWebRequest,
-            MemberInfo memberInfo) {
+            @RequestBody final CreateReservationByAdminWebRequest createReservationByAdminWebRequest) {
         final ReservationWebResponse reservationWebResponse = reservationService.create(createReservationByAdminWebRequest);
         final URI location = UriFactory.buildPath(BASE_PATH, String.valueOf(reservationWebResponse.id()));
         return ResponseEntity.created(location)
                 .body(reservationWebResponse);
+    }
+
+    @GetMapping("/admin" + BASE_PATH)
+    public ResponseEntity<List<ReservationWebResponse>> getReservationsByAdmin(
+            @ModelAttribute final ReservationSearchWebRequest reservationSearchWebRequest) {
+        return ResponseEntity.ok(reservationService.search(reservationSearchWebRequest));
     }
 
     @DeleteMapping(BASE_PATH + "/{id}")
