@@ -8,11 +8,20 @@ import org.springframework.http.HttpStatus;
 
 public class MemberApiFixture {
 
-    public static Map<String, String> memberSignUpParams() {
+    public static Map<String, String> signUpParams1() {
         final Map<String, String> params = new HashMap<>();
-        params.put("email", "test@imtest.com");
-        params.put("password", "impassword");
-        params.put("name", "테스트 이름");
+        params.put("email", "test@one.com");
+        params.put("password", "one");
+        params.put("name", "테스트 이름1");
+
+        return params;
+    }
+
+    public static Map<String, String> signUpParams2() {
+        final Map<String, String> params = new HashMap<>();
+        params.put("email", "test2@two.com");
+        params.put("password", "two");
+        params.put("name", "테스트 이름2");
 
         return params;
     }

@@ -36,7 +36,7 @@ class AuthRestControllerTest {
 
     @Test
     void 회원가입한_사용자는_일반_회원_권한을_가진다() {
-        final Map<String, String> signUpParams = MemberApiFixture.memberSignUpParams();
+        final Map<String, String> signUpParams = MemberApiFixture.signUpParams1();
         signUp(signUpParams);
 
         final Map<String, String> loginParams = Map.of(
@@ -59,7 +59,7 @@ class AuthRestControllerTest {
 
     @Test
     void 로그인_체크_요청_시_회원의_이름을_응답한다() {
-        final Map<String, String> signUpParams = MemberApiFixture.memberSignUpParams();
+        final Map<String, String> signUpParams = MemberApiFixture.signUpParams1();
         signUp(signUpParams);
 
         final Map<String, String> loginParams = Map.of(

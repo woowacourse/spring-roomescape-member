@@ -34,7 +34,7 @@ class ReservationTimeRestControllerTest {
 
     @Test
     void 회원_권한으로_예약_시간을_추가한다() {
-        final Map<String, String> singUpParams = MemberApiFixture.memberSignUpParams();
+        final Map<String, String> singUpParams = MemberApiFixture.signUpParams1();
         MemberApiFixture.signUp(singUpParams);
         final Map<String, String> cookies = LoginApiFixture.memberLoginAndGetCookies(singUpParams);
 

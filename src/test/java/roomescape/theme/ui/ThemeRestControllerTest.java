@@ -20,7 +20,7 @@ class ThemeRestControllerTest {
     void 관리자_권한으로_테마를_추가한다() {
         final Map<String, String> cookies = LoginApiFixture.adminLoginAndGetCookies();
 
-        final Map<String, String> themeParams = ThemeApiFixture.themeParams();
+        final Map<String, String> themeParams = ThemeApiFixture.themeParams1();
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .cookies(cookies)
@@ -32,11 +32,11 @@ class ThemeRestControllerTest {
 
     @Test
     void 회원_권한으로_테마_추가를_시도하면_UNATHORIZED_응답을_받는다() {
-        final Map<String, String> signUpParams = MemberApiFixture.memberSignUpParams();
+        final Map<String, String> signUpParams = MemberApiFixture.signUpParams1();
         MemberApiFixture.signUp(signUpParams);
 
         final Map<String, String> cookies = LoginApiFixture.memberLoginAndGetCookies(signUpParams);
-        final Map<String, String> themeParams = ThemeApiFixture.themeParams();
+        final Map<String, String> themeParams = ThemeApiFixture.themeParams1();
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .cookies(cookies)
@@ -50,7 +50,7 @@ class ThemeRestControllerTest {
     @Test
     void 이미_존재하는_테마_이름으로_테마_생성을_요청하면_CONFLICT_응답을_받는다() {
         final Map<String, String> cookies = LoginApiFixture.adminLoginAndGetCookies();
-        final Map<String, String> themeParams = ThemeApiFixture.themeParams();
+        final Map<String, String> themeParams = ThemeApiFixture.themeParams1();
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -73,7 +73,7 @@ class ThemeRestControllerTest {
     void 권리자_권한으로_테마를_삭제한다() {
         final Map<String, String> cookies = LoginApiFixture.adminLoginAndGetCookies();
 
-        final Map<String, String> themeParams = ThemeApiFixture.themeParams();
+        final Map<String, String> themeParams = ThemeApiFixture.themeParams1();
         final Integer themeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .cookies(cookies)
@@ -116,7 +116,7 @@ class ThemeRestControllerTest {
                 .statusCode(HttpStatus.OK.value())
                 .extract().path("size()");
 
-        final Map<String, String> themeParams = ThemeApiFixture.themeParams();
+        final Map<String, String> themeParams = ThemeApiFixture.themeParams1();
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .cookies(cookies)

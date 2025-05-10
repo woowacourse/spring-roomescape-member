@@ -18,4 +18,11 @@ public class ReservationTimeApiFixture {
 
         return params;
     }
+
+    public static Map<String, String> reservationTimeParams3() {
+        final Map<String, String> params = new HashMap<>();
+        params.put("startAt", "14:00");
+
+        return params;
+    }
 }
