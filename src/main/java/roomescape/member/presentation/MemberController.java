@@ -11,6 +11,7 @@ import roomescape.member.application.service.AuthService;
 import roomescape.member.domain.Member;
 import roomescape.member.presentation.dto.LoginRequest;
 import roomescape.member.presentation.dto.MemberResponse;
+import roomescape.member.presentation.dto.RegisterRequest;
 import roomescape.member.presentation.dto.TokenResponse;
 
 @RestController
@@ -45,5 +46,11 @@ public class MemberController {
         logoutCookie.setMaxAge(0);
         response.addCookie(logoutCookie);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/members")
+    public ResponseEntity<MemberResponse> register(@RequestBody RegisterRequest registerRequest) {
+        MemberResponse response = authService.signup(registerRequest);
+        return ResponseEntity.ok().body(response);
     }
 }
