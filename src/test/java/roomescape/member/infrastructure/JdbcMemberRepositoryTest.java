@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 @JdbcTest
 class JdbcMemberRepositoryTest {
@@ -30,7 +31,7 @@ class JdbcMemberRepositoryTest {
     @DisplayName("정상적으로 저장되어 id를 반환하는지 확인한다.")
     void save_test() {
         // given
-        Member member = Member.createWithoutId("a", "a", "a");
+        Member member = Member.createWithoutId("a", "a", "a", Role.USER);
         // when
         Long id = jdbcMemberRepository.save(member);
         // then
@@ -41,7 +42,7 @@ class JdbcMemberRepositoryTest {
     @DisplayName("아이디로 회원 조회 테스트")
     void findById_test() {
         // given
-        Member member = Member.createWithoutId("a", "a", "a");
+        Member member = Member.createWithoutId("a", "a", "a", Role.USER);
         Long id = jdbcMemberRepository.save(member);
         // when
         Optional<Member> findMember = jdbcMemberRepository.findById(id);
@@ -60,7 +61,7 @@ class JdbcMemberRepositoryTest {
     @DisplayName("이메일 존재 확인 테스트")
     void existByEmail_test(String email, boolean expected) {
         // given
-        Member member = Member.createWithoutId("a", "a", "a");
+        Member member = Member.createWithoutId("a", "a", "a", Role.USER);
         jdbcMemberRepository.save(member);
         // when
         boolean existed = jdbcMemberRepository.existByEmail(email);
@@ -73,7 +74,7 @@ class JdbcMemberRepositoryTest {
     @DisplayName("이메일, 비밀번호 존재 확인 테스트")
     void existByEmailAndPassword(String email, String password, boolean expected) {
         // given
-        Member member = Member.createWithoutId("a", "a", "a");
+        Member member = Member.createWithoutId("a", "a", "a", Role.USER);
         jdbcMemberRepository.save(member);
         // when
         Optional<Member> findMember = jdbcMemberRepository.findByEmailAndPassword(email, password);

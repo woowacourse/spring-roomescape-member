@@ -27,7 +27,7 @@ public class MemberController {
 
     @PostMapping
     public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest request) {
-        SignupResponse response = memberService.createMember(request);
+        SignupResponse response = memberService.createUser(request);
         URI uri = URI.create(RESERVATION_BASE_URL + SLASH + response.id());
         return ResponseEntity.created(uri).body(response);
     }

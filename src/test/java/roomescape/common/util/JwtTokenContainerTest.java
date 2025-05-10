@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.common.exception.LoginException;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 class JwtTokenContainerTest {
 
@@ -18,7 +19,7 @@ class JwtTokenContainerTest {
     @DisplayName("정상적인 토큰을 반환한다.")
     void createJwtToken_test() {
         // given
-        Member member = Member.createWithId(1L, "a", "a", "a");
+        Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
         // when
         String jwtToken = jwtTokenContainer.createJwtToken(member);
         // then
@@ -39,7 +40,7 @@ class JwtTokenContainerTest {
     @DisplayName("토큰이 유효한 경우 예외를 발생시키지 않는다.")
     void validateToken_test() {
         // given
-        Member member = Member.createWithId(1L, "a", "a", "a");
+        Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
         String jwtToken = jwtTokenContainer.createJwtToken(member);
         // when & then
         assertDoesNotThrow(() -> jwtTokenContainer.validateToken(jwtToken));
@@ -49,7 +50,7 @@ class JwtTokenContainerTest {
     @DisplayName("정상적인 토큰인 경우 맴버 아이디를 가져온다.")
     void getMemberId_test() {
         // given
-        Member member = Member.createWithId(1L, "a", "a", "a");
+        Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
         String jwtToken = jwtTokenContainer.createJwtToken(member);
         // when
         Long memberId = jwtTokenContainer.getMemberId(jwtToken);
@@ -71,7 +72,7 @@ class JwtTokenContainerTest {
     @DisplayName("정상적인 토큰인 경우 맴버 이름를 가져온다.")
     void getMemberName_test() {
         // given
-        Member member = Member.createWithId(1L, "a", "a", "a");
+        Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
         String jwtToken = jwtTokenContainer.createJwtToken(member);
         // when
         String name = jwtTokenContainer.getMemberName(jwtToken);

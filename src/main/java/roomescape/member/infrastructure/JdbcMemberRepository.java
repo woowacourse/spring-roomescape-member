@@ -11,16 +11,22 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
+import roomescape.member.domain.Role;
 
 @Repository
 public class JdbcMemberRepository implements MemberRepository {
 
-    private static final RowMapper<Member> ROW_MAPPER = (resultSet, rowNum) -> Member.createWithId(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getString("email"),
-            resultSet.getString("password")
-    );
+    private static final RowMapper<Member> ROW_MAPPER = (resultSet, rowNum) -> {
+        String role = resultSet.getString("role");
+        Role memberRole = Role.findRole(role);
+        return Member.createWithId(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("email"),
+                resultSet.getString("password"),
+                memberRole
+        );
+    };
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -38,6 +44,7 @@ public class JdbcMemberRepository implements MemberRepository {
         parameters.put("name", member.getName());
         parameters.put("email", member.getEmail());
         parameters.put("password", member.getPassword());
+        parameters.put("role",member.getRole());
 
         return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
