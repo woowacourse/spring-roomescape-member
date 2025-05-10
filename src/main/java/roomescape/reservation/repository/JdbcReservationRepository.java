@@ -105,9 +105,9 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existsByReservationTime(ReservationTime reservationTime) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE reservation_time_id = ?";
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation JOIN reservation_time ON reservation.id = reservation_time.id WHERE reservation_time.id = ?)";
 
-        return jdbcTemplate.queryForObject(sql, Long.class, reservationTime.getId()) >= 1;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, reservationTime.getId());
     }
 
     @Override
