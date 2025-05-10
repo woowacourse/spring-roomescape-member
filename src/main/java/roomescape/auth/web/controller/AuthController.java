@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.dto.AuthenticatedMember;
 import roomescape.auth.service.AuthService;
 import roomescape.auth.web.controller.dto.LoginRequest;
+import roomescape.global.exception.AuthenticationException;
 import roomescape.global.util.CookieUtils;
 
 @RestController
@@ -31,7 +32,17 @@ public class AuthController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/login/check")
     public AuthenticatedMember loginCheck(HttpServletRequest request) {
-        Cookie cookie = CookieUtils.extractFromCookiesByName(request.getCookies(), "token");
+        Cookie cookie = CookieUtils.findFromCookiesByName(request.getCookies(), "token")
+                .orElseThrow(() -> new AuthenticationException("인증을 위한 쿠키가 존재하지 않습니다."));
         return authService.getAuthenticatedMember(cookie.getValue());
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        Cookie cookie = CookieUtils.findFromCookiesByName(request.getCookies(), "token")
+                .orElseThrow(() -> new AuthenticationException("인증을 위한 쿠키가 존재하지 않습니다."));
+        //TODO : 토큰 블랙리스트 구현
+        response.addCookie(CookieUtils.toExpiredCookie(cookie));
     }
 }

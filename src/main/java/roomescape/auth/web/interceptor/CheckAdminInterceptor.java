@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.dto.AuthenticatedMember;
 import roomescape.auth.infrastructure.TokenProvider;
+import roomescape.global.exception.AuthenticationException;
 import roomescape.global.util.CookieUtils;
 import roomescape.member.domain.Role;
 
@@ -21,7 +22,8 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        Cookie cookie = CookieUtils.extractFromCookiesByName(request.getCookies(), "token");
+        Cookie cookie = CookieUtils.findFromCookiesByName(request.getCookies(), "token")
+                .orElseThrow(() -> new AuthenticationException("인증을 위한 쿠키가 존재하지 않습니다."));
         AuthenticatedMember authenticatedMember = tokenProvider.resolveAuthenticatedMember(cookie.getValue());
         if (Objects.equals(authenticatedMember.role(), Role.ADMIN)) {
             return true;
