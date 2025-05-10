@@ -48,4 +48,15 @@ public class ReservationController {
         reservationService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    @PostMapping("/admin/reservations")
+    public ResponseEntity<ReservationResponse> createReservation(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @RequestBody AdminReservationCreateRequest request
+    ) {
+        ReservationResponse dto = reservationService.create(request.date(), request.timeId(), request.themeId(),
+                request.memberId(), LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    }
 }

@@ -21,7 +21,7 @@ VALUES ('08:00'),
 
 INSERT INTO member (name, email, password, role)
 VALUES
-    -- 기존 예약 데이터에 있던 이름들을 사용
+    ('Admin', 'admin@gmail.com', 'password', 'ADMIN'),
     ('Alice', 'alice@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
     ('Bob', 'bob@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
     ('Carol', 'carol@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),

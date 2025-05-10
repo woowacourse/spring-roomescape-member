@@ -1,5 +1,6 @@
 package roomescape.member.repository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,7 +20,7 @@ public class FakeMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findByMember(final String email, final String password) {
+    public Optional<Member> findMemberByEmailAndPassword(final String email, final String password) {
         return members.values()
                 .stream()
                 .filter(member -> member.getEmail().equals(email) && member.getPassword().equals(password))
@@ -27,7 +28,12 @@ public class FakeMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findById(final Long id) {
+    public boolean existsById(final Long id) {
+        return members.containsKey(id);
+    }
+
+    @Override
+    public Optional<Member> findUserById(final Long id) {
         return members.values()
                 .stream()
                 .filter(member -> member.getId().equals(id))
@@ -40,5 +46,10 @@ public class FakeMemberRepository implements MemberRepository {
         members.put(id, member);
         return Member.of(id, member.getName(), member.getEmail(), member.getPassword(),
                 member.getMemberRole());
+    }
+
+    @Override
+    public List<Member> findAllUsers() {
+        return members.values().stream().toList();
     }
 }

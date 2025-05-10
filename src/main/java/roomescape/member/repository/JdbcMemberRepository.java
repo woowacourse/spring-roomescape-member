@@ -1,5 +1,6 @@
 package roomescape.member.repository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -8,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
 import roomescape.member.entity.MemberEntity;
 
 @Repository
@@ -46,7 +48,7 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findByMember(final String email, final String password) {
+    public Optional<Member> findMemberByEmailAndPassword(final String email, final String password) {
         try {
             MemberEntity memberEntity = jdbcTemplate.queryForObject(
                     "SELECT id, name, email, password, role FROM member WHERE (email, password) = (?, ?)",
@@ -59,11 +61,24 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findById(final Long id) {
+    public boolean existsById(final Long id) {
+        try {
+            return Boolean.TRUE.equals(
+                    jdbcTemplate.queryForObject("SELECT EXISTS (SELECT 1 FROM member WHERE id = ?)",
+                            Boolean.class,
+                            id
+                    ));
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public Optional<Member> findUserById(final Long id) {
         try {
             MemberEntity memberEntity = jdbcTemplate.queryForObject(
-                    "SELECT id, name, email, password, role FROM member WHERE id = ?",
-                    MEMBER_ENTITY_ROW_MAPPER, id);
+                    "SELECT id, name, email, password, role FROM member WHERE (id, role) = (?, ?)",
+                    MEMBER_ENTITY_ROW_MAPPER, id, MemberRole.USER.name());
             return Optional.ofNullable(memberEntity)
                     .map(MemberEntity::toMember);
         } catch (EmptyResultDataAccessException e) {
@@ -79,5 +94,15 @@ public class JdbcMemberRepository implements MemberRepository {
         ).longValue();
         return Member.of(generatedId, member.getName(), member.getEmail(), member.getPassword(),
                 member.getMemberRole());
+    }
+
+    @Override
+    public List<Member> findAllUsers() {
+        final String sql = "SELECT * FROM member WHERE role = ?";
+        List<MemberEntity> memberEntities = jdbcTemplate.query(sql, MEMBER_ENTITY_ROW_MAPPER,
+                MemberRole.USER.name());
+        return memberEntities.stream()
+                .map(MemberEntity::toMember)
+                .toList();
     }
 }

@@ -28,19 +28,47 @@
 HTTP/1.1 200
 Content-Type: application/json
 
+[
 {
 "id": 1,
-"name": "브라운",
-"date": "2023-08-05",
+"member": {
+"id": 1,
+"name": "Alice"
+},
+"date": "2025-05-05",
 "time": {
 "id": 1,
-"startAt": "10:00"
+"startAt": "08:00:00"
+},
+"theme": {
+"id": 12,
+"name": "논리",
+"description": "퍼즐 마스터",
+"thumbnail": "image/thumbnail.png"
+}
+},
+{
+"id": 2,
+"member": {
+"id": 2,
+"name": "Bob"
+},
+"date": "2025-05-05",
+"time": {
+"id": 2,
+"startAt": "12:00:00"
+},
+"theme": {
+"id": 12,
+"name": "논리",
+"description": "퍼즐 마스터",
+"thumbnail": "image/thumbnail.png"
 }
 }
 ]
 ```
 
-## 예약 추가
+## 예약 추가 (사용자)
 
 ### 요청
 
@@ -65,6 +93,47 @@ host: localhost:8080
 "date": "2024-03-01",
 "themeId": 1,
 "timeId": 1
+}
+```
+
+### 응답
+
+```json
+HTTP/1.1 201
+Content-Type: application/json
+
+{
+"id": 1,
+"name": "브라운",
+"date": "2023-08-05",
+"time": {
+"id": 1,
+"startAt": "10:00"
+},
+"theme": {
+  "id" : 1,
+  "name": "추리",
+  "description": "추리 with mint",
+  "thumbnail" : "thumbnail.png"
+}
+}
+```
+
+## 예약 추가 (관리자)
+
+### 요청
+
+```json
+POST /admin/reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
+
+{
+"date": "2024-03-01",
+"themeId": 1,
+"timeId": 1,
+"memberId": 1
 }
 ```
 
@@ -469,6 +538,37 @@ Transfer-Encoding: chunked
 }
 ```
 
+## 모든 사용자 조회
+
+### 요청
+
+```json
+GET /members HTTP/1.1
+cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+host: localhost: 8080
+```
+
+### 응답
+
+```json
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Type: application/json
+Date: Sun, 03 Mar 2024 19: 16: 56 GMT
+Keep-Alive: timeout=60
+Transfer-Encoding: chunked
+
+[
+{
+"id": 2,
+"name": "mint"
+},
+{
+"id": 3,
+"name": "danny"
+}
+]
+```
 ## 예외
 
 - DateTimeParseException : 날짜(yyyy-MM-dd) & 시간(HH:mm) 파싱 예외시 400

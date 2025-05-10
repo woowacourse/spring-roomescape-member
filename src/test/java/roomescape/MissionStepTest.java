@@ -4,12 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import roomescape.auth.dto.CheckLoginResponse;
 import roomescape.auth.dto.LoginRequest;
+import roomescape.member.dto.MemberResponse;
 import roomescape.member.dto.SignupRequest;
 import roomescape.reservation.controller.ReservationController;
 
@@ -28,14 +31,15 @@ import roomescape.reservation.controller.ReservationController;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @TestPropertySource(properties = {
         "spring.sql.init.schema-locations=classpath:schema.sql",
-        "spring.sql.init.data-locations="
+        "spring.sql.init.data-locations=classpath:test-data.sql"
 })
 public class MissionStepTest {
 
-    private static final String NAME = "admin";
+    private static final String NAME = "User";
     private static final String PASSWORD = "password";
-    private static final String EMAIL = "admin@gmail.com";
+    private static final String USER_EMAIL = "user@gmail.com";
     private static final String futureDate = LocalDate.now().plusDays(1).toString();
+    private static final String ADMIN_EMAIL = "admin@gmail.com";
 
     @Nested
     class AdminTest {
@@ -65,7 +69,7 @@ public class MissionStepTest {
         void step3_createAndDeleteReservation() {
             createReservationTime();
             createTheme("추리");
-            createReservation();
+            createUserReservation();
 
             RestAssured.given().log().all()
                     .when().get("/reservations")
@@ -118,7 +122,7 @@ public class MissionStepTest {
         void step6_addReservationWithDatabase() {
             createReservationTime();
             createTheme("추리");
-            createReservation();
+            createUserReservation();
 
             Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
             assertThat(count).isEqualTo(1);
@@ -152,7 +156,7 @@ public class MissionStepTest {
         void step8_schemaModification() {
             createReservationTime();
             createTheme("추리");
-            createReservation();
+            createUserReservation();
 
             RestAssured.given().log().all()
                     .when().get("/reservations")
@@ -250,7 +254,7 @@ public class MissionStepTest {
             step4_signup();
 
             RestAssured.given().log().all()
-                    .body(new LoginRequest(EMAIL, PASSWORD))
+                    .body(new LoginRequest(USER_EMAIL, PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .when().post("/login")
                     .then().log().all()
@@ -261,10 +265,10 @@ public class MissionStepTest {
         @Test
         void step4_logout() {
             step4_signup();
-            String authToken = loginAndGetAuthToken();
+            String authToken = loginAndGetAuthToken(USER_EMAIL, PASSWORD);
 
             RestAssured.given().log().all()
-                    .body(new LoginRequest(EMAIL, PASSWORD))
+                    .body(new LoginRequest(USER_EMAIL, PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .cookie("token", authToken)
                     .when().post("/logout")
@@ -276,10 +280,10 @@ public class MissionStepTest {
         void step4_loginCheck() {
             step4_signup();
 
-            String authToken = loginAndGetAuthToken();
+            String authToken = loginAndGetAuthToken(USER_EMAIL, PASSWORD);
 
             CheckLoginResponse checkLoginResponse = RestAssured.given().log().all()
-                    .body(new LoginRequest(EMAIL, PASSWORD))
+                    .body(new LoginRequest(USER_EMAIL, PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .cookie("token", authToken)
                     .when().get("/login/check")
@@ -288,26 +292,62 @@ public class MissionStepTest {
                     .extract()
                     .as(CheckLoginResponse.class);
 
-            assertThat(checkLoginResponse.name()).isEqualTo("admin");
+            assertThat(checkLoginResponse.name()).isEqualTo("User");
         }
 
+        @Test
+        void step5_admin_reservation() {
+            createReservationTime();
+            createTheme("추리");
+            String authToken = loginAndGetAuthToken(ADMIN_EMAIL, PASSWORD);
+            signup();
+
+            Map<String, Object> reservation = new HashMap<>();
+            reservation.put("date", futureDate);
+            reservation.put("timeId", 1);
+            reservation.put("themeId", 1);
+            reservation.put("memberId", 2);
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(reservation)
+                    .cookie("token", authToken)
+                    .when().post("/admin/reservations")
+                    .then().log().all()
+                    .statusCode(201);
+        }
+
+        @Test
+        void step5_findAllUsers() {
+            String authToken = loginAndGetAuthToken(ADMIN_EMAIL, PASSWORD);
+            signup();
+
+            List<MemberResponse> memberResponses = RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .cookie("token", authToken)
+                    .when().get("/members")
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .as(new TypeRef<>() {});
+            assertThat(memberResponses.size()).isEqualTo(1);
+        }
     }
 
     private void signup() {
         RestAssured.given().log().all()
-                .body(new SignupRequest(EMAIL, PASSWORD, NAME))
+                .body(new SignupRequest(USER_EMAIL, PASSWORD, NAME))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/members")
                 .then().log().all()
                 .statusCode(201);
     }
 
-    private void createReservation() {
+    private void createUserReservation() {
         signup();
-        String authToken = loginAndGetAuthToken();
+        String authToken = loginAndGetAuthToken(USER_EMAIL, PASSWORD);
 
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", futureDate);
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
@@ -355,9 +395,9 @@ public class MissionStepTest {
                 .body("size()", is(size));
     }
 
-    private String loginAndGetAuthToken() {
+    private String loginAndGetAuthToken(final String email, final String password) {
         return RestAssured.given().log().all()
-                .body(new LoginRequest(EMAIL, PASSWORD))
+                .body(new LoginRequest(email, password))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
                 .then().log().all()
