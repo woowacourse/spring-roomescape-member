@@ -11,7 +11,6 @@ import java.util.List;
 
 @Service
 public class ThemeService {
-    // todo: Service naming 다시 생각해보기
     private final ThemeRepository themeRepository;
 
     @Autowired

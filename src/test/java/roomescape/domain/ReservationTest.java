@@ -24,21 +24,10 @@ class ReservationTest {
 
     private static Stream<Arguments> getInvalidReservations() {
         return Stream.of(
-                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, LocalDate.now(), new ReservationTime(1L, LocalTime.now()), new Theme(1L, "테마","테마 설명", "테마 이미지"),new Member(1L,"이름","test@test.com","1234"))),
-                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, null, new ReservationTime(1L, LocalTime.now()), new Theme(1L, "테마","테마 설명", "테마 이미지"),new Member(1L,"이름","test@test.com","1234"))),
-                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, LocalDate.now(), null, new Theme(1L, "테마","테마 설명", "테마 이미지"),new Member(1L,"이름","test@test.com","1234"))),
-                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, LocalDate.now(), new ReservationTime(1L, LocalTime.now()), null,new Member(1L,"이름","test@test.com","1234")))
+                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, null, new ReservationTime(1L, LocalTime.now()), new Theme(1L, "테마","테마 설명", "테마 이미지"),new Member(1L,"이름","test@test.com",MemberRole.USER,"1234"))),
+                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, LocalDate.now(), null, new Theme(1L, "테마","테마 설명", "테마 이미지"),new Member(1L,"이름","test@test.com",MemberRole.USER,"1234"))),
+                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, LocalDate.now(), new ReservationTime(1L, LocalTime.now()), null,new Member(1L,"이름","test@test.com",MemberRole.USER,"1234"))),
+                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, LocalDate.now(), new ReservationTime(1L, LocalTime.now()), new Theme(1L, "테마","테마 설명", "테마 이미지"),null))
         );
-    }
-
-    @DisplayName("name이 빈 값일 때(공백) ReservationValidationException을 throw 한다.")
-    @Test
-    void validateBlankName() {
-        // given
-        Supplier<Reservation> supplier = () -> new Reservation(1L, LocalDate.now(), new ReservationTime(1L, LocalTime.now()), new Theme(1L, "테마","테마 설명", "테마 이미지"),new Member(1L,"이름","test@test.com","1234"));
-
-
-        // when & then
-        assertThatThrownBy(supplier::get).isInstanceOf(ReservationValidationException.class);
     }
 }
