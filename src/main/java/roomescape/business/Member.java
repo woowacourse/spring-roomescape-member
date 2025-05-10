@@ -1,5 +1,7 @@
 package roomescape.business;
 
+import jakarta.validation.constraints.NotEmpty;
+
 public final class Member {
 
     private final Long id;
@@ -16,5 +18,13 @@ public final class Member {
 
     public Member(String name, String email, String password) {
         this(null, name, email, password);
+    }
+
+    public boolean checkValidPassword(@NotEmpty String password) {
+        return password.equals(password);
+    }
+
+    public Long getId() {
+        return id;
     }
 }
