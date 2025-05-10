@@ -37,7 +37,6 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations(@ModelAttribute ReservationConditionRequest request) {
-        System.out.println(request);
         List<ReservationResponse> response = reservationService.getReservations(request);
         return ResponseEntity.ok(response);
     }
