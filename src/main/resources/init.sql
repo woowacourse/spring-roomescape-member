@@ -6,11 +6,13 @@ INSERT INTO reservation_time (start_at) VALUES ('10:00');
 INSERT INTO reservation_time (start_at) VALUES ('11:00');
 INSERT INTO reservation_time (start_at) VALUES ('12:00');
 
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('테스트1', '2025-04-28', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('테스트2', '2025-04-28', 2, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('테스트3', '2025-04-26', 1, 3);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('테스트4', '2025-04-18', 1, 2);
-
-INSERT INTO member (name, email, password) VALUES ('유저', 'member@email.com', 'password');
+INSERT INTO member (name, email, password) VALUES ('유저1', 'member1@email.com', 'password');
+INSERT INTO member (name, email, password) VALUES ('유저2', 'member2@email.com', 'password');
+INSERT INTO member (name, email, password) VALUES ('유저3', 'member3@email.com', 'password');
 
 INSERT INTO admin (name, email, password) VALUES ('어드민', 'admin@email.com', 'password');
+
+INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES ('2025-04-28', 1, 1, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES ('2025-04-28', 2, 1, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES ('2025-04-26', 1, 3, 2);
+INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES ('2025-04-18', 1, 2, 3);
