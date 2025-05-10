@@ -1,4 +1,4 @@
-package roomescape.reservation.presentation.fixture;
+package roomescape.global;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;

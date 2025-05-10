@@ -8,10 +8,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.global.ApiHelper;
 import roomescape.reservation.presentation.dto.MemberReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ThemeRequest;
-import roomescape.reservation.presentation.fixture.ApiHelper;
 import roomescape.reservation.presentation.fixture.ReservationFixture;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -69,6 +69,7 @@ public class ThemeControllerTest {
     @DisplayName("예약이 이미 존재하는 테마는 삭제할 수 없다.")
     void deleteThemeExceptionTest() {
         // given
+
         ReservationTimeRequest reservationTime = reservationFixture.createReservationTime("10:00");
         ApiHelper.post(ApiHelper.TIME_ENDPOINT, reservationTime);
 
