@@ -39,6 +39,7 @@ public class JdbcMemberRepository implements MemberRepository {
                 .addValue("ID", member.id())
                 .addValue("NAME", member.name())
                 .addValue("EMAIL", member.email())
+                .addValue("PASSWORD", member.password())
                 .addValue("ROLE", member.role());
 
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();

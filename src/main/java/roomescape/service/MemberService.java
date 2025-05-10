@@ -1,22 +1,25 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.member.dto.LoginCheckResponse;
 import roomescape.controller.member.dto.MemberLoginRequest;
+import roomescape.controller.member.dto.MemberResponse;
+import roomescape.controller.member.dto.MemberSignupRequest;
 import roomescape.exception.AuthorizationException;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.model.Member;
 import roomescape.repository.MemberRepository;
 
 @Service
-public class AuthService {
+public class MemberService {
 
-    private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthService(final JwtTokenProvider jwtTokenProvider, final MemberRepository memberRepository) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public MemberService(final MemberRepository memberRepository, final JwtTokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public String login(final MemberLoginRequest request) {
@@ -36,5 +39,17 @@ public class AuthService {
         final Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new AuthorizationException("해당 이메일에 대한 회원 정보가 존재하지 않습니다. 이메일: " + email));
         return new LoginCheckResponse(member.name());
+    }
+
+    public MemberResponse add(final MemberSignupRequest request) {
+        final Member member = request.toEntity();
+        final Long id = memberRepository.save(member);
+        final Member savedMember = new Member(id, member.name(), member.email(), member.password(), member.role());
+        return MemberResponse.from(savedMember);
+    }
+
+    public List<MemberResponse> findAll() {
+        final List<Member> members = memberRepository.findAll();
+        return MemberResponse.from(members);
     }
 }

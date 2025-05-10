@@ -15,4 +15,9 @@ public class UserPageController {
     public String loginPage() {
         return "login";
     }
+
+    @GetMapping("/signup")
+    public String signupPage() {
+        return "signup";
+    }
 }

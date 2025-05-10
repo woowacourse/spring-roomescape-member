@@ -431,3 +431,31 @@
     Keep-Alive: timeout=60
     Set-Cookie: token=; Max-Age=0; Path=/; HttpOnly
     ```
+
+사용자 회원가입
+- [x] 회원가입 요청(POST /members) API 구현
+  - Request
+    ```
+    POST /members HTTP/1.1
+    content-type: application/json
+
+    {
+        "email": "ex4@email.com",
+        "password": "pw4",
+        "name": "이름4"
+    }
+    ```
+
+  - Request
+    ```
+    HTTP/1.1 201
+    Location: /themes/1
+    Content-Type: application/json
+    {
+        "id": 4,
+        "name": "이름4",
+        "email": "ex4@email.com",
+        "password": "pw4",
+        "role": "USER"
+    }
+    ```

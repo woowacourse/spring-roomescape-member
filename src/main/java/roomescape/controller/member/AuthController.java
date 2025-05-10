@@ -15,22 +15,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.controller.member.dto.LoginCheckResponse;
 import roomescape.controller.member.dto.MemberLoginRequest;
 import roomescape.controller.member.dto.TokenResponse;
-import roomescape.service.AuthService;
+import roomescape.service.MemberService;
 
 @Controller
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final AuthService authService;
+    private final MemberService memberService;
 
-    public AuthController(final AuthService authService) {
-        this.authService = authService;
+    public AuthController(final MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody @Valid final MemberLoginRequest request,
                                                final HttpServletResponse response) {
-        String token = authService.login(request);
+        String token = memberService.login(request);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Connection", "keep-alive");
@@ -52,7 +52,7 @@ public class AuthController {
     public ResponseEntity<LoginCheckResponse> checkLogin(final HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies);
-        LoginCheckResponse response = authService.checkLogin(token);
+        LoginCheckResponse response = memberService.checkLogin(token);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Connection", "keep-alive");
