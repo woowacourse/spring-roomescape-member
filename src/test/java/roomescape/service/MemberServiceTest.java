@@ -27,7 +27,7 @@ class MemberServiceTest {
     private MemberService memberService;
 
     @Test
-    void findMemberByTokenTest() {
+    void findByTokenTest() {
 
         // given
         final Member member = new Member("체체", "cheche903@naver.com", "password1234", MemberRole.USER);
