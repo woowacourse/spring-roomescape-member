@@ -11,9 +11,13 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final AuthenticationService authenticationService;
 
-    public MemberService(final MemberRepository memberRepository, final AuthenticationService authenticationService) {
+    private final MemberFinder memberFinder;
+
+    public MemberService(final MemberRepository memberRepository, final AuthenticationService authenticationService,
+                         final MemberFinder memberFinder) {
         this.memberRepository = memberRepository;
         this.authenticationService = authenticationService;
+        this.memberFinder = memberFinder;
     }
 
     public String loginMember(MemberLoginRequestDto memberLoginRequestDto) {
@@ -27,9 +31,9 @@ public class MemberService {
 
     }
 
-    public LoginMember getMember(Long id) {
-        Member member = memberRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("아이디 해당하는 멤버 없습니다"));
-        return new LoginMember(member.getId(), member.getRole(), member.getMemberName(), member.getEmail());
+    public LoginMember getMemberById(Long id) {
+        Member member = memberFinder.getMemberById(id);
+        return new LoginMember(member.getId(), member.getRole(), member.getMemberName(),
+                member.getEmail());
     }
 }
