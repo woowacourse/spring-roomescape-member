@@ -15,10 +15,8 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.service.param.CreateReservationParam;
-import roomescape.service.result.MemberResult;
+import roomescape.service.param.ReservationSearchParam;
 import roomescape.service.result.ReservationResult;
-import roomescape.service.result.ReservationTimeResult;
-import roomescape.service.result.ThemeResult;
 
 @Service
 public class ReservationService {
@@ -72,22 +70,22 @@ public class ReservationService {
     public List<ReservationResult> findAll() {
         List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
-                .map(this::toReservationResult)
+                .map(ReservationResult::from)
                 .toList();
     }
 
     public ReservationResult findById(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new NotFoundEntityException(reservationId + "에 해당하는 reservation 튜플이 없습니다."));
-        return toReservationResult(reservation);
+        return ReservationResult.from(reservation);
     }
 
-    private ReservationResult toReservationResult(Reservation reservation) {
-        return new ReservationResult(
-                reservation.getId(),
-                MemberResult.from(reservation.getMember()),
-                reservation.getDate(),
-                ReservationTimeResult.from(reservation.getTime()),
-                ThemeResult.from(reservation.getTheme()));
+    public List<ReservationResult> findReservationsBy(ReservationSearchParam reservationSearchParam) {
+        List<Reservation> reservations = reservationRepository.findByThemeIdAndMemberIdBetweenDate(
+                reservationSearchParam.themeId(),
+                reservationSearchParam.memberId(), reservationSearchParam.from(), reservationSearchParam.to());
+        return reservations.stream()
+                .map(ReservationResult::from)
+                .toList();
     }
 }

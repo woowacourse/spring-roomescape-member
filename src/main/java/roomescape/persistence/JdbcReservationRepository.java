@@ -184,4 +184,43 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .addValue("date", reservationDate);
         return namedParameterJdbcTemplate.query(sql, param, reservationRowMapper);
     }
+
+    @Override
+    public List<Reservation> findByThemeIdAndMemberIdBetweenDate(Long themeId,
+                                                                 Long memberId,
+                                                                 LocalDate from,
+                                                                 LocalDate to) {
+        String sql = """
+                SELECT
+                    r.id as reservation_id,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    r.theme_id,
+                    tm.name as theme_name,
+                    tm.description as theme_description,
+                    tm.thumbnail as theme_thumbnail,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email as member_email,
+                    m.password as member_password,
+                    m.role as member_role
+                FROM reservation as r
+                INNER JOIN reservation_time as t
+                    ON r.time_id = t.id
+                INNER JOIN theme as tm
+                    ON r.theme_id = tm.id
+                INNER JOIN member as m
+                    ON r.member_id = m.id
+                WHERE r.theme_id = :themeId
+                  AND m.id = :memberId
+                  AND r.date BETWEEN :from AND :to
+                """;
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("themeId", themeId)
+                .addValue("memberId", memberId)
+                .addValue("from", from)
+                .addValue("to", to);
+        return namedParameterJdbcTemplate.query(sql, param, reservationRowMapper);
+    }
 }
