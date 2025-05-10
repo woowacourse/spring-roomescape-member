@@ -7,7 +7,7 @@ import roomescape.auth.login.presentation.dto.SearchCondition;
 import roomescape.common.util.time.DateTime;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
-import roomescape.member.presentation.MemberResponse;
+import roomescape.member.presentation.dto.MemberResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.presentation.dto.ReservationRequest;
