@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.auth.entity.LoginMember;
 import roomescape.exception.conflict.ReservationConflictException;
 import roomescape.exception.notFound.ReservationNotFoundException;
 import roomescape.exception.notFound.ReservationTimeNotFoundException;
@@ -47,13 +48,13 @@ public class ReservationService {
         return ReservationResponse.from(reservation, theme);
     }
 
-    public ReservationResponse createReservation(ReservationRequest request) {
+    public ReservationResponse createReservation(ReservationRequest request, LoginMember loginMember) {
         ReservationTime timeEntity = timeRepository.findById(request.timeId())
                 .orElseThrow(() -> new ReservationTimeNotFoundException(request.timeId()));
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new ThemeNotFoundException(request.themeId()));
 
-        Reservation newReservation = request.toEntity(timeEntity);
+        Reservation newReservation = request.toEntity(loginMember, timeEntity);
         validateDuplicated(newReservation);
 
         Reservation saved = reservationRepository.save(newReservation);

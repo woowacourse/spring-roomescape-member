@@ -1,4 +1,4 @@
-package roomescape.auth.service.dto.response;
+package roomescape.auth.controller.dto;
 
 public record CheckResponse(
         String name

@@ -171,7 +171,6 @@ function onReservationButtonClick() {
   const selectedTimeId = document
     .querySelector(".time-slot.active")
     ?.getAttribute("data-time-id");
-  const name = document.getElementById("user-name").value;
 
   if (selectedDate && selectedThemeId && selectedTimeId) {
     /*
@@ -183,7 +182,6 @@ function onReservationButtonClick() {
       date: selectedDate,
       themeId: selectedThemeId,
       timeId: selectedTimeId,
-      name: name,
     };
 
     fetch("/reservations", {

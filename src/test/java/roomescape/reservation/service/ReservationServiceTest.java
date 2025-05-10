@@ -3,7 +3,9 @@ package roomescape.reservation.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.auth.entity.LoginMember;
 import roomescape.auth.entity.Member;
+import roomescape.auth.entity.Role;
 import roomescape.auth.repository.FakeMemberRepository;
 import roomescape.auth.repository.MemberRepository;
 import roomescape.exception.badRequest.BadRequestException;
@@ -30,18 +32,25 @@ class ReservationServiceTest {
     private final ReservationTimeRepository timeRepository = new FakeTimeRepository();
     private final ThemeRepository themeRepository = new FakeThemeRepository(reservationRepository);
     private final MemberRepository memberRepository = new FakeMemberRepository();
+    // TODO: memberRepository 연결
     private final ReservationService service = new ReservationService(
             reservationRepository,
             timeRepository,
             themeRepository
     );
 
-    private final Long memberId = 1L;
+    private final LoginMember loginMember = new LoginMember(1L, "test", "test@example.com", Role.USER.name());
 
     @BeforeEach
     void setupTheme() {
         themeRepository.save(new Theme(1L, "theme", "hello", "hi"));
-        memberRepository.save(new Member(memberId, "test", "USER", "test@example.com", "password"));
+        memberRepository.save(new Member(
+                loginMember.getId(),
+                loginMember.getName(),
+                loginMember.getRole().name(),
+                loginMember.getEmail(),
+                "password"
+        ));
     }
 
     @DisplayName("존재하지 않는 timeId로 생성할 수 없다.")
@@ -49,11 +58,11 @@ class ReservationServiceTest {
     void notExistTimeId() {
         // given
         LocalDate now = LocalDate.now();
-        ReservationRequest requestDto = new ReservationRequest(now.plusDays(1), memberId, 1L, 1L);
+        ReservationRequest requestDto = new ReservationRequest(now.plusDays(1), 1L, 1L);
 
         // when & then
         assertThatThrownBy(() -> {
-            service.createReservation(requestDto);
+            service.createReservation(requestDto, loginMember);
         }).isInstanceOf(ReservationTimeNotFoundException.class);
      }
 
@@ -65,11 +74,11 @@ class ReservationServiceTest {
         timeRepository.save(timeEntity);
 
         LocalDate now = LocalDate.now();
-        ReservationRequest requestDto = new ReservationRequest(now.minusDays(1), memberId, 1L, 1L);
+        ReservationRequest requestDto = new ReservationRequest(now.minusDays(1), 1L, 1L);
 
         // when & then
         assertThatThrownBy(() -> {
-            service.createReservation(requestDto);
+            service.createReservation(requestDto, loginMember);
         }).isInstanceOf(BadRequestException.class);
     }
 
@@ -81,15 +90,15 @@ class ReservationServiceTest {
         LocalDate date = now.plusDays(1);
 
         ReservationTime timeEntity = ReservationTime.of(1L, LocalTime.of(12, 0));
-        Reservation reservation = Reservation.of(1L, memberId, date, timeEntity, 1L);
+        Reservation reservation = Reservation.of(1L, loginMember.getId(), date, timeEntity, 1L);
         timeRepository.save(timeEntity);
         reservationRepository.save(reservation);
 
-        ReservationRequest requestDto = new ReservationRequest(date, memberId, timeEntity.getId(), 1L);
+        ReservationRequest requestDto = new ReservationRequest(date, timeEntity.getId(), 1L);
 
         // when & then
         assertThatThrownBy(() -> {
-            service.createReservation(requestDto);
+            service.createReservation(requestDto, loginMember);
         }).isInstanceOf(ReservationConflictException.class);
     }
 }
