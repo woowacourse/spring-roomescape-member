@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
 import roomescape.common.domain.Id;
+import roomescape.member.domain.Member;
 import roomescape.reservation.exception.InvalidReservationException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
@@ -12,31 +13,30 @@ import roomescape.theme.domain.Theme;
 public class Reservation {
 
     private final Id id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    private Reservation(final Id id, final String name, final LocalDate date, final ReservationTime time,
-                        final Theme theme) {
-        validateNameLength(name);
+    private Reservation(final Id id, final Member member, final LocalDate date, final ReservationTime time,
+                       final Theme theme) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public static Reservation of(final Long id, final String name, final LocalDate date, final ReservationTime time,
+    public static Reservation of(final Long id, final LocalDate date, final Member member, final ReservationTime time,
                                  final Theme theme) {
-        return new Reservation(Id.assignDatabaseId(id), name, date, time, theme);
+        return new Reservation(Id.assignDatabaseId(id), member, date, time, theme);
     }
 
-    public static Reservation createUpcomingReservationWithUnassignedId(final String name, final LocalDate date,
+    public static Reservation createUpcomingReservationWithUnassignedId(final Member member, final LocalDate date,
                                                                         final ReservationTime time,
                                                                         final Theme theme, final LocalDateTime now) {
         validateDateTime(date, time.getStartAt(), now);
-        return new Reservation(Id.unassigned(), name, date, time, theme);
+        return new Reservation(Id.unassigned(), member, date, time, theme);
     }
 
     private static void validateDateTime(LocalDate date, LocalTime time, LocalDateTime now) {
@@ -45,18 +45,12 @@ public class Reservation {
         }
     }
 
-    private void validateNameLength(final String value) {
-        if (value.length() > 10) {
-            throw new InvalidReservationException("이름은 10글자 이내여야 합니다.");
-        }
-    }
-
     public Long getId() {
         return id.getDatabaseId();
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
@@ -72,18 +66,17 @@ public class Reservation {
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if (o == null || getClass() != o.getClass()) {
+    public boolean equals(final Object object) {
+        if (!(object instanceof final Reservation that)) {
             return false;
         }
-        Reservation that = (Reservation) o;
-        return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName())
+        return Objects.equals(getId(), that.getId()) && Objects.equals(getMember(), that.getMember())
                 && Objects.equals(getDate(), that.getDate()) && Objects.equals(getTime(),
-                that.getTime());
+                that.getTime()) && Objects.equals(getTheme(), that.getTheme());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDate(), getTime());
+        return Objects.hash(getId(), getMember(), getDate(), getTime(), getTheme());
     }
 }

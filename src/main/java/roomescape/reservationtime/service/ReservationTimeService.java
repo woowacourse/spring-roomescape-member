@@ -55,8 +55,7 @@ public class ReservationTimeService {
         }
     }
 
-    public List<AvailableReservationTimeResponse> getAvailableReservationTimes(final LocalDate date,
-                                                                               final Long themeId) {
+    public List<AvailableReservationTimeResponse> getAvailableReservationTimes(final LocalDate date, final Long themeId) {
         return reservationRepository.findAvailableTimesByDateAndThemeId(date, themeId);
     }
 }

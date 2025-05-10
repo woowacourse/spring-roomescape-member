@@ -19,55 +19,86 @@ VALUES ('08:00'),
        ('16:00'),
        ('18:00');
 
-INSERT INTO reservation(name, date, time_id, theme_id)
+INSERT INTO member (name, email, password, role)
 VALUES
-    -- theme_id = 1 (6회)
-    ('Alice', '2025-05-05', 1, 12),
-    ('Bob', '2025-05-05', 2, 12),
-    ('Carol', '2025-05-05', 3, 12),
-    ('Dave', '2025-05-05', 4, 12),
-    ('Eve', '2025-05-05', 5, 12),
-    ('Frank', '2025-05-05', 1, 12),
+    -- 기존 예약 데이터에 있던 이름들을 사용
+    ('Alice', 'alice@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Bob', 'bob@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Carol', 'carol@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Dave', 'dave@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Eve', 'eve@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Frank', 'frank@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Grace', 'grace@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Heidi', 'heidi@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Ivan', 'ivan@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Judy', 'judy@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Mallory', 'mallory@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Niaj', 'niaj@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Olivia', 'olivia@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Peggy', 'peggy@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Rupert', 'rupert@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Sybil', 'sybil@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Trent', 'trent@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Uma', 'uma@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Victor', 'victor@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Wendy', 'wendy@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Xander', 'xander@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Yvonne', 'yvonne@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Zack', 'zack@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Amy', 'amy@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Brian', 'brian@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Chloe', 'chloe@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
+    ('Daniel', 'daniel@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER');
 
-    -- theme_id = 2 (5회)
-    ('Grace', '2025-05-05', 2, 11),
-    ('Heidi', '2025-05-05', 3, 11),
-    ('Ivan', '2025-05-05', 4, 11),
-    ('Judy', '2025-05-05', 5, 11),
-    ('Mallory', '2025-05-05', 1, 11),
+INSERT INTO reservation(date, time_id, theme_id, member_id)
+VALUES
+    -- theme_id = 12 (6회)
+    ('2025-05-05', 1, 12, 1), -- Alice
+    ('2025-05-05', 2, 12, 2), -- Bob
+    ('2025-05-05', 3, 12, 3), -- Carol
+    ('2025-05-05', 4, 12, 4), -- Dave
+    ('2025-05-05', 5, 12, 5), -- Eve
+    ('2025-05-05', 1, 12, 6), -- Frank
+
+    -- theme_id = 11 (5회)
+    ('2025-05-05', 2, 11, 7), -- Grace
+    ('2025-05-05', 3, 11, 8), -- Heidi
+    ('2025-05-05', 4, 11, 9), -- Ivan
+    ('2025-05-05', 5, 11, 10), -- Judy
+    ('2025-05-05', 1, 11, 11), -- Mallory
 
     -- theme_id = 3 (4회)
-    ('Niaj', '2025-05-05', 2, 3),
-    ('Olivia', '2025-05-05', 3, 3),
-    ('Peggy', '2025-05-05', 4, 3),
-    ('Rupert', '2025-05-05', 5, 3),
+    ('2025-05-05', 2, 3, 12), -- Niaj
+    ('2025-05-05', 3, 3, 13), -- Olivia
+    ('2025-05-05', 4, 3, 14), -- Peggy
+    ('2025-05-05', 5, 3, 15), -- Rupert
 
     -- theme_id = 4 (3회)
-    ('Sybil', '2025-05-05', 1, 4),
-    ('Trent', '2025-05-05', 2, 4),
-    ('Uma', '2025-05-05', 3, 4),
+    ('2025-05-05', 1, 4, 16), -- Sybil
+    ('2025-05-05', 2, 4, 17), -- Trent
+    ('2025-05-05', 3, 4, 18), -- Uma
 
     -- theme_id = 5 (2회)
-    ('Victor', '2025-05-05', 4, 5),
-    ('Wendy', '2025-05-05', 5, 5),
+    ('2025-05-05', 4, 5, 19), -- Victor
+    ('2025-05-05', 5, 5, 20), -- Wendy
 
     -- theme_id = 6 (1회)
-    ('Xander', '2025-05-05', 1, 6),
+    ('2025-05-05', 1, 6, 21), -- Xander
 
     -- theme_id = 7 (1회)
-    ('Yvonne', '2025-05-05', 2, 7),
+    ('2025-05-05', 2, 7, 22), -- Yvonne
 
     -- theme_id = 8 (1회)
-    ('Zack', '2025-05-05', 3, 8),
+    ('2025-05-05', 3, 8, 23), -- Zack
 
     -- theme_id = 9 (1회)
-    ('Amy', '2025-05-05', 4, 9),
+    ('2025-05-05', 4, 9, 24), -- Amy
 
     -- theme_id = 10 (1회)
-    ('Brian', '2025-05-05', 5, 10),
+    ('2025-05-05', 5, 10, 25), -- Brian
 
     -- theme_id = 11 (1회)
-    ('Chloe', '2025-05-05', 1, 11),
+    ('2025-05-05', 1, 11, 26), -- Chloe
 
     -- theme_id = 12 (1회)
-    ('Daniel', '2025-05-05', 2, 12);
+    ('2025-05-05', 2, 12, 27); -- Daniel

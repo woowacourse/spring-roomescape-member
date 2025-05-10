@@ -18,7 +18,7 @@ class FakeThemeRepositoryTest {
     void setUp() {
         themeRepository = new FakeThemeRepository();
 
-        themeRepository.save(TestFixture.makeTheme());
+        themeRepository.save(TestFixture.makeTheme(1L));
     }
 
     @Test

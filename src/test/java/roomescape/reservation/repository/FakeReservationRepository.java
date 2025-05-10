@@ -19,8 +19,8 @@ public class FakeReservationRepository implements ReservationRepository {
         return reservations.entrySet().stream()
                 .map(entry -> {
                     Reservation value = entry.getValue();
-                    return Reservation.of(entry.getKey(), value.getName(),
-                            value.getDate(), value.getTime(), value.getTheme());
+                    return Reservation.of(entry.getKey(), value.getDate(), value.getMember(),
+                            value.getTime(), value.getTheme());
                 })
                 .toList();
     }
@@ -29,7 +29,7 @@ public class FakeReservationRepository implements ReservationRepository {
     public Reservation save(final Reservation reservation) {
         Long id = index.getAndIncrement();
         reservations.put(id, reservation);
-        return Reservation.of(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+        return Reservation.of(id, reservation.getDate(), reservation.getMember(), reservation.getTime(),
                 reservation.getTheme());
     }
 
@@ -51,10 +51,11 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeId(final LocalDate date, final Long timeId) {
+    public boolean existsByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
         return reservations.values().stream()
                 .anyMatch(reservation -> Objects.equals(reservation.getDate(), date) && Objects.equals(
-                        reservation.getTime().getId(), timeId));
+                        reservation.getTime().getId(), timeId) && Objects.equals(reservation.getTheme().getId(),
+                        themeId));
     }
 
     @Override
@@ -62,9 +63,11 @@ public class FakeReservationRepository implements ReservationRepository {
                                                                                      final Long themeId) {
         return reservations.values()
                 .stream()
-                .filter(reservation -> reservation.getDate().equals(date) && reservation.getTheme().getId().equals(themeId))
-                .map(reservation -> new AvailableReservationTimeResponse(reservation.getTime().getId(), reservation.getTime()
-                        .getStartAt(), true))
+                .filter(reservation -> reservation.getDate().equals(date) && reservation.getTheme().getId()
+                        .equals(themeId))
+                .map(reservation -> new AvailableReservationTimeResponse(reservation.getTime().getId(),
+                        reservation.getTime()
+                                .getStartAt(), true))
                 .toList();
     }
 }

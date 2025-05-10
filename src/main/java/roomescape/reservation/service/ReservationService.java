@@ -1,11 +1,13 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.auth.domain.LoginMember;
+import roomescape.member.domain.Member;
+import roomescape.member.exception.MemberNotFoundException;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.request.ReservationCreateRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.exception.ReservationAlreadyExistsException;
 import roomescape.reservation.exception.ReservationNotFoundException;
@@ -21,13 +23,16 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(final ReservationRepository reservationRepository,
                               final ReservationTimeRepository reservationTimeRepository,
-                              final ThemeRepository themeRepository) {
+                              final ThemeRepository themeRepository,
+                              final MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<ReservationResponse> getReservations() {
@@ -35,7 +40,8 @@ public class ReservationService {
                 .map(reservation -> {
                     ReservationTime time = reservation.getTime();
                     Theme theme = reservation.getTheme();
-                    return ReservationResponse.of(reservation, time, theme);
+                    Member member = reservation.getMember();
+                    return ReservationResponse.of(reservation, time, theme, member);
                 })
                 .toList();
     }
@@ -46,19 +52,36 @@ public class ReservationService {
         }
     }
 
-    public ReservationResponse create(final ReservationCreateRequest request, final LoginMember loginMember, final LocalDateTime now) {
-        if (reservationRepository.existsByDateAndTimeId(request.date(), request.timeId())) {
-            throw new ReservationAlreadyExistsException("해당 시간에 이미 예약이 존재합니다.");
-        }
-        ReservationTime time = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new ReservationNotFoundException("요청한 id와 일치하는 예약 시간 정보가 없습니다."));
-
-        Theme theme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new ReservationNotFoundException("요청한 id와 일치하는 테마 정보가 없습니다."));
+    public ReservationResponse create(final LocalDate date, final Long timeId, final Long themeId, final Long memberId,
+                                      final LocalDateTime now) {
+        checkIfReservationExists(date, timeId, themeId);
+        ReservationTime time = findReservationTime(timeId);
+        Theme theme = findTheme(themeId);
+        Member member = findMember(memberId);
 
         Reservation newReservation = reservationRepository.save(
-                Reservation.createUpcomingReservationWithUnassignedId(loginMember.name(), request.date(), time, theme,
-                        now));
-        return ReservationResponse.of(newReservation, time, theme);
+                Reservation.createUpcomingReservationWithUnassignedId(member, date, time, theme, now));
+        return ReservationResponse.of(newReservation, time, theme, member);
+    }
+
+    private Member findMember(final Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("멤버를 찾을 수 없습니다."));
+    }
+
+    private Theme findTheme(final Long request) {
+        return themeRepository.findById(request)
+                .orElseThrow(() -> new ReservationNotFoundException("요청한 id와 일치하는 테마 정보가 없습니다."));
+    }
+
+    private ReservationTime findReservationTime(final Long reservationTimeId) {
+        return reservationTimeRepository.findById(reservationTimeId)
+                .orElseThrow(() -> new ReservationNotFoundException("요청한 id와 일치하는 예약 시간 정보가 없습니다."));
+    }
+
+    private void checkIfReservationExists(final LocalDate date, final Long timeId, final Long themeId) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, themeId, timeId)) {
+            throw new ReservationAlreadyExistsException("해당 시간에 이미 예약이 존재합니다.");
+        }
     }
 }

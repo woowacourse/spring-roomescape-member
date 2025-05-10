@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.member.entity.MemberEntity;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.entity.ReservationEntity;
 import roomescape.reservationtime.dto.response.AvailableReservationTimeResponse;
@@ -20,19 +21,25 @@ public class JDBCReservationRepository implements ReservationRepository {
 
     private static final String SELECT_RESERVATION_WITH_JOIN = "SELECT "
             + "r.id as reservation_id, "
-            + "r.name, "
             + "r.date, "
             + "t.id as time_id, "
             + "t.start_at as time_value, "
             + "th.id as theme_id, "
             + "th.name as theme_name, "
-            + "th.description,"
-            + "th.thumbnail "
+            + "th.description, "
+            + "th.thumbnail, "
+            + "m.id as member_id, "
+            + "m.name as member_name, "
+            + "m.email as member_email, "
+            + "m.password as member_password, "
+            + "m.role as member_role "
             + "FROM reservation as r "
             + "inner join reservation_time as t "
             + "on r.time_id = t.id "
             + "inner join theme as th "
-            + "on r.theme_id = th.id";
+            + "on r.theme_id = th.id "
+            + "inner join member as m "
+            + "on r.member_id = m.id";
 
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> {
         ReservationTimeEntity timeEntity = new ReservationTimeEntity(
@@ -45,10 +52,18 @@ public class JDBCReservationRepository implements ReservationRepository {
                 resultSet.getString("description"),
                 resultSet.getString("thumbnail"));
 
+        MemberEntity memberEntity = new MemberEntity(
+                resultSet.getLong("member_id"),
+                resultSet.getString("member_name"),
+                resultSet.getString("member_email"),
+                resultSet.getString("member_password"),
+                resultSet.getString("member_role")
+        );
+
         ReservationEntity entity = new ReservationEntity(
                 resultSet.getLong("reservation_id"),
-                resultSet.getString("name"),
                 resultSet.getString("date"),
+                memberEntity,
                 timeEntity,
                 themeEntity
         );
@@ -84,11 +99,11 @@ public class JDBCReservationRepository implements ReservationRepository {
     @Override
     public Reservation save(final Reservation reservation) {
         Long generatedId = simpleJdbcInsert.executeAndReturnKey(
-                Map.of("name", reservation.getName(), "date", reservation.getDate(), "time_id",
-                        reservation.getTime().getId(), "theme_id", reservation.getTheme().getId())
+                Map.of("date", reservation.getDate(), "time_id", reservation.getTime().getId(),
+                        "theme_id", reservation.getTheme().getId(), "member_id", reservation.getMember().getId())
         ).longValue();
 
-        return Reservation.of(generatedId, reservation.getName(), reservation.getDate(), reservation.getTime(),
+        return Reservation.of(generatedId, reservation.getDate(), reservation.getMember(), reservation.getTime(),
                 reservation.getTheme());
     }
 
@@ -124,13 +139,14 @@ public class JDBCReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeId(final LocalDate date, final Long timeId) {
+    public boolean existsByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
         try {
             return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
-                    "SELECT EXISTS (SELECT 1 FROM reservation WHERE (date, time_id) = (?,?))",
+                    "SELECT EXISTS (SELECT 1 FROM reservation WHERE (date, time_id, theme_id) = (?, ?, ?))",
                     Boolean.class,
                     date,
-                    timeId
+                    timeId,
+                    themeId
             ));
         } catch (EmptyResultDataAccessException e) {
             return false;

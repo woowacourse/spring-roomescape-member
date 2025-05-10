@@ -21,7 +21,7 @@ public class JwtProvider {
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .setSubject(member.getId().getDatabaseId().toString())
+                .setSubject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("role", member.getMemberRole().name())
                 .setIssuedAt(now)

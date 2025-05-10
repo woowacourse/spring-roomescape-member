@@ -99,9 +99,11 @@ public class MissionStepTest {
         @Test
         void step5_getReservationWithDatabase() {
             createReservationTime();
+            createTheme("추리");
+            signup();
 
-            jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", futureDate,
-                    "1");
+            jdbcTemplate.update("INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+                    futureDate, "1", "1", "1");
 
             RestAssured.given().log().all()
                     .when().get("/reservations")
@@ -178,14 +180,15 @@ public class MissionStepTest {
 
         @Test
         void step1_exceptionHandle() {
-            createReservationTime();
-            createTheme("추리");
-            createReservation();
+            Map<String, String> reservationTime = new HashMap<>();
+            reservationTime.put("startAt", "10 00");
 
             RestAssured.given().log().all()
-                    .when().delete("/times/1")
+                    .contentType(ContentType.JSON)
+                    .body(reservationTime)
+                    .when().post("/times")
                     .then().log().all()
-                    .statusCode(409);
+                    .statusCode(400);
         }
 
         @Test
@@ -239,12 +242,7 @@ public class MissionStepTest {
 
         @Test
         void step4_signup() {
-            RestAssured.given().log().all()
-                    .body(new SignupRequest(EMAIL, PASSWORD, NAME))
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .when().post("/members")
-                    .then().log().all()
-                    .statusCode(201);
+            signup();
         }
 
         @Test
@@ -295,7 +293,19 @@ public class MissionStepTest {
 
     }
 
+    private void signup() {
+        RestAssured.given().log().all()
+                .body(new SignupRequest(EMAIL, PASSWORD, NAME))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/members")
+                .then().log().all()
+                .statusCode(201);
+    }
+
     private void createReservation() {
+        signup();
+        String authToken = loginAndGetAuthToken();
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", futureDate);
@@ -305,6 +315,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
+                .cookie("token", authToken)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);

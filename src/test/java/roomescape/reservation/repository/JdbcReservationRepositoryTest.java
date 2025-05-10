@@ -46,7 +46,6 @@ class JdbcReservationRepositoryTest {
 
     @Test
     void save() {
-        LocalDate now = LocalDate.now();
         ReservationTime reservationTime = TestFixture.makeReservationTime(1L);
         Reservation reservation = TestFixture.makeReservation(1L, reservationTime.getId());
         reservationRepository.save(reservation);

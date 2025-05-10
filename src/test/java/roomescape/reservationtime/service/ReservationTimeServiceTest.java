@@ -9,6 +9,9 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.member.domain.Member;
+import roomescape.member.repository.FakeMemberRepository;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.dto.request.ReservationCreateRequest;
 import roomescape.reservation.fixture.TestFixture;
 import roomescape.reservation.repository.FakeReservationRepository;
@@ -30,7 +33,8 @@ class ReservationTimeServiceTest {
 
     private final LocalDate futureDate = TestFixture.makeFutureDate();
     private final LocalDateTime afterOneHour = TestFixture.makeTimeAfterOneHour();
-    private final Theme theme = TestFixture.makeTheme();
+    private final Theme theme = TestFixture.makeTheme(1L);
+    private final Member member = TestFixture.makeMember();
 
     private ReservationService reservationService;
     private ReservationTimeService reservationTimeService;
@@ -42,7 +46,9 @@ class ReservationTimeServiceTest {
         ThemeRepository themeRepository = new FakeThemeRepository();
         themeRepository.save(theme);
         reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+        MemberRepository memberRepository = new FakeMemberRepository();
+        memberRepository.save(member);
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository, memberRepository);
     }
 
     @Test
@@ -99,7 +105,7 @@ class ReservationTimeServiceTest {
     void deleteReservationTime_shouldThrowException_WhenReservationExists() {
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
                 new ReservationTimeCreateRequest(LocalTime.now()));
-        reservationService.create(new ReservationCreateRequest("danny", futureDate, reservationTimeResponse.id(), theme.getId()), afterOneHour);
+        reservationService.create(futureDate, reservationTimeResponse.id(), theme.getId(), 1L, afterOneHour);
         assertThatThrownBy(() -> reservationTimeService.delete(reservationTimeResponse.id()))
                 .isInstanceOf(ReservationTimeInUseException.class)
                 .hasMessageContaining("해당 시간에 대한 예약이 존재하여 삭제할 수 없습니다.");
@@ -107,16 +113,19 @@ class ReservationTimeServiceTest {
 
     @Test
     void getAvailableReservationTimes_shouldReturnAllAvailableReservationTimes() {
-        reservationTimeService.create(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
+                new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
         reservationTimeService.create(new ReservationTimeCreateRequest(LocalTime.of(11, 0)));
         reservationTimeService.create(new ReservationTimeCreateRequest(LocalTime.of(12, 0)));
 
-        reservationService.create(new ReservationCreateRequest("mint", futureDate, 1L, 1L), afterOneHour);
+        reservationService.create(futureDate, reservationTimeResponse.id(), theme.getId(), 1L, afterOneHour);
         List<AvailableReservationTimeResponse> availableReservationTimes = reservationTimeService.getAvailableReservationTimes(
-                futureDate, 1L);
+                futureDate, theme.getId());
 
         assertThat(
-                availableReservationTimes.stream().filter(reservationTime -> !reservationTime.alreadyBooked()).count())
-                .isEqualTo(0L);
+                availableReservationTimes.stream()
+                        .filter(AvailableReservationTimeResponse::alreadyBooked)
+                        .count())
+                .isEqualTo(1L);
     }
 }

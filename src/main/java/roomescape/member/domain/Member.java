@@ -39,8 +39,8 @@ public class Member {
         }
     }
 
-    public Id getId() {
-        return id;
+    public Long getId() {
+        return id.getDatabaseId();
     }
 
     public String getName() {

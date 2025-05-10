@@ -8,34 +8,9 @@ import org.junit.jupiter.api.Test;
 class ReservationCreateRequestTest {
 
     @Test
-    void create_shouldThrowException_whenNameNull() {
-        assertThatThrownBy(
-                () -> new ReservationCreateRequest(
-                        null,
-                        LocalDate.parse("2025-12-25"),
-                        1L,
-                        1L
-                )
-        ).hasMessageContaining("이름은 반드시 입력해야합니다.");
-    }
-
-    @Test
-    void create_shouldThrowException_whenNameBlank() {
-        assertThatThrownBy(
-                () -> new ReservationCreateRequest(
-                        " ",
-                        LocalDate.parse("2025-12-25"),
-                        1L,
-                        1L
-                )
-        ).hasMessageContaining("이름은 반드시 입력해야합니다.");
-    }
-
-    @Test
     void create_shouldThrowException_whenDateNull() {
         assertThatThrownBy(
                 () -> new ReservationCreateRequest(
-                        "Mint",
                         null,
                         1L,
                         1L
@@ -47,7 +22,6 @@ class ReservationCreateRequestTest {
     void create_shouldThrowException_whenTimeIdNull() {
         assertThatThrownBy(
                 () -> new ReservationCreateRequest(
-                        "Mint",
                         LocalDate.parse("2025-12-25"),
                         null,
                         1L
@@ -59,7 +33,6 @@ class ReservationCreateRequestTest {
     void create_shouldThrowException_whenThemeIdNull() {
         assertThatThrownBy(
                 () -> new ReservationCreateRequest(
-                        "Mint",
                         LocalDate.parse("2025-12-25"),
                         1L,
                         null
@@ -71,7 +44,6 @@ class ReservationCreateRequestTest {
     void create_shouldThrowException_whenDateformatIllegal() {
         assertThatThrownBy(
                 () -> new ReservationCreateRequest(
-                        "Danny",
                         LocalDate.parse("2025-12"),
                         1L,
                         1L

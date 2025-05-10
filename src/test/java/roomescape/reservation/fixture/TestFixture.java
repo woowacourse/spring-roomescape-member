@@ -3,6 +3,8 @@ package roomescape.reservation.fixture;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
@@ -11,8 +13,8 @@ public class TestFixture {
 
     private static final LocalTime TIME = LocalTime.of(10, 0);
 
-    public static Theme makeTheme() {
-        return Theme.of(1L, "추리", "셜록 추리 게임 with Danny", "image.png");
+    public static Theme makeTheme(Long id) {
+        return Theme.of(id, "추리", "셜록 추리 게임 with Danny", "image.png");
     }
 
     public static LocalDateTime makeTimeAfterOneHour() {
@@ -21,7 +23,7 @@ public class TestFixture {
 
     public static Reservation makeReservation(final Long reservationId, final long reservationTimeId) {
         ReservationTime reservationTime = makeReservationTime(reservationTimeId);
-        return Reservation.of(reservationId, "밍트", LocalDate.now().plusDays(1), reservationTime, makeTheme());
+        return Reservation.of(reservationId, LocalDate.now().plusDays(1), makeMember(), reservationTime, makeTheme(1L));
     }
 
     public static ReservationTime makeReservationTime(final long reservationTimeId) {
@@ -30,5 +32,9 @@ public class TestFixture {
 
     public static LocalDate makeFutureDate() {
         return LocalDate.now().plusDays(5);
+    }
+
+    public static Member makeMember() {
+        return Member.of(1L, "Mint", "mint@gmail.com", "password", MemberRole.USER);
     }
 }

@@ -10,7 +10,8 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.dto.request.ReservationCreateRequest;
+import roomescape.member.repository.FakeMemberRepository;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.exception.ReservationAlreadyExistsException;
 import roomescape.reservation.exception.ReservationNotFoundException;
@@ -20,7 +21,6 @@ import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.FakeReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
-import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -37,20 +37,25 @@ class ReservationServiceTest {
         ReservationRepository reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
         ThemeRepository themeRepository = new FakeThemeRepository();
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+        MemberRepository memberRepository = new FakeMemberRepository();
 
-        ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
-        reservationTimeRepository.save(time);
-        themeRepository.save(TestFixture.makeTheme());
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
+                memberRepository);
+
+        ReservationTime time1 = ReservationTime.of(1L, LocalTime.of(10, 0));
+        reservationTimeRepository.save(time1);
+        ReservationTime time2 = ReservationTime.of(2L, LocalTime.of(10, 0));
+        reservationTimeRepository.save(time2);
+        themeRepository.save(TestFixture.makeTheme(1L));
+        memberRepository.save(TestFixture.makeMember());
     }
 
     @Test
     void createReservation_shouldReturnResponseWhenSuccessful() {
-        ReservationCreateRequest request = new ReservationCreateRequest("홍길동", futureDate, 1L, 1L);
-        ReservationResponse response = reservationService.create(request, afterOneHour);
+        ReservationResponse response = reservationService.create(futureDate, 1L, 1L, 1L, afterOneHour);
 
         Assertions.assertAll(
-                () -> assertThat(response.name()).isEqualTo("홍길동"),
+                () -> assertThat(response.name()).isEqualTo("Mint"),
                 () -> assertThat(response.date()).isEqualTo(futureDate),
                 () -> assertThat(response.time().startAt()).isEqualTo(LocalTime.of(10, 0))
         );
@@ -59,8 +64,8 @@ class ReservationServiceTest {
     @Test
     void getReservations_shouldReturnAllCreatedReservations() {
         reservationTimeRepository.save(ReservationTime.of(2L, LocalTime.of(10, 0)));
-        reservationService.create(new ReservationCreateRequest("A", futureDate, 1L, 1L), afterOneHour);
-        reservationService.create(new ReservationCreateRequest("B", futureDate, 2L, 1L), afterOneHour);
+        reservationService.create(futureDate, 1L, 1L, 1L, afterOneHour);
+        reservationService.create(futureDate, 2L, 1L, 1L, afterOneHour);
 
         List<ReservationResponse> result = reservationService.getReservations();
         assertThat(result).hasSize(2);
@@ -75,10 +80,7 @@ class ReservationServiceTest {
 
     @Test
     void deleteReservation_shouldRemoveSuccessfully() {
-        ReservationResponse response = reservationService.create(
-                new ReservationCreateRequest("Test", futureDate, 1L, 1L), TestFixture.makeTimeAfterOneHour()
-        );
-
+        ReservationResponse response = reservationService.create(futureDate, 1L, 1L, 1L, afterOneHour);
         reservationService.delete(response.id());
 
         List<ReservationResponse> result = reservationService.getReservations();
@@ -87,19 +89,16 @@ class ReservationServiceTest {
 
     @Test
     void createReservation_shouldThrowException_WhenDuplicated() {
-        ReservationCreateRequest request = new ReservationCreateRequest("밍트", futureDate, 1L, 1L);
-        reservationService.create(request, afterOneHour);
+        reservationService.create(futureDate, 1L, 1L, 1L, afterOneHour);
 
-        assertThatThrownBy(() -> reservationService.create(request, afterOneHour))
+        assertThatThrownBy(() -> reservationService.create(futureDate, 1L, 1L, 1L, afterOneHour))
                 .isInstanceOf(ReservationAlreadyExistsException.class)
                 .hasMessageContaining("해당 시간에 이미 예약이 존재합니다.");
     }
 
     @Test
     void createReservation_shouldThrowException_WhenTimeIdNotFound() {
-        ReservationCreateRequest request = new ReservationCreateRequest("대니", futureDate, 99L, 1L);
-
-        assertThatThrownBy(() -> reservationService.create(request, afterOneHour))
+        assertThatThrownBy(() -> reservationService.create(futureDate, 3L, 1L, 1L, afterOneHour))
                 .isInstanceOf(ReservationNotFoundException.class)
                 .hasMessageContaining("요청한 id와 일치하는 예약 시간 정보가 없습니다.");
     }

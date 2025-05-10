@@ -23,6 +23,6 @@ public class MemberController {
     @PostMapping
     public ResponseEntity<Long> signUp(final @RequestBody SignupRequest signupRequest){
         final Member member = memberService.signup(signupRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(member.getId().getDatabaseId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(member.getId());
     }
 }

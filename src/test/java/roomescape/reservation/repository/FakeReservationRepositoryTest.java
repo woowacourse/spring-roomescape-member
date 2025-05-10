@@ -6,7 +6,9 @@ import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.fixture.TestFixture;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.FakeThemeRepository;
@@ -18,16 +20,16 @@ class FakeReservationRepositoryTest {
     private ReservationRepository reservationRepository;
     private Reservation reservation;
     private Theme theme;
+    private Member member;
 
     @BeforeEach
     void setUp() {
         reservationRepository = new FakeReservationRepository();
         ThemeRepository themeRepository = new FakeThemeRepository();
 
-        theme = Theme.of(1L, "추리", "셜록 추리 게임 with Danny", "image.png");
-        reservation = Reservation.of(1L, "브라운", futureDate, ReservationTime.of(1L, "15:40"),
-                theme);
-
+        theme = TestFixture.makeTheme(1L);
+        member = TestFixture.makeMember();
+        reservation = TestFixture.makeReservation(1L, 1L);
         themeRepository.save(theme);
     }
 
@@ -40,7 +42,7 @@ class FakeReservationRepositoryTest {
 
     @Test
     void findAll_shouldReturnAllSavedReservations() {
-        Reservation reservation2 = Reservation.of(1L, "대니", futureDate, ReservationTime.of(1L, "16:00"),
+        Reservation reservation2 = Reservation.of(1L, futureDate, member, ReservationTime.of(1L, "16:00"),
                 theme);
 
         reservationRepository.save(reservation);
