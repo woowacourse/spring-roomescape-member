@@ -29,8 +29,9 @@ public class ThemeService {
     }
 
     public ThemeResponse create(ThemeCreateRequest request) {
-        Theme theme = themeRepository.save(request.name(), request.description(), request.thumbnail());
-        return ThemeResponse.from(theme);
+        Theme created = Theme.create(request.name(), request.description(), request.thumbnail());
+        Theme saved = themeRepository.save(created);
+        return ThemeResponse.from(saved);
     }
 
     public List<ThemeResponse> getAll() {
@@ -61,7 +62,7 @@ public class ThemeService {
     public List<ThemeResponse> getPopularThemesBulk() {
         int limit = 10;
         LocalDate now = LocalDate.now();
-        
+
         List<Theme> popularThemes = themeRepository.findPopularThemeDuringAWeek(limit, now);
         return ThemeResponse.from(popularThemes);
     }

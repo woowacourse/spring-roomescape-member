@@ -23,7 +23,12 @@ public class AdminMemberHandlerInterceptor implements HandlerInterceptor {
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies);
 
-        return jwtHandler.isAdmin(token);
+        boolean isAdmin = jwtHandler.isAdmin(token);
+        if (!isAdmin) {
+            response.setStatus(401);
+            return false;
+        }
+        return true;
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {

@@ -19,7 +19,7 @@ public class Member {
         this.password = password;
     }
 
-    public static Member createUser(String name, String email, String password) {
+    public static Member signUpUser(String name, String email, String password) {
         return new Member(null, name, Role.USER, email, password);
     }
 

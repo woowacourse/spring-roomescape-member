@@ -1,53 +1,25 @@
 package roomescape.reservation.fixture;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.service.ThemeRepository;
 
 @Component
 public class ThemeDbFixture {
 
-    private JdbcTemplate jdbcTemplate;
+    private final ThemeRepository themeRepository;
 
-    public ThemeDbFixture(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public ThemeDbFixture(ThemeRepository themeRepository) {
+        this.themeRepository = themeRepository;
     }
 
     public Theme 공포() {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
-
-        String name = "공포";
-        String description = "공포 테마";
-        String thumbnail = "공포.jpg";
-
-        Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
-                .addValue("name", name)
-                .addValue("description", description)
-                .addValue("thumbnail", thumbnail)
-        ).longValue();
-
-        return new Theme(id, name, description, thumbnail);
+        Theme theme = Theme.create("공포", "공포 테마", "공포.jpg");
+        return themeRepository.save(theme);
     }
 
     public Theme 커스텀_테마(String customName) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
-
-        String name = customName;
-        String description = customName + "테마";
-        String thumbnail = customName + ".jpg";
-
-        Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
-                .addValue("name", name)
-                .addValue("description", description)
-                .addValue("thumbnail", thumbnail)
-        ).longValue();
-
-        return new Theme(id, name, description, thumbnail);
+        Theme theme = Theme.create(customName, "커스텀 테마", "custom.jpg");
+        return themeRepository.save(theme);
     }
 }
