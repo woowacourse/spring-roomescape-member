@@ -32,6 +32,7 @@ public final class AuthenticationInterceptor implements HandlerInterceptor {
             LoginMember loginMember = memberService.getMemberFromToken(accessToken);
             request.setAttribute(LOGIN_MEMBER_ATTRIBUTE_NAME, loginMember);
         } catch (Exception ignored) {
+            request.setAttribute(LOGIN_MEMBER_ATTRIBUTE_NAME,  LoginMember.ANONYMOUS);
         }
         return true;
     }
