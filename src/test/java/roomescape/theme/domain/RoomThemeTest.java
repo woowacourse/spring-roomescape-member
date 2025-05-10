@@ -1,10 +1,9 @@
-package roomescape.domain;
+package roomescape.theme.domain;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.theme.domain.RoomTheme;
 import roomescape.exception.custom.InvalidInputException;
 
 class RoomThemeTest {

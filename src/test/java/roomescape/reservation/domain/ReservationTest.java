@@ -1,4 +1,4 @@
-package roomescape.domain;
+package roomescape.reservation.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -7,13 +7,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.theme.domain.RoomTheme;
 import roomescape.exception.custom.InvalidInputException;
-import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.theme.domain.RoomTheme;
 
 class ReservationTest {
-
     private static final String NAME = "검프";
     private static final LocalDate DATE = LocalDate.now().plusDays(1);
     private static final ReservationTime RESERVATION_TIME = new ReservationTime(1L, LocalTime.of(10, 0));
@@ -97,5 +95,4 @@ class ReservationTest {
         // when // then
         assertThat(reservation.isPastDateAndTime()).isFalse();
     }
-
 }

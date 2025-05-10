@@ -1,4 +1,4 @@
-package roomescape.domain;
+package roomescape.reservationtime.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -8,8 +8,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.custom.InvalidInputException;
-import roomescape.reservationtime.domain.AvailableReservationTime;
-import roomescape.reservationtime.domain.ReservationTime;
 
 class AvailableReservationTimeTest {
 

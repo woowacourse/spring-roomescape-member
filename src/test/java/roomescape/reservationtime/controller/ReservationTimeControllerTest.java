@@ -1,4 +1,4 @@
-package roomescape.controller.rest;
+package roomescape.reservationtime.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -14,58 +14,56 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class RoomThemeControllerTest {
+class ReservationTimeControllerTest {
 
     private static final Map<String, String> RESERVATION_BODY = Map.of(
-            "name", "공포 테마",
-            "description", "공포 테마 입니다",
-            "thumbnail", "url"
+            "startAt", "13:00"
     );
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @DisplayName("방 테마 추가 요청시, id를 포함한 방 테마와 CREATED를 응답한다")
+    @DisplayName("예약 시간 추가 요청시, id를 포함한 예약 시간과 CREATED를 응답한다")
     @Test
-    void addRoomThemeTest() {
+    void addReservationTimeTest() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(RESERVATION_BODY)
-                .when().post("/themes")
+                .when().post("/times")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
                 .body("id", Matchers.equalTo(4))
-                .body("name", Matchers.equalTo("공포 테마"));
+                .body("startAt", Matchers.equalTo("13:00:00"));
     }
 
-    @DisplayName("방 테마 조회 요청시, 존재하는 모든 방 테마와 OK를 응답한다")
+    @DisplayName("예약 시간 조회 요청시, 존재하는 모든 예약 시간과 OK를 응답한다")
     @Test
-    void findAllRoomThemeTest() {
+    void findAllReservationTimeTest() {
         RestAssured.given().log().all()
-                .when().get("/themes")
+                .when().get("/times")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .body("size()", Matchers.is(3))
-                .body("[0].name", Matchers.equalTo("예시 1"))
-                .body("[1].name", Matchers.equalTo("예시 2"))
-                .body("[2].name", Matchers.equalTo("예시 3"));
+                .body("[0].startAt", Matchers.equalTo("10:00:00"))
+                .body("[1].startAt", Matchers.equalTo("11:00:00"))
+                .body("[2].startAt", Matchers.equalTo("12:00:00"));
     }
 
 
-    @DisplayName("방 테마 삭제 요청시, 주어진 아이디에 해당하는 방 테마가 없다면 NOT FOUND를 응답한다.")
+    @DisplayName("예약 시간 삭제 요청시, 주어진 아이디에 해당하는 예약 시간이 없다면 NOT FOUND를 응답한다.")
     @Test
-    void removeRoomThemeTest_WhenRoomThemeDoesNotExisted() {
+    void removeReservationTimeTest_WhenReservationTimeDoesNotExisted() {
         RestAssured.given().log().all()
-                .when().delete("/themes/1000")
+                .when().delete("/times/1000")
                 .then().log().all()
                 .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
-    @DisplayName("방 테마 삭제 요청시, 주어진 아이디에 해당하는 방테마가 있다면 삭제하고 NO CONTENT를 응답한다.")
+    @DisplayName("예약 시간 삭제 요청시, 주어진 아이디에 해당하는 예약 시간이 있다면 삭제하고 NO CONTENT를 응답한다.")
     @Test
-    void removeRoomThemeTest() {
+    void removeReservationTimeTest() {
         RestAssured.given().log().all()
-                .when().delete("/themes/3")
+                .when().delete("/times/3")
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
     }

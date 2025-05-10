@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -17,7 +17,6 @@ import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
 import roomescape.reservation.controller.dto.CreateReservationRequest;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.dto.CreateReservationServiceRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)

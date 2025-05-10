@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.reservationtime.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.dao.ReservationTimeDao;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)

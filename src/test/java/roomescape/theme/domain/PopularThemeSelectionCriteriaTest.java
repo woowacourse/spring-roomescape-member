@@ -1,4 +1,4 @@
-package roomescape.domain;
+package roomescape.theme.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.theme.domain.PopularThemeSelectionCriteria;
 import roomescape.exception.custom.InvalidInputException;
 
 class PopularThemeSelectionCriteriaTest {
