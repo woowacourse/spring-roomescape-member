@@ -6,7 +6,7 @@ import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
 import roomescape.reservation.domain.exception.ReservationException.InvalidReservationTimeException;
-import roomescape.reservation.domain.vo.ReservationDetails;
+import roomescape.reservation.domain.dto.ReservationDetails;
 
 @Getter
 public class Reservation {

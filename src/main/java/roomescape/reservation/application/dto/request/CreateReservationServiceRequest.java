@@ -3,7 +3,7 @@ package roomescape.reservation.application.dto.request;
 import java.time.LocalDate;
 import roomescape.reservation.domain.entity.ReservationTheme;
 import roomescape.reservation.domain.entity.ReservationTime;
-import roomescape.reservation.domain.vo.ReservationDetails;
+import roomescape.reservation.domain.dto.ReservationDetails;
 
 public record CreateReservationServiceRequest(
         String memberName,

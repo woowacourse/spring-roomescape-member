@@ -12,7 +12,7 @@ import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationThemeRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.service.ReservationValidator;
-import roomescape.reservation.domain.vo.ReservationDetails;
+import roomescape.reservation.domain.dto.ReservationDetails;
 import roomescape.global.exception.BusinessRuleViolationException;
 
 @Service

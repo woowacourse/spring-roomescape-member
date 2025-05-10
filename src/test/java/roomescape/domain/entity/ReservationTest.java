@@ -14,7 +14,7 @@ import roomescape.reservation.domain.entity.Reservation;
 import roomescape.reservation.domain.entity.ReservationTheme;
 import roomescape.reservation.domain.entity.ReservationTime;
 import roomescape.reservation.domain.exception.ReservationException.InvalidReservationTimeException;
-import roomescape.reservation.domain.vo.ReservationDetails;
+import roomescape.reservation.domain.dto.ReservationDetails;
 
 class ReservationTest {
 

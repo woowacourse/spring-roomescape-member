@@ -1,4 +1,4 @@
-package roomescape.reservation.domain.vo;
+package roomescape.reservation.domain.dto;
 
 import java.time.LocalDate;
 import lombok.Builder;
