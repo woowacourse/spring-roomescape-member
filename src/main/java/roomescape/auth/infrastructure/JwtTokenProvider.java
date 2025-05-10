@@ -6,7 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.auth.infrastructure.dto.CredentialDetails;
+import roomescape.auth.dto.AuthenticatedMember;
 import roomescape.global.util.NumberParser;
 import roomescape.member.domain.Member;
 
@@ -38,19 +38,18 @@ public class JwtTokenProvider implements TokenProvider {
     }
 
     @Override
-    public CredentialDetails extractToCredentialDetails(String token) {
+    public AuthenticatedMember resolveAuthenticatedMember(String token) {
         Claims payload = Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
 
-        return CredentialDetails.builder()
+        return AuthenticatedMember.builder()
                 .id(NumberParser.parseToLong(payload.getSubject()))
                 .email(payload.get(CLAIM_EMAIL_KEY, String.class))
                 .role(payload.get(CLAIM_ROLE_KEY, String.class))
                 .name(payload.get(CLAIM_NAME_KEY, String.class))
                 .build();
     }
-
 }

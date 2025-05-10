@@ -1,9 +1,9 @@
-package roomescape.auth.infrastructure.dto;
+package roomescape.auth.dto;
 
 import lombok.Builder;
 
 @Builder
-public record CredentialDetails(
+public record AuthenticatedMember(
         Long id,
         String email,
         String name,

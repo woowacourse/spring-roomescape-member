@@ -1,4 +1,4 @@
-package roomescape.auth.controller;
+package roomescape.auth.web.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,10 +10,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.auth.controller.dto.LoginRequest;
-import roomescape.auth.controller.dto.response.CredentialResponse;
+import roomescape.auth.dto.AuthenticatedMember;
 import roomescape.auth.service.AuthService;
-import roomescape.auth.service.dto.response.CredentialServiceResponse;
+import roomescape.auth.service.dto.response.AuthenticatedMemberServiceResponse;
+import roomescape.auth.web.controller.dto.LoginRequest;
+import roomescape.auth.web.controller.dto.response.AuthenticatedMemberResponse;
 import roomescape.global.util.CookieUtils;
 
 @RestController
@@ -31,9 +32,8 @@ public class AuthController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/login/check")
-    public CredentialResponse loginCheck(HttpServletRequest request) {
+    public AuthenticatedMember loginCheck(HttpServletRequest request) {
         Cookie cookie = CookieUtils.extractFromCookiesByName(request.getCookies(), "token");
-        CredentialServiceResponse response = authService.getCredentialDetails(cookie.getValue());
-        return CredentialResponse.from(response);
+        return authService.getAuthenticatedMember(cookie.getValue());
     }
 }
