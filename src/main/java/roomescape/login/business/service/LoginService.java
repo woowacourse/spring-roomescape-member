@@ -45,11 +45,9 @@ public class LoginService {
     }
 
     private void validateDuplicatedEmail(Member member) {
-        memberDao.findByEmail(member.getEmail())
-                .ifPresent((existsMember) -> {
-                            throw new BadRequestException("이미 존재하는 이메일입니다.");
-                        }
-                );
+        if (memberDao.existsByEmail(member.getEmail())) {
+            throw new BadRequestException("이미 존재하는 이메일입니다.");
+        }
     }
 }
 

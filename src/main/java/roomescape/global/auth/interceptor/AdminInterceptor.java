@@ -39,6 +39,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         return isAdmin(role);
     }
 
+
     private boolean isAdmin(final Role role) {
         if (role == Role.ADMIN) {
             return true;

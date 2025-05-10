@@ -74,20 +74,6 @@ public class JdbcMemberDao implements MemberDao {
     }
 
     @Override
-    public Optional<Member> findByEmail(final String email) {
-        String sql = "SELECT * FROM member WHERE email = :email";
-
-        try {
-            Member findMember = jdbcTemplate.queryForObject(
-                    sql, new MapSqlParameterSource("email", email),
-                    ROW_MAPPER);
-            return Optional.of(findMember);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    @Override
     public Optional<Member> findByEmailAndPassword(final String email, final String password) {
         String sql = "SELECT * FROM member WHERE email = :email AND password = :password";
 
@@ -100,5 +86,19 @@ public class JdbcMemberDao implements MemberDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public boolean existsByEmail(final String email) {
+        String sql = """
+                SELECT EXISTS 
+                    (SELECT 1 
+                     FROM member 
+                     WHERE email = :email
+                    )
+                """;
+
+        return Boolean.TRUE == jdbcTemplate.queryForObject(
+                sql, new MapSqlParameterSource("email", email), Boolean.class);
     }
 }
