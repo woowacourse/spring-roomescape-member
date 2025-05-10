@@ -9,7 +9,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.dto.LoginMember;
-import roomescape.error.NotFoundException;
+import roomescape.error.UnauthorizedException;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
 
@@ -34,8 +34,12 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
 
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         final Long memberId = (Long) request.getAttribute("memberId");
+        if (memberId == null) {
+            throw new UnauthorizedException("인증되지 않은 요청입니다.");
+        }
+
         final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 멤버입니다."));
+                .orElseThrow(() -> new UnauthorizedException("인증 정보가 유효하지 않습니다. id: " + memberId));
         return new LoginMember(
                 member.getId(),
                 member.getName(),
