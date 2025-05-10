@@ -1,7 +1,10 @@
 package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.auth.entity.Member;
+import roomescape.auth.repository.MemberRepository;
 import roomescape.exception.conflict.ReservationConflictException;
+import roomescape.exception.notFound.MemberNotFoundException;
 import roomescape.exception.notFound.ReservationNotFoundException;
 import roomescape.exception.notFound.ReservationTimeNotFoundException;
 import roomescape.exception.notFound.ThemeNotFoundException;
@@ -22,15 +25,18 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             ReservationTimeRepository timeRepository,
-            ThemeRepository themeRepository
+            ThemeRepository themeRepository,
+            MemberRepository memberRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<ReservationResponse> getAllReservation() {
@@ -44,7 +50,10 @@ public class ReservationService {
         final Long themeId = reservation.getThemeId();
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new ThemeNotFoundException(themeId));
-        return ReservationResponse.from(reservation, theme);
+        final Long memberId = reservation.getMemberId();
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        return ReservationResponse.from(reservation, theme, member.getName());
     }
 
     public ReservationResponse createReservation(CreateReservationRequest request) {
@@ -52,12 +61,14 @@ public class ReservationService {
                 .orElseThrow(() -> new ReservationTimeNotFoundException(request.timeId()));
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new ThemeNotFoundException(request.themeId()));
+        Member member = memberRepository.findById(request.memberId())
+                .orElseThrow(() -> new MemberNotFoundException(request.memberId()));
 
         Reservation newReservation = request.toEntity(timeEntity);
         validateDuplicated(newReservation);
 
         Reservation saved = reservationRepository.save(newReservation);
-        return ReservationResponse.from(saved, theme);
+        return ReservationResponse.from(saved, theme, member.getName());
     }
 
     private void validateDuplicated(Reservation newReservation) {

@@ -9,15 +9,15 @@ import java.time.LocalDate;
 
 public record ReservationResponse(
         Long id,
-        Long memberId,
+        String memberName,
         LocalDate date,
         ReservationTimeResponse time,
         ThemeResponse theme
 ) {
-    public static ReservationResponse from(Reservation reservation, Theme theme) {
+    public static ReservationResponse from(Reservation reservation, Theme theme, String name) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getMemberId(),
+                name,
                 reservation.getDate(),
                 ReservationTimeResponse.from(reservation.getTime()),
                 ThemeResponse.from(theme)

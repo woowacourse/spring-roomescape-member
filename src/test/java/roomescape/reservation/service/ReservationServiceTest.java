@@ -36,7 +36,8 @@ class ReservationServiceTest {
     private final ReservationService service = new ReservationService(
             reservationRepository,
             timeRepository,
-            themeRepository
+            themeRepository,
+            memberRepository
     );
 
     private final LoginMember loginMember = new LoginMember(1L, "test", "test@example.com", Role.USER.name());
