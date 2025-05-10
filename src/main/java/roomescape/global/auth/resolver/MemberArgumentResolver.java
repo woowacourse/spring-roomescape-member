@@ -43,7 +43,8 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
         String accessToken = tokenCookieService.getTokenFromCookies(request.getCookies());
         Map<String, String> decodedClaims = jwtHandler.decode(accessToken);
+        Long id = Long.valueOf(decodedClaims.get(JwtHandler.CLAIM_ID_KEY));
 
-        return LoginCheckRequest.from(decodedClaims);
+        return LoginCheckRequest.from(id);
     }
 }
