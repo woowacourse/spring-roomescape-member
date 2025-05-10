@@ -68,13 +68,14 @@ class ReservationServiceTest {
     void test2() {
         ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(11, 0));
         Theme theme1 = new Theme(1L, "테마명1", "테마설명1", "테마썸네일링크1");
-        ReservationRequest reservationRequest = new ReservationRequest("유저명", LocalDate.now().plusDays(1), 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L);
 
         when(reservationTimeService.getReservationTimeById(1L)).thenReturn(reservationTime1);
         when(themeService.getThemeById(1L)).thenReturn(theme1);
         when(reservedChecker.contains(LocalDate.now().plusDays(1), 1L, 1L)).thenReturn(false);
 
-        assertThatCode(() -> reservationService.addReservation(reservationRequest)).doesNotThrowAnyException();
+        assertThatCode(() -> reservationService.addReservation(new UserName("유저명"),
+                reservationRequest)).doesNotThrowAnyException();
     }
 
 }

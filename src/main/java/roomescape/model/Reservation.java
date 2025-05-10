@@ -17,11 +17,12 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static Reservation createWithNoId(ReservationRequest reservationRequest, ReservationTime reservationTime,
+    public static Reservation createWithNoId(UserName userName, ReservationRequest reservationRequest,
+                                             ReservationTime reservationTime,
                                              Theme theme) {
         validateFuture(reservationRequest, reservationTime);
         return new Reservation(null,
-                new UserName(reservationRequest.name()),
+                userName,
                 new ReservationDateTime(reservationRequest.date(), reservationTime),
                 theme);
     }
