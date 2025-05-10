@@ -1,7 +1,7 @@
 package roomescape.reservationTime.service;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static roomescape.reservationTime.ReservationTimeTestDataConfig.DEFAULT_DUMMY_TIME;
+import static roomescape.reservationTime.ReservationTimeTestDataConfig.TIME_FIELD;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -65,13 +65,13 @@ class ReservationTimeServiceTest {
     @Test
     void convertToReservationTimeResponseDto() {
         // given
-        ReservationTime reservationTime = ReservationTimeFixture.create(DEFAULT_DUMMY_TIME);
+        ReservationTime reservationTime = ReservationTimeFixture.create(TIME_FIELD);
 
         // when
         ReservationTimeResponseDto resDto = ReservationTimeFixture.createResponseDto(reservationTime);
 
         // then
-        Assertions.assertThat(resDto.startAt()).isEqualTo(DEFAULT_DUMMY_TIME);
+        Assertions.assertThat(resDto.startAt()).isEqualTo(TIME_FIELD);
     }
 
     private void deleteAll() {
@@ -94,7 +94,7 @@ class ReservationTimeServiceTest {
                         s.assertThat(resDtos).hasSize(1);
                         s.assertThat(resDtos)
                                 .extracting(ReservationTimeResponseDto::startAt)
-                                .contains(DEFAULT_DUMMY_TIME);
+                                .contains(TIME_FIELD);
                         resDtos.forEach(resDto ->
                                 s.assertThat(resDto.id()).isNotNull());
                     }
@@ -158,7 +158,7 @@ class ReservationTimeServiceTest {
         @Test
         void delete_success_withValidId() {
             // given
-            service.delete(testDataConfig.getDefaultDummyTimeId());
+            service.delete(testDataConfig.getSavedId());
 
             // when
             List<ReservationTimeResponseDto> resDtos = service.findAll();
@@ -188,13 +188,13 @@ class ReservationTimeServiceTest {
             reservationService.add(
                     new ReservationRequestDto(
                             LocalDate.now().plusMonths(3),
-                            testDataConfig.getDefaultDummyTimeId(),
+                            testDataConfig.getSavedId(),
                             theme.getId()
                     ), savedUser);
 
             // when, then
             Assertions.assertThatCode(
-                    () -> service.delete(testDataConfig.getDefaultDummyTimeId())
+                    () -> service.delete(testDataConfig.getSavedId())
             ).isInstanceOf(AlreadyReservedTimeException.class);
         }
     }

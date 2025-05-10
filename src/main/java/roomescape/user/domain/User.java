@@ -20,6 +20,10 @@ public class User {
         this(null, Role.findByName(roleName), name, email, password);
     }
 
+    public boolean isMember() {
+        return this.role.equals(Role.ROLE_MEMBER);
+    }
+
     public Long getId() {
         return id;
     }

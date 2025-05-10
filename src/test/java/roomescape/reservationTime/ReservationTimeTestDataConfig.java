@@ -4,25 +4,32 @@ import jakarta.annotation.PostConstruct;
 import java.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.reservationTime.fixture.ReservationTimeFixture;
+import roomescape.reservationTime.repository.ReservationTimeRepository;
 
 @TestConfiguration
 public class ReservationTimeTestDataConfig {
 
-    public static final LocalTime DEFAULT_DUMMY_TIME = LocalTime.of(2, 40);
+    public static final LocalTime TIME_FIELD = LocalTime.of(2, 40);
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-    private Long defaultDummyTimeId;
+    private ReservationTimeRepository repository;
+
+    private Long savedId;
+    private ReservationTime savedReservationTime;
 
     @PostConstruct
     public void setUpTestData() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", DEFAULT_DUMMY_TIME.toString());
-
-        defaultDummyTimeId = jdbcTemplate.queryForObject(
-            "SELECT id FROM reservation_time WHERE start_at = ?", Long.class, DEFAULT_DUMMY_TIME.toString());
+        ReservationTime reservationTime = ReservationTimeFixture.create(TIME_FIELD);
+        savedReservationTime = repository.add(reservationTime);
+        savedId = savedReservationTime.getId();
     }
 
-    public Long getDefaultDummyTimeId() {
-        return defaultDummyTimeId;
+    public Long getSavedId() {
+        return savedId;
+    }
+
+    public ReservationTime getSavedReservationTime() {
+        return savedReservationTime;
     }
 }

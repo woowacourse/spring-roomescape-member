@@ -162,5 +162,6 @@ VALUES
 ('2025-05-5', 12, 13),
 ('2025-05-5', 13, 13);
 
-INSERT INTO users(name, email, password)
-VALUES ('name', 'user@email.com', 'password')
+INSERT INTO users(role, name, email, password)
+VALUES ('ROLE_MEMBER', 'name', 'user@email.com', 'password'),
+       ('ROLE_ADMIN', '어드민', 'admin@email.com', 'password2');

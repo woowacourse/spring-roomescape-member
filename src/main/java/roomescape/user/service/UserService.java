@@ -18,4 +18,8 @@ public class UserService {
         User user = userRequestDto.toEntity();
         return userRepository.save(user);
     }
+
+    public User findById(Long id) {
+        return userRepository.findByIdOrThrow(id);
+    }
 }

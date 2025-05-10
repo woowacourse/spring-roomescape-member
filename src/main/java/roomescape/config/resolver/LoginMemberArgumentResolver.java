@@ -9,8 +9,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.exception.NotFoundCookieException;
 import roomescape.auth.service.AuthService;
-import roomescape.globalException.AuthorizationException;
 import roomescape.user.domain.User;
 
 @Component
@@ -48,6 +48,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             }
         }
 
-        throw new AuthorizationException("인증 쿠키가 존재하지 않습니다.");
+        throw new NotFoundCookieException();
     }
 }
