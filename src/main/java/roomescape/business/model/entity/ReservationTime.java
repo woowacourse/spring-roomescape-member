@@ -1,7 +1,5 @@
 package roomescape.business.model.entity;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import roomescape.business.model.vo.Id;
@@ -11,7 +9,6 @@ import java.time.LocalTime;
 
 @ToString
 @EqualsAndHashCode(exclude = "id")
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReservationTime {
 
     private static final LocalTime START_TIME = LocalTime.of(10, 0);
@@ -21,20 +18,24 @@ public class ReservationTime {
     private final Id id;
     private final LocalTime startAt;
 
-    public static ReservationTime create(final LocalTime startAt) {
+    private ReservationTime(final Id id, final LocalTime startAt) {
         validateTimeAvailable(startAt);
-        return new ReservationTime(Id.issue(), startAt);
-    }
-
-    public static ReservationTime restore(final String id, final LocalTime startAt) {
-        validateTimeAvailable(startAt);
-        return new ReservationTime(Id.create(id), startAt);
+        this.id = id;
+        this.startAt = startAt;
     }
 
     private static void validateTimeAvailable(final LocalTime time) {
         if (time.isBefore(START_TIME) || time.isAfter(END_TIME)) {
             throw new InvalidCreateArgumentException("예약은 10시~23시로만 가능합니다.");
         }
+    }
+
+    public static ReservationTime create(final LocalTime startAt) {
+        return new ReservationTime(Id.issue(), startAt);
+    }
+
+    public static ReservationTime restore(final String id, final LocalTime startAt) {
+        return new ReservationTime(Id.create(id), startAt);
     }
 
     public LocalTime startInterval() {
