@@ -15,18 +15,31 @@ INSERT INTO theme(name, description, thumbnail) VALUES('테마9', '테마9입니
 INSERT INTO theme(name, description, thumbnail) VALUES('테마10', '테마10입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 INSERT INTO theme(name, description, thumbnail) VALUES('테마11', '테마11입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
-INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES('2025-04-30', 1, 1, 11);
-INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES('2025-04-30', 1, 2, 11);
-INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES('2025-04-29', 1, 1, 11);
-INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES('2025-04-29', 1, 2, 9);
-INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES('2025-04-28', 1, 2, 9);
-INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES('2025-04-28', 1, 1, 8);
-INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES('2025-04-27', 1, 1, 1);
-INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES('2025-04-27', 1, 2, 2);
-INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES('2025-04-26', 1, 1, 3);
-INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES('2025-04-26', 1, 2, 4);
-INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES('2025-04-25', 1, 1, 5);
-INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES('2025-04-25', 1, 2, 6);
-INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES('2025-04-24', 1, 1, 7);
-INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES('2025-04-24', 1, 2, 10);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES(DATEADD('DAY', -1, CURRENT_DATE), 1, 1, 11);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES(DATEADD('DAY', -1, CURRENT_DATE), 1, 2, 11);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES(DATEADD('DAY', -2, CURRENT_DATE), 1, 1, 11);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES(DATEADD('DAY', -2, CURRENT_DATE), 1, 2, 9);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES(DATEADD('DAY', -3, CURRENT_DATE), 1, 2, 9);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES(DATEADD('DAY', -3, CURRENT_DATE), 1, 1, 8);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES(DATEADD('DAY', -4, CURRENT_DATE), 1, 1, 1);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES(DATEADD('DAY', -4, CURRENT_DATE), 1, 2, 2);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES(DATEADD('DAY', -5, CURRENT_DATE), 1, 1, 3);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES(DATEADD('DAY', -5, CURRENT_DATE), 1, 2, 4);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES(DATEADD('DAY', -6, CURRENT_DATE), 1, 1, 5);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES(DATEADD('DAY', -6, CURRENT_DATE), 1, 2, 6);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES(DATEADD('DAY', -7, CURRENT_DATE), 1, 1, 7);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES(DATEADD('DAY', -7, CURRENT_DATE), 1, 2, 10);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
