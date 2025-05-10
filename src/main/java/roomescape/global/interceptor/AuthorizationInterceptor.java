@@ -26,13 +26,10 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
-        if (!(handler instanceof HandlerMethod handlerMethod)) {
-            return true;
-        }
-
         final String token = authorizationExtractor.extract(request);
         final TokenInfo tokenInfo = tokenProvider.getInfo(token);
 
+        HandlerMethod handlerMethod = (HandlerMethod) handler;
         if (!AuthChecker.checkAuthorization(handlerMethod.getMethod(), tokenInfo.getRole())) {
             log();
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
