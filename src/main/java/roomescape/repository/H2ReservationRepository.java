@@ -69,10 +69,12 @@ public class H2ReservationRepository implements ReservationRepository {
 
     public Optional<Reservation> findById(long id) {
         String sql = "SELECT "
-                + "r.id as reservation_id, r.name, r.date "
-                + "rt.id as time_id, rt.start_at "
+                + "r.id as reservation_id, r.date, "
+                + "m.id as member_id, m.name as member_name, m.email, m.password, m.role,"
+                + "rt.id as time_id, rt.start_at, "
                 + "t.id as theme_id, t.name as theme_name, t.description, t.thumbnail "
                 + "FROM reservation AS r "
+                + "INNER JOIN member AS m ON r.member_id = m.id "
                 + "INNER JOIN reservation_time AS rt ON r.time_id = rt.id "
                 + "INNER JOIN theme AS t ON r.theme_id = t.id "
                 + "WHERE r.id = ?";
