@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.dto.AuthenticatedMember;
 import roomescape.auth.application.AuthService;
+import roomescape.auth.support.CookieAuthorizationExtractor;
 import roomescape.auth.web.controller.dto.LoginRequest;
 import roomescape.global.exception.AuthenticationException;
 import roomescape.global.util.CookieUtils;
@@ -34,9 +35,8 @@ public class AuthController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/login/check")
     public AuthenticatedMember loginCheck(HttpServletRequest request) {
-        Cookie cookie = CookieUtils.findFromCookiesByName(request.getCookies(), AUTH_COOKIE_KEY)
-                .orElseThrow(() -> new AuthenticationException("인증을 위한 쿠키가 존재하지 않습니다."));
-        return authService.getAuthenticatedMember(cookie.getValue());
+        String token = CookieAuthorizationExtractor.extract(request);
+        return authService.getAuthenticatedMember(token);
     }
 
     @ResponseStatus(HttpStatus.OK)
