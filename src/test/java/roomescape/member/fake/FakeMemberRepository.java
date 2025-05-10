@@ -1,4 +1,4 @@
-package roomescape.reservation.fake;
+package roomescape.member.fake;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +44,7 @@ public class FakeMemberRepository implements MemberRepository {
     @Override
     public void save(final Member member) {
         final Long newId = atomicLong.incrementAndGet();
-        data.add(new Member(newId, member.getName(), member.getEmail(), member.getPassword(), member.getPassword()));
+        data.add(new Member(newId, member.getName(), member.getEmail(), member.getPassword(), member.getRole().name()));
     }
 
     @Override
