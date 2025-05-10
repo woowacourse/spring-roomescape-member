@@ -75,7 +75,7 @@ function login() {
         })
     })
         .then(response => {
-            if (200 === !response.status) {
+            if (response.status !== 200) {
                 alert('Login failed'); // 로그인 실패 시 경고창 표시
                 throw new Error('Login failed');
             }
@@ -122,7 +122,7 @@ function register(event) {
         body: JSON.stringify(formData)
     })
         .then(response => {
-            if (!response.status == 201) {
+            if (response.status !== 201) {
                 alert('Signup request failed');
                 throw new Error('Signup request failed');
             }
