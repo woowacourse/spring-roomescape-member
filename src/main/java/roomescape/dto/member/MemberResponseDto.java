@@ -6,7 +6,7 @@ public record MemberResponseDto(
         Long id,
         String name
 ) {
-    public static MemberResponseDto from(Member member){
+    public static MemberResponseDto from(Member member) {
         return new MemberResponseDto(member.getId(), member.getName());
     }
 }

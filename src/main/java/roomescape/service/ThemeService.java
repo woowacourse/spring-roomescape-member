@@ -48,7 +48,7 @@ public class ThemeService {
 
     public void deleteTheme(Long id) {
         boolean isReserved = reservationDao.existsByThemeId(id);
-        if (isReserved){
+        if (isReserved) {
             throw new ResourceInUseException("삭제하고자 하는 테마에 예약된 정보가 있습니다.");
         }
         themeDao.deleteById(id);

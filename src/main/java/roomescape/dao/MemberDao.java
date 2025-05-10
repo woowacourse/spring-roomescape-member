@@ -31,7 +31,7 @@ public class MemberDao {
         return jdbcTemplate.query(sql, customerRowMapper);
     }
 
-    public Optional<Member> findByEmailAndPassword(String email, String password){
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
         String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
         return jdbcTemplate.query(sql, customerRowMapper, email, password)
                 .stream()

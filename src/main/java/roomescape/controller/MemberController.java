@@ -21,7 +21,7 @@ public class MemberController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<MemberResponseDto> getAllMember(){
+    public List<MemberResponseDto> getAllMember() {
         return memberService.findAllMember();
     }
 }

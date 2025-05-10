@@ -9,10 +9,10 @@ public record LoginRequestDto(
         @NotBlank(message = "패스워드는 null이거나 공백일 수 없습니다")
         String password
 ) {
-        public Member convertToUser(){
-                return new Member(
-                        email,
-                        password
-                );
-        }
+    public Member convertToUser() {
+        return new Member(
+                email,
+                password
+        );
+    }
 }

@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.DuplicatedException;
@@ -66,6 +67,20 @@ public class ReservationService {
 
     public void cancelReservation(Long id) {
         reservationDao.deleteById(id);
+    }
+
+
+    public List<ReservationResponseDto> findReservationsByConditions(
+            Long themeId,
+            Long memberId,
+            LocalDate dateFrom,
+            LocalDate dateTo
+    ) {
+        List<Reservation> reservations = reservationDao.findByConditions(themeId, memberId, dateFrom, dateTo);
+        return reservations
+                .stream()
+                .map(ReservationResponseDto::from)
+                .toList();
     }
 
     private Reservation createReservation(MemberReservationRequestDto dto, MemberInfoDto memberInfoDto) {

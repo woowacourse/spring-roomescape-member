@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -51,7 +52,7 @@ public class ReservationDao {
                         resultSet.getString("name"),
                         resultSet.getString("password"),
                         Role.getMemberRole(resultSet.getString("role"))
-                        ),
+                ),
                 resultSet.getDate("date").toLocalDate(),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
@@ -113,5 +114,10 @@ public class ReservationDao {
     public boolean existsByReservationTimeId(Long id) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
+    }
+
+    public List<Reservation> findByConditions(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = SELECT_RESERVATION + " WHERE t.id = ? AND m.id = ? AND r.date > ? AND r.date < ?";
+        return jdbcTemplate.query(sql, actorRowMapper, themeId, memberId, dateFrom, dateTo);
     }
 }

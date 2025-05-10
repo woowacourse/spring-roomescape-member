@@ -12,7 +12,7 @@ public class JwtProvider {
     private final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
 
 
-    public String createToken(Member member){
+    public String createToken(Member member) {
 
         Date now = new Date();
         Date expiry = new Date(now.getTime() + EXPIRATION_TIME);

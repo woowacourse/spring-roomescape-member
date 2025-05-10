@@ -36,7 +36,7 @@ public class AuthController {
 
     @GetMapping("/check")
     @ResponseStatus(HttpStatus.OK)
-    public MemberResponseDto loginCheck(MemberResponseDto memberResponseDto){
+    public MemberResponseDto loginCheck(MemberResponseDto memberResponseDto) {
         return memberResponseDto;
     }
 

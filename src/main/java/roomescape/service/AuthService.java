@@ -21,13 +21,12 @@ public class AuthService {
         this.jwtProvider = jwtProvider;
     }
 
-    public String loginAndGenerateToken(LoginRequestDto loginRequestDto){
-        Member member = loginRequestDto.convertToUser();
-        boolean isExists = memberDao.existsByEmailAndPassword(member);
-        if (!isExists) {
+    public String loginAndGenerateToken(LoginRequestDto loginRequestDto) {
+        Optional<Member> member = memberDao.findByEmailAndPassword(loginRequestDto.email(), loginRequestDto.password());
+        if (member.isEmpty()) {
             throw new UnauthorizedException("존재하지 않는 email 혹은 틀린 password 입니다.");
         }
-        return jwtProvider.createToken(member);
+        return jwtProvider.createToken(member.get());
     }
 
     public MemberInfoDto findByToken(String token) {

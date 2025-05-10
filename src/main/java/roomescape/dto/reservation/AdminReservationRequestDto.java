@@ -3,7 +3,6 @@ package roomescape.dto.reservation;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import roomescape.dto.auth.MemberInfoDto;
 import roomescape.model.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;

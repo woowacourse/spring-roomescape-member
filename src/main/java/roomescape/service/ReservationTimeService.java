@@ -2,7 +2,6 @@ package roomescape.service;
 
 import java.time.LocalTime;
 import java.util.List;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.DuplicatedException;
 import roomescape.common.exception.ResourceInUseException;

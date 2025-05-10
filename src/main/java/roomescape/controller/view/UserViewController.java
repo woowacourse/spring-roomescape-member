@@ -11,7 +11,7 @@ public class UserViewController {
     }
 
     @GetMapping("/login")
-    public String userLogin(){
+    public String userLogin() {
         return "/login";
     }
 

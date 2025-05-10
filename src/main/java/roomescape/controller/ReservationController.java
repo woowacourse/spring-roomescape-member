@@ -43,7 +43,7 @@ public class ReservationController {
             @RequestParam(name = "dateFrom", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(name = "dateTo", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo
     ) {
-        return reservationService.findReservationsByConditions(themeId, memberId,dateFrom, dateTo);
+        return reservationService.findReservationsByConditions(themeId, memberId, dateFrom, dateTo);
     }
 
 
@@ -57,7 +57,8 @@ public class ReservationController {
 
     @PostMapping("/admin/reservations")
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponseDto addReservation(@RequestBody @Valid AdminReservationRequestDto adminReservationRequestDto){
+    public ReservationResponseDto addReservation(
+            @RequestBody @Valid AdminReservationRequestDto adminReservationRequestDto) {
         return reservationService.saveReservation(adminReservationRequestDto);
     }
 
