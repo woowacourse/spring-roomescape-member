@@ -9,13 +9,12 @@ import static roomescape.testFixture.Fixture.RESERVATION_TIME_1;
 import static roomescape.testFixture.Fixture.RESERVATION_TIME_2;
 import static roomescape.testFixture.Fixture.RESERVATION_TIME_3;
 import static roomescape.testFixture.Fixture.THEME_1;
+import static roomescape.testFixture.Fixture.resetH2TableIds;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.sql.Connection;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,22 +44,7 @@ class RoomescapeApplicationTest {
     @BeforeEach
     void cleanDatabase() {
         RestAssured.port = port;
-
-        jdbcTemplate.execute((Connection connection) -> {
-            try (Statement statement = connection.createStatement()) {
-                statement.execute("SET REFERENTIAL_INTEGRITY FALSE");
-                statement.execute("TRUNCATE TABLE reservation");
-                statement.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-                statement.execute("TRUNCATE TABLE reservation_time");
-                statement.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-                statement.execute("TRUNCATE TABLE theme");
-                statement.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-                statement.execute("TRUNCATE TABLE member");
-                statement.execute("ALTER TABLE member ALTER COLUMN id RESTART WITH 1");
-                statement.execute("SET REFERENTIAL_INTEGRITY TRUE");
-            }
-            return null;
-        });
+        resetH2TableIds(jdbcTemplate);
     }
 
     @DisplayName("스프링 컨텍스트 로딩 성공")

@@ -1,11 +1,14 @@
 package roomescape.testFixture;
 
+import java.sql.Connection;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -35,5 +38,23 @@ public class Fixture {
         params.put("themeId", 1);
 
         return params;
+    }
+
+    public static void resetH2TableIds(JdbcTemplate jdbcTemplate) {
+        jdbcTemplate.execute((Connection connection) -> {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute("SET REFERENTIAL_INTEGRITY FALSE");
+                statement.execute("TRUNCATE TABLE reservation");
+                statement.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+                statement.execute("TRUNCATE TABLE reservation_time");
+                statement.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+                statement.execute("TRUNCATE TABLE theme");
+                statement.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+                statement.execute("TRUNCATE TABLE member");
+                statement.execute("ALTER TABLE member ALTER COLUMN id RESTART WITH 1");
+                statement.execute("SET REFERENTIAL_INTEGRITY TRUE");
+            }
+            return null;
+        });
     }
 }
