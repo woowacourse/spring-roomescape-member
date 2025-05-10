@@ -1,3 +1,6 @@
+INSERT INTO USERS(name, email, password)
+VALUES ('동찬', 'test123@test.com', 'test');
+
 INSERT INTO RESERVATION_TIME(start_at)
 VALUES ('13:40'),
        ('14:40'),

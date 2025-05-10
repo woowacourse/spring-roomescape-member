@@ -10,4 +10,9 @@ public class UserViewController {
     public String userReservationView() {
         return "reservation";
     }
+
+    @GetMapping("/login")
+    public String loginPage() {
+        return "login";
+    }
 }
