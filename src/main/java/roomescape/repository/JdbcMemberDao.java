@@ -56,6 +56,12 @@ public class JdbcMemberDao implements MemberRepository {
     }
 
     @Override
+    public Optional<Member> findByEmailAndPassword(final MemberEmail email, final String password) {
+        final String sql = "SELECT id, name, email, password FROM member WHERE email = ? AND password = ?";
+        return jdbcTemplate.query(sql, memberRowMapper, email.getEmail(), password).stream().findFirst();
+    }
+    
+    @Override
     public boolean existsByEmail(final MemberEmail email) {
         final String sql = "SELECT 1 FROM member WHERE email = ? LIMIT 1";
         List<Integer> result = jdbcTemplate.query(sql, (resultSet, rowNumber) -> resultSet.getInt(1), email.getEmail());

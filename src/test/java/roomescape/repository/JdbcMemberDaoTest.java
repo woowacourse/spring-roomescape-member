@@ -48,6 +48,21 @@ class JdbcMemberDaoTest {
         assertThat(actual).hasSize(3);
     }
 
+    @DisplayName("이메일과 비밀번호가 일치하는 사용자를 찾을 수 있다.")
+    @Test
+    void testFindByEmailAndPassword() {
+        // given
+        MemberEmail email = new MemberEmail("aaa@gmail.com");
+        String password = "1234";
+        // when
+        Member actual = jdbcMemberDao.findByEmailAndPassword(email, password).orElseThrow();
+        // then
+        assertAll(
+                () -> assertThat(actual.getId()).isEqualTo(1L),
+                () -> assertThat(actual.getMemberName()).isEqualTo(new MemberName("사용자1"))
+        );
+    }
+
     @DisplayName("ID로 특정 사용자를 불러올 수 있다.")
     @Test
     void testFindById() {

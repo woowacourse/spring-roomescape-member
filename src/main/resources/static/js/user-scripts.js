@@ -74,8 +74,8 @@ function login() {
         })
     })
         .then(response => {
-            if (200 === !response.status) {
-                alert('Login failed'); // 로그인 실패 시 경고창 표시
+            if (!response.ok) {
+                response.json().then(error => alert(error.message));
                 throw new Error('Login failed');
             }
         })
