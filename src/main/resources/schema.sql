@@ -11,8 +11,7 @@ CREATE TABLE member
 CREATE TABLE reservation_time
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
--- TODO: 타입 변경 (2순위)
-    start_at VARCHAR(255) NOT NULL,
+    start_at TIME NOT NULL,
     PRIMARY KEY (id)
 );
 
