@@ -69,4 +69,8 @@ public class Reservation {
     public Theme getTheme() {
         return theme;
     }
+
+    public User getUser() {
+        return user;
+    }
 }

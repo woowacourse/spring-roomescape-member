@@ -50,21 +50,27 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Optional<Reservation> findById(Long id) {
-        String sql = "SELECT r.id AS reservation_id,\n" +
-                "       r.name,\n" +
-                "       r.date,\n" +
-                "       time.id AS reservation_time_id,\n" +
-                "       time.start_at AS reservation_time_start_at,\n" +
+        String sql = "SELECT reservation.id AS reservation_id,\n" +
+                "       reservation.name AS reservation_name,\n" +
+                "       reservation.date AS reservation_date,\n" +
+                "       reservation_time.id AS reservation_time_id,\n" +
+                "       reservation_time.start_at AS reservation_time_start_at,\n" +
                 "       theme.id AS theme_id,\n" +
                 "       theme.name AS theme_name,\n" +
                 "       theme.description AS theme_description,\n" +
-                "       theme.thumbnail AS theme_thumbnail\n" +
-                "FROM reservation AS r\n" +
-                "    INNER JOIN reservation_time AS time\n" +
-                "    ON r.reservation_time_id = time.id\n" +
-                "    INNER JOIN theme AS theme\n" +
-                "    ON r.theme_id = theme.id\n" +
-                "WHERE r.id = ?";
+                "       theme.thumbnail AS theme_thumbnail,\n" +
+                "       users.id AS user_id,\n" +
+                "       users.name AS user_name,\n" +
+                "       users.email AS user_email,\n" +
+                "       users.password AS user_password\n" +
+                "FROM reservation\n" +
+                "    JOIN reservation_time\n" +
+                "    ON reservation.time_id = reservation_time.id\n" +
+                "    JOIN theme\n" +
+                "    ON reservation.theme_id = theme.id\n" +
+                "    JOIN users\n" +
+                "    ON reservation.user_id = users.id\n" +
+                "WHERE reservation.id = ?";
 
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, RowMapperManager.reservationRowMapper, id)
@@ -112,11 +118,12 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     private Long insertWithKeyHolder(Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, reservation_time_id, theme_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO reservation (name, date, time_id, theme_id, user_id) VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         Long reservationTimeId = reservation.getReservationTime().getId();
         Long themeId = reservation.getTheme().getId();
+        Long userId = reservation.getUser().getId();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
@@ -126,6 +133,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             ps.setString(2, reservation.getDate().toString());
             ps.setLong(3, reservationTimeId);
             ps.setLong(4, themeId);
+            ps.setLong(5, userId);
             return ps;
         }, keyHolder);
 

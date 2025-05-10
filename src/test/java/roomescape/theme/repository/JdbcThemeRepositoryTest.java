@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.common.KeyHolderManager;
 import roomescape.reservation.fixture.ReservationFixture;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationTime.domain.ReservationTime;
@@ -20,10 +21,11 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.dto.PopularThemeRequestDto;
 import roomescape.user.UserTestDataConfig;
 import roomescape.user.domain.User;
+import roomescape.user.repository.JdbcUserRepository;
 
 @JdbcTest
 @Import({JdbcThemeRepository.class, JdbcReservationRepository.class, JdbcReservationTimeRepository.class,
-        UserTestDataConfig.class})
+        UserTestDataConfig.class, KeyHolderManager.class, JdbcUserRepository.class})
 class JdbcThemeRepositoryTest {
 
     @Autowired

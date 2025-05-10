@@ -49,9 +49,9 @@ public class RowMapperManager {
                                                   Theme theme,
                                                   User user) throws SQLException {
         return new Reservation(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getDate("date").toLocalDate(),
+                rs.getLong("reservation_id"),
+                rs.getString("reservation_name"),
+                rs.getDate("reservation_date").toLocalDate(),
                 reservationTime,
                 theme,
                 user
