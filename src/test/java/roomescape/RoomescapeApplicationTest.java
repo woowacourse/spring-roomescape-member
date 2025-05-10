@@ -31,7 +31,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.auth.dto.MemberAuthResponse;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.domain.repository.dto.TimeDataWithBookingInfo;
-import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.testFixture.JdbcHelper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -42,9 +41,6 @@ class RoomescapeApplicationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
 
     @BeforeEach
     void cleanDatabase() {
