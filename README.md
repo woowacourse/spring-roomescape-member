@@ -58,10 +58,12 @@ Content-Type: application/json
 ```json
 POST /reservations HTTP/1.1
 content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
 
 {
-"date": "2023-08-05",
-"name": "브라운",
+"date": "2024-03-01",
+"themeId": 1,
 "timeId": 1
 }
 ```
@@ -79,6 +81,12 @@ Content-Type: application/json
 "time": {
 "id": 1,
 "startAt": "10:00"
+},
+"theme": {
+  "id" : 1,
+  "name": "추리",
+  "description": "추리 with mint",
+  "thumbnail" : "thumbnail.png"
 }
 }
 ```

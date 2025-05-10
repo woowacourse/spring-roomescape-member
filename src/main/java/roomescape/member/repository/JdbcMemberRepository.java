@@ -80,17 +80,4 @@ public class JdbcMemberRepository implements MemberRepository {
         return Member.of(generatedId, member.getName(), member.getEmail(), member.getPassword(),
                 member.getMemberRole());
     }
-
-    @Override
-    public boolean existsById(final Long id) {
-        try {
-            return Boolean.TRUE.equals(
-                    jdbcTemplate.queryForObject("SELECT EXISTS (SELECT 1 FROM member WHERE id = ?)",
-                            Boolean.class,
-                            id
-                    ));
-        } catch (EmptyResultDataAccessException e) {
-            return false;
-        }
-    }
 }

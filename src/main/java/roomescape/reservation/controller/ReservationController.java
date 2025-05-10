@@ -1,6 +1,5 @@
 package roomescape.reservation.controller;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -12,7 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import roomescape.auth.annotation.AuthenticationPrincipal;
+import roomescape.auth.domain.LoginMember;
 import roomescape.reservation.dto.request.ReservationCreateRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
@@ -34,9 +34,10 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
+            @AuthenticationPrincipal LoginMember loginMember,
             @RequestBody ReservationCreateRequest request
     ) {
-        ReservationResponse dto = reservationService.create(request, LocalDateTime.now());
+        ReservationResponse dto = reservationService.create(request, loginMember, LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
