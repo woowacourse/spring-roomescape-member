@@ -24,13 +24,13 @@ import roomescape.reservation.domain.Theme;
 public class ReservationDao implements ReservationRepository {
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> {
         return new Reservation(
-                resultSet.getLong("id"),
+                resultSet.getLong("reservation_id"),
                 new Member(
                         resultSet.getLong("member_id"),
-                        resultSet.getString("email"),
-                        resultSet.getString("password"),
-                        resultSet.getString("name"),
-                        Role.valueOf(resultSet.getString("role"))
+                        resultSet.getString("member_email"),
+                        resultSet.getString("member_password"),
+                        resultSet.getString("member_name"),
+                        Role.valueOf(resultSet.getString("member_role"))
                 ),
                 new Theme(
                         resultSet.getLong("theme_id"),
@@ -39,11 +39,11 @@ public class ReservationDao implements ReservationRepository {
                         resultSet.getString("theme_thumbnail")
                 ),
                 new ReservationDate(
-                        resultSet.getDate("date").toLocalDate()
+                        resultSet.getDate("reservation_date").toLocalDate()
                 ),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
-                        resultSet.getTime("start_at").toLocalTime()
+                        resultSet.getTime("time_value").toLocalTime()
                 ));
     };
 
@@ -83,7 +83,7 @@ public class ReservationDao implements ReservationRepository {
                     t.name as theme_name,
                     t.description as theme_description,
                     t.thumbnail as theme_thumbnail,
-                    r.date,
+                    r.date as reservation_date,
                     rt.id as time_id,
                     rt.start_at as time_value
                 FROM reservation as r
@@ -113,7 +113,7 @@ public class ReservationDao implements ReservationRepository {
                     t.name as theme_name,
                     t.description as theme_description,
                     t.thumbnail as theme_thumbnail,
-                    r.date,
+                    r.date as reservation_date,
                     rt.id as time_id,
                     rt.start_at as time_value
                 FROM reservation as r
