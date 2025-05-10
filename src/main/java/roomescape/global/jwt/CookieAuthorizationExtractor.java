@@ -8,8 +8,11 @@ public class CookieAuthorizationExtractor implements AuthorizationExtractor {
 
     @Override
     public String extract(HttpServletRequest request) {
+        if (request == null || request.getCookies() == null) {
+            return null;
+        }
+
         Cookie[] cookies = request.getCookies();
-        if (cookies == null) return null;
         return Arrays.stream(cookies)
                 .filter(c -> "token".equals(c.getName()))
                 .findFirst()

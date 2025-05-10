@@ -40,10 +40,6 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
             final WebDataBinderFactory binderFactory
     ) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        if (request == null || request.getCookies() == null) {
-            throw new IllegalStateException("사용자 인증 정보가 없습니다.");
-        }
-
         String token = authorizationExtractor.extract(request);
         Long id = tokenProvider.getInfo(token).getId();
         return memberService.findById(id);
