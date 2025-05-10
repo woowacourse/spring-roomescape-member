@@ -22,7 +22,7 @@ public class AuthService {
                 .orElseThrow(() -> new AuthorizationException("인증되지 않은 유저 정보입니다."));
         if (checkInvalidLogin(member, request)) {
             throw new AuthorizationException("인증되지 않은 유저 정보입니다.");
-        };
+        }
         return jwtTokenProvider.createToken(member);
     }
 

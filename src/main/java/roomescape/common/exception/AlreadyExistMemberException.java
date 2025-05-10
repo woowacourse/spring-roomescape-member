@@ -1,6 +1,6 @@
 package roomescape.common.exception;
 
-public class AlreadyExistMemberException extends AlreadyExistException{
+public class AlreadyExistMemberException extends AlreadyExistException {
     public AlreadyExistMemberException() {
     }
 

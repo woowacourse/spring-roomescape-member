@@ -21,7 +21,7 @@ public class ReservationTimeController {
     public ReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
-    // todo: ReservationTime Response 처리
+
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> create(@RequestBody ReservationTimeCreateRequest reservationTimeCreateRequest) {
         ReservationTimeResponse createdReservationTime = reservationTimeService.createReservationTime(reservationTimeCreateRequest);

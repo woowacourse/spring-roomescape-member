@@ -1,6 +1,6 @@
 package roomescape.common.exception;
 
-public class ThemeValidationException extends DomainValidationException{
+public class ThemeValidationException extends DomainValidationException {
     public ThemeValidationException() {
     }
 

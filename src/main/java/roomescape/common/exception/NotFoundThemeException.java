@@ -1,6 +1,6 @@
 package roomescape.common.exception;
 
-public class NotFoundThemeException extends NotFoundException{
+public class NotFoundThemeException extends NotFoundException {
     public NotFoundThemeException() {
     }
 

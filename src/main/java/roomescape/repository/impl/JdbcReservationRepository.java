@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.common.exception.NotAbleDeleteException;
 import roomescape.domain.*;
-import roomescape.dto.response.ReservationResponse;
 import roomescape.repository.ReservationRepository;
 
 import java.util.List;
@@ -94,31 +93,31 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findByMemberAndThemeAndVisitDateBetween(Long themeId, Long memberId, String dateFrom, String dateTo) {
         String query = """
-            SELECT
-                r.id as reservation_id,
-                r.date as reservation_date,
-                t.id as time_id,
-                t.start_at as time_start_at,
-                m.id as member_id,
-                m.name as member_name,
-                m.email as member_email,
-                m.member_role as member_role,
-                m.password as member_password,
-                th.id as theme_id,
-                th.name as theme_name,
-                th.description as theme_description,
-                th.thumbnail as theme_thumbnail 
-            FROM reservation as r
-            INNER JOIN reservation_time as t
-                ON r.time_id = t.id
-            INNER JOIN theme as th
-                ON r.theme_id = th.id
-            INNER JOIN member as m
-                ON r.member_id = m.id
-            WHERE th.id = ?
-              AND m.id = ?
-              AND r.date BETWEEN ? AND ?
-            """;
+                SELECT
+                    r.id as reservation_id,
+                    r.date as reservation_date,
+                    t.id as time_id,
+                    t.start_at as time_start_at,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email as member_email,
+                    m.member_role as member_role,
+                    m.password as member_password,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description as theme_description,
+                    th.thumbnail as theme_thumbnail 
+                FROM reservation as r
+                INNER JOIN reservation_time as t
+                    ON r.time_id = t.id
+                INNER JOIN theme as th
+                    ON r.theme_id = th.id
+                INNER JOIN member as m
+                    ON r.member_id = m.id
+                WHERE th.id = ?
+                  AND m.id = ?
+                  AND r.date BETWEEN ? AND ?
+                """;
 
         return jdbcTemplate.query(
                 query,

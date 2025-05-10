@@ -34,11 +34,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = extractor.extractTokenFromCookie(request);
-
         if (!jwtTokenProvider.validateToken(token)) {
             throw new AuthorizationException("인증 정보가 올바르지 않습니다.");
-        };
-
+        }
         String id = jwtTokenProvider.getSub(token);
         Long memberId = Long.parseLong(id);
         Member member = memberService.findMemberById(memberId);

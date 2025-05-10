@@ -1,6 +1,6 @@
 package roomescape.common.exception;
 
-public class NotFoundMemberException extends NotFoundException{
+public class NotFoundMemberException extends NotFoundException {
     public NotFoundMemberException() {
     }
 
