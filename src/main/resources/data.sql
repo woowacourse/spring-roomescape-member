@@ -15,7 +15,16 @@ values ('theme1', 'description', 'thumbnail'),
        ('theme13', 'description', 'thumbnail')
 ;
 
--- 예약 시간
+-- 사용자
+insert into member (name, email, password, role)
+values ('name1', 'email1@email.com', 'password', 'USER'),
+       ('name2', 'email2@email.com', 'password', 'USER'),
+       ('name3', 'email3@email.com', 'password', 'USER'),
+       ('name4', 'email4@email.com', 'password', 'ADMIN'),
+       ('name5', 'email5@email.com', 'password', 'ADMIN'),
+       ('name6', 'email6@email.com', 'password', 'ADMIN')
+;
+
 insert into reservation_time (start_at)
 values ('10:00'),
        ('10:10'),
@@ -160,12 +169,3 @@ values
 
 -- theme_id = 10 (1개 예약)
     (1, 10, '2025-04-30', 55);
-
-insert into member (name, email, password, role)
-values ('name1', 'email1@email.com', 'password', 'USER'),
-       ('name2', 'email2@email.com', 'password', 'USER'),
-       ('name3', 'email3@email.com', 'password', 'USER'),
-       ('name4', 'email4@email.com', 'password', 'ADMIN'),
-       ('name5', 'email5@email.com', 'password', 'ADMIN'),
-       ('name6', 'email6@email.com', 'password', 'ADMIN')
-;
