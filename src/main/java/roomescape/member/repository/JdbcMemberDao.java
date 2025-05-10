@@ -2,6 +2,7 @@ package roomescape.member.repository;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -29,31 +30,22 @@ public class JdbcMemberDao implements MemberRepository {
     public Optional<Member> findByEmail(String email) {
         String sql = "SELECT id, name, email, password, role FROM member where email = ?";
 
-        List<Member> findMembers = jdbcTemplate.query(sql, rowMapper, email);
-
-        if (findMembers.isEmpty()) {
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, email));
+        } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
-        if (findMembers.size() > 1) {
-            throw new IllegalStateException("조회 결과가 2개 이상입니다.");
-        }
-
-        return Optional.of(findMembers.getFirst());
     }
 
     @Override
     public Optional<Member> findById(Long id) {
         String sql = "SELECT id, name, email, password, role FROM member where id = ?";
-        List<Member> findMembers = jdbcTemplate.query(sql, rowMapper, id);
 
-        if (findMembers.isEmpty()) {
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
-        if (findMembers.size() > 1) {
-            throw new IllegalStateException("조회 결과가 2개 이상입니다.");
-        }
-
-        return Optional.of(findMembers.getFirst());
     }
 
     @Override

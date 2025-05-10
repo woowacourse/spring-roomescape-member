@@ -23,10 +23,6 @@ public class MemberFakeRepository implements MemberRepository {
         if (emailMembers.isEmpty()) {
             return Optional.empty();
         }
-        if (emailMembers.size() > 1) {
-            throw new IllegalStateException("조회 결과가 2개 이상입니다.");
-        }
-
         return Optional.of(emailMembers.getFirst());
     }
 
@@ -46,10 +42,6 @@ public class MemberFakeRepository implements MemberRepository {
         if (members.isEmpty()) {
             return Optional.empty();
         }
-        if (members.size() > 1) {
-            throw new IllegalStateException("조회 결과가 2개 이상입니다.");
-        }
-
         return Optional.of(members.getFirst());
     }
 
