@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.auth.entity.Name;
 import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
@@ -28,6 +29,7 @@ import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.repository.ThemeRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
+@Transactional
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ReservationTimeApiTest {
 

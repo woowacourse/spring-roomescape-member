@@ -96,6 +96,5 @@ public class AuthServiceIntegrationTest {
                 authService.getLoginUser(invalidToken);
             }).isInstanceOf(InvalidAuthorizationException.class);
         }
-
     }
 }
