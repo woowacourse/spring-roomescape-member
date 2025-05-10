@@ -22,7 +22,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
 
-    public boolean checkInvalidLogin(String principal, String credentials) {
+    public boolean checkInvalidLogin(final String principal, final String credentials) {
         final Member member = memberRepository.findByEmail(principal)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 email입니다."));
         return !member.getEmail().equals(principal) || !member.getPassword().equals(credentials);
@@ -43,10 +43,9 @@ public class AuthService {
                 .add(CLAIM_NAME, member.getName())
                 .add(CLAIM_ROLE, member.getRole().name())
                 .build();
-
     }
 
-    public LoginCheckResponse checkLogin(String token) {
+    public LoginCheckResponse checkLogin(final String token) {
         final Long memberId = Long.valueOf(jwtTokenProvider.getSubject(token));
         final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));

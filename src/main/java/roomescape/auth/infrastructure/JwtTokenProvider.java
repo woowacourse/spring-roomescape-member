@@ -10,11 +10,13 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import javax.crypto.SecretKey;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import roomescape.auth.JwtProperties;
+import roomescape.error.TokenCreationException;
 import roomescape.error.UnauthorizedException;
 
 @Component
+@Slf4j
 public class JwtTokenProvider {
 
     private final SecretKey key;
@@ -31,12 +33,18 @@ public class JwtTokenProvider {
 
     public String createToken(final Claims claims) {
         final Instant now = Instant.now();
-        return Jwts.builder()
-                .claims(claims)
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plus(validity)))
-                .signWith(key)
-                .compact();
+        log.info("JWT 토큰 생성 시작");
+        try {
+            return Jwts.builder()
+                    .claims(claims)
+                    .issuedAt(Date.from(now))
+                    .expiration(Date.from(now.plus(validity)))
+                    .signWith(key)
+                    .compact();
+        } catch (IllegalArgumentException | JwtException e) {
+            log.error("JWT 토큰 생성 실패", e);
+            throw new TokenCreationException("토큰 생성 중 오류가 발생했습니다.");
+        }
     }
 
     public String getSubject(final String token) {
@@ -45,7 +53,7 @@ public class JwtTokenProvider {
 
     private Claims parseAllClaims(final String token) {
         try {
-            Jwt<?, Claims> jwt = jwtParser.parseSignedClaims(token);
+            final Jwt<?, Claims> jwt = jwtParser.parseSignedClaims(token);
             return jwt.getPayload();
         } catch (JwtException | IllegalArgumentException e) {
             throw new UnauthorizedException("유효하지 않은 토큰입니다.");
