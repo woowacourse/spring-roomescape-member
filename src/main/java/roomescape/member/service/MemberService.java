@@ -30,7 +30,7 @@ public class MemberService {
     }
 
     public UserLoginCheckResponse getUserNameFromToken(String token) {
-        String name = jwtUtil.getUserNameFromToken(token);
+        String name = jwtUtil.getMemberNameFromToken(token);
         return UserLoginCheckResponse.from(name);
     }
 
@@ -49,5 +49,13 @@ public class MemberService {
         Member member = Member.createWithoutId(userSignupRequest.name(), userSignupRequest.email(),
                 userSignupRequest.password(), USER_ROLE);
         memberDao.create(member);
+    }
+
+    public Member findById(Long id) {
+        Optional<Member> memberOptional = memberDao.findById(id);
+        if(memberOptional.isEmpty()) {
+            throw new BadRequestException(ExceptionCause.MEMBER_NOTFOUND);
+        }
+        return memberOptional.get();
     }
 }

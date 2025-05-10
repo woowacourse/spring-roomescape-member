@@ -3,6 +3,7 @@ package roomescape.reservation.controller;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,15 +34,10 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationCreateResponse> create(
+            @CookieValue("token") String token,
             @RequestBody ReservationCreateRequest reservationCreateRequest) {
-        ReservationCreateResponse reservationCreateResponse = reservationService.create(reservationCreateRequest);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(reservationCreateResponse.id())
-                .toUri();
-        return ResponseEntity.created(location).body(reservationCreateResponse);
+        ReservationCreateResponse reservationCreateResponse = reservationService.create(token, reservationCreateRequest);
+        return ResponseEntity.created(URI.create("/reservation")).body(reservationCreateResponse);
     }
 
     @DeleteMapping("/{id}")

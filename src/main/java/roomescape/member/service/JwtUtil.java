@@ -37,7 +37,11 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String getUserNameFromToken(String token) {
+    public Long getMemberIdFromToken(String token) {
+        return Long.valueOf(getJwtClaims(token).getSubject());
+    }
+
+    public String getMemberNameFromToken(String token) {
         return getJwtClaims(token).get("name", String.class);
     }
 

@@ -7,7 +7,6 @@ import roomescape.theme.dto.ThemeResponse;
 
 public record ReservationResponse(
         Long id,
-        String name,
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate date,
         ReservationTimeResponse time,

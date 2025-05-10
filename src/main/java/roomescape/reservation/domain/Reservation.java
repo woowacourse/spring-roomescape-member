@@ -5,37 +5,37 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionCause;
-import roomescape.member.domain.ReserverName;
+import roomescape.member.domain.Member;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 public class Reservation {
 
     private final Long id;
-    private final ReserverName name;
     private final LocalDate date;
+    private final Member member;
     private final ReservationTime time;
     private final Theme theme;
 
-    private Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time,
+    private Reservation(final Long id, final LocalDate date, Member member, final ReservationTime time,
                         final Theme theme) {
-        validateFields(name, date);
+        validateFields(date);
         this.id = id;
-        this.name = new ReserverName(name);
         this.date = date;
+        this.member = member;
         this.time = time;
         this.theme = theme;
     }
 
-    public static Reservation load(final Long id, final String name, final LocalDate date, final ReservationTime time,
+    public static Reservation load(final Long id, final LocalDate date, final Member member, final ReservationTime time,
                                    final Theme theme) {
-        return new Reservation(id, name, date, time, theme);
+        return new Reservation(id, date, member, time, theme);
     }
 
-    public static Reservation create(final String name, final LocalDate date, final ReservationTime time,
+    public static Reservation create(final LocalDate date, final Member member, final ReservationTime time,
                                      final Theme theme) {
         validateDateTime(date, time);
-        return new Reservation(null, name, date, time, theme);
+        return new Reservation(null, date, member, time, theme);
     }
 
     private static void validateDateTime(final LocalDate localDate, final ReservationTime reservationTime) {
@@ -45,10 +45,7 @@ public class Reservation {
         }
     }
 
-    public void validateFields(String name, LocalDate date) {
-        if (name.isBlank()) {
-            throw new BadRequestException(ExceptionCause.EMPTY_VALUE_RESERVATION_NAME);
-        }
+    public void validateFields(LocalDate date) {
         if (date == null) {
             throw new BadRequestException(ExceptionCause.EMPTY_VALUE_RESERVATION_DATE);
         }
@@ -62,8 +59,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name.getName();
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {

@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import roomescape.exception.ConflictException;
 import roomescape.exception.ExceptionCause;
 import roomescape.exception.NotFoundException;
+import roomescape.member.domain.Member;
+import roomescape.member.service.JwtUtil;
+import roomescape.member.service.MemberService;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationCreateRequest;
@@ -20,42 +23,51 @@ import roomescape.theme.service.ThemeService;
 @Service
 public class ReservationService {
 
+    private final JwtUtil jwtUtil;
     private final ReservationDao reservationDao;
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
+    private final MemberService memberService;
 
-    public ReservationService(final ReservationDao reservationDao,
-                              final ReservationTimeService reservationTimeService, final ThemeService themeService) {
+    public ReservationService(JwtUtil jwtUtil, final ReservationDao reservationDao,
+                              final ReservationTimeService reservationTimeService, final ThemeService themeService,
+                              MemberService memberService) {
+        this.jwtUtil = jwtUtil;
         this.reservationDao = reservationDao;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
+        this.memberService = memberService;
     }
 
-    public ReservationCreateResponse create(ReservationCreateRequest reservationCreateRequest) {
-        ReservationTime time = reservationTimeService.findById(reservationCreateRequest.timeId());
-        Theme theme = themeService.findById(reservationCreateRequest.themeId());
-        Reservation reservation = Reservation.create(
-                reservationCreateRequest.name(),
-                reservationCreateRequest.date(),
-                time,
-                theme);
-
+    public ReservationCreateResponse create(String token, ReservationCreateRequest reservationCreateRequest) {
+        Reservation reservation = createReservationWithoutId(token, reservationCreateRequest);
         if (reservationDao.findByThemeAndDateAndTime(reservation).isPresent()) {
             throw new ConflictException(ExceptionCause.RESERVATION_DUPLICATE);
         }
-        return ReservationCreateResponse.from(reservationDao.create(reservation));
+        Reservation savedReservation = reservationDao.create(reservation);
+        return ReservationCreateResponse.from(savedReservation);
     }
 
     public List<ReservationResponse> findAll() {
         return reservationDao.findAll().stream()
                 .map(reservation -> new ReservationResponse(
                         reservation.getId(),
-                        reservation.getName(),
                         reservation.getDate(),
                         ReservationTimeResponse.from(reservation.getTime()),
                         ThemeResponse.from(reservation.getTheme())
                 ))
                 .toList();
+    }
+
+    private Reservation createReservationWithoutId(String token, ReservationCreateRequest reservationCreateRequest) {
+        ReservationTime time = reservationTimeService.findById(reservationCreateRequest.timeId());
+        Theme theme = themeService.findById(reservationCreateRequest.themeId());
+        Member member = memberService.findById(jwtUtil.getMemberIdFromToken(token));
+        return Reservation.create(
+                reservationCreateRequest.date(),
+                member,
+                time,
+                theme);
     }
 
     public void delete(final Long id) {

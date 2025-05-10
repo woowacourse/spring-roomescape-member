@@ -69,4 +69,16 @@ public class JdbcMemberDao implements MemberDao {
                 """;
         return jdbcTemplate.query(sql, memberRowMapper, email).stream().findFirst();
     }
+
+    @Override
+    public Optional<Member> findById(Long id) {
+        String sql = """
+                SELECT m.id, m.name, m.email, m.password, r.id as role_id, r.name as role_name
+                FROM member m
+                INNER JOIN role r
+                    ON m.role_id = r.id
+                WHERE m.id = ?
+                """;
+        return jdbcTemplate.query(sql, memberRowMapper, id).stream().findFirst();
+    }
 }
