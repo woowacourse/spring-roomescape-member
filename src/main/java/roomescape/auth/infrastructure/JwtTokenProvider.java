@@ -17,7 +17,7 @@ import roomescape.error.UnauthorizedException;
 
 @Component
 @Slf4j
-public class JwtTokenProvider {
+public class JwtTokenProvider implements TokenProvider {
 
     private final SecretKey key;
     private final JwtParser jwtParser;
@@ -31,6 +31,7 @@ public class JwtTokenProvider {
         this.validity = Duration.ofMillis(jwtProperties.getExpireLength());
     }
 
+    @Override
     public String createToken(final Claims claims) {
         final Instant now = Instant.now();
         log.info("JWT 토큰 생성 시작");
@@ -47,7 +48,8 @@ public class JwtTokenProvider {
         }
     }
 
-    public String getSubject(final String token) {
+    @Override
+    public String extractPrincipal(final String token) {
         return parseAllClaims(token).getSubject();
     }
 

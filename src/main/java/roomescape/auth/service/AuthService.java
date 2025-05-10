@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
-import roomescape.auth.infrastructure.JwtTokenProvider;
+import roomescape.auth.infrastructure.TokenProvider;
 import roomescape.error.NotFoundException;
 import roomescape.error.UnauthorizedException;
 import roomescape.member.domain.Member;
@@ -19,7 +19,7 @@ public class AuthService {
     private static final String CLAIM_NAME = "name";
     private static final String CLAIM_ROLE = "role";
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
 
     public String createToken(final LoginRequest loginRequest) {
@@ -40,7 +40,7 @@ public class AuthService {
     }
 
     public LoginCheckResponse checkLogin(final String token) {
-        final Long memberId = Long.valueOf(jwtTokenProvider.getSubject(token));
+        final Long memberId = Long.valueOf(jwtTokenProvider.extractPrincipal(token));
         final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
         return new LoginCheckResponse(member);
