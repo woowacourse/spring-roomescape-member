@@ -3,16 +3,10 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import roomescape.dao.MemberDao;
-import roomescape.dto.request.LoginRequest;
 import roomescape.dto.request.MemberPostRequest;
-import roomescape.dto.response.MemberNameResponse;
 import roomescape.dto.response.MemberSafeResponse;
-import roomescape.entity.AccessToken;
 import roomescape.entity.Member;
 import roomescape.entity.MemberRole;
-import roomescape.exception.InvalidAccessTokenException;
-import roomescape.exception.MemberNotFoundException;
-import roomescape.web.LoginMember;
 
 @Component
 public class MemberService {
@@ -21,15 +15,6 @@ public class MemberService {
 
     public MemberService(MemberDao memberDao) {
         this.memberDao = memberDao;
-    }
-
-    public MemberNameResponse findMember(LoginMember member) {
-        try {
-            Member realMemberINDb = memberDao.findById(member.getId());
-            return new MemberNameResponse(realMemberINDb);
-        } catch (MemberNotFoundException exception) {
-            throw new InvalidAccessTokenException();
-        }
     }
 
     public List<MemberSafeResponse> findAllMembers() {
@@ -47,18 +32,5 @@ public class MemberService {
 
         Member member = memberDao.create(memberWithoutId);
         return new MemberSafeResponse(member);
-    }
-
-    public void validateMemberExistence(LoginRequest login) {
-
-        boolean hasMember = memberDao.existsByEmailAndPassword(login.email(), login.password());
-        if (!hasMember) {
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 틀렸습니다.");
-        }
-    }
-
-    public AccessToken createAccessToken(LoginRequest request) {
-        Member member = memberDao.findByEmailAndPassword(request.email(), request.password());
-        return new AccessToken(member);
     }
 }

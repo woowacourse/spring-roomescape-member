@@ -12,17 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.MemberNameResponse;
 import roomescape.entity.AccessToken;
-import roomescape.service.MemberService;
+import roomescape.service.AuthorizationService;
 import roomescape.web.LoginMember;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final MemberService memberService;
+    private final AuthorizationService authorizationService;
 
-    public AuthController(MemberService memberService) {
-        this.memberService = memberService;
+    public AuthController(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
     }
 
     @PostMapping("/login")
@@ -31,8 +31,8 @@ public class AuthController {
             @RequestBody LoginRequest request,
             HttpServletResponse response
     ) {
-        memberService.validateMemberExistence(request);
-        AccessToken token = memberService.createAccessToken(request);
+        authorizationService.validateMemberExistence(request);
+        AccessToken token = authorizationService.createAccessToken(request);
 
         Cookie tokenCookie = new Cookie("token", token.getValue());
         tokenCookie.setHttpOnly(true);
@@ -47,7 +47,7 @@ public class AuthController {
     public MemberNameResponse checkAuthorization(
             LoginMember member
     ) {
-        return memberService.findMember(member);
+        return authorizationService.findAuthorizedMember(member);
     }
 
     @PostMapping("/logout")

@@ -28,10 +28,7 @@ class ReservationServiceTest {
     private final MemberDao memberDao = new FakeMemberDao();
     private final ReservationTimeDao timeDao = new FakeReservationTimeDao();
     private final ThemeDao themeDao = new FakeThemeDao();
-    private final ReservationQueryService reservationQueryService = new ReservationQueryService(reservationDao,
-            memberDao,
-            timeDao,
-            themeDao);
+    private final ReservationQueryService reservationQueryService = new ReservationQueryService(reservationDao);
     private final ReservationCommandService reservationCommandService = new ReservationCommandService(reservationDao,
             memberDao,
             timeDao,

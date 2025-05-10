@@ -35,6 +35,15 @@ public class AccessToken {
         return value;
     }
 
+    public boolean isVerified() {
+        try {
+            getTokenBody();
+            return true;
+        } catch (InvalidAccessTokenException e) {
+            return false;
+        }
+    }
+
     public long findSubject() {
         return Long.parseLong(
                 getTokenBody().getSubject());
