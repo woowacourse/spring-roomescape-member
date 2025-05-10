@@ -14,7 +14,7 @@ public class LoginService {
 
     private final MemberDao memberDao;
 
-    private static final String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
 
     public LoginService(MemberDao memberDao) {
         this.memberDao = memberDao;
@@ -30,13 +30,13 @@ public class LoginService {
             .claim(Claims.SUBJECT, user.getId().toString())
             .claim("name", user.getName())
             .claim("email", user.getEmail())
-            .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+            .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
             .compact();
     }
 
     public Member getLoginMemberByToken(String token) {
         Long memberId = Long.valueOf(Jwts.parser()
-            .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+            .verifyWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
             .build()
             .parseSignedClaims(token)
             .getPayload().getSubject());
