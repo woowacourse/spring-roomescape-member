@@ -41,8 +41,7 @@ public class MemberService {
 
     public MemberResponse createUser(SignupRequest request) {
         Member memberWithoutId = request.toMember(MemberRole.USER);
-        long id = memberDao.create(memberWithoutId);
-        Member member = memberWithoutId.copyWithId(id);
+        Member member = memberDao.create(memberWithoutId);
         return new MemberResponse(member);
     }
 

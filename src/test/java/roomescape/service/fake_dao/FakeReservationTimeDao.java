@@ -25,10 +25,11 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public Long create(ReservationTime time) {
+    public ReservationTime create(ReservationTime time) {
         Long timeId = id++;
-        fakeMemory.add(time.copyWithId(timeId));
-        return timeId;
+        ReservationTime createdReservationTime = time.copyWithId(timeId);
+        fakeMemory.add(createdReservationTime);
+        return createdReservationTime;
     }
 
     @Override

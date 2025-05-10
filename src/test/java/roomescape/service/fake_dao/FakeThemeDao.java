@@ -31,10 +31,11 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public Long create(Theme theme) {
+    public Theme create(Theme theme) {
         Long timeId = id++;
-        fakeMemory.add(theme.copyWithId(timeId));
-        return timeId;
+        Theme createdTheme = theme.copyWithId(timeId);
+        fakeMemory.add(createdTheme);
+        return createdTheme;
     }
 
     @Override

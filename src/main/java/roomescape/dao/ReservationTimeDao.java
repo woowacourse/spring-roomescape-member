@@ -9,7 +9,7 @@ public interface ReservationTimeDao {
 
     ReservationTime findById(Long id);
 
-    Long create(ReservationTime time);
+    ReservationTime create(ReservationTime time);
 
     void deleteById(Long id);
 }

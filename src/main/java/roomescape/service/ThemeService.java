@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
-import roomescape.entity.Theme;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.entity.Theme;
 
 @Component
 public class ThemeService {
@@ -40,9 +40,8 @@ public class ThemeService {
 
     public ThemeResponse createTheme(ThemeRequest themeRequest) {
         Theme themeWithoutId = themeRequest.toTheme();
-        Long id = themeDao.create(themeWithoutId);
-        Theme created = themeWithoutId.copyWithId(id);
-        return new ThemeResponse(created);
+        Theme theme = themeDao.create(themeWithoutId);
+        return new ThemeResponse(theme);
     }
 
     public void deleteTheme(Long id) {

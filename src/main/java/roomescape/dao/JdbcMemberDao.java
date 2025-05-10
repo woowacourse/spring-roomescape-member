@@ -66,7 +66,7 @@ public class JdbcMemberDao implements MemberDao {
     }
 
     @Override
-    public long create(Member member) {
+    public Member create(Member member) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into member (name, email, password, role) values (?, ?, ?, ?)";
         jdbcTemplate.update(
@@ -83,6 +83,7 @@ public class JdbcMemberDao implements MemberDao {
                 },
                 keyHolder
         );
-        return keyHolder.getKey().longValue();
+        long memberId = keyHolder.getKey().longValue();
+        return member.copyWithId(memberId);
     }
 }

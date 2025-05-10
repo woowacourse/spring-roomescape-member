@@ -11,7 +11,7 @@ public interface ThemeDao {
 
     List<Theme> findAllById(List<Long> themeIds);
 
-    Long create(Theme theme);
+    Theme create(Theme theme);
 
     void deleteById(Long idRequest);
 }

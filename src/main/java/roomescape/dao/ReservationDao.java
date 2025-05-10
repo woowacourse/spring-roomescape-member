@@ -9,7 +9,7 @@ public interface ReservationDao {
 
     List<Reservation> findAll();
 
-    Long create(Reservation reservation);
+    Reservation create(Reservation reservation);
 
     void deleteById(Long id);
 

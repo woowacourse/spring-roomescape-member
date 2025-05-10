@@ -71,7 +71,7 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public Long create(Theme theme) {
+    public Theme create(Theme theme) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into theme (name, description, thumbnail) values (?, ?, ?)";
         jdbcTemplate.update(
@@ -87,7 +87,8 @@ public class JdbcThemeDao implements ThemeDao {
                 },
                 keyHolder
         );
-        return keyHolder.getKey().longValue();
+        long themeId = keyHolder.getKey().longValue();
+        return theme.copyWithId(themeId);
     }
 
     @Override

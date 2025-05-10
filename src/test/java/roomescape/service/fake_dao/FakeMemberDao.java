@@ -17,8 +17,8 @@ public class FakeMemberDao implements MemberDao {
     }
 
     @Override
-    public long create(Member member) {
-        return 0;
+    public Member create(Member member) {
+        return null;
     }
 
     @Override

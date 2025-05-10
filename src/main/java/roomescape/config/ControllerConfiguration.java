@@ -17,6 +17,7 @@ public class ControllerConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         //TODO : 빈으로 주입
+        //현재 : 의존성이 숨겨져 있다.
         registry.addInterceptor(new CheckAdminInterceptor()).addPathPatterns("/admin/**");
     }
 }

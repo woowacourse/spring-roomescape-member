@@ -26,10 +26,11 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public Long create(Reservation reservation) {
+    public Reservation create(Reservation reservation) {
         long reservationId = id++;
-        fakeMemory.add(reservation.copyWithId(reservationId));
-        return reservationId;
+        Reservation createdReservation = reservation.copyWithId(reservationId);
+        fakeMemory.add(createdReservation);
+        return createdReservation;
     }
 
     @Override

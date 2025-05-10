@@ -39,7 +39,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Long create(Reservation newReservation) {
+    public Reservation create(Reservation newReservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into reservation (date, member_id, time_id, theme_id) values (?, ?, ?, ?)";
         jdbcTemplate.update(
@@ -56,7 +56,8 @@ public class JdbcReservationDao implements ReservationDao {
                 },
                 keyHolder
         );
-        return keyHolder.getKey().longValue();
+        long reservationId = keyHolder.getKey().longValue();
+        return newReservation.copyWithId(reservationId);
     }
 
     @Override

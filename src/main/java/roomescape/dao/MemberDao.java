@@ -13,5 +13,5 @@ public interface MemberDao {
 
     Member findByEmailAndPassword(String email, String password);
 
-    long create(Member member);
+    Member create(Member member);
 }

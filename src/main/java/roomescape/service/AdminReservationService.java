@@ -39,9 +39,7 @@ public class AdminReservationService {
             throw new IllegalArgumentException("중복된 예약은 생성이 불가능합니다.");
         }
 
-        long reservationId = reservationDao.create(reservationWithoutId);
-
-        Reservation reservation = reservationWithoutId.copyWithId(reservationId);
+        Reservation reservation = reservationDao.create(reservationWithoutId);
         return new ReservationResponse(reservation);
     }
 }

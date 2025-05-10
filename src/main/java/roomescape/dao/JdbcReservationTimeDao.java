@@ -40,7 +40,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         }
     }
 
-    public Long create(ReservationTime time) {
+    public ReservationTime create(ReservationTime time) {
         String sql = "insert into reservation_time (start_at) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
@@ -53,7 +53,8 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
                     return ps;
                 }, keyHolder
         );
-        return keyHolder.getKey().longValue();
+        long reservationTimeId = keyHolder.getKey().longValue();
+        return time.copyWithId(reservationTimeId);
     }
 
     public void deleteById(Long id) {

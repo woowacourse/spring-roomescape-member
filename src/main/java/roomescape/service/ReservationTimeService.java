@@ -23,8 +23,7 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse createTime(ReservationTimeRequest timeRequest) {
         ReservationTime reservationTimeWithoutId = timeRequest.toTime();
-        long id = reservationTimeDao.create(reservationTimeWithoutId);
-        ReservationTime reservationTime = reservationTimeWithoutId.copyWithId(id);
+        ReservationTime reservationTime = reservationTimeDao.create(reservationTimeWithoutId);
         return new ReservationTimeResponse(reservationTime);
     }
 
