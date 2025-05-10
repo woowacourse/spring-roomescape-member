@@ -3,6 +3,7 @@ package roomescape.reservation.infrastructure;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -128,6 +129,55 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findByMemberIdAndThemeIdAndDate(Long memberId, Long themeId, LocalDate dateFrom,
+                                                             LocalDate dateTo) {
+        String sql = """               
+                SELECT
+                    r.id as reservation_id,
+                    m.name as name,
+                    m.email as email,
+                    m.password as password,
+                    m.role as role,
+                    m.id as member_id,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description,
+                    th.thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as t ON r.time_id = t.id 
+                INNER JOIN theme as th ON th.id = r.theme_id 
+                INNER JOIN member as m ON m.id = r.member_id
+                WHERE 
+                """;
+
+        List<Object> params = new ArrayList<>();
+        boolean hasCondition = false;
+        if (memberId != null) {
+            params.add(memberId);
+            sql = addReservationMemberCondition(sql, hasCondition);
+            hasCondition=true;
+        }
+        if (themeId != null) {
+            params.add(themeId);
+            sql = addReservationThemeCondition(sql, hasCondition);
+            hasCondition=true;
+        }
+        if (dateFrom != null) {
+            params.add(Date.valueOf(dateFrom));
+            sql = addReservationDateFromCondition(sql, hasCondition);
+            hasCondition=true;
+        }
+        if (dateTo != null) {
+            params.add(Date.valueOf(dateTo));
+            sql = addReservationDateToCondition(sql, hasCondition);
+        }
+        return jdbcTemplate.query(sql, ROW_MAPPER, params.toArray());
+    }
+
+    @Override
     public boolean existByReservationTimeId(final Long timeId) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
@@ -155,4 +205,41 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE theme_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
+
+    private String addReservationMemberCondition(String sql, boolean hasCondition) {
+        if (hasCondition) {
+            sql += "AND r.member_id = ? ";
+            return sql;
+        }
+        sql += " r.member_id = ? ";
+        return sql;
+    }
+
+    private String addReservationThemeCondition(String sql, boolean hasCondition) {
+        if (hasCondition) {
+            sql += "AND r.theme_id = ? ";
+            return sql;
+        }
+        sql += " r.theme_id = ? ";
+        return sql;
+    }
+
+    private String addReservationDateFromCondition(String sql, boolean hasCondition) {
+        if (hasCondition) {
+            sql += "AND r.date >= ? ";
+            return sql;
+        }
+        sql += " r.date >= ? ";
+        return sql;
+    }
+
+    private String addReservationDateToCondition(String sql, boolean hasCondition) {
+        if (hasCondition) {
+            sql += "AND r.date <= ? ";
+            return sql;
+        }
+        sql += " r.date <= ? ";
+        return sql;
+    }
+
 }

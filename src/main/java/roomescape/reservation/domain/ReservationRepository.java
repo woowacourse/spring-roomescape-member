@@ -13,6 +13,8 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
+    List<Reservation> findByMemberIdAndThemeIdAndDate(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo);
+
     boolean existByReservationTimeId(Long timeId);
 
     boolean hasSameReservation(Reservation reservation);
