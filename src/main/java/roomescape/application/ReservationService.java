@@ -3,6 +3,7 @@ package roomescape.application;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.application.dto.AdminReservationCreateDto;
 import roomescape.application.dto.ReservationCreateDto;
 import roomescape.application.dto.ReservationDto;
 import roomescape.domain.Member;
@@ -43,6 +44,12 @@ public class ReservationService {
         Long id = reservationRepository.save(reservation);
 
         return ReservationDto.from(Reservation.assignId(id, reservation));
+    }
+
+    @Transactional
+    public ReservationDto registerReservation(AdminReservationCreateDto request) {
+        return registerReservation(new ReservationCreateDto(request.themeId(), request.date(),
+                request.timeId()), request.memberId());
     }
 
     private void validateNotDuplicate(Reservation reservation) {
