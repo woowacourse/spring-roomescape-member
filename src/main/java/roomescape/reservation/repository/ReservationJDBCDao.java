@@ -8,8 +8,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.reservation.entity.Reservation;
-import roomescape.time.entity.ReservationTime;
 import roomescape.theme.entity.Theme;
+import roomescape.time.entity.ReservationTime;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -44,15 +44,15 @@ public class ReservationJDBCDao implements ReservationRepository {
         String sql = "insert into reservation (name, date, time_id, theme_id) values (:name, :date, :timeId, :themeId)";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.name())
-                .addValue("date", Date.valueOf(reservation.date()))
-                .addValue("timeId", reservation.time().id())
-                .addValue("themeId", reservation.theme().id());
+                .addValue("name", reservation.getName())
+                .addValue("date", Date.valueOf(reservation.getDate()))
+                .addValue("timeId", reservation.getTime().getId())
+                .addValue("themeId", reservation.getTheme().getId());
 
         namedJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new Reservation(id, reservation.name(), reservation.date(), reservation.time(), reservation.theme());
+        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
     @Override

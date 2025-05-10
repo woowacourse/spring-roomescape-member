@@ -44,6 +44,6 @@ public class ReservationTimeService {
 
     private boolean isAnyMatchTime(LocalTime time) {
         return repository.findAll().stream()
-                .anyMatch(current -> current.startAt().equals(time));
+                .anyMatch(current -> current.getStartAt().equals(time));
     }
 }

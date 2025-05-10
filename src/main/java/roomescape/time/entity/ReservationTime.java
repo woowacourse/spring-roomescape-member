@@ -2,14 +2,27 @@ package roomescape.time.entity;
 
 import java.time.LocalTime;
 
-public record ReservationTime(Long id, LocalTime startAt) {
+public class ReservationTime {
 
-    public ReservationTime {
+    private final Long id;
+    private final LocalTime startAt;
+
+    public ReservationTime(Long id, LocalTime startAt) {
         validate(startAt);
+        this.id = id;
+        this.startAt = startAt;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public LocalTime getStartAt() {
+        return startAt;
     }
 
     public boolean equalsTime(ReservationTime time) {
-        return this.startAt.equals(time.startAt());
+        return this.startAt.equals(time.getStartAt());
     }
 
     private void validate(LocalTime startAt) {

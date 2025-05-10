@@ -10,6 +10,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.common.exception.EntityNotFoundException;
+import roomescape.common.security.jwt.JwtTokenProvider;
+import roomescape.member.service.MemberService;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
@@ -31,6 +33,12 @@ public class ThemeControllerTest {
 
     @MockitoBean
     private ThemeService themeService;
+
+    @MockitoBean
+    private MemberService memberService;
+
+    @MockitoBean
+    private JwtTokenProvider jwtTokenProvider;
 
     @BeforeEach
     void setUp() {

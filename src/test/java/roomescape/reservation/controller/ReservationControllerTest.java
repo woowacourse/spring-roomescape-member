@@ -10,12 +10,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.common.exception.EntityNotFoundException;
+import roomescape.common.security.jwt.JwtTokenProvider;
+import roomescape.member.service.MemberService;
 import roomescape.reservation.dto.ReservationAvailableTimeResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
-import roomescape.time.dto.ReservationTimeResponse;
-import roomescape.theme.dto.ThemeResponse;
 import roomescape.reservation.service.ReservationService;
+import roomescape.theme.dto.ThemeResponse;
+import roomescape.time.dto.ReservationTimeResponse;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -36,6 +38,12 @@ public class ReservationControllerTest {
 
     @MockitoBean
     private ReservationService reservationService;
+
+    @MockitoBean
+    private MemberService memberService;
+
+    @MockitoBean
+    private JwtTokenProvider jwtTokenProvider;
 
     @BeforeEach
     void setUp() {

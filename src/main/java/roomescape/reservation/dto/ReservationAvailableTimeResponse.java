@@ -1,8 +1,9 @@
 package roomescape.reservation.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.time.LocalTime;
 import roomescape.time.entity.ReservationTime;
+
+import java.time.LocalTime;
 
 public record ReservationAvailableTimeResponse(
         long id,
@@ -12,6 +13,6 @@ public record ReservationAvailableTimeResponse(
 ) {
 
     public static ReservationAvailableTimeResponse of(final ReservationTime reservation, final boolean isBooked) {
-        return new ReservationAvailableTimeResponse(reservation.id(), reservation.startAt(), isBooked);
+        return new ReservationAvailableTimeResponse(reservation.getId(), reservation.getStartAt(), isBooked);
     }
 }

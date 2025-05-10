@@ -9,6 +9,6 @@ public record PopularThemeResponse(
 ) {
 
     public static PopularThemeResponse from(Theme theme) {
-        return new PopularThemeResponse(theme.name(), theme.description(), theme.thumbnail());
+        return new PopularThemeResponse(theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 }

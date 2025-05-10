@@ -45,7 +45,7 @@ public class ReservationTimeFakeRepository implements ReservationTimeRepository 
 
         ReservationTime savedTime = new ReservationTime(
                 newId,
-                reservationTime.startAt());
+                reservationTime.getStartAt());
 
         reservationTimes.put(newId, savedTime);
 

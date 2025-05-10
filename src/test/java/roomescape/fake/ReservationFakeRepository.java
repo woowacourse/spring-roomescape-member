@@ -2,9 +2,9 @@ package roomescape.fake;
 
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.reservation.entity.Reservation;
-import roomescape.time.entity.ReservationTime;
-import roomescape.theme.entity.Theme;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.theme.entity.Theme;
+import roomescape.time.entity.ReservationTime;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -49,12 +49,12 @@ public class ReservationFakeRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        Long timeId = reservation.time().id();
+        Long timeId = reservation.getTime().getId();
         if (!reservationTimes.containsKey(timeId)) {
             throw new EntityNotFoundException("예약 시간을 찾을 수 없습니다: " + timeId);
         }
 
-        Long themeId = reservation.theme().id();
+        Long themeId = reservation.getTheme().getId();
         if (!themes.containsKey(themeId)) {
             throw new EntityNotFoundException("테마를 찾을 수 없습니다: " + themeId);
         }
@@ -66,8 +66,8 @@ public class ReservationFakeRepository implements ReservationRepository {
 
         Reservation savedReservation = new Reservation(
                 newId,
-                reservation.name(),
-                reservation.date(),
+                reservation.getName(),
+                reservation.getDate(),
                 time,
                 theme);
 
@@ -88,9 +88,9 @@ public class ReservationFakeRepository implements ReservationRepository {
     @Override
     public List<Long> findBookedTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
         return reservations.values().stream()
-                .filter(reservation -> reservation.date().equals(date))
-                .map(Reservation::time)
-                .map(ReservationTime::id)
+                .filter(reservation -> reservation.getDate().equals(date))
+                .map(Reservation::getTime)
+                .map(ReservationTime::getId)
                 .filter(id -> id.equals(themeId)).toList();
     }
 }

@@ -5,13 +5,13 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.dto.ReservationAvailableTimeResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservation.exception.ReservationDuplicateException;
 import roomescape.reservation.entity.Reservation;
-import roomescape.time.entity.ReservationTime;
-import roomescape.theme.entity.Theme;
+import roomescape.reservation.exception.ReservationDuplicateException;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.time.entity.ReservationTime;
+import roomescape.time.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,8 +38,8 @@ public class ReservationService {
         Theme theme = themeRepository.findById(request.themeId());
         Reservation reservation = Reservation.createIfDateTimeValid(request.name(), request.date(), time, theme);
         if (isDuplicate(reservation)) {
-            throw new ReservationDuplicateException("해당 시각의 중복된 예약이 존재합니다.", reservation.date(),
-                    reservation.time().startAt(), reservation.theme().name());
+            throw new ReservationDuplicateException("해당 시각의 중복된 예약이 존재합니다.", reservation.getDate(),
+                    reservation.getTime().getStartAt(), reservation.getTheme().getName());
         }
 
         Reservation newReservation = reservationRepository.save(reservation);
@@ -67,7 +67,7 @@ public class ReservationService {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         return reservationTimes.stream()
-                .map(time -> ReservationAvailableTimeResponse.of(time, bookedTimeIds.contains(time.id())))
+                .map(time -> ReservationAvailableTimeResponse.of(time, bookedTimeIds.contains(time.getId())))
                 .toList();
     }
 }

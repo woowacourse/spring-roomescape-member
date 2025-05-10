@@ -57,6 +57,6 @@ public class ThemeService {
 
     private boolean isAnyMatchName(String name) {
         return repository.findAll().stream()
-                .anyMatch(current -> current.name().equals(name));
+                .anyMatch(current -> current.getName().equals(name));
     }
 }
