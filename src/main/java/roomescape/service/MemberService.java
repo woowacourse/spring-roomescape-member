@@ -21,7 +21,7 @@ public class MemberService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public TokenResponse create(final TokenRequest tokenRequest) {
+    public TokenResponse createToken(final TokenRequest tokenRequest) {
         final String accessToken = jwtTokenProvider.createToken(tokenRequest.email());
         return new TokenResponse(accessToken);
     }

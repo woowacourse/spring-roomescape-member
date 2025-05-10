@@ -32,7 +32,7 @@ public class LoginController {
     @PostMapping()
     public ResponseEntity<Void> create(
             @RequestBody @Valid final TokenRequest tokenRequest) {
-        final TokenResponse tokenResponse = memberService.create(tokenRequest);
+        final TokenResponse tokenResponse = memberService.createToken(tokenRequest);
 
         final HttpCookie cookie = ResponseCookie.from("token", tokenResponse.accessToken())
                 .path("/")

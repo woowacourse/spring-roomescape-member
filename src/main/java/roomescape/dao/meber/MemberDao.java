@@ -5,7 +5,5 @@ import roomescape.domain.Member;
 
 public interface MemberDao {
 
-    Member create(Member member);
-
     Optional<Member> findByEmail(String email);
 }
