@@ -1,6 +1,5 @@
 package roomescape.business.service;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -70,8 +69,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("시간 간격이 겹치는 예약 시간 추가 시 예외가 발생한다")
-    void addAndGet_OverlappingInterval_ThrowsException() {
+    void 시간_간격이_겹치는_예약_시간_추가_시_예외가_발생한다() {
         // given
         LocalTime time = LocalTime.of(10, 0);
 
@@ -88,8 +86,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("모든 예약 시간을 조회할 수 있다")
-    void getAll_ReturnsAllReservationTimes() {
+    void 모든_예약_시간을_조회할_수_있다() {
         // given
         List<ReservationTime> expectedTimes = Arrays.asList(
                 ReservationTime.restore("time-id-1", LocalTime.of(10, 0)),
@@ -107,8 +104,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("날짜와 테마 ID로 이용 가능한 예약 시간을 조회할 수 있다")
-    void getAvailableReservationTimesByDateAndThemeId_ReturnsAvailableTimes() {
+    void 날짜와_테마_ID로_이용_가능한_예약_시간을_조회할_수_있다() {
         // given
         LocalDate date = LocalDate.now();
         String themeId = "theme-id";
@@ -129,8 +125,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("예약 시간을 삭제할 수 있다")
-    void delete_ExistingReservationTime_DeletesReservationTime() {
+    void 예약_시간을_삭제할_수_있다() {
         // given
         String timeId = "time-id";
 
@@ -147,8 +142,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 예약 시간 삭제 시 예외가 발생한다")
-    void delete_NonExistingReservationTime_ThrowsException() {
+    void 존재하지_않는_예약_시간_삭제_시_예외가_발생한다() {
         // given
         String timeId = "non-existing-id";
 
@@ -165,8 +159,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("예약이 연결된 예약 시간 삭제 시 예외가 발생한다")
-    void delete_ReservationTimeWithReservations_ThrowsException() {
+    void 예약이_연결된_예약_시간_삭제_시_예외가_발생한다() {
         // given
         String timeId = "time-with-reservations";
 

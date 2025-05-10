@@ -1,6 +1,5 @@
 package roomescape.business.service;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -77,8 +76,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 사용자 ID로 예약 시 예외가 발생한다")
-    void addAndGet_NonExistingReserverId_ThrowsException() {
+    void 존재하지_않는_사용자_ID로_예약_시_예외가_발생한다() {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
         String timeId = "time-id";
@@ -98,8 +96,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 예약 시간 ID로 예약 시 예외가 발생한다")
-    void addAndGet_NonExistingTimeId_ThrowsException() {
+    void 존재하지_않는_예약_시간_ID로_예약_시_예외가_발생한다() {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
         String timeId = "nonexistent-time-id";
@@ -122,8 +119,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 테마 ID로 예약 시 예외가 발생한다")
-    void addAndGet_NonExistingThemeId_ThrowsException() {
+    void 존재하지_않는_테마_ID로_예약_시_예외가_발생한다() {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
         String timeId = "time-id";
@@ -148,8 +144,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("이미 예약된 날짜, 시간, 테마로 예약 시 예외가 발생한다")
-    void addAndGet_AlreadyReserved_ThrowsException() {
+    void 이미_예약된_날짜_시간_테마로_예약_시_예외가_발생한다() {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
         String timeId = "time-id";
@@ -178,8 +173,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("필터를 적용하여 모든 예약을 조회할 수 있다")
-    void getAll_ReturnsFilteredReservations() {
+    void 필터를_적용하여_모든_예약을_조회할_수_있다() {
         // given
         String themeId = "theme-id";
         String userId = "user-id";
@@ -210,8 +204,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 삭제할 수 있다")
-    void delete_ExistingReservation_DeletesReservation() {
+    void 예약을_삭제할_수_있다() {
         // given
         final User user = User.create("dompoo", "dompoo@email.com", "password");
         final Reservation reservation = Reservation.create(
@@ -231,8 +224,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 예약 삭제 시 예외가 발생한다")
-    void delete_NonExistingReservation_ThrowsException() {
+    void 존재하지_않는_예약_삭제_시_예외가_발생한다() {
         // given
         String reservationId = "nonexistent-id";
 
@@ -248,8 +240,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약자가 아닌 유저가 삭제 시도시 예외가 발생한다")
-    void delete_ReservationOfOtherUser_ThrowsException() {
+    void 예약자가_아닌_유저가_삭제_시도시_예외가_발생한다() {
         // given
         final User user1 = User.create("dompoo", "dompoo@email.com", "password");
         final User user2 = User.create("lemon", "lemon@email.com", "password");
