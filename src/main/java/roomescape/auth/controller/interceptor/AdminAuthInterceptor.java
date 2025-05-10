@@ -7,6 +7,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.infrastructure.JwtPayload;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.auth.infrastructure.TokenExtractor;
+import roomescape.global.exception.error.ForbiddenException;
+import roomescape.global.exception.error.UnauthorizedException;
 import roomescape.member.domain.enums.Role;
 
 @Component
@@ -24,13 +26,12 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         String token = tokenExtractor.extractTokenByCookies(request)
-                .orElseThrow(() -> new IllegalArgumentException("인증 토큰이 쿠키에 존재하지 않습니다."));
+                .orElseThrow(() -> new UnauthorizedException("인증 토큰이 쿠키에 존재하지 않습니다."));
 
         JwtPayload payload = tokenProvider.getPayload(token);
 
-        // TODO: 커스텀 예외로 변경하기 - 403
-        if(payload.role() != Role.ADMIN) {
-            throw new RuntimeException("접근 권한이 없습니다.");
+        if (payload.role() != Role.ADMIN) {
+            throw new ForbiddenException("접근 권한이 없습니다.");
         }
 
         return true;

@@ -101,7 +101,7 @@ class LoginIntegrationTest {
                 .contentType(ContentType.JSON)
                 .when().get("/login/check")
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(401)
                 .body(equalTo("인증 토큰이 쿠키에 존재하지 않습니다."));
     }
 

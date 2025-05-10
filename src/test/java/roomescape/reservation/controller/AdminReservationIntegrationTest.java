@@ -57,8 +57,7 @@ class AdminReservationIntegrationTest {
                 .body(params)
                 .when().post("/admin/reservations")
                 .then().log().all()
-                // TODO: 임시 500 - 403변경
-                .statusCode(500)
+                .statusCode(403)
                 .body(equalTo("접근 권한이 없습니다."));
     }
 

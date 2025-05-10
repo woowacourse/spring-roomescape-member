@@ -197,7 +197,7 @@ class ReservationIntegrationTest {
                 .body(requestBody)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(404)
                 .body(equalTo("해당하는 시간 정보가 존재하지 않습니다."));
     }
 
@@ -222,7 +222,7 @@ class ReservationIntegrationTest {
                 .body(requestBody)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(404)
                 .body(equalTo("해당하는 테마가 존재하지 않습니다."));
     }
 

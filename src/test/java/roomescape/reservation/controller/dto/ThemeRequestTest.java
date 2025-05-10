@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.global.exception.error.InvalidRequestException;
 import roomescape.reservation.domain.Theme;
 
 class ThemeRequestTest {
@@ -23,7 +24,7 @@ class ThemeRequestTest {
 
         // when & then
         assertThatThrownBy(() -> new ThemeRequest(name, description, thumbnail))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidRequestException.class)
                 .hasMessage("이름은 필수입니다.");
     }
 
@@ -38,7 +39,7 @@ class ThemeRequestTest {
 
         // when & then
         assertThatThrownBy(() -> new ThemeRequest(name, description, thumbnail))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidRequestException.class)
                 .hasMessage("설명은 필수입니다.");
     }
 
@@ -53,7 +54,7 @@ class ThemeRequestTest {
 
         // when & then
         assertThatThrownBy(() -> new ThemeRequest(name, description, thumbnail))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidRequestException.class)
                 .hasMessage("대표 이미지는 필수입니다.");
     }
 

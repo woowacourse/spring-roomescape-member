@@ -6,9 +6,9 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
-import org.apache.el.parser.Token;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.global.exception.error.UnauthorizedException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.enums.Role;
 
@@ -57,9 +57,9 @@ public class JwtTokenProvider {
                     Role.valueOf(claims.get(ROLE_CLAIM_KEY, String.class))
             );
         } catch (ExpiredJwtException e) {
-            throw new IllegalArgumentException("만료된 토큰 입니다.");
+            throw new UnauthorizedException("만료된 토큰 입니다.");
         } catch (JwtException | IllegalArgumentException e) {
-            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+            throw new UnauthorizedException("유효하지 않은 토큰입니다.");
         }
     }
 

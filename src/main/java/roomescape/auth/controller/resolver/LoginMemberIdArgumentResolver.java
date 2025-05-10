@@ -11,6 +11,7 @@ import roomescape.auth.controller.resolver.annotation.LoginMemberId;
 import roomescape.auth.infrastructure.JwtPayload;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.auth.infrastructure.TokenExtractor;
+import roomescape.global.exception.error.UnauthorizedException;
 
 @Component
 public class LoginMemberIdArgumentResolver implements HandlerMethodArgumentResolver {
@@ -33,7 +34,7 @@ public class LoginMemberIdArgumentResolver implements HandlerMethodArgumentResol
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = tokenExtractor.extractTokenByCookies(request)
-                .orElseThrow(() -> new IllegalArgumentException("인증 토큰이 쿠키에 존재하지 않습니다."));
+                .orElseThrow(() -> new UnauthorizedException("인증 토큰이 쿠키에 존재하지 않습니다."));
 
         JwtPayload payload = jwtTokenProvider.getPayload(token);
 

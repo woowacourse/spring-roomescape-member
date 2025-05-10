@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.global.exception.error.InvalidRequestException;
 
 class ReservationRequestTest {
 
@@ -19,7 +20,7 @@ class ReservationRequestTest {
 
         // when & then
         assertThatThrownBy(() -> new ReservationRequest(date, timeId, themeId, memberId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidRequestException.class)
                 .hasMessage("예약 날짜는 필수입니다.");
     }
 
@@ -27,7 +28,6 @@ class ReservationRequestTest {
     @Test
     void time_id_null_exception() {
         // given
-        String name = "루키";
         LocalDate date = LocalDate.of(2025, 4, 25);
         Long timeId = null;
         Long themeId = 1L;
@@ -35,7 +35,7 @@ class ReservationRequestTest {
 
         // when & then
         assertThatThrownBy(() -> new ReservationRequest(date, timeId, themeId, memberId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidRequestException.class)
                 .hasMessage("예약 시간 ID는 필수입니다.");
     }
 
@@ -43,7 +43,6 @@ class ReservationRequestTest {
     @Test
     void theme_id_validate_test() {
         // given
-        String name = "루키";
         LocalDate date = LocalDate.of(2025, 4, 25);
         Long timeId = 1L;
         Long themeId = null;
@@ -51,7 +50,7 @@ class ReservationRequestTest {
 
         // when & then
         assertThatThrownBy(() -> new ReservationRequest(date, timeId, themeId, memberId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidRequestException.class)
                 .hasMessage("테마 ID는 필수입니다.");
     }
 

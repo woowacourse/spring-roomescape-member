@@ -11,6 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.global.exception.error.ConflictException;
 import roomescape.member.domain.enums.Role;
 import roomescape.reservation.controller.dto.ThemeRankingResponse;
 import roomescape.reservation.controller.dto.ThemeRequest;
@@ -128,7 +129,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.remove(deleteId))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(ConflictException.class)
                 .hasMessage("해당 테마와 연관된 예약이 있어 삭제할 수 없습니다.");
     }
 

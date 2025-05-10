@@ -149,7 +149,7 @@ class ThemeIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/themes/3")
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(409)
                 .body(equalTo("해당 테마와 연관된 예약이 있어 삭제할 수 없습니다."));
     }
 

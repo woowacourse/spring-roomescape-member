@@ -2,6 +2,7 @@ package roomescape.reservation.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
+import roomescape.global.exception.error.InvalidRequestException;
 import roomescape.reservation.domain.ReservationTime;
 
 public record ReservationTimeRequest(
@@ -18,7 +19,7 @@ public record ReservationTimeRequest(
 
     private void validateStartAt(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("시작 시각은 필수입니다.");
+            throw new InvalidRequestException("시작 시각은 필수입니다.");
         }
     }
 

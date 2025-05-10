@@ -125,7 +125,7 @@ class ReservationTimeIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/times/3")
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(409)
                 .body(equalTo("해당 시간과 연관된 예약이 있어 삭제할 수 없습니다."));
     }
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import roomescape.global.exception.error.ConflictException;
 import roomescape.reservation.controller.dto.ThemeRankingResponse;
 import roomescape.reservation.controller.dto.ThemeRequest;
 import roomescape.reservation.controller.dto.ThemeResponse;
@@ -50,7 +51,7 @@ public class ThemeService {
     private void validateReservationConstraint(Long id) {
         List<Reservation> constraintReservations = reservationRepository.findAllByThemeId(id);
         if (!constraintReservations.isEmpty()) {
-            throw new IllegalStateException("해당 테마와 연관된 예약이 있어 삭제할 수 없습니다.");
+            throw new ConflictException("해당 테마와 연관된 예약이 있어 삭제할 수 없습니다.");
         }
     }
 

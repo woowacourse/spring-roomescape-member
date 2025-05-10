@@ -3,6 +3,7 @@ package roomescape.reservation.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.global.exception.error.ConflictException;
 import roomescape.reservation.controller.dto.ReservationTimeRequest;
 import roomescape.reservation.controller.dto.ReservationTimeResponse;
 import roomescape.reservation.domain.Reservation;
@@ -30,7 +31,7 @@ public class ReservationTimeService {
     private void validateReservationConstraint(Long id) {
         List<Reservation> constraintReservations = reservationRepository.findAllByTimeId(id);
         if (!constraintReservations.isEmpty()) {
-            throw new IllegalStateException("해당 시간과 연관된 예약이 있어 삭제할 수 없습니다.");
+            throw new ConflictException("해당 시간과 연관된 예약이 있어 삭제할 수 없습니다.");
         }
     }
 
@@ -50,7 +51,7 @@ public class ReservationTimeService {
 
     private void validateDuplicateTime(ReservationTimeRequest request) {
         if (reservationTimeRepository.existSameStartAt(request.startAt())) {
-            throw new IllegalArgumentException("해당 시간은 이미 존재합니다.");
+            throw new ConflictException("해당 시간은 이미 존재합니다.");
         }
     }
 

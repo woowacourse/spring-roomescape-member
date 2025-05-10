@@ -2,10 +2,11 @@ package roomescape.reservation.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
+import roomescape.global.exception.error.InvalidRequestException;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
-import roomescape.member.domain.Member;
 
 public record ReservationRequest(
         @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul") LocalDate date,
@@ -30,19 +31,19 @@ public record ReservationRequest(
 
     private void validateDate(LocalDate date) {
         if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 필수입니다.");
+            throw new InvalidRequestException("예약 날짜는 필수입니다.");
         }
     }
 
     private void validateTimeId(Long timeId) {
         if (timeId == null) {
-            throw new IllegalArgumentException("예약 시간 ID는 필수입니다.");
+            throw new InvalidRequestException("예약 시간 ID는 필수입니다.");
         }
     }
 
     private void validateThemeId(Long themeId) {
-        if(themeId == null){
-            throw new IllegalArgumentException("테마 ID는 필수입니다.");
+        if (themeId == null) {
+            throw new InvalidRequestException("테마 ID는 필수입니다.");
         }
     }
 

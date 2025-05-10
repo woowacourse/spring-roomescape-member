@@ -10,6 +10,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.global.exception.error.UnauthorizedException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.enums.Role;
 
@@ -86,7 +87,7 @@ class JwtTokenProviderTest {
 
         // when & then
         assertThatThrownBy(() -> jwtTokenProvider.getPayload(expiredToken))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(UnauthorizedException.class)
                 .hasMessage("만료된 토큰 입니다.");
     }
 
@@ -104,7 +105,7 @@ class JwtTokenProviderTest {
 
         // when & then
         assertThatThrownBy(() -> jwtTokenProvider.getPayload(invalidSignatureToken))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(UnauthorizedException.class)
                 .hasMessage("유효하지 않은 토큰입니다.");
     }
 

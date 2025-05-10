@@ -3,6 +3,8 @@ package roomescape.auth.service;
 import org.springframework.stereotype.Service;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.infrastructure.JwtTokenProvider;
+import roomescape.global.exception.error.InvalidRequestException;
+import roomescape.global.exception.error.NotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
 
@@ -20,7 +22,7 @@ public class AuthService {
     public String createToken(TokenRequest request) {
         String email = request.email();
         Member findMember = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 이메일입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 사용자 이메일입니다."));
 
         validatePassword(findMember, request.password());
 
@@ -32,7 +34,7 @@ public class AuthService {
             return;
         }
 
-        throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        throw new InvalidRequestException("비밀번호가 일치하지 않습니다.");
     }
 
 }

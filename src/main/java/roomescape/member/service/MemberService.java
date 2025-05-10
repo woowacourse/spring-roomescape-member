@@ -3,6 +3,7 @@ package roomescape.member.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.auth.dto.MemberProfileResponse;
+import roomescape.global.exception.error.NotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.repository.MemberRepository;
@@ -18,7 +19,7 @@ public class MemberService {
 
     public MemberProfileResponse findMemberProfile(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 사용자입니다."));
 
         return MemberProfileResponse.from(member);
     }
