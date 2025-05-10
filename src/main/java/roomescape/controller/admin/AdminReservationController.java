@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import roomescape.dto.request.CreateAdminReservationRequest;
 import roomescape.service.ReservationService;
@@ -20,7 +21,7 @@ public class AdminReservationController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public void create(@RequestBody CreateAdminReservationRequest request) {
+    public void create(@RequestBody @Valid CreateAdminReservationRequest request) {
         reservationService.create(request.memberId(), request.date(), request.timeId(), request.themeId());
     }
 }

@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import roomescape.auth.RequestMember;
 import roomescape.domain.Member;
-import roomescape.dto.SignupRequest;
 import roomescape.dto.request.LoginRequest;
+import roomescape.dto.request.SignupRequest;
 import roomescape.dto.response.LoginCheckResponse;
 import roomescape.dto.response.MemberResponse;
 import roomescape.service.MemberService;
@@ -28,7 +29,7 @@ public class MemberController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
-    public void login(@RequestBody LoginRequest request, HttpServletResponse response) {
+    public void login(@RequestBody @Valid LoginRequest request, HttpServletResponse response) {
         String token = memberService.login(request);
         Cookie cookie = new Cookie("token", token);
         cookie.setPath("/");
@@ -58,7 +59,7 @@ public class MemberController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/signup")
-    public void signup(@RequestBody SignupRequest request) {
+    public void signup(@RequestBody @Valid SignupRequest request) {
         memberService.signup(request);
     }
 }

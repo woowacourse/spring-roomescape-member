@@ -13,9 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import roomescape.dto.request.CreateReservationThemeRequest;
 import roomescape.dto.response.ReservationThemeResponse;
-import lombok.RequiredArgsConstructor;
 import roomescape.service.ReservationThemeService;
 
 @RestController
@@ -27,7 +28,7 @@ public class ReservationThemeController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ReservationThemeResponse create(@RequestBody CreateReservationThemeRequest request) {
+    public ReservationThemeResponse create(@RequestBody @Valid CreateReservationThemeRequest request) {
         return reservationThemeService.create(request);
     }
 

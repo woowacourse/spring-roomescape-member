@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import roomescape.dto.request.CreateReservationTimeRequest;
 import roomescape.dto.response.ReservationTimeResponse;
-import lombok.RequiredArgsConstructor;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -28,7 +29,7 @@ public class ReservationTimeController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ReservationTimeResponse create(@RequestBody CreateReservationTimeRequest request) {
+    public ReservationTimeResponse create(@RequestBody @Valid CreateReservationTimeRequest request) {
         return reservationTimeService.create(request);
     }
 
