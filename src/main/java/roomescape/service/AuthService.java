@@ -37,6 +37,6 @@ public class AuthService {
             throw new NotFoundException("존재하지 않는 user 정보입니다.");
         }
         Member getMember = customer.get();
-        return new MemberInfoDto(getMember.getId());
+        return new MemberInfoDto(getMember.getId(), getMember.getRole());
     }
 }
