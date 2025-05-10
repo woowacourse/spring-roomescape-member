@@ -410,9 +410,11 @@ host: localhost: 8080
 ### 응답
 
 ```json
-HTTP/1.1 200 OK
+HTTP/1.1 201 OK
 Content-Type: application/json
 Keep-Alive: timeout=60
+
+{id}
 ```
 
 ## 로그아웃
@@ -429,13 +431,9 @@ Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6Im1pbnQiLCJyb2xlIjoiV
 ### 응답
 
 ```json
-HTTP/1.1 200 OK
+HTTP/1.1 204 OK
 Content-Type: application/json
 Keep-Alive: timeout=60
-
-{
-id
-}
 ```
 
 ## 인증 정보 조회

@@ -43,6 +43,6 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(final HttpServletResponse httpServletResponse) {
         cookieManager.deleteCookie(httpServletResponse, TOKEN);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
