@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import roomescape.business.domain.LoginUser;
 import roomescape.business.domain.User;
 import roomescape.exception.InvalidCredentialsException;
 import roomescape.persistence.dao.UserDao;
@@ -24,17 +25,17 @@ public class AuthService {
     }
 
     public String createToken(final LoginRequest loginRequest) {
-        final User user = findUserByPrincipalAndCredentials(loginRequest.email(), loginRequest.password());
+        final LoginUser loginUser = findLoginUserByPrincipalAndCredentials(loginRequest.email(), loginRequest.password());
 
         return Jwts.builder()
-                .setSubject(user.getId().toString())
-                .claim("name", user.getName())
-                .claim("role", user.getRole())
+                .setSubject(loginUser.id().toString())
+                .claim("name", loginUser.name())
+                .claim("role", loginUser.role())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
 
-    private User findUserByPrincipalAndCredentials(
+    public LoginUser findLoginUserByPrincipalAndCredentials(
             final String principal,
             final String credentials
     ) {
@@ -45,7 +46,7 @@ public class AuthService {
             throw new InvalidCredentialsException();
         }
 
-        return user;
+        return LoginUser.from(user);
     }
 
     public LoginCheckResponse checkLoginByToken(final String token) {
