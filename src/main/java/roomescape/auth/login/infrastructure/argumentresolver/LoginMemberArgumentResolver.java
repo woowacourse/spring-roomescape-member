@@ -7,6 +7,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.auth.exception.ForbiddenException;
 import roomescape.auth.login.infrastructure.token.JwtTokenManager;
 import roomescape.auth.login.infrastructure.token.TokenExtractor;
 import roomescape.auth.login.presentation.dto.LoginMemberInfo;
@@ -14,6 +15,8 @@ import roomescape.auth.login.presentation.dto.annotation.LoginMember;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+
+    public static final String MEMBER_STRING = "MEMBER";
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -27,10 +30,14 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         String token = TokenExtractor.extract(request);
 
         String role = JwtTokenManager.getRole(token);
-        if (!role.equals("MEMBER")) {
-            throw new IllegalStateException("인증할 수 없습니다.");
-        }
+        validateRoleIsMember(role);
 
         return new LoginMemberInfo(JwtTokenManager.getId(token));
+    }
+
+    private static void validateRoleIsMember(String role) {
+        if (!role.equals(MEMBER_STRING)) {
+            throw new ForbiddenException("멤버가 아닙니다.");
+        }
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.auth.exception.ForbiddenException;
 import roomescape.auth.exception.UnauthorizedException;
 import roomescape.common.exception.handler.dto.ExceptionResponse;
 
@@ -46,6 +47,15 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(401).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ExceptionResponse> handleForbidden(final ForbiddenException exception, final HttpServletRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(
+                403, "[ERROR] " + exception.getMessage(), request.getRequestURI()
+        );
+
+        return ResponseEntity.status(403).body(exceptionResponse);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
