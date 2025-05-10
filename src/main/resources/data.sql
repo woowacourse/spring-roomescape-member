@@ -96,79 +96,79 @@ values ('10:00'),
        ('20:30');
 
 -- 예약 개수 차등두기
-insert into reservation (member_id, theme_id, date, time_id)
-values
--- theme_id = 1 (10개 예약)
-(1, 1, '2025-04-24', 1),
-(2, 1, '2025-04-24', 2),
-(3, 1, '2025-04-24', 3),
-(4, 1, '2025-04-24', 4),
-(5, 1, '2025-04-24', 5),
-(6, 1, '2025-04-24', 6),
-(7, 1, '2025-04-24', 7),
-(8, 1, '2025-04-24', 8),
-(9, 1, '2025-04-24', 9),
-(10, 1, '2025-04-24', 10),
+INSERT INTO reservation (member_id, theme_id, date, time_id)
+VALUES
+-- theme_id = 1 (7일 전)
+(1, 1, DATEADD('DAY', -7, CURRENT_DATE), 1),
+(2, 1, DATEADD('DAY', -7, CURRENT_DATE), 2),
+(3, 1, DATEADD('DAY', -7, CURRENT_DATE), 3),
+(4, 1, DATEADD('DAY', -7, CURRENT_DATE), 4),
+(5, 1, DATEADD('DAY', -7, CURRENT_DATE), 5),
+(6, 1, DATEADD('DAY', -7, CURRENT_DATE), 6),
+(7, 1, DATEADD('DAY', -7, CURRENT_DATE), 7),
+(8, 1, DATEADD('DAY', -7, CURRENT_DATE), 8),
+(9, 1, DATEADD('DAY', -7, CURRENT_DATE), 9),
+(10, 1, DATEADD('DAY', -7, CURRENT_DATE), 10),
 
--- theme_id = 2 (9개 예약)
-(1, 2, '2025-04-25', 11),
-(2, 2, '2025-04-25', 12),
-(3, 2, '2025-04-25', 13),
-(4, 2, '2025-04-25', 14),
-(5, 2, '2025-04-25', 15),
-(6, 2, '2025-04-25', 16),
-(7, 2, '2025-04-25', 17),
-(8, 2, '2025-04-25', 18),
-(9, 2, '2025-04-25', 19),
+-- theme_id = 2 (6일 전)
+(1, 2, DATEADD('DAY', -6, CURRENT_DATE), 11),
+(2, 2, DATEADD('DAY', -6, CURRENT_DATE), 12),
+(3, 2, DATEADD('DAY', -6, CURRENT_DATE), 13),
+(4, 2, DATEADD('DAY', -6, CURRENT_DATE), 14),
+(5, 2, DATEADD('DAY', -6, CURRENT_DATE), 15),
+(6, 2, DATEADD('DAY', -6, CURRENT_DATE), 16),
+(7, 2, DATEADD('DAY', -6, CURRENT_DATE), 17),
+(8, 2, DATEADD('DAY', -6, CURRENT_DATE), 18),
+(9, 2, DATEADD('DAY', -6, CURRENT_DATE), 19),
 
--- theme_id = 3 (8개 예약)
-(1, 3, '2025-04-26', 20),
-(2, 3, '2025-04-26', 21),
-(3, 3, '2025-04-26', 22),
-(4, 3, '2025-04-26', 23),
-(5, 3, '2025-04-26', 24),
-(6, 3, '2025-04-26', 25),
-(7, 3, '2025-04-26', 26),
-(8, 3, '2025-04-26', 27),
+-- theme_id = 3 (5일 전)
+(1, 3, DATEADD('DAY', -5, CURRENT_DATE), 20),
+(2, 3, DATEADD('DAY', -5, CURRENT_DATE), 21),
+(3, 3, DATEADD('DAY', -5, CURRENT_DATE), 22),
+(4, 3, DATEADD('DAY', -5, CURRENT_DATE), 23),
+(5, 3, DATEADD('DAY', -5, CURRENT_DATE), 24),
+(6, 3, DATEADD('DAY', -5, CURRENT_DATE), 25),
+(7, 3, DATEADD('DAY', -5, CURRENT_DATE), 26),
+(8, 3, DATEADD('DAY', -5, CURRENT_DATE), 27),
 
--- theme_id = 4 (7개 예약)
-(1, 4, '2025-04-27', 28),
-(2, 4, '2025-04-27', 29),
-(3, 4, '2025-04-27', 30),
-(4, 4, '2025-04-27', 31),
-(5, 4, '2025-04-27', 32),
-(6, 4, '2025-04-27', 33),
-(7, 4, '2025-04-27', 34),
+-- theme_id = 4 (4일 전)
+(1, 4, DATEADD('DAY', -4, CURRENT_DATE), 28),
+(2, 4, DATEADD('DAY', -4, CURRENT_DATE), 29),
+(3, 4, DATEADD('DAY', -4, CURRENT_DATE), 30),
+(4, 4, DATEADD('DAY', -4, CURRENT_DATE), 31),
+(5, 4, DATEADD('DAY', -4, CURRENT_DATE), 32),
+(6, 4, DATEADD('DAY', -4, CURRENT_DATE), 33),
+(7, 4, DATEADD('DAY', -4, CURRENT_DATE), 34),
 
--- theme_id = 5 (6개 예약)
-(1, 5, '2025-04-28', 35),
-(2, 5, '2025-04-28', 36),
-(3, 5, '2025-04-28', 37),
-(4, 5, '2025-04-28', 38),
-(5, 5, '2025-04-28', 39),
-(6, 5, '2025-04-28', 40),
+-- theme_id = 5 (3일 전)
+(1, 5, DATEADD('DAY', -3, CURRENT_DATE), 35),
+(2, 5, DATEADD('DAY', -3, CURRENT_DATE), 36),
+(3, 5, DATEADD('DAY', -3, CURRENT_DATE), 37),
+(4, 5, DATEADD('DAY', -3, CURRENT_DATE), 38),
+(5, 5, DATEADD('DAY', -3, CURRENT_DATE), 39),
+(6, 5, DATEADD('DAY', -3, CURRENT_DATE), 40),
 
--- theme_id = 6 (5개 예약)
-(1, 6, '2025-04-29', 41),
-(2, 6, '2025-04-29', 42),
-(3, 6, '2025-04-29', 43),
-(4, 6, '2025-04-29', 44),
-(5, 6, '2025-04-29', 45),
+-- theme_id = 6 (2일 전)
+(1, 6, DATEADD('DAY', -2, CURRENT_DATE), 41),
+(2, 6, DATEADD('DAY', -2, CURRENT_DATE), 42),
+(3, 6, DATEADD('DAY', -2, CURRENT_DATE), 43),
+(4, 6, DATEADD('DAY', -2, CURRENT_DATE), 44),
+(5, 6, DATEADD('DAY', -2, CURRENT_DATE), 45),
 
--- theme_id = 7 (4개 예약)
-(1, 7, '2025-04-30', 46),
-(2, 7, '2025-04-30', 47),
-(3, 7, '2025-04-30', 48),
-(4, 7, '2025-04-30', 49),
+-- theme_id = 7 (1일 전)
+(1, 7, DATEADD('DAY', -1, CURRENT_DATE), 46),
+(2, 7, DATEADD('DAY', -1, CURRENT_DATE), 47),
+(3, 7, DATEADD('DAY', -1, CURRENT_DATE), 48),
+(4, 7, DATEADD('DAY', -1, CURRENT_DATE), 49),
 
--- theme_id = 8 (3개 예약)
-(1, 8, '2025-04-30', 50),
-(2, 8, '2025-04-30', 51),
-(3, 8, '2025-04-30', 52),
+-- theme_id = 8 (1일 전)
+(1, 8, DATEADD('DAY', -1, CURRENT_DATE), 50),
+(2, 8, DATEADD('DAY', -1, CURRENT_DATE), 51),
+(3, 8, DATEADD('DAY', -1, CURRENT_DATE), 52),
 
--- theme_id = 9 (2개 예약)
-(1, 9, '2025-04-30', 53),
-(2, 9, '2025-04-30', 54),
+-- theme_id = 9 (1일 전)
+(1, 9, DATEADD('DAY', -1, CURRENT_DATE), 53),
+(2, 9, DATEADD('DAY', -1, CURRENT_DATE), 54),
 
--- theme_id = 10 (1개 예약)
-(1, 10, '2025-04-30', 55);
+-- theme_id = 10 (1일 전)
+(1, 10, DATEADD('DAY', -1, CURRENT_DATE), 55);
