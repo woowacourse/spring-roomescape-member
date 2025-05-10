@@ -1,10 +1,8 @@
 package roomescape.presentation.controller.api;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import java.util.Arrays;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,11 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.business.domain.member.Member;
 import roomescape.business.service.AuthService;
+import roomescape.config.AuthMember;
 import roomescape.presentation.dto.LoginCheckResponse;
 import roomescape.presentation.dto.LoginRequest;
 import roomescape.presentation.dto.TokenResponse;
-import roomescape.presentation.exception.BadRequestException;
 
 @RestController
 @RequestMapping("/login")
@@ -43,15 +42,8 @@ public class LoginController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<LoginCheckResponse> loginCheck(final HttpServletRequest request) {
-        if (request.getCookies() == null) {
-            throw new BadRequestException("쿠키를 입력해 주세요.");
-        }
-        final String token = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals("token"))
-                .findFirst()
-                .orElseThrow(() -> new BadRequestException("토큰을 입력해주세요."))
-                .getValue();
-        final LoginCheckResponse response = authService.checkMember(token);
+    public ResponseEntity<LoginCheckResponse> loginCheck(@AuthMember final Member member) {
+        final LoginCheckResponse response = new LoginCheckResponse(member.getName());
         return ResponseEntity.ok().body(response);
     }
 }

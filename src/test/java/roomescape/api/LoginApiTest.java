@@ -86,18 +86,18 @@ public class LoginApiTest {
                     .body("name", Matchers.equalTo("사용자1"));
         }
 
-        @DisplayName("쿠키를 찾을 수 없는 경우 400을 반환한다.")
+        @DisplayName("쿠키를 찾을 수 없는 경우 401을 반환한다.")
         @Test
         void testCookieAbsence() {
             RestAssured.given().log().all()
                     .when().get("/login/check")
                     .then().log().all()
-                    .statusCode(400);
+                    .statusCode(401);
             RestAssured.given().log().all()
                     .cookie("invalidName", "token")
                     .when().get("/login/check")
                     .then().log().all()
-                    .statusCode(400);
+                    .statusCode(401);
         }
 
         @DisplayName("쿠키의 정보가 올바르지 않을 경우 401을 반환한다.")

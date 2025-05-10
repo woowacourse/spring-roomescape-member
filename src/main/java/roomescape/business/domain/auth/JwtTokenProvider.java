@@ -19,7 +19,6 @@ public class JwtTokenProvider {
         final Claims claims = Jwts.claims().setSubject(payload);
         final Date now = new Date();
         final Date validity = new Date(now.getTime() + validityInMilliseconds);
-
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
