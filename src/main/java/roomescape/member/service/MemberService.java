@@ -48,4 +48,11 @@ public class MemberService {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("등록된 회원이 아닙니다."));
     }
+
+    public List<MemberInfo> getAll() {
+        return memberRepository.findAll()
+                .stream()
+                .map(MemberConverter::toDto)
+                .toList();
+    }
 }

@@ -2,6 +2,7 @@ package roomescape.member.repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -73,6 +74,17 @@ public class JdbcMemberRepository implements MemberRepository {
                 """;
 
         return JdbcUtils.queryForOptional(jdbcTemplate, sql, accountRowMapper, email.getValue());
+    }
+
+    @Override
+    public List<Member> findAll() {
+        final String sql = """
+                SELECT id, name, email, role
+                FROM member
+                """;
+
+        return jdbcTemplate.query(sql, memberRowMapper).stream()
+                .toList();
     }
 
     @Override
