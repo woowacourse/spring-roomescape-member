@@ -39,10 +39,10 @@ public class ReservationJdbcRepository implements ReservationRepository {
                        th.id as theme_id, 
                        th.name as theme_name, 
                        th.description as theme_description, 
-                       th.thumbnail as theme_thumbnail
-                       u.id as user_id
-                       u.name as user_name
-                       u.email as user_email
+                       th.thumbnail as theme_thumbnail,
+                       u.id as user_id,
+                       u.name as user_name,
+                       u.email as user_email,
                        u.password as user_password
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
@@ -66,9 +66,9 @@ public class ReservationJdbcRepository implements ReservationRepository {
                         ),
                         new Member(
                                 resultSet.getLong("user_id"),
-                                resultSet.getString("name"),
-                                resultSet.getString("email"),
-                                resultSet.getString("password")
+                                resultSet.getString("user_name"),
+                                resultSet.getString("user_email"),
+                                resultSet.getString("user_password")
                         )));
     }
 
@@ -97,10 +97,10 @@ public class ReservationJdbcRepository implements ReservationRepository {
                        th.id as theme_id, 
                        th.name as theme_name, 
                        th.description as theme_description, 
-                       th.thumbnail as theme_thumbnail
-                       u.id as user_id
-                       u.name as user_name
-                       u.email as user_email
+                       th.thumbnail as theme_thumbnail,
+                       u.id as user_id,
+                       u.name as user_name,
+                       u.email as user_email,
                        u.password as user_password
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
