@@ -2,6 +2,7 @@ package roomescape.reservation.dao;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -122,6 +123,63 @@ public class JdbcReservationDao implements ReservationDao {
         List<Reservation> reservations = jdbcTemplate.query(query, RESERVATION_ROW_MAPPER, id);
         return reservations.stream()
                 .findFirst();
+    }
+
+    @Override
+    public List<Reservation> findByConditions(final Long memberId, final Long themeId,
+                                              final LocalDate from, final LocalDate to) {
+
+        final StringBuilder query = new StringBuilder(
+                """
+                        SELECT
+                            r.id AS reservation_id,
+                            r.date,
+                            rt.id AS time_id,
+                            rt.start_at AS time_value,
+                            t.theme_name,
+                            t.description,
+                            t.thumbnail,
+                            m.id AS member_id,
+                            m.role,
+                            m.name,
+                            m.email,
+                            m.password
+                        FROM reservation AS r
+                        JOIN reservation_time AS rt
+                        ON r.time_id = rt.id
+                        JOIN theme AS t
+                        ON r.theme_id = t.id
+                        JOIN member AS m
+                        ON r.member_id = m.id
+                        """);
+
+        List<String> conditions = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
+
+        if (memberId != null) {
+            conditions.add("r.member_id = ?");
+            params.add(memberId);
+        }
+        if (themeId != null) {
+            conditions.add("r.theme_id = ?");
+            params.add(themeId);
+        }
+        if (from != null) {
+            conditions.add("r.date >= ?");
+            params.add(from);
+        }
+        if (to != null) {
+            conditions.add("r.date <= ? ");
+            params.add(to);
+        }
+
+        if (!conditions.isEmpty()) {
+            query.append(" WHERE ");
+            query.append(String.join(" AND ", conditions));
+            return jdbcTemplate.query(query.toString(), RESERVATION_ROW_MAPPER, params.toArray());
+        }
+
+        return jdbcTemplate.query(query.toString(), RESERVATION_ROW_MAPPER);
     }
 
     @Override

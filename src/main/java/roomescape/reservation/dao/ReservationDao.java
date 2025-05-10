@@ -15,6 +15,8 @@ public interface ReservationDao {
 
     Optional<Reservation> findById(long id);
 
+    List<Reservation> findByConditions(Long memberId, Long themeId, LocalDate from, LocalDate to);
+
     boolean existsByTimeId(long timeId);
 
     boolean existsByThemeId(long themeId);

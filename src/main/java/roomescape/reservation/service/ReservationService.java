@@ -1,5 +1,6 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.exception.custom.BusinessRuleViolationException;
@@ -81,6 +82,11 @@ public class ReservationService {
 
     public List<Reservation> findAllReservations() {
         return reservationDAO.findAll();
+    }
+
+    public List<Reservation> findByConditions(final Long memberId, final Long themeId,
+                                              final LocalDate from, final LocalDate to) {
+        return reservationDAO.findByConditions(memberId, themeId, from, to);
     }
 
     public void removeReservationById(final long id) {
