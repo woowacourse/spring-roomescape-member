@@ -25,7 +25,7 @@ public class MemberService {
         Member member = memberRepository.findByEmail(tokenRequest.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("유저 정보를 찾을 수 없습니다."));
 
-        if(!member.getPassword().equals(tokenRequest.getPassword())){
+        if (!member.getPassword().equals(tokenRequest.getPassword())) {
             throw new IllegalArgumentException("패스워드가 맞지 않습니다.");
         }
 
@@ -43,6 +43,9 @@ public class MemberService {
     }
 
     public SignUpResponse signUp(SignUpRequest signUpRequest) {
+        if (memberRepository.findByEmail(signUpRequest.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+        }
         return new SignUpResponse(memberRepository.insert(signUpRequest).getId());
     }
 
