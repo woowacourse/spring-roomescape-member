@@ -28,7 +28,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         String sql = "SELECT r.id AS reservation_id,\n" +
-                "       r.name,\n" +
                 "       r.date,\n" +
                 "       time.id AS reservation_time_id,\n" +
                 "       time.start_at AS reservation_time_start_at,\n" +
@@ -52,7 +51,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Optional<Reservation> findById(Long id) {
         String sql = "SELECT reservation.id AS reservation_id,\n" +
-                "       reservation.name AS reservation_name,\n" +
                 "       reservation.date AS reservation_date,\n" +
                 "       reservation_time.id AS reservation_time_id,\n" +
                 "       reservation_time.start_at AS reservation_time_start_at,\n" +
@@ -85,7 +83,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findByThemeAndDate(Theme theme, LocalDate date, User user) {
         String sql =
                 "SELECT reservation.id AS reservation_id,\n" +
-                        "       reservation.name AS reservation_name,\n" +
                         "       reservation.date AS reservation_date,\n" +
                         "       reservation_time.id AS reservation_time_id,\n" +
                         "       reservation_time.start_at AS reservation_time_start_at,\n" +
@@ -136,7 +133,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     private Long insertWithKeyHolder(Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, time_id, theme_id, user_id) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO reservation (date, time_id, theme_id, user_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         Long reservationTimeId = reservation.getReservationTime().getId();
@@ -147,11 +144,10 @@ public class JdbcReservationRepository implements ReservationRepository {
             PreparedStatement ps = connection.prepareStatement(
                     sql,
                     new String[]{"id"});
-            ps.setString(1, reservation.getName());
-            ps.setString(2, reservation.getDate().toString());
-            ps.setLong(3, reservationTimeId);
-            ps.setLong(4, themeId);
-            ps.setLong(5, userId);
+            ps.setString(1, reservation.getDate().toString());
+            ps.setLong(2, reservationTimeId);
+            ps.setLong(3, themeId);
+            ps.setLong(4, userId);
             return ps;
         }, keyHolder);
 

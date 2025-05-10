@@ -53,15 +53,15 @@ class ReservationServiceTest {
         return reservationTimeRepository.add(reservationTime);
     }
 
-    private Reservation createReservation(String name, int plusDays, ReservationTime time) {
+    private Reservation createReservation(int plusDays, ReservationTime time) {
         LocalDate date = LocalDate.now().plusDays(plusDays);
-        return Reservation.of(name, date, time, savedTheme, savedUser);
+        return Reservation.of(date, time, savedTheme, savedUser);
     }
 
-    private ReservationRequestDto createRequestDto(String name, int plusDays, Long timeId, Long themeId) {
+    private ReservationRequestDto createRequestDto(int plusDays, Long timeId, Long themeId) {
         LocalDate date = LocalDate.now().plusDays(plusDays);
 
-        return ReservationFixture.createRequestDto(name, date, timeId, themeId);
+        return ReservationFixture.createRequestDto(date, timeId, themeId);
     }
 
     @Nested
@@ -73,10 +73,10 @@ class ReservationServiceTest {
         void add_failure_byDuplicateDateTime() {
             // given
             ReservationTime reservationTime1 = createAndSaveReservationTime(LocalTime.of(11, 33));
-            Reservation reservation1 = createReservation("kali", 1, reservationTime1);
+            Reservation reservation1 = createReservation(1, reservationTime1);
 
             ReservationTime reservationTime2 = createAndSaveReservationTime(LocalTime.of(22, 44));
-            Reservation reservation2 = createReservation("pobi", 2, reservationTime2);
+            Reservation reservation2 = createReservation(2, reservationTime2);
 
             reservationRepository.add(reservation1);
             reservationRepository.add(reservation2);
@@ -84,7 +84,7 @@ class ReservationServiceTest {
             // when & then
             LocalDate duplicateDate = reservation1.getDate();
             Long duplicateReservationTimeId = reservationTime1.getId();
-            ReservationRequestDto requestDto = ReservationFixture.createRequestDto("jason", duplicateDate,
+            ReservationRequestDto requestDto = ReservationFixture.createRequestDto(duplicateDate,
                     duplicateReservationTimeId, savedTheme.getId());
 
             Assertions.assertThatThrownBy(
@@ -97,17 +97,17 @@ class ReservationServiceTest {
         void add_success_withDifferenceDateAndSameTime() {
             // given
             ReservationTime reservationTime1 = createAndSaveReservationTime(LocalTime.of(11, 33));
-            Reservation reservation1 = createReservation("kali", 1, reservationTime1);
+            Reservation reservation1 = createReservation(1, reservationTime1);
 
             ReservationTime reservationTime2 = createAndSaveReservationTime(LocalTime.of(22, 44));
-            Reservation reservation2 = createReservation("pobi", 2, reservationTime2);
+            Reservation reservation2 = createReservation(2, reservationTime2);
 
             reservationRepository.add(reservation1);
             reservationRepository.add(reservation2);
 
             // when & then
             Long duplicateReservationTimeId = reservationTime1.getId();
-            ReservationRequestDto requestDto = createRequestDto("jason", 3, duplicateReservationTimeId,
+            ReservationRequestDto requestDto = createRequestDto(3, duplicateReservationTimeId,
                     savedTheme.getId());
 
             Assertions.assertThatCode(

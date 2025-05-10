@@ -9,12 +9,12 @@ import roomescape.user.domain.User;
 
 public class ReservationFixture {
 
-    public static Reservation create(String name, LocalDate date, ReservationTime reservationTime, Theme theme,
+    public static Reservation create(LocalDate date, ReservationTime reservationTime, Theme theme,
                                      User user) {
-        return Reservation.of(name, date, reservationTime, theme, user);
+        return Reservation.of(date, reservationTime, theme, user);
     }
 
-    public static ReservationRequestDto createRequestDto(String name, LocalDate date, Long timeId, Long themeId) {
-        return new ReservationRequestDto(name, date, timeId, themeId);
+    public static ReservationRequestDto createRequestDto(LocalDate date, Long timeId, Long themeId) {
+        return new ReservationRequestDto(date, timeId, themeId);
     }
 }

@@ -187,7 +187,6 @@ class ReservationTimeServiceTest {
 
             reservationService.add(
                     new ReservationRequestDto(
-                            "r1",
                             LocalDate.now().plusMonths(3),
                             testDataConfig.getDefaultDummyTimeId(),
                             theme.getId()

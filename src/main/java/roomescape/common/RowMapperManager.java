@@ -50,7 +50,6 @@ public class RowMapperManager {
                                                   User user) throws SQLException {
         return new Reservation(
                 rs.getLong("reservation_id"),
-                rs.getString("reservation_name"),
                 rs.getDate("reservation_date").toLocalDate(),
                 reservationTime,
                 theme,

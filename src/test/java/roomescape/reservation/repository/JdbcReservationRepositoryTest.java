@@ -39,9 +39,9 @@ class JdbcReservationRepositoryTest {
     @Autowired
     private UserTestDataConfig userTestDataConfig;
 
-    private Reservation createReservation(String name, int plusDays, ReservationTime time) {
+    private Reservation createReservation(int plusDays, ReservationTime time) {
         LocalDate date = LocalDate.now().plusDays(plusDays);
-        return ReservationFixture.create(name, date, time, themeTestDataConfig.getSavedTheme(),
+        return ReservationFixture.create(date, time, themeTestDataConfig.getSavedTheme(),
                 userTestDataConfig.getSavedUser());
     }
 
@@ -51,7 +51,7 @@ class JdbcReservationRepositoryTest {
         // given
         ReservationTime reservationTime = reservationTimeRepository.add(new ReservationTime(LocalTime.now()));
 
-        Reservation reservation = createReservation("n1", 1, reservationTime);
+        Reservation reservation = createReservation(1, reservationTime);
         reservationRepository.add(reservation);
 
         // when

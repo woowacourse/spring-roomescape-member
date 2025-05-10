@@ -7,7 +7,6 @@ import roomescape.theme.domain.dto.ThemeResponseDto;
 
 public record ReservationResponseDto(
         Long id,
-        String name,
         LocalDate date,
         ReservationTimeResponseDto time,
         ThemeResponseDto theme
@@ -17,7 +16,6 @@ public record ReservationResponseDto(
                                               ThemeResponseDto themeResponseDto) {
         return new ReservationResponseDto(
                 reservation.getId(),
-                reservation.getName(),
                 reservation.getDate(),
                 reservationTimeResponseDto,
                 themeResponseDto

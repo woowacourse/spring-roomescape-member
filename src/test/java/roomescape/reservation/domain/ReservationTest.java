@@ -36,8 +36,8 @@ class ReservationTest {
     @Autowired
     private UserTestDataConfig userTestDataConfig;
 
-    private Reservation createReservation(String name, LocalDate date, ReservationTime time) {
-        return ReservationFixture.create(name, date, time, themeTestDataConfig.getSavedTheme(),
+    private Reservation createReservation(LocalDate date, ReservationTime time) {
+        return ReservationFixture.create(date, time, themeTestDataConfig.getSavedTheme(),
                 userTestDataConfig.getSavedUser());
     }
 
@@ -56,7 +56,7 @@ class ReservationTest {
 
             // when & then
             Assertions.assertThatThrownBy(
-                    () -> createReservation(dummyName, dummyPastDate, reservationTime)
+                    () -> createReservation(dummyPastDate, reservationTime)
             ).isInstanceOf(InvalidReservationTimeException.class);
         }
 
@@ -64,7 +64,6 @@ class ReservationTest {
         @Test
         void isPastTense_doesNotThrowExceptionByFutureTime() {
             // given
-            String dummyName = "kali";
             LocalDateTime dummyFuture = LocalDateTime.now().plusDays(1);
             LocalDate dummyPastDate = dummyFuture.toLocalDate();
             LocalTime dummyTime = dummyFuture.toLocalTime();
@@ -72,7 +71,7 @@ class ReservationTest {
 
             // when & then
             Assertions.assertThatCode(
-                    () -> createReservation(dummyName, dummyPastDate, reservationTime)
+                    () -> createReservation(dummyPastDate, reservationTime)
             ).doesNotThrowAnyException();
         }
 
@@ -80,16 +79,14 @@ class ReservationTest {
         @Test
         void isSameDateTime_false_bySameDateDifferenceTime() {
             // given
-            String dummyName1 = "kali";
             LocalDateTime dummyDateTime1 = LocalDateTime.now().plusDays(1);
             ReservationTime duplicateReservationTime = ReservationTimeFixture.create(dummyDateTime1.toLocalTime());
 
-            Reservation reservation1 = createReservation(dummyName1, dummyDateTime1.toLocalDate(),
+            Reservation reservation1 = createReservation(dummyDateTime1.toLocalDate(),
                     duplicateReservationTime);
 
-            String dummyName2 = "pobi";
             LocalDateTime dummyDateTime2 = LocalDateTime.now().plusDays(2);
-            Reservation reservation2 = createReservation(dummyName2, dummyDateTime2.toLocalDate(),
+            Reservation reservation2 = createReservation(dummyDateTime2.toLocalDate(),
                     duplicateReservationTime);
 
             // when
