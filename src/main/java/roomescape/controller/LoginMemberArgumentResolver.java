@@ -31,7 +31,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             WebDataBinderFactory binderFactory) throws Exception {
 
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        System.out.println("request.getAttribute(\"memberId\") = " + request.getAttribute("memberId"));
         Long memberId = (Long) request.getAttribute("memberId");
         return memberService.getMemberById(memberId);
     }
