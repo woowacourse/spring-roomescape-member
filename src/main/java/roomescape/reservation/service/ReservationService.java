@@ -3,17 +3,21 @@ package roomescape.reservation.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.auth.login.presentation.SearchCondition;
 import roomescape.common.util.time.DateTime;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
+import roomescape.member.presentation.MemberResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationResponse;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.ReservationTimeRepository;
+import roomescape.reservationTime.presentation.dto.ReservationTimeResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
+import roomescape.theme.presentation.dto.ThemeResponse;
 
 @Service
 public class ReservationService {
@@ -45,7 +49,7 @@ public class ReservationService {
 
         validateExistDuplicateReservation(request, time);
 
-        Reservation reservation = Reservation.createWithoutId(member.getName(), request.date(), time, theme);
+        Reservation reservation = Reservation.createWithoutId(request.date(), time, theme, member);
         validateCanReserveDateTime(reservation, dateTime.now());
         Long id = reservationRepository.save(reservation);
 
@@ -79,5 +83,22 @@ public class ReservationService {
         if (!isDeleted) {
             throw new IllegalArgumentException("존재하지 않는 예약입니다.");
         }
+    }
+
+    public List<ReservationResponse> searchReservationWithCondition(final SearchCondition condition) {
+        List<Reservation> reservations = reservationRepository.findBy(
+                condition.memberId(), condition.themeId(),
+                condition.dateFrom(), condition.dateTo()
+        );
+
+        return reservations.stream()
+                .map(reservation -> new ReservationResponse(
+                        reservation.getId(),
+                        reservation.getDate(),
+                        new ReservationTimeResponse(reservation.getTime().getId(), reservation.getTime().getStartAt()),
+                        new ThemeResponse(reservation.getTheme().getId(), reservation.getTheme().getName(), reservation.getTheme().getDescription(), reservation.getTheme().getThumbnail()),
+                        new MemberResponse(reservation.getMember().getId(), reservation.getMember().getName())
+                ))
+                .toList();
     }
 }

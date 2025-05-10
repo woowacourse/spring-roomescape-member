@@ -1,10 +1,14 @@
 package roomescape.reservation.presentation;
 
 import java.net.URI;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.login.presentation.SearchCondition;
 import roomescape.auth.login.presentation.controller.dto.annotation.LoginAdmin;
 import roomescape.auth.login.presentation.controller.dto.LoginAdminInfo;
 import roomescape.reservation.presentation.dto.AdminReservationRequest;
@@ -29,5 +33,13 @@ public class AdminReservationController {
         ReservationResponse response = reservationService.createReservation(
                 new ReservationRequest(request.date(), request.timeId(), request.themeId()), request.memberId());
         return ResponseEntity.created(URI.create("/admin/reservation")).body(response);
+    }
+
+
+    @GetMapping("/user-reservation")
+    public ResponseEntity<List<ReservationResponse>> reservationFilter(@ModelAttribute SearchCondition condition) {
+        List<ReservationResponse> responses = reservationService.searchReservationWithCondition(condition);
+
+        return ResponseEntity.ok().body(responses);
     }
 }
