@@ -88,7 +88,7 @@ class ReservationTimeServiceTest {
         ReservationTimeResponse response = reservationTimeService.createReservationTime(request);
         ReservationTime time = new ReservationTime(response.id(), response.startAt());
         Theme theme = new Theme(1L, "우테코방탈출", "탈출탈출탈출", "abcdefg");
-        reservationDao.save(new Reservation("노랑", LocalDate.now().plusDays(1), time, theme));
+        reservationDao.save(Reservation.register("노랑", LocalDate.now().plusDays(1), time, theme));
         // when
         // then
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(response.id()))

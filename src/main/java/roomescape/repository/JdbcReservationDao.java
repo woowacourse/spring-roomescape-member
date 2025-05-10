@@ -51,7 +51,7 @@ public class JdbcReservationDao implements ReservationRepository {
                 "theme_id", reservation.getTheme().getId()
         );
         final long id = reservationInserter.executeAndReturnKey(parameters).longValue();
-        return new Reservation(id, reservation);
+        return reservation.withId(id);
     }
 
     @Override

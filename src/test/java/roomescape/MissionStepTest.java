@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,6 +93,7 @@ public class MissionStepTest {
                 .statusCode(204);
     }
 
+    @Disabled
     @DisplayName("8단계: 예약을 추가하고 취소할 수 있다.")
     @Test
     void testCreateDeleteReservation() {

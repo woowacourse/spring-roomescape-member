@@ -13,7 +13,7 @@ public final class Reservation {
     private final ReservationDateTime dateTime;
     private final Theme theme;
 
-    private Reservation(final Long id, final MemberName name, final ReservationDateTime dateTime, final Theme theme) {
+    public Reservation(final Long id, final MemberName name, final ReservationDateTime dateTime, final Theme theme) {
         validateNotNull(name, dateTime, theme);
         this.id = id;
         this.name = name;
@@ -27,14 +27,17 @@ public final class Reservation {
         this(id, new MemberName(name), new ReservationDateTime(date, time), theme);
     }
 
-    public Reservation(final String name, final LocalDate date,
-                       final ReservationTime time, final Theme theme) {
-        this(null, new MemberName(name), new ReservationDateTime(date, time), theme);
-        validateDateTime();
+    public static Reservation register(final String name, final LocalDate date,
+                                       final ReservationTime time, final Theme theme) {
+        final ReservationDateTime dateTime = new ReservationDateTime(date, time);
+        if (dateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("지나간 날짜와 시간은 예약 불가합니다.");
+        }
+        return new Reservation(null, new MemberName(name), dateTime, theme);
     }
 
-    public Reservation(final long id, final Reservation reservation) {
-        this(id, reservation.name, reservation.dateTime, reservation.theme);
+    public Reservation withId(final long id) {
+        return new Reservation(id, name, dateTime, theme);
     }
 
     private void validateNotNull(final MemberName name, final ReservationDateTime dateTime, final Theme theme) {
@@ -46,12 +49,6 @@ public final class Reservation {
         }
         if (theme == null) {
             throw new IllegalArgumentException("테마를 입력해야 합니다.");
-        }
-    }
-
-    private void validateDateTime() {
-        if (dateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("지나간 날짜와 시간은 예약 불가합니다.");
         }
     }
 
