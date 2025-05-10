@@ -46,7 +46,7 @@ public class ReservationTimeService {
                                                                                              LocalDate date) {
         List<ReservationTime> allTime = repository.findAll();
         Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마입니다."));
+                .orElseThrow(InvalidThemeException::new);
         Set<ReservationTime> reservationTimesByThemeAndDate = reservationRepository.findByThemeAndDate(theme, date)
                 .stream()
                 .map(Reservation::getReservationTime)
@@ -65,7 +65,7 @@ public class ReservationTimeService {
     public void delete(Long id) {
         ReservationTime reservationTime = repository.findByIdOrThrow(id);
         if (reservationRepository.existsByReservationTime(reservationTime)) {
-            throw new AlreadyReservedTimeException("예약에서 사용 중인 시간입니다.");
+            throw new AlreadyReservedTimeException();
         }
         repository.delete(id);
     }
@@ -81,7 +81,7 @@ public class ReservationTimeService {
         boolean exists = repository.existsByReservationTime(inputReservationTime.getStartAt());
 
         if (exists) {
-            throw new DuplicateReservationException("이미 등록되어 있는 예약 시간입니다.");
+            throw new DuplicateReservationException();
         }
     }
 
