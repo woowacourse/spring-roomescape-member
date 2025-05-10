@@ -62,10 +62,10 @@
     - request
       ```
       POST /reservations HTTP/1.1
+      cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
       content-type: application/json
       
       {
-          "name": "예약자명",
           "reservation_date": "2025-04-29",
           "theme_id": "1",
           "time_id": "1"

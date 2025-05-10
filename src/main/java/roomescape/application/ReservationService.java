@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.infrastructure.repository.ReservationRepository;
+import roomescape.presentation.dto.LoginMember;
 import roomescape.presentation.dto.request.ReservationCreateRequest;
 import roomescape.presentation.dto.response.ReservationResponse;
 import roomescape.domain.Reservation;
@@ -37,7 +38,7 @@ public class ReservationService {
         return ReservationResponse.from(reservations);
     }
 
-    public ReservationResponse createReservation(ReservationCreateRequest request) {
+    public ReservationResponse createReservation(ReservationCreateRequest request, LoginMember loginMember) {
         ReservationDate reservationDate = new ReservationDate(request.date());
         Long timeId = request.timeId();
         Long themeId = request.themeId();
@@ -46,7 +47,7 @@ public class ReservationService {
             throw new IllegalArgumentException("[ERROR] 이미 예약이 찼습니다.");
         }
 
-        ReserverName reserverName = new ReserverName(request.name());
+        ReserverName reserverName = new ReserverName(loginMember.name());
         ReservationTime reservationTime = reservationTimeService.findReservationTimeById(timeId);
         ReservationDateTime reservationDateTime = ReservationDateTime.create(reservationDate, reservationTime, currentTimeService.now());
         Theme theme = themeService.findThemeById(themeId);

@@ -17,8 +17,8 @@ public class MemberDbFixture {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Member 듀이() {
-        String name = "듀이";
+    public Member 한스() {
+        String name = "한스";
         String email = "test@test.com";
         String password = "pass1";
 

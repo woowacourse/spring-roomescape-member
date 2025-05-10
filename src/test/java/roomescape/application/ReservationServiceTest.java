@@ -5,14 +5,17 @@ import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.common.BaseTest;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.fixture.MemberDbFixture;
 import roomescape.fixture.ReservationDateFixture;
 import roomescape.fixture.ReservationDbFixture;
 import roomescape.fixture.ReservationTimeDbFixture;
 import roomescape.fixture.ReserverNameFixture;
 import roomescape.fixture.ThemeDbFixture;
+import roomescape.presentation.dto.LoginMember;
 import roomescape.presentation.dto.request.ReservationCreateRequest;
 import roomescape.presentation.dto.response.ReservationResponse;
 import roomescape.presentation.dto.response.ReservationTimeResponse;
@@ -38,19 +41,23 @@ class ReservationServiceTest extends BaseTest {
     @Autowired
     private ReservationDbFixture reservationDbFixture;
 
+    @Autowired
+    private MemberDbFixture memberDbFixture;
+
     @Test
     void 예약을_생성한다() {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
+        Member member = memberDbFixture.한스();
 
         ReservationCreateRequest request = new ReservationCreateRequest(
-                ReserverNameFixture.한스.getName(),
                 ReservationDateFixture.예약날짜_25_4_22.getDate(),
                 reservationTime.getId(),
                 theme.getId()
         );
+        LoginMember loginMember = LoginMember.from(member);
 
-        ReservationResponse response = reservationService.createReservation(request);
+        ReservationResponse response = reservationService.createReservation(request, loginMember);
 
         assertAll(
                 () -> assertThat(response.id()).isEqualTo(1L),
@@ -66,15 +73,16 @@ class ReservationServiceTest extends BaseTest {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
         reservationDbFixture.예약_한스_25_4_22_10시_공포(reservationTime, theme);
+        Member member = memberDbFixture.한스();
 
         ReservationCreateRequest request = new ReservationCreateRequest(
-                ReserverNameFixture.한스.getName(),
                 ReservationDateFixture.예약날짜_25_4_22.getDate(),
                 reservationTime.getId(),
                 theme.getId()
         );
+        LoginMember loginMember = LoginMember.from(member);
 
-        assertThatThrownBy(() -> reservationService.createReservation(request))
+        assertThatThrownBy(() -> reservationService.createReservation(request, loginMember))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -84,15 +92,16 @@ class ReservationServiceTest extends BaseTest {
         Theme horror = themeDbFixture.공포();
         Theme mystery = themeDbFixture.커스텀_테마("미스테리");
         reservationDbFixture.예약_한스_25_4_22_10시_공포(reservationTime, horror);
+        Member member = memberDbFixture.한스();
 
         ReservationCreateRequest request = new ReservationCreateRequest(
-                ReserverNameFixture.한스.getName(),
                 ReservationDateFixture.예약날짜_25_4_22.getDate(),
                 reservationTime.getId(),
                 mystery.getId()
         );
+        LoginMember loginMember = LoginMember.from(member);
 
-        assertThatCode(() -> reservationService.createReservation(request))
+        assertThatCode(() -> reservationService.createReservation(request, loginMember))
                 .doesNotThrowAnyException();
     }
 
