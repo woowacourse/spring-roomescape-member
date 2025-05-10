@@ -13,11 +13,8 @@ public record AvailableReservationTimeWebResponse(
         Boolean isBooked
 ) {
 
-    public AvailableReservationTimeWebResponse(final LocalTime startAt, final Long timeId, final Boolean isBooked) {
+    public AvailableReservationTimeWebResponse {
         validate(startAt, timeId, isBooked);
-        this.startAt = startAt;
-        this.timeId = timeId;
-        this.isBooked = isBooked;
     }
 
     private void validate(final LocalTime startAt, final Long timeId, final Boolean isBooked) {
