@@ -53,13 +53,13 @@ class ReservationTimeServiceTest {
         memberRepository.save("베루스", "verus@woowa.com", "verusverus123", Role.ADMIN);
 
         reservationRepository.saveAndReturnId(
-                new Reservation(null, LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L).get(),
+                new Reservation(null, LocalDate.now().minusDays(3), reservationTimeRepository.findById(1L).get(),
                         themeRepository.findById(1L).get(), memberRepository.findById(1L).get()));
         reservationRepository.saveAndReturnId(
-                new Reservation(null, LocalDate.of(2025, 4, 2), reservationTimeRepository.findById(2L).get(),
+                new Reservation(null, LocalDate.now().minusDays(1), reservationTimeRepository.findById(2L).get(),
                         themeRepository.findById(2L).get(), memberRepository.findById(2L).get()));
         reservationRepository.saveAndReturnId(
-                new Reservation(null, LocalDate.of(2025, 5, 15), reservationTimeRepository.findById(3L).get(),
+                new Reservation(null, LocalDate.now().plusDays(3), reservationTimeRepository.findById(3L).get(),
                         themeRepository.findById(3L).get(), memberRepository.findById(3L).get()));
 
         reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);

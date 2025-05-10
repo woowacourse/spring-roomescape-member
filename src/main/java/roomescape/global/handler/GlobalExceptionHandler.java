@@ -24,6 +24,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalStateException.class)
     public String handleIllegalStateException(IllegalStateException exception) {
         LOGGER.error(exception.getMessage());
+        exception.printStackTrace();
         return exception.getMessage();
     }
 
@@ -38,6 +39,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public String handleException(Exception exception) {
         LOGGER.error(exception.getMessage());
+        exception.printStackTrace();
         return "서버 내부에서 오류가 발생했습니다.";
     }
 

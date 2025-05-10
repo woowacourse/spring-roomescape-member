@@ -46,7 +46,7 @@ class ReservationServiceTest {
         MemberFakeRepository memberRepository = new MemberFakeRepository();
         clock = Clock.fixed(Instant.parse("2025-03-28T23:59:59Z"), ZoneOffset.UTC);
 
-        reservationTimeRepository.saveAndReturnId(new ReservationTime(null, LocalTime.of(3, 12)));
+        reservationTimeRepository.saveAndReturnId(new ReservationTime(null, LocalTime.of(0, 0)));
         reservationTimeRepository.saveAndReturnId(new ReservationTime(null, LocalTime.of(11, 33)));
         reservationTimeRepository.saveAndReturnId(new ReservationTime(null, LocalTime.of(16, 54)));
         reservationTimeRepository.saveAndReturnId(new ReservationTime(null, LocalTime.of(23, 53)));
@@ -63,13 +63,13 @@ class ReservationServiceTest {
         memberRepository.save("베루스", "verus@woowa.com", "verusverus123", Role.ADMIN);
 
         reservationRepository.saveAndReturnId(
-                new Reservation(null, LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L).get(),
+                new Reservation(null, LocalDate.now().minusDays(3), reservationTimeRepository.findById(1L).get(),
                         themeRepository.findById(1L).get(), memberRepository.findById(1L).get()));
         reservationRepository.saveAndReturnId(
-                new Reservation(null, LocalDate.of(2025, 4, 2), reservationTimeRepository.findById(2L).get(),
+                new Reservation(null, LocalDate.now().minusDays(1), reservationTimeRepository.findById(2L).get(),
                         themeRepository.findById(2L).get(), memberRepository.findById(2L).get()));
         reservationRepository.saveAndReturnId(
-                new Reservation(null, LocalDate.of(2025, 5, 15), reservationTimeRepository.findById(3L).get(),
+                new Reservation(null, LocalDate.now().plusDays(3), reservationTimeRepository.findById(3L).get(),
                         themeRepository.findById(3L).get(), memberRepository.findById(3L).get()));
 
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
@@ -100,7 +100,7 @@ class ReservationServiceTest {
     @Test
     void add_test() {
         // given
-        ReservationRequest request = new ReservationRequest(LocalDate.of(2025, 5, 3), 4L, 3L, 1L);
+        ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(2), 4L, 3L, 1L);
 
         // when
         ReservationResponse response = reservationService.add(request);
@@ -131,7 +131,7 @@ class ReservationServiceTest {
     @Test
     void past_day_exception_test() {
         // given
-        ReservationRequest request = new ReservationRequest(LocalDate.now(clock).minusDays(1), 4L, 3L, 1L);
+        ReservationRequest request = new ReservationRequest(LocalDate.now().minusDays(1), 4L, 3L, 1L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.add(request))
@@ -143,7 +143,7 @@ class ReservationServiceTest {
     @Test
     void past_time_exception_test() {
         // given
-        ReservationRequest request = new ReservationRequest(LocalDate.now(clock), 1L, 3L, 1L);
+        ReservationRequest request = new ReservationRequest(LocalDate.now(), 1L, 3L, 1L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.add(request))
@@ -155,7 +155,7 @@ class ReservationServiceTest {
     @Test
     void future_test() {
         // given
-        ReservationRequest request = new ReservationRequest(LocalDate.now(clock).plusDays(3), 1L, 1L, 1L);
+        ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(3), 1L, 1L, 1L);
 
         // when
         ReservationResponse response = reservationService.add(request);
@@ -174,7 +174,7 @@ class ReservationServiceTest {
     @Test
     void reservation_duplicate_exception() {
         // given
-        ReservationRequest request = new ReservationRequest(LocalDate.of(2025, 5, 15), 3L, 3L, 1L);
+        ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(3), 3L, 3L, 1L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.add(request))
@@ -186,7 +186,7 @@ class ReservationServiceTest {
     @Test
     void get_available_times_test() {
         // given
-        LocalDate date = LocalDate.of(2025, 3, 28);
+        LocalDate date = LocalDate.now().minusDays(3);
         Long themeId = 1L;
 
         // when
@@ -221,11 +221,11 @@ class ReservationServiceTest {
         return Stream.of(
                 Arguments.of(1L, null, null, null, List.of(1L)),
                 Arguments.of(null, 2L, null, null, List.of(2L)),
-                Arguments.of(null, null, LocalDate.of(2025, 4, 1), null, List.of(2L, 3L)),
-                Arguments.of(null, null, null, LocalDate.of(2025, 4, 1), List.of(1L)),
-                Arguments.of(null, null, LocalDate.of(2025, 3, 29), LocalDate.of(2025, 5, 1), List.of(2L)),
+                Arguments.of(null, null, LocalDate.now().minusDays(2), null, List.of(2L, 3L)),
+                Arguments.of(null, null, null, LocalDate.now().minusDays(2), List.of(1L)),
+                Arguments.of(null, null, LocalDate.now().minusDays(2), LocalDate.now().plusDays(2), List.of(2L)),
                 Arguments.of(3L, 3L, null, null, List.of(3L)),
-                Arguments.of(1L, 1L, LocalDate.of(2025, 3, 1), LocalDate.of(2025, 3, 30), List.of(1L)),
+                Arguments.of(1L, 1L, LocalDate.now().minusDays(5), LocalDate.now().minusDays(2), List.of(1L)),
                 Arguments.of(null, null, null, null, List.of(1L, 2L, 3L))
         );
     }

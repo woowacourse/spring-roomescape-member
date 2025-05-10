@@ -114,10 +114,10 @@ class JdbcThemeDaoTest {
 
     @DisplayName("인기 테마 목록의 ID를 조회한다")
     @Test
-    void find_top_theme_id_by_date_range_test(){
+    void find_top_theme_id_by_date_range_test() {
         // given
-        LocalDate start = LocalDate.of(2025, 4, 27);
-        LocalDate end = LocalDate.of(2025, 5, 3);
+        LocalDate start = LocalDate.now().minusDays(3);
+        LocalDate end = LocalDate.now().plusDays(3);
         int limit = 10;
 
         // when

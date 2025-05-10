@@ -212,7 +212,7 @@ class ReservationIntegrationTest {
 
         Map<String, String> requestBody = Map.of(
                 "name", "루키",
-                "date", "2025-05-06",
+                "date", LocalDate.now().plusDays(3).toString(),
                 "timeId", "1",
                 "themeId", "200",
                 "memberId", "1"
@@ -249,25 +249,19 @@ class ReservationIntegrationTest {
 
 
     static Stream<Arguments> add_reservation_null_empty_exception() {
+        String saveDate = LocalDate.now().plusDays(2).toString();
         return Stream.of(
                 Arguments.of(
                         Map.of(
                                 "name", " ",
-                                "date", "2025-03-21",
+                                "date", saveDate,
                                 "timeId", "1L",
                                 "themeId", "1L"
                         )
                 ),
                 Arguments.of(
                         Map.of(
-                                "date", "2025-03-21",
-                                "timeId", "1L",
-                                "themeId", "1L"
-                        )
-                ),
-                Arguments.of(
-                        Map.of(
-                                "name", "루키",
+                                "date", saveDate,
                                 "timeId", "1L",
                                 "themeId", "1L"
                         )
@@ -275,14 +269,21 @@ class ReservationIntegrationTest {
                 Arguments.of(
                         Map.of(
                                 "name", "루키",
-                                "date", "2025-03-21",
+                                "timeId", "1L",
                                 "themeId", "1L"
                         )
                 ),
                 Arguments.of(
                         Map.of(
                                 "name", "루키",
-                                "date", "2025-03-21",
+                                "date", saveDate,
+                                "themeId", "1L"
+                        )
+                ),
+                Arguments.of(
+                        Map.of(
+                                "name", "루키",
+                                "date", saveDate,
                                 "timeId", "1L"
                         )
                 )
@@ -294,7 +295,7 @@ class ReservationIntegrationTest {
                 Arguments.of(
                         Map.of(
                                 "name", "루키",
-                                "date", "2000-01-01",
+                                "date", LocalDate.now().minusDays(10).toString(),
                                 "timeId", "1",
                                 "themeId", "1"
                         ),
@@ -303,7 +304,7 @@ class ReservationIntegrationTest {
                 Arguments.of(
                         Map.of(
                                 "name", "루키",
-                                "date", "2025-05-04",
+                                "date", LocalDate.now().toString(),
                                 "timeId", "1",
                                 "themeId", "1"
                         ),

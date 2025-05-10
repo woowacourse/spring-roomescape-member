@@ -118,11 +118,11 @@ public class ReservationService {
     }
 
     private void validateDateAndTime(LocalDate date, LocalTime time) {
-        LocalDate now = LocalDate.now(clock);
+        LocalDate now = LocalDate.now();
         if (date.isBefore(now)) {
             throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
         }
-        if (date.equals(now) && time.isBefore(LocalTime.now(clock))) {
+        if (date.equals(now) && time.isBefore(LocalTime.now())) {
             throw new IllegalArgumentException("지난 시각은 예약할 수 없습니다.");
         }
     }

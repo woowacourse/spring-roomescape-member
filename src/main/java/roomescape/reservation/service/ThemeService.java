@@ -58,8 +58,8 @@ public class ThemeService {
     }
 
     public List<ThemeRankingResponse> getThemeRankings() {
-        LocalDate startDate = LocalDate.now(clock).minusDays(DAYS_BEFORE_START);
-        LocalDate endDate = LocalDate.now(clock).minusDays(DAYS_BEFORE_END);
+        LocalDate startDate = LocalDate.now().minusDays(DAYS_BEFORE_START);
+        LocalDate endDate = LocalDate.now().minusDays(DAYS_BEFORE_END);
         List<Long> themeRankIds = themeRepository.findTopThemeIdByDateRange(startDate, endDate, RANKING_LIMIT);
         List<Theme> unorderedThemes = themeRepository.findByIdIn(themeRankIds);
 
