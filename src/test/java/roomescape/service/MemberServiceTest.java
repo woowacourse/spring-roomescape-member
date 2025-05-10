@@ -35,6 +35,6 @@ class MemberServiceTest {
         when(memberDao.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
 
         // when
-        assertThat(memberService.findMemberByToken(token).name()).isEqualTo("체체");
+        assertThat(memberService.findByToken(token).name()).isEqualTo("체체");
     }
 }
