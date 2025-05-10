@@ -34,7 +34,7 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findById(Long id) {
-        String sql = "select id AS user_id, name AS user_name, email AS user_email, password AS user_password from users where id = ?";
+        String sql = "select id AS user_id, role AS user_role, name AS user_name, email AS user_email, password AS user_password from users where id = ?";
 
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, RowMapperManager.userRowMapper, id));
@@ -52,7 +52,7 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findUseByEmail(String email) {
-        String sql = "select id AS user_id, name AS user_name, email AS user_email, password AS user_password from users where email = ?";
+        String sql = "select id AS user_id, role AS user_role, name AS user_name, email AS user_email, password AS user_password from users where email = ?";
 
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, RowMapperManager.userRowMapper, email));
@@ -63,9 +63,10 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findUserByEmailAndPassword(String email, String password) {
-        String sql = "select id AS user_id, name AS user_name, email AS user_email, password AS user_password "
-                + "FROM users "
-                + "WHERE email = ? AND password = ?";
+        String sql =
+                "select id AS user_id, role AS user_role, name AS user_name, email AS user_email, password AS user_password "
+                        + "FROM users "
+                        + "WHERE email = ? AND password = ?";
 
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, RowMapperManager.userRowMapper, email, password));
@@ -75,16 +76,17 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     private Long insertWithKeyHolder(User user) {
-        String sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO users (role, name, email, password) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     sql,
                     new String[]{"id"});
-            ps.setString(1, user.getName());
-            ps.setString(2, user.getEmail());
-            ps.setString(3, user.getPassword());
+            ps.setString(1, user.getRole().name());
+            ps.setString(2, user.getName());
+            ps.setString(3, user.getEmail());
+            ps.setString(4, user.getPassword());
             return ps;
         }, keyHolder);
 

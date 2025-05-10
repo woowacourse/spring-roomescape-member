@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import roomescape.auth.domain.dto.TokenRequestDto;
+import roomescape.user.domain.Role;
 import roomescape.user.fixture.UserFixture;
 import roomescape.user.service.UserService;
 
@@ -37,14 +38,13 @@ class AuthControllerTest {
 
         @BeforeEach
         void setUPLogin() {
-            userService.add(UserFixture.createRequestDto("name", EMAIL, PASSWORD));
+            userService.add(UserFixture.createRequestDto(Role.ROLE_MEMBER, "name", EMAIL, PASSWORD));
         }
 
         @DisplayName("유효한 이메일과 비밀번호로 로그인을 성공한다.")
         @Test
         void login_success() {
             // given
-
             // when
             TokenRequestDto requestDto = new TokenRequestDto(EMAIL, PASSWORD);
 

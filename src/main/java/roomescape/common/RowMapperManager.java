@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
+import roomescape.user.domain.Role;
 import roomescape.user.domain.User;
 
 public class RowMapperManager {
@@ -38,6 +39,7 @@ public class RowMapperManager {
     public static User mapRowToUser(ResultSet rs) throws SQLException {
         return new User(
                 rs.getLong("user_id"),
+                Role.findByName(rs.getString("user_role")),
                 rs.getString("user_name"),
                 rs.getString("user_email"),
                 rs.getString("user_password")

@@ -20,6 +20,7 @@ import roomescape.reservationTime.fixture.ReservationTimeFixture;
 import roomescape.reservationTime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.user.domain.Role;
 import roomescape.user.domain.User;
 import roomescape.user.fixture.UserFixture;
 import roomescape.user.repository.UserRepository;
@@ -45,7 +46,7 @@ class ReservationServiceTest {
     @BeforeEach
     void beforeEach() {
         savedTheme = themeRepository.save(new Theme("name1", "dd", "tt"));
-        savedUser = userRepository.save(UserFixture.create("n1", "e1", "p1"));
+        savedUser = userRepository.save(UserFixture.create(Role.ROLE_MEMBER, "n1", "e1", "p1"));
     }
 
     private ReservationTime createAndSaveReservationTime(LocalTime time) {

@@ -20,7 +20,7 @@ public class ReservationTableTest {
         // then
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('10:00')");
         jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES ('Theme 1', '테마1 설명','썸네일')");
-        jdbcTemplate.update("INSERT INTO users (name, email, password) VALUES ('n1', 'e1', 'p1')");
+        jdbcTemplate.update("INSERT INTO users (role, name, email, password) VALUES ('ROLE_MEMBER', 'n1', 'e1', 'p1')");
         jdbcTemplate.update(
                 "INSERT INTO reservation (date, time_id, theme_id, user_id) VALUES ('2025-11-11', 1L, 1L, 1L)");
 

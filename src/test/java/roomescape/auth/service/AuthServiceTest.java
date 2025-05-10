@@ -12,6 +12,7 @@ import roomescape.auth.JwtTokenProvider;
 import roomescape.auth.domain.dto.TokenResponseDto;
 import roomescape.auth.exception.InvalidTokenException;
 import roomescape.auth.fixture.AuthFixture;
+import roomescape.user.domain.Role;
 import roomescape.user.domain.User;
 import roomescape.user.domain.dto.UserResponseDto;
 import roomescape.user.fixture.UserFixture;
@@ -44,7 +45,7 @@ class AuthServiceTest {
 
         @BeforeEach
         void setUPLogin() {
-            savedUser = userRepository.save(UserFixture.create(NAME, EMAIL, PASSWORD));
+            savedUser = userRepository.save(UserFixture.create(Role.ROLE_MEMBER, NAME, EMAIL, PASSWORD));
             TokenResponseDto tokenResponseDto = authService.login(AuthFixture.createTokenRequestDto(EMAIL, PASSWORD));
             accessToken = tokenResponseDto.accessToken();
         }

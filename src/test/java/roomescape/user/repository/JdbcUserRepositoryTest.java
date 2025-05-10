@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.user.domain.Role;
 import roomescape.user.domain.User;
 
 @JdbcTest
@@ -19,7 +20,7 @@ class JdbcUserRepositoryTest {
     @Test
     void findUserByEmailAndPassword_byEmailAndPassword() {
         // given
-        User user = new User(1L, "name", "email", "password");
+        User user = new User(1L, Role.ROLE_MEMBER, "name", "email", "password");
         User expected = jdbcUserRepository.save(user);
 
         // when
@@ -35,7 +36,7 @@ class JdbcUserRepositoryTest {
     @Test
     void existUserByEmailAndPassword() {
         // given
-        User user = new User(1L, "name", "email", "password");
+        User user = new User(1L, Role.ROLE_MEMBER, "name", "email", "password");
         jdbcUserRepository.save(user);
 
         // when

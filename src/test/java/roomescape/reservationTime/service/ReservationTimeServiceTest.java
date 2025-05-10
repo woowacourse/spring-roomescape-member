@@ -29,6 +29,7 @@ import roomescape.reservationTime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.user.domain.Role;
 import roomescape.user.domain.User;
 import roomescape.user.fixture.UserFixture;
 import roomescape.user.repository.JdbcUserRepository;
@@ -181,9 +182,8 @@ class ReservationTimeServiceTest {
         @Test
         void delete_throwException_whenUsingInReservation() {
             // given
-
             Theme theme = themeRepository.save(new Theme("name1", "dd", "tt"));
-            User savedUser = userRepository.save(UserFixture.create("n1", "e1", "p1"));
+            User savedUser = userRepository.save(UserFixture.create(Role.ROLE_MEMBER, "n1", "e1", "p1"));
 
             reservationService.add(
                     new ReservationRequestDto(
