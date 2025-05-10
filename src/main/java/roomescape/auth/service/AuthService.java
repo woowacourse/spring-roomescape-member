@@ -6,6 +6,7 @@ import roomescape.auth.entity.Member;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.auth.repository.JdbcAuthRepository;
 import roomescape.exception.impl.HasDuplicatedEmailException;
+import roomescape.exception.impl.MemberNotFountException;
 
 @Service
 public class AuthService {
@@ -32,13 +33,12 @@ public class AuthService {
     }
 
     public String login(final String email, final String password) {
-        checkInvalidLogin(email, password);
-        return jwtTokenProvider.createToken(email);
-    }
-
-    private void checkInvalidLogin(final String email, final String password) {
         Member member = jdbcAuthRepository.findByEmail(email);
+        if (member == null) {
+            throw new MemberNotFountException();
+        }
         member.validatePassword(password);
+        return jwtTokenProvider.createToken(member);
     }
 
 }
