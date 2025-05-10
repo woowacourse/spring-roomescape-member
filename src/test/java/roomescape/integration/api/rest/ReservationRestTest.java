@@ -31,12 +31,14 @@ class ReservationRestTest extends RestAssuredTestBase {
     void setUp() {
         timeId = RestAssured.given()
                 .contentType(ContentType.JSON)
+                .cookie("JSESSIONID", getSessionId())
                 .body(Map.of("startAt", "10:00"))
                 .when().post("/times")
                 .then().statusCode(201)
                 .extract().path("id");
         themeId = RestAssured.given()
                 .contentType(ContentType.JSON)
+                .cookie("JSESSIONID", getSessionId())
                 .body(Map.of(
                         "name", "어드벤처",
                         "description", "정글 탐험 컨셉",
@@ -72,6 +74,7 @@ class ReservationRestTest extends RestAssuredTestBase {
     void 예약_목록을_조회한다() {
         예약을_생성한다();
         RestAssured.given().log().all()
+                .cookie("JSESSIONID", getSessionId())
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -90,6 +93,7 @@ class ReservationRestTest extends RestAssuredTestBase {
         예약을_생성한다();
         RestAssured.given().log().all()
                 .param("themeId", themeId)
+                .cookie("JSESSIONID", getSessionId())
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -107,6 +111,7 @@ class ReservationRestTest extends RestAssuredTestBase {
     void 예약을_삭제한다() {
         예약을_생성한다();
         RestAssured.given().log().all()
+                .cookie("JSESSIONID", getSessionId())
                 .when().delete("/reservations/{id}", 1)
                 .then().log().all()
                 .statusCode(204);

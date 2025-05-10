@@ -6,9 +6,20 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import roomescape.common.RestAssuredTestBase;
+import roomescape.domain.member.MemberEmail;
+import roomescape.domain.member.MemberEncodedPassword;
+import roomescape.domain.member.MemberName;
+import roomescape.domain.member.MemberRole;
+import roomescape.repository.MemberRepository;
 
 class ThemeRestTest extends RestAssuredTestBase {
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     private Map<String, String> createThemeRequest = Map.of(
             "name", "공포방탈출",
@@ -20,6 +31,7 @@ class ThemeRestTest extends RestAssuredTestBase {
     void 테마를_생성한다() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("JSESSIONID", getSessionId())
                 .body(createThemeRequest)
                 .when().post("/themes")
                 .then().log().all()
@@ -34,6 +46,7 @@ class ThemeRestTest extends RestAssuredTestBase {
     void 테마_목록을_조회한다() {
         테마를_생성한다();
         RestAssured.given().log().all()
+                .cookie("JSESSIONID", getSessionId())
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
@@ -47,11 +60,13 @@ class ThemeRestTest extends RestAssuredTestBase {
     void 테마를_삭제한다() {
         Integer id = RestAssured.given()
                 .contentType(ContentType.JSON)
+                .cookie("JSESSIONID", getSessionId())
                 .body(createThemeRequest)
                 .when().post("/themes")
                 .then().statusCode(201)
                 .extract().path("id");
         RestAssured.given().log().all()
+                .cookie("JSESSIONID", getSessionId())
                 .when().delete("/themes/{id}", id)
                 .then().log().all()
                 .statusCode(204);
@@ -61,9 +76,34 @@ class ThemeRestTest extends RestAssuredTestBase {
     void 인기_테마를_조회한다() {
         테마를_생성한다();
         RestAssured.given().log().all()
+                .cookie("JSESSIONID", getSessionId())
                 .when().get("/themes/popular")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", greaterThanOrEqualTo(0));
+    }
+
+    private String getSessionId() {
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        memberRepository.save(
+                new MemberEmail("leenyeonsu4888@gmail.com"),
+                new MemberName("홍길동"),
+                new MemberEncodedPassword(encoder.encode("gustn111!!")),
+                MemberRole.MEMBER
+        );
+
+        Map<String, Object> request = Map.of(
+                "password", "gustn111!!",
+                "email", "leenyeonsu4888@gmail.com"
+        );
+
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .cookie("JSESSIONID");
     }
 }
