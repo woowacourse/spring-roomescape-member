@@ -44,7 +44,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> loginCheck(HttpServletResponse response) {
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
         ResponseCookie jwtCookie = createCookie("token", "", 0);
         return ResponseEntity.noContent()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())

@@ -5,11 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.common.exception.AuthException;
-import roomescape.common.exception.AuthException.LoginAuthException;
 import roomescape.common.exception.BusinessRuleViolationException;
 import roomescape.common.exception.CoreException;
 import roomescape.common.exception.NotFoundEntityException;
+import roomescape.common.exception.UnauthorizedException;
+import roomescape.common.exception.UnauthorizedException.LoginAuthException;
 import roomescape.presentation.response.ApiFailResponse;
 
 @RestControllerAdvice
@@ -41,8 +41,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ApiFailResponse(e.getMessage()));
     }
 
-    @ExceptionHandler(AuthException.class)
-    public ResponseEntity<ApiFailResponse> handleAuthException(AuthException e) {
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiFailResponse> handleAuthException(UnauthorizedException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiFailResponse("인증에 실패했습니다."));
     }
 

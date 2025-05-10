@@ -9,7 +9,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.common.exception.AuthException;
+import roomescape.common.exception.UnauthorizedException;
 import roomescape.service.JwtProvider;
 import roomescape.service.JwtProvider.JwtPayload;
 
@@ -40,6 +40,6 @@ public class AuthInfoArgumentResolver implements HandlerMethodArgumentResolver {
         return Arrays.stream(request.getCookies())
                 .filter(each -> each.getName().equals("token"))
                 .findFirst()
-                .orElseThrow(() -> new AuthException("인증 쿠키값이 존재하지 않습니다."));
+                .orElseThrow(() -> new UnauthorizedException("인증 쿠키값이 존재하지 않습니다."));
     }
 }

@@ -1,15 +1,15 @@
 package roomescape.common.exception;
 
-public class AuthException extends CoreException {
-    public AuthException(String message) {
+public class UnauthorizedException extends CoreException {
+    public UnauthorizedException(String message) {
         super(message);
     }
 
-    public AuthException(String message, Throwable cause) {
+    public UnauthorizedException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public static class LoginAuthException extends AuthException {
+    public static class LoginAuthException extends UnauthorizedException {
 
         public LoginAuthException(String message) {
             super(message);
