@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.infrastructure.repository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,19 +17,19 @@ public class ThemeJdbcRepository implements ThemeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public ThemeJdbcRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
-    }
-
     private static final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("description"),
             resultSet.getString("thumbnail")
     );
+
+    public ThemeJdbcRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
+    }
 
     @Override
     public List<Theme> findAll() {

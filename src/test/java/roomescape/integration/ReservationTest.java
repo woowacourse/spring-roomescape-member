@@ -18,7 +18,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.common.BaseTest;
 import roomescape.presentation.dto.response.ReservationResponse;
 import roomescape.domain.Theme;
-import roomescape.infrastructure.ThemeRepository;
+import roomescape.infrastructure.repository.ThemeRepository;
 
 public class ReservationTest extends BaseTest {
 

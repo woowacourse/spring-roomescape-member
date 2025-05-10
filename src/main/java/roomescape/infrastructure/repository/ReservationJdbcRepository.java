@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.infrastructure.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,13 +23,6 @@ public class ReservationJdbcRepository implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public ReservationJdbcRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
-    }
-
     private final static RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) ->
             new Reservation(
                     resultSet.getLong("reservation_id"),
@@ -45,6 +38,13 @@ public class ReservationJdbcRepository implements ReservationRepository {
                             resultSet.getString("theme_description"),
                             resultSet.getString("theme_thumbnail")
                     ));
+
+    public ReservationJdbcRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
+    }
 
     public List<Reservation> findAll() {
         String sql = """
