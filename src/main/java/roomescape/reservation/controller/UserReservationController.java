@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.dto.AuthenticatedMember;
+import roomescape.global.annotation.AuthenticationPrincipal;
 import roomescape.reservation.controller.dto.request.CreateReservationRequest;
 import roomescape.reservation.controller.dto.response.ReservationResponse;
 import roomescape.reservation.application.UserReservationService;
@@ -23,8 +25,13 @@ public class UserReservationController {
     // TODO : Admin과 API를 공유하고 있다. 분리를 고민해보자.
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ReservationResponse create(@RequestBody @Valid CreateReservationRequest request) {
-        ReservationServiceResponse response = userReservationService.create(request.toServiceRequest());
+    public ReservationResponse create(
+            @RequestBody @Valid CreateReservationRequest request,
+            @AuthenticationPrincipal AuthenticatedMember authenticatedMember
+    ) {
+        String reservationName = authenticatedMember.name();
+        System.out.println(reservationName);
+        ReservationServiceResponse response = userReservationService.create(request.toServiceRequest(reservationName));
         return ReservationResponse.from(response);
     }
 }

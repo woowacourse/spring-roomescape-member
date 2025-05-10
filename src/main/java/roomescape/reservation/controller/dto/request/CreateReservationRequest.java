@@ -1,13 +1,10 @@
 package roomescape.reservation.controller.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import roomescape.reservation.application.dto.request.CreateReservationServiceRequest;
 
 public record CreateReservationRequest(
-        @NotBlank(message = "예약자명을 빈 문자열이 아닌 값으로 입력해주세요.")
-        String name,
         @NotNull(message = "날짜를 필수로 입력해야 합니다.")
         LocalDate date,
         @NotNull(message = "시간을 필수로 입력해야 합니다.")
@@ -16,7 +13,7 @@ public record CreateReservationRequest(
         Long themeId
 ) {
 
-    public CreateReservationServiceRequest toServiceRequest() {
+    public CreateReservationServiceRequest toServiceRequest(String name) {
         return new CreateReservationServiceRequest(name, date, timeId, themeId);
     }
 }
