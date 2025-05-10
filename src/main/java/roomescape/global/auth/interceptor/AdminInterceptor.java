@@ -29,7 +29,7 @@ public class AdminInterceptor implements HandlerInterceptor {
             final Object handler
     ) {
         if (request.getCookies() == null) {
-            throw new UnauthorizedException("사용자 인증 정보가 없습니다.");
+            throw new UnauthorizedException("로그인이 필요합니다.");
         }
 
         String accessToken = tokenCookieService.getTokenFromCookies(request.getCookies());

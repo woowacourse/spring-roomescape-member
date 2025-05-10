@@ -22,7 +22,7 @@ public class TokenCookieService {
         return Arrays.stream(cookies)
                 .filter(c -> c.getName().equals(COOKIE_TOKEN_KEY))
                 .findFirst()
-                .orElseThrow(() -> new UnauthorizedException("사용자 인증 정보가 없습니다."))
+                .orElseThrow(() -> new UnauthorizedException("로그인이 필요합니다."))
                 .getValue();
     }
 }

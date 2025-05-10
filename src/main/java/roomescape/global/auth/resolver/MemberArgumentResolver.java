@@ -35,10 +35,10 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
             final ModelAndViewContainer mavContainer,
             final NativeWebRequest webRequest,
             final WebDataBinderFactory binderFactory
-    ) throws Exception {
+    ) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         if (request == null || request.getCookies() == null) {
-            throw new UnauthorizedException("사용자 인증 정보가 없습니다.");
+            throw new UnauthorizedException("로그인이 필요합니다.");
         }
 
         String accessToken = tokenCookieService.getTokenFromCookies(request.getCookies());
