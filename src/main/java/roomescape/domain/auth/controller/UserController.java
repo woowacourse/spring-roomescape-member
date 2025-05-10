@@ -1,5 +1,6 @@
 package roomescape.domain.auth.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserInfoResponse> signUp(@RequestBody final UserCreateRequest userCreateRequest) {
+    public ResponseEntity<UserInfoResponse> signUp(@Valid @RequestBody final UserCreateRequest userCreateRequest) {
         final UserInfoResponse register = userService.register(userCreateRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED)

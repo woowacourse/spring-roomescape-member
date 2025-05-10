@@ -1,5 +1,6 @@
 package roomescape.domain.auth.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -30,7 +31,7 @@ public class LoginController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> login(@RequestBody final LoginRequest loginRequest) {
+    public ResponseEntity<Void> login(@Valid  @RequestBody final LoginRequest loginRequest) {
         final TokenResponse tokenResponse = authService.login(loginRequest);
 
         final ResponseCookie cookie = ResponseCookie.from("token", tokenResponse.token())
