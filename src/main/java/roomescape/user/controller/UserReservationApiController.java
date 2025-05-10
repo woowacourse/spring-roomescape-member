@@ -1,14 +1,14 @@
 package roomescape.user.controller;
 
-import org.springframework.http.HttpEntity;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.controller.response.MemberResponse;
-import roomescape.member.domain.Member;
 import roomescape.member.resolver.LoginMember;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
@@ -31,5 +31,12 @@ public class UserReservationApiController {
     ) {
         ReservationResponse response = reservationService.createByName(memberResponse.name(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReservationResponse>> getReservations() {
+        List<ReservationResponse> responses = reservationService.getAll();
+
+        return ResponseEntity.ok(responses);
     }
 }
