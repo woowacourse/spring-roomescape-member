@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.common.Role;
 import roomescape.common.util.JwtProvider;
 import roomescape.model.Member;
 
@@ -44,7 +45,7 @@ class ReservationTimeControllerTest {
         reservation.put("themeId", 1);
 
         JwtProvider jwtProvider = new JwtProvider();
-        String token = jwtProvider.createToken(new Member(1L, "조로", "emai","1234"));
+        String token = jwtProvider.createToken(new Member(1L, "조로", "emai","1234", Role.ADMIN));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

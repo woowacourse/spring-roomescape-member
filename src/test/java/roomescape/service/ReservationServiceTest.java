@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import roomescape.common.Role;
 import roomescape.common.exception.DuplicatedException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.dao.MemberDao;
@@ -56,7 +57,7 @@ class ReservationServiceTest {
     void setUp() {
         time = new ReservationTime(1L, LocalTime.of(14, 0));
         theme = new Theme(1L, "스릴러", "무서운 테마", "thumbnail.jpg");
-        member = new Member(1L, "다로", "email", "password");
+        member = new Member(1L, "다로", "email", "password", Role.ADMIN);
     }
 
     @DisplayName("예약 저장에 성공한다")
@@ -65,7 +66,7 @@ class ReservationServiceTest {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
         MemberReservationRequestDto requestDto = new MemberReservationRequestDto(date, 1L, 1L);
-        MemberInfoDto memberInfoDto = new MemberInfoDto(1L);
+        MemberInfoDto memberInfoDto = new MemberInfoDto(1L, Role.ADMIN);
 
         when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(time));
         when(themeDao.findById(1L)).thenReturn(Optional.of(theme));
@@ -90,7 +91,7 @@ class ReservationServiceTest {
         MemberReservationRequestDto requestDto = new MemberReservationRequestDto(LocalDate.now().plusDays(1), 999L, 1L);
 
         when(reservationTimeDao.findById(999L)).thenReturn(Optional.empty());
-        MemberInfoDto memberInfoDto = new MemberInfoDto(1L);
+        MemberInfoDto memberInfoDto = new MemberInfoDto(1L, Role.ADMIN);
 
         // when & then
         assertThatThrownBy(() -> reservationService.saveReservation(requestDto, memberInfoDto))
@@ -103,7 +104,7 @@ class ReservationServiceTest {
     void test2() {
         // given
         MemberReservationRequestDto requestDto = new MemberReservationRequestDto(LocalDate.now().plusDays(1), 1L, 999L);
-        MemberInfoDto memberInfoDto = new MemberInfoDto(1L);
+        MemberInfoDto memberInfoDto = new MemberInfoDto(1L, Role.ADMIN);
 
         when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(time));
         when(themeDao.findById(999L)).thenReturn(Optional.empty());
@@ -119,9 +120,9 @@ class ReservationServiceTest {
     void test3() {
         // given
         MemberReservationRequestDto requestDto = new MemberReservationRequestDto(LocalDate.now().plusDays(1), 1L, 1L);
-        MemberInfoDto memberInfoDto = new MemberInfoDto(1L);
+        MemberInfoDto memberInfoDto = new MemberInfoDto(1L, Role.ADMIN);
         Reservation reservation = requestDto.convertToReservation(
-                new Member(1L, "다로", "qwe", "1234"),
+                new Member(1L, "다로", "qwe", "1234", Role.ADMIN),
                 time,
                 theme
         );
@@ -143,13 +144,13 @@ class ReservationServiceTest {
         // given
         Reservation reservation1 = new Reservation(
                 1L,
-                new Member(1L, "다로", "qwer","1234"),
+                new Member(1L, "다로", "qwer","1234", Role.ADMIN),
                 LocalDate.now().plusDays(2),
                 time,
                 theme
         );
         Reservation reservation2 = new Reservation(2L,
-                new Member(2L, "히로", "qwer", "1234"),
+                new Member(2L, "히로", "qwer", "1234", Role.ADMIN),
                 LocalDate.now().plusDays(3),
                 time,
                 theme

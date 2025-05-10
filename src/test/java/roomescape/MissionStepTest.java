@@ -14,19 +14,12 @@ import static org.hamcrest.CoreMatchers.is;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import roomescape.common.Role;
 import roomescape.common.util.JwtProvider;
-import roomescape.config.LoginCustomerResolver;
-import roomescape.controller.ReservationController;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dto.reservation.ReservationResponseDto;
@@ -47,25 +40,46 @@ public class MissionStepTest {
     @Autowired
     private ThemeDao themeDao;
 
+    @Autowired
+    private JwtProvider jwtProvider;
+
     @BeforeEach
     void beforeEachTest() {
         reservationTimeDao.saveTime(new ReservationTime(LocalTime.of(10, 10)));
         themeDao.saveTheme(new Theme("공포", "무서워요", "image"));
     }
 
-    @DisplayName("관리자 페이지 GET 요청 시 200 OK를 반환한다")
+    @DisplayName("admin이 관리자 페이지 GET 요청 시 200 OK를 반환한다")
     @Test
-    void 일단계() {
+    void 관리자_페이지_접근_성공() {
+        String adminToken = jwtProvider.createToken(new Member(1L, "다로", "mail", "pass",Role.ADMIN)); // 테스트용 JWT 생성
         RestAssured.given().log().all()
+                .cookie("token", adminToken)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
     }
 
-    @DisplayName("GET /admin/reservation 및 /reservations 요청 시 200 OK와 빈 목록 반환 확인")
+    @DisplayName("user가 관리자 페이지 GET 요청 시 403을 반환한다")
     @Test
-    void 이단계() {
+    void 관리자_페이지_접근_실패() {
+        String userToken = jwtProvider.createToken(
+                new Member(2L, "다로", "mail", "pass", Role.USER)
+        );
         RestAssured.given().log().all()
+                .cookie("token", userToken)
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(403);
+    }
+
+
+    @DisplayName("admin은 GET /admin/reservation 및 /reservations 요청 시 200 OK와 빈 목록 반환 확인")
+    @Test
+    void reservation_접근_성공() {
+        String adminToken = jwtProvider.createToken(new Member(1L, "다로", "mail", "pass",Role.ADMIN)); // 테스트용 JWT 생성
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
@@ -74,8 +88,19 @@ public class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
+                .body("size()", is(0));
     }
+
+    @DisplayName("user GET /admin/reservation 요청 시 403 실패")
+    @Test
+    void reservation_접근_실패() {
+        String userToken = jwtProvider.createToken(new Member(2L, "다로", "mail", "pass",Role.USER)); // 테스트용 JWT 생성
+        RestAssured.given().log().all()
+                .cookie("token", userToken)
+                .then().log().all()
+                .statusCode(403);
+    }
+
 
     @DisplayName("예약 생성 후 조회 및 삭제까지의 전체 흐름 테스트")
     @Test
@@ -86,7 +111,7 @@ public class MissionStepTest {
         params.put("themeId", "1");
 
         JwtProvider jwtProvider = new JwtProvider();
-        String token = jwtProvider.createToken(new Member(1L, "조로", "emai","1234"));
+        String token = jwtProvider.createToken(new Member(1L, "조로", "emai","1234", Role.ADMIN));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -155,7 +180,7 @@ public class MissionStepTest {
         params.put("themeId", "1");
 
         JwtProvider jwtProvider = new JwtProvider();
-        String token = jwtProvider.createToken(new Member(1L, "조로", "emai","1234"));
+        String token = jwtProvider.createToken(new Member(1L, "조로", "emai","1234", Role.ADMIN));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -212,7 +237,7 @@ public class MissionStepTest {
         reservation.put("themeId", 1);
 
         JwtProvider jwtProvider = new JwtProvider();
-        String token = jwtProvider.createToken(new Member(1L, "조로", "emai","1234"));
+        String token = jwtProvider.createToken(new Member(1L, "조로", "emai","1234", Role.ADMIN));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
