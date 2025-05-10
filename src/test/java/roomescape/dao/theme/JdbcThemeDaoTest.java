@@ -21,7 +21,7 @@ import roomescape.domain.Theme;
 
 @JdbcTest
 @Import({JdbcReservationTimeDao.class, JdbcReservationDao.class, JdbcThemeDao.class})
-@Sql({"/test-schema.sql", "/test-data.sql"})
+@Sql({"/schema.sql", "/theme-data.sql"})
 class JdbcThemeDaoTest {
 
     @Autowired
@@ -107,9 +107,10 @@ class JdbcThemeDaoTest {
         final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(new ReservationTime(time));
         final Theme savedPopularTheme = jdbcThemeDao.create(popularTheme);
         final Theme savedNotPopularTheme = jdbcThemeDao.create(notPopularTheme);
-        final String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('test', ?, ?, ?)";
-        jdbcTemplate.update(sql, beforeOneDay.toString(), savedReservationTime.getId(), savedPopularTheme.getId());
-        jdbcTemplate.update(sql, beforeEightDay.toString(), savedReservationTime.getId(), savedNotPopularTheme.getId());
+        final String sql = "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, beforeOneDay.toString(), savedReservationTime.getId(), savedPopularTheme.getId(), 1L);
+        jdbcTemplate.update(sql, beforeEightDay.toString(), savedReservationTime.getId(), savedNotPopularTheme.getId(),
+                1L);
 
         // when
         final List<Theme> themes = jdbcThemeDao.findPopularThemesInRecentSevenDays(
