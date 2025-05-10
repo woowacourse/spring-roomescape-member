@@ -9,12 +9,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.reservation.ThemeRequest;
 import roomescape.dto.reservation.ThemeResponse;
 import roomescape.exceptions.EntityNotFoundException;
 import roomescape.exceptions.reservation.ThemeDuplicateException;
 
 @SpringBootTest
+@Transactional
 class ThemeServiceTest {
 
     @Autowired
@@ -51,7 +53,7 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("예약 시간 생성 시, 중복된 테마명일 경우 예외가 발생한다.")
+    @DisplayName("테마 생성 시, 중복된 테마명일 경우 예외가 발생한다.")
     void postThemeIfDuplicationThemeName() {
         //given
         ThemeRequest request = new ThemeRequest("우테코 레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",

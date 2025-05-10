@@ -1,4 +1,4 @@
-package roomescape.controller.auth;
+package roomescape.integration;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -18,9 +18,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.auth.LoginRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql({"/schema.sql", "/fixtures/member.sql"})
 class AuthenticationControllerTest {
 
     @LocalServerPort
@@ -43,7 +47,7 @@ class AuthenticationControllerTest {
     void login_ShouldSetTokenCookie() {
         // given
         String email = "user1@example.com";
-        String password = "user1123";
+        String password = "user123";
         LoginRequest request = new LoginRequest(email, password);
 
         // when & then
@@ -71,7 +75,7 @@ class AuthenticationControllerTest {
         // given
         String name = "user1";
         String email = "user1@example.com";
-        String password = "user1123";
+        String password = "user123";
         LoginRequest request = new LoginRequest(email, password);
 
         ExtractableResponse<Response> response = RestAssured.given()

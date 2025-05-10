@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.member.UserReservationRequest;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
@@ -19,6 +20,7 @@ import roomescape.exceptions.reservation.ReservationDuplicateException;
 import roomescape.infrastructure.member.MemberInfo;
 
 @SpringBootTest
+@Transactional
 class ReservationServiceTest {
 
     private static final ReservationSearchFilter RESERVATION_SEARCH_FILTER = new ReservationSearchFilter(null, null,

@@ -9,12 +9,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.reservation.ReservationTimeRequest;
 import roomescape.dto.reservation.ReservationTimeResponse;
 import roomescape.exceptions.EntityNotFoundException;
 import roomescape.exceptions.reservation.ReservationTimeDuplicateException;
 
 @SpringBootTest
+@Transactional
+@Sql({"/schema.sql", "/fixtures/reservationTime.sql"})
 class ReservationTimeServiceTest {
 
     @Autowired
@@ -57,7 +61,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("저장소에 없는 값을 삭제하려할 경우, 예외가 발생한다.")
+    @DisplayName("저장되지 않은 값을 삭제하려할 경우, 예외가 발생한다.")
     void deleteReservationTime() {
         assertThatThrownBy(() -> reservationService.deleteReservationTime(999L))
                 .isInstanceOf(EntityNotFoundException.class);

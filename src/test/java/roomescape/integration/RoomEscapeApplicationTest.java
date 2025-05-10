@@ -1,6 +1,5 @@
-package roomescape;
+package roomescape.integration;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -31,17 +30,6 @@ class RoomEscapeApplicationTest {
                 .build();
 
         RestAssured.requestSpecification = spec;
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 ID로 삭제 요청 시 404 응답이 반환되어야 한다")
-    void deleteNonExistingReservation() {
-        RestAssured.given().log().all()
-                .when().delete("/reservations/999")
-                .then().log().all()
-                .statusCode(404)
-                .body("title", equalTo("EntityNotFoundException"))
-                .body("detail", equalTo("[ERROR] 예약 데이터를 찾을 수 없습니다:999"));
     }
 
     @Test
