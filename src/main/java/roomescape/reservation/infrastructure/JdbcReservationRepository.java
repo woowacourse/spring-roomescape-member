@@ -175,8 +175,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAllByThemIdAndMemberIdAndDateRange(final Long themeId, final Long memberId,
-                                                                    final LocalDate dateFrom, final LocalDate dateTo) {
+    public List<Reservation> findAllByThemeIdAndMemberIdAndDateRange(final Long themeId, final Long memberId,
+                                                                     final LocalDate dateFrom, final LocalDate dateTo) {
         final String sql = """
                 SELECT 
                     r.id AS id,                
