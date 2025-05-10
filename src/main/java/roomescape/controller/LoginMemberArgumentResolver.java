@@ -26,7 +26,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
-        Claims claims = CookieUtil.getSubjectFromCookie(cookies);
+        Claims claims = CookieUtil.getClaimsFromCookie(cookies);
 
         return Member.createMemberWithoutPassword(claims);
     }

@@ -6,28 +6,28 @@
     - 설명 : 랭킹 페이지 응답
     - 정상 응답 (200)
 
-- GET /admin
-    - 설명 : 메인페이지 응답
+- GET /admin (ADMIN 권한 유저만 접근 가능)
+    - 설명 : 어드민 메인페이지 응답
     - 정상 응답 (200)
       ```
       메인 페이지 HTML 파일
       ```
 
-- GET /admin/reservation
+- GET /admin/reservation (ADMIN 권한 유저만 접근 가능)
     - 설명 : 예약페이지 응답
     - 정상 응답 (200)
       ```
       예약 페이지 HTML 문서
       ```
 
-- GET /admin/time
+- GET /admin/time (ADMIN 권한 유저만 접근 가능)
     - 설명 : 시간페이지 응답
     - 정상 응답 (200)
       ```
       시간 페이지 HTML 문서
       ```
 
-- GET /admin/theme
+- GET /admin/theme (ADMIN 권한 유저만 접근 가능)
     - 설명 : 테마페이지 응답
     - 정상 응답 (200)
       ```

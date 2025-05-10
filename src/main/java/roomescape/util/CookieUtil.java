@@ -17,13 +17,22 @@ public class CookieUtil {
         response.addCookie(cookie);
     }
 
-    public static Claims getSubjectFromCookie(Cookie[] cookies) {
+    public static Claims getClaimsFromCookie(Cookie[] cookies) {
         String token = extractTokenFromCookie(cookies);
         return Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public static Long getSubjectFromCookie(Cookie[] cookies) {
+        String token = extractTokenFromCookie(cookies);
+        return Long.valueOf(Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody().getSubject());
     }
 
     private static String extractTokenFromCookie(Cookie[] cookies) {

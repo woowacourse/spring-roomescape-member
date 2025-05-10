@@ -1,6 +1,6 @@
 package roomescape.service;
 
-import static roomescape.util.CookieUtil.getSubjectFromCookie;
+import static roomescape.util.CookieUtil.getClaimsFromCookie;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,8 +35,13 @@ public class MemberService {
         return member.orElseThrow(() -> new NotFoundException("[ERROR] 사용자 정보를 가져오지 못했습니다."));
     }
 
+    public Member findMemberById(Long id) {
+        Optional<Member> member = memberRepository.findMemberById(id);
+        return member.orElseThrow(() -> new NotFoundException("[ERROR] 사용자 정보를 가져오지 못했습니다."));
+    }
+
     public LoginCheckResponse checkMember(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        return new LoginCheckResponse(getSubjectFromCookie(cookies).get("name", String.class));
+        return new LoginCheckResponse(getClaimsFromCookie(cookies).get("name", String.class));
     }
 }

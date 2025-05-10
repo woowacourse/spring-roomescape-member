@@ -20,7 +20,7 @@ public class Member {
 
     public static Member createMemberWithoutPassword(Claims claims) {
         return new Member(
-                claims.get("id", Long.class),
+                Long.valueOf(claims.getSubject()),
                 claims.get("name", String.class),
                 claims.get("email", String.class),
                 "0000",
@@ -45,6 +45,10 @@ public class Member {
 
     public String getRole() {
         return role;
+    }
+
+    public boolean isNotAdmin() {
+        return !role.equals("ADMIN");
     }
 
     @Override

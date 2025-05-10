@@ -69,7 +69,7 @@ public class H2ReservationRepository implements ReservationRepository {
 
     public Optional<Reservation> findById(long id) {
         String sql = "SELECT "
-                + "r.id as reservation_id, r.date, "
+                + "r.id as reservation_id, r.date,"
                 + "m.id as member_id, m.name as member_name, m.email, m.password, m.role,"
                 + "rt.id as time_id, rt.start_at, "
                 + "t.id as theme_id, t.name as theme_name, t.description, t.thumbnail "
@@ -91,6 +91,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 + "SELECT * "
                 + "FROM reservation AS r "
                 + "INNER JOIN reservation_time AS rt ON r.time_id = rt.id "
+                + "INNER JOIN theme AS t ON r.theme_id = t.id "
                 + "WHERE r.date = ? AND r.time_id = ? AND r.theme_id = ?)";
         return template.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
@@ -116,11 +117,10 @@ public class H2ReservationRepository implements ReservationRepository {
     public long add(Reservation reservation) {
         insertReservation = initializeSimpleJdbcInsert();
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", reservation.getMember().getName());
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTime().getId());
         parameters.put("theme_id", reservation.getTheme().getId());
-
+        parameters.put("member_id", reservation.getMember().getId());
         return insertReservation.executeAndReturnKey(parameters).longValue();
     }
 
