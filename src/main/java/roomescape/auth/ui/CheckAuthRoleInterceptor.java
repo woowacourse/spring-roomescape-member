@@ -10,6 +10,7 @@ import roomescape.auth.domain.AuthRole;
 import roomescape.auth.domain.AuthTokenExtractor;
 import roomescape.auth.domain.AuthTokenProvider;
 import roomescape.auth.domain.RequiresRole;
+import roomescape.exception.auth.AuthenticationException;
 
 @RequiredArgsConstructor
 public class CheckAuthRoleInterceptor implements HandlerInterceptor {
@@ -18,7 +19,8 @@ public class CheckAuthRoleInterceptor implements HandlerInterceptor {
     private final AuthTokenProvider authTokenProvider;
 
     @Override
-    public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, Object handler) {
+    public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, Object handler)
+            throws AuthenticationException {
         if (!(handler instanceof HandlerMethod handlerMethod)) {
             return true;
         }
@@ -30,11 +32,14 @@ public class CheckAuthRoleInterceptor implements HandlerInterceptor {
 
         final String accessToken = authTokenExtractor.extract(request);
         if (!authTokenProvider.validateToken(accessToken)) {
-            return false;
+            throw new AuthenticationException("유효하지 않은 토큰입니다.");
         }
-        final AuthRole role = authTokenProvider.getRole(accessToken);
 
-        return Arrays.stream(requiresRole.authRoles())
-                .anyMatch(authRole -> authRole == role);
+        final AuthRole role = authTokenProvider.getRole(accessToken);
+        if (Arrays.stream(requiresRole.authRoles())
+                .noneMatch(authRole -> authRole == role)) {
+            throw new AuthenticationException("권한이 없습니다.");
+        }
+        return true;
     }
 }
