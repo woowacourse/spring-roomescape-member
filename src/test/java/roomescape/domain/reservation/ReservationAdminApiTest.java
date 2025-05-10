@@ -20,6 +20,8 @@ import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 public class ReservationAdminApiTest {
 
     private static String adminToken;
+    private static String userToken;
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @LocalServerPort
@@ -27,8 +29,11 @@ public class ReservationAdminApiTest {
 
     @BeforeAll
     static void setUp(@Autowired final JwtManager jwtManager) {
-        final User user = new User(1L, new Name("꾹"), "tizm@naver.com", "1234", Roles.ADMIN);
-        adminToken = jwtManager.createToken(user);
+        final User admin = new User(1L, new Name("꾹"), "tizm@naver.com", "1234", Roles.ADMIN);
+        final User user = new User(1L, new Name("꾹"), "user@naver.com", "1234", Roles.USER);
+
+        adminToken = jwtManager.createToken(admin);
+        userToken = jwtManager.createToken(user);
     }
 
     @BeforeEach
@@ -86,6 +91,34 @@ public class ReservationAdminApiTest {
     @Test
     void adminReservationTest2() {
         RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .get("/admin/reservation")
+                .then()
+                .log()
+                .all()
+                .statusCode(403);
+    }
+
+    @DisplayName("일반 유저가 어드민 페이지에 접근하면 403 예외가 발생한다.")
+    @Test
+    void userAccessAdminPage_forbidden() {
+        // given
+        // when & then
+        RestAssured.given()
+                .cookie("token", userToken)
+                .log()
+                .all()
+                .when()
+                .get("/admin")
+                .then()
+                .log()
+                .all()
+                .statusCode(403);
+
+        RestAssured.given()
+                .cookie("token", userToken)
                 .log()
                 .all()
                 .when()
