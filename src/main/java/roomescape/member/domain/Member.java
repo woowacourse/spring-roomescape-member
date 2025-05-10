@@ -1,25 +1,27 @@
 package roomescape.member.domain;
 
+import java.util.Objects;
+
 public class Member {
 
     private final Long id;
-    private final String name;
-    private final String email;
-    private final String password;
+    private final Name name;
+    private final Email email;
+    private final Password password;
 
-    private Member(final Long id, final String name, final String email, final String password) {
+    private Member(final Long id, final Name name, final Email email, final Password password) {
         this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
+        this.name = Objects.requireNonNull(name);
+        this.email = Objects.requireNonNull(email);
+        this.password = Objects.requireNonNull(password);
     }
 
-    public static Member createWithId(final Long id, final String name, final String email, final String password) {
-        return new Member(id, name, email, password);
+    public static Member createWithId(final Long id, String name, String email, String password) {
+        return new Member(Objects.requireNonNull(id), new Name(name), new Email(email), new Password(password));
     }
 
-    public static Member createWithoutId(final String name, final String email, final String password) {
-        return new Member(null, name, email, password);
+    public static Member createWithoutId(String name, String email, String password) {
+        return new Member(null, new Name(name), new Email(email), new Password(password));
     }
 
     public boolean isSamePassword(final String password) {
@@ -31,14 +33,14 @@ public class Member {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     public String getEmail() {
-        return email;
+        return email.getEmail();
     }
 
     public String getPassword() {
-        return password;
+        return password.getPassword();
     }
 }
