@@ -1,0 +1,31 @@
+package roomescape.controller;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.LoginMember;
+import roomescape.dto.UserReservationRequestDto;
+import roomescape.model.Reservation;
+import roomescape.service.ReservationService;
+
+@RestController
+@RequestMapping("/user/reservations")
+public class UserReservationController {
+    private final ReservationService reservationService;
+
+    public UserReservationController(ReservationService reservationService) {
+        this.reservationService = reservationService;
+    }
+
+    @PostMapping()
+    public ResponseEntity<Reservation> addReservation(@RequestBody UserReservationRequestDto reservationRequestDto,
+                                                      @CurrentMember LoginMember loginMember) {
+        Reservation reservation = reservationService.addReservation(reservationRequestDto, loginMember);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(reservation);
+    }
+
+}

@@ -49,7 +49,7 @@ public class ReservationControllerTest {
         Test_ReservationTime_Post();
         Test_Theme_Post();
         Map<String, Object> params = new HashMap<>();
-        params.put("name", null);
+        params.put("memberId", null);
         params.put("date", "2025-08-05");
         params.put("timeId", 1);
         params.put("themeId", 1);
@@ -57,7 +57,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(400).body(containsString("[ERROR]"))
         ;
@@ -70,7 +70,7 @@ public class ReservationControllerTest {
         Test_Theme_Post();
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "띠용");
+        params.put("memberId", 1);
         params.put("date", String.valueOf(LocalDate.now().minusDays(1)));
         params.put("timeId", 1);
         params.put("themeId", 1);
@@ -78,7 +78,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(400).body(containsString("[ERROR]"))
         ;
@@ -100,7 +100,7 @@ public class ReservationControllerTest {
                 .statusCode(201);
 
         Map<String, Object> reservationParams = new HashMap<>();
-        reservationParams.put("name", "띠용");
+        reservationParams.put("memberId", 1);
         reservationParams.put("date", String.valueOf(LocalDate.now()));
         reservationParams.put("timeId", 1);
         reservationParams.put("themeId", 1);
@@ -108,7 +108,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationParams)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(400).body(containsString("[ERROR]"))
         ;
@@ -121,7 +121,7 @@ public class ReservationControllerTest {
         Test_Theme_Post();
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "띠용");
+        params.put("memberId", 1);
         params.put("date", "2222-02-02");
         params.put("timeId", 1);
         params.put("themeId", 1);
@@ -129,7 +129,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201);
 
@@ -138,7 +138,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(400)
                 .body(containsString("[ERROR]"))

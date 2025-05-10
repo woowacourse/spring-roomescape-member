@@ -4,7 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.dto.LoginMember;
 import roomescape.dto.ReservationRequestDto;
+import roomescape.dto.UserReservationRequestDto;
+import roomescape.model.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
@@ -18,13 +21,16 @@ public class ReservationService {
     private final ReservedChecker reservedChecker;
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
+    private final MemberFinder memberFinder;
 
     public ReservationService(ReservationRepository reservationRepository, ReservedChecker reservedChecker,
-                              ReservationTimeService reservationTimeService, ThemeService themeService) {
+                              ReservationTimeService reservationTimeService, ThemeService themeService,
+                              final MemberFinder memberFinder) {
         this.reservationRepository = reservationRepository;
         this.reservedChecker = reservedChecker;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
+        this.memberFinder = memberFinder;
     }
 
     public List<Reservation> getAllReservations() {
@@ -46,12 +52,37 @@ public class ReservationService {
         }
 
         Theme theme = themeService.getThemeById(reservationRequestDto.themeId());
+        System.out.println("___________________");
+        System.out.println("reservationRequestDto.memberId() = " + reservationRequestDto.memberId());
+        System.out.println("___________________");
+        System.out.println("___________________");
+        System.out.println("___________________");
 
-        return reservationRepository.addReservation(reservationRequestDto.toEntity(null, reservationTime, theme));
+        Member member = memberFinder.getMemberById(reservationRequestDto.memberId());
+
+        return reservationRepository.addReservation(
+                reservationRequestDto.toEntity(null, member, reservationTime, theme));
+    }
+
+    public Reservation addReservation(final UserReservationRequestDto userReservationRequestDto,
+                                      final LoginMember loginMember) {
+        ReservationTime reservationTime = reservationTimeService.getReservationTimeById(
+                userReservationRequestDto.timeId());
+        ReservationDateTime reservationDateTime = new ReservationDateTime(
+                userReservationRequestDto.date(), reservationTime);
+
+        validateFutureDateTime(reservationDateTime);
+        if (isAlreadyExist(reservationDateTime.getDate(), userReservationRequestDto.timeId(),
+                userReservationRequestDto.themeId())) {
+            throw new IllegalArgumentException("Reservation already exists");
+        }
+        Theme theme = themeService.getThemeById(userReservationRequestDto.themeId());
+        Member member = loginMember.toEntity();
+        return reservationRepository.addReservation(new Reservation(null, member, reservationDateTime, theme));
     }
 
     public void deleteReservation(long id) {
-        int  result = reservationRepository.deleteReservation(id);
+        int result = reservationRepository.deleteReservation(id);
         if (result == 0) {
             throw new IllegalArgumentException("삭제할 예약이 존재하지 않습니다. id: " + id);
         }
@@ -69,5 +100,6 @@ public class ReservationService {
     private boolean isAlreadyExist(LocalDate reservationDate, Long timeId, Long themeId) {
         return reservedChecker.contains(reservationDate, timeId, themeId);
     }
+
 
 }

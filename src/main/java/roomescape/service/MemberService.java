@@ -34,6 +34,6 @@ public class MemberService {
     public LoginMember getMemberById(Long id) {
         Member member = memberFinder.getMemberById(id);
         return new LoginMember(member.getId(), member.getRole(), member.getMemberName(),
-                member.getEmail());
+                member.getEmail(), member.getPassword());
     }
 }
