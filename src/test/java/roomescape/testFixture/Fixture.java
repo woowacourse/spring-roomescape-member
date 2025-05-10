@@ -3,13 +3,10 @@ package roomescape.testFixture;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.application.dto.AdminReservationCreateDto;
+import roomescape.application.dto.ReservationCreateDto;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -27,19 +24,10 @@ public class Fixture {
     public static final Reservation RESERVATION_1 =
             Reservation.of(1L, MEMBER1, THEME_1, LocalDate.now().plusDays(1), RESERVATION_TIME_1);
 
-    // TODO: USER_RESERVATION_BODY로 변경하고 memberId 속성 제거
-    public static final Map<String, Object> RESERVATION_BODY = createReservationBody(1L);
+    public static final ReservationCreateDto RESERVATION_BODY = createReservationBody();
 
-    public static Map<String, Object> createReservationBody(Long memberId) {
-        String date = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("memberId", memberId);
-        params.put("date", date);
-        params.put("timeId", 1);
-        params.put("themeId", 1);
-
-        return params;
+    public static ReservationCreateDto createReservationBody() {
+        return new ReservationCreateDto(1L, LocalDate.now().plusDays(1), 1L);
     }
 
     public static AdminReservationCreateDto createAdminReservationCreateDto(Long memberId) {
