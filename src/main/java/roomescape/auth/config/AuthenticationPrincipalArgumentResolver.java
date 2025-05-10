@@ -30,7 +30,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
             throws Exception {
         String cookie = webRequest.getHeader("Cookie");
         if (cookie == null || !cookie.contains("token")){
-            throw new AuthException("토큰이 존재하지 않습니다.");
+            throw new AuthException("로그인이 필요합니다.");
         }
         String accessToken = authService.extractTokenFromCookie(cookie);
         return authService.makeLoginMember(accessToken);

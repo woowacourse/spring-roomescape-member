@@ -41,13 +41,10 @@ public class AuthService {
     public LoginMember makeLoginMember(final String token) {
         validateToken(token);
         Claims claims = jwtProvider.getAllClaimsFromToken(token);
-        return new LoginMember(Long.valueOf(claims.getSubject()), (String) claims.get("name"),
+        Long memberId = Long.valueOf(claims.getSubject());
+        validateMember(memberId);
+        return new LoginMember(memberId, (String) claims.get("name"),
                 MemberRole.from((String) claims.get("role")));
-    }
-
-    private Member getMemberByEmailAndPassword(final String email, final String password) {
-        return memberRepository.findByMember(email, password)
-                .orElseThrow(() -> new AuthException("존재하지 않은 email 또는 비밀번호입니다."));
     }
 
     private void validateToken(final String token) {
@@ -56,4 +53,14 @@ public class AuthService {
         }
     }
 
+    private Member getMemberByEmailAndPassword(final String email, final String password) {
+        return memberRepository.findMemberByEmailAndPassword(email, password)
+                .orElseThrow(() -> new AuthException("존재하지 않은 사용자입니다."));
+    }
+
+    private void validateMember(final Long id) {
+        if (!memberRepository.existsById(id)) {
+            throw new AuthException("존재하지 않은 사용자입니다.");
+        }
+    }
 }
