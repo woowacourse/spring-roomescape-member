@@ -1,5 +1,8 @@
 package roomescape.domain.auth;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+
 import io.restassured.RestAssured;
 import java.util.HashMap;
 import java.util.Map;
@@ -139,7 +142,24 @@ public class UserApiTest {
                 .all()
                 .statusCode(409);
     }
+    @DisplayName("모든 회원 정보를 조회한다")
+    @Test
+    void getAllUsersTest() {
+        // given
+        userRepository.save(User.withoutId(new Name("유저1"), "user1@naver.com", "pw1", Roles.USER));
+        userRepository.save(User.withoutId(new Name("유저2"), "user2@naver.com", "pw2", Roles.USER));
 
-
+        // when & then
+        RestAssured.given()
+                .log().all()
+                .when()
+                .get("/members")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("size()", is(2))
+                .body("[0].name", notNullValue())
+                .body("[1].name", notNullValue());
+    }
 
 }
