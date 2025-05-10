@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.auth.exception.UnauthorizedException;
 import roomescape.common.exception.handler.dto.ExceptionResponse;
 
 @RestControllerAdvice
@@ -20,7 +21,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.internalServerError().body(exceptionResponse);
     }
 
-    @ExceptionHandler(value = IllegalArgumentException.class)
+    @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ExceptionResponse> handleIllegalArgument(final IllegalArgumentException exception, final HttpServletRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 400, "[ERROR] " + exception.getMessage(), request.getRequestURI()
@@ -38,7 +39,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(401).body(exceptionResponse);
     }
 
-    @ExceptionHandler(value = HttpMessageNotReadableException.class)
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ExceptionResponse> handleUnauthorize(final UnauthorizedException exception, final HttpServletRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(
+                401, "[ERROR] " + exception.getMessage(), request.getRequestURI()
+        );
+
+        return ResponseEntity.status(401).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ExceptionResponse> handleHttpMessageNotReadable(
             final HttpMessageNotReadableException exception, final HttpServletRequest request
     ) {
