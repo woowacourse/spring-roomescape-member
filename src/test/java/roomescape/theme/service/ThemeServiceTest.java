@@ -1,4 +1,4 @@
-package roomescape.reservation.service;
+package roomescape.theme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,16 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.common.CleanUp;
+import roomescape.fixture.ReservationDateFixture;
+import roomescape.fixture.ReservationDbFixture;
+import roomescape.fixture.ReservationTimeDbFixture;
+import roomescape.fixture.ThemeDbFixture;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
-import roomescape.reservation.fixture.ReservationDateFixture;
-import roomescape.reservation.fixture.ReservationDbFixture;
-import roomescape.reservation.fixture.ReservationTimeDbFixture;
-import roomescape.reservation.fixture.ThemeDbFixture;
 import roomescape.theme.controller.request.ThemeCreateRequest;
 import roomescape.theme.controller.response.ThemeResponse;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.service.ThemeService;
 import roomescape.time.domain.ReservationTime;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
@@ -71,7 +70,7 @@ class ThemeServiceTest {
     @Test
     void 테마를_삭제한다() {
         Theme theme = themeDbFixture.공포();
-        
+
         themeService.deleteById(theme.getId());
 
         assertThat(themeService.getAll()).isEmpty();

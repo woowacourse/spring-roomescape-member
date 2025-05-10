@@ -21,7 +21,7 @@ import roomescape.global.response.ApiResponse;
 import roomescape.reservation.controller.request.ReserveByUserRequest;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
-import roomescape.reservation.service.dto.ReserveCommand;
+import roomescape.reservation.service.command.ReserveCommand;
 
 @RestController
 @RequestMapping("/reservations")

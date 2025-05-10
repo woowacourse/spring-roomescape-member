@@ -12,15 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.common.CleanUp;
+import roomescape.fixture.MemberDbFixture;
+import roomescape.fixture.ReservationDateFixture;
+import roomescape.fixture.ReservationDbFixture;
+import roomescape.fixture.ReservationTimeDbFixture;
+import roomescape.fixture.ThemeDbFixture;
 import roomescape.member.domain.Member;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.fixture.MemberDbFixture;
-import roomescape.reservation.fixture.ReservationDateFixture;
-import roomescape.reservation.fixture.ReservationDbFixture;
-import roomescape.reservation.fixture.ReservationTimeDbFixture;
-import roomescape.reservation.fixture.ThemeDbFixture;
-import roomescape.reservation.service.dto.ReserveCommand;
+import roomescape.reservation.service.command.ReserveCommand;
 import roomescape.theme.domain.Theme;
 import roomescape.time.controller.response.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
@@ -82,7 +82,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.reserve(command))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이미 예약이 존재합니다.");
+                .hasMessage("[ERROR] 이미 예약이 존재하는 시간입니다.");
     }
 
     @Test

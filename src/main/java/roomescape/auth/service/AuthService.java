@@ -3,7 +3,7 @@ package roomescape.auth.service;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.auth.infrastructure.jwt.JwtHandler;
+import roomescape.auth.infrastructure.jwt.TokenProvider;
 import roomescape.auth.web.controller.request.LoginRequest;
 import roomescape.auth.web.controller.response.MemberNameResponse;
 import roomescape.member.domain.Member;
@@ -13,13 +13,13 @@ import roomescape.member.service.MemberService;
 @Service
 public class AuthService {
 
-    private final JwtHandler jwtHandler;
+    private final TokenProvider tokenProvider;
     private final MemberService memberService;
 
     public String login(LoginRequest request) {
         Member member = memberService.getMember(request.email(), request.password());
 
-        return jwtHandler.createToken(member);
+        return tokenProvider.issue(member);
     }
 
     public MemberNameResponse check(Long memberId) {
@@ -29,11 +29,11 @@ public class AuthService {
     }
 
     public boolean isAdmin(String token) {
-        return jwtHandler.isAdmin(token);
+        return tokenProvider.isAdmin(token);
     }
 
-    public Object getMemberId(String token) {
-        return jwtHandler.getMemberId(token);
+    public Long getMemberId(String token) {
+        return tokenProvider.getMemberId(token);
     }
 
     public String extractTokenFromCookie(Cookie[] cookies) {

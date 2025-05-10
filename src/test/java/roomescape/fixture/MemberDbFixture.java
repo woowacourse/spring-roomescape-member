@@ -1,4 +1,4 @@
-package roomescape.reservation.fixture;
+package roomescape.fixture;
 
 import org.springframework.stereotype.Component;
 import roomescape.member.domain.Member;
@@ -15,6 +15,11 @@ public class MemberDbFixture {
 
     public Member 유저1_생성() {
         Member member = Member.signUpUser("유저1", "user1@email.com", "1234");
+        return memberRepository.save(member);
+    }
+
+    public Member 관리자_생성() {
+        Member member = Member.signUpAdmin("관리자", "admin@email.com", "1234");
         return memberRepository.save(member);
     }
 }

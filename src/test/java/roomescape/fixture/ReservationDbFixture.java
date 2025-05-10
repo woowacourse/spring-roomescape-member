@@ -1,4 +1,4 @@
-package roomescape.reservation.fixture;
+package roomescape.fixture;
 
 import org.springframework.stereotype.Component;
 import roomescape.reservation.domain.Reservation;

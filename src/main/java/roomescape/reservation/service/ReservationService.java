@@ -11,7 +11,7 @@ import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationDateTime;
-import roomescape.reservation.service.dto.ReserveCommand;
+import roomescape.reservation.service.command.ReserveCommand;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
 import roomescape.time.service.ReservationTimeService;
@@ -32,8 +32,8 @@ public class ReservationService {
     }
 
     public ReservationResponse reserve(ReserveCommand reserveCommand) {
-        Long timeId = reserveCommand.timeId();
         LocalDate date = reserveCommand.date();
+        Long timeId = reserveCommand.timeId();
 
         isAlreadyReservedTime(date, timeId);
 
@@ -51,7 +51,7 @@ public class ReservationService {
 
     private void isAlreadyReservedTime(LocalDate date, Long timeId) {
         if (reservationRepository.existsSameDateTime(date, timeId)) {
-            throw new IllegalArgumentException("[ERROR] 이미 예약이 존재합니다.");
+            throw new IllegalArgumentException("[ERROR] 이미 예약이 존재하는 시간입니다.");
         }
     }
 

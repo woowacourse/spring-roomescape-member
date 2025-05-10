@@ -1,4 +1,4 @@
-package roomescape.reservation.service;
+package roomescape.time.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,15 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.common.CleanUp;
+import roomescape.fixture.ReservationDbFixture;
+import roomescape.fixture.ReservationTimeDbFixture;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.fixture.ReservationDbFixture;
-import roomescape.reservation.fixture.ReservationTimeDbFixture;
 import roomescape.time.controller.request.AvailableReservationTimeRequest;
 import roomescape.time.controller.request.ReservationTimeCreateRequest;
 import roomescape.time.controller.response.AvailableReservationTimeResponse;
 import roomescape.time.controller.response.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.service.ReservationTimeService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class ReservationTimeServiceTest {

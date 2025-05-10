@@ -23,6 +23,10 @@ public class Member {
         return new Member(null, name, Role.USER, email, password);
     }
 
+    public static Member signUpAdmin(String name, String email, String password) {
+        return new Member(null, name, Role.ADMIN, email, password);
+    }
+
     public static Member load(Long id, String name, Role role, String email, String password) {
         return new Member(id, name, role, email, password);
     }

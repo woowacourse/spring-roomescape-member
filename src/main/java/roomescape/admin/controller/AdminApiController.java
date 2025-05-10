@@ -18,7 +18,7 @@ import roomescape.admin.controller.request.ReserveByAdminRequest;
 import roomescape.global.response.ApiResponse;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
-import roomescape.reservation.service.dto.ReserveCommand;
+import roomescape.reservation.service.command.ReserveCommand;
 
 @RequiredArgsConstructor
 @RestController
