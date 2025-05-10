@@ -52,7 +52,7 @@ public class ExceptionController {
                 .body(PREFIX + e.getBindingResult().getFieldErrors().get(0).getDefaultMessage());
     }
 
-    @ExceptionHandler(InvalidMemberException.class)
+    @ExceptionHandler({InvalidMemberException.class})
     public ResponseEntity<String> handleInvalidUserException(InvalidMemberException e) {
         return ResponseEntity.status(e.getStatusCode()).body(PREFIX + e.getMessage());
     }
@@ -60,6 +60,11 @@ public class ExceptionController {
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<String> handleInvalidTokenException(InvalidTokenException e) {
         return ResponseEntity.status(e.getStatusCode()).body(PREFIX + e.getMessage());
+    }
+
+    @ExceptionHandler(NotAdminException.class)
+    public ResponseEntity<String> handleNotAdminException(NotAdminException e) {
+        return ResponseEntity.status(403).body(PREFIX + e.getMessage());
     }
 
     @ExceptionHandler(RuntimeException.class)
