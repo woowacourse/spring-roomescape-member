@@ -3,7 +3,7 @@ package roomescape.reservation.controller.dto;
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.utils.Validator;
-import roomescape.member.auth.dto.MemberInfo;
+import roomescape.member.controller.dto.MemberInfo;
 import roomescape.theme.controller.dto.ThemeWebResponse;
 import roomescape.time.controller.dto.ReservationTimeWebResponse;
 

@@ -42,4 +42,8 @@ public class Member {
                 .notNullField(Fields.email, email)
                 .notNullField(Fields.role, role);
     }
+
+    public boolean isAdmin() {
+        return this.role.isEqual(Role.ADMIN);
+    }
 }

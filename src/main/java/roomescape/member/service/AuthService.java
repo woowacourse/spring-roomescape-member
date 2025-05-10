@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.member.controller.dto.LoginCheckResponse;
 import roomescape.member.controller.dto.LoginRequest;
-import roomescape.member.auth.dto.MemberInfo;
+import roomescape.member.controller.dto.MemberInfo;
 import roomescape.member.domain.Account;
 import roomescape.member.domain.Member;
 import roomescape.member.auth.JwtTokenExtractor;
@@ -34,7 +34,10 @@ public class AuthService {
     }
 
     public MemberInfo getMemberInfo(Cookie[] cookies) {
-        Member member = memberService.get(jwtTokenExtractor.extractMemberIdFromCookie(cookies));
-        return MemberConverter.toDto(member);
+        return MemberConverter.toDto(memberService.get(jwtTokenExtractor.extractMemberIdFromCookie(cookies)));
+    }
+
+    public Member get(Cookie[] cookies) {
+        return memberService.get(jwtTokenExtractor.extractMemberIdFromCookie(cookies));
     }
 }

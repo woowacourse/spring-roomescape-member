@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.member.auth.dto.MemberInfo;
 import roomescape.member.controller.dto.LoginRequest;
 import roomescape.member.controller.dto.SignupRequest;
 import roomescape.member.domain.Account;
@@ -22,12 +21,12 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public Member signup(SignupRequest signupRequest) {
+    public roomescape.member.controller.dto.MemberInfo signup(SignupRequest signupRequest) {
         if (memberRepository.existsByEmail(MemberEmail.from(signupRequest.email()))) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
 
-        return memberRepository.save(
+        return MemberConverter.toResponse(memberRepository.save(
                 Account.of(
                         Member.withoutId(
                                 MemberName.from(signupRequest.name()),
@@ -36,7 +35,7 @@ public class MemberService {
                         ),
                         Password.from(signupRequest.password())
                 )
-        );
+        ));
     }
 
     public Account findAccount(LoginRequest loginRequest) {
@@ -49,10 +48,10 @@ public class MemberService {
                 .orElseThrow(() -> new NoSuchElementException("등록된 회원이 아닙니다."));
     }
 
-    public List<MemberInfo> getAll() {
+    public List<roomescape.member.controller.dto.MemberInfo> getAll() {
         return memberRepository.findAll()
                 .stream()
-                .map(MemberConverter::toDto)
+                .map(MemberConverter::toResponse)
                 .toList();
     }
 }
