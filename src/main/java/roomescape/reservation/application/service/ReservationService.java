@@ -1,12 +1,17 @@
 package roomescape.reservation.application.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import roomescape.admin.presentation.dto.AdminReservationRequest;
 import roomescape.global.exception.DuplicateReservationException;
 import roomescape.global.exception.GetThemeException;
 import roomescape.global.exception.GetTimeException;
 import roomescape.global.exception.PastTimeException;
+import roomescape.member.InvalidMemberException;
+import roomescape.member.application.repository.MemberRepository;
 import roomescape.member.domain.Member;
 import roomescape.reservation.application.dto.CreateReservationRequest;
 import roomescape.reservation.application.repository.ReservationRepository;
@@ -24,30 +29,37 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(final ReservationRepository reservationRepository,
                               final ReservationTimeRepository reservationTimeRepository,
-                              final ThemeRepository themeRepository) {
+                              final ThemeRepository themeRepository, MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public ReservationResponse createReservation(final Member member,
                                                  final MemberReservationRequest memberReservationRequest) {
-        ReservationDate reservationDate = new ReservationDate(memberReservationRequest.getDate());
-        ReservationTime reservationTime = getReservationTime(memberReservationRequest.getTimeId());
-        Theme theme = getTheme(memberReservationRequest.getThemeId());
-        validateReservationDateTime(reservationDate, reservationTime);
-
-        CreateReservationRequest createReservationRequest = new CreateReservationRequest(
+        CreateReservationRequest request = mapToCreateReservationRequest(
                 member,
-                theme,
-                reservationDate,
-                reservationTime
-        );
+                memberReservationRequest.date(),
+                memberReservationRequest.themeId(),
+                memberReservationRequest.timeId());
+        return new ReservationResponse(reservationRepository.insert(request));
+    }
 
-        return new ReservationResponse(reservationRepository.insert(createReservationRequest));
+    public ReservationResponse createReservation(final AdminReservationRequest adminReservationRequest) {
+        Member member = memberRepository.findById(adminReservationRequest.memberId())
+                .orElseThrow(() -> new InvalidMemberException("존재하지 않는 사용자입니다.", HttpStatus.NOT_FOUND));
+
+        CreateReservationRequest request = mapToCreateReservationRequest(
+                member,
+                adminReservationRequest.date(),
+                adminReservationRequest.themeId(),
+                adminReservationRequest.timeId());
+        return new ReservationResponse(reservationRepository.insert(request));
     }
 
     public List<ReservationResponse> getReservations() {
@@ -58,6 +70,20 @@ public class ReservationService {
 
     public void deleteReservation(final Long id) {
         reservationRepository.delete(id);
+    }
+
+    private CreateReservationRequest mapToCreateReservationRequest(Member member, LocalDate date, Long themeId,
+                                                                   Long timeId) {
+        ReservationDate reservationDate = new ReservationDate(date);
+        ReservationTime reservationTime = getReservationTime(timeId);
+        Theme theme = getTheme(themeId);
+        validateReservationDateTime(reservationDate, reservationTime);
+        return new CreateReservationRequest(
+                member,
+                theme,
+                reservationDate,
+                reservationTime
+        );
     }
 
     private ReservationTime getReservationTime(Long timeId) {

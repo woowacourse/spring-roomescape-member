@@ -60,4 +60,30 @@ public class MemberDao implements MemberRepository {
         long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Member(id, request.name(), request.email(), request.password(), request.role());
     }
+
+    @Override
+    public Optional<Member> findById(Long id) {
+        String sql = """
+                SELECT id, name, email, password, role FROM `member`
+                WHERE id = ?
+                """;
+        try {
+            Member member = jdbcTemplate.queryForObject(sql,
+                    (resultSet, rowNum) -> {
+                        Role role = Role.valueOf(resultSet.getString("role"));
+                        return new Member(
+                                resultSet.getLong("id"),
+                                resultSet.getString("name"),
+                                resultSet.getString("email"),
+                                resultSet.getString("password"),
+                                role
+                        );
+                    }, id);
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+
 }

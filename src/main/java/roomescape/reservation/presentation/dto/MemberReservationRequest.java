@@ -3,30 +3,7 @@ package roomescape.reservation.presentation.dto;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
-public class MemberReservationRequest {
-
-    @NotNull
-    private final LocalDate date;
-    @NotNull
-    private final Long themeId;
-    @NotNull
-    private final Long timeId;
-
-    public MemberReservationRequest(final LocalDate date, final Long themeId, final Long timeId) {
-        this.date = date;
-        this.themeId = themeId;
-        this.timeId = timeId;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public Long getTimeId() {
-        return timeId;
-    }
-
-    public Long getThemeId() {
-        return themeId;
-    }
+public record MemberReservationRequest(@NotNull LocalDate date,
+                                       @NotNull Long themeId,
+                                       @NotNull Long timeId) {
 }

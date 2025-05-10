@@ -9,4 +9,6 @@ public interface MemberRepository {
     Optional<Member> findByEmail(String email);
 
     Member insert(CreateMemberRequest request);
+
+    Optional<Member> findById(Long id);
 }
