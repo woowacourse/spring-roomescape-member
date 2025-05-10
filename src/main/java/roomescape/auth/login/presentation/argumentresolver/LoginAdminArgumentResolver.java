@@ -30,11 +30,6 @@ public class LoginAdminArgumentResolver implements HandlerMethodArgumentResolver
                 .orElseThrow(() -> new IllegalStateException("인증할 수 없습니다."))
                 .getValue();
 
-        String role = JwtTokenManager.getRole(token);
-        if (!role.equals("ADMIN")) {
-            throw new IllegalStateException("인증할 수 없습니다.");
-        }
-
         return new LoginAdminInfo(JwtTokenManager.getId(token));
     }
 }
