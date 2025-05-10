@@ -14,6 +14,9 @@ import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.common.util.time.DateTime;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRepository;
+import roomescape.member.infrastructure.JdbcMemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.infrastructure.JdbcReservationRepository;
@@ -55,10 +58,19 @@ class ThemeServiceTest {
         themeRepository.findById(themeId2);
         theme3 = themeRepository.findById(themeId3);
 
+        MemberRepository memberRepository = new JdbcMemberRepository(namedParameterJdbcTemplate, DATASOURCE);
+        Long memberId1 = memberRepository.save(Member.createWithoutId("유저1", "email1@email.com", "password"));
+        Long memberId2 = memberRepository.save(Member.createWithoutId("유저2", "email2@email.com", "password"));
+        Long memberId3 = memberRepository.save(Member.createWithoutId("유저3", "email3@email.com", "password"));
+
+        Member member1 = memberRepository.findById(memberId1);
+        Member member2 = memberRepository.findById(memberId2);
+        Member member3 = memberRepository.findById(memberId3);
+
         ReservationRepository reservationRepository = new JdbcReservationRepository(namedParameterJdbcTemplate, DATASOURCE);
-        reservationRepository.save(Reservation.createWithoutId("홍길동1", LocalDate.of(2025, 12, 5), ReservationTime.createWithoutId(LocalTime.of(1, 0)), theme1));
-        reservationRepository.save(Reservation.createWithoutId("홍길동2", LocalDate.of(2025, 12, 6), ReservationTime.createWithoutId(LocalTime.of(1, 0)), theme1));
-        reservationRepository.save(Reservation.createWithoutId("홍길동3", LocalDate.of(2025, 12, 4), ReservationTime.createWithoutId(LocalTime.of(1, 0)), theme3));
+        reservationRepository.save(Reservation.createWithoutId(LocalDate.of(2025, 12, 5), ReservationTime.createWithoutId(LocalTime.of(1, 0)), theme1, member1));
+        reservationRepository.save(Reservation.createWithoutId(LocalDate.of(2025, 12, 6), ReservationTime.createWithoutId(LocalTime.of(1, 0)), theme1, member2));
+        reservationRepository.save(Reservation.createWithoutId(LocalDate.of(2025, 12, 4), ReservationTime.createWithoutId(LocalTime.of(1, 0)), theme3, member3));
 
         DateTime dateTime = () -> LocalDateTime.of(2025, 12, 7, 10, 0);
 

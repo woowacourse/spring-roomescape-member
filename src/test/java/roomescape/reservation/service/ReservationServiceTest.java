@@ -18,6 +18,9 @@ import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.common.util.time.DateTime;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRepository;
+import roomescape.member.infrastructure.JdbcMemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.infrastructure.JdbcReservationRepository;
@@ -60,14 +63,19 @@ class ReservationServiceTest {
         reservationTimeRepository.save(reservationTime1);
         reservationTimeRepository.save(reservationTime2);
 
+        MemberRepository memberRepository = new JdbcMemberRepository(namedParameterJdbcTemplate, DATASOURCE);
+        Long memberId = memberRepository.save(Member.createWithoutId("유저1", "email@email.com", "password"));
+        Member member = memberRepository.findById(memberId);
+
         ReservationRepository reservationRepository = new JdbcReservationRepository(namedParameterJdbcTemplate, DATASOURCE);
-        reservationRepository.save(Reservation.createWithoutId("홍길동", LocalDate.of(2024, 10, 6), reservationTime1, theme));
+        reservationRepository.save(Reservation.createWithoutId(LocalDate.of(2024, 10, 6), reservationTime1, theme, member));
 
         reservationService = new ReservationService(
                 dateTime,
                 reservationRepository,
                 reservationTimeRepository,
-                themeRepository
+                themeRepository,
+                memberRepository
         );
     }
 
@@ -76,7 +84,7 @@ class ReservationServiceTest {
     @MethodSource
     void cant_not_reserve_before_now(final LocalDate date, final Long timeId) {
         Assertions.assertThatThrownBy(
-                        () -> reservationService.createReservation(new ReservationRequest("홍길동", date, timeId, 1L)))
+                        () -> reservationService.createReservation(new ReservationRequest(date, timeId, 1L), 1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -93,7 +101,7 @@ class ReservationServiceTest {
     @Test
     void cant_not_reserve_duplicate() {
         Assertions.assertThatThrownBy(() -> reservationService.createReservation(
-                        new ReservationRequest("홍길동", LocalDate.of(2024, 10, 6), 1L, 1L)))
+                        new ReservationRequest(LocalDate.of(2024, 10, 6), 1L, 1L), 1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
