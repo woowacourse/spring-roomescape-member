@@ -3,7 +3,10 @@ package roomescape.member.infrastructure.dao;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.member.application.dto.CreateMemberRequest;
 import roomescape.member.application.repository.MemberRepository;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
@@ -12,9 +15,14 @@ import roomescape.member.domain.Role;
 public class MemberDao implements MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
+                .withTableName("member")
+                .usingColumns("name", "email", "password", "role")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -39,5 +47,17 @@ public class MemberDao implements MemberRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public Member insert(CreateMemberRequest request) {
+        MapSqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("name", request.name())
+                .addValue("email", request.email())
+                .addValue("password", request.password())
+                .addValue("role", request.role());
+
+        long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        return new Member(id, request.name(), request.email(), request.password(), request.role());
     }
 }

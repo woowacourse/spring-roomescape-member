@@ -11,13 +11,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.application.dto.CreateReservationRequest;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.application.service.ThemeService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
-import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.infrastructure.fake.FakeReservationDao;
@@ -42,7 +43,7 @@ public class ThemeServiceTest {
 
     @Test
     @DisplayName("테마 추가 테스트")
-    void createThemeTest(){
+    void createThemeTest() {
         // given
         ThemeRequest themeRequest = new ThemeRequest(
                 "레벨2 탈출",
@@ -59,7 +60,7 @@ public class ThemeServiceTest {
 
     @Test
     @DisplayName("테마 전체 조회 테스트")
-    void getThemesTest(){
+    void getThemesTest() {
         // given
         ThemeRequest themeRequest = new ThemeRequest(
                 "레벨2 탈출",
@@ -77,7 +78,7 @@ public class ThemeServiceTest {
 
     @Test
     @DisplayName("테마 삭제 테스트")
-    void deleteThemeTest(){
+    void deleteThemeTest() {
         // given
         ThemeRequest themeRequest = new ThemeRequest(
                 "레벨2 탈출",
@@ -95,7 +96,7 @@ public class ThemeServiceTest {
 
     @Test
     @DisplayName("인기 테마 목록 조회 테스트")
-    void getPopularThemesTest(){
+    void getPopularThemesTest() {
         // given
         setFakeReservationsAndThemes();
 
@@ -105,16 +106,16 @@ public class ThemeServiceTest {
         // then
         assertThat(popularThemes).hasSize(10);
         Assertions.assertAll(() -> {
-            for(int i=0; i<10; i++){
-                assertThat(popularThemes.get(i).getId()).isEqualTo(10-i);
+            for (int i = 0; i < 10; i++) {
+                assertThat(popularThemes.get(i).getId()).isEqualTo(10 - i);
             }
         });
     }
 
-    private void setFakeReservationsAndThemes(){
+    private void setFakeReservationsAndThemes() {
         List<Reservation> reservations = new ArrayList<>();
 
-        for(int i=1; i<=10; i++){
+        for (int i = 1; i <= 10; i++) {
             ThemeResponse theme = setTheme(i);
             Theme currentTheme = new Theme((long) i, theme.getName(), theme.getDescription(), theme.getThumbnail());
 
@@ -127,10 +128,13 @@ public class ThemeServiceTest {
         themeRepository.setReservations(reservations);
     }
 
-    private void createFakeReservations(Theme currentTheme, ReservationTime reservationTime, List<Reservation> reservations, int count) {
-        for(int i=1; i<=count; i++) {
+    private void createFakeReservations(Theme currentTheme, ReservationTime reservationTime,
+                                        List<Reservation> reservations, int count) {
+        for (int i = 1; i <= count; i++) {
+            Member member = new Member((long) i, "name", "email@email.com", "password", Role.USER);
+
             CreateReservationRequest reservationRequest = new CreateReservationRequest(
-                    new ReservationName("브라운"),
+                    member,
                     currentTheme,
                     new ReservationDate(LocalDate.now().minusDays(2)),
                     reservationTime
@@ -141,7 +145,7 @@ public class ThemeServiceTest {
 
     private ThemeResponse setTheme(int i) {
         ThemeRequest themeRequest = new ThemeRequest(
-                "레벨 탈출:"+ i,
+                "레벨 탈출:" + i,
                 "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
         );

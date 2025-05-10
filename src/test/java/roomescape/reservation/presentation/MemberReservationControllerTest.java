@@ -3,6 +3,8 @@ package roomescape.reservation.presentation;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,7 +43,10 @@ class MemberReservationControllerTest {
     @DisplayName("날짜는 LocalDate 형식을 만족시켜야 한다.")
     void createReservationDateExceptionTest() {
         // given
-        MemberReservationRequest reservation = reservationFixture.createReservation("2025-0805", "1", "1");
+        Map<String, String> reservation = new HashMap<>();
+        reservation.put("date", "2025:08:05");
+        reservation.put("themeId", "1");
+        reservation.put("timeId", "1");
 
         // when - then
         ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation)
@@ -151,7 +156,7 @@ class MemberReservationControllerTest {
         ThemeRequest theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
-        
+
         MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "1");
         ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation);
 

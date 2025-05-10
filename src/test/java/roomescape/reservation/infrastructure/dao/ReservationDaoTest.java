@@ -12,9 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.global.exception.DeleteReservationException;
+import roomescape.member.application.dto.CreateMemberRequest;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
+import roomescape.member.infrastructure.dao.MemberDao;
 import roomescape.reservation.application.dto.CreateReservationRequest;
 import roomescape.reservation.domain.ReservationDate;
-import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ThemeRequest;
 
@@ -23,6 +26,7 @@ public class ReservationDaoTest {
 
     private ReservationDao reservationDao;
     private ReservationTimeDao reservationTimeDao;
+    private MemberDao memberDao;
     private ThemeDao themeDao;
     private JdbcTemplate jdbcTemplate;
 
@@ -32,6 +36,7 @@ public class ReservationDaoTest {
         this.reservationDao = new ReservationDao(jdbcTemplate);
         this.reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
         this.themeDao = new ThemeDao(jdbcTemplate);
+        this.memberDao = new MemberDao(jdbcTemplate);
     }
 
     @BeforeEach
@@ -44,6 +49,8 @@ public class ReservationDaoTest {
     @DisplayName("예약 추가 확인 테스트")
     void insertTest() {
         // given
+        CreateMemberRequest memberRequest = new CreateMemberRequest("name", "email@email.com", "password", Role.USER);
+        Member member = memberDao.insert(memberRequest);
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));
         ThemeRequest themeRequest = new ThemeRequest(
                 "레벨2 탈출",
@@ -51,7 +58,7 @@ public class ReservationDaoTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
         );
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                new ReservationName("브라운"),
+                member,
                 themeDao.insert(themeRequest),
                 new ReservationDate(LocalDate.of(2023, 8, 5)),
                 reservationTimeDao.insert(reservationTimeRequest.getStartAt())
@@ -68,6 +75,8 @@ public class ReservationDaoTest {
     @DisplayName("예약 삭제 확인 테스트")
     void deleteTest() {
         // given
+        CreateMemberRequest memberRequest = new CreateMemberRequest("name", "email@email.com", "password", Role.USER);
+        Member member = memberDao.insert(memberRequest);
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));
         ThemeRequest themeRequest = new ThemeRequest(
                 "레벨2 탈출",
@@ -75,7 +84,7 @@ public class ReservationDaoTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
         );
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                new ReservationName("브라운"),
+                member,
                 themeDao.insert(themeRequest),
                 new ReservationDate(LocalDate.of(2023, 8, 5)),
                 reservationTimeDao.insert(reservationTimeRequest.getStartAt())
