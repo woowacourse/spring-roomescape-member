@@ -202,7 +202,7 @@ function applyFilter(event) {
     */
     const queryParams = new URLSearchParams({themeId, memberId, dateFrom, dateTo}).toString();
 
-    fetch(`/admin/reservations?${queryParams}`, { // 예약 검색 API 호출
+    fetch(`/reservations/filtered?${queryParams}`, { // 예약 검색 API 호출
         method: 'GET',
         credentials: 'include'
     }).then(response => {
@@ -219,7 +219,7 @@ function requestCreate(reservation) {
         body: JSON.stringify(reservation)
     };
 
-    return fetch('/admin/reservations', requestOptions)
+    return fetch('/reservations/filtered', requestOptions)
         .then(response => {
             if (response.status === 201) return response.json();
             throw new Error('Create failed');

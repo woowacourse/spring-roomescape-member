@@ -15,7 +15,7 @@ import roomescape.reservation.ui.dto.AvailableReservationTimeRequest;
 import roomescape.reservation.ui.dto.AvailableReservationTimeResponse;
 import roomescape.reservation.ui.dto.CreateReservationRequest;
 import roomescape.reservation.ui.dto.ReservationResponse;
-import roomescape.reservation.ui.dto.ReservationsByCriteriaRequest;
+import roomescape.reservation.ui.dto.ReservationsByfilterRequest;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 
@@ -60,7 +60,11 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<ReservationResponse> findAllByCriteria(final ReservationsByCriteriaRequest request) {
+    public List<ReservationResponse> findAllByFilter(final ReservationsByfilterRequest request) {
+        if (request.dateFrom().isAfter(request.dateTo())) {
+            throw new IllegalArgumentException("시작 날짜는 종료 날짜보다 이전이어야 합니다.");
+        }
+        
         return reservationRepository.findAllByThemIdAndMemberIdAndDateRange(
                         request.themeId(), request.memberId(), request.dateFrom(), request.dateTo()
                 )

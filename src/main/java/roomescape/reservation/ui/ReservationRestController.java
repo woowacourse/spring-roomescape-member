@@ -21,7 +21,7 @@ import roomescape.reservation.ui.dto.AvailableReservationTimeRequest;
 import roomescape.reservation.ui.dto.AvailableReservationTimeResponse;
 import roomescape.reservation.ui.dto.CreateReservationRequest;
 import roomescape.reservation.ui.dto.ReservationResponse;
-import roomescape.reservation.ui.dto.ReservationsByCriteriaRequest;
+import roomescape.reservation.ui.dto.ReservationsByfilterRequest;
 
 @RestController
 @RequiredArgsConstructor
@@ -58,13 +58,12 @@ public class ReservationRestController {
         return ResponseEntity.ok(reservationResponses);
     }
 
-    @GetMapping("/admin/reservations")
+    @GetMapping("/reservations/filtered")
     @RequiresRole(authRoles = {AuthRole.ADMIN})
-    public ResponseEntity<List<ReservationResponse>> findAllByCriteria(
-            @ModelAttribute @Valid final ReservationsByCriteriaRequest request
+    public ResponseEntity<List<ReservationResponse>> findAllByFilter(
+            @ModelAttribute @Valid final ReservationsByfilterRequest request
     ) {
-        log.info(request.toString());
-        final List<ReservationResponse> reservationResponses = reservationService.findAllByCriteria(request);
+        final List<ReservationResponse> reservationResponses = reservationService.findAllByFilter(request);
 
         return ResponseEntity.ok(reservationResponses);
     }
