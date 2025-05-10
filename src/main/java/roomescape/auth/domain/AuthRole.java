@@ -7,7 +7,7 @@ import lombok.Getter;
 public enum AuthRole {
 
     ADMIN("어드민"),
-    MEMBER("가입"),
+    MEMBER("회원"),
     GUEST("게스트"),
     ;
 
