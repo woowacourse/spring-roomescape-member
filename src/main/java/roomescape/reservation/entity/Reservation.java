@@ -10,10 +10,10 @@ import lombok.Getter;
 public class Reservation {
 
     private final Long id;
-    private String name;
     private LocalDate date;
     private ReservationTime time;
     private Long themeId;
+    private Long memberId;
 
     public boolean isDuplicatedWith(Reservation other) {
         return date.isEqual(other.date) && time.isDuplicatedWith(other.time);
