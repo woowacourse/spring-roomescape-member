@@ -42,7 +42,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationRequest request,
                                                                  @Login final LoginMember loginMember) {
-        ReservationResponse response = reservationService.createReservation(request, loginMember);
+        ReservationResponse response = reservationService.createReservation(request, loginMember.id());
         URI locationUri = URI.create(RESERVATION_BASE_URL + SLASH + response.id());
         return ResponseEntity.created(locationUri).body(response);
     }

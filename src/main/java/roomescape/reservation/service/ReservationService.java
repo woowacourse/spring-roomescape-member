@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import roomescape.common.util.DateTime;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
-import roomescape.member.dto.LoginMember;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.dto.ReservationRequest;
@@ -38,11 +37,11 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public ReservationResponse createReservation(final ReservationRequest request, final LoginMember loginMember) {
+    public ReservationResponse createReservation(final ReservationRequest request, final Long memberId) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId());
         Theme theme = themeRepository.findById(request.themeId());
 
-        Optional<Member> findMember = memberRepository.findById(loginMember.id());
+        Optional<Member> findMember = memberRepository.findById(memberId);
         if (findMember.isEmpty()) {
             throw new IllegalArgumentException("존재 하지 않는 유저입니다.");
         }
