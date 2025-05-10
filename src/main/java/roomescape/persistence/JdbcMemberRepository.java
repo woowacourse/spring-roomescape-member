@@ -1,5 +1,6 @@
 package roomescape.persistence;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -12,7 +13,7 @@ import roomescape.domain.MemberRepository;
 @Repository
 public class JdbcMemberRepository implements MemberRepository {
 
-    private final static RowMapper<Member> memberRowMapper = ((rs, rowNum) -> new Member(
+    private final static RowMapper<Member> MEMBER_ROW_MAPPER = ((rs, rowNum) -> new Member(
             rs.getLong("id"),
             rs.getString("name"),
             rs.getString("email"),
@@ -29,7 +30,7 @@ public class JdbcMemberRepository implements MemberRepository {
     public Optional<Member> findById(Long id) {
         String sql = "SELECT id, name, email, password FROM member WHERE id = :id";
         try {
-            Member member = namedParameterJdbcTemplate.queryForObject(sql, Map.of("id", id), memberRowMapper);
+            Member member = namedParameterJdbcTemplate.queryForObject(sql, Map.of("id", id), MEMBER_ROW_MAPPER);
             return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -40,10 +41,16 @@ public class JdbcMemberRepository implements MemberRepository {
     public Optional<Member> findByEmail(String email) {
         String sql = "SELECT id, name, email, password FROM member WHERE email = :email";
         try {
-            Member member = namedParameterJdbcTemplate.queryForObject(sql, Map.of("email", email), memberRowMapper);
+            Member member = namedParameterJdbcTemplate.queryForObject(sql, Map.of("email", email), MEMBER_ROW_MAPPER);
             return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String sql = "SELECT id, name, email, password FROM member";
+        return namedParameterJdbcTemplate.query(sql, MEMBER_ROW_MAPPER);
     }
 }
