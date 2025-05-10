@@ -7,10 +7,15 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.auth.infrastructure.dto.CredentialDetails;
+import roomescape.global.util.NumberParser;
 import roomescape.member.domain.Member;
 
 @Component
 public class JwtTokenProvider implements TokenProvider {
+
+    private static final String CLAIM_EMAIL_KEY = "email";
+    private static final String CLAIM_ROLE_KEY = "role";
+    private static final String CLAIM_NAME_KEY = "name";
 
     @Value("${jwt.secret-key}")
     String secretKey;
@@ -24,9 +29,9 @@ public class JwtTokenProvider implements TokenProvider {
         return Jwts.builder()
                 .subject(member.getId().toString())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
-                .claim("email", member.getEmail())
-                .claim("role", member.getRole())
-                .claim("name", member.getName())
+                .claim(CLAIM_EMAIL_KEY, member.getEmail())
+                .claim(CLAIM_ROLE_KEY, member.getRole())
+                .claim(CLAIM_NAME_KEY, member.getName())
                 .issuer(issure)
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
@@ -41,10 +46,10 @@ public class JwtTokenProvider implements TokenProvider {
                 .getPayload();
 
         return CredentialDetails.builder()
-                .id(Long.valueOf(payload.getId()))
-                .email(payload.get("email", String.class))
-                .role(payload.get("role", String.class))
-                .name(payload.get("name", String.class))
+                .id(NumberParser.parseToLong(payload.getSubject()))
+                .email(payload.get(CLAIM_EMAIL_KEY, String.class))
+                .role(payload.get(CLAIM_ROLE_KEY, String.class))
+                .name(payload.get(CLAIM_NAME_KEY, String.class))
                 .build();
     }
 
