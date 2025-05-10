@@ -1,7 +1,12 @@
 package roomescape.member.repository;
 
+import java.util.Map;
+import java.util.Optional;
+
 import javax.sql.DataSource;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -17,6 +22,12 @@ public class MemberDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
+    private final RowMapper<Member> memberRowMapper = (resultSet, rowNum) -> new Member(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("email"),
+            resultSet.getString("password")
+    );
 
     public MemberDao(final NamedParameterJdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -36,5 +47,21 @@ public class MemberDao {
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         return new Member(id, name, email, password);
+    }
+
+    public Optional<Member> findByEmailAndPassword(final String email, final String password) {
+        String sql = """
+                SELECT id, name, email, password
+                FROM member
+                WHERE email = :email AND password = :password
+                """;
+        Map<String, String> params = Map.of("email", email, "password", password);
+
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, params, memberRowMapper);
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }
