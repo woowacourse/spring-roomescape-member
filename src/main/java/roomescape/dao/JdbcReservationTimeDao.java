@@ -74,7 +74,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
                 sql,
                 Boolean.class,
-                reservationTime
+                reservationTime.getStartAt()
         ));
     }
 }

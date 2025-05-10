@@ -12,6 +12,11 @@ public class FakeMemberDao implements MemberDao {
     }
 
     @Override
+    public boolean existsByEmail(Member member) {
+        return false;
+    }
+
+    @Override
     public Member findByEmailAndPassword(String email, String password) {
         return null;
     }

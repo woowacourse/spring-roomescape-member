@@ -42,4 +42,9 @@ public class FakeThemeDao implements ThemeDao {
     public void deleteById(Long idRequest) {
         fakeMemory.removeIf(theme -> Objects.equals(theme.getId(), idRequest));
     }
+
+    @Override
+    public boolean existsByName(Theme theme) {
+        return false;
+    }
 }

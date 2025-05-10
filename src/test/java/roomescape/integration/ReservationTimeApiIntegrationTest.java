@@ -40,7 +40,7 @@ class ReservationTimeApiIntegrationTest {
     @DisplayName("시간을 생성한다.")
     void createTime() {
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        params.put("startAt", "11:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

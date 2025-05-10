@@ -36,4 +36,9 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
     public void deleteById(Long id) {
         fakeMemory.removeIf(reservationTime -> reservationTime.getId() == id);
     }
+
+    @Override
+    public boolean existsByStartAt(ReservationTime reservationTime) {
+        return false;
+    }
 }
