@@ -1,5 +1,6 @@
 package roomescape.member.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -10,6 +11,7 @@ import roomescape.member.entity.Member;
 import roomescape.member.entity.Role;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class MemberJDBCDao implements MemberRepository {
@@ -23,7 +25,7 @@ public class MemberJDBCDao implements MemberRepository {
     @Override
     public Member save(Member member) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "insert into users (email, password, name, role) values (:email, :password, :name, :role)";
+        String sql = "insert into member (email, password, name, role) values (:email, :password, :name, :role)";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("email", member.getEmail())
@@ -38,13 +40,31 @@ public class MemberJDBCDao implements MemberRepository {
     }
 
     @Override
-    public Member findByEmail(String email) {
-        String sql = "select * from users where email = :email";
-
+    public Optional<Member> findByEmail(String email) {
+        String sql = "select * from member where email = :email";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("email", email);
 
-        return namedJdbcTemplate.queryForObject(sql, params, getUserRowMapper());
+        try {
+            Member member = namedJdbcTemplate.queryForObject(sql, params, getUserRowMapper());
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Member> findById(Long id) {
+        String sql = "select * from member where id = :id";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        try {
+            Member member = namedJdbcTemplate.queryForObject(sql, params, getUserRowMapper());
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     private RowMapper<Member> getUserRowMapper() {
