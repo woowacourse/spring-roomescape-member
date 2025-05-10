@@ -15,7 +15,7 @@ public class JwtTokenProvider {
     public String generateToken(Account account) {
         Member member = account.getMember();
         return  Jwts.builder()
-                .setSubject(member.getId().toString())
+                .setSubject(member.getId().getValue().toString())
                 .claim("name", member.getName().getValue())
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();

@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.member.auth.dto.MemberInfo;
 import roomescape.reservation.service.converter.ReservationConverter;
 import roomescape.reservation.service.dto.AvailableReservationTimeServiceRequest;
 import roomescape.reservation.service.dto.CreateReservationServiceRequest;
@@ -38,11 +39,11 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationWebResponse create(final CreateReservationWebRequest createReservationWebRequest) {
+    public ReservationWebResponse create(final CreateReservationWebRequest createReservationWebRequest, final MemberInfo memberInfo) {
         return ReservationConverter.toDto(
                 reservationCommandUseCase.create(
                         new CreateReservationServiceRequest(
-                                createReservationWebRequest.name(),
+                                memberInfo.id(),
                                 createReservationWebRequest.date(),
                                 createReservationWebRequest.timeId(),
                                 createReservationWebRequest.themeId())));

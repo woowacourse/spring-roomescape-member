@@ -37,9 +37,9 @@ public class Member {
                                 final MemberEmail email,
                                 final Role role) {
         Validator.of(Member.class)
-                .notNullField(Member.Fields.id, id)
-                .notNullField(Member.Fields.name, name)
-                .notNullField(Member.Fields.email, email)
-                .notNullField(Member.Fields.role, role);
+                .notNullField(Fields.id, id)
+                .notNullField(Fields.name, name)
+                .notNullField(Fields.email, email)
+                .notNullField(Fields.role, role);
     }
 }

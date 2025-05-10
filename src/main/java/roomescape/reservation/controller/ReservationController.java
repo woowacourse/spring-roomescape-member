@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.utils.UriFactory;
+import roomescape.member.auth.dto.MemberInfo;
 import roomescape.reservation.controller.dto.AvailableReservationTimeWebResponse;
 import roomescape.reservation.controller.dto.CreateReservationWebRequest;
 import roomescape.reservation.controller.dto.ReservationWebResponse;
@@ -43,8 +44,9 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationWebResponse> create(
-            @RequestBody final CreateReservationWebRequest createReservationWebRequest) {
-        final ReservationWebResponse reservationWebResponse = reservationService.create(createReservationWebRequest);
+            @RequestBody final CreateReservationWebRequest createReservationWebRequest,
+            MemberInfo memberInfo) {
+        final ReservationWebResponse reservationWebResponse = reservationService.create(createReservationWebRequest, memberInfo);
         final URI location = UriFactory.buildPath(BASE_PATH, String.valueOf(reservationWebResponse.id()));
         return ResponseEntity.created(location)
                 .body(reservationWebResponse);

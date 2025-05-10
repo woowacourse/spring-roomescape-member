@@ -1,8 +1,10 @@
 package roomescape.member.service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.member.auth.dto.MemberInfo;
 import roomescape.member.controller.dto.LoginRequest;
 import roomescape.member.controller.dto.SignupRequest;
 import roomescape.member.domain.Account;
@@ -42,7 +44,7 @@ public class MemberService {
         ).orElseThrow(() -> new NoSuchElementException("등록된 이메일이 존재하지 않습니다."));
     }
 
-    public Member findMemberById(MemberId id) {
+    public Member get(MemberId id) {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("등록된 회원이 아닙니다."));
     }

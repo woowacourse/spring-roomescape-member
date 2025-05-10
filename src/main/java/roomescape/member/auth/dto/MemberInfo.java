@@ -1,6 +1,6 @@
 package roomescape.member.auth.dto;
 
-public record MemberInfoResponse(
+public record MemberInfo(
         Long id,
         String name,
         String email
