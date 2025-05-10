@@ -1,15 +1,14 @@
 package roomescape.auth.infrastructure;
 
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("security.jwt.token")
 @Getter
+@RequiredArgsConstructor
 public class JwtProperties {
 
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
-    @Value("${security.jwt.token.expire-length}")
-    private Long expireLength;
+    private final String secretKey;
+    private final Long expireLength;
 }
