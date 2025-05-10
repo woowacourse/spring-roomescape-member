@@ -3,27 +3,32 @@ package roomescape.config;
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import roomescape.controller.CheckAdminInterceptor;
+import roomescape.controller.CheckLoginInterceptor;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    private final HandlerInterceptor handlerInterceptor;
+    private final CheckLoginInterceptor checkLoginInterceptor;
+    private final CheckAdminInterceptor checkAdminInterceptor;
     private final HandlerMethodArgumentResolver handlerMethodArgumentResolver;
 
-    public WebMvcConfiguration(final HandlerInterceptor handlerInterceptor,
+    public WebMvcConfiguration(final CheckLoginInterceptor checkLoginInterceptor,
+                               final CheckAdminInterceptor checkAdminInterceptor,
                                final HandlerMethodArgumentResolver handlerMethodArgumentResolver) {
-        this.handlerInterceptor = handlerInterceptor;
+        this.checkLoginInterceptor = checkLoginInterceptor;
+        this.checkAdminInterceptor = checkAdminInterceptor;
         this.handlerMethodArgumentResolver = handlerMethodArgumentResolver;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        InterceptorRegistration interceptorRegistration = registry.addInterceptor(handlerInterceptor);
-        interceptorRegistration.addPathPatterns("/auth/login/check", "/user/reservations");
+        registry.addInterceptor(checkLoginInterceptor)
+                .addPathPatterns("/auth/login/check", "/user/reservations");
+        registry.addInterceptor(checkAdminInterceptor)
+                .addPathPatterns("/admin/**");
 
     }
 

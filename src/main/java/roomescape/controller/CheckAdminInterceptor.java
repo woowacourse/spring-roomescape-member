@@ -6,13 +6,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.dto.TokenClaims;
+import roomescape.model.Role;
 import roomescape.service.AuthenticationService;
 
 @Component
-public class CheckLoginInterceptor implements HandlerInterceptor {
+public class CheckAdminInterceptor implements HandlerInterceptor {
     private final AuthenticationService authenticationService;
 
-    public CheckLoginInterceptor(final AuthenticationService authenticationService) {
+    public CheckAdminInterceptor(final AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
 
@@ -24,8 +25,13 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
             throw new IllegalArgumentException("토큰이 존재하지 않습니다.");
         }
         TokenClaims tokenClaims = authenticationService.validateTokenAndGetClaims(accessToken);
-        System.out.println("id = " + tokenClaims.id());
-        request.setAttribute("memberId", tokenClaims.id());
+        if (tokenClaims.role().equals(Role.USER.toString())) {
+            System.out.println(tokenClaims.role());
+            System.out.println(Role.USER.toString());
+            response.setStatus(401);
+            return false;
+        }
+
         return true;
     }
 

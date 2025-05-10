@@ -38,9 +38,9 @@ CREATE TABLE reservation
 
 
 insert into member(role, name, email, password)
-values ('USER', 'vector', 'abc', 'def');
+values ('ADMIN', 'vector', 'abc', 'def');
 insert into member(role, name, email, password)
-values ('USER', 'ddiyong', 'abc', 'def');
+values ('USER', 'ddiyong', 'hij', 'kln');
 
 
 insert into reservation_time (start_at) values ('12:00'); --1
