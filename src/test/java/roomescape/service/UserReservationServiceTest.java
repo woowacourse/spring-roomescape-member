@@ -32,6 +32,8 @@ class UserReservationServiceTest extends IntegrationTestSupport {
     void setUp() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
+        jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES (?,?,?,?);",
+                "어드민", "admin@naver.com", "1234", "ADMIN");
     }
 
     @DisplayName("요청된 예약 정보로 예약을 진행할 수 있다")
