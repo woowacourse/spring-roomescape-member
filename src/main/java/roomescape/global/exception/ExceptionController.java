@@ -23,6 +23,11 @@ public class ExceptionController {
         return ResponseEntity.badRequest().body(PREFIX + e.getMessage());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(PREFIX + e.getMessage());
+    }
+
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
         return ResponseEntity.badRequest().body(PREFIX + e.getMessage());

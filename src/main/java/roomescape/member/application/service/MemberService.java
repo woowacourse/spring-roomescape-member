@@ -25,6 +25,10 @@ public class MemberService {
         Member member = memberRepository.findByEmail(tokenRequest.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("유저 정보를 찾을 수 없습니다."));
 
+        if(!member.getPassword().equals(tokenRequest.getPassword())){
+            throw new IllegalArgumentException("패스워드가 맞지 않습니다.");
+        }
+
         return tokenProvider.createToken(member);
     }
 
