@@ -65,7 +65,7 @@ public class ReservationTimeRepositoryTest {
     void delete_already_use_other_reservation_time_id_then_throw_exception() {
 
         //given
-        Member member = new Member("testMember", "a@email.com", "aaa");
+        Member member = Member.createMember("testMember", "a@email.com", "aaa");
         long savedMemberId = memberDao.save(member);
         member.setId(savedMemberId);
 

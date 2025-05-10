@@ -43,7 +43,7 @@ public class JdbcMemberDaoImpl implements MemberDao {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query,
                 (resultSet, rowNum) -> {
-                    return new Member(
+                    return Member.createMemberWithId(
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
                         resultSet.getString("email"),
@@ -65,7 +65,7 @@ public class JdbcMemberDaoImpl implements MemberDao {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query,
                 (resultSet, rowNum) -> {
-                    return new Member(
+                    return Member.createMemberWithId(
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
                         resultSet.getString("email"),
@@ -87,7 +87,7 @@ public class JdbcMemberDaoImpl implements MemberDao {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query,
                 (resultSet, rowNum) -> {
-                    return new Member(
+                    return Member.createMemberWithId(
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
                         resultSet.getString("email"),
@@ -104,7 +104,7 @@ public class JdbcMemberDaoImpl implements MemberDao {
         String query = "select * from member";
         return jdbcTemplate.query(query,
             (resultSet, RowNum) -> {
-                Member member = new Member(
+                Member member = Member.createMemberWithId(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("email"),

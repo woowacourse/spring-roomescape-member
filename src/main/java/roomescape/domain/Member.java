@@ -4,21 +4,44 @@ package roomescape.domain;
 public class Member {
 
     private Long id;
+    private final Role role;
     private final String name;
     private final String email;
     private final String password;
 
-    public Member(Long id, String name, String email, String password) {
+    private Member(Long id, Role role, String name, String email, String password) {
         this.id = id;
+        this.role = role;
         this.name = name;
         this.email = email;
         this.password = password;
     }
 
-    public Member(String name, String email, String password) {
+    private Member(Role role, String name, String email, String password) {
         this.name = name;
+        this.role = role;
         this.email = email;
         this.password = password;
+    }
+
+    public static Member createMemberWithId(Long id, String name, String email, String password) {
+        return new Member(id, Role.USER, name, email, password);
+    }
+
+    public static Member createMember(String name, String email, String password) {
+        return new Member(Role.USER, name, email, password);
+    }
+
+    public static Member createAdminWithId(Long id, String name, String email, String password) {
+        return new Member(id, Role.ADMIN, name, email, password);
+    }
+
+    public static Member createAdminWithId(String name, String email, String password) {
+        return new Member(Role.ADMIN, name, email, password);
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     public void setId(Long id) {

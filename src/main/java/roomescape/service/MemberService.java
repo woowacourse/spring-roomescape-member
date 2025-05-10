@@ -18,7 +18,7 @@ public class MemberService {
     }
 
     public MemberResponseDto saveMember(MemberRequestDto memberRequestDto) {
-        Member member = new Member(memberRequestDto.name(), memberRequestDto.email(),
+        Member member = Member.createMember(memberRequestDto.name(), memberRequestDto.email(),
             memberRequestDto.password());
         memberRepository.save(member);
         return MemberResponseDto.from(member);

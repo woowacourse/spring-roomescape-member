@@ -68,7 +68,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     }
 
     private Member createMember(ResultSet resultSet) throws SQLException {
-        return new Member(
+        return Member.createMemberWithId(
             resultSet.getLong("member_id"),
             resultSet.getString("member_name"),
             resultSet.getString("member_email"),
