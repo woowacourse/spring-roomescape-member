@@ -7,13 +7,30 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import roomescape.reservation.exception.InvalidReservationTimeException;
 import roomescape.reservation.fixture.ReservationFixture;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.fixture.ReservationTimeFixture;
-import roomescape.theme.domain.Theme;
+import roomescape.theme.ThemeTestDataConfig;
+import roomescape.user.UserTestDataConfig;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {ThemeTestDataConfig.class, UserTestDataConfig.class})
 class ReservationTest {
+
+    @Autowired
+    private ThemeTestDataConfig themeTestDataConfig;
+    @Autowired
+    private UserTestDataConfig userTestDataConfig;
+
+    private Reservation createReservation(String name, LocalDate date, ReservationTime time) {
+        return ReservationFixture.create(name, date, time, themeTestDataConfig.getSavedTheme(),
+                userTestDataConfig.getSavedUser());
+    }
 
     @Nested
     @DisplayName("예약 시점이 현재보다 과거이면 예외가 발생해야 한다.")
@@ -28,11 +45,9 @@ class ReservationTest {
             LocalTime dummyTime = LocalTime.of(11, 13);
             ReservationTime reservationTime = ReservationTimeFixture.create(dummyTime);
 
-            Theme theme = new Theme("name1", "dd", "tt");
-
             // when & then
             Assertions.assertThatThrownBy(
-                    () -> ReservationFixture.create(dummyName, dummyPastDate, reservationTime, theme)
+                    () -> createReservation(dummyName, dummyPastDate, reservationTime)
             ).isInstanceOf(InvalidReservationTimeException.class);
         }
 
@@ -46,11 +61,9 @@ class ReservationTest {
             LocalTime dummyTime = dummyFuture.toLocalTime();
             ReservationTime reservationTime = ReservationTimeFixture.create(dummyTime);
 
-            Theme theme = new Theme("name1", "dd", "tt");
-
             // when & then
             Assertions.assertThatCode(
-                    () -> ReservationFixture.create(dummyName, dummyPastDate, reservationTime, theme)
+                    () -> createReservation(dummyName, dummyPastDate, reservationTime)
             ).doesNotThrowAnyException();
         }
 
@@ -62,15 +75,13 @@ class ReservationTest {
             LocalDateTime dummyDateTime1 = LocalDateTime.now().plusDays(1);
             ReservationTime duplicateReservationTime = ReservationTimeFixture.create(dummyDateTime1.toLocalTime());
 
-            Theme theme = new Theme("name1", "dd", "tt");
-
-            Reservation reservation1 = ReservationFixture.create(dummyName1, dummyDateTime1.toLocalDate(),
-                    duplicateReservationTime, theme);
+            Reservation reservation1 = createReservation(dummyName1, dummyDateTime1.toLocalDate(),
+                    duplicateReservationTime);
 
             String dummyName2 = "pobi";
             LocalDateTime dummyDateTime2 = LocalDateTime.now().plusDays(2);
-            Reservation reservation2 = ReservationFixture.create(dummyName2, dummyDateTime2.toLocalDate(),
-                    duplicateReservationTime, theme);
+            Reservation reservation2 = createReservation(dummyName2, dummyDateTime2.toLocalDate(),
+                    duplicateReservationTime);
 
             // when
             Assertions.assertThat(reservation1.isSameDateTime(reservation2)).isFalse();

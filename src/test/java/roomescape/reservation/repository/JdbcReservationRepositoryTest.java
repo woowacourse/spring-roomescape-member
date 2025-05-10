@@ -13,11 +13,17 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.fixture.ReservationFixture;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.repository.JdbcReservationTimeRepository;
-import roomescape.theme.domain.Theme;
+import roomescape.theme.ThemeTestDataConfig;
 import roomescape.theme.repository.JdbcThemeRepository;
+import roomescape.user.UserTestDataConfig;
 
 @JdbcTest
-@Import({JdbcReservationRepository.class, JdbcReservationTimeRepository.class, JdbcThemeRepository.class})
+@Import({JdbcReservationRepository.class,
+        JdbcReservationTimeRepository.class,
+        JdbcThemeRepository.class,
+        ThemeTestDataConfig.class,
+        UserTestDataConfig.class
+})
 class JdbcReservationRepositoryTest {
 
     @Autowired
@@ -25,7 +31,15 @@ class JdbcReservationRepositoryTest {
     @Autowired
     private JdbcReservationTimeRepository reservationTimeRepository;
     @Autowired
-    private JdbcThemeRepository themeRepository;
+    private ThemeTestDataConfig themeTestDataConfig;
+    @Autowired
+    private UserTestDataConfig userTestDataConfig;
+
+    private Reservation createReservation(String name, int plusDays, ReservationTime time) {
+        LocalDate date = LocalDate.now().plusDays(plusDays);
+        return ReservationFixture.create(name, date, time, themeTestDataConfig.getSavedTheme(),
+                userTestDataConfig.getSavedUser());
+    }
 
     @DisplayName("예약 시간에 해당하는 예약의 존재 여부를 알 수 있다.")
     @Test
@@ -33,11 +47,7 @@ class JdbcReservationRepositoryTest {
         // given
         ReservationTime reservationTime = reservationTimeRepository.add(new ReservationTime(LocalTime.now()));
 
-        Theme theme = new Theme("name1", "dd", "tt");
-        Theme savedTheme = themeRepository.add(theme);
-
-        Reservation reservation = ReservationFixture.create("r1", LocalDate.now().plusMonths(2), reservationTime,
-                savedTheme);
+        Reservation reservation = createReservation("n1", 1, reservationTime);
         reservationRepository.add(reservation);
 
         // when

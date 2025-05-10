@@ -28,6 +28,10 @@ import roomescape.reservationTime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.user.domain.User;
+import roomescape.user.fixture.UserFixture;
+import roomescape.user.repository.JdbcUserRepository;
+import roomescape.user.repository.UserRepository;
 
 @JdbcTest
 @Import({
@@ -36,7 +40,8 @@ import roomescape.theme.repository.ThemeRepository;
         JdbcReservationRepository.class,
         ReservationService.class,
         JdbcThemeRepository.class,
-        ReservationTimeTestDataConfig.class
+        ReservationTimeTestDataConfig.class,
+        JdbcUserRepository.class
 })
 class ReservationTimeServiceTest {
 
@@ -50,6 +55,8 @@ class ReservationTimeServiceTest {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private ReservationTimeTestDataConfig testDataConfig;
+    @Autowired
+    private UserRepository userRepository;
 
     @DisplayName("ReservationTime 객체를 ReservationTimeResponseDto로 변환할 수 있다")
     @Test
@@ -173,7 +180,9 @@ class ReservationTimeServiceTest {
         void delete_throwException_whenUsingInReservation() {
             // given
 
-            Theme theme = themeRepository.add(new Theme("name1", "dd", "tt"));
+            Theme theme = themeRepository.save(new Theme("name1", "dd", "tt"));
+            User savedUser = userRepository.save(UserFixture.create("n1", "e1", "p1"));
+
             reservationService.add(
                     new ReservationRequestDto(
                             "r1",
