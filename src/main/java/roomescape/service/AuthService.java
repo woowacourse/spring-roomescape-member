@@ -36,9 +36,14 @@ public class AuthService {
                 .orElseThrow(() -> new MemberException("해당 이메일의 회원이 존재하지 않습니다."));
     }
 
-    public MemberResponse checkLogin(final String cookieName, final Cookie[] cookies) {
-        String token = jwtExtractor.extractTokenFromCookie(cookieName, cookies);
-        return findMemberByToken(token);
+    public MemberResponse checkLogin(final String token) {
+        Member member = findMemberByToken(token);
+        return new MemberResponse(member.getName());
+    }
+
+    public LoginMember findLoginMemberByToken(final String token) {
+        Member member = findMemberByToken(token);
+        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
     private MemberResponse findMemberByToken(final String token) {

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.CookieProvider;
+import roomescape.auth.JwtExtractor;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.MemberResponse;
 import roomescape.service.AuthService;
@@ -21,10 +22,13 @@ public class AuthController {
 
     private final AuthService authService;
     private final CookieProvider cookieProvider;
+    private final JwtExtractor jwtExtractor;
 
-    public AuthController(final AuthService authService, final CookieProvider cookieProvider) {
+    public AuthController(final AuthService authService, final CookieProvider cookieProvider,
+                          final JwtExtractor jwtExtractor) {
         this.authService = authService;
         this.cookieProvider = cookieProvider;
+        this.jwtExtractor = jwtExtractor;
     }
 
     @PostMapping("/login")
@@ -38,7 +42,8 @@ public class AuthController {
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        MemberResponse response = authService.checkLogin(COOKIE_NAME, cookies);
+        String token = jwtExtractor.extractTokenFromCookie(COOKIE_NAME, cookies);
+        MemberResponse response = authService.checkLogin(token);
         return ResponseEntity.ok(response);
     }
 
