@@ -3,6 +3,8 @@ package roomescape.presentation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
+import java.util.function.Predicate;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -34,19 +36,26 @@ public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentR
             final WebDataBinderFactory binderFactory
     ) {
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        final Cookie tokenCookie = findCookieByName(request.getCookies(), "token");
 
-        return authService.verifyTokenAndGetLoginUser(tokenCookie.getValue());
+        try {
+            final Cookie tokenCookie = findCookieBy(
+                    request.getCookies(),
+                    cookie -> cookie.getName().equals("token")
+            );
+            return authService.verifyTokenAndGetLoginUser(tokenCookie.getValue());
+        } catch (NoSuchElementException e) {
+            throw new InvalidCredentialsException();
+        }
     }
 
-    private Cookie findCookieByName(final Cookie[] cookies, final String name) {
+    private Cookie findCookieBy(final Cookie[] cookies, final Predicate<Cookie> condition) {
         if (cookies == null) {
-            throw new InvalidCredentialsException();
+            throw new NoSuchElementException();
         }
 
         return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals(name))
+                .filter(condition)
                 .findAny()
-                .orElseThrow(InvalidCredentialsException::new);
+                .orElseThrow(NoSuchElementException::new);
     }
 }
