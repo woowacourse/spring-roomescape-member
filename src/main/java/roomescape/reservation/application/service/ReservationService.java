@@ -15,7 +15,7 @@ import roomescape.reservation.application.repository.ThemeRepository;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
-import roomescape.reservation.presentation.dto.ReservationRequest;
+import roomescape.reservation.presentation.dto.MemberReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationResponse;
 
 @Service
@@ -33,10 +33,11 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public ReservationResponse createReservation(final Member member, final ReservationRequest reservationRequest) {
-        ReservationDate reservationDate = new ReservationDate(reservationRequest.getDate());
-        ReservationTime reservationTime = getReservationTime(reservationRequest.getTimeId());
-        Theme theme = getTheme(reservationRequest.getThemeId());
+    public ReservationResponse createReservation(final Member member,
+                                                 final MemberReservationRequest memberReservationRequest) {
+        ReservationDate reservationDate = new ReservationDate(memberReservationRequest.getDate());
+        ReservationTime reservationTime = getReservationTime(memberReservationRequest.getTimeId());
+        Theme theme = getTheme(memberReservationRequest.getThemeId());
         validateReservationDateTime(reservationDate, reservationTime);
 
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(

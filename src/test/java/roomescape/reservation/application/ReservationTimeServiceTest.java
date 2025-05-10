@@ -8,6 +8,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.application.repository.ThemeRepository;
@@ -18,7 +20,7 @@ import roomescape.reservation.infrastructure.fake.FakeReservationDao;
 import roomescape.reservation.infrastructure.fake.FakeReservationTimeDao;
 import roomescape.reservation.infrastructure.fake.FakeThemeDao;
 import roomescape.reservation.presentation.dto.AvailableReservationTimeResponse;
-import roomescape.reservation.presentation.dto.ReservationRequest;
+import roomescape.reservation.presentation.dto.MemberReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ReservationTimeResponse;
 import roomescape.reservation.presentation.dto.ThemeRequest;
@@ -79,13 +81,14 @@ public class ReservationTimeServiceTest {
         );
         themeService.createTheme(themeRequest);
 
-        ReservationRequest reservationRequest = new ReservationRequest(
+        MemberReservationRequest memberReservationRequest = new MemberReservationRequest(
                 LocalDate.of(2025, 8, 5),
-                "브라운",
                 1L,
                 1L
         );
-        reservationService.createReservation(reservationRequest);
+
+        Member member = new Member(1L, "브라운", "email@email.com", "password", Role.USER);
+        reservationService.createReservation(member, memberReservationRequest);
 
         // when
         List<AvailableReservationTimeResponse> reservationTimes = reservationTimeService.getReservationTimes(

@@ -10,11 +10,12 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.global.exception.DeleteReservationException;
-import roomescape.reservation.application.repository.ReservationRepository;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.application.dto.CreateReservationRequest;
+import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
-import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 
@@ -28,14 +29,14 @@ public class ReservationDao implements ReservationRepository {
 
     @Override
     public Reservation insert(final CreateReservationRequest request) {
-        String sql = "insert into reservation (name, theme_id, date, time_id) values (?, ?, ?, ?)";
+        String sql = "insert into reservation (member_id, theme_id, date, time_id) values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     sql,
-                    new String[] {"id"});
-            ps.setString(1, request.getName().getName());
-            ps.setLong(2,request.getTheme().getId());
+                    new String[]{"id"});
+            ps.setLong(1, request.getMember().getId());
+            ps.setLong(2, request.getTheme().getId());
             ps.setString(3, request.getDate().getReservationDate().toString());
             ps.setLong(4, request.getTime().getId());
             return ps;
@@ -43,27 +44,21 @@ public class ReservationDao implements ReservationRepository {
 
         long id = keyHolder.getKey().longValue();
 
-        return new Reservation(id, request.getName(), request.getTheme(), request.getDate(), request.getTime());
+        return new Reservation(id, request.getMember(), request.getTheme(), request.getDate(), request.getTime());
     }
 
     @Override
     public List<Reservation> findAllReservations() {
         String sql = """
                     SELECT
-                    r.id as reservation_id,
-                    r.name,
-                    t.id as theme_id,
-                    t.name as theme_name,
-                    t.description as theme_description,
-                    t.thumbnail as theme_thumbnail,
-                    r.date,
-                    rt.id as time_id,
-                    rt.start_at as time_value
+                    r, rt, m
                 FROM reservation as r
                 inner join reservation_time as rt
                 on r.time_id = rt.id
                 inner join theme as t
                 on r.theme_id = t.id
+                inner join member as m 
+                on m.id = r.member_id
                 """;
 
         return jdbcTemplate.query(
@@ -71,21 +66,25 @@ public class ReservationDao implements ReservationRepository {
                 (resultSet, rowNum) -> {
                     return new Reservation(
                             resultSet.getLong("id"),
-                            new ReservationName(
-                                    resultSet.getString("name")
+                            new Member(
+                                    resultSet.getLong("m.id"),
+                                    resultSet.getString("m.name"),
+                                    resultSet.getString("m.email"),
+                                    resultSet.getString("m.password"),
+                                    Role.valueOf(resultSet.getString("m.role"))
                             ),
                             new Theme(
-                                    resultSet.getLong("theme_id"),
-                                    resultSet.getString("theme_name"),
-                                    resultSet.getString("theme_description"),
-                                    resultSet.getString("theme_thumbnail")
+                                    resultSet.getLong("t.id"),
+                                    resultSet.getString("t.name"),
+                                    resultSet.getString("t.description"),
+                                    resultSet.getString("t.thumbnail")
                             ),
                             new ReservationDate(
-                                resultSet.getDate("date").toLocalDate()
+                                    resultSet.getDate("r.date").toLocalDate()
                             ),
                             new ReservationTime(
-                                    resultSet.getLong("time_id"),
-                                    resultSet.getTime("start_at").toLocalTime()
+                                    resultSet.getLong("rt.id"),
+                                    resultSet.getTime("rt.start_at").toLocalTime()
                             ));
                 });
     }
@@ -108,7 +107,7 @@ public class ReservationDao implements ReservationRepository {
                     WHERE time_id = ?
                 )
                 """;
-        int result = jdbcTemplate.queryForObject(sql,Integer.class, timeId);
+        int result = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
         return result == 1;
     }
 
@@ -121,7 +120,7 @@ public class ReservationDao implements ReservationRepository {
                     WHERE theme_id = ?
                 )
                 """;
-        int result = jdbcTemplate.queryForObject(sql,Integer.class, themeId);
+        int result = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
         return result == 1;
     }
 
@@ -155,7 +154,7 @@ public class ReservationDao implements ReservationRepository {
                     AND r.theme_id = ?
                 )
                 """;
-        int result = jdbcTemplate.queryForObject(sql,Integer.class, date, timeId, themeId);
+        int result = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId);
         return result == 1;
     }
 }

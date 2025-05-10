@@ -5,11 +5,9 @@ import static org.hamcrest.Matchers.is;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.reservation.presentation.dto.ReservationRequest;
+import roomescape.reservation.presentation.dto.MemberReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ThemeRequest;
 import roomescape.reservation.presentation.fixture.ApiHelper;
@@ -17,7 +15,7 @@ import roomescape.reservation.presentation.fixture.ReservationFixture;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationControllerTest {
+class MemberReservationControllerTest {
     ReservationFixture reservationFixture = new ReservationFixture();
 
     @Test
@@ -31,7 +29,7 @@ class ReservationControllerTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
-        ReservationRequest reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
+        MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "1");
 
         // when - then
         ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation)
@@ -39,25 +37,11 @@ class ReservationControllerTest {
                 .statusCode(201);
     }
 
-
-    @ParameterizedTest
-    @ValueSource(strings = {"", "aaaaaaaaaaa"})
-    @DisplayName("예약자명이 존재하지 않거나, 10자를 초과할 수 없다.")
-    void createReservationNameExceptionTest(String name) {
-        // given
-        ReservationRequest reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
-
-        // when - then
-        ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation)
-                .then().log().all()
-                .statusCode(400);
-    }
-
     @Test
     @DisplayName("날짜는 LocalDate 형식을 만족시켜야 한다.")
     void createReservationDateExceptionTest() {
         // given
-        ReservationRequest reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
+        MemberReservationRequest reservation = reservationFixture.createReservation("2025-0805", "1", "1");
 
         // when - then
         ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation)
@@ -72,7 +56,7 @@ class ReservationControllerTest {
         ReservationTimeRequest reservationTime = reservationFixture.createReservationTime("10:00");
         ApiHelper.post(ApiHelper.TIME_ENDPOINT, reservationTime);
 
-        ReservationRequest reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
+        MemberReservationRequest reservation = reservationFixture.createReservation("2024-08-05", "1", "1");
 
         // when - then
         ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation)
@@ -91,7 +75,7 @@ class ReservationControllerTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
-        ReservationRequest reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
+        MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "1");
         ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation);
 
         // when - then
@@ -108,8 +92,7 @@ class ReservationControllerTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
-        ReservationRequest reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
-
+        MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "1");
         // when - then
         ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation)
                 .then().log().all()
@@ -123,8 +106,7 @@ class ReservationControllerTest {
         ReservationTimeRequest reservationTime = reservationFixture.createReservationTime("10:00");
         ApiHelper.post(ApiHelper.TIME_ENDPOINT, reservationTime);
 
-        ReservationRequest reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
-
+        MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "1");
         // when - then
         ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation)
                 .then().log().all()
@@ -142,7 +124,7 @@ class ReservationControllerTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
-        ReservationRequest reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
+        MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "1");
         ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation);
 
         // when
@@ -169,8 +151,8 @@ class ReservationControllerTest {
         ThemeRequest theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
-
-        ReservationRequest reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
+        
+        MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "1");
         ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation);
 
         // when-then

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.reservation.presentation.dto.ReservationRequest;
+import roomescape.reservation.presentation.dto.MemberReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ThemeRequest;
 import roomescape.reservation.presentation.fixture.ApiHelper;
@@ -87,7 +87,7 @@ public class ReservationTimeControllerTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
-        ReservationRequest reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "2");
+        MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "2");
         ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation);
 
         // when
@@ -123,7 +123,7 @@ public class ReservationTimeControllerTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
-        ReservationRequest reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
+        MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "1");
         ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation);
 
         // when-then

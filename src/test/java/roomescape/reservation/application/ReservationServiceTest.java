@@ -10,6 +10,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.global.exception.GetThemeException;
 import roomescape.global.exception.GetTimeException;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.application.repository.ThemeRepository;
@@ -17,18 +19,18 @@ import roomescape.reservation.application.service.ReservationService;
 import roomescape.reservation.infrastructure.fake.FakeReservationDao;
 import roomescape.reservation.infrastructure.fake.FakeReservationTimeDao;
 import roomescape.reservation.infrastructure.fake.FakeThemeDao;
-import roomescape.reservation.presentation.dto.ReservationRequest;
+import roomescape.reservation.presentation.dto.MemberReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationResponse;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ThemeRequest;
 
 public class ReservationServiceTest {
-    private static final ReservationRequest RESERVATION_REQUEST = new ReservationRequest(
+    private static final MemberReservationRequest RESERVATION_REQUEST = new MemberReservationRequest(
             LocalDate.of(2025, 8, 5),
-            "브라운",
             1L,
             1L
     );
+    private static final Member MEMBER = new Member(1L, "브라운", "email@email.com", "password", Role.USER);
 
     private ReservationService reservationService;
     private ReservationTimeRepository reservationTimeRepository;
@@ -54,7 +56,7 @@ public class ReservationServiceTest {
         themeRepository.insert(themeRequest);
 
         // when
-        ReservationResponse reservationResponse = reservationService.createReservation(RESERVATION_REQUEST);
+        ReservationResponse reservationResponse = reservationService.createReservation(MEMBER, RESERVATION_REQUEST);
 
         // then
         assertThat(reservationResponse.getId()).isEqualTo(1L);
@@ -72,7 +74,7 @@ public class ReservationServiceTest {
         themeRepository.insert(themeRequest);
 
         // when - then
-        assertThatThrownBy(() -> reservationService.createReservation(RESERVATION_REQUEST))
+        assertThatThrownBy(() -> reservationService.createReservation(MEMBER, RESERVATION_REQUEST))
                 .isInstanceOf(GetTimeException.class)
                 .hasMessage("[ERROR] 예약 시간 정보를 찾을 수 없습니다.");
     }
@@ -85,7 +87,7 @@ public class ReservationServiceTest {
         reservationTimeRepository.insert(reservationTimeRequest.getStartAt());
 
         // when - then
-        assertThatThrownBy(() -> reservationService.createReservation(RESERVATION_REQUEST))
+        assertThatThrownBy(() -> reservationService.createReservation(MEMBER, RESERVATION_REQUEST))
                 .isInstanceOf(GetThemeException.class)
                 .hasMessage("[ERROR] 테마 정보를 찾을 수 없습니다.");
     }
@@ -101,7 +103,7 @@ public class ReservationServiceTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         themeRepository.insert(themeRequest);
 
-        reservationService.createReservation(RESERVATION_REQUEST);
+        reservationService.createReservation(MEMBER, RESERVATION_REQUEST);
 
         // when - then
         assertThat(reservationService.getReservations().size()).isEqualTo(1);
@@ -118,7 +120,7 @@ public class ReservationServiceTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         themeRepository.insert(themeRequest);
 
-        reservationService.createReservation(RESERVATION_REQUEST);
+        reservationService.createReservation(MEMBER, RESERVATION_REQUEST);
 
         // when - then
         assertThat(reservationService.getReservations().size()).isEqualTo(1);
@@ -135,7 +137,7 @@ public class ReservationServiceTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         themeRepository.insert(themeRequest);
 
-        reservationService.createReservation(RESERVATION_REQUEST);
+        reservationService.createReservation(MEMBER, RESERVATION_REQUEST);
 
         // when
         reservationService.deleteReservation(1L);
