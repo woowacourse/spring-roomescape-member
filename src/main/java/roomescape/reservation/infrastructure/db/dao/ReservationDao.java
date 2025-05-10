@@ -20,4 +20,6 @@ public interface ReservationDao {
     boolean existsByThemeId(Long reservationThemeId);
 
     boolean existsByTimeId(Long reservationTimeId);
+
+    List<Reservation> selectByFilter(Long themeId, Long memberId, LocalDate from, LocalDate to);
 }

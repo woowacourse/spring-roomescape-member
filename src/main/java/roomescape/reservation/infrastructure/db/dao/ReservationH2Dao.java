@@ -1,6 +1,7 @@
 package roomescape.reservation.infrastructure.db.dao;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -155,5 +156,54 @@ public class ReservationH2Dao implements ReservationDao {
 
         Boolean exists = jdbcTemplate.queryForObject(sql, params, Boolean.class);
         return exists != null && exists;
+    }
+
+    @Override
+    public List<Reservation> selectByFilter(Long themeId, Long memberId, LocalDate from, LocalDate to) {
+        StringBuilder sql = new StringBuilder("""
+                    SELECT
+                    r.id,
+                    r.name,
+                    r.date,
+                    r.member_id,
+                    th.id as theme_id,
+                    th.name as th_name,
+                    th.description as th_description,
+                    th.thumbnail as th_thumbnail,
+                    rt.id as time_id,
+                    rt.start_at
+                FROM reservation as r
+                INNER JOIN reservation_time as rt
+                on r.time_id = rt.id
+                INNER JOIN theme as th
+                on r.theme_id = th.id
+                """);
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        List<String> conditions = new ArrayList<>();
+
+        if (memberId != null) {
+            conditions.add("r.member_id = :memberId");
+            params.addValue("memberId", memberId);
+        }
+        if (themeId != null) {
+            conditions.add("r.theme_id = :themeId");
+            params.addValue("themeId", themeId);
+        }
+        if (from != null) {
+            conditions.add("r.date >= :from");
+            params.addValue("from", from);
+        }
+        if (to != null) {
+            conditions.add("r.date <= :to");
+            params.addValue("to", to);
+        }
+
+        if (!conditions.isEmpty()) {
+            sql.append(" WHERE ");
+            sql.append(String.join(" AND ", conditions));
+        }
+
+        return jdbcTemplate.query(sql.toString(), params, DEFAULT_ROW_MAPPER);
     }
 }

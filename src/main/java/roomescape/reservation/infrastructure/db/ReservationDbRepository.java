@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import roomescape.global.exception.ResourceNotFoundException;
 import roomescape.reservation.domain.entity.Reservation;
 import roomescape.reservation.domain.repository.ReservationRepository;
-import roomescape.global.exception.ResourceNotFoundException;
 import roomescape.reservation.infrastructure.db.dao.ReservationDao;
 
 @Repository
@@ -55,5 +55,10 @@ public class ReservationDbRepository implements ReservationRepository {
     @Override
     public boolean existsByTimeId(Long reservationTimeId) {
         return reservationDao.existsByTimeId(reservationTimeId);
+    }
+
+    @Override
+    public List<Reservation> getSearchReservations(Long themeId, Long memberId, LocalDate from, LocalDate to) {
+        return reservationDao.selectByFilter(themeId, memberId, from, to);
     }
 }
