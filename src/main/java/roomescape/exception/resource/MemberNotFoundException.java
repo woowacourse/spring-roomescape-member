@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.exception.resource;
 
 public class MemberNotFoundException extends ResourceNotFoundException {
 

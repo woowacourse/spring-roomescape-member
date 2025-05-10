@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.exception.AlreadyExistException;
-import roomescape.exception.ResourceNotFoundException;
+import roomescape.exception.resource.AlreadyExistException;
+import roomescape.exception.resource.ResourceNotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
@@ -64,7 +64,7 @@ public class ReservationService {
         if (request.dateFrom().isAfter(request.dateTo())) {
             throw new IllegalArgumentException("시작 날짜는 종료 날짜보다 이전이어야 합니다.");
         }
-        
+
         return reservationRepository.findAllByThemIdAndMemberIdAndDateRange(
                         request.themeId(), request.memberId(), request.dateFrom(), request.dateTo()
                 )

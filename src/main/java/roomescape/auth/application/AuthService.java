@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.domain.AuthRole;
 import roomescape.auth.domain.AuthTokenProvider;
 import roomescape.auth.ui.dto.CreateAccessTokenRequest;
-import roomescape.exception.AuthenticationException;
-import roomescape.exception.ResourceNotFoundException;
+import roomescape.exception.auth.AuthenticationException;
+import roomescape.exception.resource.ResourceNotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberQueryRepository;
 

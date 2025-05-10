@@ -10,7 +10,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.exception.AlreadyExistException;
+import roomescape.exception.resource.AlreadyExistException;
 import roomescape.theme.applcation.ThemeService;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;

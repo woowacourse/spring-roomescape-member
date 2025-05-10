@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.exception.auth;
 
 public class AuthorizationException extends RuntimeException {
 
