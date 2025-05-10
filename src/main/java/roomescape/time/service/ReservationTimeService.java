@@ -10,17 +10,16 @@ import roomescape.time.controller.request.ReservationTimeCreateRequest;
 import roomescape.time.controller.response.AvailableReservationTimeResponse;
 import roomescape.time.controller.response.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.service.in.ReservationTimeService;
 import roomescape.time.service.out.ReservationTimeRepository;
 
 @Service
-public class ReservationTimeServiceImpl implements ReservationTimeService {
+public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationTimeServiceImpl(ReservationTimeRepository reservationTimeRepository,
-                                      ReservationRepository reservationRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
+                                  ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
     }

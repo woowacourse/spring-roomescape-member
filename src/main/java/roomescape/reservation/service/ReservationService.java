@@ -15,7 +15,7 @@ import roomescape.reservation.service.command.ReserveCommand;
 import roomescape.reservation.service.out.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
-import roomescape.time.service.in.ReservationTimeService;
+import roomescape.time.service.ReservationTimeService;
 
 @RequiredArgsConstructor
 @Service

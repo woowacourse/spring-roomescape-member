@@ -20,7 +20,6 @@ import roomescape.time.controller.request.ReservationTimeCreateRequest;
 import roomescape.time.controller.response.AvailableReservationTimeResponse;
 import roomescape.time.controller.response.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.service.in.ReservationTimeService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class ReservationTimeServiceTest {
