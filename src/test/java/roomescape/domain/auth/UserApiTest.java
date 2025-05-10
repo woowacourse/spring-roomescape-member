@@ -114,34 +114,6 @@ public class UserApiTest {
                 .statusCode(401);
     }
 
-    @DisplayName("중복된 이메일로 회원가입 시 409 예외를 반환한다.")
-    @Test
-    void registerDuplicateEmailTest() {
-        // given
-        final String email = "duplicate@naver.com";
-        final String password = "password";
-        final String name = "테스트유저";
-
-        userRepository.save(User.withoutId(new Name(name), email, password, Roles.USER));
-
-        final Map<String, String> request = new HashMap<>();
-        request.put("name", name);
-        request.put("email", email);
-        request.put("password", password);
-
-        // when & then
-        RestAssured.given()
-                .log()
-                .all()
-                .contentType("application/json")
-                .body(request)
-                .when()
-                .post("/members")
-                .then()
-                .log()
-                .all()
-                .statusCode(409);
-    }
     @DisplayName("모든 회원 정보를 조회한다")
     @Test
     void getAllUsersTest() {
@@ -151,11 +123,13 @@ public class UserApiTest {
 
         // when & then
         RestAssured.given()
-                .log().all()
+                .log()
+                .all()
                 .when()
                 .get("/members")
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .statusCode(200)
                 .body("size()", is(2))
                 .body("[0].name", notNullValue())

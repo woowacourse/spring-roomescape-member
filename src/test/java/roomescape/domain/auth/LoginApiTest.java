@@ -13,13 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
-import roomescape.domain.auth.config.JwtProperties;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.auth.dto.LoginRequest;
 import roomescape.domain.auth.entity.Name;
 import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.repository.UserRepository;
-import roomescape.domain.auth.service.JwtManager;
+import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LoginApiTest {
@@ -28,17 +28,15 @@ public class LoginApiTest {
     private int port;
 
     @Autowired
-    private JwtManager jwtManager;
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private JwtProperties jwtProperties;
-
     @BeforeEach
     void init() {
         RestAssured.port = port;
+        JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
     }
 
     @DisplayName("로그인 성공 시 httpOnly 쿠키가 설정된다.")

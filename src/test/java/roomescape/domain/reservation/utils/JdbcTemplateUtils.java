@@ -21,30 +21,24 @@ public final class JdbcTemplateUtils {
     }
 
     public static void insertReservationTime(final JdbcTemplate jdbcTemplate, final Long id, final LocalTime time) {
-        jdbcTemplate.update(
-                "INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
-                id, time
-        );
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", id, time);
     }
 
-    public static void insertTheme(final JdbcTemplate jdbcTemplate, final Long id, final String name, final String desc, final String thumbnail) {
-        jdbcTemplate.update(
-                "INSERT INTO theme (id, name, description, thumbnail) VALUES (?, ?, ?, ?)",
-                id, name, desc, thumbnail
-        );
+    public static void insertTheme(final JdbcTemplate jdbcTemplate, final Long id, final String name, final String desc,
+                                   final String thumbnail) {
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) VALUES (?, ?, ?, ?)", id, name, desc,
+                thumbnail);
     }
 
-    public static void insertUser(final JdbcTemplate jdbcTemplate, final Long id, final String name, final String email, final String password, final String role) {
-        jdbcTemplate.update(
-                "INSERT INTO users (id, name, email, password, role) VALUES (?, ?, ?, ?, ?)",
-                id, name, email, password, role
-        );
+    public static void insertUser(final JdbcTemplate jdbcTemplate, final Long id, final String name, final String email,
+                                  final String password, final String role) {
+        jdbcTemplate.update("INSERT INTO users (id, name, email, password, role) VALUES (?, ?, ?, ?, ?)", id, name,
+                email, password, role);
     }
 
-    public static void insertReservation(final JdbcTemplate jdbcTemplate, final Long id, final Long userId, final String date, final Long timeId, final Long themeId) {
-        jdbcTemplate.update(
-                "INSERT INTO reservation (id, user_id, date, time_id, theme_id) VALUES (?, ?, ?, ?, ?)",
-                id, userId, date, timeId, themeId
-        );
+    public static void insertReservation(final JdbcTemplate jdbcTemplate, final Long id, final Long userId,
+                                         final String date, final Long timeId, final Long themeId) {
+        jdbcTemplate.update("INSERT INTO reservation (id, user_id, date, time_id, theme_id) VALUES (?, ?, ?, ?, ?)", id,
+                userId, date, timeId, themeId);
     }
 }
