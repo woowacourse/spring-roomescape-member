@@ -13,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dao.meber.JdbcMemberDao;
-import roomescape.dao.reservationTime.JdbcReservationTimeDao;
-import roomescape.dao.theme.JdbcThemeDao;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
 import roomescape.domain.Reservation;
@@ -23,34 +20,24 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 @JdbcTest
-@Import({JdbcReservationTimeDao.class, JdbcReservationDao.class, JdbcThemeDao.class, JdbcMemberDao.class})
-@Sql({"/schema.sql", "/test-data.sql"})
+@Import({JdbcReservationDao.class})
+@Sql({"/schema.sql", "/reservation-data.sql"})
 class JdbcReservationDaoTest {
 
     @Autowired
-    private JdbcReservationDao jdbcReservationDao;
-
-    @Autowired
-    private JdbcReservationTimeDao jdbcReservationTimeDao;
-
-    @Autowired
-    private JdbcMemberDao jdbcMemberDao;
-
-    @Autowired
-    private JdbcThemeDao jdbcThemeDao;
+    JdbcReservationDao jdbcReservationDao;
 
     @DisplayName("에약을 데이터베이스에 추가한다.")
     @Test
     void addTest() {
 
         // given
-        final ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1));
-        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
-        final Theme theme = new Theme("test", "test", "test");
-        final Theme savedTheme = jdbcThemeDao.create(theme);
-        final Member member = new Member(1L, "test", "test", "test", MemberRole.USER);
-        final Reservation reservation = Reservation.create(LocalDate.now(),
-                savedReservationTime, savedTheme, member);
+        final Theme theme = new Theme(1L, "test", "test", "test");
+        final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 10));
+        final Member member = new Member(1L, "체체", "cheche903@naver.com", "password", MemberRole.USER);
+
+        final Reservation reservation = Reservation.create(LocalDate.now().plusDays(1),
+                reservationTime, theme, member);
 
         // when
         final Reservation savedReservation = jdbcReservationDao.create(reservation);
@@ -112,6 +99,6 @@ class JdbcReservationDaoTest {
     void nonExistsByIdReturnFalseTest() {
 
         // when & then
-        assertThat(jdbcReservationDao.existsById(5L)).isFalse();
+        assertThat(jdbcReservationDao.existsById(999L)).isFalse();
     }
 }
