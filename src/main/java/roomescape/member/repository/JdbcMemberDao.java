@@ -1,5 +1,6 @@
 package roomescape.member.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -54,5 +55,11 @@ public class JdbcMemberDao implements MemberDao {
                 .addValue("password", member.getPassword());
         jdbcTemplate.update(sql, parameters, keyHolder, new String[]{"id"});
         return new Member(keyHolder.getKeyAs(Long.class), member.getName(), member.getEmail(), member.getPassword());
+    }
+
+    @Override
+    public List<Member> findAll() {
+        final String sql = "SELECT id, name, email, password FROM member";
+        return jdbcTemplate.query(sql, memberMapper);
     }
 }

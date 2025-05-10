@@ -32,4 +32,9 @@ public class FakeMemberDao implements MemberDao {
         members.add(newMember);
         return newMember;
     }
+
+    @Override
+    public List<Member> findAll() {
+        return new ArrayList<>(members);
+    }
 }

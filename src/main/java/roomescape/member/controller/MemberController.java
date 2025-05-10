@@ -1,5 +1,6 @@
 package roomescape.member.controller;
 
+import java.util.List;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -8,17 +9,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.controller.dto.LoginMemberCheckResponse;
+import roomescape.member.controller.dto.MemberResponse;
 import roomescape.member.service.AuthService;
+import roomescape.member.service.MemberService;
 import roomescape.member.service.dto.MemberLoginCommand;
 import roomescape.member.service.dto.LoginMemberInfo;
 
+/**
+ * TODO
+ * 로그인 관련과 Member 리소스 관련 Controller 분리?
+ */
 @RestController
 public class MemberController {
 
     private final AuthService authService;
+    private final MemberService memberService;
 
-    public MemberController(final AuthService authService) {
+    public MemberController(final AuthService authService, MemberService memberService) {
         this.authService = authService;
+        this.memberService = memberService;
     }
 
     /**
@@ -39,5 +48,14 @@ public class MemberController {
     public ResponseEntity<LoginMemberCheckResponse> getLoginMember(@CookieValue("token") String token) {
         LoginMemberInfo loginMemberInfo = authService.getLoginMemberInfoByToken(token);
         return ResponseEntity.ok().body(new LoginMemberCheckResponse(loginMemberInfo.name()));
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity<List<MemberResponse>> getMembers() {
+        List<MemberResponse> responses = memberService.findAll()
+                .stream()
+                .map(MemberResponse::new)
+                .toList();
+        return ResponseEntity.ok().body(responses);
     }
 }
