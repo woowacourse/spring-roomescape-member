@@ -50,43 +50,52 @@ public class ReservationDao implements ReservationRepository {
     @Override
     public List<Reservation> findAllReservations() {
         String sql = """
-                    SELECT
-                    r, rt, m
-                FROM reservation as r
-                inner join reservation_time as rt
-                on r.time_id = rt.id
-                inner join theme as t
-                on r.theme_id = t.id
-                inner join member as m 
-                on m.id = r.member_id
+                SELECT
+                    r.id as r_id,
+                    r.date as r_date,
+                    rt.id as rt_id,
+                    rt.start_at as rt_start_at,
+                    t.id as t_id,
+                    t.name as t_name,
+                    t.description as t_description,
+                    t.thumbnail as t_thumbnail,
+                    m.id as m_id,
+                    m.name as m_name,
+                    m.email as m_email,
+                    m.password as m_password,
+                    m.role as m_role
+                FROM reservation r
+                INNER JOIN reservation_time rt ON r.time_id = rt.id
+                INNER JOIN theme t ON r.theme_id = t.id
+                INNER JOIN member m ON m.id = r.member_id
                 """;
 
         return jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> {
-                    return new Reservation(
-                            resultSet.getLong("id"),
-                            new Member(
-                                    resultSet.getLong("m.id"),
-                                    resultSet.getString("m.name"),
-                                    resultSet.getString("m.email"),
-                                    resultSet.getString("m.password"),
-                                    Role.valueOf(resultSet.getString("m.role"))
-                            ),
-                            new Theme(
-                                    resultSet.getLong("t.id"),
-                                    resultSet.getString("t.name"),
-                                    resultSet.getString("t.description"),
-                                    resultSet.getString("t.thumbnail")
-                            ),
-                            new ReservationDate(
-                                    resultSet.getDate("r.date").toLocalDate()
-                            ),
-                            new ReservationTime(
-                                    resultSet.getLong("rt.id"),
-                                    resultSet.getTime("rt.start_at").toLocalTime()
-                            ));
-                });
+                (resultSet, rowNum) -> new Reservation(
+                        resultSet.getLong("r_id"),
+                        new Member(
+                                resultSet.getLong("m_id"),
+                                resultSet.getString("m_name"),
+                                resultSet.getString("m_email"),
+                                resultSet.getString("m_password"),
+                                Role.valueOf(resultSet.getString("m_role"))
+                        ),
+                        new Theme(
+                                resultSet.getLong("t_id"),
+                                resultSet.getString("t_name"),
+                                resultSet.getString("t_description"),
+                                resultSet.getString("t_thumbnail")
+                        ),
+                        new ReservationDate(
+                                resultSet.getDate("r_date").toLocalDate()
+                        ),
+                        new ReservationTime(
+                                resultSet.getLong("rt_id"),
+                                resultSet.getTime("rt_start_at").toLocalTime()
+                        )
+                )
+        );
     }
 
     @Override
