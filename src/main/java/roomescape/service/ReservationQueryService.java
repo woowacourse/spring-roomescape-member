@@ -7,7 +7,7 @@ import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.dto.ReservationResponse;
+import roomescape.dto.response.ReservationPostResponse;
 import roomescape.entity.Reservation;
 
 @Component
@@ -27,18 +27,18 @@ public class ReservationQueryService {
         this.themeDao = themeDao;
     }
 
-    public List<ReservationResponse> findAllReservations() {
+    public List<ReservationPostResponse> findAllReservations() {
         return reservationDao.findAll().stream()
-                .map(ReservationResponse::new)
+                .map(ReservationPostResponse::new)
                 .toList();
     }
 
-    public List<ReservationResponse> searchReservations(Long themeId, Long memberId, LocalDate dateFrom,
-                                                        LocalDate dateTo) {
+    public List<ReservationPostResponse> searchReservations(Long themeId, Long memberId, LocalDate dateFrom,
+                                                            LocalDate dateTo) {
         List<Reservation> reservations = reservationDao.findByThemeAndMemberAndDate(themeId, memberId,
                 dateFrom, dateTo);
         return reservations.stream()
-                .map(ReservationResponse::new)
+                .map(ReservationPostResponse::new)
                 .toList();
     }
 }

@@ -13,9 +13,9 @@ import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.request.ReservationPostRequestByUser;
+import roomescape.dto.response.ReservationPostResponse;
+import roomescape.dto.response.ReservationTimePostResponse;
 import roomescape.entity.ReservationTime;
 import roomescape.service.fake_dao.FakeMemberDao;
 import roomescape.service.fake_dao.FakeReservationDao;
@@ -43,15 +43,15 @@ class ReservationServiceTest {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0, 0));
         timeDao.create(time);
 
-        ReservationResponse reservation = reservationCommandService.createReservationOfLoginMember(
-                new ReservationRequest(
+        ReservationPostResponse reservation = reservationCommandService.createReservationOfLoginMember(
+                new ReservationPostRequestByUser(
                         LocalDate.of(2025, 4, 27), 1L, 1L
                 ), new LoginMember(1L));
 
         assertAll(
                 () -> assertThat(reservation.id()).isEqualTo(1),
                 () -> assertThat(reservation.date()).isEqualTo(LocalDate.of(2025, 4, 27)),
-                () -> assertThat(reservation.time()).isEqualTo(new ReservationTimeResponse(time))
+                () -> assertThat(reservation.time()).isEqualTo(new ReservationTimePostResponse(time))
         );
     }
 
@@ -60,7 +60,7 @@ class ReservationServiceTest {
     void findAllReservations() {
         createReservation();
 
-        List<ReservationResponse> reservations = reservationQueryService.findAllReservations();
+        List<ReservationPostResponse> reservations = reservationQueryService.findAllReservations();
 
         assertThat(reservations).hasSize(1);
     }

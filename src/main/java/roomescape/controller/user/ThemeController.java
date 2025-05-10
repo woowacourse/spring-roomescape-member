@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.ThemeResponse;
+import roomescape.dto.response.ThemeFullResponse;
 import roomescape.service.ThemeQueryService;
 
 @RestController
@@ -21,13 +21,13 @@ public class ThemeController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ThemeResponse> readThemes() {
+    public List<ThemeFullResponse> readThemes() {
         return themeQueryService.findAllThemes();
     }
 
     @GetMapping("/rank")
     @ResponseStatus(HttpStatus.OK)
-    public List<ThemeResponse> readThemeRank() {
+    public List<ThemeFullResponse> readThemeRank() {
         return themeQueryService.findThemeRank();
     }
 }

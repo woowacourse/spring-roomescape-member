@@ -1,15 +1,15 @@
-package roomescape.dto;
+package roomescape.dto.response;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import roomescape.entity.ReservationTime;
 
-public record ReservationTimeResponse(
+public record ReservationTimePostResponse(
         Long id, LocalTime startAt
 ) {
     private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-    public ReservationTimeResponse(ReservationTime reservationTime) {
+    public ReservationTimePostResponse(ReservationTime reservationTime) {
         this(
                 reservationTime.getId(), reservationTime.getStartAt()
         );

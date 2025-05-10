@@ -1,4 +1,4 @@
-package roomescape.dto;
+package roomescape.dto.request;
 
 import java.time.LocalDate;
 import roomescape.entity.Member;
@@ -6,7 +6,7 @@ import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
 
-public record AdminReservationRequest(
+public record ReservationPostRequestByAdmin(
         LocalDate date,
         Long themeId,
         Long timeId,

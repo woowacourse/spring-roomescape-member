@@ -1,4 +1,4 @@
-package roomescape.dto;
+package roomescape.dto.request;
 
 import java.time.LocalDate;
 import roomescape.entity.Member;
@@ -6,10 +6,12 @@ import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
 
-public record ReservationRequest(
-        LocalDate date, Long timeId, Long themeId
+public record ReservationPostRequestByUser(
+        LocalDate date,
+        Long timeId,
+        Long themeId
 ) {
-    public ReservationRequest {
+    public ReservationPostRequestByUser {
         validateNotNull(date, timeId, themeId);
     }
 

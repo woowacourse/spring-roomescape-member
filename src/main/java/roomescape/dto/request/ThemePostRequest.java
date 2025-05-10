@@ -1,11 +1,11 @@
-package roomescape.dto;
+package roomescape.dto.request;
 
 import roomescape.entity.Theme;
 
-public record ThemeRequest(
+public record ThemePostRequest(
         String name, String description, String thumbnail
 ) {
-    public ThemeRequest {
+    public ThemePostRequest {
         validateNotNull(name, description, thumbnail);
     }
 

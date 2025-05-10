@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.config.LoginMember;
-import roomescape.dto.AuthorizationResponse;
-import roomescape.dto.LoginRequest;
+import roomescape.dto.response.MemberNameResponse;
+import roomescape.dto.request.LoginRequest;
 import roomescape.entity.AccessToken;
 import roomescape.service.MemberService;
 
@@ -44,7 +44,7 @@ public class AuthController {
 
     @GetMapping("/login/check")
     @ResponseStatus(HttpStatus.OK)
-    public AuthorizationResponse checkAuthorization(
+    public MemberNameResponse checkAuthorization(
             LoginMember member
     ) {
         return memberService.findMember(member);

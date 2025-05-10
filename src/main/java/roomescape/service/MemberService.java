@@ -4,10 +4,10 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 import roomescape.config.LoginMember;
 import roomescape.dao.MemberDao;
-import roomescape.dto.AuthorizationResponse;
-import roomescape.dto.LoginRequest;
-import roomescape.dto.MemberResponse;
-import roomescape.dto.SignupRequest;
+import roomescape.dto.response.MemberNameResponse;
+import roomescape.dto.request.LoginRequest;
+import roomescape.dto.request.MemberPostRequest;
+import roomescape.dto.response.MemberSafeResponse;
 import roomescape.entity.AccessToken;
 import roomescape.entity.Member;
 import roomescape.entity.MemberRole;
@@ -23,26 +23,26 @@ public class MemberService {
         this.memberDao = memberDao;
     }
 
-    public AuthorizationResponse findMember(LoginMember member) {
+    public MemberNameResponse findMember(LoginMember member) {
         try {
             Member realMemberINDb = memberDao.findById(member.getId());
-            return new AuthorizationResponse(realMemberINDb);
+            return new MemberNameResponse(realMemberINDb);
         } catch (MemberNotFoundException exception) {
             // TODO DAO에서 안잡고 여기서 잡은 이유 -> dao에서 잡기엔 너무 에러메세지가 authroization로직에서만 유효한 잡기이다.
             throw new InvalidAccessTokenException();
         }
     }
 
-    public List<MemberResponse> findAllMembers() {
+    public List<MemberSafeResponse> findAllMembers() {
         return memberDao.findAll().stream()
-                .map(MemberResponse::new)
+                .map(MemberSafeResponse::new)
                 .toList();
     }
 
-    public MemberResponse createUser(SignupRequest request) {
+    public MemberSafeResponse createUser(MemberPostRequest request) {
         Member memberWithoutId = request.toMember(MemberRole.USER);
         Member member = memberDao.create(memberWithoutId);
-        return new MemberResponse(member);
+        return new MemberSafeResponse(member);
     }
 
     public void validateMemberExistence(LoginRequest login) {

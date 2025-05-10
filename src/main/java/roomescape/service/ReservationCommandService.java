@@ -6,9 +6,9 @@ import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.dto.AdminReservationRequest;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
+import roomescape.dto.request.ReservationPostRequestByAdmin;
+import roomescape.dto.request.ReservationPostRequestByUser;
+import roomescape.dto.response.ReservationPostResponse;
 import roomescape.entity.Member;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
@@ -30,12 +30,14 @@ public class ReservationCommandService {
         this.themeDao = themeDao;
     }
 
-    public ReservationResponse createReservationOfLoginMember(ReservationRequest reservationRequest,
-                                                              LoginMember loginMember) {
+    public ReservationPostResponse createReservationOfLoginMember(
+            ReservationPostRequestByUser reservationPostRequestByUser,
+            LoginMember loginMember) {
         Member member = memberDao.findById(loginMember.getId());
-        ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
-        Theme theme = themeDao.findById(reservationRequest.themeId());
-        Reservation reservationWithoutId = reservationRequest.toReservationWith(member, reservationTime, theme);
+        ReservationTime reservationTime = reservationTimeDao.findById(reservationPostRequestByUser.timeId());
+        Theme theme = themeDao.findById(reservationPostRequestByUser.themeId());
+        Reservation reservationWithoutId = reservationPostRequestByUser.toReservationWith(member, reservationTime,
+                theme);
 
         reservationWithoutId.validatePastDateTime();
         if (reservationDao.existBySameDateTime(reservationWithoutId)) {
@@ -43,10 +45,10 @@ public class ReservationCommandService {
         }
 
         Reservation reservation = reservationDao.create(reservationWithoutId);
-        return new ReservationResponse(reservation);
+        return new ReservationPostResponse(reservation);
     }
 
-    public ReservationResponse createReservationOfRequestMember(AdminReservationRequest request) {
+    public ReservationPostResponse createReservationOfRequestMember(ReservationPostRequestByAdmin request) {
         Member member = memberDao.findById(request.memberId());
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
         Theme theme = themeDao.findById(request.themeId());
@@ -58,7 +60,7 @@ public class ReservationCommandService {
         }
 
         Reservation reservation = reservationDao.create(reservationWithoutId);
-        return new ReservationResponse(reservation);
+        return new ReservationPostResponse(reservation);
     }
 
     public void deleteReservation(Long id) {

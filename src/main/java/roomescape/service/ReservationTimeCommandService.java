@@ -3,8 +3,8 @@ package roomescape.service;
 import org.springframework.stereotype.Component;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.request.ReservationTimePostRequest;
+import roomescape.dto.response.ReservationTimePostResponse;
 import roomescape.entity.ReservationTime;
 
 @Component
@@ -18,10 +18,10 @@ public class ReservationTimeCommandService {
         this.reservationTimeDao = reservationTimeDao;
     }
 
-    public ReservationTimeResponse createTime(ReservationTimeRequest timeRequest) {
+    public ReservationTimePostResponse createTime(ReservationTimePostRequest timeRequest) {
         ReservationTime reservationTimeWithoutId = timeRequest.toTime();
         ReservationTime reservationTime = reservationTimeDao.create(reservationTimeWithoutId);
-        return new ReservationTimeResponse(reservationTime);
+        return new ReservationTimePostResponse(reservationTime);
     }
 
     public void deleteTime(long id) {

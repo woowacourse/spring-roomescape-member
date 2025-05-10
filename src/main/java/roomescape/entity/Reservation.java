@@ -13,7 +13,7 @@ public class Reservation {
     public Reservation(Long id, LocalDate date, Member member, ReservationTime time, Theme theme) {
         this.id = id;
         this.date = Objects.requireNonNull(date);
-        this.member = member;
+        this.member = Objects.requireNonNull(member);
         this.time = Objects.requireNonNull(time);
         this.theme = Objects.requireNonNull(theme);
     }

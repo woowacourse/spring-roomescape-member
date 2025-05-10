@@ -1,10 +1,15 @@
-package roomescape.dto;
+package roomescape.dto.response;
 
 import roomescape.entity.Theme;
 
-public record ThemeResponse(Long id, String name, String description, String thumbnail) {
+public record ThemeFullResponse(
+        Long id,
+        String name,
+        String description,
+        String thumbnail
+) {
 
-    public ThemeResponse(Theme theme) {
+    public ThemeFullResponse(Theme theme) {
         this(
                 theme.getId(),
                 theme.getName(),

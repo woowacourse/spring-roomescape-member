@@ -1,12 +1,12 @@
-package roomescape.dto;
+package roomescape.dto.request;
 
 import java.time.LocalTime;
 import roomescape.entity.ReservationTime;
 
-public record ReservationTimeRequest(
+public record ReservationTimePostRequest(
         LocalTime startAt
 ) {
-    public ReservationTimeRequest {
+    public ReservationTimePostRequest {
         validateNotNull(startAt);
     }
 

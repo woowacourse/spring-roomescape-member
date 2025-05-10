@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
-import roomescape.dto.ThemeResponse;
+import roomescape.dto.response.ThemeFullResponse;
 import roomescape.entity.Theme;
 
 @Component
@@ -19,13 +19,13 @@ public class ThemeQueryService {
         this.reservationDao = reservationDao;
     }
 
-    public List<ThemeResponse> findAllThemes() {
+    public List<ThemeFullResponse> findAllThemes() {
         return themeDao.findAll().stream()
-                .map(ThemeResponse::new)
+                .map(ThemeFullResponse::new)
                 .toList();
     }
 
-    public List<ThemeResponse> findThemeRank() {
+    public List<ThemeFullResponse> findThemeRank() {
         LocalDate now = LocalDate.now();
         LocalDate startDate = now.minusDays(8);
         LocalDate endDate = now.minusDays(1);
@@ -33,7 +33,7 @@ public class ThemeQueryService {
         List<Theme> themes = themeDao.findAllById(themeIds);
 
         return themes.stream()
-                .map(ThemeResponse::new)
+                .map(ThemeFullResponse::new)
                 .toList();
     }
 }

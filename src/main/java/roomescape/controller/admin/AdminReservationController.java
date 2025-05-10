@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.AdminReservationRequest;
-import roomescape.dto.ReservationResponse;
+import roomescape.dto.request.ReservationPostRequestByAdmin;
+import roomescape.dto.response.ReservationPostResponse;
 import roomescape.service.ReservationCommandService;
 import roomescape.service.ReservationQueryService;
 
@@ -33,7 +33,7 @@ public class AdminReservationController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ReservationResponse> readReservations(
+    public List<ReservationPostResponse> readReservations(
             @RequestParam(required = false) Long themeId,
             @RequestParam(required = false) Long memberId,
             @RequestParam(required = false) LocalDate dateFrom,
@@ -51,8 +51,8 @@ public class AdminReservationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponse createReservation(
-            @RequestBody AdminReservationRequest request
+    public ReservationPostResponse createReservation(
+            @RequestBody ReservationPostRequestByAdmin request
     ) {
         return reservationCommandService.createReservationOfRequestMember(request);
     }
