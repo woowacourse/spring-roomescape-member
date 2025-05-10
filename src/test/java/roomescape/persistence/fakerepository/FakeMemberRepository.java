@@ -45,6 +45,12 @@ public final class FakeMemberRepository implements MemberRepository, FakeReposit
     }
 
     @Override
+    public boolean existsByEmail(String email) {
+        return members.stream()
+                .anyMatch(member -> member.getEmail().equals(email));
+    }
+
+    @Override
     public void clear() {
         members.clear();
         idGenerator.set(1);

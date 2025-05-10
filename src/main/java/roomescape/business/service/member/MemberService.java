@@ -29,6 +29,9 @@ public class MemberService {
                 memberRequestDto.email(),
                 memberRequestDto.password()
         );
+        if (memberRepository.existsByEmail(member.getEmail())) {
+            throw new MemberException("이미 존재하는 이메일입니다.");
+        }
         return memberRepository.save(member).getId();
     }
 

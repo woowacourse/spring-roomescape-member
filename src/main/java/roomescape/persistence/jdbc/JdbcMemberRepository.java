@@ -101,4 +101,15 @@ public class JdbcMemberRepository implements MemberRepository {
                 .map(MemberEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        String query = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM member
+                    WHERE email = ?
+                )""";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, email));
+    }
 }
