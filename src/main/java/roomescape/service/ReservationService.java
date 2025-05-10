@@ -23,8 +23,6 @@ import java.util.List;
 
 @Service
 public class ReservationService {
-    // TODO: Repository 의존이 너무 많다. 개선할 방법이 없을까?
-    // todo: 왜 Repository에 의존성이 너무 많다고 생각하면 안되는지
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
@@ -67,6 +65,13 @@ public class ReservationService {
     public List<ReservationResponse> findAll() {
         List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream().map(ReservationResponse::from).toList();
+    }
+
+    public List<ReservationResponse> findByCondition(Long themeId, Long memberId, String dateFrom, String dateTo) {
+        List<Reservation> reservations = reservationRepository.findByMemberAndThemeAndVisitDateBetween(themeId, memberId, dateFrom, dateTo);
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 
     public void deleteReservationById(Long id) {
