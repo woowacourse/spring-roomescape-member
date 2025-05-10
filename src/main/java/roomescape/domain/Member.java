@@ -24,11 +24,16 @@ public class Member {
         this.password = password;
     }
 
-    public static Member createMemberWithId(Long id, String name, String email, String password) {
+    public static Member createMember(Long id, Role role, String name, String email,
+        String password) {
+        return new Member(id, role, name, email, password);
+    }
+
+    public static Member createUserWithId(Long id, String name, String email, String password) {
         return new Member(id, Role.USER, name, email, password);
     }
 
-    public static Member createMember(String name, String email, String password) {
+    public static Member createUser(String name, String email, String password) {
         return new Member(Role.USER, name, email, password);
     }
 

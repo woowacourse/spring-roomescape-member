@@ -16,6 +16,7 @@ import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 @Repository
@@ -37,6 +38,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
             select
                         m.name as member_name,
                         m.id as member_id,
+                        m.role as member_role,
                         m.email as member_email,
                         m.password as member_password,
                         r.id as reservation_id,
@@ -68,8 +70,9 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     }
 
     private Member createMember(ResultSet resultSet) throws SQLException {
-        return Member.createMemberWithId(
+        return Member.createMember(
             resultSet.getLong("member_id"),
+            Role.convertFrom(resultSet.getString("member_role")),
             resultSet.getString("member_name"),
             resultSet.getString("member_email"),
             resultSet.getString("member_password")
@@ -114,6 +117,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
         String query = """
                 select
                         m.name as member_name,
+                        m.role as member_role,
                         m.id as member_id,
                         m.email as member_email,
                         m.password as member_password,

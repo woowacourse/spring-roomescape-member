@@ -105,7 +105,7 @@ public class JdbcReservationTimeDaoTest {
 
     private void initData() {
         String sql1 = "INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '안녕, 자두야', '자두', 'https://jado.com');";
-        String sql2 = "INSERT INTO member (id, name, email, password) VALUES (1, 'jenson', 'a@example.com', 'abc');";
+        String sql2 = "INSERT INTO member (id, role, name, email, password) VALUES (1, 'admin', 'jenson', 'a@example.com', 'abc');";
         String sql3 = "INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00');";
         String sql4 = "INSERT INTO reservation_time (id, start_at) VALUES (2, '11:00');";
         String sql5 = "INSERT INTO reservation_time (id, start_at) VALUES (3, '12:00');";

@@ -43,7 +43,7 @@ public class ThemeRepositoryTest {
     void delete_already_use_other_theme_id_then_throw_exception() {
 
         //given
-        Member member = Member.createMember("testMember", "a@email.com", "aaa");
+        Member member = Member.createUser("testMember", "a@email.com", "aaa");
         long savedMemberId = memberDao.save(member);
         member.setId(savedMemberId);
 

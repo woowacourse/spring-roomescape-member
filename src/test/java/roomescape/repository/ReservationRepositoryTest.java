@@ -102,7 +102,7 @@ public class ReservationRepositoryTest {
     }
 
     private Member createMember() {
-        Member member = Member.createMember("testMember", "a@email.com", "aaa");
+        Member member = Member.createUser("testMember", "a@email.com", "aaa");
         long savedId = memberDao.save(member);
         member.setId(savedId);
         return member;

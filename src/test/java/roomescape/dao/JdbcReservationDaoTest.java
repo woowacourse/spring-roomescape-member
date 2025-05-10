@@ -45,7 +45,7 @@ public class JdbcReservationDaoTest {
 
     @BeforeEach
     void init() {
-        member = Member.createMember("젠슨", "a@naver.com", "aabb");
+        member = Member.createUser("젠슨", "a@naver.com", "aabb");
         long savedMemberId = memberDao.save(member);
         member.setId(savedMemberId);
 

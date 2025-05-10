@@ -32,4 +32,11 @@ public class AuthService {
         }
         throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
     }
+
+    public String getSubject(String value) {
+        if (jwtProvider.validateToken(value)) {
+            return jwtProvider.getTokenSubject(value);
+        }
+        throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+    }
 }

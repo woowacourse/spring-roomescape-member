@@ -102,7 +102,7 @@ public class JdbcThemeDaoTest {
         String sql5 = "INSERT INTO reservation_time (id, start_at) VALUES (2, '11:00');";
         String sql6 = "INSERT INTO reservation_time (id, start_at) VALUES (3, '12:00');";
         String sql7 = "INSERT INTO reservation_time (id, start_at) VALUES (4, '13:00');";
-        String sql8 = "INSERT INTO member (id, name, email, password) VALUES (1, 'jenson', 'a@example.com', 'abc');";
+        String sql8 = "INSERT INTO member (id, role, name, email, password) VALUES (1, 'admin', 'jenson', 'a@example.com', 'abc');";
         String sql9 = "INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES ('2025-04-24', 1, 1, 1);";
         String sql10 = "INSERT INTO reservation (date, member_id, time_id, theme_id)VALUES ('2025-04-25', 1, 2, 1);";
         String sql11 = "INSERT INTO reservation (date, member_id, time_id, theme_id)VALUES ('2025-04-26', 1, 3, 1);";

@@ -14,5 +14,5 @@ VALUES (3, '12:00');
 INSERT INTO reservation_time (id, start_at)
 VALUES (4, '13:00');
 
-INSERT INTO member (name, email, password)
-VALUES ('jenson', 'a@example.com', 'abc');
+INSERT INTO member (role, name, email, password)
+VALUES ('admin', 'jenson', 'a@example.com', 'abc');

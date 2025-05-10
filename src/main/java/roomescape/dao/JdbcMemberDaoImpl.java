@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 
 @Repository
 public class JdbcMemberDaoImpl implements MemberDao {
@@ -25,7 +26,8 @@ public class JdbcMemberDaoImpl implements MemberDao {
 
     @Override
     public long save(Member member) {
-        Map<String, Object> parameters = new HashMap<>(3);
+        Map<String, Object> parameters = new HashMap<>(4);
+        parameters.put("role", member.getRole().toString());
         parameters.put("name", member.getName());
         parameters.put("email", member.getEmail());
         parameters.put("password", member.getPassword());
@@ -43,8 +45,9 @@ public class JdbcMemberDaoImpl implements MemberDao {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query,
                 (resultSet, rowNum) -> {
-                    return Member.createMemberWithId(
+                    return Member.createMember(
                         resultSet.getLong("id"),
+                        Role.convertFrom(resultSet.getString("role")),
                         resultSet.getString("name"),
                         resultSet.getString("email"),
                         resultSet.getString("password")
@@ -65,8 +68,9 @@ public class JdbcMemberDaoImpl implements MemberDao {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query,
                 (resultSet, rowNum) -> {
-                    return Member.createMemberWithId(
+                    return Member.createMember(
                         resultSet.getLong("id"),
+                        Role.convertFrom(resultSet.getString("role")),
                         resultSet.getString("name"),
                         resultSet.getString("email"),
                         resultSet.getString("password")
@@ -87,8 +91,9 @@ public class JdbcMemberDaoImpl implements MemberDao {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query,
                 (resultSet, rowNum) -> {
-                    return Member.createMemberWithId(
+                    return Member.createMember(
                         resultSet.getLong("id"),
+                        Role.convertFrom(resultSet.getString("role")),
                         resultSet.getString("name"),
                         resultSet.getString("email"),
                         resultSet.getString("password")
@@ -104,12 +109,12 @@ public class JdbcMemberDaoImpl implements MemberDao {
         String query = "select * from member";
         return jdbcTemplate.query(query,
             (resultSet, RowNum) -> {
-                Member member = Member.createMemberWithId(
+                return Member.createMember(
                     resultSet.getLong("id"),
+                    Role.convertFrom(resultSet.getString("role")),
                     resultSet.getString("name"),
                     resultSet.getString("email"),
                     resultSet.getString("password"));
-                return member;
             });
     }
 }
