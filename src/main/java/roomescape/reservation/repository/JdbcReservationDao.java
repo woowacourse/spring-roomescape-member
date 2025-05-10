@@ -34,12 +34,21 @@ public class JdbcReservationDao implements ReservationRepository {
                         rs.getString("theme_thumb")
                 );
 
+                Member member = new Member(
+                        rs.getLong("member_id"),
+                        rs.getString("member_name"),
+                        rs.getString("member_email"),
+                        rs.getString("member_password"),
+                        Role.valueOf(rs.getString("member_role"))
+                );
+
                 return new Reservation(
                         rs.getLong("reservation_id"),
                         rs.getString("reservation_name"),
                         LocalDate.parse(rs.getString("reservation_date")),
                         time,
-                        theme
+                        theme,
+                        member
                 );
             };
 

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.dto.MemberProfileResponse;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.service.AuthService;
+import roomescape.global.resolver.annotation.LoginMemberId;
+import roomescape.member.service.MemberService;
 
 @RestController
 @RequestMapping("/login")
@@ -17,9 +19,11 @@ public class LoginController {
 
     public static final String TOKEN_COOKIE_NAME = "token";
     private final AuthService authService;
+    private final MemberService memberService;
 
-    public LoginController(AuthService authService) {
+    public LoginController(AuthService authService, MemberService memberService) {
         this.authService = authService;
+        this.memberService = memberService;
     }
 
     @PostMapping
