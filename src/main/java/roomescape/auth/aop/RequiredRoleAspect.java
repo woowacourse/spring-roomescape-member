@@ -8,7 +8,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import roomescape.auth.annotation.AuthenticatedUser;
 import roomescape.auth.annotation.RequiredRoles;
-import roomescape.auth.intercepter.ForbiddenException;
+import roomescape.auth.exception.ForbiddenException;
 import roomescape.auth.resolver.UserSession;
 import roomescape.user.domain.UserRole;
 

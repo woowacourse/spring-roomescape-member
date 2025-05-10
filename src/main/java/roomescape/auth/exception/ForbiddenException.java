@@ -1,4 +1,4 @@
-package roomescape.auth.intercepter;
+package roomescape.auth.exception;
 
 import org.springframework.http.HttpStatus;
 import roomescape.auth.sign.exception.AuthException;
