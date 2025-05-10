@@ -2,10 +2,10 @@ package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.domain.dto.TokenInfoDto;
 import roomescape.auth.domain.dto.TokenRequestDto;
 import roomescape.auth.domain.dto.TokenResponseDto;
 import roomescape.auth.exception.InvalidTokenException;
-import roomescape.globalException.AuthorizationException;
 import roomescape.user.domain.User;
 import roomescape.user.domain.dto.UserResponseDto;
 import roomescape.user.exception.NotFoundUserException;
@@ -22,10 +22,6 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
-    public boolean checkInvalidLogin(String email, String password) {
-        return !userRepository.existUserByEmailAndPassword(email, password);
-    }
-
     public UserResponseDto findMemberByToken(String token) {
         if (!jwtTokenProvider.validateToken(token)) {
             throw new InvalidTokenException();
@@ -35,24 +31,20 @@ public class AuthService {
         return UserResponseDto.of(user);
     }
 
-    public User findMember(String email) {
-        return userRepository.findUseByEmail(email)
+    public User findMember(String payload) {
+        Long id = Long.valueOf(payload);
+        return userRepository.findById(id)
                 .orElseThrow(NotFoundUserException::new);
     }
 
     public TokenResponseDto login(TokenRequestDto tokenRequestDto) {
-        userRepository.findUserByEmailAndPassword(tokenRequestDto.email(), tokenRequestDto.password())
+        User user = userRepository.findUserByEmailAndPassword(tokenRequestDto.email(), tokenRequestDto.password())
                 .orElseThrow(NotFoundUserException::new);
-
-        return createToken(tokenRequestDto);
+        return createToken(TokenInfoDto.of(user));
     }
 
-    public TokenResponseDto createToken(TokenRequestDto tokenRequestDto) {
-        if (checkInvalidLogin(tokenRequestDto.email(), tokenRequestDto.password())) {
-            throw new AuthorizationException("이메일 또는 패스워드가 올바르지 않습니다.");
-        }
-
-        String accessToken = jwtTokenProvider.createToken(tokenRequestDto.email());
+    public TokenResponseDto createToken(TokenInfoDto tokenInfoDto) {
+        String accessToken = jwtTokenProvider.createToken(tokenInfoDto);
         return new TokenResponseDto(accessToken);
     }
 }

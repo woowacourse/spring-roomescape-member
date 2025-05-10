@@ -8,16 +8,20 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.auth.domain.dto.TokenInfoDto;
 
 @Component
 public class JwtTokenProvider {
+
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
-    public String createToken(String payload) {
-        Claims claims = Jwts.claims().setSubject(payload);
+    public String createToken(TokenInfoDto tokenInfoDto) {
+        Claims claims = Jwts.claims().setSubject(String.valueOf(tokenInfoDto.id()));
+        claims.put("role", tokenInfoDto.role().name());
+
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
@@ -30,7 +34,12 @@ public class JwtTokenProvider {
     }
 
     public String getPayload(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        Claims claims = getClaims(token);
+        return claims.getSubject();
+    }
+
+    public Claims getClaims(String token) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
     }
 
     public boolean validateToken(String token) {
