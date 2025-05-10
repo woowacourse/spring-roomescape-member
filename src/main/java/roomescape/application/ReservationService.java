@@ -47,7 +47,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationDto registerReservation(AdminReservationCreateDto request) {
+    public ReservationDto registerReservationByAdmin(AdminReservationCreateDto request) {
         return registerReservation(new ReservationCreateDto(request.themeId(), request.date(),
                 request.timeId()), request.memberId());
     }
