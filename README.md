@@ -37,6 +37,16 @@
 - [X] `/signup` 요청 시 로그인 페이지를 응답한다.
 - [X] `/members` 요청 시 사용자 정보를 저장한다.
 
+### 사용자 예약 생성
+
+- [ ] 사용자는 날짜, 테마, 시간을 선택하여 예약을 생성 할 수 있다.
+- [ ] `/reservations` 요청 시 예약을 생성한다.
+
+### 관리자 예약 생성
+
+- [ ] 관리자는 유저를 조회하여 선택 후 예약을 생성 할 수 있다.
+- [ ] `/admin/reservations` 요청 시 예약을 생성한다.
+
 ## 유효성 검증
 
 ### 시간
@@ -282,4 +292,64 @@
     {
         "name": "name"
     }
+    ```
+
+### 사용자 예약 생성
+
+- [ ] 쿠키를 이용한 사용자 예약 생성 API를 구현한다.
+  - Request
+    ```
+    POST /reservations HTTP/1.1
+    content-type: application/json
+    cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+    host: localhost:8080
+
+    {
+        "date": "2024-03-01",
+        "themeId": 1,
+        "timeId": 1
+    }
+    ```
+
+  - Response
+    ```
+    HTTP/1.1 200 OK
+    ```
+
+### 관리자 예약 생성
+
+- [ ] 관리자 예약 생성 API를 구현한다.
+  - Request
+    ```
+    POST /admin/reservations HTTP/1.1
+    content-type: application/json
+    cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+    host: localhost:8080
+
+    {
+        "date": "2024-03-01",
+        "themeId": 1,
+        "timeId": 1,
+        "memberId": 1
+    }
+    ```
+
+  - Response
+    ```
+    HTTP/1.1 200 OK
+    [
+      {
+          "id": 1,
+          "member": {
+            "name": "name"
+          },
+          "theme": {
+            "name": "우테코 레벨1 탈출"
+          },
+          "date": "2025-05-15",
+          "time": {
+            "startAt": "14:00"
+          }
+      }
+    ]
     ```
