@@ -40,6 +40,7 @@
     "password": "string"
   }
   ```
+- **Response**: 회원가입된 유저 정보
 
 ## 테마 API (ThemeApiController)
 

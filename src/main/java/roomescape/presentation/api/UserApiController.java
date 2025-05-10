@@ -13,6 +13,7 @@ import roomescape.business.service.UserService;
 import roomescape.presentation.dto.request.RegisterRequest;
 import roomescape.presentation.dto.response.UserResponse;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -34,9 +35,10 @@ public class UserApiController {
     }
 
     @PostMapping("/members")
-    public ResponseEntity<Void> register(@RequestBody RegisterRequest request) {
-        userService.register(request.name(), request.email(), request.password());
-
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<UserResponse> register(@RequestBody RegisterRequest request) {
+        final User user = userService.register(request.name(), request.email(), request.password());
+        final UserResponse response = UserResponse.from(user);
+        final URI uri = URI.create("/members");
+        return ResponseEntity.created(uri).body(response);
     }
 }

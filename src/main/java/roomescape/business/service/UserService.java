@@ -17,12 +17,13 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public void register(final String name, final String email, final String password) {
+    public User register(final String name, final String email, final String password) {
         if (userRepository.existByEmail(email)) {
             throw new InvalidCreateArgumentException("중복된 이메일입니다.");
         }
         User user = User.create(name, email, password);
         userRepository.save(user);
+        return user;
     }
 
     public User getById(final String id) {
