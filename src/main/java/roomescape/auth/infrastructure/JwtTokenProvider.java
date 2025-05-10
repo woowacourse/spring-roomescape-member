@@ -18,15 +18,12 @@ import roomescape.auth.domain.AuthTokenProvider;
 @Component
 public class JwtTokenProvider implements AuthTokenProvider {
 
-    @Value("${security.jwt.access-token.secret-key}")
-    private String secretKeyValue;
     @Value("${security.jwt.access-token.validity-in-milliseconds}")
     private long validityInMilliseconds;
 
-    private SecretKey secretKey;
+    private final SecretKey secretKey;
 
-    @PostConstruct
-    public void init() {
+    public JwtTokenProvider(@Value("${security.jwt.access-token.secret-key}") final String secretKeyValue) {
         this.secretKey = Keys.hmacShaKeyFor(secretKeyValue.getBytes(StandardCharsets.UTF_8));
     }
 
