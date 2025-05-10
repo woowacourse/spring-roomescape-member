@@ -46,7 +46,7 @@ public class LoginController {
     @GetMapping("/check")
     public ResponseEntity<MemberResponse> findInfo(final HttpServletRequest request) {
         final String token = authorizationExtractor.extract(request);
-        final MemberResponse memberResponse = memberService.findMemberByToken(token);
+        final MemberResponse memberResponse = memberService.findByToken(token);
         return ResponseEntity.ok().body(memberResponse);
     }
 }
