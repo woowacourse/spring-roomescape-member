@@ -1,4 +1,4 @@
-package roomescape.theme.service;
+package roomescape.theme.unit.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -6,10 +6,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.global.error.exception.ConflictException;
 import roomescape.global.error.exception.NotFoundException;
-import roomescape.theme.dto.request.ThemeRequest;
+import roomescape.theme.dto.request.ThemeRequest.ThemeCreateRequest;
 import roomescape.theme.entity.Theme;
-import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.service.ThemeService;
+import roomescape.theme.unit.repository.FakeThemeRepository;
 
 class ThemeServiceTest {
 
@@ -28,7 +29,7 @@ class ThemeServiceTest {
                 "진격의 밍곰 썸네일"
         ));
 
-        ThemeRequest request = new ThemeRequest(
+        ThemeCreateRequest request = new ThemeCreateRequest(
                 name,
                 "우테코 레벨2 탈출",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"

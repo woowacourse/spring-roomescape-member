@@ -1,10 +1,11 @@
-package roomescape.reservation.repository;
+package roomescape.reservation.unit.repository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.repository.ReservationRepository;
 
 public class FakeReservationRepository implements ReservationRepository {
 

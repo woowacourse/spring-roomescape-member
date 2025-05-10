@@ -1,4 +1,4 @@
-package roomescape.reservation.entity;
+package roomescape.reservation.unit.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,11 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import roomescape.reservation.entity.ReservationTime;
 
 class ReservationTimeTest {
 
-    @DisplayName("게임 러닝 타임(2시간)을 고려하여 예약 중복 여부를 판단할 수 있다.")
     @Test
+    @DisplayName("게임 러닝 타임(2시간)을 고려하여 예약 중복 여부를 판단할 수 있다.")
     void duplicateByRunningTime() {
         // given
         LocalTime time = LocalTime.of(10, 0);
@@ -28,8 +29,8 @@ class ReservationTimeTest {
         assertThat(isDuplicated).isTrue();
     }
 
-    @DisplayName("게임 러닝 타임(2시간) 이후의 예약은 중복이 아니다.")
     @Test
+    @DisplayName("게임 러닝 타임(2시간) 이후의 예약은 중복이 아니다.")
     void notDuplicateByRunningTime() {
         // given
         LocalTime time = LocalTime.of(10, 0);

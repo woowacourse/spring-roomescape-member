@@ -1,4 +1,4 @@
-package roomescape.theme.repository;
+package roomescape.theme.unit.repository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import roomescape.reservation.entity.Reservation;
 import roomescape.theme.entity.Theme;
+import roomescape.theme.repository.ThemeRepository;
 
 public class FakeThemeRepository implements ThemeRepository {
 
