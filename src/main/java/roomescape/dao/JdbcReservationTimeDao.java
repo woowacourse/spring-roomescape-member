@@ -67,4 +67,14 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
             throw new IllegalArgumentException("존재하지 않는 시간 id입니다.");
         }
     }
+
+    @Override
+    public boolean existsByStartAt(ReservationTime reservationTime) {
+        String sql = "select exists (select 1 from reservation_time where start_at = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                sql,
+                Boolean.class,
+                reservationTime
+        ));
+    }
 }

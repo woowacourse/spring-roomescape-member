@@ -14,4 +14,6 @@ public interface ThemeDao {
     Theme create(Theme theme);
 
     void deleteById(Long idRequest);
+
+    boolean existsByName(Theme theme);
 }

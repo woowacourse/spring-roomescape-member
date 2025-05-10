@@ -12,4 +12,6 @@ public interface ReservationTimeDao {
     ReservationTime create(ReservationTime time);
 
     void deleteById(Long id);
+
+    boolean existsByStartAt(ReservationTime reservationTime);
 }

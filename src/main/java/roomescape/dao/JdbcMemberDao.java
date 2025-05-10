@@ -44,28 +44,6 @@ public class JdbcMemberDao implements MemberDao {
     }
 
     @Override
-    public boolean existsByEmailAndPassword(String email, String password) {
-        String sql = "select exists (select 1 from member where email = ? and password = ?)";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
-                sql,
-                Boolean.class,
-                email,
-                password
-        ));
-    }
-
-    @Override
-    public Member findByEmailAndPassword(String email, String password) {
-        String sql = "select * from member where email = ? and password = ?";
-        return jdbcTemplate.queryForObject(
-                sql,
-                new MemberMapper(),
-                email,
-                password
-        );
-    }
-
-    @Override
     public Member create(Member member) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into member (name, email, password, role) values (?, ?, ?, ?)";
@@ -85,5 +63,37 @@ public class JdbcMemberDao implements MemberDao {
         );
         long memberId = keyHolder.getKey().longValue();
         return member.copyWithId(memberId);
+    }
+
+    @Override
+    public boolean existsByEmailAndPassword(String email, String password) {
+        String sql = "select exists (select 1 from member where email = ? and password = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                sql,
+                Boolean.class,
+                email,
+                password
+        ));
+    }
+
+    @Override
+    public boolean existsByEmail(Member member) {
+        String sql = "select exists (select 1 from member where email = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                sql,
+                Boolean.class,
+                member.getEmail()
+        ));
+    }
+
+    @Override
+    public Member findByEmailAndPassword(String email, String password) {
+        String sql = "select * from member where email = ? and password = ?";
+        return jdbcTemplate.queryForObject(
+                sql,
+                new MemberMapper(),
+                email,
+                password
+        );
     }
 }

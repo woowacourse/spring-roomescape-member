@@ -40,6 +40,11 @@ public class MemberService {
 
     public MemberSafeResponse createUser(MemberPostRequest request) {
         Member memberWithoutId = request.toMember(MemberRole.USER);
+
+        if (memberDao.existsByEmail(memberWithoutId)) {
+            throw new IllegalArgumentException("해당 이메일로 가입한 이력이 있습니다.");
+        }
+
         Member member = memberDao.create(memberWithoutId);
         return new MemberSafeResponse(member);
     }

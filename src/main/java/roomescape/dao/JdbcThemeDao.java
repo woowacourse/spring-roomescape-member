@@ -102,4 +102,14 @@ public class JdbcThemeDao implements ThemeDao {
             throw new IllegalArgumentException("존재하지 않는 테마 id입니다.");
         }
     }
+
+    @Override
+    public boolean existsByName(Theme theme) {
+        String sql = "select exists (select 1 from theme where name = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                sql,
+                Boolean.class,
+                theme.getName()
+        ));
+    }
 }

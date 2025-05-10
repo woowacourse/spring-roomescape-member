@@ -9,9 +9,11 @@ public interface MemberDao {
 
     List<Member> findAll();
 
+    Member create(Member member);
+
     boolean existsByEmailAndPassword(String email, String password);
 
-    Member findByEmailAndPassword(String email, String password);
+    boolean existsByEmail(Member member);
 
-    Member create(Member member);
+    Member findByEmailAndPassword(String email, String password);
 }

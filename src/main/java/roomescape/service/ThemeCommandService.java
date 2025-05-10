@@ -3,8 +3,8 @@ package roomescape.service;
 import org.springframework.stereotype.Component;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
-import roomescape.dto.response.ThemeFullResponse;
 import roomescape.dto.request.ThemePostRequest;
+import roomescape.dto.response.ThemeFullResponse;
 import roomescape.entity.Theme;
 
 @Component
@@ -20,6 +20,10 @@ public class ThemeCommandService {
 
     public ThemeFullResponse createTheme(ThemePostRequest themePostRequest) {
         Theme themeWithoutId = themePostRequest.toTheme();
+
+        if (themeDao.existsByName(themeWithoutId)) {
+            throw new IllegalArgumentException("이미 존재하는 테마명입니다.");
+        }
         Theme theme = themeDao.create(themeWithoutId);
         return new ThemeFullResponse(theme);
     }

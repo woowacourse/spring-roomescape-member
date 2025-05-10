@@ -20,6 +20,10 @@ public class ReservationTimeCommandService {
 
     public ReservationTimePostResponse createTime(ReservationTimePostRequest timeRequest) {
         ReservationTime reservationTimeWithoutId = timeRequest.toTime();
+
+        if (reservationTimeDao.existsByStartAt(reservationTimeWithoutId)) {
+            throw new IllegalArgumentException("이미 존재하는 시간입니다.");
+        }
         ReservationTime reservationTime = reservationTimeDao.create(reservationTimeWithoutId);
         return new ReservationTimePostResponse(reservationTime);
     }
