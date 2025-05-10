@@ -2,7 +2,9 @@ const THEME_API_ENDPOINT = '/themes';
 
 document.addEventListener('DOMContentLoaded', () => {
     requestRead(THEME_API_ENDPOINT)
-        .then(renderTheme)
+        .then(res => {
+            renderTheme(res.data)
+        })
         .catch(error => console.error('Error fetching times:', error));
 
     flatpickr("#datepicker", {
@@ -35,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderTheme(themes) {
     const themeSlots = document.getElementById('theme-slots');
     themeSlots.innerHTML = '';
-    themes.forEach(theme => {
+    themes.data.forEach(theme => {
         const name = theme.name;
         const themeId = theme.id;
 
@@ -119,7 +121,7 @@ function renderAvailableTimes(times) {
         timeSlots.innerHTML = '<div class="no-times">선택할 수 있는 시간이 없습니다.</div>';
         return;
     }
-    times.forEach(time => {
+    times.data.forEach(time => {
         /*
         TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출 후 렌더링
               response 명세에 맞춰 createSlot 함수 호출 시 값 설정
