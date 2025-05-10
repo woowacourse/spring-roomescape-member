@@ -5,29 +5,27 @@ import java.time.LocalDate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
+import roomescape.member.domain.Member;
 
 public record ReservationRequest(
-        String name,
         @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul") LocalDate date,
         Long timeId,
-        Long themeId
+        Long themeId,
+        Long memberId
 ) {
 
     public ReservationRequest {
-        validateName(name);
         validateDate(date);
         validateTimeId(timeId);
         validateThemeId(themeId);
     }
 
-    public Reservation toReservationWithoutId(ReservationTime time, Theme theme) {
-        return new Reservation(null, name, date, time, theme);
+    public ReservationRequest withMemberId(Long memberId) {
+        return new ReservationRequest(date, timeId, themeId, memberId);
     }
 
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름은 필수입니다.");
-        }
+    public Reservation toReservationWithoutId(ReservationTime time, Theme theme, Member member) {
+        return new Reservation(null, date, time, theme, member);
     }
 
     private void validateDate(LocalDate date) {

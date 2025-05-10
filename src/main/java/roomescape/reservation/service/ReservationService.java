@@ -14,6 +14,8 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.reservation.repository.ThemeRepository;
+import roomescape.member.domain.Member;
+import roomescape.member.repository.MemberRepository;
 
 @Service
 public class ReservationService {
@@ -21,14 +23,16 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
     private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository,
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository, MemberRepository memberRepository,
                               Clock clock) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
         this.clock = clock;
     }
 
@@ -77,7 +81,10 @@ public class ReservationService {
         Theme findTheme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 테마가 존재하지 않습니다."));
 
-        return request.toReservationWithoutId(findTime, findTheme);
+        Member findMember = memberRepository.findById(request.memberId())
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 사용자가 존재하지 않습니다."));
+
+        return request.toReservationWithoutId(findTime, findTheme, findMember);
     }
 
     private Boolean isAlreadyBooked(ReservationTime time, List<Reservation> reservations) {

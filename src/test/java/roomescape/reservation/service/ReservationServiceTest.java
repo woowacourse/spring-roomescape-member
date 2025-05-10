@@ -95,7 +95,7 @@ class ReservationServiceTest {
     @Test
     void add_test() {
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.of(2025, 5, 3), 4L, 3L);
+        ReservationRequest request = new ReservationRequest(LocalDate.of(2025, 5, 3), 4L, 3L, 1L);
 
         // when
         ReservationResponse response = reservationService.add(request);
