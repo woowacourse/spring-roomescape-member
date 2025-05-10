@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.exception.MemberException;
 
 class MemberTest {
 
@@ -21,7 +22,7 @@ class MemberTest {
         // when
         // then
         assertThatCode(() -> new Member(1L, invalidName, VALID_EMAIL, VALID_PASSWORD))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(MemberException.class)
                 .hasMessage("사용자 이름은 null이거나 빈 문자열일 수 없습니다.");
     }
 
@@ -33,7 +34,7 @@ class MemberTest {
         // when
         // then
         assertThatCode(() -> new Member(1L, invalidName, VALID_EMAIL, VALID_PASSWORD))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(MemberException.class)
                 .hasMessage("사용자 이름은 2자 이상 8자 이하이어야 합니다.");
     }
 
@@ -56,7 +57,7 @@ class MemberTest {
         // when
         // then
         assertThatCode(() -> new Member(1L, VALID_NAME, invalidEmail, VALID_PASSWORD))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(MemberException.class)
                 .hasMessage("이메일은 null이거나 빈 문자열일 수 없습니다.");
     }
 
@@ -68,7 +69,7 @@ class MemberTest {
         // when
         // then
         assertThatCode(() -> new Member(1L, VALID_NAME, invalidEmail, VALID_PASSWORD))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(MemberException.class)
                 .hasMessage("이메일 형식이 올바르지 않습니다.");
     }
 
