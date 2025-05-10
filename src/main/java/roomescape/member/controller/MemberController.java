@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.controller.dto.LoginRequest;
 import roomescape.member.controller.dto.MemberSearchResponse;
+import roomescape.member.controller.dto.SignupRequest;
+import roomescape.member.controller.dto.SignupResponse;
 import roomescape.member.service.MemberService;
 
 @RestController
@@ -36,7 +38,7 @@ public class MemberController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/login/check")
-    public MemberSearchResponse searchMember(HttpServletRequest request) {
+    public MemberSearchResponse loginCheck(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies)
                 .orElseThrow(() -> new IllegalArgumentException("token 쿠키가 없습니다."));
@@ -53,6 +55,12 @@ public class MemberController {
             expiredCookie.setPath("/");
             response.addCookie(expiredCookie);
         });
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/members")
+    public SignupResponse signup(@RequestBody SignupRequest request) {
+        return memberService.add(request);
     }
 
     private Optional<String> extractTokenFromCookie(Cookie[] cookies) {

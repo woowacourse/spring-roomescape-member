@@ -9,4 +9,5 @@ public interface MemberRepository {
 
     Member findById(Long id);
 
+    Long saveAndReturnId(Member member);
 }

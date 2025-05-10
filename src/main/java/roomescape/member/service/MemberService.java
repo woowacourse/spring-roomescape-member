@@ -5,6 +5,8 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 import roomescape.member.controller.dto.LoginRequest;
 import roomescape.member.controller.dto.MemberSearchResponse;
+import roomescape.member.controller.dto.SignupRequest;
+import roomescape.member.controller.dto.SignupResponse;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
 
@@ -38,6 +40,12 @@ public class MemberService {
                 .getBody().getSubject());
         Member findMember = memberRepository.findById(id);
         return MemberSearchResponse.from(findMember.getName());
+    }
+
+    public SignupResponse add(SignupRequest request) {
+        Member member = request.toMemberWithoutId();
+        Long id = memberRepository.saveAndReturnId(member);
+        return SignupResponse.from(member.createMemberWithId(id).getName());
     }
 
 }

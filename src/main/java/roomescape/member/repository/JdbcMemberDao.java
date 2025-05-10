@@ -1,8 +1,12 @@
 package roomescape.member.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 
@@ -34,6 +38,27 @@ public class JdbcMemberDao implements MemberRepository {
     public Member findById(Long id) {
         String sql = "SELECT id, email, password, name, role FROM member WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
+    }
+
+    @Override
+    public Long saveAndReturnId(Member member) {
+        String sql = "INSERT INTO member (email, password, name, role) VALUES(?, ?, ?, ?)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(
+                connection -> {
+                    PreparedStatement preparedStatement = connection.prepareStatement(sql,
+                            Statement.RETURN_GENERATED_KEYS);
+                    preparedStatement.setString(1, member.getEmail());
+                    preparedStatement.setString(2, member.getPassword());
+                    preparedStatement.setString(3, member.getName());
+                    preparedStatement.setString(4, member.getRole());
+                    return preparedStatement;
+                },
+                keyHolder
+        );
+
+        return keyHolder.getKey().longValue();
     }
 
 }
