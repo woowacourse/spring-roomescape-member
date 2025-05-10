@@ -36,14 +36,9 @@ public class AdminInterceptor implements HandlerInterceptor {
         String roleName = jwtHandler.decode(accessToken, JwtHandler.CLAIM_ROLE_KEY);
 
         Role role = Role.valueOf(roleName);
-        return isAdmin(role);
-    }
-
-
-    private boolean isAdmin(final Role role) {
-        if (role == Role.ADMIN) {
-            return true;
+        if (role != Role.ADMIN) {
+            throw new ForbiddenException("회원 권한이 존재하지 않아 접근할 수 없습니다.");
         }
-        throw new ForbiddenException("회원 권한이 존재하지 않아 접근할 수 없습니다.");
+        return true;
     }
 }
