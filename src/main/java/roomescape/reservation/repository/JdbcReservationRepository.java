@@ -59,6 +59,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 "       theme.description AS theme_description,\n" +
                 "       theme.thumbnail AS theme_thumbnail,\n" +
                 "       users.id AS user_id,\n" +
+                "       users.role AS user_role,\n" +
                 "       users.name AS user_name,\n" +
                 "       users.email AS user_email,\n" +
                 "       users.password AS user_password\n" +
@@ -91,6 +92,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                         "       theme.description AS theme_description,\n" +
                         "       theme.thumbnail AS theme_thumbnail,\n" +
                         "       users.id AS user_id,\n" +
+                        "       users.role AS user_role,\n" +
                         "       users.name AS user_name,\n" +
                         "       users.email AS user_email,\n" +
                         "       users.password AS user_password\n" +

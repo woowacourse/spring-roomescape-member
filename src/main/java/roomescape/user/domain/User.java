@@ -16,7 +16,7 @@ public class User {
         this.password = password;
     }
 
-    public User(String name, String roleName, String email, String password) {
+    public User(String roleName, String name, String email, String password) {
         this(null, Role.findByName(roleName), name, email, password);
     }
 

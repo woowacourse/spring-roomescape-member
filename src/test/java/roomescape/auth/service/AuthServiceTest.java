@@ -54,12 +54,13 @@ class AuthServiceTest {
         @Test
         void findMemberByToken_success_byValidToken() {
             // given
-
             // when
             UserResponseDto userResponseDto = authService.findMemberByToken(accessToken);
 
             // then
+            // TODO 2025. 5. 10. 23:59: 필드가 바뀌어도 내가 수정하지 않을 수 있도록
             Assertions.assertThat(userResponseDto.id()).isEqualTo(savedUser.getId());
+            Assertions.assertThat(userResponseDto.roleName()).isEqualTo(savedUser.getRole().name());
             Assertions.assertThat(userResponseDto.name()).isEqualTo(savedUser.getName());
             Assertions.assertThat(userResponseDto.email()).isEqualTo(savedUser.getEmail());
             Assertions.assertThat(userResponseDto.password()).isEqualTo(savedUser.getPassword());

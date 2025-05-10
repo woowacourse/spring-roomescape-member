@@ -22,6 +22,17 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
+    public TokenResponseDto login(TokenRequestDto tokenRequestDto) {
+        User user = userRepository.findUserByEmailAndPassword(tokenRequestDto.email(), tokenRequestDto.password())
+                .orElseThrow(NotFoundUserException::new);
+        return createToken(TokenInfoDto.of(user));
+    }
+
+    public TokenResponseDto createToken(TokenInfoDto tokenInfoDto) {
+        String accessToken = jwtTokenProvider.createToken(tokenInfoDto);
+        return new TokenResponseDto(accessToken);
+    }
+
     public UserResponseDto findMemberByToken(String token) {
         if (!jwtTokenProvider.validateToken(token)) {
             throw new InvalidTokenException();
@@ -35,16 +46,5 @@ public class AuthService {
         Long id = Long.valueOf(payload);
         return userRepository.findById(id)
                 .orElseThrow(NotFoundUserException::new);
-    }
-
-    public TokenResponseDto login(TokenRequestDto tokenRequestDto) {
-        User user = userRepository.findUserByEmailAndPassword(tokenRequestDto.email(), tokenRequestDto.password())
-                .orElseThrow(NotFoundUserException::new);
-        return createToken(TokenInfoDto.of(user));
-    }
-
-    public TokenResponseDto createToken(TokenInfoDto tokenInfoDto) {
-        String accessToken = jwtTokenProvider.createToken(tokenInfoDto);
-        return new TokenResponseDto(accessToken);
     }
 }
