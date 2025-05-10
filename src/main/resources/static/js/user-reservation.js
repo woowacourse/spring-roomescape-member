@@ -163,10 +163,6 @@ function onReservationButtonClick() {
       timeId: Number(selectedTimeId)
     };
 
-    console.log("Selected Date:", selectedDate);
-    console.log("Selected Theme:", selectedThemeId);
-    console.log("Selected Time:", selectedThemeId);
-
     fetch('/reservations', {
       method: 'POST',
       headers: {

@@ -5,5 +5,7 @@ import roomescape.business.domain.User;
 
 public interface UserDao {
 
+    Optional<User> find(Long id);
+
     Optional<User> findByPrincipal(String principal);
 }

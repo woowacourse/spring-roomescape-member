@@ -4,7 +4,9 @@ import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import roomescape.business.domain.Theme;
 import roomescape.business.domain.User;
+import roomescape.persistence.entity.ThemeEntity;
 import roomescape.persistence.entity.UserEntity;
 
 @Repository
@@ -14,6 +16,17 @@ public class JdbcUserDao implements UserDao {
 
     public JdbcUserDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public Optional<User> find(final Long id) {
+        final String sql = "SELECT id, name, email, password, role FROM users WHERE id = ?";
+        try {
+            final UserEntity userEntity = jdbcTemplate.queryForObject(sql, UserEntity.getDefaultRowMapper(), id);
+            return Optional.of(userEntity.toDomain());
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
