@@ -20,7 +20,7 @@ public record ReservationResponseDto(
 
         return new ReservationResponseDto(
                 reservationInfo.getId(),
-                reservationInfo.getName(),
+                reservationInfo.getMember().getName(),
                 reservationInfo.getDate(),
                 new ReservationTimeResponseDto(timeInfo.getId(), timeInfo.getStartAt()),
                 new ThemeResponseDto(themeInfo.getId(), themeInfo.getName(), themeInfo.getDescription(),

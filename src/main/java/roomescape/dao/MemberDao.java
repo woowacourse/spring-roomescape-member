@@ -29,7 +29,7 @@ public class MemberDao {
     }
 
     public Optional<Member> findById(Long customerId) {
-        String sql = "SELECT * FROM customer WHERE id = ?";
+        String sql = "SELECT * FROM member WHERE id = ?";
         return jdbcTemplate.query(sql, customerRowMapper, customerId)
                 .stream().
                 findFirst();

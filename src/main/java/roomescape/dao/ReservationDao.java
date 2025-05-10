@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.model.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -20,16 +21,21 @@ public class ReservationDao {
     private static final String SELECT_RESERVATION = """
             SELECT 
                 r.id, 
-                r.name, 
+                r.member_id, 
                 r.date,
                 rt.id AS time_id, 
                 rt.start_at AS time_start_at,
                 t.id AS theme_id, 
                 t.name AS theme_name, 
                 t.description AS theme_description, 
-                t.thumbnail AS theme_thumbnail
+                t.thumbnail AS theme_thumbnail,
+                m.id,
+                m.email,
+                m.name,
+                m.password
             FROM reservation AS r
             INNER JOIN reservation_time AS rt ON r.time_id = rt.id
+            INNER JOIN member AS m ON m.id = r.member_id
             INNER JOIN theme AS t ON t.id = r.theme_id 
             """;
 
@@ -37,14 +43,23 @@ public class ReservationDao {
     private final RowMapper<Reservation> actorRowMapper = (resultSet, rowNum) -> {
         Reservation reservation = new Reservation(
                 resultSet.getLong("id"),
-                resultSet.getString("name"),
+                new Member(
+                        resultSet.getLong("member_id"),
+                        resultSet.getString("email"),
+                        resultSet.getString("name"),
+                        resultSet.getString("password")
+                        ),
                 resultSet.getDate("date").toLocalDate(),
-                new ReservationTime(resultSet.getLong("time_id"),
-                        resultSet.getTime("time_start_at").toLocalTime()),
-                new Theme(resultSet.getLong("theme_id"),
+                new ReservationTime(
+                        resultSet.getLong("time_id"),
+                        resultSet.getTime("time_start_at").toLocalTime()
+                ),
+                new Theme(
+                        resultSet.getLong("theme_id"),
                         resultSet.getString("theme_name"),
                         resultSet.getString("theme_description"),
-                        resultSet.getString("theme_thumbnail"))
+                        resultSet.getString("theme_thumbnail")
+                )
         );
         return reservation;
     };
@@ -68,12 +83,12 @@ public class ReservationDao {
     }
 
     public Long saveReservation(Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) values (?,?,?,?)";
+        String sql = "INSERT INTO reservation (member_id, date, time_id, theme_id) values (?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservation.getName());
+            ps.setLong(1, reservation.getMember().getId());
             ps.setDate(2, Date.valueOf(reservation.getDate()));
             ps.setLong(3, reservation.getTime().getId());
             ps.setLong(4, reservation.getTheme().getId());

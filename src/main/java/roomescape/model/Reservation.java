@@ -7,26 +7,36 @@ import roomescape.common.exception.ReservationDateException;
 public class Reservation {
 
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
-        validateRequiredFields(id, name, date, reservationTime, theme);
+    public Reservation(
+            Long id,
+            Member member,
+            LocalDate date,
+            ReservationTime reservationTime,
+            Theme theme
+    ) {
+        validateRequiredFields(id, member, date, reservationTime, theme);
 
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
-        validateRequiredFields(name, date, reservationTime, theme);
+    public Reservation(
+            Member member,
+            LocalDate date,
+            ReservationTime reservationTime,
+            Theme theme) {
+        validateRequiredFields(member, date, reservationTime, theme);
 
         this.id = null;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
@@ -38,19 +48,28 @@ public class Reservation {
         }
     }
 
-    private void validateRequiredFields(Long id, String name, LocalDate date, ReservationTime reservationTime,
-                                        Theme theme) {
+    private void validateRequiredFields(
+            Long id,
+            Member member,
+            LocalDate date,
+            ReservationTime reservationTime,
+            Theme theme
+    ) {
         if (id == null) {
             throw new InvalidInputException("id 값은 null 일 수 없습니다.");
         }
 
-        validateRequiredFields(name, date, reservationTime, theme);
+        validateRequiredFields(member, date, reservationTime, theme);
     }
 
-    private void validateRequiredFields(String name, LocalDate date, ReservationTime reservationTime,
-                                        Theme theme) {
-        if (name == null || name.isBlank()) {
-            throw new InvalidInputException("예약자명은 null이거나 공백일 수 없습니다");
+    private void validateRequiredFields(
+            Member member,
+            LocalDate date,
+            ReservationTime reservationTime,
+            Theme theme
+    ) {
+        if (member == null) {
+            throw new InvalidInputException("예약자는 null일 수 없습니다");
         }
 
         if (date == null) {
@@ -70,8 +89,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {

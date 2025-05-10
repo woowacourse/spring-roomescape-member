@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.auth.LoginRequestDto;
-import roomescape.dto.customer.CustomerResponseDto;
+import roomescape.dto.member.MemberResponseDto;
 import roomescape.service.AuthService;
 
 @RestController
@@ -36,8 +36,8 @@ public class AuthController {
 
     @GetMapping("/check")
     @ResponseStatus(HttpStatus.OK)
-    public CustomerResponseDto loginCheck(CustomerResponseDto customerResponseDto){
-        return customerResponseDto;
+    public MemberResponseDto loginCheck(MemberResponseDto memberResponseDto){
+        return memberResponseDto;
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
