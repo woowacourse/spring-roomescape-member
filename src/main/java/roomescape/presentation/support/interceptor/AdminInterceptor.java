@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.application.auth.dto.JwtPayload;
-import roomescape.common.exception.ForbiddenException;
+import roomescape.application.support.exception.ForbiddenException;
 import roomescape.domain.member.Role;
 import roomescape.infrastructure.security.JwtProvider;
 import roomescape.presentation.support.JwtTokenExtractor;

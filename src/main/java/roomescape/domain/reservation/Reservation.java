@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import roomescape.common.exception.BusinessRuleViolationException;
+import roomescape.domain.BusinessRuleViolationException;
 import roomescape.domain.member.Member;
 
 public class Reservation {

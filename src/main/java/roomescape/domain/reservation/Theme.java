@@ -1,7 +1,7 @@
 package roomescape.domain.reservation;
 
 import java.util.Objects;
-import roomescape.common.exception.BusinessRuleViolationException;
+import roomescape.domain.BusinessRuleViolationException;
 
 public class Theme {
 

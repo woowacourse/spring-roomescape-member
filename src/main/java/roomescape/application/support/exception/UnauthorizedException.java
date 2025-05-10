@@ -1,4 +1,4 @@
-package roomescape.common.exception;
+package roomescape.application.support.exception;
 
 public class UnauthorizedException extends CoreException {
     public UnauthorizedException(String message) {

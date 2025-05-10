@@ -1,7 +1,7 @@
 package roomescape.domain.reservation;
 
 import java.time.LocalTime;
-import roomescape.common.exception.BusinessRuleViolationException;
+import roomescape.domain.BusinessRuleViolationException;
 
 public record ReservationTime(Long id, LocalTime startAt) {
 

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.application.auth.dto.JwtPayload;
 import roomescape.application.auth.dto.LoginParam;
 import roomescape.application.auth.dto.LoginResult;
-import roomescape.common.exception.UnauthorizedException.LoginAuthException;
+import roomescape.application.support.exception.UnauthorizedException.LoginAuthException;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;
 import roomescape.infrastructure.security.JwtProvider;

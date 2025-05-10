@@ -1,6 +1,6 @@
-package roomescape.common.exception;
+package roomescape.domain;
 
-public class BusinessRuleViolationException extends CoreException {
+public class BusinessRuleViolationException extends RuntimeException {
     public BusinessRuleViolationException(String message) {
         super(message);
     }

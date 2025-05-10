@@ -5,12 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.common.exception.BusinessRuleViolationException;
-import roomescape.common.exception.CoreException;
-import roomescape.common.exception.ForbiddenException;
-import roomescape.common.exception.NotFoundEntityException;
-import roomescape.common.exception.UnauthorizedException;
-import roomescape.common.exception.UnauthorizedException.LoginAuthException;
+import roomescape.application.support.exception.CoreException;
+import roomescape.application.support.exception.ForbiddenException;
+import roomescape.application.support.exception.NotFoundEntityException;
+import roomescape.application.support.exception.UnauthorizedException;
+import roomescape.application.support.exception.UnauthorizedException.LoginAuthException;
+import roomescape.domain.BusinessRuleViolationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

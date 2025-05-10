@@ -1,7 +1,7 @@
 package roomescape.domain.member;
 
 import java.util.regex.Pattern;
-import roomescape.common.exception.BusinessRuleViolationException;
+import roomescape.domain.BusinessRuleViolationException;
 
 public record Email(String email) {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");

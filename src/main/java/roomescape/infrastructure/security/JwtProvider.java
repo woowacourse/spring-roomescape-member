@@ -10,7 +10,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.application.auth.dto.JwtPayload;
-import roomescape.common.exception.UnauthorizedException;
+import roomescape.application.support.exception.UnauthorizedException;
 import roomescape.domain.member.Role;
 
 @Component

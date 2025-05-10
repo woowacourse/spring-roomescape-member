@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import roomescape.common.exception.BusinessRuleViolationException;
+import roomescape.domain.BusinessRuleViolationException;
 
 public class DailyThemeReservations {
 
