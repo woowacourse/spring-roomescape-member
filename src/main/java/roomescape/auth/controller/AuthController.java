@@ -27,15 +27,15 @@ public class AuthController {
 
     @PostMapping("/login")
     public void login(@RequestBody final LoginRequest request, final HttpServletResponse response) {
-        log.info("로그인 시작 {}", request);
+        log.info("로그인 시작");
         final String token = authService.createToken(request);
-        log.info("토큰 생성 완료 {}", token);
+        log.info("토큰 생성 완료");
 
         final ResponseCookie cookie = ResponseCookie.from(COOKIE_TOKEN, token)
                 .httpOnly(true)
                 .path("/")
                 .build();
-        log.info("쿠키 생성 완료 {}", cookie);
+        log.info("쿠키 생성 완료");
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         log.info("로그인 성공");
