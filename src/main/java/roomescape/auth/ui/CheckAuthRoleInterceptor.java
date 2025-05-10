@@ -32,7 +32,7 @@ public class CheckAuthRoleInterceptor implements HandlerInterceptor {
         }
 
         final String accessToken = authTokenExtractor.extract(request);
-        if (!authTokenProvider.validateToken(accessToken)) {
+        if (accessToken == null || !authTokenProvider.validateToken(accessToken)) {
             throw new AuthenticationException("유효하지 않은 토큰입니다.");
         }
 
