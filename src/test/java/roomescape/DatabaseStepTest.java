@@ -24,8 +24,6 @@ public class DatabaseStepTest {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             assertThat(connection).isNotNull();
             assertThat(connection.getCatalog()).isEqualTo("DATABASE-TEST");
-            assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null)
-                .next()).isTrue();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

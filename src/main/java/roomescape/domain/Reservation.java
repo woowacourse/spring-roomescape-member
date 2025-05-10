@@ -37,6 +37,10 @@ public class Reservation {
         this.id = id;
     }
 
+    public String getMemberName() {
+        return member.getName();
+    }
+
     public Long getId() {
         return id;
     }

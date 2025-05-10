@@ -1,9 +1,14 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationRequestDto;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.exception.InvalidReservationException;
@@ -40,27 +45,24 @@ public class ReservationService {
         reservationRepository.delete(id);
     }
 
-    public ReservationResponseDto saveReservation(ReservationRequestDto reservationRequestDto) {
-        Reservation reservation = createReservationFrom(reservationRequestDto);
+    public ReservationResponseDto saveReservation(ReservationRequestDto reservationRequestDto,
+        Member member) {
+        Reservation reservation = createReservationFrom(reservationRequestDto, member);
         reservation.validateDateTime(currentDateTime.get());
         validateAlreadyExistDateTime(reservationRequestDto, reservation.getReservationDate());
         reservationRepository.save(reservation);
         return ReservationResponseDto.from(reservation);
     }
 
-    private Reservation createReservationFrom(ReservationRequestDto reservationRequestDto) {
-        /*
+    private Reservation createReservationFrom(ReservationRequestDto reservationRequestDto,
+        Member member) {
         LocalDateTime currentDateTimeInfo = currentDateTime.get();
-        Member member = new Member(reservationRequestDto.name());
         ReservationDate date = new ReservationDate(LocalDate.parse(reservationRequestDto.date()));
         date.validateDate(currentDateTimeInfo.toLocalDate());
         ReservationTime reservationTime = reservationTimeRepository.findById(
             reservationRequestDto.timeId());
         Theme theme = themeRepository.findById(reservationRequestDto.themeId());
         return new Reservation(member, date, reservationTime, theme);
-
-         */
-        return null;
     }
 
     private void validateAlreadyExistDateTime(ReservationRequestDto reservationRequestDto,

@@ -151,7 +151,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
 
     @Override
     public int countExistReservationByTime(Long id) {
-        String query = "SELECT EXISTS (select count(1) from reservation where time_id = ?)";
+        String query = "select count(*) from reservation where time_id = ?";
         return jdbcTemplate.queryForObject(query, Integer.class, id);
     }
 

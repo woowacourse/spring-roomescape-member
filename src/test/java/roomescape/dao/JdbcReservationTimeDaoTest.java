@@ -22,16 +22,18 @@ public class JdbcReservationTimeDaoTest {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private JdbcReservationTimeDaoImpl reservationTimeDao;
+    private ReservationTimeDao reservationTimeDao;
 
     @AfterEach
     void clearResource() {
         String sql1 = "DELETE FROM reservation";
         String sql2 = "DELETE FROM reservation_time";
         String sql3 = "DELETE FROM theme";
+        String sql4 = "DELETE FROM member";
         jdbcTemplate.update(sql1);
         jdbcTemplate.update(sql2);
         jdbcTemplate.update(sql3);
+        jdbcTemplate.update(sql4);
     }
 
     @DisplayName("시간이 주어졌을 때, db에 저장해야하고 저장된 id를 반환해야 한다.")
@@ -103,16 +105,18 @@ public class JdbcReservationTimeDaoTest {
 
     private void initData() {
         String sql1 = "INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '안녕, 자두야', '자두', 'https://jado.com');";
-        String sql2 = "INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00');";
-        String sql3 = "INSERT INTO reservation_time (id, start_at) VALUES (2, '11:00');";
-        String sql4 = "INSERT INTO reservation_time (id, start_at) VALUES (3, '12:00');";
-        String sql5 = "INSERT INTO reservation_time (id, start_at) VALUES (4, '13:00');";
-        String sql6 = "INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (1, '김덕배', '2025-04-24', 1, 1);";
+        String sql2 = "INSERT INTO member (id, name, email, password) VALUES (1, 'jenson', 'a@example.com', 'abc');";
+        String sql3 = "INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00');";
+        String sql4 = "INSERT INTO reservation_time (id, start_at) VALUES (2, '11:00');";
+        String sql5 = "INSERT INTO reservation_time (id, start_at) VALUES (3, '12:00');";
+        String sql6 = "INSERT INTO reservation_time (id, start_at) VALUES (4, '13:00');";
+        String sql7 = "INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES ('2025-04-24', 1, 1, 1);";
         jdbcTemplate.update(sql1);
         jdbcTemplate.update(sql2);
         jdbcTemplate.update(sql3);
         jdbcTemplate.update(sql4);
         jdbcTemplate.update(sql5);
         jdbcTemplate.update(sql6);
+        jdbcTemplate.update(sql7);
     }
 }

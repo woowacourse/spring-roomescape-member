@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 class ReservationTest {
 
     private Theme theme = new Theme(1L, "안녕 자두야", "안녕", "http://aa");
+    private Member member = new Member(1L, "jenson", "b@example.com", "abc");
 
     @DisplayName("현재 날짜로 예약을 생성할 때 과거 시간이라면 예약을 생성할 수 없다.")
     @Test
@@ -20,7 +21,7 @@ class ReservationTest {
         //given
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(9, 21));
         ReservationDate reservationDate = new ReservationDate(LocalDate.of(2025, 2, 5));
-        Reservation reservation = new Reservation(new Member("james"), reservationDate,
+        Reservation reservation = new Reservation(member, reservationDate,
             reservationTime, theme);
         LocalDateTime currentDateTime = LocalDateTime.of(2025, 2, 5, 9, 20);
 
@@ -38,7 +39,7 @@ class ReservationTest {
         //given
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(9, 21));
         ReservationDate reservationDate = new ReservationDate(LocalDate.of(2025, 2, 5));
-        Reservation reservation = new Reservation(new Member("james"), reservationDate,
+        Reservation reservation = new Reservation(member, reservationDate,
             reservationTime, theme);
         LocalDateTime currentDateTime = LocalDateTime.of(2025, 2, 5, 9, 22);
 

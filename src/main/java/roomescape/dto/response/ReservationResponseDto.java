@@ -8,7 +8,7 @@ public record ReservationResponseDto(long id, String name, String date,
     public static ReservationResponseDto from(Reservation reservation) {
         return new ReservationResponseDto(
             reservation.getId(),
-            reservation.getPersonName(),
+            reservation.getMemberName(),
             reservation.getDate().toString(),
             ReservationTimeResponseDto.from(reservation.getReservationTime()),
             ThemeResponseDto.from(reservation.getTheme())

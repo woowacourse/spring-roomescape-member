@@ -4,18 +4,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-public record ReservationRequestDto(String name, String date, Long timeId, Long themeId) {
+public record ReservationRequestDto(String date, Long themeId, Long timeId) {
 
     public ReservationRequestDto {
-        validateName(name);
         validateDate(date);
+        validateThemeId(themeId);
         validateTimeId(timeId);
-    }
-
-    private void validateName(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("잘못된 이름입니다.");
-        }
     }
 
     private void validateDate(String date) {
@@ -38,6 +32,12 @@ public record ReservationRequestDto(String name, String date, Long timeId, Long 
     private void validateTimeId(Long timeId) {
         if (timeId == null) {
             throw new IllegalArgumentException("잘못된 시간ID입니다.");
+        }
+    }
+
+    private void validateThemeId(Long themeId) {
+        if (themeId == null) {
+            throw new IllegalArgumentException("잘못된 테마ID입니다.");
         }
     }
 }

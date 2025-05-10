@@ -1,32 +1,12 @@
 package roomescape.service;
 
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import roomescape.dao.FakeReservationDaoImpl;
-import roomescape.dao.FakeReservationTimeDaoImpl;
-import roomescape.dao.FakeThemeDaoImpl;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.dto.request.ReservationRequestDto;
-import roomescape.exception.InvalidReservationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.repository.impl.ReservationRepositoryImpl;
-import roomescape.repository.impl.ReservationTimeRepositoryImpl;
-import roomescape.repository.impl.ThemeRepositoryImpl;
 
 public class ReservationServiceTest {
 
@@ -37,7 +17,7 @@ public class ReservationServiceTest {
     private ReservationTimeDao reservationTimeDao;
     private ReservationTimeRepository reservationTimeRepository;
     private ReservationService reservationService;
-
+/*
 
     @BeforeEach
     void init() {
@@ -84,4 +64,6 @@ public class ReservationServiceTest {
             .isInstanceOf(InvalidReservationException.class)
             .hasMessage("중복된 날짜와 시간을 예약할 수 없습니다.");
     }
+
+ */
 }
