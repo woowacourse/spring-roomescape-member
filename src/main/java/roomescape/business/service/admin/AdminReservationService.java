@@ -1,5 +1,6 @@
 package roomescape.business.service.admin;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.business.domain.member.Member;
@@ -13,6 +14,7 @@ import roomescape.persistence.MemberRepository;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
 import roomescape.persistence.ReservationTimeRepository;
+import roomescape.presentation.admin.dto.ReservationQueryCondition;
 import roomescape.presentation.admin.dto.AdminReservationRequestDto;
 import roomescape.presentation.member.dto.ReservationResponseDto;
 
@@ -58,5 +60,18 @@ public class AdminReservationService {
         if (reservationRepository.existsByReservation(reservation)) {
             throw new ReservationException("해당 날짜와 시간에 이미 예약이 존재합니다.");
         }
+    }
+
+    public List<ReservationResponseDto> getAllReservationsByCondition(ReservationQueryCondition condition) {
+        if (condition == null) {
+            return reservationRepository.findAll()
+                    .stream()
+                    .map(ReservationResponseDto::toResponse)
+                    .toList();
+        }
+        return reservationRepository.findAllByCondition(condition)
+                .stream()
+                .map(ReservationResponseDto::toResponse)
+                .toList();
     }
 }

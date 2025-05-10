@@ -94,8 +94,10 @@ function signup() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    const signupForm = document.getElementById('signup-form');
-    signupForm.addEventListener('submit', register);
+    if (document.getElementById('signup-form')) {
+        const signupForm = document.getElementById('signup-form');
+        signupForm.addEventListener('submit', register);
+    }
 });
 
 function register(event) {

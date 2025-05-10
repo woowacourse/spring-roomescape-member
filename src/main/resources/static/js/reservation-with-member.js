@@ -66,6 +66,12 @@ function fetchMembers() {
 
 function populateSelect(selectId, options, textProperty) {
   const select = document.getElementById(selectId);
+  const defaultOption = document.createElement('option');
+  defaultOption.textContent = '미선택';
+  defaultOption.value = '';
+  defaultOption.selected = true;
+  select.appendChild(defaultOption);
+
   options.forEach(optionData => {
     const option = document.createElement('option');
     option.value = optionData.id;
@@ -82,6 +88,8 @@ function createSelect(options, defaultText, selectId, textProperty) {
   // 기본 옵션 추가
   const defaultOption = document.createElement('option');
   defaultOption.textContent = defaultText;
+  defaultOption.value = '';
+  defaultOption.selected = true;
   select.appendChild(defaultOption);
 
   // 넘겨받은 옵션을 바탕으로 드롭다운 메뉴 아이템 생성
@@ -192,11 +200,7 @@ function applyFilter(event) {
   const dateFrom = document.getElementById('date-from').value;
   const dateTo = document.getElementById('date-to').value;
 
-  /*
-  TODO: [6단계] 예약 검색 - 조건에 따른 예약 조회 API 호출
-        요청 포맷에 맞게 설정
-  */
-  fetch('/', { // 예약 검색 API 호출
+  fetch(`/admin/reservations?themeId=${themeId}&memberId=${memberId}&dateFrom=${dateFrom}&dateTo=${dateTo}`, { // 예약 검색 API 호출
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

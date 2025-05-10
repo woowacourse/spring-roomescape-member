@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.business.domain.reservation.Reservation;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.entity.ReservationEntity;
+import roomescape.presentation.admin.dto.ReservationQueryCondition;
 
 @Repository
 public class FakeReservationRepository implements ReservationRepository, FakeRepository {
@@ -61,6 +62,17 @@ public class FakeReservationRepository implements ReservationRepository, FakeRep
     public boolean existsByThemeId(Long id) {
         return reservations.stream()
                 .anyMatch(reservation -> reservation.getThemeEntity().getId().equals(id));
+    }
+
+    @Override
+    public List<Reservation> findAllByCondition(ReservationQueryCondition condition) {
+        return reservations.stream()
+                .filter(reservation -> reservation.getDate().equals(condition.dateFrom().toString()))
+                .filter(reservation -> reservation.getDate().equals(condition.dateTo().toString()))
+                .filter(reservation -> reservation.getMemberEntity().getId().equals(condition.memberId()))
+                .filter(reservation -> reservation.getThemeEntity().getId().equals(condition.themeId()))
+                .map(ReservationEntity::toDomain)
+                .toList();
     }
 
     @Override
