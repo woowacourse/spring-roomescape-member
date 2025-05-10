@@ -25,6 +25,16 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findByMemberIdAndThemeIdAndDate(Long memberId, Long themeId, LocalDate dateFrom,
+                                                             LocalDate dateTo) {
+        return reservations.stream()
+                .filter(reservation -> matchMemberId(reservation, memberId))
+                .filter(reservation -> matchThemeId(reservation, themeId))
+                .filter(reservation -> matchDateRange(reservation, dateFrom, dateTo))
+                .toList();
+    }
+
+    @Override
     public boolean existByReservationTimeId(Long timeId) {
         return reservations.stream()
                 .anyMatch(reservation -> Objects.equals(reservation.getTimeId(), timeId));
@@ -73,5 +83,21 @@ public class FakeReservationRepository implements ReservationRepository {
         return reservations.stream()
                 .filter(reservation -> reservation.getDate().equals(date) && reservation.getThemeId().equals(themeId))
                 .toList();
+    }
+
+    private boolean matchMemberId(Reservation reservation, Long memberId) {
+        return memberId == null || reservation.getMemberId().equals(memberId);
+    }
+
+    private boolean matchThemeId(Reservation reservation, Long themeId) {
+        return themeId == null || reservation.getThemeId().equals(themeId);
+    }
+
+    private boolean matchDateRange(Reservation reservation, LocalDate dateFrom, LocalDate dateTo) {
+        if (dateFrom == null && dateTo == null) return true;
+        LocalDate reservationDate = reservation.getDate();
+        if (dateFrom != null && reservationDate.isBefore(dateFrom)) return false;
+        if (dateTo != null && reservationDate.isAfter(dateTo)) return false;
+        return true;
     }
 }
