@@ -35,9 +35,6 @@ public class AuthService {
 
     public MemberInfo getMemberInfo(Cookie[] cookies) {
         Member member = memberService.get(jwtTokenExtractor.extractMemberIdFromCookie(cookies));
-        return new MemberInfo(
-                member.getId().getValue(),
-                member.getName().getValue(),
-                member.getEmail().getValue());
+        return MemberConverter.toDto(member);
     }
 }

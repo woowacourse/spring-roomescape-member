@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.utils.UriFactory;
 import roomescape.member.auth.dto.MemberInfo;
 import roomescape.reservation.controller.dto.AvailableReservationTimeWebResponse;
+import roomescape.reservation.controller.dto.CreateReservationByAdminWebRequest;
 import roomescape.reservation.controller.dto.CreateReservationWebRequest;
 import roomescape.reservation.controller.dto.ReservationWebResponse;
 import roomescape.reservation.service.ReservationService;
@@ -23,26 +24,26 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(ReservationController.BASE_PATH)
+@RequestMapping
 public class ReservationController {
 
     public static final String BASE_PATH = "/reservations";
 
     private final ReservationService reservationService;
 
-    @GetMapping
+    @GetMapping(BASE_PATH)
     public List<ReservationWebResponse> getAll() {
         return reservationService.getAll();
     }
 
-    @GetMapping("/times")
+    @GetMapping(BASE_PATH + "/times")
     public List<AvailableReservationTimeWebResponse> getAvailable(
             @RequestParam final LocalDate date,
             @RequestParam final Long themeId) {
         return reservationService.getAvailable(date, themeId);
     }
 
-    @PostMapping
+    @PostMapping(BASE_PATH)
     public ResponseEntity<ReservationWebResponse> create(
             @RequestBody final CreateReservationWebRequest createReservationWebRequest,
             MemberInfo memberInfo) {
@@ -52,7 +53,17 @@ public class ReservationController {
                 .body(reservationWebResponse);
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/admin" + BASE_PATH)
+    public ResponseEntity<ReservationWebResponse> createReservationByAdmin(
+            @RequestBody final CreateReservationByAdminWebRequest createReservationByAdminWebRequest,
+            MemberInfo memberInfo) {
+        final ReservationWebResponse reservationWebResponse = reservationService.create(createReservationByAdminWebRequest);
+        final URI location = UriFactory.buildPath(BASE_PATH, String.valueOf(reservationWebResponse.id()));
+        return ResponseEntity.created(location)
+                .body(reservationWebResponse);
+    }
+
+    @DeleteMapping(BASE_PATH + "/{id}")
     public ResponseEntity<Void> delete(@PathVariable final Long id) {
         reservationService.delete(id);
         return ResponseEntity.noContent().build();
