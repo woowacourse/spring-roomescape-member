@@ -20,7 +20,7 @@ public class ReservationTimeH2Dao implements ReservationTimeDao {
 
     private static final RowMapper<ReservationTime> DEFAULT_ROW_MAPPER = (resultSet, rowNum) ->
             ReservationTime.builder()
-                    .id(resultSet.getLong("time_id"))
+                    .id(resultSet.getLong("id"))
                     .startAt(resultSet.getTime("start_at").toLocalTime())
                     .build();
 

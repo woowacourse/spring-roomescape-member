@@ -19,10 +19,10 @@ public class ReservationThemeH2Dao implements ReservationThemeDao {
 
     private static final RowMapper<ReservationTheme> DEFAULT_ROW_MAPPER = (resultSet, rowNum) ->
             ReservationTheme.builder()
-                    .id(resultSet.getLong("theme_id"))
-                    .name(resultSet.getString("th_name"))
-                    .description(resultSet.getString("th_description"))
-                    .thumbnail(resultSet.getString("th_thumbnail"))
+                    .id(resultSet.getLong("id"))
+                    .name(resultSet.getString("name"))
+                    .description(resultSet.getString("description"))
+                    .thumbnail(resultSet.getString("thumbnail"))
                     .build();
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
