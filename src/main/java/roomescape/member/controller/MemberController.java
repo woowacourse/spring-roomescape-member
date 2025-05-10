@@ -1,5 +1,6 @@
 package roomescape.member.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class MemberController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void signup(@RequestBody MemberRequest request) {
+    public void signup(@RequestBody @Valid MemberRequest request) {
         memberService.save(request);
     }
 }
