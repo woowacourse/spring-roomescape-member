@@ -46,6 +46,28 @@ public class JdbcReservationRepository implements ReservationRepository {
             )
     );
 
+    private static final String RESERVATION_JOIN_QUERY =
+            """               
+            SELECT
+                r.id as reservation_id,
+                m.name as name,
+                m.email as email,
+                m.password as password,
+                m.role as role,
+                m.id as member_id,
+                r.date,
+                t.id as time_id,
+                t.start_at as time_value,
+                th.id as theme_id,
+                th.name as theme_name,
+                th.description,
+                th.thumbnail
+            FROM reservation as r
+            INNER JOIN reservation_time as t ON r.time_id = t.id 
+            INNER JOIN theme as th ON th.id = r.theme_id 
+            INNER JOIN member as m ON m.id = r.member_id 
+            """;
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
@@ -69,27 +91,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
-        String sql = """               
-                SELECT
-                    r.id as reservation_id,
-                    m.name as name,
-                    m.email as email,
-                    m.password as password,
-                    m.role as role,
-                    m.id as member_id,
-                    r.date,
-                    t.id as time_id,
-                    t.start_at as time_value,
-                    th.id as theme_id,
-                    th.name as theme_name,
-                    th.description,
-                    th.thumbnail
-                FROM reservation as r
-                INNER JOIN reservation_time as t ON r.time_id = t.id 
-                INNER JOIN theme as th ON th.id = r.theme_id 
-                INNER JOIN member as m ON m.id = r.member_id                
-                WHERE th.id = ? AND r.date = ?
-                """;
+        String sql = RESERVATION_JOIN_QUERY + "WHERE th.id = ? AND r.date = ?";
 
         return jdbcTemplate.query(sql, ROW_MAPPER, themeId, Date.valueOf(date));
     }
@@ -104,77 +106,16 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = """               
-                SELECT
-                    r.id as reservation_id,
-                    m.name as name,
-                    m.email as email,
-                    m.password as password,
-                    m.role as role,
-                    m.id as member_id,
-                    r.date,
-                    t.id as time_id,
-                    t.start_at as time_value,
-                    th.id as theme_id,
-                    th.name as theme_name,
-                    th.description,
-                    th.thumbnail
-                FROM reservation as r
-                INNER JOIN reservation_time as t ON r.time_id = t.id 
-                INNER JOIN theme as th ON th.id = r.theme_id 
-                INNER JOIN member as m ON m.id = r.member_id
-                """;
-
-        return jdbcTemplate.query(sql, ROW_MAPPER);
+        return jdbcTemplate.query(RESERVATION_JOIN_QUERY, ROW_MAPPER);
     }
 
     @Override
     public List<Reservation> findByMemberIdAndThemeIdAndDate(Long memberId, Long themeId, LocalDate dateFrom,
                                                              LocalDate dateTo) {
-        String sql = """               
-                SELECT
-                    r.id as reservation_id,
-                    m.name as name,
-                    m.email as email,
-                    m.password as password,
-                    m.role as role,
-                    m.id as member_id,
-                    r.date,
-                    t.id as time_id,
-                    t.start_at as time_value,
-                    th.id as theme_id,
-                    th.name as theme_name,
-                    th.description,
-                    th.thumbnail
-                FROM reservation as r
-                INNER JOIN reservation_time as t ON r.time_id = t.id 
-                INNER JOIN theme as th ON th.id = r.theme_id 
-                INNER JOIN member as m ON m.id = r.member_id
-                WHERE 
-                """;
+        List<Object> params = createParams(memberId, themeId, dateFrom, dateTo);
+        String whereClause = createWhereClause(memberId, themeId, dateFrom, dateTo);
 
-        List<Object> params = new ArrayList<>();
-        boolean hasCondition = false;
-        if (memberId != null) {
-            params.add(memberId);
-            sql = addReservationMemberCondition(sql, hasCondition);
-            hasCondition=true;
-        }
-        if (themeId != null) {
-            params.add(themeId);
-            sql = addReservationThemeCondition(sql, hasCondition);
-            hasCondition=true;
-        }
-        if (dateFrom != null) {
-            params.add(Date.valueOf(dateFrom));
-            sql = addReservationDateFromCondition(sql, hasCondition);
-            hasCondition=true;
-        }
-        if (dateTo != null) {
-            params.add(Date.valueOf(dateTo));
-            sql = addReservationDateToCondition(sql, hasCondition);
-        }
-        return jdbcTemplate.query(sql, ROW_MAPPER, params.toArray());
+        return jdbcTemplate.query(RESERVATION_JOIN_QUERY + whereClause, ROW_MAPPER, params.toArray());
     }
 
     @Override
@@ -239,6 +180,44 @@ public class JdbcReservationRepository implements ReservationRepository {
             return sql;
         }
         sql += " r.date <= ? ";
+        return sql;
+    }
+
+    private List<Object> createParams(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        List<Object> params = new ArrayList<>();
+        if (memberId != null) {
+            params.add(memberId);
+        }
+        if (themeId != null) {
+            params.add(themeId);
+        }
+        if (dateFrom != null) {
+            params.add(Date.valueOf(dateFrom));
+        }
+        if (dateTo != null) {
+            params.add(Date.valueOf(dateTo));
+        }
+        return params;
+    }
+
+    private String createWhereClause(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = "WHERE ";
+        boolean hasCondition = false;
+        if (memberId != null) {
+            sql = addReservationMemberCondition(sql, hasCondition);
+            hasCondition = true;
+        }
+        if (themeId != null) {
+            sql = addReservationThemeCondition(sql, hasCondition);
+            hasCondition = true;
+        }
+        if (dateFrom != null) {
+            sql = addReservationDateFromCondition(sql, hasCondition);
+            hasCondition = true;
+        }
+        if (dateTo != null) {
+            sql = addReservationDateToCondition(sql, hasCondition);
+        }
         return sql;
     }
 
