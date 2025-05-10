@@ -1,7 +1,6 @@
 package roomescape.application;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -27,9 +26,8 @@ public class ThemeService {
         return ThemeDto.from(themes);
     }
 
-    public ThemeDto registerTheme(@Valid ThemeCreateDto themeCreateDto) {
-        Theme themeWithoutId = Theme.withoutId(themeCreateDto.name(), themeCreateDto.description(),
-                themeCreateDto.thumbnail());
+    public ThemeDto registerTheme(@Valid ThemeCreateDto createDto) {
+        Theme themeWithoutId = Theme.withoutId(createDto.name(), createDto.description(), createDto.thumbnail());
         Long id = themeRepository.save(themeWithoutId);
         Theme theme = Theme.assignId(id, themeWithoutId);
         return ThemeDto.from(theme);
@@ -47,7 +45,7 @@ public class ThemeService {
         }
     }
 
-    public ThemeDto getThemeById(@NotNull Long id) {
+    public ThemeDto getThemeById(Long id) {
         Theme theme = themeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("id에 해당하는 테마가 없습니다."));
         return ThemeDto.from(theme);
