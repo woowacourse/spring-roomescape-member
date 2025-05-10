@@ -23,7 +23,7 @@ import roomescape.presentation.dto.response.ReservationTimeResponse;
 import roomescape.domain.ReservationTime;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-public class ReservationTimeServiceTest extends BaseTest {
+class ReservationTimeServiceTest extends BaseTest {
 
     @Autowired
     private ReservationTimeService reservationTimeService;

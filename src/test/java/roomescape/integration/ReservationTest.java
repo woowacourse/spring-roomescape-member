@@ -23,7 +23,7 @@ import roomescape.domain.Theme;
 import roomescape.infrastructure.repository.ThemeRepository;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-public class ReservationTest extends BaseTest {
+class ReservationTest extends BaseTest {
 
     @LocalServerPort
     private int port;
@@ -31,14 +31,13 @@ public class ReservationTest extends BaseTest {
     @Autowired
     private ThemeRepository themeRepository;
 
-    private Theme theme;
     private Map<String, Object> reservation;
     private Map<String, String> reservationTime;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        theme = themeRepository.save(Theme.create("테마1", "설명1", "썸네일1"));
+        themeRepository.save(Theme.create("테마1", "설명1", "썸네일1"));
         reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2025-08-05");

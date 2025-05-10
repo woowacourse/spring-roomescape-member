@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-public class ReservationServiceTest extends BaseTest {
+class ReservationServiceTest extends BaseTest {
 
     @Autowired
     private ReservationService reservationService;

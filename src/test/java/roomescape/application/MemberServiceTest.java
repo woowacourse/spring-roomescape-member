@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-public class MemberServiceTest extends BaseTest {
+class MemberServiceTest extends BaseTest {
 
     @Autowired
     private MemberService memberService;

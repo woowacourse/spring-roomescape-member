@@ -24,7 +24,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.ReservationTime;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-public class ThemeServiceTest extends BaseTest {
+class ThemeServiceTest extends BaseTest {
 
     @Autowired
     private ThemeService themeService;

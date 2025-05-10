@@ -14,7 +14,7 @@ import roomescape.domain.exception.PastReservationException;
 import roomescape.fake.FixedCurrentTimeService;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-public class ReservationDateTimeTest {
+class ReservationDateTimeTest {
 
     @Test
     void 현재_이전_시간에는_예약할_수_없다() {

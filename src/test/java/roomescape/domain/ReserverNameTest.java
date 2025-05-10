@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.domain.exception.ReserverNameEmptyException;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-public class ReserverNameTest {
+class ReserverNameTest {
 
     @ParameterizedTest
     @NullSource
