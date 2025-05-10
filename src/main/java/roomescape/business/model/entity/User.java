@@ -2,7 +2,6 @@ package roomescape.business.model.entity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import roomescape.business.model.vo.Email;
 import roomescape.business.model.vo.Id;
@@ -10,8 +9,9 @@ import roomescape.business.model.vo.Password;
 import roomescape.business.model.vo.UserName;
 import roomescape.business.model.vo.UserRole;
 
+import java.util.Objects;
+
 @ToString(exclude = "password")
-@EqualsAndHashCode(exclude = "id")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class User {
 
@@ -51,5 +51,17 @@ public class User {
 
     public String role() {
         return userRole.name();
+    }
+
+    @Override
+    public final boolean equals(final Object o) {
+        if (!(o instanceof final User user)) return false;
+
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

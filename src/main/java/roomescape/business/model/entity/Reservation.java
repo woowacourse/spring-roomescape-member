@@ -1,16 +1,15 @@
 package roomescape.business.model.entity;
 
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import roomescape.business.model.vo.Id;
 import roomescape.business.model.vo.ReservationDate;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @ToString
-@EqualsAndHashCode(exclude = "id")
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class Reservation {
 
@@ -54,5 +53,17 @@ public class Reservation {
 
     public User reserver() {
         return user;
+    }
+
+    @Override
+    public final boolean equals(final Object o) {
+        if (!(o instanceof final Reservation that)) return false;
+
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

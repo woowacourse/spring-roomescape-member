@@ -2,13 +2,13 @@ package roomescape.business.model.entity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import roomescape.business.model.vo.Id;
 import roomescape.business.model.vo.ThemeName;
 
+import java.util.Objects;
+
 @ToString
-@EqualsAndHashCode(exclude = "id")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Theme {
 
@@ -39,5 +39,17 @@ public class Theme {
 
     public String thumbnail() {
         return thumbnail;
+    }
+
+    @Override
+    public final boolean equals(final Object o) {
+        if (!(o instanceof final Theme theme)) return false;
+
+        return Objects.equals(id, theme.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
