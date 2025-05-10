@@ -1,5 +1,6 @@
 package roomescape.member.infrastructure.db;
 
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -15,5 +16,10 @@ public class MemberDbRepository implements MemberRepository {
     @Override
     public Optional<Member> findByEmailAndPassword(String email, String password) {
         return memberDao.selectByEmailAndPassword(email, password);
+    }
+
+    @Override
+    public List<Member> getAll() {
+        return memberDao.getAll();
     }
 }

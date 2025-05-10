@@ -30,7 +30,6 @@ public class UserReservationController {
             @AuthenticationPrincipal AuthenticatedMember authenticatedMember
     ) {
         String reservationName = authenticatedMember.name();
-        System.out.println(reservationName);
         ReservationServiceResponse response = userReservationService.create(request.toServiceRequest(reservationName));
         return ReservationResponse.from(response);
     }

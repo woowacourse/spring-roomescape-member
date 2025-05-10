@@ -1,5 +1,6 @@
 package roomescape.member.infrastructure.db;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,6 @@ public class MemberH2Dao implements MemberDao {
                     .id(resultSet.getLong("id"))
                     .name(resultSet.getString("name"))
                     .email(resultSet.getString("email"))
-                    .password(resultSet.getString("password"))
                     .role(Role.valueOf(resultSet.getString("role")))
                     .build();
 
@@ -28,7 +28,7 @@ public class MemberH2Dao implements MemberDao {
     @Override
     public Optional<Member> selectByEmailAndPassword(String email, String password) {
         String selectQuery = """
-                SELECT id, name, email, password, role
+                SELECT id, name, email, role
                 FROM member
                 WHERE member.email = :email AND member.password = :password
                 """;
@@ -41,5 +41,14 @@ public class MemberH2Dao implements MemberDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Member> getAll() {
+        String selectQuery = """
+                SELECT id, name, email, role
+                FROM member
+                """;
+        return namedParameterJdbcTemplate.query(selectQuery, DEFAULT_ROW_MAPPER);
     }
 }
