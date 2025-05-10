@@ -1,26 +1,26 @@
-package roomescape.global.resolver;
+package roomescape.auth.controller.resolver;
 
-import static roomescape.auth.controller.LoginController.TOKEN_COOKIE_NAME;
-
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Optional;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.auth.controller.resolver.annotation.LoginMemberId;
+import roomescape.auth.infrastructure.JwtPayload;
 import roomescape.auth.infrastructure.JwtTokenProvider;
-import roomescape.global.resolver.annotation.LoginMemberId;
+import roomescape.auth.infrastructure.TokenExtractor;
 
 @Component
 public class LoginMemberIdArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final TokenExtractor tokenExtractor;
 
-    public LoginMemberIdArgumentResolver(JwtTokenProvider jwtTokenProvider) {
+    public LoginMemberIdArgumentResolver(JwtTokenProvider jwtTokenProvider, TokenExtractor tokenExtractor) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.tokenExtractor = tokenExtractor;
     }
 
     @Override
@@ -32,23 +32,12 @@ public class LoginMemberIdArgumentResolver implements HandlerMethodArgumentResol
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        String token = extractTokenByCookies(request)
+        String token = tokenExtractor.extractTokenByCookies(request)
                 .orElseThrow(() -> new IllegalArgumentException("인증 토큰이 쿠키에 존재하지 않습니다."));
 
-        jwtTokenProvider.validateToken(token);
+        JwtPayload payload = jwtTokenProvider.getPayload(token);
 
-        return Long.parseLong(jwtTokenProvider.getSubject(token));
+        return payload.memberId();
     }
 
-    private Optional<String> extractTokenByCookies(HttpServletRequest request) {
-        if (request.getCookies() == null) {
-            return Optional.empty();
-        }
-        for (Cookie cookie : request.getCookies()) {
-            if (cookie.getName().equals(TOKEN_COOKIE_NAME)) {
-                return Optional.of(cookie.getValue());
-            }
-        }
-        return Optional.empty();
-    }
 }

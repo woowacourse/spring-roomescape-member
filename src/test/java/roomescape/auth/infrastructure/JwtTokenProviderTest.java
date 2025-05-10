@@ -48,7 +48,7 @@ class JwtTokenProviderTest {
         );
     }
 
-    @DisplayName("토큰의 subject 데이터를 반환한다")
+    @DisplayName("토큰의 데이터를 반환한다")
     @Test
     void get_subject_test() {
         // given
@@ -62,11 +62,15 @@ class JwtTokenProviderTest {
         String token = jwtTokenProvider.createToken(member);
 
         // when
-        String subject = jwtTokenProvider.getSubject(token);
+        JwtPayload payload = jwtTokenProvider.getPayload(token);
 
         // then
-        long actual = Long.parseLong(subject);
-        assertThat(actual).isEqualTo(id);
+        assertAll(
+                () -> assertThat(payload.memberId()).isEqualTo(id),
+                () -> assertThat(payload.name()).isEqualTo(name),
+                () -> assertThat(payload.email()).isEqualTo(email),
+                () -> assertThat(payload.role()).isEqualTo(role)
+        );
     }
 
     @DisplayName("토큰이 만료되었으면 예외가 발생한다")
@@ -81,7 +85,7 @@ class JwtTokenProviderTest {
                 .compact();
 
         // when & then
-        assertThatThrownBy(() -> jwtTokenProvider.validateToken(expiredToken))
+        assertThatThrownBy(() -> jwtTokenProvider.getPayload(expiredToken))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("만료된 토큰 입니다.");
     }
@@ -99,7 +103,7 @@ class JwtTokenProviderTest {
                 .compact();
 
         // when & then
-        assertThatThrownBy(() -> jwtTokenProvider.validateToken(invalidSignatureToken))
+        assertThatThrownBy(() -> jwtTokenProvider.getPayload(invalidSignatureToken))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("유효하지 않은 토큰입니다.");
     }
