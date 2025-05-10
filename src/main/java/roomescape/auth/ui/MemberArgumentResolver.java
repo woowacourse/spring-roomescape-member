@@ -19,6 +19,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final AuthTokenProvider authTokenProvider;
     private final AuthService authService;
 
+    // TODO: 파라미터 어노테이션으로 개선. parameter.hasParameterAnnotation(xxxx.class);
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
         return parameter.getParameterType().equals(Member.class);
