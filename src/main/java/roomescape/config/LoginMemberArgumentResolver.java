@@ -7,7 +7,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.Member;
-import roomescape.dto.request.LoginMember;
+import roomescape.dto.LoginMember;
 import roomescape.service.LoginService;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -30,6 +30,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         String token = JwtExtractor.getTokenFromRequest(request);
         Member member = loginService.getLoginMemberByToken(token);
         return new LoginMember(member.getId(), member.getName(), member.getEmail(),
-            member.getPassword(), member.getRole());
+            member.getRole());
     }
 }

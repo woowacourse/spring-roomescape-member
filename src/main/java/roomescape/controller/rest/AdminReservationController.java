@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.rest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.AdminReservationRequest;
-import roomescape.dto.request.LoginMember;
+import roomescape.dto.LoginMember;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
 

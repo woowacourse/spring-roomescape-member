@@ -1,18 +1,18 @@
-package roomescape.controller;
+package roomescape.controller.rest;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.LoginRequest;
-import roomescape.dto.request.LoginMember;
+import roomescape.dto.LoginMember;
 import roomescape.service.LoginService;
 
-@Controller
+@RestController
 @RequestMapping("/login")
 public class LoginController {
 
@@ -22,13 +22,8 @@ public class LoginController {
         this.loginService = loginService;
     }
 
-    @GetMapping
-    public String home() {
-        return "login";
-    }
-
     @PostMapping
-    public ResponseEntity<HttpServletResponse> login(@RequestBody LoginRequest request,
+    public ResponseEntity<Void> login(@RequestBody LoginRequest request,
         HttpServletResponse response) {
         String accessToken = loginService.login(request);
         Cookie cookie = new Cookie("token", accessToken);

@@ -15,7 +15,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.AdminReservationRequest;
-import roomescape.dto.request.LoginMember;
+import roomescape.dto.LoginMember;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.ResourceNotExistException;

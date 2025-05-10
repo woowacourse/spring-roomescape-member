@@ -3,7 +3,7 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
-import roomescape.dto.MemberResponse;
+import roomescape.dto.response.MemberResponse;
 
 @Service
 public class MemberService {

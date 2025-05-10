@@ -16,7 +16,8 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest webRequest, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest webRequest, HttpServletResponse response,
+        Object handler) throws Exception {
         String token = JwtExtractor.getTokenFromRequest(webRequest);
         Member member = loginService.getLoginMemberByToken(token);
         if (member == null || !member.getRole().equals(Role.ADMIN)) {
