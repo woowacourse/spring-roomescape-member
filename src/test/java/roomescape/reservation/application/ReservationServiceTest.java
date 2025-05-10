@@ -1,12 +1,12 @@
 package roomescape.reservation.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.fixture.MemberFixture.NOT_SAVED_MEMBER_1;
-import static roomescape.fixture.MemberFixture.NOT_SAVED_MEMBER_2;
-import static roomescape.fixture.ReservationTimeFixture.NOT_SAVED_RESERVATION_TIME_1;
-import static roomescape.fixture.ReservationTimeFixture.NOT_SAVED_RESERVATION_TIME_2;
-import static roomescape.fixture.ThemeFixture.NOT_SAVED_THEME_1;
-import static roomescape.fixture.ThemeFixture.NOT_SAVED_THEME_2;
+import static roomescape.fixture.domain.MemberFixture.NOT_SAVED_MEMBER_1;
+import static roomescape.fixture.domain.MemberFixture.NOT_SAVED_MEMBER_2;
+import static roomescape.fixture.domain.ReservationTimeFixture.NOT_SAVED_RESERVATION_TIME_1;
+import static roomescape.fixture.domain.ReservationTimeFixture.NOT_SAVED_RESERVATION_TIME_2;
+import static roomescape.fixture.domain.ThemeFixture.NOT_SAVED_THEME_1;
+import static roomescape.fixture.domain.ThemeFixture.NOT_SAVED_THEME_2;
 
 import java.time.LocalDate;
 import org.assertj.core.api.Assertions;
@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.exception.resource.AlreadyExistException;
 import roomescape.exception.resource.ResourceNotFoundException;
-import roomescape.fixture.ThemeFixture;
+import roomescape.fixture.domain.ThemeFixture;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberCommandRepository;
 import roomescape.member.domain.MemberQueryRepository;

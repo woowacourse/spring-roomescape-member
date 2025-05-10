@@ -1,4 +1,4 @@
-package roomescape.fixture;
+package roomescape.fixture.domain;
 
 import roomescape.auth.domain.AuthRole;
 import roomescape.member.domain.Member;

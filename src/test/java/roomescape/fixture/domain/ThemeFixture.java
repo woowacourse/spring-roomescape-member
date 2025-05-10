@@ -1,4 +1,4 @@
-package roomescape.fixture;
+package roomescape.fixture.domain;
 
 import roomescape.theme.domain.Theme;
 
