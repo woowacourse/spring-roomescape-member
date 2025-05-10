@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.admin.ReserveByAdminRequest;
+import roomescape.admin.controller.request.ReserveByAdminRequest;
 import roomescape.member.domain.Member;
 import roomescape.member.service.MemberService;
 import roomescape.reservation.controller.request.ReserveByUserRequest;

@@ -1,4 +1,4 @@
-package roomescape.member.interceptor;
+package roomescape.auth.web.interceptor;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.member.infrastructure.jwt.JwtHandler;
+import roomescape.auth.infrastructure.jwt.JwtHandler;
 
 @RequiredArgsConstructor
 @Component

@@ -1,4 +1,4 @@
-package roomescape.member.resolver;
+package roomescape.auth.web.resolver;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

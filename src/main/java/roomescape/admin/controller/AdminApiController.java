@@ -1,4 +1,4 @@
-package roomescape.admin;
+package roomescape.admin.controller;
 
 import static roomescape.reservation.controller.response.ReservationSuccessCode.RESERVE;
 
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.admin.controller.request.ReserveByAdminRequest;
 import roomescape.global.response.ApiResponse;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
