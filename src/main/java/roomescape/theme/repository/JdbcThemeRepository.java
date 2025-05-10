@@ -86,7 +86,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     public List<Theme> findAll() {
-        String sql = "SELECT * FROM theme";
+        String sql = "SELECT id AS theme_id, name AS theme_name, description AS theme_description, thumbnail AS theme_thumbnail FROM theme";
 
         return jdbcTemplate.query(sql, RowMapperManager.themeRowMapper);
     }
