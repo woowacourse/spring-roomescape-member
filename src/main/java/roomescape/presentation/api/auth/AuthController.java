@@ -16,10 +16,12 @@ import roomescape.presentation.support.methodresolver.AuthInfo;
 @RestController
 public class AuthController {
 
+    private static final String TOKEN_COOKIE_KEY = "token";
+
     private final AuthService authService;
 
     @Value("${security.jwt.token.expire-length}")
-    private Duration validityDuration;
+    private Duration tokenCookieDuration;
 
     public AuthController(AuthService authService) {
         this.authService = authService;
@@ -28,7 +30,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest) {
         LoginResult loginResult = authService.login(loginRequest.toServiceParam());
-        ResponseCookie jwtCookie = createCookie("token", loginResult.token(), validityDuration.toMillis());
+        ResponseCookie jwtCookie = createCookie(TOKEN_COOKIE_KEY, loginResult.token(), tokenCookieDuration);
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .build();
@@ -41,13 +43,13 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
-        ResponseCookie jwtCookie = createCookie("token", "", 0);
+        ResponseCookie jwtCookie = createCookie(TOKEN_COOKIE_KEY, "", Duration.ZERO);
         return ResponseEntity.noContent()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .build();
     }
 
-    private ResponseCookie createCookie(String name, String value, long maxAge) {
+    private ResponseCookie createCookie(String name, String value, Duration maxAge) {
         return ResponseCookie.from(name, value)
                 .httpOnly(true)
                 .secure(false) //https 적용전 임시
