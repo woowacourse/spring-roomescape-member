@@ -4,7 +4,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CookieUtility {
 
     public Optional<Cookie> findCookie(HttpServletRequest request, String key) {
