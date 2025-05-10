@@ -6,7 +6,7 @@ import roomescape.common.exception.LoginException;
 import roomescape.common.util.JwtTokenContainer;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
-import roomescape.member.dto.LoginCheckResponse;
+import roomescape.member.dto.LoginMember;
 import roomescape.member.dto.LoginRequest;
 
 @Service
@@ -29,9 +29,10 @@ public class LoginService {
         return jwtTokenContainer.createJwtToken(loginMember.get());
     }
 
-    public LoginCheckResponse loginCheck(String token) {
+    public LoginMember loginCheck(String token) {
         jwtTokenContainer.validateToken(token);
         String name = jwtTokenContainer.getMemberName(token);
-        return new LoginCheckResponse(name);
+        Long memberId = jwtTokenContainer.getMemberId(token);
+        return new LoginMember(memberId, name);
     }
 }
