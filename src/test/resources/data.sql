@@ -10,6 +10,8 @@ VALUES (1, '테마1', '설명1', 'thumbnail1.jpg'),
 
 INSERT INTO member(name, email, password, role)
 VALUES ('체체', 'email@email.com', 'password', 'USER');
+INSERT INTO member(name, email, password, role)
+VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN');
 
 INSERT INTO reservation(date, time_id, theme_id, member_id)
 VALUES ('2025-04-25', 1, 1, 1),

@@ -1,11 +1,13 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationCreateRequest;
+import roomescape.dto.request.ReservationSearchRequest;
+import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.ReservationDuplicateException;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,5 +62,28 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.create(request, member))
                 .isInstanceOf(ReservationDuplicateException.class)
                 .hasMessage("이미 존재하는 예약입니다.");
+    }
+
+    @DisplayName("테마와 멤버 날짜로 예약 목록을 조회한다.")
+    @Test
+    void findThemeAndMemberAndDateTest() {
+
+        // given
+        final Reservation reservation = Reservation.load(1L, LocalDate.of(2025, 4, 25),
+                new ReservationTime(1L, LocalTime.of(10, 10)), new Theme(1L, "test", "test", "test"),
+                new Member(1L, "test", "test@email.com", "password", MemberRole.USER));
+        final List<Reservation> reservations = List.of(reservation);
+        final ReservationSearchRequest reservationSearchRequest = new ReservationSearchRequest(1L, 1L,
+                LocalDate.of(2025, 4, 25), LocalDate.of(2025, 4, 28));
+
+        // when
+        when(reservationDao.findByThemeAndMemberAndDate(1L, 1L, LocalDate.of(2025, 4, 25),
+                LocalDate.of(2025, 4, 28))).thenReturn(reservations);
+        final List<ReservationResponse> reservationResponses = reservationService.findByThemeAndMemberAndDate(
+                reservationSearchRequest);
+
+        // then
+        assertThat(reservationResponses.size()).isEqualTo(1);
+
     }
 }

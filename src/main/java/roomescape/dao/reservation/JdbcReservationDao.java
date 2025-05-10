@@ -140,4 +140,39 @@ public class JdbcReservationDao implements ReservationDao {
         final Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
     }
+
+    @Override
+    public List<Reservation> findByThemeAndMemberAndDate(
+            final Long themeId,
+            final Long memberId,
+            final LocalDate dateFrom,
+            final LocalDate dateTo) {
+
+        final String sql = """
+                SELECT
+                    r.id as reservation_id,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description as theme_description,
+                    th.thumbnail as theme_thumbnail,
+                    me.id as member_id,
+                    me.name as member_name,
+                    me.email as member_email,
+                    me.password as member_password,
+                    me.role as member_role
+                FROM reservation r
+                INNER JOIN reservation_time t
+                    ON r.time_id = t.id
+                INNER JOIN theme th
+                    ON r.theme_id = th.id
+                INNER JOIN member me
+                    ON r.member_id = me.id
+                WHERE r.theme_id = ? AND r.member_id = ? AND r.date BETWEEN ? AND ?
+                ORDER BY r.date, t.start_at
+                """;
+        return jdbcTemplate.query(sql, reservationMapper, themeId, memberId, dateFrom, dateTo);
+    }
 }

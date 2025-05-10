@@ -11,11 +11,9 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationAdminCreateRequest;
 import roomescape.dto.request.ReservationCreateRequest;
-import roomescape.dto.response.MemberResponse;
+import roomescape.dto.request.ReservationSearchRequest;
 import roomescape.dto.response.ReservationCreateResponse;
 import roomescape.dto.response.ReservationResponse;
-import roomescape.dto.response.ReservationTimeResponse;
-import roomescape.dto.response.ThemeResponse;
 import roomescape.exception.ReservationDuplicateException;
 
 @Service
@@ -72,13 +70,7 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public List<ReservationResponse> findAll() {
         return reservationDao.findAll().stream()
-                .map(reservation -> new ReservationResponse(
-                        reservation.getId(),
-                        reservation.getDate(),
-                        ReservationTimeResponse.from(reservation.getTime()),
-                        ThemeResponse.from(reservation.getTheme()),
-                        MemberResponse.from(reservation.getMember())
-                ))
+                .map(ReservationResponse::from)
                 .toList();
     }
 
@@ -88,5 +80,22 @@ public class ReservationService {
             throw new NoSuchElementException("예약이 존재하지 않습니다.");
         }
         reservationDao.delete(id);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReservationResponse> findByThemeAndMemberAndDate(
+            final ReservationSearchRequest reservationSearchRequest) {
+        if (reservationSearchRequest.dateFrom().isAfter(reservationSearchRequest.dateTo())) {
+            throw new IllegalArgumentException("시작 날짜는 종료 날짜보다 이후일 수 없습니다.");
+        }
+        final List<Reservation> reservations = reservationDao.findByThemeAndMemberAndDate(
+                reservationSearchRequest.themeId(),
+                reservationSearchRequest.memberId(),
+                reservationSearchRequest.dateFrom(),
+                reservationSearchRequest.dateTo());
+
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 }

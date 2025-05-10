@@ -101,4 +101,16 @@ class JdbcReservationDaoTest {
         // when & then
         assertThat(jdbcReservationDao.existsById(999L)).isFalse();
     }
+
+    @DisplayName("테마, 멤버, 날짜로 예약 목록을 조회한다.")
+    @Test
+    void findByThemeAndMemberAndDateTest() {
+
+        // when
+        final List<Reservation> reservations = jdbcReservationDao.findByThemeAndMemberAndDate(1L, 1L,
+                LocalDate.of(2025, 4, 25), LocalDate.of(2025, 4, 28));
+
+        // then
+        assertThat(reservations.size()).isEqualTo(1);
+    }
 }

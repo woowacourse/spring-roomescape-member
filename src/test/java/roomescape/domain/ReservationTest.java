@@ -55,7 +55,7 @@ class ReservationTest {
 
         // given
         final LocalDate date = LocalDate.now();
-        final ReservationTime time = new ReservationTime(LocalTime.now().minusHours(1));
+        final ReservationTime time = new ReservationTime(1L, LocalTime.now().minusMinutes(1));
         final Theme theme = new Theme(1L, "test", "test", "test");
         final Member member = new Member(1L, "test", "test", "test", MemberRole.USER);
 
