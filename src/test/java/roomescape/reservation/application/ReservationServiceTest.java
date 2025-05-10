@@ -22,7 +22,6 @@ import roomescape.exception.AlreadyExistException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.fixture.ThemeFixture;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.MemberRepository;
 import roomescape.member.infrastructure.JdbcMemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;

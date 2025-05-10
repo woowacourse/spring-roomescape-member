@@ -11,11 +11,12 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.auth.domain.AuthRole;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.MemberRepository;
+import roomescape.member.domain.MemberCommandRepository;
+import roomescape.member.domain.MemberQueryRepository;
 
 @Repository
 @RequiredArgsConstructor
-public class JdbcMemberRepository implements MemberRepository {
+public class JdbcMemberRepository implements MemberCommandRepository, MemberQueryRepository {
 
     private static final RowMapper<Member> RESERVATION_ROW_MAPPER = (rs, rowNum) ->
             new Member(

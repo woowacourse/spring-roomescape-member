@@ -2,7 +2,6 @@ package roomescape.fixture;
 
 import roomescape.auth.domain.AuthRole;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.MemberRepository;
 
 public class MemberFixture {
 

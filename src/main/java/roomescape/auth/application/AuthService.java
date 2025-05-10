@@ -8,28 +8,28 @@ import roomescape.auth.ui.dto.CreateAccessTokenRequest;
 import roomescape.exception.AuthenticationException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.MemberRepository;
+import roomescape.member.domain.MemberQueryRepository;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     private final AuthTokenProvider authTokenProvider;
-    private final MemberRepository memberRepository;
+    private final MemberQueryRepository memberQueryRepository;
 
     public String createAccessToken(final CreateAccessTokenRequest request) {
-        final Member member = memberRepository.findByEmail(request.email())
+        final Member member = memberQueryRepository.findByEmail(request.email())
                 .orElseThrow(() -> new ResourceNotFoundException("해당 이메일을 가진 사용자가 존재하지 않습니다."));
 
         if (member.isWrongPassword(request.password())) {
             throw new AuthenticationException("이메일 혹은 비밀번호가 올바르지 않습니다.");
         }
 
-        return authTokenProvider.createAccessToken(member.getEmail(), member.getRole());
+        return authTokenProvider.createAccessToken(member.getId().toString(), member.getRole());
     }
 
-    public Member getMemberByEmail(final String email) {
-        return memberRepository.findByEmail(email)
+    public Member getMemberById(final Long id) {
+        return memberQueryRepository.findById(id)
                 .orElseGet(() -> new Member("게스트", "게스트는_이메일이_없습니다", "패스워드도_없습니다", AuthRole.GUEST));
     }
 }

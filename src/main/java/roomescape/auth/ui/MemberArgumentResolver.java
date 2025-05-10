@@ -33,8 +33,8 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         if (token == null || !authTokenProvider.validateToken(token)) {
             return null;
         }
-        final String email = authTokenProvider.getPrincipal(token);
+        final Long id = Long.parseLong(authTokenProvider.getPrincipal(token));
 
-        return authService.getMemberByEmail(email);
+        return authService.getMemberById(id);
     }
 }
