@@ -25,23 +25,9 @@ public class ExceptionController {
         return ResponseEntity.badRequest().body(PREFIX + "시간 형식이 잘못되었습니다.");
     }
 
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
-        return ResponseEntity.badRequest().body(PREFIX + e.getMessage());
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(PREFIX + e.getMessage());
-    }
-
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
-        return ResponseEntity.badRequest().body(PREFIX + e.getMessage());
-    }
-
-    @ExceptionHandler(DateTimeException.class)
-    public ResponseEntity<String> handleDateTimeException(DateTimeException e) {
+    @ExceptionHandler({IllegalStateException.class, IllegalArgumentException.class, NoSuchElementException.class,
+            DateTimeException.class})
+    public ResponseEntity<String> handleBadRequest(IllegalStateException e) {
         return ResponseEntity.badRequest().body(PREFIX + e.getMessage());
     }
 
@@ -49,5 +35,10 @@ public class ExceptionController {
     public ResponseEntity<String> MethodArgumentNotValidException(MethodArgumentNotValidException e) {
         return ResponseEntity.badRequest()
                 .body(PREFIX + e.getBindingResult().getFieldErrors().getFirst().getDefaultMessage());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntimeException() {
+        return ResponseEntity.badRequest().body(PREFIX + "예상하지 못한 예외가 발생하였습니다.");
     }
 }
