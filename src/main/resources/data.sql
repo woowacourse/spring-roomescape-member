@@ -44,10 +44,10 @@ VALUES ('Theme 1', '테마1 설명',
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQqlkX2ISwyii-yHkQmp-Ad0hsfekERx2RNEa_RFNrr25BDWEAxHRgghcPid7ckxbLngE&usqp=CAU');
 
 INSERT INTO member(name, email, password, role)
-VALUES ('체체', 'cheche903@naver.com', 'password1234', 'user');
+VALUES ('체체', 'cheche903@naver.com', 'password1234', 'USER');
 
 INSERT INTO member(name, email, password, role)
-VALUES ('어드민', 'admin@email.com', 'password1234', 'admin');
+VALUES ('어드민', 'admin@email.com', 'password1234', 'ADMIN');
 
 INSERT INTO reservation(date, time_id, theme_id, member_id)
 VALUES ('2025-04-25', 1, 1, 1);
