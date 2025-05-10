@@ -9,7 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.dao.meber.MemberDao;
+import roomescape.dao.member.MemberDao;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
 import roomescape.support.auth.JwtTokenProvider;

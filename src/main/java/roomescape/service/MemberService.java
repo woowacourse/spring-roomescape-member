@@ -5,7 +5,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.dao.meber.MemberDao;
+import roomescape.dao.member.MemberDao;
 import roomescape.domain.Member;
 import roomescape.dto.request.TokenRequest;
 import roomescape.dto.response.MemberResponse;
