@@ -20,9 +20,6 @@ import roomescape.member.service.AuthService;
 @Controller
 public class UserController {
 
-    private final AuthService authService;
-    private final MemberService memberService;
-
     @GetMapping("/login")
     public String getLoginPage() {
         return "login";
@@ -31,29 +28,5 @@ public class UserController {
     @GetMapping("/signup")
     public String getSignupPage() {
         return "signup";
-    }
-
-    @ResponseBody
-    @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest) {
-        String token = authService.login(loginRequest);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Set-Cookie", "token=" + token + "; Path=/; HttpOnly");
-        headers.add("Keep-Alive", "timeout=60");
-
-        return ResponseEntity.ok().headers(headers).build();
-    }
-
-    @ResponseBody
-    @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> checkLogin(HttpServletRequest request) {
-        return ResponseEntity.ok(authService.checkLogin(request.getCookies()));
-    }
-
-    @ResponseBody
-    @PostMapping("/signup")
-    public ResponseEntity<Member> signup(@RequestBody SignupRequest signupRequest) {
-        return ResponseEntity.ok(memberService.signup(signupRequest));
     }
 }
