@@ -15,9 +15,13 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import roomescape.auth.dto.CheckLoginResponse;
+import roomescape.auth.dto.LoginRequest;
+import roomescape.member.dto.SignupRequest;
 import roomescape.reservation.controller.ReservationController;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -28,7 +32,10 @@ import roomescape.reservation.controller.ReservationController;
 })
 public class MissionStepTest {
 
-    private final String futureDate = LocalDate.now().plusDays(1).toString();
+    private static final String NAME = "admin";
+    private static final String PASSWORD = "password";
+    private static final String EMAIL = "admin@gmail.com";
+    private static final String futureDate = LocalDate.now().plusDays(1).toString();
 
     @Nested
     class AdminTest {
@@ -230,7 +237,64 @@ public class MissionStepTest {
                     .body("size()", is(10));
         }
 
+        @Test
+        void step4_signup() {
+            RestAssured.given().log().all()
+                    .body(new SignupRequest(EMAIL, PASSWORD, NAME))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().post("/members")
+                    .then().log().all()
+                    .statusCode(201);
+        }
+
+        @Test
+        void step4_login() {
+            step4_signup();
+
+            RestAssured.given().log().all()
+                    .body(new LoginRequest(EMAIL, PASSWORD))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().post("/login")
+                    .then().log().all()
+                    .statusCode(200);
+        }
+
+
+        @Test
+        void step4_logout() {
+            step4_signup();
+            String authToken = loginAndGetAuthToken();
+
+            RestAssured.given().log().all()
+                    .body(new LoginRequest(EMAIL, PASSWORD))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .cookie("token", authToken)
+                    .when().post("/logout")
+                    .then().log().all()
+                    .statusCode(204);
+        }
+
+        @Test
+        void step4_loginCheck() {
+            step4_signup();
+
+            String authToken = loginAndGetAuthToken();
+
+            CheckLoginResponse checkLoginResponse = RestAssured.given().log().all()
+                    .body(new LoginRequest(EMAIL, PASSWORD))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .cookie("token", authToken)
+                    .when().get("/login/check")
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .as(CheckLoginResponse.class);
+
+            assertThat(checkLoginResponse.name()).isEqualTo("admin");
+        }
+
     }
+
     private void createReservation() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
@@ -278,5 +342,16 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(size));
+    }
+
+    private String loginAndGetAuthToken() {
+        return RestAssured.given().log().all()
+                .body(new LoginRequest(EMAIL, PASSWORD))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .cookie("token");
     }
 }
