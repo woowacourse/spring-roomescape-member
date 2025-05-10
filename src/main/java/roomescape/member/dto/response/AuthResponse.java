@@ -1,6 +1,6 @@
 package roomescape.member.dto.response;
 
-import roomescape.member.dto.request.LoginMember;
+import roomescape.global.auth.LoginMember;
 
 public class AuthResponse {
 

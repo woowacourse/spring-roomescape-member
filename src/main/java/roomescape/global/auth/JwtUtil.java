@@ -8,8 +8,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.member.dto.request.LoginMember;
-import roomescape.member.entity.RoleType;
 
 @Component
 public class JwtUtil {
@@ -36,7 +34,7 @@ public class JwtUtil {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
-    
+
     public Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(secretKey)

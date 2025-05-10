@@ -11,7 +11,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.global.error.exception.UnauthorizedException;
-import roomescape.member.dto.request.LoginMember;
 import roomescape.member.entity.RoleType;
 
 @Component
