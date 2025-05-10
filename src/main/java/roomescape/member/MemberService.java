@@ -10,8 +10,6 @@ import roomescape.member.dto.MemberResponse;
 @Service
 public class MemberService {
 
-    private static final String MEMBER_ROLE = "MEMBER";
-
     private final MemberRepository memberRepository;
 
     @Autowired
@@ -24,7 +22,7 @@ public class MemberService {
     public void createMember(final MemberRequest request) {
         validateDuplicationEmail(request);
 
-        final Member notSavedMember = new Member(request.email(), request.password(), request.name(), MEMBER_ROLE);
+        final Member notSavedMember = new Member(request.email(), request.password(), request.name(), MemberRole.MEMBER);
         memberRepository.saveMember(notSavedMember);
     }
 

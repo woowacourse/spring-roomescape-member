@@ -8,9 +8,9 @@ public class Member {
     private final String email;
     private final String password;
     private final String name;
-    private final String role;
+    private final MemberRole role;
 
-    public Member(final Long id, final String email, final String password, final String name, final String role) {
+    public Member(final Long id, final String email, final String password, final String name, final MemberRole role) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -18,7 +18,7 @@ public class Member {
         this.role = role;
     }
 
-    public Member(final String email, final String password, final String name, final String role) {
+    public Member(final String email, final String password, final String name, final MemberRole role) {
         this(null, email, password, name, role);
     }
 
@@ -42,7 +42,7 @@ public class Member {
         return name;
     }
 
-    public String getRole() {
+    public MemberRole getRole() {
         return role;
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.dto.LoginMember;
 import roomescape.exception.custom.reason.auth.AuthNotExistsCookieException;
+import roomescape.member.MemberRole;
 
 public class AuthorizationAdminInterceptor implements HandlerInterceptor {
 
@@ -31,7 +32,7 @@ public class AuthorizationAdminInterceptor implements HandlerInterceptor {
         final String token = extractToken(request);
 
         final LoginMember loginMember = authService.findLoginMemberByToken(token);
-        if (loginMember == null || !loginMember.role().equals("ADMIN")) {
+        if (loginMember == null || !Objects.equals(loginMember.role(), MemberRole.ADMIN)) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return false;
         }
@@ -50,7 +51,7 @@ public class AuthorizationAdminInterceptor implements HandlerInterceptor {
                 .orElseThrow(() -> new AuthNotExistsCookieException());
     }
 
-    private static void validateExistsCookies(final Cookie[] cookies) {
+    private void validateExistsCookies(final Cookie[] cookies) {
         if(cookies == null){
             throw new AuthNotExistsCookieException();
         }

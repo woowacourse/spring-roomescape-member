@@ -106,6 +106,7 @@ public class ReservationService {
         }
     }
 
+    // TODO: 같은 날짜, 시간이더라도 테마가 다르면 예약이 가능해야한다.
     private void validateDuplicateDateTime(final LocalDate date, final Long reservationTimeId) {
         if (reservationRepository.existsByReservationTimeIdAndDate(reservationTimeId, date)) {
             throw new ReservationConflictException();

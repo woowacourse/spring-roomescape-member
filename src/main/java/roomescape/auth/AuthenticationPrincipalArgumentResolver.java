@@ -43,10 +43,19 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
 
     private String extractToken(final NativeWebRequest request) {
         final HttpServletRequest nativeRequest = (HttpServletRequest) request.getNativeRequest();
-        return Arrays.stream(nativeRequest.getCookies())
+        final Cookie[] cookies = nativeRequest.getCookies();
+        validateExistsCookies(cookies);
+
+        return Arrays.stream(cookies)
                 .filter(cookie -> Objects.equals(cookie.getName(), TOKEN_NAME))
                 .map(Cookie::getValue)
                 .findAny()
                 .orElseThrow(AuthNotExistsCookieException::new);
+    }
+
+    private void validateExistsCookies(final Cookie[] cookies) {
+        if(cookies == null){
+            throw new AuthNotExistsCookieException();
+        }
     }
 }

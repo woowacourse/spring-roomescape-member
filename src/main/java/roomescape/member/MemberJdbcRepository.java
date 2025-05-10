@@ -21,7 +21,7 @@ public class MemberJdbcRepository implements MemberRepository {
     @Override
     public void saveMember(final Member member) {
         final String sql = "INSERT INTO member(email, password, name, role) VALUES(?, ?, ?, ?)";
-        jdbcTemplate.update(sql, member.getEmail(), member.getPassword(), member.getName(), member.getRole());
+        jdbcTemplate.update(sql, member.getEmail(), member.getPassword(), member.getName(), member.getRole().name());
     }
 
     @Override
@@ -55,7 +55,7 @@ public class MemberJdbcRepository implements MemberRepository {
                         resultSet.getString("email"),
                         resultSet.getString("password"),
                         resultSet.getString("name"),
-                        resultSet.getString("role")
+                        MemberRole.valueOf(resultSet.getString("role"))
                 );
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.Member;
+import roomescape.member.MemberRole;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.theme.Theme;
 
@@ -195,7 +196,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     resultSet.getString("member_email"),
                     resultSet.getString("member_password"),
                     resultSet.getString("member_name"),
-                    resultSet.getString("member_role")
+                    MemberRole.valueOf(resultSet.getString("member_role"))
             );
 
             return new Reservation(
