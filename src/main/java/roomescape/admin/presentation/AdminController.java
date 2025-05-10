@@ -25,7 +25,7 @@ public class AdminController {
             final @RequestBody @Valid AdminReservationRequest request
     ) {
         ReservationResponse reservation = reservationService.createReservation(request);
-        return ResponseEntity.ok().body(reservation);
+        return ResponseEntity.status(201).body(reservation);
     }
 
 }

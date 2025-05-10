@@ -8,8 +8,10 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.application.repository.MemberRepository;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
+import roomescape.member.infrastructure.fake.FakeMemberDao;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.application.repository.ThemeRepository;
@@ -35,8 +37,10 @@ public class ReservationTimeServiceTest {
         ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeDao();
         ReservationRepository reservationRepository = new FakeReservationDao();
         ThemeRepository themeRepository = new FakeThemeDao();
+        MemberRepository memberRepository = new FakeMemberDao();
         reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
+                memberRepository);
         themeService = new ThemeService(reservationRepository, themeRepository);
     }
 

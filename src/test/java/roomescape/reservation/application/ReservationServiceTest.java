@@ -10,8 +10,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.global.exception.GetThemeException;
 import roomescape.global.exception.GetTimeException;
+import roomescape.member.application.repository.MemberRepository;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
+import roomescape.member.infrastructure.fake.FakeMemberDao;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.application.repository.ThemeRepository;
@@ -35,13 +37,16 @@ public class ReservationServiceTest {
     private ReservationService reservationService;
     private ReservationTimeRepository reservationTimeRepository;
     private ThemeRepository themeRepository;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void init() {
         ReservationRepository reservationRepository = new FakeReservationDao();
         reservationTimeRepository = new FakeReservationTimeDao();
         themeRepository = new FakeThemeDao();
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+        memberRepository = new FakeMemberDao();
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
+                memberRepository);
     }
 
     @Test
@@ -61,7 +66,7 @@ public class ReservationServiceTest {
         // then
         assertThat(reservationResponse.getId()).isEqualTo(1L);
         assertThat(reservationResponse.getDate()).isEqualTo(LocalDate.of(2025, 8, 5));
-        assertThat(reservationResponse.getName()).isEqualTo("브라운");
+        assertThat(reservationResponse.getMember().name()).isEqualTo("브라운");
         assertThat(reservationResponse.getTime().getId()).isEqualTo(1L);
     }
 

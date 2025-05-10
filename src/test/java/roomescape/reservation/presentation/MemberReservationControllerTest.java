@@ -33,7 +33,7 @@ class MemberReservationControllerTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
-        MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "1");
+        MemberReservationRequest reservation = reservationFixture.createMemberReservation("2025-08-05", "1", "1");
 
         // when - then
         ApiHelper.postWithToken(ApiHelper.RESERVATION_ENDPOINT, reservation, token)
@@ -67,7 +67,7 @@ class MemberReservationControllerTest {
         ReservationTimeRequest reservationTime = reservationFixture.createReservationTime("10:00");
         ApiHelper.post(ApiHelper.TIME_ENDPOINT, reservationTime);
 
-        MemberReservationRequest reservation = reservationFixture.createReservation("2024-08-05", "1", "1");
+        MemberReservationRequest reservation = reservationFixture.createMemberReservation("2024-08-05", "1", "1");
 
         // when - then
         ApiHelper.postWithToken(ApiHelper.RESERVATION_ENDPOINT, reservation, token)
@@ -88,7 +88,7 @@ class MemberReservationControllerTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
-        MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "1");
+        MemberReservationRequest reservation = reservationFixture.createMemberReservation("2025-08-05", "1", "1");
         ApiHelper.postWithToken(ApiHelper.RESERVATION_ENDPOINT, reservation, token);
 
         // when - then
@@ -107,7 +107,7 @@ class MemberReservationControllerTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
-        MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "1");
+        MemberReservationRequest reservation = reservationFixture.createMemberReservation("2025-08-05", "1", "1");
         // when - then
         ApiHelper.postWithToken(ApiHelper.RESERVATION_ENDPOINT, reservation, token)
                 .then().log().all()
@@ -123,7 +123,7 @@ class MemberReservationControllerTest {
         ReservationTimeRequest reservationTime = reservationFixture.createReservationTime("10:00");
         ApiHelper.post(ApiHelper.TIME_ENDPOINT, reservationTime);
 
-        MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "1");
+        MemberReservationRequest reservation = reservationFixture.createMemberReservation("2025-08-05", "1", "1");
         // when - then
         ApiHelper.postWithToken(ApiHelper.RESERVATION_ENDPOINT, reservation, token)
                 .then().log().all()
@@ -143,7 +143,7 @@ class MemberReservationControllerTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
-        MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "1");
+        MemberReservationRequest reservation = reservationFixture.createMemberReservation("2025-08-05", "1", "1");
         ApiHelper.postWithToken(ApiHelper.RESERVATION_ENDPOINT, reservation, token);
 
         // when - then
@@ -166,7 +166,7 @@ class MemberReservationControllerTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
-        MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "1");
+        MemberReservationRequest reservation = reservationFixture.createMemberReservation("2025-08-05", "1", "1");
         ApiHelper.postWithToken(ApiHelper.RESERVATION_ENDPOINT, reservation, token);
 
         // when-then

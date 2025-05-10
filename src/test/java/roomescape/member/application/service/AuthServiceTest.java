@@ -2,8 +2,10 @@ package roomescape.member.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.application.dto.GetMemberResponse;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.infrastructure.JwtTokenProvider;
@@ -38,8 +40,8 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("유저 정보 조회 테스트")
-    void getUserTest() {
+    @DisplayName("사용자 정보 조회 테스트")
+    void getMemberTest() {
         // given
         String email = "email@email.com";
         String password = "password";
@@ -52,6 +54,21 @@ class AuthServiceTest {
 
         // then
         assertThat(member.getName()).isEqualTo("name");
+    }
+
+    @Test
+    @DisplayName("사용자 목록 조회 테스트")
+    void getMembersTest() {
+        // given
+        userRepository.insert(new Member(0L, "name1", "email1@email.com", "password", Role.USER));
+        userRepository.insert(new Member(1L, "name2", "email2@email.com", "password", Role.USER));
+        userRepository.insert(new Member(2L, "name3", "email3@email.com", "password", Role.USER));
+
+        // when
+        List<GetMemberResponse> members = authService.getMembers();
+
+        // then
+        assertThat(members).hasSize(3);
     }
 
 }

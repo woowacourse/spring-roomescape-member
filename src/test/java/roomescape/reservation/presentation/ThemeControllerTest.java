@@ -77,7 +77,7 @@ public class ThemeControllerTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
-        MemberReservationRequest reservation = reservationFixture.createReservation("2025-08-05", "1", "1");
+        MemberReservationRequest reservation = reservationFixture.createMemberReservation("2025-08-05", "1", "1");
         ApiHelper.postWithToken(ApiHelper.RESERVATION_ENDPOINT, reservation, token);
 
         // when - then

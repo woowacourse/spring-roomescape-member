@@ -81,7 +81,7 @@ public class MemberDao implements MemberRepository {
                                 role
                         );
                     }, id);
-            return Optional.ofNullable(member);
+            return Optional.of(member);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

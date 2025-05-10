@@ -1,9 +1,11 @@
 package roomescape.member.infrastructure.fake;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import roomescape.member.application.dto.CreateMemberRequest;
+import roomescape.member.application.dto.GetMemberResponse;
 import roomescape.member.application.repository.MemberRepository;
 import roomescape.member.domain.Member;
 
@@ -34,5 +36,17 @@ public class FakeMemberDao implements MemberRepository {
         );
         store.put(id, member);
         return member;
+    }
+
+    @Override
+    public Optional<Member> findById(Long id) {
+        return Optional.ofNullable(store.get(id));
+    }
+
+    @Override
+    public List<GetMemberResponse> findAll() {
+        return store.values().stream()
+                .map(member -> new GetMemberResponse(member.getId(), member.getName()))
+                .toList();
     }
 }
