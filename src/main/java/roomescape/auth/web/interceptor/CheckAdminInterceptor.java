@@ -1,0 +1,35 @@
+package roomescape.auth.web.interceptor;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.util.Objects;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.auth.dto.AuthenticatedMember;
+import roomescape.auth.infrastructure.TokenProvider;
+import roomescape.global.util.CookieUtils;
+import roomescape.member.domain.Role;
+
+@Component
+@RequiredArgsConstructor
+public class CheckAdminInterceptor implements HandlerInterceptor {
+
+    private final TokenProvider tokenProvider;
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        Cookie cookie = CookieUtils.extractFromCookiesByName(request.getCookies(), "token");
+        AuthenticatedMember authenticatedMember = tokenProvider.resolveAuthenticatedMember(cookie.getValue());
+        if (Objects.equals(authenticatedMember.role(), Role.ADMIN)) {
+            return true;
+        }
+
+        // TODO : HandlerExceptionResolver 커스텀 클래스 구현해 처리하기
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"message\": \"관리자 권한이 필요합니다.\"}");
+        return false;
+    }
+}
