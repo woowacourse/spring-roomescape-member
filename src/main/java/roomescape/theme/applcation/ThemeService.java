@@ -15,6 +15,7 @@ import roomescape.theme.ui.dto.ThemeResponse;
 @RequiredArgsConstructor
 public class ThemeService {
 
+    // TODO: ThemeRepository도 Command, Query 인터페이스 분리할 것
     private final ThemeRepository themeRepository;
 
     public ThemeResponse create(final CreateThemeRequest request) {
