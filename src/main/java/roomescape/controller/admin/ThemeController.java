@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeCreationRequest;
@@ -14,6 +15,7 @@ import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController(value = "AdminThemeController")
+@RequestMapping("/themes")
 public class ThemeController {
 
     private final ThemeService themeService;
@@ -22,7 +24,7 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @PostMapping("/themes")
+    @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(
             @Valid @RequestBody ThemeCreationRequest request
     ) {
@@ -33,7 +35,7 @@ public class ThemeController {
                 .body(new ThemeResponse(theme));
     }
 
-    @DeleteMapping("/themes/{themeId}")
+    @DeleteMapping("/{themeId}")
     public ResponseEntity<Void> deleteById(
             @PathVariable("themeId") Long id
     ) {

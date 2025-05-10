@@ -5,6 +5,7 @@ import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.annotation.AuthenticationPrinciple;
 import roomescape.domain.Reservation;
@@ -15,6 +16,7 @@ import roomescape.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
 
 @RestController
+@RequestMapping("/reservations")
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -23,7 +25,7 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping("/reservations")
+    @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
             @AuthenticationPrinciple AuthenticationInformation authInformation,
             @Valid @RequestBody ReservationCreationRequest request
