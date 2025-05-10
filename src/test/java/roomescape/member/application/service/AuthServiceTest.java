@@ -1,10 +1,13 @@
 package roomescape.member.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import roomescape.member.InvalidMemberException;
 import roomescape.member.application.dto.GetMemberResponse;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
@@ -25,7 +28,7 @@ class AuthServiceTest {
 
     @Test
     @DisplayName("로그인 테스트")
-    void login() {
+    void loginTest() {
         // given
         String email = "email@email.com";
         String password = "password";
@@ -37,6 +40,22 @@ class AuthServiceTest {
 
         // then
         assertThat(token.accessToken()).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("비밀번호가 틀릴 경우 로그인에 실패한다.")
+    void loginFailedTest() {
+        // given
+        String email = "email@email.com";
+        String password = "password";
+        userRepository.insert(new Member(0L, "name", email, password, Role.USER));
+        LoginRequest loginRequest = new LoginRequest(email, "wrong password");
+
+        // when - then
+        assertThatThrownBy(() -> authService.login(loginRequest))
+                .isInstanceOf(InvalidMemberException.class)
+                .hasMessage("비밀번호가 틀렸습니다.")
+                .hasFieldOrPropertyWithValue("statusCode", HttpStatus.UNAUTHORIZED);
     }
 
     @Test
