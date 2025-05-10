@@ -4,13 +4,16 @@
 
 
 
-### 유저 관련
+### 회원 관련
 - [x] `POST /login`  
   로그인
 
 
 - [x] `GET /signup`  
   회원가입
+
+- [x] `GET /login/check`
+  로그인 상태 확인
 
 ---
 
