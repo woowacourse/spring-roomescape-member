@@ -180,7 +180,7 @@ class ReservationTimeServiceTest {
                             LocalDate.now().plusMonths(3),
                             testDataConfig.getDefaultDummyTimeId(),
                             theme.getId()
-                    ));
+                    ), savedUser);
 
             // when, then
             Assertions.assertThatCode(

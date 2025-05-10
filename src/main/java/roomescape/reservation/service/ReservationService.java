@@ -16,6 +16,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.dto.ThemeResponseDto;
 import roomescape.theme.exception.InvalidThemeException;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.user.domain.User;
 
 @Service
 public class ReservationService {
@@ -38,8 +39,8 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-    public ReservationResponseDto add(ReservationRequestDto requestDto) {
-        Reservation reservation = convertReservation(requestDto);
+    public ReservationResponseDto add(ReservationRequestDto requestDto, User user) {
+        Reservation reservation = convertReservation(requestDto, user);
         validateDuplicateDateTime(reservation);
         Reservation savedReservation = repository.add(reservation);
         return convertReservationResponseDto(savedReservation);
@@ -56,17 +57,17 @@ public class ReservationService {
                 inputReservation.getReservationTime()
         );
         if (exists) {
-            throw new DuplicateReservationException("이미 예약되어 있는 시간입니다.");
+            throw new DuplicateReservationException();
         }
     }
 
-    private Reservation convertReservation(ReservationRequestDto dto) {
+    private Reservation convertReservation(ReservationRequestDto dto, User user) {
         ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
-                .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(InvalidReservationTimeException::new);
         Theme theme = themeRepository.findById(dto.themeId())
-                .orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마입니다."));
+                .orElseThrow(InvalidThemeException::new);
 
-        return dto.toEntity(reservationTime, theme);
+        return dto.toEntity(reservationTime, theme, user);
     }
 
     private ReservationResponseDto convertReservationResponseDto(Reservation reservation) {
