@@ -9,6 +9,7 @@ import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -19,11 +20,13 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 //TODO : 구체적인 예외 추상화 시켜 핸들링하기
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ResponseStatus(INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ExceptionResponse handleException(Exception e) {
+        log.error("Unhandled exception occurred", e);
         return new ExceptionResponse(INTERNAL_SERVER_ERROR.value(), "서버 에러입니다", LocalDateTime.now());
     }
 
