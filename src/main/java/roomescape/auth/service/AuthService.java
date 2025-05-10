@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.infrastructure.TokenProvider;
-import roomescape.error.NotFoundException;
 import roomescape.error.UnauthorizedException;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
@@ -40,14 +39,17 @@ public class AuthService {
     }
 
     public LoginCheckResponse checkLogin(final String token) {
+        final Long memberId = parseMemberId(token);
+        final Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new UnauthorizedException("유효하지 않은 회원입니다. id: " + memberId));
+        return new LoginCheckResponse(member);
+    }
+
+    private Long parseMemberId(final String token) {
         try {
-            final Long memberId = Long.valueOf(jwtTokenProvider.extractPrincipal(token));
-            final Member member = memberRepository.findById(memberId)
-                    .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
-            return new LoginCheckResponse(member);
+            return Long.valueOf(jwtTokenProvider.extractPrincipal(token));
         } catch (NumberFormatException e) {
             throw new UnauthorizedException("유효하지 않은 토큰입니다.");
         }
-
     }
 }
