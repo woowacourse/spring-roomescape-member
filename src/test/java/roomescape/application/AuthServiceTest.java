@@ -9,7 +9,7 @@ import roomescape.domain.Member;
 import roomescape.fixture.MemberDbFixture;
 import roomescape.infrastructure.jwt.JwtTokenProvider;
 import roomescape.presentation.dto.request.LoginRequest;
-import roomescape.presentation.dto.response.MemberResponse;
+import roomescape.presentation.dto.LoginMember;
 
 import java.util.NoSuchElementException;
 
@@ -62,7 +62,7 @@ class AuthServiceTest extends BaseTest {
     void 토큰으로_사용자를_찾는다() {
         Member member = memberDbFixture.듀이();
         String token = jwtTokenProvider.createToken(member.getEmail());
-        MemberResponse response = authService.findMemberByToken(token);
+        LoginMember response = authService.findMemberByToken(token);
 
         assertAll(
                 () -> assertThat(response.id()).isEqualTo(member.getId()),
