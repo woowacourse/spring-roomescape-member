@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class JwtTokenProvider {
     private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
 
-    public static String createToken(Long id, String name, String role) {
+    public String createToken(Long id, String name, String role) {
         return Jwts.builder()
                 .setSubject(id.toString())
                 .claim("name", name)
@@ -18,7 +18,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public static String extractTokenFromCookies(Cookie[] cookies) {
+    public String extractTokenFromCookies(Cookie[] cookies) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();
@@ -27,7 +27,7 @@ public class JwtTokenProvider {
         return "";
     }
 
-    public static Long getUserId(String token) {
+    public Long getUserId(String token) {
         return Long.valueOf(Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build()

@@ -11,12 +11,19 @@ import roomescape.model.User;
 @Service
 public class LoginService {
     private final UserDao userDao;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginService(UserDao userDao) {
+    public LoginService(UserDao userDao, JwtTokenProvider jwtTokenProvider) {
         this.userDao = userDao;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public User login(LoginRequest loginRequest) {
+    public String loginAndGetToken(LoginRequest loginRequest) {
+        User user = login(loginRequest);
+        return jwtTokenProvider.createToken(user.getId(), user.getName(), "USER");
+    }
+
+    private User login(LoginRequest loginRequest) {
         User user = userDao.findByEmail(loginRequest.email())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
@@ -27,8 +34,8 @@ public class LoginService {
     }
 
     public UserResponse findUserFromToken(Cookie[] cookies) {
-        String token = JwtTokenProvider.extractTokenFromCookies(cookies);
-        Long id = JwtTokenProvider.getUserId(token);
+        String token = jwtTokenProvider.extractTokenFromCookies(cookies);
+        Long id = jwtTokenProvider.getUserId(token);
         User user = userDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 ID가 없습니다."));
         return UserResponse.from(user);

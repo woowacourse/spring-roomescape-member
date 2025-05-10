@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.UserResponse;
-import roomescape.infra.JwtTokenProvider;
-import roomescape.model.User;
 import roomescape.service.LoginService;
 
 @RequestMapping("/login")
@@ -30,8 +28,7 @@ public class LoginController {
             @RequestBody LoginRequest loginRequest,
             HttpServletResponse response
             ) {
-        User user = loginService.login(loginRequest);
-        String token = JwtTokenProvider.createToken(user.getId(), user.getName(), "USER");
+        String token = loginService.loginAndGetToken(loginRequest);
 
         Cookie cookie = new Cookie("token", token);
         cookie.setPath("/");

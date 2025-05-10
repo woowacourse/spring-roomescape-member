@@ -47,7 +47,7 @@
   - [x] `GET /login` 요청 시 로그인 폼이 있는 페이지 응답
   - [x] `POST /login` 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
   - [x] 응답 Cookie에 "token" 값으로 토큰을 포함
-- [ ] 로그인 후 Cookie를 이용하여 사용자 정보 조회 API 구현
-  - [ ] 'GET /login/check'를 통해 인증 정보 조회
-  - [ ] Cookie를 이용하여 사용자 정보 확인
-  - [ ] 로그인 상태를 표현하기 위해 사용자의 정보 조회
+- [x] 로그인 후 Cookie를 이용하여 사용자 정보 조회 API 구현
+  - [x] 'GET /login/check'를 통해 인증 정보 조회
+  - [x] Cookie를 이용하여 사용자 정보 확인
+  - [x] 로그인 상태를 표현하기 위해 사용자의 정보 조회
