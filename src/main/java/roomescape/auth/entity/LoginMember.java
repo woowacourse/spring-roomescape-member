@@ -13,6 +13,10 @@ public class LoginMember {
         this.role = Role.valueOf(role);
     }
 
+    public boolean hasRole(Role role) {
+        return this.role == role;
+    }
+
     public Long getId() {
         return id;
     }

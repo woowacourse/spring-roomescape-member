@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exception.badRequest.BadRequestException;
 import roomescape.exception.conflict.ConflictException;
 import roomescape.exception.notFound.NotFoundException;
-import roomescape.exception.unauthorized.UnauthorizedException;
 
 import java.util.List;
 
@@ -29,11 +28,6 @@ public class RestExceptionHandler {
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<String> conflict(ConflictException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-    }
-
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<String> unauthorized(UnauthorizedException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
