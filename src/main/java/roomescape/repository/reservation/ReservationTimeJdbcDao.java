@@ -5,7 +5,6 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -14,6 +13,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.exceptions.EntityNotFoundException;
+import roomescape.repository.reservation.mapper.ReservationTimeRowMapper;
 
 @Repository
 public class ReservationTimeJdbcDao implements ReservationTimeRepository {
@@ -29,7 +29,7 @@ public class ReservationTimeJdbcDao implements ReservationTimeRepository {
         String sql = "select * from reservation_time where id = :id";
         SqlParameterSource params = new MapSqlParameterSource("id", id);
         try {
-            return namedJdbcTemplate.queryForObject(sql, params, getReservationTimeRowMapper());
+            return namedJdbcTemplate.queryForObject(sql, params, ReservationTimeRowMapper.INSTANCE);
         } catch (EmptyResultDataAccessException e) {
             throw new EntityNotFoundException("예약 시간 데이터를 찾을 수 없습니다: " + id);
         }
@@ -38,7 +38,7 @@ public class ReservationTimeJdbcDao implements ReservationTimeRepository {
     @Override
     public List<ReservationTime> findAll() {
         String sql = "select * from reservation_time order by id;";
-        return namedJdbcTemplate.query(sql, getReservationTimeRowMapper());
+        return namedJdbcTemplate.query(sql, ReservationTimeRowMapper.INSTANCE);
     }
 
     @Override
@@ -70,12 +70,5 @@ public class ReservationTimeJdbcDao implements ReservationTimeRepository {
         SqlParameterSource params = new MapSqlParameterSource("startAt", startAt);
         Integer count = namedJdbcTemplate.queryForObject(sql, params, Integer.class);
         return count != null && count > 0;
-    }
-
-    private RowMapper<ReservationTime> getReservationTimeRowMapper() {
-        return (resultSet, rowNum) -> new ReservationTime(
-                resultSet.getLong("id"),
-                resultSet.getTime("start_at").toLocalTime()
-        );
     }
 }

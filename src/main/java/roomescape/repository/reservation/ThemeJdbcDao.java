@@ -3,7 +3,6 @@ package roomescape.repository.reservation;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -12,6 +11,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.Theme;
 import roomescape.exceptions.EntityNotFoundException;
+import roomescape.repository.reservation.mapper.ThemeRowMapper;
 
 @Repository
 public class ThemeJdbcDao implements ThemeRepository {
@@ -27,7 +27,7 @@ public class ThemeJdbcDao implements ThemeRepository {
         String sql = "select * from theme where id = :id";
         SqlParameterSource params = new MapSqlParameterSource("id", id);
         try {
-            return namedJdbcTemplate.queryForObject(sql, params, getThemeRowMapper());
+            return namedJdbcTemplate.queryForObject(sql, params, ThemeRowMapper.INSTANCE);
         } catch (EmptyResultDataAccessException e) {
             throw new EntityNotFoundException("테마 데이터를 찾을 수 없습니다: " + id);
         }
@@ -36,7 +36,7 @@ public class ThemeJdbcDao implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         String sql = "select * from theme order by id;";
-        return namedJdbcTemplate.query(sql, getThemeRowMapper());
+        return namedJdbcTemplate.query(sql, ThemeRowMapper.INSTANCE);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class ThemeJdbcDao implements ThemeRepository {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("period", period)
                 .addValue("maxResults", maxResults);
-        return namedJdbcTemplate.query(sql, params, getThemeRowMapper());
+        return namedJdbcTemplate.query(sql, params, ThemeRowMapper.INSTANCE);
     }
 
     @Override
@@ -90,14 +90,5 @@ public class ThemeJdbcDao implements ThemeRepository {
         SqlParameterSource params = new MapSqlParameterSource("name", name);
         Integer count = namedJdbcTemplate.queryForObject(sql, params, Integer.class);
         return count != null && count > 0;
-    }
-
-    private RowMapper<Theme> getThemeRowMapper() {
-        return (resultSet, rowNum) -> new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
-        );
     }
 }

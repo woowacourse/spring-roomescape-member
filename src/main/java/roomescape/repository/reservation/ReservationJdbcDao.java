@@ -3,7 +3,6 @@ package roomescape.repository.reservation;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -16,6 +15,7 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.Theme;
 import roomescape.exceptions.EntityNotFoundException;
+import roomescape.repository.reservation.mapper.ReservationRowMapper;
 
 @Repository
 public class ReservationJdbcDao implements ReservationRepository {
@@ -39,7 +39,7 @@ public class ReservationJdbcDao implements ReservationRepository {
                 on r.member_id = m.id 
                 order by r.id;
                 """;
-        return namedJdbcTemplate.query(sql, getReservationRowMapper());
+        return namedJdbcTemplate.query(sql, ReservationRowMapper.INSTANCE);
     }
 
     @Override
@@ -98,28 +98,5 @@ public class ReservationJdbcDao implements ReservationRepository {
                 .addValue("memberId", member.getId());
         Integer count = namedJdbcTemplate.queryForObject(sql, params, Integer.class);
         return count != null && count > 0;
-    }
-
-    private RowMapper<Reservation> getReservationRowMapper() {
-        return (resultSet, rowNum) -> Reservation.of(
-                resultSet.getLong("reservation_id"),
-                resultSet.getDate("date").toLocalDate(),
-                new ReservationTime(
-                        resultSet.getLong("time_id"),
-                        resultSet.getTime("start_at").toLocalTime()
-                ),
-                new Theme(
-                        resultSet.getLong("theme_id"),
-                        resultSet.getString("theme_name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                ),
-                new Member(
-                        resultSet.getLong("member_id"),
-                        resultSet.getString("member_name"),
-                        resultSet.getString("email"),
-                        resultSet.getString("password")
-                )
-        );
     }
 }
