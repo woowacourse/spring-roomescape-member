@@ -9,7 +9,7 @@ import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationDateTime;
 import roomescape.domain.time.ReservationTime;
 
-public class ReservationDateTimeTest {
+class ReservationDateTimeTest {
 
     @Test
     void 현재_이전_시간에는_예약할_수_없다() {

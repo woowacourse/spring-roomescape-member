@@ -14,31 +14,31 @@ import roomescape.domain.time.ReservationTime;
 public class ReservationDbFixture {
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public ReservationDbFixture(JdbcTemplate jdbcTemplate) {
+    public ReservationDbFixture(final JdbcTemplate jdbcTemplate) {
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Reservation 예약_25_4_22(ReservationTime time, Theme theme, Member member) {
+    public Reservation 예약_25_4_22(final ReservationTime time, final Theme theme, final Member member) {
         ReservationDate date = ReservationDateFixture.예약날짜_25_4_22;
         return createReservation(date, time, theme, member);
     }
 
     public Reservation 예약_생성(
-            ReservationDate date,
-            ReservationTime time,
-            Theme theme,
-            Member member
+            final ReservationDate date,
+            final ReservationTime time,
+            final Theme theme,
+            final Member member
     ) {
         return createReservation(date, time, theme, member);
     }
 
     public Reservation createReservation(
-            ReservationDate date,
-            ReservationTime time,
-            Theme theme,
-            Member member
+            final ReservationDate date,
+            final ReservationTime time,
+            final Theme theme,
+            final Member member
     ) {
         Long id = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
                 .addValue("member_id", member.getId())

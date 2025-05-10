@@ -5,21 +5,30 @@ import static org.hamcrest.Matchers.*;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.common.RestAssuredTestBase;
+import roomescape.integration.api.RestLoginMember;
 
 class ThemeRestTest extends RestAssuredTestBase {
 
+    private RestLoginMember restLoginMember;
     private Map<String, String> createThemeRequest = Map.of(
             "name", "공포방탈출",
             "description", "무서운 분위기 속에서 탈출",
             "thumbnail", "https://example.com/horror.jpg"
     );
 
+    @BeforeEach
+    void setUp() {
+        restLoginMember = generateLoginMember();
+    }
+
     @Test
     void 테마를_생성한다() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("JSESSIONID", restLoginMember.sessionId())
                 .body(createThemeRequest)
                 .when().post("/themes")
                 .then().log().all()
@@ -34,6 +43,7 @@ class ThemeRestTest extends RestAssuredTestBase {
     void 테마_목록을_조회한다() {
         테마를_생성한다();
         RestAssured.given().log().all()
+                .cookie("JSESSIONID", restLoginMember.sessionId())
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
@@ -47,11 +57,13 @@ class ThemeRestTest extends RestAssuredTestBase {
     void 테마를_삭제한다() {
         Integer id = RestAssured.given()
                 .contentType(ContentType.JSON)
+                .cookie("JSESSIONID", restLoginMember.sessionId())
                 .body(createThemeRequest)
                 .when().post("/themes")
                 .then().statusCode(201)
                 .extract().path("id");
         RestAssured.given().log().all()
+                .cookie("JSESSIONID", restLoginMember.sessionId())
                 .when().delete("/themes/{id}", id)
                 .then().log().all()
                 .statusCode(204);
@@ -61,6 +73,7 @@ class ThemeRestTest extends RestAssuredTestBase {
     void 인기_테마를_조회한다() {
         테마를_생성한다();
         RestAssured.given().log().all()
+                .cookie("JSESSIONID", restLoginMember.sessionId())
                 .when().get("/themes/popular")
                 .then().log().all()
                 .statusCode(200)

@@ -20,14 +20,14 @@ public class AdminReservationController {
 
     private final ReservationService reservationService;
 
-    public AdminReservationController(ReservationService reservationService) {
+    public AdminReservationController(final ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
-            @RequestBody @Valid AdminCreateReservationRequest request,
-            @Auth(allowedRoles = {MemberRole.ADMIN}) Member member
+            @RequestBody @Valid final AdminCreateReservationRequest request,
+            @Auth(allowedRoles = {MemberRole.ADMIN}) final Member member
     ) {
         ReservationResponse response = reservationService.createReservationByAdmin(request);
         return ResponseEntity

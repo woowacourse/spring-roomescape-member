@@ -16,11 +16,11 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(
-            Long id,
+            final Long id,
             final Member member,
-            ReservationDate reservationDate,
-            ReservationTime reservationTime,
-            Theme theme
+            final ReservationDate reservationDate,
+            final ReservationTime reservationTime,
+            final Theme theme
     ) {
         this.id = Objects.requireNonNull(id, "id는 null일 수 없습니다.");
         this.member = Objects.requireNonNull(
@@ -61,5 +61,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public ReservationDate getReservationDate() {
+        return reservationDate;
     }
 }

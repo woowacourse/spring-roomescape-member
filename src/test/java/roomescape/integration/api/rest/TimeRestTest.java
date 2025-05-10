@@ -8,16 +8,31 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import roomescape.common.RestAssuredTestBase;
+import roomescape.domain.member.MemberEmail;
+import roomescape.domain.member.MemberEncodedPassword;
+import roomescape.domain.member.MemberName;
+import roomescape.domain.member.MemberRole;
+import roomescape.integration.api.RestLoginMember;
 
 class TimeRestTest extends RestAssuredTestBase {
 
     private Map<String, String> reservationTime = Map.of("startAt", "10:00");
+    private RestLoginMember restLoginMember;
+
+    @BeforeEach
+    void setUp() {
+        restLoginMember = generateLoginMember();
+    }
 
     @Test
     void 예약_시간을_생성한다() {
         RestAssured.given().log().all()
+                .cookie("JSESSIONID", restLoginMember.sessionId())
                 .contentType(ContentType.JSON)
                 .body(reservationTime)
                 .when().post("/times")
@@ -31,6 +46,7 @@ class TimeRestTest extends RestAssuredTestBase {
     void 예약_시간을_조회한다() {
         예약_시간을_생성한다();
         RestAssured.given().log().all()
+                .cookie("JSESSIONID", restLoginMember.sessionId())
                 .contentType(ContentType.JSON)
                 .when().get("/times")
                 .then().log().all()
@@ -44,6 +60,7 @@ class TimeRestTest extends RestAssuredTestBase {
     void 예약_시간을_삭제한다() {
         예약_시간을_생성한다();
         RestAssured.given().log().all()
+                .cookie("JSESSIONID", restLoginMember.sessionId())
                 .contentType(ContentType.JSON)
                 .when().delete("/times/{id}", 1L)
                 .then().log().all()
@@ -54,6 +71,7 @@ class TimeRestTest extends RestAssuredTestBase {
     void 예약_시간들의_예약_가능_여부를_조회한다() {
         예약_시간을_생성한다();
         RestAssured.given().log().all()
+                .cookie("JSESSIONID", restLoginMember.sessionId())
                 .contentType(ContentType.JSON)
                 .queryParam("date", LocalDate.now(FIXED_CLOCK).toString())
                 .queryParam("themeId", 1L)

@@ -191,6 +191,7 @@ host: localhost:8080
 
 
 TODO
-- Service, Repository 테스트 작성
-- Repository 리팩터링
-- 
+- 테스트에서 자주 사용하는 자원 어떤 형식으로 준비할건지 고민 + 리팩터링 하기
+- fakeTest vs mockTest 결정하기
+- 테스트 리팩터링
+- 인터셉터에서 repository 사용하는 구조 고민해보기

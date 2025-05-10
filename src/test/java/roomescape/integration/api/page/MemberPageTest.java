@@ -11,6 +11,7 @@ class MemberPageTest extends RestAssuredTestBase {
     void 유저_예약하기_페이지_조회() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("JSESSIONID", generateLoginMember().sessionId())
                 .when().get("/reservation")
                 .then().log().all()
                 .statusCode(200);
@@ -20,6 +21,7 @@ class MemberPageTest extends RestAssuredTestBase {
     void 기본페이지인_인기_테마_페이지_조회() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("JSESSIONID", generateLoginMember().sessionId())
                 .when().get("/")
                 .then().log().all()
                 .statusCode(200);

@@ -87,54 +87,56 @@ public class DynamicReservationSelectQuery {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void addMemberCondition(Long memberId) {
-        if (memberId == null) {
-            return;
+    public DynamicReservationSelectQuery addMemberCondition(final Long memberId) {
+        if (memberId != null) {
+            conditions.add(new Condition("mb.id = ?", memberId));
         }
-        conditions.add(new Condition("mb.id = ?", memberId));
+        return this;
     }
 
-    public void addThemeCondition(Long themeId) {
-        if (themeId == null) {
-            return;
+    public DynamicReservationSelectQuery addThemeCondition(final Long themeId) {
+        if (themeId != null) {
+            conditions.add(new Condition("th.id = ?", themeId));
         }
-        conditions.add(new Condition("th.id = ?", themeId));
+        return this;
     }
 
-    public void addFromDateCondition(LocalDate startDate) {
-        if (startDate == null) {
-            return;
+    public DynamicReservationSelectQuery addFromDateCondition(final LocalDate startDate) {
+        if (startDate != null) {
+            conditions.add(new Condition(
+                    "PARSEDATETIME(r.date, 'yyyy-MM-dd') >= PARSEDATETIME(?, 'yyyy-MM-dd')",
+                    startDate
+            ));
         }
-        conditions.add(new Condition(
-                "PARSEDATETIME(r.date, 'yyyy-MM-dd') >= PARSEDATETIME(?, 'yyyy-MM-dd')",
-                startDate
-        ));
+        return this;
     }
 
-    public void toEndDateCondition(LocalDate endDate) {
-        if (endDate == null) {
-            return;
+    public DynamicReservationSelectQuery addToDateCondition(final LocalDate endDate) {
+        if (endDate != null) {
+            conditions.add(new Condition(
+                    "PARSEDATETIME(r.date, 'yyyy-MM-dd') <= PARSEDATETIME(?, 'yyyy-MM-dd')",
+                    endDate
+            ));
         }
-        conditions.add(new Condition(
-                "PARSEDATETIME(r.date, 'yyyy-MM-dd') <= PARSEDATETIME(?, 'yyyy-MM-dd')",
-                endDate
-        ));
+        return this;
     }
 
     public List<Reservation> findAllReservations() {
-        return jdbcTemplate.query(completeQuery(), mapper, conditionValues());
+        if (conditions.isEmpty()) {
+            return jdbcTemplate.query(selectQuery, mapper);
+        }
+        return jdbcTemplate.query(containsWhereConditionQuery(), mapper, conditionValues());
     }
 
-    private String completeQuery() {
-        return selectQuery + joinConditions();
+    private String containsWhereConditionQuery() {
+        return selectQuery + " where " + joinConditions() + ";";
     }
 
-    private List<Object> conditionValues() {
-        return conditions.stream().map(Condition::getValue).toList();
+    private Object[] conditionValues() {
+        return conditions.stream().map(Condition::getValue).toArray();
     }
 
     private String joinConditions() {
-        String joinQuery = conditions.stream().map(Condition::getConditionQuery).collect(Collectors.joining(" and "));
-        return String.format(" %s ", joinQuery);
+        return conditions.stream().map(Condition::getConditionQuery).collect(Collectors.joining(" and "));
     }
 }

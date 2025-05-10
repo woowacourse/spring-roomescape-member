@@ -1,14 +1,16 @@
 package roomescape.unit.domain.theme;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.SoftAssertions.*;
 
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeName;
 import roomescape.domain.theme.ThemeDescription;
 import roomescape.domain.theme.ThemeThumbnail;
 
-public class ThemeTest {
+class ThemeTest {
 
     @Test
     void name이_null이면_예외를_던진다() {
@@ -40,8 +42,10 @@ public class ThemeTest {
                 new ThemeThumbnail("thumb.jpg")
         );
 
-        assertThat(theme.getName().name()).isEqualTo("공포");
-        assertThat(theme.getDescription().description()).isEqualTo("무서운 테마입니다");
-        assertThat(theme.getThumbnail().thumbnail()).isEqualTo("thumb.jpg");
+        assertSoftly(softly -> {
+            softly.assertThat(theme.getName().name()).isEqualTo("공포");
+            softly.assertThat(theme.getDescription().description()).isEqualTo("무서운 테마입니다");
+            softly.assertThat(theme.getThumbnail().thumbnail()).isEqualTo("thumb.jpg");
+        });
     }
 }

@@ -23,7 +23,7 @@ public class Member {
         this.role = role;
     }
 
-    public boolean isMatchPassword(MemberPassword rawPassword, PasswordEncoder encoder) {
+    public boolean isMatchPassword(final MemberPassword rawPassword, final PasswordEncoder encoder) {
         return password.isMatched(rawPassword, encoder);
     }
 

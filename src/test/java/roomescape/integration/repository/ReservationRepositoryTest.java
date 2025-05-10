@@ -25,10 +25,9 @@ import roomescape.integration.fixture.ReservationTimeDbFixture;
 import roomescape.integration.fixture.ThemeDbFixture;
 import roomescape.repository.ReservationRepository;
 
-public class ReservationRepositoryTest extends RepositoryBaseTest {
+class ReservationRepositoryTest extends RepositoryBaseTest {
 
     private static final String SELECT_RESERVATION_BY_ID = "SELECT * FROM reservation WHERE id = ?";
-    private static final String SELECT_ALL_RESERVATIONS = "SELECT * FROM reservation";
     private static final String COUNT_RESERVATION_BY_ID = "SELECT COUNT(*) FROM reservation WHERE id = ?";
 
     @Autowired
@@ -88,22 +87,20 @@ public class ReservationRepositoryTest extends RepositoryBaseTest {
 
         // when
         List<Reservation> reservations = reservationRepository.findAll();
-        List<Map<String, Object>> result = jdbcTemplate.queryForList(SELECT_ALL_RESERVATIONS);
 
         // then
-        SoftAssertions softly = new SoftAssertions();
-        softly.assertThat(reservations).hasSize(2);
-        softly.assertThat(result).hasSize(2);
-
-        softly.assertThat(result).anySatisfy(row -> {
-            SoftAssertions nested = new SoftAssertions();
-            nested.assertThat(row.get("member_id")).isEqualTo(1L);
-            nested.assertThat(row.get("date")).isEqualTo(예약1.getDate().toString());
-            nested.assertThat(row.get("time_id")).isEqualTo(예약1.getTimeId());
-            nested.assertThat(row.get("theme_id")).isEqualTo(예약1.getTheme().getId());
-            nested.assertAll();
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(reservations).hasSize(2);
+            softly.assertThat(reservations).hasSize(2);
+            softly.assertThat(reservations).anySatisfy(row -> {
+                SoftAssertions nested = new SoftAssertions();
+                nested.assertThat(row.getId()).isEqualTo(1L);
+                nested.assertThat(row.getDate()).isEqualTo(예약1.getDate());
+                nested.assertThat(row.getTimeId()).isEqualTo(예약1.getTimeId());
+                nested.assertThat(row.getTheme().getId()).isEqualTo(예약1.getTheme().getId());
+                nested.assertAll();
+            });
         });
-        softly.assertAll();
     }
 
     @Test

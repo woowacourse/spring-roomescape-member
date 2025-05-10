@@ -9,7 +9,7 @@ public record MemberEncodedPassword(String password) {
         this.password = Objects.requireNonNull(password, "password은 null일 수 없습니다.");
     }
 
-    public boolean isMatched(MemberPassword rawPassword, PasswordEncoder encoder) {
+    public boolean isMatched(final MemberPassword rawPassword, final PasswordEncoder encoder) {
         return encoder.matches(rawPassword.password(), password);
     }
 }
