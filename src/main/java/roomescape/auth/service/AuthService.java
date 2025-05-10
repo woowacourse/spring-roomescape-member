@@ -33,7 +33,11 @@ public class AuthService {
 
     public TokenWithCookieResponse issueToken(TokenRequest tokenRequest) {
         Member member = memberRepository.findByEmail(tokenRequest.getEmail())
-                .orElseThrow(() -> new NoSuchElementException("해당 사용자를 찾을 수 없습니다" + tokenRequest.getEmail()));
+                .orElseThrow(() -> new NoSuchElementException("해당 사용자를 찾을 수 없습니다 " + tokenRequest.getEmail()));
+
+        if (!member.matchesPassword(tokenRequest.getPassword())) {
+            throw new UnauthorizedException("비밀번호가 일치하지 않습니다.");
+        }
 
         String accessToken = jwtTokenProvider.createToken(member);
         ResponseCookie responseCookie = CookieUtil.createJwtCookie(accessToken);

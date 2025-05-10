@@ -7,6 +7,8 @@ import roomescape.member.entity.Member;
 import roomescape.member.entity.Role;
 import roomescape.member.repository.MemberRepository;
 
+import java.util.NoSuchElementException;
+
 @Service
 public class MemberService {
 
@@ -20,5 +22,10 @@ public class MemberService {
         Member member = Member.withoutId(request.getEmail(), request.getPassword(), request.getName(), Role.USER);
         Member registeredUser = memberRepository.save(member);
         return SignUpResponse.from(registeredUser);
+    }
+
+    public Member findById(Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("해당 사용자를 찾을 수 없습니다."));
     }
 }
