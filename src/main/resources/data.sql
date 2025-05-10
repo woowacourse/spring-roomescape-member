@@ -22,17 +22,3 @@ INSERT INTO themes (name, description, thumbnail)
 VALUES ('테마명2', '설명2', '썸네일2');
 INSERT INTO themes (name, description, thumbnail)
 VALUES ('테마명3', '설명', '썸네일');
-INSERT INTO themes (name, description, thumbnail)
-VALUES ('테마명4', '설명', '썸네일');
-INSERT INTO themes (name, description, thumbnail)
-VALUES ('테마명5', '설명', '썸네일');
-INSERT INTO themes (name, description, thumbnail)
-VALUES ('테마명6', '설명', '썸네일');
-INSERT INTO themes (name, description, thumbnail)
-VALUES ('테마명7', '설명', '썸네일');
-INSERT INTO themes (name, description, thumbnail)
-VALUES ('테마명8', '설명', '썸네일');
-INSERT INTO themes (name, description, thumbnail)
-VALUES ('테마명9', '설명', '썸네일');
-INSERT INTO themes (name, description, thumbnail)
-VALUES ('테마명10', '설명', '썸네일');
