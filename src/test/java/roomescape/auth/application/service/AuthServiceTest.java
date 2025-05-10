@@ -41,6 +41,22 @@ class AuthServiceTest {
     }
 
     @Test
+    @DisplayName("이메일이 존재하지 않을 경우 로그인에 실패한다.")
+    void notFoundEmailTest() {
+        // given
+        String email = "email@email.com";
+        String password = "password";
+        userRepository.insert(new Member(0L, "name", email, password, Role.USER));
+        LoginRequest loginRequest = new LoginRequest("notFound@email.com", password);
+
+        // when - then
+        assertThatThrownBy(() -> authService.login(loginRequest))
+                .isInstanceOf(InvalidMemberException.class)
+                .hasMessage("이메일이 올바르지 않습니다.")
+                .hasFieldOrPropertyWithValue("statusCode", HttpStatus.NOT_FOUND);
+    }
+
+    @Test
     @DisplayName("비밀번호가 틀릴 경우 로그인에 실패한다.")
     void loginFailedTest() {
         // given
