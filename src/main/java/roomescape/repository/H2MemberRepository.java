@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -29,7 +30,13 @@ public class H2MemberRepository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findMember(String email, String password) {
+    public List<Member> findAll() {
+        String sql = "SELECT * FROM member";
+        return template.query(sql, mapper);
+    }
+
+    @Override
+    public Optional<Member> findMemberByEmailAndPassword(String email, String password) {
         String sql =
                 """ 
                         SELECT * 
@@ -39,6 +46,21 @@ public class H2MemberRepository implements MemberRepository {
                         """;
         try {
             Member member = template.queryForObject(sql, mapper, email, password);
+            return Optional.of(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Member> findMemberById(final Long id) {
+        String sql = """ 
+                SELECT * 
+                FROM member
+                WHERE id = ?
+                """;
+        try {
+            Member member = template.queryForObject(sql, mapper, id);
             return Optional.of(member);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
