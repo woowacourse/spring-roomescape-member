@@ -2,15 +2,17 @@ package roomescape.global.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.lang.reflect.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.global.auth.AuthChecker;
+import roomescape.global.auth.Auth;
 import roomescape.global.jwt.AuthorizationExtractor;
 import roomescape.global.jwt.TokenInfo;
 import roomescape.global.jwt.TokenProvider;
+import roomescape.member.domain.Role;
 
 @Component
 public class AuthorizationInterceptor implements HandlerInterceptor {
@@ -30,12 +32,25 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         final TokenInfo tokenInfo = tokenProvider.getInfo(token);
 
         HandlerMethod handlerMethod = (HandlerMethod) handler;
-        if (!AuthChecker.checkAuthorization(handlerMethod.getMethod(), tokenInfo.getRole())) {
+        if (!checkAuthorization(handlerMethod.getMethod(), tokenInfo.getRole())) {
             log();
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }
 
+        return true;
+    }
+
+    private boolean checkAuthorization(Method method, Role currentUserRole) {
+        if (method.isAnnotationPresent(Auth.class)) {
+            if (currentUserRole == Role.ADMIN) {
+                return true;
+            }
+
+            Auth auth = method.getAnnotation(Auth.class);
+            Role requiredRole = auth.value();
+            return currentUserRole == requiredRole;
+        }
         return true;
     }
 
