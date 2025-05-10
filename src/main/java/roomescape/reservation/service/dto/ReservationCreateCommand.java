@@ -1,4 +1,4 @@
-package roomescape.reservation.controller.dto;
+package roomescape.reservation.service.dto;
 
 import java.time.LocalDate;
 import roomescape.member.domain.Member;
@@ -6,7 +6,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 
-public record CreateReservationInfo(LocalDate date, long memberId, Long timeId, Long themeId) {
+public record ReservationCreateCommand(LocalDate date, long memberId, Long timeId, Long themeId) {
 
     public Reservation convertToReservation(final Member member, final ReservationTime reservationTime,
                                             final Theme theme) {

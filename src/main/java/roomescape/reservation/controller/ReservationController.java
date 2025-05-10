@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.service.AuthService;
-import roomescape.member.service.dto.MemberInfo;
-import roomescape.reservation.controller.dto.CreateReservationInfo;
+import roomescape.member.service.dto.LoginMemberInfo;
+import roomescape.reservation.service.dto.ReservationCreateCommand;
 import roomescape.reservation.controller.dto.ReservationRequest;
-import roomescape.reservation.controller.dto.ReservationResponse;
+import roomescape.reservation.service.dto.ReservationInfo;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
@@ -32,20 +32,20 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> create(
+    public ResponseEntity<ReservationInfo> create(
             @CookieValue("token") String token,
             @RequestBody @Valid final ReservationRequest request
     ) {
-        MemberInfo memberInfo = authService.getMemberInfoByToken(token);
-        CreateReservationInfo createReservationInfo = request.convertToCreateReservationInfo(memberInfo.id());
-        final ReservationResponse response = reservationService.createReservation(createReservationInfo);
-        return ResponseEntity.created(URI.create("/reservations/" + response.id())).body(response);
+        LoginMemberInfo loginMemberInfo = authService.getLoginMemberInfoByToken(token);
+        ReservationCreateCommand reservationCreateCommand = request.convertToCreateCommand(loginMemberInfo.id());
+        final ReservationInfo reservationInfo = reservationService.createReservation(reservationCreateCommand);
+        return ResponseEntity.created(URI.create("/reservations/" + reservationInfo.id())).body(reservationInfo);
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> findAll() {
-        final List<ReservationResponse> responses = reservationService.getReservations();
-        return ResponseEntity.ok().body(responses);
+    public ResponseEntity<List<ReservationInfo>> findAll() {
+        final List<ReservationInfo> reservationInfos = reservationService.getReservations();
+        return ResponseEntity.ok().body(reservationInfos);
     }
 
     @DeleteMapping("/{id}")

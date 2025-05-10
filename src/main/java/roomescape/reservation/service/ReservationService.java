@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import roomescape.CurrentDateTime;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberDao;
-import roomescape.reservation.controller.dto.CreateReservationInfo;
-import roomescape.reservation.controller.dto.ReservationResponse;
+import roomescape.reservation.service.dto.ReservationCreateCommand;
+import roomescape.reservation.service.dto.ReservationInfo;
 import roomescape.reservation.repository.ReservationDao;
 import roomescape.reservation.repository.ReservationTimeDao;
 import roomescape.reservation.repository.ThemeDao;
@@ -33,21 +33,21 @@ public class ReservationService {
         this.currentDateTime = dateTimeGenerator;
     }
 
-    public ReservationResponse createReservation(final CreateReservationInfo request) {
-        final Reservation reservation = makeReservation(request);
+    public ReservationInfo createReservation(final ReservationCreateCommand command) {
+        final Reservation reservation = makeReservation(command);
         if (reservation.isBefore(currentDateTime.getDateTime())) {
             throw new IllegalArgumentException("지나간 날짜와 시간은 예약 불가합니다.");
         }
-        if (reservationDao.isExistsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId())) {
+        if (reservationDao.isExistsByDateAndTimeIdAndThemeId(command.date(), command.timeId(), command.themeId())) {
             throw new IllegalArgumentException("해당 시간에 이미 예약이 존재합니다.");
         }
         final Reservation savedReservation = reservationDao.save(reservation);
-        return new ReservationResponse(savedReservation);
+        return new ReservationInfo(savedReservation);
     }
 
-    public List<ReservationResponse> getReservations() {
+    public List<ReservationInfo> getReservations() {
         return reservationDao.findAll().stream()
-                .map(ReservationResponse::new)
+                .map(ReservationInfo::new)
                 .toList();
     }
 
@@ -55,7 +55,7 @@ public class ReservationService {
         reservationDao.deleteById(id);
     }
 
-    private Reservation makeReservation(final CreateReservationInfo request) {
+    private Reservation makeReservation(final ReservationCreateCommand request) {
         final Member member = findMember(request.memberId());
         final ReservationTime reservationTime = findReservationTime(request.timeId());
         final Theme theme = findTheme(request.themeId());

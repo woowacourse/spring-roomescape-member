@@ -3,9 +3,8 @@ package roomescape.member.service;
 import org.springframework.stereotype.Service;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberDao;
-import roomescape.member.service.dto.LoginInfo;
-import roomescape.member.service.dto.TokenResponse;
-import roomescape.member.service.dto.MemberInfo;
+import roomescape.member.service.dto.MemberLoginCommand;
+import roomescape.member.service.dto.LoginMemberInfo;
 
 @Service
 public class AuthService {
@@ -18,18 +17,17 @@ public class AuthService {
         this.tokenProvider = tokenProvider;
     }
 
-    public TokenResponse tokenLogin(final LoginInfo loginInfo) {
-        final Member loginMember = memberDao.findByEmailAndPassword(loginInfo.email(), loginInfo.password())
+    public String tokenLogin(final MemberLoginCommand command) {
+        final Member loginMember = memberDao.findByEmailAndPassword(command.email(), command.password())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일 혹은 비밀번호입니다."));
         Long memberId = loginMember.getId();
-        String token = tokenProvider.createToken(memberId.toString());
-        return new TokenResponse(token);
+        return tokenProvider.createToken(memberId.toString());
     }
 
-    public MemberInfo getMemberInfoByToken(String token) {
+    public LoginMemberInfo getLoginMemberInfoByToken(String token) {
         long memberId = Long.parseLong(tokenProvider.parsePayload(token));
-        Member member = memberDao.findById(memberId)
+        Member loginMember = memberDao.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원 정보입니다."));
-        return new MemberInfo(member);
+        return new LoginMemberInfo(loginMember);
     }
 }
