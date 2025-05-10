@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.domain.enums.Role;
 import roomescape.reservation.controller.dto.ReservationTimeRequest;
 import roomescape.reservation.controller.dto.ReservationTimeResponse;
 import roomescape.reservation.domain.Reservation;
@@ -47,9 +48,9 @@ class ReservationTimeServiceTest {
         themeRepository.saveAndReturnId(new Theme(null, "레벨3 탈출", "우테코 레벨3를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
-        memberRepository.save("루키", "rookie123@woowa.com", "rookierookie123");
-        memberRepository.save("하루", "haru123@woowa.com", "haruharu123");
-        memberRepository.save("베루스", "verus@woowa.com", "verusverus123");
+        memberRepository.save("루키", "rookie123@woowa.com", "rookierookie123", Role.USER);
+        memberRepository.save("하루", "haru123@woowa.com", "haruharu123", Role.USER);
+        memberRepository.save("베루스", "verus@woowa.com", "verusverus123", Role.ADMIN);
 
         reservationRepository.saveAndReturnId(
                 new Reservation(null, LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L).get(),
