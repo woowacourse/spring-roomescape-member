@@ -54,8 +54,6 @@ public class ReservationServiceTest {
         Member member = memberRepository.findById(1L);
 
         // when & then
-        System.out.println("member = " + member);
-        System.out.println("reservation = " + reservation);
         assertDoesNotThrow(() -> reservationService.save(member, reservation));
     }
 

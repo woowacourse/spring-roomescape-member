@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.exception.UnauthorizedException;
 import roomescape.domain.model.Member;
 import roomescape.domain.repository.MemberRepository;
-import roomescape.presentation.dto.request.TokenRequest;
+import roomescape.presentation.dto.request.LoginRequest;
+import roomescape.presentation.dto.response.LoginResponse;
 
 @Service
 public class TokenLoginService {
@@ -19,19 +20,14 @@ public class TokenLoginService {
         this.memberRepository = memberRepository;
     }
 
-    public String login(final TokenRequest request) {
-        Member member = memberRepository.findByEmailAndPassword(request.email(), request.password());
-        return createToken(member);
-    }
+    public LoginResponse login(final LoginRequest request) {
+        Member member = memberRepository.findByEmail(request.email());
+        if (!isPasswordCorrect(request.password(), member.getPassword())) {
+            throw new UnauthorizedException();
+        }
 
-    private String createToken(final Member member) {
-        String accessToken = Jwts.builder()
-                .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("email", member.getEmail())
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                .compact();
-        return accessToken;
+        String token = createToken(member);
+        return new LoginResponse(token);
     }
 
     public Member check(final String token) {
@@ -47,5 +43,17 @@ public class TokenLoginService {
         }
 
         return memberRepository.findById(memberId);
+    }
+
+    private String createToken(final Member member) {
+        String accessToken = Jwts.builder()
+                .setSubject(member.getId().toString())
+                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .compact();
+        return accessToken;
+    }
+
+    private boolean isPasswordCorrect(String getPassword, String savedPassword) {
+        return true;
     }
 }

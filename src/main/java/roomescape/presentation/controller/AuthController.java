@@ -11,29 +11,31 @@ import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.application.service.TokenLoginService;
 import roomescape.domain.model.Member;
 import roomescape.presentation.annotation.MemberAuthorization;
-import roomescape.presentation.dto.request.TokenRequest;
+import roomescape.presentation.dto.request.LoginRequest;
+import roomescape.presentation.dto.response.LoginResponse;
 import roomescape.presentation.dto.response.MemberNameResponse;
 
 @Controller
 public class LoginController {
 
-    private final TokenLoginService tokenLoginService;
+    private final TokenLoginService loginService;
 
-    public LoginController(final TokenLoginService tokenLoginService) {
-        this.tokenLoginService = tokenLoginService;
+    public LoginController(final TokenLoginService loginService) {
+        this.loginService = loginService;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@Validated @RequestBody TokenRequest request) {
-        String accessToken = tokenLoginService.login(request);
+    public ResponseEntity<Void> login(@Validated @RequestBody LoginRequest request) {
+        LoginResponse response = loginService.login(request);
+        String token = response.token();
 
-        Cookie cookie = new Cookie("token", accessToken);
+        Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Keep-Alive", "timeout=" + 60);
-        headers.add("Set-Cookie", "token=" + accessToken + "; Path=/; HttpOnly");
+        headers.add("Set-Cookie", "token=" + token + "; Path=/; HttpOnly");
 
         return ResponseEntity.ok()
                 .headers(headers)
@@ -66,5 +68,4 @@ public class LoginController {
                 .headers(headers)
                 .build();
     }
-
 }
