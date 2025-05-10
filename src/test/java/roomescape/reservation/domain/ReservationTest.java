@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import roomescape.reservation.exception.InvalidReservationTimeException;
@@ -16,10 +17,18 @@ import roomescape.reservation.fixture.ReservationFixture;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.fixture.ReservationTimeFixture;
 import roomescape.theme.ThemeTestDataConfig;
+import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.user.UserTestDataConfig;
+import roomescape.user.repository.JdbcUserRepository;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {ThemeTestDataConfig.class, UserTestDataConfig.class})
+@JdbcTest
+@ContextConfiguration(classes = {
+        JdbcThemeRepository.class,
+        JdbcUserRepository.class,
+        ThemeTestDataConfig.class,
+        UserTestDataConfig.class
+})
 class ReservationTest {
 
     @Autowired

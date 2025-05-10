@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.common.KeyHolderManager;
 import roomescape.globalException.NotFoundException;
 import roomescape.reservation.domain.dto.ReservationRequestDto;
 import roomescape.reservation.repository.JdbcReservationRepository;
@@ -41,7 +42,8 @@ import roomescape.user.repository.UserRepository;
         ReservationService.class,
         JdbcThemeRepository.class,
         ReservationTimeTestDataConfig.class,
-        JdbcUserRepository.class
+        JdbcUserRepository.class,
+        KeyHolderManager.class
 })
 class ReservationTimeServiceTest {
 

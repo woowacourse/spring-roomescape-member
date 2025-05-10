@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.common.KeyHolderManager;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.fixture.ReservationFixture;
 import roomescape.reservationTime.domain.ReservationTime;
@@ -16,13 +17,16 @@ import roomescape.reservationTime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.ThemeTestDataConfig;
 import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.user.UserTestDataConfig;
+import roomescape.user.repository.JdbcUserRepository;
 
 @JdbcTest
 @Import({JdbcReservationRepository.class,
         JdbcReservationTimeRepository.class,
         JdbcThemeRepository.class,
         ThemeTestDataConfig.class,
-        UserTestDataConfig.class
+        UserTestDataConfig.class,
+        KeyHolderManager.class,
+        JdbcUserRepository.class
 })
 class JdbcReservationRepositoryTest {
 

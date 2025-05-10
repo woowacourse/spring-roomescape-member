@@ -8,12 +8,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.common.KeyHolderManager;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.exception.NotFoundReservationTimeException;
 import roomescape.reservationTime.fixture.ReservationTimeFixture;
 
 @JdbcTest
-@Import({JdbcReservationTimeRepository.class})
+@Import({JdbcReservationTimeRepository.class, KeyHolderManager.class})
 class JdbcReservationTimeRepositoryTest {
 
     @Autowired
