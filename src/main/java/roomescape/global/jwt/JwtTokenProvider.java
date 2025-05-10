@@ -52,6 +52,10 @@ public class JwtTokenProvider implements TokenProvider {
     }
 
     private void validateToken(String token) {
+        if (token == null || token.trim().isEmpty()) {
+            throw new JwtException("JWT 토큰이 존재하지 않습니다.");
+        }
+
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
