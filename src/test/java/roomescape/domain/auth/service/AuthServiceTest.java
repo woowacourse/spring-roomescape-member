@@ -22,6 +22,7 @@ import roomescape.domain.auth.entity.Name;
 import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.exception.InvalidAuthorizationException;
+import roomescape.domain.auth.exception.UserNotFoundException;
 import roomescape.domain.auth.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -80,9 +81,7 @@ class AuthServiceTest {
             final LoginRequest loginRequest = new LoginRequest(email, "123");
 
             // when & then
-            assertThatThrownBy(() -> {
-                authService.login(loginRequest);
-            }).isInstanceOf(InvalidAuthorizationException.class);
+            assertThatThrownBy(() -> authService.login(loginRequest)).isInstanceOf(InvalidAuthorizationException.class);
         }
 
         @DisplayName("존재하지 않는 이메일이라면 UserNotFoundException 예외를 반환한다.")
@@ -94,9 +93,7 @@ class AuthServiceTest {
             final LoginRequest loginRequest = new LoginRequest(email, "123");
 
             // when & then
-            assertThatThrownBy(() -> {
-                authService.login(loginRequest);
-            }).isInstanceOf(InvalidAuthorizationException.class);
+            assertThatThrownBy(() -> authService.login(loginRequest)).isInstanceOf(UserNotFoundException.class);
         }
     }
 }

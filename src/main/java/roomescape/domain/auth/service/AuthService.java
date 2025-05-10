@@ -12,6 +12,7 @@ import roomescape.domain.auth.dto.TokenResponse;
 import roomescape.domain.auth.dto.UserInfoResponse;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.exception.InvalidAuthorizationException;
+import roomescape.domain.auth.exception.UserNotFoundException;
 import roomescape.domain.auth.repository.UserRepository;
 
 @Slf4j
@@ -32,7 +33,7 @@ public class AuthService {
     @Transactional(readOnly = true)
     public TokenResponse login(final LoginRequest loginRequest) {
         final User user = userRepository.findByEmail(loginRequest.email())
-                .orElseThrow(() -> new InvalidAuthorizationException("해당 계정이 존재하지 않습니다."));
+                .orElseThrow(() -> new UserNotFoundException("해당 계정이 존재하지 않습니다."));
 
         user.login(loginRequest.email(), loginRequest.password());
 
@@ -45,7 +46,7 @@ public class AuthService {
     public UserInfoResponse getUserInfo(final LoginUserDto loginUserDto) {
         return userRepository.findById(loginUserDto.id())
                 .map(UserInfoResponse::from)
-                .orElseThrow(() -> new InvalidAuthorizationException("해당 계정이 존재하지 않습니다."));
+                .orElseThrow(() -> new UserNotFoundException("해당 계정이 존재하지 않습니다."));
     }
 
     @Transactional(readOnly = true)
@@ -69,6 +70,6 @@ public class AuthService {
 
         return userRepository.findById(userId)
                 .map(LoginUserDto::from)
-                .orElseThrow(() -> new InvalidAuthorizationException("해당 계정이 존재하지 않습니다."));
+                .orElseThrow(() -> new UserNotFoundException("해당 계정이 존재하지 않습니다."));
     }
 }

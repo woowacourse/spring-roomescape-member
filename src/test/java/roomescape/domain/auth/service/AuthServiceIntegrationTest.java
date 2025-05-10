@@ -18,6 +18,7 @@ import roomescape.domain.auth.entity.Name;
 import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.exception.InvalidAuthorizationException;
+import roomescape.domain.auth.exception.UserNotFoundException;
 import roomescape.domain.auth.repository.UserRepository;
 
 @SpringBootTest
@@ -71,9 +72,7 @@ public class AuthServiceIntegrationTest {
             final LoginUserDto loginUserDto = new LoginUserDto(210L, Roles.USER);
 
             // when & then
-            assertThatThrownBy(() -> {
-                authService.getUserInfo(loginUserDto);
-            }).isInstanceOf(InvalidAuthorizationException.class);
+            assertThatThrownBy(() -> authService.getUserInfo(loginUserDto)).isInstanceOf(UserNotFoundException.class);
         }
     }
 
@@ -105,9 +104,7 @@ public class AuthServiceIntegrationTest {
             final String invalidToken = "213123213214sdadcxzcxz";
 
             // when & then
-            assertThatThrownBy(() -> {
-                authService.getLoginUser(invalidToken);
-            }).isInstanceOf(InvalidAuthorizationException.class);
+            assertThatThrownBy(() -> authService.getLoginUser(invalidToken)).isInstanceOf(InvalidAuthorizationException.class);
         }
 
         @DisplayName("쿠키를 통해 로그인 정보를 검증한다.")
