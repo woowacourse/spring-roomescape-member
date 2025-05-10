@@ -1,6 +1,8 @@
 package roomescape.service;
 
+import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
+import roomescape.auth.JwtExtractor;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
@@ -13,10 +15,13 @@ import roomescape.exception.MemberException;
 public class AuthService {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtExtractor jwtExtractor;
     private final MemberDao memberDao;
 
-    public AuthService(final JwtTokenProvider jwtTokenProvider, final MemberDao memberDao) {
+    public AuthService(final JwtTokenProvider jwtTokenProvider, final JwtExtractor jwtExtractor,
+                       final MemberDao memberDao) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtExtractor = jwtExtractor;
         this.memberDao = memberDao;
     }
 
@@ -31,7 +36,12 @@ public class AuthService {
                 .orElseThrow(() -> new MemberException("해당 이메일의 회원이 존재하지 않습니다."));
     }
 
-    public MemberResponse findMemberByToken(final String token) {
+    public MemberResponse checkLogin(final String cookieName, final Cookie[] cookies) {
+        String token = jwtExtractor.extractTokenFromCookie(cookieName, cookies);
+        return findMemberByToken(token);
+    }
+
+    private MemberResponse findMemberByToken(final String token) {
         Long id = jwtTokenProvider.getSubjectFromPayloadBy(token);
         Member member = findMemberById(id);
         return new MemberResponse(member.getName());

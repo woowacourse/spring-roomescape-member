@@ -3,9 +3,11 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.auth.JwtExtractor;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.dao.FakeMemberDaoImpl;
 import roomescape.dao.MemberDao;
@@ -17,12 +19,14 @@ import roomescape.exception.InvalidAuthException;
 class AuthServiceTest {
 
     private AuthService authService;
+    private JwtExtractor jwtExtractor;
     private MemberDao memberDao;
 
     @BeforeEach
     void setUp() {
         this.memberDao = new FakeMemberDaoImpl();
-        this.authService = new AuthService(new JwtTokenProvider(), memberDao);
+        this.jwtExtractor = new JwtExtractor();
+        this.authService = new AuthService(new JwtTokenProvider(), jwtExtractor, memberDao);
     }
 
     @DisplayName("인증에 성공하면 Jwt 토큰을 발급한다.")
@@ -61,8 +65,10 @@ class AuthServiceTest {
         LoginRequest request = new LoginRequest("testEmail", "1234");
         String token = authService.createToken(request);
 
+        Cookie[] cookies = new Cookie[]{new Cookie("token", token)};
+
         //when
-        MemberResponse actual = authService.findMemberByToken(token);
+        MemberResponse actual = authService.checkLogin("token", cookies);
 
         //then
         assertThat(actual.name()).isEqualTo("testName");
