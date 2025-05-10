@@ -32,4 +32,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 null, request);
         return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
     }
+
+    @ExceptionHandler(TokenCreationException.class)
+    public ResponseEntity<Object> handleTokenCreationException(final Exception ex, final WebRequest request) {
+        final ProblemDetail body = super.createProblemDetail(ex, HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(),
+                null,
+                null, request);
+        return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
 }
