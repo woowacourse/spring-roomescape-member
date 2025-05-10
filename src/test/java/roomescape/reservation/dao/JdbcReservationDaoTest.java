@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
@@ -31,7 +32,8 @@ public class JdbcReservationDaoTest {
         final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         final Theme theme = new Theme(1L, "예시 1", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        final Reservation reservation = new Reservation("검프", LocalDate.now().plusDays(1), reservationTime, theme);
+        final Member member = new Member(2L, "User", "사용자", "user@email.com", "password");
+        final Reservation reservation = new Reservation(LocalDate.now().plusDays(1), reservationTime, theme, member);
 
         // when
         final long result = reservationDAO.insert(reservation);
@@ -60,9 +62,9 @@ public class JdbcReservationDaoTest {
         Assertions.assertNotNull(results);
         assertAll(
                 () -> assertThat(results).hasSize(3),
-                () -> assertThat(results.getFirst().getName()).isEqualTo("test1"),
-                () -> assertThat(results.get(1).getName()).isEqualTo("test2"),
-                () -> assertThat(results.getLast().getName()).isEqualTo("test3")
+                () -> assertThat(results.getFirst().getDate()).isEqualTo("2025-04-26"),
+                () -> assertThat(results.get(1).getDate()).isEqualTo("2025-04-27"),
+                () -> assertThat(results.getLast().getDate()).isEqualTo("2025-04-28")
         );
     }
 

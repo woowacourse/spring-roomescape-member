@@ -15,6 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
+import roomescape.member.domain.Member;
 import roomescape.reservation.controller.dto.CreateReservationRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.service.dto.CreateReservationServiceRequest;
@@ -32,7 +33,7 @@ class ReservationServiceTest {
     @DisplayName("예약 정보를 저장한 다음 저장 정보를 리턴한다")
     void addReservationTest() {
         // given // when
-        final CreateReservationServiceRequest creation = new CreateReservationServiceRequest("검프", FUTURE_DATE, 1L, 1L);
+        final CreateReservationServiceRequest creation = new CreateReservationServiceRequest(FUTURE_DATE, 1L, 1L, 2L);
         final Reservation actual = reservationService.addReservation(creation);
 
         // then
@@ -46,11 +47,12 @@ class ReservationServiceTest {
     @DisplayName("테마, 날짜, 시간이 같은 예약이 존재하면 예외를 던진다")
     void addReservationTest_WhenDuplicatedReservationExists() {
         // given
-        reservationService.addReservation(CreateReservationServiceRequest.from(
-                new CreateReservationRequest("test", FUTURE_DATE, 1L, 1L)));
+        reservationService.addReservation(CreateReservationServiceRequest.fromRequestAndMember(
+                new CreateReservationRequest(FUTURE_DATE, 1L, 1L),
+                new Member(2L, "User", "사용자", "user@email.com", "password")));
 
-        final CreateReservationServiceRequest duplicated = new CreateReservationServiceRequest("test", FUTURE_DATE, 1L,
-                1L);
+        final CreateReservationServiceRequest duplicated = new CreateReservationServiceRequest(FUTURE_DATE, 1L,
+                1L, 2L);
 
         // when // then
         assertThatThrownBy(() -> reservationService.addReservation(duplicated))
@@ -65,7 +67,7 @@ class ReservationServiceTest {
         final LocalDate pastDate = LocalDate.of(2000, 1, 1);
 
         // when // then
-        final CreateReservationServiceRequest past = new CreateReservationServiceRequest("test", pastDate, 1L, 1L);
+        final CreateReservationServiceRequest past = new CreateReservationServiceRequest(pastDate, 1L, 1L, 2L);
         assertThatThrownBy(() -> reservationService.addReservation(past))
                 .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessageContaining("과거 시점은 예약할 수 없습니다");
@@ -79,7 +81,7 @@ class ReservationServiceTest {
 
         // when // then
         assertThatThrownBy(() -> reservationService.addReservation(
-                new CreateReservationServiceRequest("test", FUTURE_DATE, notExistTimeId, 1L)))
+                new CreateReservationServiceRequest(FUTURE_DATE, notExistTimeId, 1L, 2L)))
                 .isInstanceOf(NotExistedValueException.class)
                 .hasMessageContaining("존재하지 않는 예약 가능 시간입니다");
     }
@@ -92,7 +94,7 @@ class ReservationServiceTest {
 
         // when // then
         assertThatThrownBy(() -> reservationService.addReservation(
-                new CreateReservationServiceRequest("test", FUTURE_DATE, 1L, notExistThemeId)))
+                new CreateReservationServiceRequest(FUTURE_DATE, 1L, notExistThemeId, 2L)))
                 .isInstanceOf(NotExistedValueException.class)
                 .hasMessageContaining("존재하지 않는 테마 입니다");
     }

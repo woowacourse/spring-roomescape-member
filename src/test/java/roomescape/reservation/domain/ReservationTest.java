@@ -8,29 +8,31 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.custom.InvalidInputException;
+import roomescape.member.domain.Member;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 class ReservationTest {
-    private static final String NAME = "검프";
+
     private static final LocalDate DATE = LocalDate.now().plusDays(1);
     private static final ReservationTime RESERVATION_TIME = new ReservationTime(1L, LocalTime.of(10, 0));
     private static final Theme THEME = new Theme(1L, "우테코", "미션 2는 방탈출 사용자 예약", "url");
+    private static final Member MEMBER = new Member(1L, "User", "라젤", "razel@woowa.com", "password");
 
-    @DisplayName("예약 생성시, 예약자 명이 빈 값이면 예외를 던진다")
+    @DisplayName("예약 생성시, 멤버가 빈 값이면 예외를 던진다")
     @Test
     void createReservationTest_WhenNameIsNull() {
         // given // when // then
-        assertThatThrownBy(() -> new Reservation(null, DATE, RESERVATION_TIME, THEME))
+        assertThatThrownBy(() -> new Reservation(DATE, RESERVATION_TIME, THEME, null))
                 .isInstanceOf(InvalidInputException.class)
-                .hasMessage("예약자 명은 빈 값이 입력될 수 없습니다");
+                .hasMessage("멤버는 빈 값이 입력될 수 없습니다");
     }
 
     @DisplayName("예약 생성시, 예약 날짜가 빈 값이면 예외를 던진다")
     @Test
     void createReservationTest_WhenDateIsNull() {
         // given // when // then
-        assertThatThrownBy(() -> new Reservation(NAME, null, RESERVATION_TIME, THEME))
+        assertThatThrownBy(() -> new Reservation(null, RESERVATION_TIME, THEME, MEMBER))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약 날짜는 빈 값이 입력될 수 없습니다");
     }
@@ -39,7 +41,7 @@ class ReservationTest {
     @Test
     void createReservationTest_WhenReservationTimeIsNull() {
         // given // when // then
-        assertThatThrownBy(() -> new Reservation(NAME, DATE, null, THEME))
+        assertThatThrownBy(() -> new Reservation(DATE, null, THEME, MEMBER))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약 시간은 빈 값이 입력될 수 없습니다");
     }
@@ -48,7 +50,7 @@ class ReservationTest {
     @Test
     void createReservationTest_WhenThemeIsNull() {
         // given // when // then
-        assertThatThrownBy(() -> new Reservation(NAME, DATE, RESERVATION_TIME, null))
+        assertThatThrownBy(() -> new Reservation(DATE, RESERVATION_TIME, null, MEMBER))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약 테마는 빈 값이 입력될 수 없습니다");
     }
@@ -58,7 +60,7 @@ class ReservationTest {
     void isPastDateAndTimeTest_WhenDateIsPast() {
         // given
         final LocalDate pastDate = LocalDate.now().minusDays(1);
-        final Reservation reservation = new Reservation(NAME, pastDate, RESERVATION_TIME, THEME);
+        final Reservation reservation = new Reservation(pastDate, RESERVATION_TIME, THEME, MEMBER);
 
         // when // then
         assertThat(reservation.isPastDateAndTime()).isTrue();
@@ -68,7 +70,7 @@ class ReservationTest {
     @Test
     void isPastDateAndTimeTest_WhenDateIsFuture() {
         // given
-        final Reservation reservation = new Reservation(NAME, DATE, RESERVATION_TIME, THEME);
+        final Reservation reservation = new Reservation(DATE, RESERVATION_TIME, THEME, MEMBER);
 
         // when // then
         assertThat(reservation.isPastDateAndTime()).isFalse();
@@ -79,7 +81,7 @@ class ReservationTest {
     void isPastDateAndTimeTest_WhenDateIsTodayAndTimeIsPast() {
         // given
         final ReservationTime pastTime = new ReservationTime(2L, LocalTime.now().minusHours(1));
-        final Reservation reservation = new Reservation(NAME, LocalDate.now(), pastTime, THEME);
+        final Reservation reservation = new Reservation(LocalDate.now(), pastTime, THEME, MEMBER);
 
         // when // then
         assertThat(reservation.isPastDateAndTime()).isTrue();
@@ -90,7 +92,7 @@ class ReservationTest {
     void isPastDateAndTimeTest_WhenDateIsTodayAndTimeIsFuture() {
         // given
         final ReservationTime futureTime = new ReservationTime(2L, LocalTime.now().plusMinutes(1));
-        final Reservation reservation = new Reservation(NAME, LocalDate.now(), futureTime, THEME);
+        final Reservation reservation = new Reservation(LocalDate.now(), futureTime, THEME, MEMBER);
 
         // when // then
         assertThat(reservation.isPastDateAndTime()).isFalse();

@@ -6,10 +6,8 @@ import java.util.Map;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -17,39 +15,44 @@ import org.springframework.test.annotation.DirtiesContext;
 class ReservationControllerTest {
 
     private static final Map<String, String> RESERVATION_BODY = Map.of(
-            "name", "검프",
             "date", "3000-03-17",
             "timeId", "1",
-            "themeId", "1"
+            "themeId", "1",
+            "memberId", "2"
     );
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @DisplayName("예약 추가 요청시, id를 포함한 예약 내용과 CREATED를 응답한다")
     @Test
     void addReservationTest() {
+        String token = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(Map.of("email", "user@email.com", "password", "password"))
+                .when().post("/login")
+                .then().statusCode(200)
+                .extract().response().getDetailedCookies().getValue("token");
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token) // 쿠키로 인증 정보 전달
                 .body(RESERVATION_BODY)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
-                .body("name", Matchers.equalTo("검프"))
                 .body("date", Matchers.equalTo("3000-03-17"));
+
     }
 
     @DisplayName("예약 조회 요청시, 존재하는 모든 예약과 OK를 응답한다")
     @Test
-    void findAllReservationTest() {
+    void findReservationsTest() {
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .body("size()", Matchers.is(3))
-                .body("[0].name", Matchers.equalTo("test1"))
-                .body("[1].name", Matchers.equalTo("test2"))
-                .body("[2].name", Matchers.equalTo("test3"));
+                .body("[0].date", Matchers.equalTo("2025-04-26"))
+                .body("[1].date", Matchers.equalTo("2025-04-27"))
+                .body("[2].date", Matchers.equalTo("2025-04-28"));
     }
 
 
