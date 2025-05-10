@@ -25,7 +25,7 @@ public class Member {
     }
 
     public boolean checkInvalidLogin(String email, String password) {
-        return !(this.email.equals(email) || this.password.equals(password));
+        return !(this.email.equals(email) && this.password.equals(password));
     }
 
     private void validate(String name, String email, MemberRole role, String password) {
