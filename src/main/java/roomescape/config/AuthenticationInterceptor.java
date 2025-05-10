@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.AccessToken;
 import roomescape.business.service.member.MemberService;
 
 /**

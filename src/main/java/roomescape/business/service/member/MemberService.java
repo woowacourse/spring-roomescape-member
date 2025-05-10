@@ -3,7 +3,7 @@ package roomescape.business.service.member;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import roomescape.AccessToken;
+import roomescape.config.AccessToken;
 import roomescape.business.domain.member.Member;
 import roomescape.config.LoginMember;
 import roomescape.exception.MemberException;
