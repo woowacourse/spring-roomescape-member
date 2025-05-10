@@ -27,7 +27,7 @@ public class Theme {
 
     private void validateMaxNameLength(final String name) {
         if (name.length() > MAX_NAME_LENGTH) {
-            throw new InvalidCreateArgumentException("테마 이름은 10자를 넘길 수 없습니다.");
+            throw new InvalidCreateArgumentException("테마 이름은 %d자를 넘길 수 없습니다.".formatted(MAX_NAME_LENGTH));
         }
     }
 
