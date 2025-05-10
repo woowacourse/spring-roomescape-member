@@ -17,12 +17,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthorizationException.class)
     public ProblemDetail handleAuthorizationException(AuthorizationException e) {
-        return createErrorResponse(e, HttpStatus.UNAUTHORIZED);
+        return createErrorResponse(e, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(AuthenticationException.class)
     public ProblemDetail handleAuthenticationException(AuthenticationException e) {
-        return createErrorResponse(e, HttpStatus.FORBIDDEN);
+        return createErrorResponse(e, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

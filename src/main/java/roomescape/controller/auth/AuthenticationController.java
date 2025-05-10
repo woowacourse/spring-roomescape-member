@@ -2,7 +2,6 @@ package roomescape.controller.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,7 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.auth.LoginCheckResponse;
 import roomescape.dto.auth.LoginRequest;
-import roomescape.exceptions.auth.AuthorizationException;
+import roomescape.infrastructure.intercepter.AuthenticationPrincipal;
+import roomescape.infrastructure.member.MemberInfo;
 import roomescape.service.auth.AuthenticationService;
 
 @RestController
@@ -37,16 +37,11 @@ public class AuthenticationController {
     }
 
     @GetMapping("/login/check")
-    public LoginCheckResponse loginCheck(@CookieValue(value = "token", defaultValue = "") String token,
+    public LoginCheckResponse loginCheck(@AuthenticationPrincipal MemberInfo memberInfo,
                                          HttpServletResponse response) {
-        if (token.isBlank()) {
-            throw new AuthorizationException("로그인이 필요합니다.");
-        }
-        String name = authenticationService.findNameByToken(token);
-
         response.setHeader("Connection", "keep-alive");
         response.setContentType("application/json");
         response.setHeader("Keep-Alive", "timeout=60");
-        return new LoginCheckResponse(name);
+        return new LoginCheckResponse(memberInfo.name());
     }
 }

@@ -1,7 +1,6 @@
 package roomescape.infrastructure.intercepter;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -28,7 +27,7 @@ public class AuthenticationPrincipalResolver implements HandlerMethodArgumentRes
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         if (request == null) {
-            throw new AuthenticationException("로그인이 필요합니다.");
+            throw new IllegalArgumentException("잘못된 요청입니다.");
         }
         String token = JwtCookieResolver.getTokenFromCookie(request);
         return jwtTokenProvider.resolveToken(token);
