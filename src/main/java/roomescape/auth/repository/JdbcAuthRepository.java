@@ -1,5 +1,6 @@
 package roomescape.auth.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -46,4 +47,24 @@ public class JdbcAuthRepository implements AuthRepository {
         long id = keyHolder.getKey().longValue();
         return Member.afterSave(id, name, email, password, Role.USER);
     }
+
+    public Member findByEmail(final String email) {
+        try {
+            final String sql = "SELECT * FROM member WHERE email = ?";
+            return jdbcTemplate.queryForObject(
+                    sql,
+                    (resultSet, rowNum) ->
+                            Member.afterSave(
+                                    resultSet.getLong("id"),
+                                    resultSet.getString("name"),
+                                    resultSet.getString("email"),
+                                    resultSet.getString("password"),
+                                    Role.valueOf(resultSet.getString("role"))
+                            ),
+                    email);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
 }

@@ -1,5 +1,7 @@
 package roomescape.auth.entity;
 
+import roomescape.exception.impl.InvalidLoginException;
+
 public class Member {
     private final Long id;
     private final String name;
@@ -53,5 +55,11 @@ public class Member {
 
     public Role getRole() {
         return role;
+    }
+
+    public void validatePassword(final String password) {
+        if (!this.password.equals(password)) {
+            throw new InvalidLoginException();
+        }
     }
 }

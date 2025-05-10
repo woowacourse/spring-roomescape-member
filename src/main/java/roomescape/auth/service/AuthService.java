@@ -32,6 +32,13 @@ public class AuthService {
     }
 
     public String login(final String email, final String password) {
+        checkInvalidLogin(email, password);
         return jwtTokenProvider.createToken(email);
     }
+
+    private void checkInvalidLogin(final String email, final String password) {
+        Member member = jdbcAuthRepository.findByEmail(email);
+        member.validatePassword(password);
+    }
+
 }
