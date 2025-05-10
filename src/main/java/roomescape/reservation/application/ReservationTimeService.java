@@ -36,7 +36,7 @@ public class ReservationTimeService {
         return ReservationTimeResponse.from(found);
     }
 
-    public void delete(final Long id) {
+    public void deleteById(final Long id) {
         final Optional<ReservationTime> found = reservationTimeRepository.findById(id);
 
         if (found.isEmpty()) {

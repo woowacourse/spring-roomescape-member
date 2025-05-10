@@ -48,7 +48,7 @@ class ReservationTimeServiceTest {
         final Long id = reservationTimeRepository.save(new ReservationTime(startAt));
 
         // when & then
-        Assertions.assertThatCode(() -> reservationTimeService.delete(id))
+        Assertions.assertThatCode(() -> reservationTimeService.deleteById(id))
                 .doesNotThrowAnyException();
     }
 
@@ -73,7 +73,7 @@ class ReservationTimeServiceTest {
         final Long id = Long.MAX_VALUE;
 
         // when & then
-        Assertions.assertThatThrownBy(() -> reservationTimeService.delete(id))
+        Assertions.assertThatThrownBy(() -> reservationTimeService.deleteById(id))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 

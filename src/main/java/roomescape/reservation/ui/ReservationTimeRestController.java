@@ -41,7 +41,7 @@ public class ReservationTimeRestController {
     public ResponseEntity<Void> delete(
             @PathVariable final Long id
     ) {
-        reservationTimeService.delete(id);
+        reservationTimeService.deleteById(id);
 
         return ResponseEntity.noContent().build();
     }
