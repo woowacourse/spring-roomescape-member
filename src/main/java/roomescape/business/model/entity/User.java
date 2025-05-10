@@ -1,5 +1,6 @@
 package roomescape.business.model.entity;
 
+import roomescape.business.model.vo.Email;
 import roomescape.business.model.vo.Id;
 import roomescape.business.model.vo.Password;
 import roomescape.business.model.vo.UserRole;
@@ -12,10 +13,10 @@ public class User {
     private final Id id;
     private final UserRole userRole;
     private final String name;
-    private final String email;
+    private final Email email;
     private final Password password;
 
-    private User(final Id id, final UserRole userRole, final String name, final String email, final Password password) {
+    private User(final Id id, final UserRole userRole, final String name, final Email email, final Password password) {
         validateMaxNameLength(name);
         validateNameDoesNotContainsNumber(name);
         this.id = id;
@@ -40,11 +41,11 @@ public class User {
     }
 
     public static User create(final String name, final String email, final String password) {
-        return new User(Id.issue(), UserRole.USER, name, email, Password.encode(password));
+        return new User(Id.issue(), UserRole.USER, name, new Email(email), Password.encode(password));
     }
 
     public static User restore(final String id, final String userRole, final String name, final String email, final String password) {
-        return new User(Id.create(id), UserRole.valueOf(userRole), name, email, Password.plain(password));
+        return new User(Id.create(id), UserRole.valueOf(userRole), name, new Email(email), Password.plain(password));
     }
 
     public boolean isPasswordCorrect(final String password) {
@@ -60,7 +61,7 @@ public class User {
     }
 
     public String email() {
-        return email;
+        return email.value();
     }
 
     public String password() {

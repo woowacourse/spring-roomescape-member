@@ -78,6 +78,17 @@ class UserTest {
     }
 
     @Nested
+    class 이메일_유효성_검증_테스트 {
+
+        @ParameterizedTest
+        @ValueSource(strings = {"dompoo", "dompoo@", "dompoo@gmail", "dompoo.com"})
+        void 이메일_형식이_아니면_예외가_발생한다(String invalidEmail) {
+            assertThatThrownBy(() -> User.create(VALID_NAME, invalidEmail, VALID_PASSWORD))
+                    .isInstanceOf(InvalidCreateArgumentException.class);
+        }
+    }
+
+    @Nested
     class 비밀번호_검증_테스트 {
 
         @Test
