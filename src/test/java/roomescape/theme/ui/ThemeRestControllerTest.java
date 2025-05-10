@@ -31,7 +31,7 @@ class ThemeRestControllerTest {
     }
 
     @Test
-    void 일반_회원_권한으로_테마_추가를_시도하면_UNATHORIZED_응답을_받는다() {
+    void 회원_권한으로_테마_추가를_시도하면_UNATHORIZED_응답을_받는다() {
         final Map<String, String> signUpParams = MemberApiFixture.memberSignUpParams();
         MemberApiFixture.signUp(signUpParams);
 
