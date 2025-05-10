@@ -3,6 +3,7 @@ package roomescape.member.application.service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.jwt.TokenProvider;
 import roomescape.member.application.repository.MemberRepository;
 import roomescape.member.domain.Member;
@@ -42,6 +43,7 @@ public class MemberService {
                 .orElseThrow(() -> new NoSuchElementException("유저 정보를 찾을 수 없습니다."));
     }
 
+    @Transactional
     public SignUpResponse signUp(SignUpRequest signUpRequest) {
         if (memberRepository.findByEmail(signUpRequest.getEmail()).isPresent()) {
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");

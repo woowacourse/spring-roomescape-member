@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.member.application.repository.MemberRepository;
 import roomescape.member.domain.Member;
 import roomescape.reservation.application.dto.CreateReservationRequest;
@@ -37,6 +38,7 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
+    @Transactional
     public ReservationResponse createReservation(final ReservationRequest reservationRequest, final Member member) {
         ReservationDate reservationDate = new ReservationDate(reservationRequest.getDate());
         ReservationTime reservationTime = getReservationTime(reservationRequest.getTimeId());
@@ -53,6 +55,7 @@ public class ReservationService {
         return new ReservationResponse(reservationRepository.insert(createReservationRequest));
     }
 
+    @Transactional
     public ReservationResponse createReservation(final AdminReservationRequest adminReservationRequest) {
         ReservationDate reservationDate = new ReservationDate(adminReservationRequest.getDate());
         ReservationTime reservationTime = getReservationTime(adminReservationRequest.getTimeId());
@@ -85,6 +88,7 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional
     public void deleteReservation(final Long id) {
         if (reservationRepository.delete(id) == 0) {
             throw new IllegalStateException("이미 삭제되어 있는 리소스입니다.");
