@@ -10,6 +10,7 @@ import java.util.Date;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.MemberRole;
+import roomescape.dto.other.AuthenticationInformation;
 import roomescape.exception.UnauthorizedException;
 
 class JwtTokenProviderTest {
@@ -42,16 +43,14 @@ class JwtTokenProviderTest {
         String accessToken = jwtTokenProvider.makeAccessToken(1L, "이름", MemberRole.GENERAL);
 
         // when
-        Claims tokenBody = jwtTokenProvider.parseToken(accessToken);
+        AuthenticationInformation parsed = jwtTokenProvider.parseToken(accessToken);
 
         // then
         Date validity = new Date(new Date().getTime() + validityInMilliseconds);
         assertAll(
-                () -> assertThat(tokenBody.getSubject()).isEqualTo("1"),
-                () -> assertThat(tokenBody.get("name")).isEqualTo("이름"),
-                () -> assertThat(tokenBody.get("role")).isEqualTo(MemberRole.GENERAL.toString()),
-                () -> assertThat(tokenBody.getExpiration().getTime())
-                        .isBetween(validity.getTime() - 60000, validity.getTime())
+                () -> assertThat(parsed.id()).isEqualTo(1),
+                () -> assertThat(parsed.name()).isEqualTo("이름"),
+                () -> assertThat(parsed.role()).isEqualTo(MemberRole.GENERAL)
         );
     }
 

@@ -1,9 +1,7 @@
 package roomescape.resolver;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -11,17 +9,18 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.annotation.AuthenticationPrinciple;
-import roomescape.domain.MemberRole;
-import roomescape.dto.other.AuthenticationInformation;
 import roomescape.exception.BadRequestException;
+import roomescape.utility.CookieUtility;
 import roomescape.utility.JwtTokenProvider;
 
 public class AuthenticationInformationArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final CookieUtility cookieUtility;
 
-    public AuthenticationInformationArgumentResolver(JwtTokenProvider jwtTokenProvider) {
+    public AuthenticationInformationArgumentResolver(JwtTokenProvider jwtTokenProvider, CookieUtility cookieUtility) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.cookieUtility = cookieUtility;
     }
 
     @Override
@@ -38,28 +37,14 @@ public class AuthenticationInformationArgumentResolver implements HandlerMethodA
     ) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String accessToken = getAccessTokenInCookie(request);
-        return parseAccessToken(accessToken);
+        return jwtTokenProvider.parseToken(accessToken);
     }
 
     private String getAccessTokenInCookie(HttpServletRequest request) {
-        List<Cookie> cookies = List.of();
-        if (request.getCookies() != null) {
-            cookies = List.of(request.getCookies());
-        }
-        Optional<Cookie> accessTokenCookie = cookies.stream()
-                .filter(cookie -> cookie.getName().equals("access"))
-                .findFirst();
-        if (accessTokenCookie.isEmpty()) {
+        Optional<Cookie> cookie = cookieUtility.findCookie(request, "access");
+        if (cookie.isEmpty()) {
             throw new BadRequestException("[ERROR] 인증 정보가 존재하지 않습니다.");
         }
-        return accessTokenCookie.get().getValue();
-    }
-
-    private AuthenticationInformation parseAccessToken(String accessToken) {
-        Claims tokenContent = jwtTokenProvider.parseToken(accessToken);
-        Long id = Long.valueOf(tokenContent.getSubject());
-        String name = String.valueOf(tokenContent.get("name"));
-        MemberRole role = MemberRole.valueOf(String.valueOf(tokenContent.get("role")));
-        return new AuthenticationInformation(id, name, role);
+        return cookie.get().getValue();
     }
 }

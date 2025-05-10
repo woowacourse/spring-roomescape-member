@@ -9,6 +9,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.MemberRole;
+import roomescape.dto.other.AuthenticationInformation;
 import roomescape.exception.UnauthorizedException;
 
 @Component
@@ -39,9 +40,13 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public Claims parseToken(String token) {
+    public AuthenticationInformation parseToken(String token) {
         validateToken(token);
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        Claims tokenBody = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        Long id = Long.valueOf(tokenBody.getSubject());
+        String name = String.valueOf(tokenBody.get("name"));
+        MemberRole role = MemberRole.valueOf(String.valueOf(tokenBody.get("role")));
+        return new AuthenticationInformation(id, name, role);
     }
 
     private void validateToken(String token) {
