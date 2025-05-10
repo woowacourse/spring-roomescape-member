@@ -2,7 +2,9 @@ package roomescape.member.infrastructure;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -41,10 +43,13 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Member findById(Long id) {
+    public Optional<Member> findById(Long id) {
         String sql = "SELECT * FROM member WHERE id = ?";
-
-        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -52,5 +57,18 @@ public class JdbcMemberRepository implements MemberRepository {
         String sql = "SELECT EXISTS (SELECT 1 FROM member WHERE email = ?)";
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, email);
+    }
+
+    @Override
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
+        System.out.println("왔다.");
+        System.out.println(email);
+        System.out.println(password);
+        String sql = "SELECT * FROM member WHERE email = ? and password = ?";
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, email, password));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

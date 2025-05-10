@@ -3,6 +3,7 @@ package roomescape.member.infrastructure;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,13 +44,14 @@ class JdbcMemberRepositoryTest {
         Member member = Member.createWithoutId("a", "a", "a");
         Long id = jdbcMemberRepository.save(member);
         // when
-        Member findMember = jdbcMemberRepository.findById(id);
+        Optional<Member> findMember = jdbcMemberRepository.findById(id);
         // then
         assertAll(
-                () -> assertThat(findMember.getId()).isEqualTo(id),
-                () -> assertThat(findMember.getName()).isEqualTo(member.getName()),
-                () -> assertThat(findMember.getEmail()).isEqualTo(member.getEmail()),
-                () -> assertThat(findMember.getPassword()).isEqualTo(member.getPassword())
+                () -> assertThat(findMember.isPresent()).isTrue(),
+                () -> assertThat(findMember.get().getId()).isEqualTo(id),
+                () -> assertThat(findMember.get().getName()).isEqualTo(member.getName()),
+                () -> assertThat(findMember.get().getEmail()).isEqualTo(member.getEmail()),
+                () -> assertThat(findMember.get().getPassword()).isEqualTo(member.getPassword())
         );
     }
 
@@ -59,10 +61,23 @@ class JdbcMemberRepositoryTest {
     void existByEmail_test(String email, boolean expected) {
         // given
         Member member = Member.createWithoutId("a", "a", "a");
-        Long id = jdbcMemberRepository.save(member);
+        jdbcMemberRepository.save(member);
         // when
         boolean existed = jdbcMemberRepository.existByEmail(email);
         // then
         assertThat(existed).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"a,a,true", "a,b,false", "b,a,false", "c,c,false"})
+    @DisplayName("이메일, 비밀번호 존재 확인 테스트")
+    void existByEmailAndPassword(String email, String password, boolean expected) {
+        // given
+        Member member = Member.createWithoutId("a", "a", "a");
+        jdbcMemberRepository.save(member);
+        // when
+        Optional<Member> findMember = jdbcMemberRepository.findByEmailAndPassword(email, password);
+        // then
+        assertThat(findMember.isPresent()).isEqualTo(expected);
     }
 }

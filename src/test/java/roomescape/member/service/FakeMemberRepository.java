@@ -2,6 +2,7 @@ package roomescape.member.service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
@@ -25,16 +26,22 @@ public class FakeMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Member findById(Long id) {
+    public Optional<Member> findById(Long id) {
         return members.stream()
                 .filter(member -> Objects.equals(member.getId(), id))
-                .findAny()
-                .orElseThrow();
+                .findAny();
     }
 
     @Override
     public boolean existByEmail(String email) {
         return members.stream()
                 .anyMatch(member -> member.getEmail().equals(email));
+    }
+
+    @Override
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
+        return members.stream()
+                .filter(member -> member.getEmail().equals(email) && member.getPassword().equals(password))
+                .findAny();
     }
 }
