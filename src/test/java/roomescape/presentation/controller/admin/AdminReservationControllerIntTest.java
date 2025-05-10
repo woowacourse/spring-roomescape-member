@@ -43,14 +43,16 @@ public class AdminReservationControllerIntTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private String tokenForMember1;
+    private String tokenForAdmin;
+    private String tokenForUser;
 
     @BeforeEach
     void cleanDatabase() {
         RestAssured.port = port;
         resetH2TableIds(jdbcTemplate);
 
-        tokenForMember1 = jwtTokenProvider.createToken(MemberDto.from(MEMBER1));
+        tokenForAdmin = jwtTokenProvider.createToken(MemberDto.from(MEMBER1));
+        tokenForUser = jwtTokenProvider.createToken(MemberDto.from(MEMBER2));
     }
 
     @DisplayName("/admin/reservations 요청 시 201 CREATED")
@@ -65,12 +67,35 @@ public class AdminReservationControllerIntTest {
         int expectedSize = repositorySize + 1;
 
         RestAssured.given().log().all()
-                .cookie("token", tokenForMember1)
+                .cookie("token", tokenForAdmin)
                 .contentType(ContentType.JSON)
                 .body(createAdminReservationCreateDto(2L))
                 .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201)
+                .body("id", is(expectedSize));
+
+        int afterAddSize = reservationRepository.findAll().size();
+        assertThat(afterAddSize).isEqualTo(expectedSize);
+    }
+
+    @DisplayName("관리자가 아닌 일반 유저가 /admin/reservations 요청 시 401 Unauthorized")
+    @Test
+    public void request_addReservation_unauthorized() {
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER2);
+        JdbcHelper.insertTheme(jdbcTemplate, Theme.withoutId("테마1", "테마 1입니다.", "썸네일입니다."));
+        JdbcHelper.insertReservationTime(jdbcTemplate, ReservationTime.of(1L, LocalTime.of(10, 0)));
+
+        int repositorySize = reservationRepository.findAll().size();
+        int expectedSize = repositorySize + 1;
+
+        RestAssured.given().log().all()
+                .cookie("token", tokenForUser)
+                .contentType(ContentType.JSON)
+                .body(createAdminReservationCreateDto(2L))
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(401)
                 .body("id", is(expectedSize));
 
         int afterAddSize = reservationRepository.findAll().size();

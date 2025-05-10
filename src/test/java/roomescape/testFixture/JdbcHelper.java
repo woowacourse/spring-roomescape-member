@@ -19,8 +19,14 @@ public class JdbcHelper {
     }
 
     public static void insertMember(JdbcTemplate template, Member member) {
-        template.update("INSERT INTO member(name , email, password) VALUES (?,?,?)",
-                member.getName(), member.getEmail(), member.getPassword());
+        if (member.getId() == null) {
+            template.update("INSERT INTO member(name , email, password, role) VALUES (?,?,?,?)",
+                    member.getName(), member.getEmail(), member.getPassword(), member.getRole().name());
+            return;
+        }
+
+        template.update("INSERT INTO member(id, name , email, password, role) VALUES (?,?,?,?,?)",
+                member.getId(), member.getName(), member.getEmail(), member.getPassword(), member.getRole().name());
     }
 
     public static void insertReservationTimes(JdbcTemplate template, ReservationTime... reservationTimes) {
