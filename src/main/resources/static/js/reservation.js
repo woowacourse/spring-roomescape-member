@@ -32,8 +32,8 @@ function render(data) {
 
 function fetchTimes() {
     requestRead(TIME_API_ENDPOINT)
-        .then(data => {
-            timesOptions.push(...data);
+        .then(res => {
+            timesOptions.push(...res.data);
         })
         .catch(error => console.error('Error fetching time:', error));
 }

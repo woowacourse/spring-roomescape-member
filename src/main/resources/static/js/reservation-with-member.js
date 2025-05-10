@@ -12,7 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('filter-form').addEventListener('submit', applyFilter);
 
     requestRead(RESERVATION_API_ENDPOINT)
-        .then(res => render(res.data))
+        .then(res => {
+            console.log('[API response]', res);
+            render(res.data)
+        })
         .catch(error => console.error('Error fetching reservations:', error));
 
     fetchTimes();
@@ -61,8 +64,8 @@ function fetchThemes() {
 
 function fetchMembers() {
     requestRead(MEMBER_API_ENDPOINT)
-        .then(data => {
-            membersOptions.push(...data);
+        .then(res => {
+            membersOptions.push(...res.data);
             populateSelect('member', membersOptions, 'name');
         })
         .catch(error => console.error('Error fetching member:', error));
@@ -214,7 +217,7 @@ function applyFilter(event) {
     }).then(response => {
         if (response.status === 200) return response.json();
         throw new Error('Read failed');
-    }).then(render)
+    }).then(res => render(res.data))
         .catch(error => console.error("Error fetching available times:", error));
 }
 
