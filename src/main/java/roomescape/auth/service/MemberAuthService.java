@@ -7,11 +7,14 @@ import roomescape.auth.repository.MemberRepository;
 import roomescape.auth.service.dto.request.LoginRequest;
 import roomescape.auth.service.dto.request.UserSignupRequest;
 import roomescape.auth.service.dto.response.LoginResponse;
+import roomescape.auth.service.dto.response.MemberIdAndNameResponse;
 import roomescape.exception.badRequest.BadRequestException;
 import roomescape.exception.conflict.MemberEmailConflictException;
 import roomescape.exception.notFound.MemberNotFoundException;
 import roomescape.exception.unauthorized.MemberUnauthorizedException;
 import roomescape.infrastructure.JwtTokenProvider;
+
+import java.util.List;
 
 // TODO: findByXXX - DataAccessException 핸들링
 @Service
@@ -41,6 +44,7 @@ public class MemberAuthService {
                 });
     }
 
+    // TODO: 파라미터 토큰 ? user id?
     public LoginMember getLoginMemberByToken(String token) {
         String subject = jwtTokenProvider.resolve(token);
         try {
@@ -51,5 +55,12 @@ public class MemberAuthService {
         } catch (NumberFormatException e) {
             throw new BadRequestException("잘못된 형식의 토큰입니다.");
         }
+    }
+
+    public List<MemberIdAndNameResponse> getAllMemberNames() {
+        return memberRepository.findAll()
+                .stream()
+                .map(member -> new MemberIdAndNameResponse(member.getId(), member.getName()))
+                .toList();
     }
 }

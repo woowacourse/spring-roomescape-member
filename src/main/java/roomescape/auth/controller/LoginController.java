@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.auth.controller.dto.LoginCheckResponse;
+import roomescape.auth.controller.dto.MemberNameResponse;
 import roomescape.auth.entity.LoginMember;
 import roomescape.auth.service.MemberAuthService;
 import roomescape.auth.service.dto.request.LoginRequest;
@@ -31,9 +31,9 @@ public class LoginController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<LoginCheckResponse> checkLogin(@AuthenticationPrincipal String token) {
+    public ResponseEntity<MemberNameResponse> checkLogin(@AuthenticationPrincipal String token) {
         LoginMember loginMember = service.getLoginMemberByToken(token);
-        LoginCheckResponse response = new LoginCheckResponse(loginMember.getName());
+        MemberNameResponse response = new MemberNameResponse(loginMember.getName());
         return ResponseEntity.ok(response);
     }
 }

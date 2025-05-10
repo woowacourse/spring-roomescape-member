@@ -4,11 +4,17 @@ import roomescape.auth.entity.Member;
 import roomescape.exception.conflict.MemberEmailConflictException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 public class FakeMemberRepository implements MemberRepository {
     private final List<Member> members = new ArrayList<>();
+
+    @Override
+    public List<Member> findAll() {
+        return Collections.unmodifiableList(members);
+    }
 
     @Override
     public Optional<Member> findById(Long userId) {

@@ -11,16 +11,16 @@ import roomescape.auth.repository.MemberRepository;
 import roomescape.exception.badRequest.BadRequestException;
 import roomescape.exception.conflict.ReservationConflictException;
 import roomescape.exception.notFound.ReservationTimeNotFoundException;
+import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.FakeReservationRepository;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.service.dto.request.CreateReservationRequest;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.time.repository.FakeTimeRepository;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.repository.ReservationTimeRepository;
-import roomescape.reservation.service.dto.request.ReservationRequest;
-import roomescape.reservation.entity.Reservation;
 import roomescape.time.entity.ReservationTime;
+import roomescape.time.repository.FakeTimeRepository;
+import roomescape.time.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -58,11 +58,16 @@ class ReservationServiceTest {
     void notExistTimeId() {
         // given
         LocalDate now = LocalDate.now();
-        ReservationRequest requestDto = new ReservationRequest(now.plusDays(1), 1L, 1L);
+        CreateReservationRequest request = new CreateReservationRequest(
+                now.plusDays(1),
+                loginMember.getId(),
+                1L,
+                1L
+        );
 
         // when & then
         assertThatThrownBy(() -> {
-            service.createReservation(requestDto, loginMember);
+            service.createReservation(request);
         }).isInstanceOf(ReservationTimeNotFoundException.class);
      }
 
@@ -74,11 +79,16 @@ class ReservationServiceTest {
         timeRepository.save(timeEntity);
 
         LocalDate now = LocalDate.now();
-        ReservationRequest requestDto = new ReservationRequest(now.minusDays(1), 1L, 1L);
+        CreateReservationRequest request = new CreateReservationRequest(
+                now.minusDays(1),
+                loginMember.getId(),
+                1L,
+                1L
+        );
 
         // when & then
         assertThatThrownBy(() -> {
-            service.createReservation(requestDto, loginMember);
+            service.createReservation(request);
         }).isInstanceOf(BadRequestException.class);
     }
 
@@ -94,11 +104,16 @@ class ReservationServiceTest {
         timeRepository.save(timeEntity);
         reservationRepository.save(reservation);
 
-        ReservationRequest requestDto = new ReservationRequest(date, timeEntity.getId(), 1L);
+        CreateReservationRequest request = new CreateReservationRequest(
+                now.plusDays(1),
+                loginMember.getId(),
+                1L,
+                1L
+        );
 
         // when & then
         assertThatThrownBy(() -> {
-            service.createReservation(requestDto, loginMember);
+            service.createReservation(request);
         }).isInstanceOf(ReservationConflictException.class);
     }
 }

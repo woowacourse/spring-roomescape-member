@@ -1,14 +1,13 @@
 package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.auth.entity.LoginMember;
 import roomescape.exception.conflict.ReservationConflictException;
 import roomescape.exception.notFound.ReservationNotFoundException;
 import roomescape.exception.notFound.ReservationTimeNotFoundException;
 import roomescape.exception.notFound.ThemeNotFoundException;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.service.dto.request.ReservationRequest;
+import roomescape.reservation.service.dto.request.CreateReservationRequest;
 import roomescape.reservation.service.dto.response.ReservationResponse;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.ThemeRepository;
@@ -48,13 +47,13 @@ public class ReservationService {
         return ReservationResponse.from(reservation, theme);
     }
 
-    public ReservationResponse createReservation(ReservationRequest request, LoginMember loginMember) {
+    public ReservationResponse createReservation(CreateReservationRequest request) {
         ReservationTime timeEntity = timeRepository.findById(request.timeId())
                 .orElseThrow(() -> new ReservationTimeNotFoundException(request.timeId()));
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new ThemeNotFoundException(request.themeId()));
 
-        Reservation newReservation = request.toEntity(loginMember, timeEntity);
+        Reservation newReservation = request.toEntity(timeEntity);
         validateDuplicated(newReservation);
 
         Reservation saved = reservationRepository.save(newReservation);

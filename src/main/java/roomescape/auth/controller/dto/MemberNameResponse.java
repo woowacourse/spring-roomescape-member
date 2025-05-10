@@ -1,6 +1,6 @@
 package roomescape.auth.controller.dto;
 
-public record LoginCheckResponse(
+public record MemberNameResponse(
         String name
 ) {
 }

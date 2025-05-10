@@ -9,6 +9,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.auth.entity.Member;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -24,6 +25,12 @@ public class JdbcMemberRepository implements MemberRepository {
 
     public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String query = "SELECT * FROM member";
+        return jdbcTemplate.query(query, rowMapper);
     }
 
     // TODO: (모든 Repository, Service에 적용) try-catch 삭제 및 Service에서 DataAccessException 핸들링하도록
