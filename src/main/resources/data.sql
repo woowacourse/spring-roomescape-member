@@ -28,15 +28,15 @@ VALUES (2, '11:00');
 INSERT INTO reservation_time(id, start_at)
 VALUES (3, '12:00');
 
-INSERT INTO reservation(id, name, date, time_id, theme_id)
-VALUES (1, '테마1', '2025-04-29', 1, 1);
-INSERT INTO reservation(id, name, date, time_id, theme_id)
-VALUES (2, '테마2', '2025-04-28', 1, 2);
-INSERT INTO reservation(id, name, date, time_id, theme_id)
-VALUES (3, '테마3', '2025-04-28', 3, 3);
-INSERT INTO reservation(id, name, date, time_id, theme_id)
-VALUES (4, '테마4', '2025-04-27', 1, 3);
-
 INSERT INTO member(id, name, email, password, role)
 VALUES (1, '미소', 'miso@naver.com', 'miso', 'USER');
+
+INSERT INTO reservation(id, date, time_id, theme_id, member_id)
+VALUES (1, '2025-04-29', 1, 1, 1);
+INSERT INTO reservation(id, date, time_id, theme_id, member_id)
+VALUES (2, '2025-04-28', 1, 2, 1);
+INSERT INTO reservation(id, date, time_id, theme_id, member_id)
+VALUES (3, '2025-04-28', 3, 3, 1);
+INSERT INTO reservation(id, date, time_id, theme_id, member_id)
+VALUES (4, '2025-04-27', 1, 3, 1);
 
