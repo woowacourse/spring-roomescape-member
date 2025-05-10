@@ -7,15 +7,15 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.application.service.TokenLoginService;
+import roomescape.application.service.AuthService;
 import roomescape.domain.model.Member;
 
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final TokenLoginService tokenLoginService;
+    private final AuthService authService;
 
-    public MemberArgumentResolver(final TokenLoginService tokenLoginService) {
-        this.tokenLoginService = tokenLoginService;
+    public MemberArgumentResolver(final AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
             return member;
         }
         String token = extractTokenFromCookie(request.getCookies());
-        return tokenLoginService.check(token);
+        return authService.check(token);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {

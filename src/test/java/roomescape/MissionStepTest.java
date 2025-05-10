@@ -31,6 +31,26 @@ public class MissionStepTest {
     @BeforeEach
     void setupDatabase() {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "탈출 스페셜", "탈출하는 내용", "abc.jpg");
+
+        Map<String, Object> adminParams = new HashMap<>();
+        adminParams.put("name", "어드민");
+        adminParams.put("email", "admin@gmail.com");
+        adminParams.put("password", "1234");
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(adminParams)
+                .post("/signup/admin");
+
+        Map<String, Object> normalParams = new HashMap<>();
+        normalParams.put("name", "일반");
+        normalParams.put("email", "user@gmail.com");
+        normalParams.put("password", "1234");
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(normalParams)
+                .post("/signup");
     }
 
     @Test

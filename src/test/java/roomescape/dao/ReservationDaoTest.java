@@ -5,9 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.model.Member;
 import roomescape.domain.model.Reservation;
 import roomescape.domain.model.ReservationTime;
 import roomescape.domain.model.Theme;
+import roomescape.infrastructure.dao.MemberDao;
 import roomescape.infrastructure.dao.ReservationDao;
 import roomescape.infrastructure.dao.ReservationTimeDao;
 import roomescape.infrastructure.dao.ThemeDao;
@@ -26,12 +28,16 @@ class ReservationDaoTest {
     ReservationDao reservationDao;
     ReservationTimeDao reservationTimeDao;
     ThemeDao themeDao;
+    Long memberId;
 
     @BeforeEach
     void setUp() {
         reservationDao = new ReservationDao(jdbcTemplate);
         reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
         themeDao = new ThemeDao(jdbcTemplate);
+
+        MemberDao memberDao = new MemberDao(jdbcTemplate);
+        memberId = memberDao.save(new Member("유저", "user@gmail.com", "1234", "user"));
     }
 
     @Test
@@ -40,14 +46,14 @@ class ReservationDaoTest {
         LocalDate date = TOMORROW;
         ReservationTime savedReservationTime = reservationTimeDao.save(DEFAULT_TIME);
         Theme savedTheme = themeDao.save(DEFAULT_THEME);
-        Reservation reservation = new Reservation(1L, date, savedReservationTime, savedTheme);
+        Reservation reservation = new Reservation(memberId, date, savedReservationTime, savedTheme);
 
         // when
         Reservation savedReservation = reservationDao.save(reservation);
 
         // then
         assertAll(
-                () -> assertThat(savedReservation.getMemberId()).isEqualTo(1L),
+                () -> assertThat(savedReservation.getMemberId()).isEqualTo(memberId),
                 () -> assertThat(savedReservation.getDate()).isEqualTo(date)
         );
     }
@@ -60,7 +66,7 @@ class ReservationDaoTest {
         int totalCount = reservationDao.findAll().size();
 
         // when
-        Reservation savedReservation = reservationDao.save(new Reservation(1L, TOMORROW, savedReservationTime, savedTheme));
+        Reservation savedReservation = reservationDao.save(new Reservation(memberId, TOMORROW, savedReservationTime, savedTheme));
 
         // when & then
         assertAll(
@@ -74,7 +80,7 @@ class ReservationDaoTest {
         // given
         ReservationTime savedReservationTime = reservationTimeDao.save(DEFAULT_TIME);
         Theme savedTheme = themeDao.save(DEFAULT_THEME);
-        Reservation reservation = new Reservation(1L, LocalDate.now().plusDays(3), savedReservationTime, savedTheme);
+        Reservation reservation = new Reservation(memberId, LocalDate.now().plusDays(3), savedReservationTime, savedTheme);
         Reservation savedReservation = reservationDao.save(reservation);
         int totalCount = reservationDao.findAll().size();
 
@@ -92,7 +98,7 @@ class ReservationDaoTest {
         Theme savedTheme = themeDao.save(DEFAULT_THEME);
 
         // when
-        reservationDao.save(new Reservation(1L, TOMORROW, savedReservationTime, savedTheme));
+        reservationDao.save(new Reservation(memberId, TOMORROW, savedReservationTime, savedTheme));
 
         // then
         assertThat(reservationDao.existByTimeId(savedReservationTime.getId())).isTrue();
@@ -105,7 +111,7 @@ class ReservationDaoTest {
         Theme savedTheme = themeDao.save(DEFAULT_THEME);
 
         // when
-        reservationDao.save(new Reservation(1L, TOMORROW, savedReservationTime, savedTheme));
+        reservationDao.save(new Reservation(memberId, TOMORROW, savedReservationTime, savedTheme));
 
         // then
         assertThat(reservationDao.existByThemeId(savedTheme.getId())).isTrue();
@@ -122,7 +128,7 @@ class ReservationDaoTest {
         LocalDate date = TOMORROW;
 
         // when
-        reservationDao.save(new Reservation(1L, date, savedReservationTime, savedTheme));
+        reservationDao.save(new Reservation(memberId, date, savedReservationTime, savedTheme));
 
         // then
         assertThat(reservationDao.existByTimeIdAndThemeIdAndDate(timeId, themeId, date)).isTrue();
@@ -139,7 +145,7 @@ class ReservationDaoTest {
         LocalDate date = TOMORROW;
 
         // when
-        reservationDao.save(new Reservation(1L, date, savedReservationTime, savedTheme));
+        reservationDao.save(new Reservation(memberId, date, savedReservationTime, savedTheme));
 
         // then
         assertThat(reservationDao.findBookedTimes(themeId, date)).contains(timeId);

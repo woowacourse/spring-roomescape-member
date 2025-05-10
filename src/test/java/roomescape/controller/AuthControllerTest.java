@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,13 +19,58 @@ import static org.hamcrest.Matchers.notNullValue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class LoginControllerTest {
+public class AuthControllerTest {
+
+    @BeforeEach
+    void setUp() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "일반");
+        params.put("email", "user@gmail.com");
+        params.put("password", "1234");
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .post("/signup");
+    }
+
+    @Test
+    @DisplayName("/signup POST 요청을 통해 회원가입 할 수 있다")
+    void signup() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "회원");
+        params.put("email", "admin@gmail.com");
+        params.put("password", "1234");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/signup")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("/signup/admin POST 요청을 통해 어드민 권한의 회원가입 할 수 있다")
+    void signup_admin() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "회원");
+        params.put("email", "admin@gmail.com");
+        params.put("password", "1234");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/signup/admin")
+                .then().log().all()
+                .statusCode(200);
+    }
 
     @Test
     @DisplayName("/login POST 요청을 통해 로그인에 성공하면 토큰을 발급받는다")
     void login_token() {
         Map<String, Object> params = new HashMap<>();
-        params.put("email", "admin@gmail.com");
+        params.put("email", "user@gmail.com");
         params.put("password", "1234");
 
         RestAssured.given().log().all()
@@ -56,7 +102,7 @@ public class LoginControllerTest {
     void login_check_name() {
 
         Map<String, Object> params = new HashMap<>();
-        params.put("email", "admin@gmail.com");
+        params.put("email", "user@gmail.com");
         params.put("password", "1234");
 
         String accessToken = RestAssured
@@ -75,7 +121,7 @@ public class LoginControllerTest {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value()).extract().as(MemberNameResponse.class);
 
-        assertThat(nameResponse.name()).isEqualTo("어드민");
+        assertThat(nameResponse.name()).isEqualTo("일반");
     }
 
     @Test

@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +18,29 @@ import static org.hamcrest.Matchers.is;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class AdminControllerTest {
+
+    @BeforeEach
+    void setUp() {
+        Map<String, Object> adminParams = new HashMap<>();
+        adminParams.put("name", "어드민");
+        adminParams.put("email", "admin@gmail.com");
+        adminParams.put("password", "1234");
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(adminParams)
+                .post("/signup/admin");
+
+        Map<String, Object> normalParams = new HashMap<>();
+        normalParams.put("name", "일반");
+        normalParams.put("email", "user@gmail.com");
+        normalParams.put("password", "1234");
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(normalParams)
+                .post("/signup");
+    }
 
     @Test
     @DisplayName("/admin api에 접근 시, 관리자가 아닌 경우 401을 응답한다")

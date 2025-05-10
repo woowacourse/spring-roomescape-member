@@ -13,9 +13,16 @@ public class FakeMemberDao {
             1L, new Member(1L, "어드민", "admin@gmail.com", "1234", "admin")
     );
 
-    public Member findByEmailAndPassword(String email, String password) {
+    public Long save(final Member member) {
+        long id = IDX.getAndIncrement();
+        Member savedMember = new Member(id, member.getName(), member.getEmail(), member.getEmail(), member.getRole());
+        MEMBERS.put(id, savedMember);
+        return id;
+    }
+
+    public Member findByEmail(String email) {
         return MEMBERS.values().stream()
-                .filter(member -> member.getEmail().equals(email) && member.getPassword().equals(password))
+                .filter(member -> member.getEmail().equals(email))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 멤버가 존재하지 않습니다."));
     }

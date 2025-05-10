@@ -109,6 +109,16 @@ public class ReservationTimeControllerTest {
     @Test
     @DisplayName("/times/{id} DELETE 요청시 특정 id에 대한 예약이 존재하면 400을 응답한다")
     void cannot_delete_time_if_reservation_exist() {
+        Map<String, Object> adminParams = new HashMap<>();
+        adminParams.put("name", "어드민");
+        adminParams.put("email", "admin@gmail.com");
+        adminParams.put("password", "1234");
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(adminParams)
+                .post("/signup/admin");
+
         Map<String, Object> memberParams = new HashMap<>();
         memberParams.put("email", "admin@gmail.com");
         memberParams.put("password", "1234");

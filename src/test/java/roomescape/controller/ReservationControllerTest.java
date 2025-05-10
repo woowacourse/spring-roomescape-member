@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +19,19 @@ import static org.hamcrest.Matchers.notNullValue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationControllerTest {
+
+    @BeforeEach
+    void setUp() {
+        Map<String, Object> normalParams = new HashMap<>();
+        normalParams.put("name", "일반");
+        normalParams.put("email", "user@gmail.com");
+        normalParams.put("password", "1234");
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(normalParams)
+                .post("/signup");
+    }
 
     @Test
     @DisplayName("/reservations GET 요청에 정상적으로 응답한다")
@@ -159,7 +173,7 @@ public class ReservationControllerTest {
 
     private String getToken() {
         Map<String, Object> memberParams = new HashMap<>();
-        memberParams.put("email", "admin@gmail.com");
+        memberParams.put("email", "user@gmail.com");
         memberParams.put("password", "1234");
 
         String accessToken = RestAssured

@@ -6,9 +6,13 @@ import java.util.List;
 
 public interface MemberRepository {
 
-    Member findByEmailAndPassword(String email, String password);
+    Long save(Member member);
+
+    Member findByEmail(String email);
 
     Member findById(Long memberId);
 
     List<Member> findAll();
+
+    boolean existByEmail(String email);
 }

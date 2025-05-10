@@ -119,6 +119,16 @@ public class ThemeControllerTest {
     @Test
     @DisplayName("/themes/{id} DELETE 요청시 특정 id 대한 예약이 존재하면 400를 반환한다")
     void cannot_delete_theme_if_reservation_exist() {
+        Map<String, Object> adminParams = new HashMap<>();
+        adminParams.put("name", "어드민");
+        adminParams.put("email", "admin@gmail.com");
+        adminParams.put("password", "1234");
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(adminParams)
+                .post("/signup/admin");
+
         Map<String, Object> memberParams = new HashMap<>();
         memberParams.put("email", "admin@gmail.com");
         memberParams.put("password", "1234");
@@ -154,6 +164,16 @@ public class ThemeControllerTest {
     @Test
     @DisplayName("/themes/popular GET 요청을 통해 인기 테마 상위 10개를 조회할 수 있다.")
     void theme_top_10() {
+        Map<String, Object> adminParams = new HashMap<>();
+        adminParams.put("name", "어드민");
+        adminParams.put("email", "admin@gmail.com");
+        adminParams.put("password", "1234");
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(adminParams)
+                .post("/signup/admin");
+        
         LocalDate yesterday = LocalDate.now().minusDays(1);
         jdbcTemplate.update(
                 "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)", 1L,
