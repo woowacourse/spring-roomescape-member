@@ -69,7 +69,7 @@ class AuthServiceTest {
         TokenResponse token = authService.login(loginRequest);
 
         // when
-        Member member = authService.getUser(token.accessToken());
+        Member member = authService.getMember(token.accessToken());
 
         // then
         assertThat(member.getName()).isEqualTo("name");

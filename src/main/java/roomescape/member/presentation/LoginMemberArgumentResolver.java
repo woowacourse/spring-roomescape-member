@@ -35,6 +35,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = authorizationExtractor.extract(request);
-        return authService.getUser(token);
+        return authService.getMember(token);
     }
 }

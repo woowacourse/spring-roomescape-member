@@ -24,7 +24,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         String token = authorizationExtractor.extract(request);
-        Member member = authService.getUser(token);
+        Member member = authService.getMember(token);
         if (!member.getRole().equals(Role.ADMIN)) {
             throw new NotAdminException("접근할 수 없는 페이지입니다.");
         }

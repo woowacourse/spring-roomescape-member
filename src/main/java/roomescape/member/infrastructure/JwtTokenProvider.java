@@ -26,7 +26,7 @@ public class JwtTokenProvider {
         Date expiredDateTime = new Date(now.getTime() + validTimeInMilliSeconds);
 
         String accessToken = Jwts.builder()
-                .setSubject(member.getEmail())
+                .setSubject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
                 .setIssuedAt(now)
@@ -37,11 +37,11 @@ public class JwtTokenProvider {
         return new TokenResponse(accessToken);
     }
 
-    public String resolveToken(String token) {
-        return Jwts.parser()
+    public Long resolveTokenToMemberId(String token) {
+        return Long.valueOf(Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody()
-                .getSubject();
+                .getSubject());
     }
 }

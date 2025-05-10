@@ -32,9 +32,9 @@ public class AuthService {
         return tokenProvider.createToken(member);
     }
 
-    public Member getUser(String token) {
-        String email = tokenProvider.resolveToken(token);
-        return memberRepository.findByEmail(email)
+    public Member getMember(String token) {
+        Long id = tokenProvider.resolveTokenToMemberId(token);
+        return memberRepository.findById(id)
                 .orElseThrow(() -> new InvalidMemberException("존재하지 않는 유저입니다.", HttpStatus.NOT_FOUND));
     }
 
