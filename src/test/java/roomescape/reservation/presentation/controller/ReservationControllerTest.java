@@ -7,6 +7,7 @@ import static roomescape.testFixture.Fixture.RESERVATION_2;
 import static roomescape.testFixture.Fixture.RESERVATION_BODY;
 import static roomescape.testFixture.Fixture.RESERVATION_TIME_1;
 import static roomescape.testFixture.Fixture.THEME_1;
+import static roomescape.testFixture.Fixture.createTokenByMemberId;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -51,8 +52,7 @@ class ReservationControllerTest extends AbstractRestDocsTest {
     public void request_addReservation() {
         JdbcHelper.insertReservationTime(jdbcTemplate, RESERVATION_TIME_1);
         JdbcHelper.insertTheme(jdbcTemplate, THEME_1);
-        JdbcHelper.insertMember(jdbcTemplate, MEMBER_1);
-        long memberId = MEMBER_1.getId();
+        long memberId = JdbcHelper.insertMemberAndGetKey(jdbcTemplate, MEMBER_1);
 
         String payload = String.valueOf(memberId);
         String token = jwtTokenProvider.createToken(payload, Role.USER);
@@ -73,8 +73,12 @@ class ReservationControllerTest extends AbstractRestDocsTest {
     void requestDeleteReservation() {
         JdbcHelper.prepareAndInsertReservation(jdbcTemplate, RESERVATION_1);
 
+        Long memberId = RESERVATION_1.getMemberId();
+        String token = createTokenByMemberId(jwtTokenProvider, memberId);
+
         Long id = RESERVATION_1.getId();
         givenWithDocs("reservation-deleteById")
+                .cookie("token", token)
                 .when().delete("/reservations/" + id)
                 .then().log().all()
                 .statusCode(204);
@@ -85,8 +89,12 @@ class ReservationControllerTest extends AbstractRestDocsTest {
     void getAllReservations() {
         JdbcHelper.insertReservations(jdbcTemplate, RESERVATION_1, RESERVATION_2);
 
+        Long memberId = RESERVATION_1.getMemberId();
+        String token = createTokenByMemberId(jwtTokenProvider, memberId);
+
         List<ReservationDetailResponse> responses =
                 givenWithDocs("reservation-getAll")
+                        .cookie("token", token)
                         .when().get("/reservations")
                         .then().log().all()
                         .statusCode(200).extract()
@@ -101,9 +109,8 @@ class ReservationControllerTest extends AbstractRestDocsTest {
         // given
         JdbcHelper.prepareAndInsertReservation(jdbcTemplate, RESERVATION_1);
 
-        long memberId = 1L;
-        String payload = String.valueOf(memberId);
-        String token = jwtTokenProvider.createToken(payload, Role.USER);
+        long memberId = RESERVATION_1.getMemberId();
+        String token = createTokenByMemberId(jwtTokenProvider, memberId);
 
         Map<String, Object> reservationBody = Map.of(
                 "date", RESERVATION_1.getReservationDate(),

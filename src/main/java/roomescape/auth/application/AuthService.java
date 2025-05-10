@@ -41,8 +41,8 @@ public class AuthService {
 
     public Member findMemberByToken(String token) {
         validateMemberToken(token);
-        String id = jwtTokenProvider.getPayload(token);
-        return getMemberById(Long.parseLong(id));
+        Long id = jwtTokenProvider.getMemberId(token);
+        return getMemberById(id);
     }
 
     private void validateMemberToken(String token) {

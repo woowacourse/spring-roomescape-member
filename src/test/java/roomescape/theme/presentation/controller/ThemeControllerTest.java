@@ -7,8 +7,10 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 import static org.springframework.restdocs.snippet.Attributes.key;
+import static roomescape.testFixture.Fixture.MEMBER_1;
 import static roomescape.testFixture.Fixture.THEME_1;
 import static roomescape.testFixture.Fixture.THEME_2;
+import static roomescape.testFixture.Fixture.createTokenByMemberId;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -22,12 +24,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.AbstractRestDocsTest;
+import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.testFixture.JdbcHelper;
 
 public class ThemeControllerTest extends AbstractRestDocsTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @BeforeEach
     void cleanDatabase() {
@@ -38,6 +44,8 @@ public class ThemeControllerTest extends AbstractRestDocsTest {
         jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("TRUNCATE TABLE theme");
         jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("TRUNCATE TABLE members");
+        jdbcTemplate.execute("ALTER TABLE members ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
@@ -46,7 +54,11 @@ public class ThemeControllerTest extends AbstractRestDocsTest {
     void getAllThemes() {
         JdbcHelper.insertThemes(jdbcTemplate, THEME_1, THEME_2);
 
+        long memberId = JdbcHelper.insertMemberAndGetKey(jdbcTemplate, MEMBER_1);
+        String token = createTokenByMemberId(jwtTokenProvider, memberId);
+
         givenWithDocs("themes-getAll")
+                .cookie("token", token)
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
@@ -62,14 +74,18 @@ public class ThemeControllerTest extends AbstractRestDocsTest {
         params.put("description", "레벨2 탈출입니다.");
         params.put("thumbnail", "썸네일");
 
+        long memberId = JdbcHelper.insertMemberAndGetKey(jdbcTemplate, MEMBER_1);
+        String token = createTokenByMemberId(jwtTokenProvider, memberId);
+
         // when & then
         ExtractableResponse<Response> extractedResponse =
                 givenWithDocs("themes-add")
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201).extract();
+                        .cookie("token", token)
+                        .contentType(ContentType.JSON)
+                        .body(params)
+                        .when().post("/themes")
+                        .then().log().all()
+                        .statusCode(201).extract();
 
         assertAll(
                 () -> assertThat(extractedResponse.jsonPath().getString("name")).isEqualTo(params.get("name")),
@@ -84,13 +100,15 @@ public class ThemeControllerTest extends AbstractRestDocsTest {
     void delete() {
         //given
         JdbcHelper.insertTheme(jdbcTemplate, THEME_1);
-
         int addedCount = getThemesCount();
-
         assertThat(addedCount).isEqualTo(1);
+
+        long memberId = JdbcHelper.insertMemberAndGetKey(jdbcTemplate, MEMBER_1);
+        String token = createTokenByMemberId(jwtTokenProvider, memberId);
 
         //when & then
         givenWithDocs("themes-deleteById")
+                .cookie("token", token)
                 .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(204);
@@ -106,6 +124,9 @@ public class ThemeControllerTest extends AbstractRestDocsTest {
         JdbcHelper.insertTheme(jdbcTemplate, THEME_1);
         JdbcHelper.insertTheme(jdbcTemplate, THEME_2);
 
+        long memberId = JdbcHelper.insertMemberAndGetKey(jdbcTemplate, MEMBER_1);
+        String token = createTokenByMemberId(jwtTokenProvider, memberId);
+
         // when & then
         RestAssured.given(documentationSpec)
                 .filter(document("themes-ranking",
@@ -118,6 +139,7 @@ public class ThemeControllerTest extends AbstractRestDocsTest {
                                         .attributes(key("defaultValue").value("10"))
                         )
                 ))
+                .cookie("token", token)
                 .when().get("/themes/ranking")
                 .then().log().all()
                 .statusCode(200);

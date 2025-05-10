@@ -42,8 +42,8 @@ public class AdminPageAccessTest {
     @DisplayName("ADMIN 권한의 토큰으로 관리자 페이지에 정상 접근할 수 있다")
     void admin_role_access_success() {
         // given
-        JdbcHelper.insertMember(jdbcTemplate, MEMBER_1);
-        String payload = String.valueOf(MEMBER_1.getId());
+        long memberId = JdbcHelper.insertMemberAndGetKey(jdbcTemplate, MEMBER_1);
+        String payload = String.valueOf(memberId);
         String token = jwtTokenProvider.createToken(payload, Role.ADMIN);
 
         // when & then
@@ -83,12 +83,8 @@ public class AdminPageAccessTest {
     @DisplayName("ADMIN이 아닌 경우 403.html로 리다이렉트")
     void user_role_redirects_to_403_page() {
         // given
-        String email = "user@example.com";
-        String password = "pw";
-        String name = "유저";
-        jdbcTemplate.update("INSERT INTO members (email, password, name, role) VALUES (?, ?, ?, ?)",
-                email, password, name, "USER");
-        String token = jwtTokenProvider.createToken(email, Role.USER);
+        long memberId = JdbcHelper.insertMemberAndGetKey(jdbcTemplate, MEMBER_1);
+        String token = jwtTokenProvider.createToken(String.valueOf(memberId), Role.USER);
 
         RestAssured
                 .given().log().all()

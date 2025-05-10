@@ -8,16 +8,21 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.presentation.AdminAuthorizationInterceptor;
 import roomescape.auth.presentation.AuthenticatedMemberArgumentResolver;
+import roomescape.auth.presentation.BasicAuthorizationInterceptor;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final AuthenticatedMemberArgumentResolver resolver;
-    private final AdminAuthorizationInterceptor adminInterceptor;
+    private final BasicAuthorizationInterceptor basicAuthInterceptor;
+    private final AdminAuthorizationInterceptor adminAuthInterceptor;
 
-    public WebMvcConfiguration(AuthenticatedMemberArgumentResolver resolver, AdminAuthorizationInterceptor adminInterceptor) {
+    public WebMvcConfiguration(AuthenticatedMemberArgumentResolver resolver,
+                               BasicAuthorizationInterceptor basicAuthInterceptor,
+                               AdminAuthorizationInterceptor adminAuthInterceptor) {
         this.resolver = resolver;
-        this.adminInterceptor = adminInterceptor;
+        this.basicAuthInterceptor = basicAuthInterceptor;
+        this.adminAuthInterceptor = adminAuthInterceptor;
     }
 
     @Override
@@ -40,7 +45,10 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(adminInterceptor)
+        registry.addInterceptor(basicAuthInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/", "/login", "/css/**", "/js/**", "/image/**","/themes/ranking", "/favicon.ico");
+        registry.addInterceptor(adminAuthInterceptor)
                 .addPathPatterns("/admin/**");
     }
 }

@@ -10,7 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.AbstractRestDocsTest;
+import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.presentation.dto.response.MemberResponse;
 import roomescape.testFixture.JdbcHelper;
 
@@ -18,6 +20,9 @@ class MemberControllerTest extends AbstractRestDocsTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @BeforeEach
     void setUp() {
@@ -41,9 +46,13 @@ class MemberControllerTest extends AbstractRestDocsTest {
         Member member2 = createMemberByIdAndName(2L, "아이나");
         JdbcHelper.insertMembers(jdbcTemplate, member1, member2);
 
+        // given
+        String token = jwtTokenProvider.createToken(String.valueOf(1L), Role.ADMIN);
+
         // when & then
         List<MemberResponse> responses =
                 givenWithDocs("member-getAll")
+                        .cookie("token", token)
                         .when().get("/members")
                         .then().log().all()
                         .statusCode(200).extract()

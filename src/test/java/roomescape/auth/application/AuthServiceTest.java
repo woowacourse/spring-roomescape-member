@@ -59,7 +59,7 @@ class AuthServiceTest {
         Long memberId = 1L;
 
         given(jwtTokenProvider.validateToken(token)).willReturn(true);
-        given(jwtTokenProvider.getPayload(token)).willReturn(String.valueOf(memberId));
+        given(jwtTokenProvider.getMemberId(token)).willReturn(memberId);
         given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
 
         Member result = authService.findMemberByToken(token);

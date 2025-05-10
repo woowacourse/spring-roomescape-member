@@ -6,11 +6,12 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
-import roomescape.time.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
+import roomescape.time.domain.ReservationTime;
 
 public class Fixture {
     public static final Theme THEME_1 = Theme.of(1L, "테마1", "테마 1입니다.", "썸네일1");
@@ -27,6 +28,11 @@ public class Fixture {
             3L, 1L, THEME_3, LocalDate.now().plusDays(1), RESERVATION_TIME_3);
     public static final Member MEMBER_1 = new Member(1L, "test@email.com", "password", "멍구", Role.ADMIN);
     public static final Member MEMBER_2 = new Member(2L, "test2@email.com", "password2", "멍구2", Role.ADMIN);
+
+    public static final String createTokenByMemberId(JwtTokenProvider jwtTokenProvider, Long memberId) {
+        String payload = String.valueOf(memberId);
+        return jwtTokenProvider.createToken(payload, Role.USER);
+    }
 
     public static final Map<String, Object> RESERVATION_BODY = createReservationBody();
     public static final Map<String, Object> ADMIN_RESERVATION_BODY = createReservationBody();

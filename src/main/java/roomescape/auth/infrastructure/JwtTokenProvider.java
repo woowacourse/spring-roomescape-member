@@ -41,13 +41,14 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getPayload(String token) {
-        return Jwts.parserBuilder()
+    public Long getMemberId(String token) {
+        String subject = Jwts.parserBuilder()
                 .setSigningKey(secretkey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+        return Long.parseLong(subject);
     }
 
     public Role getRole(String token) {

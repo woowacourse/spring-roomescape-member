@@ -25,10 +25,11 @@ class JwtTokenProviderTest {
     @DisplayName("JWT를 생성하고 다시 파싱하면 payload가 동일하다")
     @Test
     void createAndParseToken() {
-        String payload = "test@email.com";
+        long id = 1L;
+        String payload = String.valueOf(id);
         String token = jwtTokenProvider.createToken(payload, Role.USER);
 
-        assertThat(jwtTokenProvider.getPayload(token)).isEqualTo(payload);
+        assertThat(jwtTokenProvider.getMemberId(token)).isEqualTo(id);
     }
 
     @DisplayName("JWT를 생성하면 유효하다")

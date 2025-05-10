@@ -8,8 +8,12 @@ import static roomescape.testFixture.Fixture.THEME_1;
 import static roomescape.testFixture.Fixture.THEME_2;
 import static roomescape.testFixture.Fixture.THEME_3;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.Arrays;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.time.domain.ReservationTime;
@@ -67,6 +71,25 @@ public class JdbcHelper {
     public static void insertMember(JdbcTemplate jdbcTemplate, Member member) {
         jdbcTemplate.update("INSERT INTO members (email, password, name, role) VALUES (?, ?, ?, ?)",
                 member.getEmail(), member.getPassword(), member.getName(), member.getRole().name());
+    }
+
+    public static long insertMemberAndGetKey(JdbcTemplate jdbcTemplate, Member member) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO members (email, password, name, role) VALUES (?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS
+            );
+            ps.setString(1, member.getEmail());
+            ps.setString(2, member.getPassword());
+            ps.setString(3, member.getName());
+            ps.setString(4, member.getRole().name());
+            return ps;
+        }, keyHolder);
+
+        Number key = keyHolder.getKey();
+        return key.longValue();
     }
 
     public static void insertMembers(JdbcTemplate jdbcTemplate, Member... members) {
