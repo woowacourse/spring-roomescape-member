@@ -9,9 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.reservation.domain.exception.ReservationException.ReservationTimeInUseException;
-import roomescape.reservation.domain.repository.ReservationRepository;
-import roomescape.reservation.domain.service.ReservationTimeValidator;
+import roomescape.domain.reservation.model.exception.ReservationException.ReservationTimeInUseException;
+import roomescape.domain.reservation.model.repository.ReservationRepository;
+import roomescape.domain.reservation.model.service.ReservationTimeValidator;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeValidatorTest {

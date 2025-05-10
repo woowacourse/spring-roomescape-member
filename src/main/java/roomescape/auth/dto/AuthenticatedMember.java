@@ -1,7 +1,7 @@
 package roomescape.auth.dto;
 
 import lombok.Builder;
-import roomescape.member.domain.Role;
+import roomescape.domain.member.model.Role;
 
 @Builder
 public record AuthenticatedMember(
