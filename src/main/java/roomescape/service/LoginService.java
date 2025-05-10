@@ -36,8 +36,20 @@ public class LoginService {
     public UserResponse findUserFromToken(Cookie[] cookies) {
         String token = jwtTokenProvider.extractTokenFromCookies(cookies);
         Long id = jwtTokenProvider.getUserId(token);
-        User user = userDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 ID가 없습니다."));
+        User user = findById(id);
         return UserResponse.from(user);
+    }
+
+    public String extractTokenFromCookies(Cookie[] cookies) {
+        return jwtTokenProvider.extractTokenFromCookies(cookies);
+    }
+
+    public Long getUserId(String token) {
+        return jwtTokenProvider.getUserId(token);
+    }
+
+    public User findById(Long id) {
+        return userDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 ID가 없습니다."));
     }
 }
