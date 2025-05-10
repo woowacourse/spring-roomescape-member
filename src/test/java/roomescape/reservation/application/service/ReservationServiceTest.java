@@ -1,4 +1,4 @@
-package roomescape.reservation.application;
+package roomescape.reservation.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -17,7 +17,6 @@ import roomescape.member.infrastructure.fake.FakeMemberDao;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.application.repository.ThemeRepository;
-import roomescape.reservation.application.service.ReservationService;
 import roomescape.reservation.infrastructure.fake.FakeReservationDao;
 import roomescape.reservation.infrastructure.fake.FakeReservationTimeDao;
 import roomescape.reservation.infrastructure.fake.FakeThemeDao;

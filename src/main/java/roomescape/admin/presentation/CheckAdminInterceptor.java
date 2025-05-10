@@ -3,28 +3,28 @@ package roomescape.admin.presentation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.auth.application.service.AuthService;
+import roomescape.auth.presentation.AuthorizationExtractor;
+import roomescape.auth.presentation.BearerAuthorizationExtractor;
 import roomescape.global.exception.NotAdminException;
-import roomescape.member.application.service.MemberService;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
-import roomescape.member.infrastructure.AuthorizationExtractor;
-import roomescape.member.infrastructure.BearerAuthorizationExtractor;
 
 public class CheckAdminInterceptor implements HandlerInterceptor {
 
     private final AuthorizationExtractor<String> authorizationExtractor;
-    private final MemberService memberService;
+    private final AuthService authService;
 
-    public CheckAdminInterceptor(MemberService memberService) {
+    public CheckAdminInterceptor(AuthService authService) {
         this.authorizationExtractor = new BearerAuthorizationExtractor();
-        this.memberService = memberService;
+        this.authService = authService;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         String token = authorizationExtractor.extract(request);
-        Member member = memberService.getMember(token);
+        Member member = authService.getMember(token);
         if (!member.getRole().equals(Role.ADMIN)) {
             throw new NotAdminException("접근할 수 없는 페이지입니다.");
         }

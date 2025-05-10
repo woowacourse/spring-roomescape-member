@@ -1,7 +1,7 @@
 package roomescape.member.presentation.fixture;
 
+import roomescape.auth.presentation.dto.LoginRequest;
 import roomescape.member.domain.Role;
-import roomescape.member.presentation.dto.LoginRequest;
 import roomescape.member.presentation.dto.RegisterRequest;
 
 public class MemberFixture {

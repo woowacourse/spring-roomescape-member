@@ -1,4 +1,4 @@
-package roomescape.reservation.application;
+package roomescape.reservation.application.service;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,7 +16,6 @@ import roomescape.member.domain.Role;
 import roomescape.reservation.application.dto.CreateReservationRequest;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
-import roomescape.reservation.application.service.ThemeService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationTime;

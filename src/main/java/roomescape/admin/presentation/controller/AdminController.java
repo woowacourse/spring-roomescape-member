@@ -1,4 +1,4 @@
-package roomescape.admin.presentation;
+package roomescape.admin.presentation.controller;
 
 import jakarta.validation.Valid;
 import java.time.LocalDate;

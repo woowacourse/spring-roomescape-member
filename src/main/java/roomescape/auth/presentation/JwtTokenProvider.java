@@ -1,12 +1,12 @@
-package roomescape.member.infrastructure;
+package roomescape.auth.presentation;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.auth.presentation.dto.TokenResponse;
 import roomescape.member.domain.Member;
-import roomescape.member.presentation.dto.TokenResponse;
 
 @Component
 public class JwtTokenProvider {
