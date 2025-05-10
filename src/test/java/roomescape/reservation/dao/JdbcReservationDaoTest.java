@@ -15,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.theme.domain.RoomTheme;
+import roomescape.theme.domain.Theme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -29,9 +29,9 @@ public class JdbcReservationDaoTest {
     void insertTest() {
         // given
         final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
-        final RoomTheme roomTheme = new RoomTheme(1L, "예시 1", "우테코 레벨2를 탈출하는 내용입니다.",
+        final Theme theme = new Theme(1L, "예시 1", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        final Reservation reservation = new Reservation("검프", LocalDate.now().plusDays(1), reservationTime, roomTheme);
+        final Reservation reservation = new Reservation("검프", LocalDate.now().plusDays(1), reservationTime, theme);
 
         // when
         final long result = reservationDAO.insert(reservation);

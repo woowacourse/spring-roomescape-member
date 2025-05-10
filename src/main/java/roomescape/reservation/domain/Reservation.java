@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import roomescape.exception.custom.InvalidInputException;
 import roomescape.member.domain.Member;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.theme.domain.RoomTheme;
+import roomescape.theme.domain.Theme;
 
 public class Reservation {
 
@@ -13,13 +13,13 @@ public class Reservation {
     private final long id;
     private final LocalDate date;
     private final ReservationTime time;
-    private final RoomTheme theme;
+    private final Theme theme;
     private final Member member;
 
     public Reservation(final long id,
                        final LocalDate date,
                        final ReservationTime time,
-                       final RoomTheme theme,
+                       final Theme theme,
                        final Member member) {
         validateInvalidInput(date, time, theme, member);
 
@@ -32,7 +32,7 @@ public class Reservation {
 
     public Reservation(final LocalDate date,
                        final ReservationTime reservationTime,
-                       final RoomTheme theme,
+                       final Theme theme,
                        final Member member) {
         this(NON_SAVED_STATUS, date, reservationTime, theme, member);
     }
@@ -43,12 +43,12 @@ public class Reservation {
     }
 
     private void validateInvalidInput(final LocalDate date, final ReservationTime reservationTime,
-                                      final RoomTheme theme, final Member member) {
+                                      final Theme theme, final Member member) {
         validateNotNull(date, reservationTime, theme, member);
     }
 
     private void validateNotNull(final LocalDate date, final ReservationTime reservationTime,
-                                 final RoomTheme theme, final Member member) {
+                                 final Theme theme, final Member member) {
         if (date == null) {
             throw new InvalidInputException("예약 날짜는 빈 값이 입력될 수 없습니다");
         }
@@ -84,7 +84,7 @@ public class Reservation {
         return time;
     }
 
-    public RoomTheme getTheme() {
+    public Theme getTheme() {
         return theme;
     }
 

@@ -6,15 +6,13 @@ import java.util.Map;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class RoomThemeControllerTest {
+class ThemeControllerTest {
 
     private static final Map<String, String> RESERVATION_BODY = Map.of(
             "name", "공포 테마",
@@ -22,12 +20,9 @@ class RoomThemeControllerTest {
             "thumbnail", "url"
     );
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     @DisplayName("방 테마 추가 요청시, id를 포함한 방 테마와 CREATED를 응답한다")
     @Test
-    void addRoomThemeTest() {
+    void addThemeTest() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(RESERVATION_BODY)
@@ -40,7 +35,7 @@ class RoomThemeControllerTest {
 
     @DisplayName("방 테마 조회 요청시, 존재하는 모든 방 테마와 OK를 응답한다")
     @Test
-    void findAllRoomThemeTest() {
+    void findAllThemeTest() {
         RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
@@ -54,7 +49,7 @@ class RoomThemeControllerTest {
 
     @DisplayName("방 테마 삭제 요청시, 주어진 아이디에 해당하는 방 테마가 없다면 NOT FOUND를 응답한다.")
     @Test
-    void removeRoomThemeTest_WhenRoomThemeDoesNotExisted() {
+    void removeThemeTest_WhenThemeDoesNotExisted() {
         RestAssured.given().log().all()
                 .when().delete("/themes/1000")
                 .then().log().all()
@@ -63,7 +58,7 @@ class RoomThemeControllerTest {
 
     @DisplayName("방 테마 삭제 요청시, 주어진 아이디에 해당하는 방테마가 있다면 삭제하고 NO CONTENT를 응답한다.")
     @Test
-    void removeRoomThemeTest() {
+    void removeThemeTest() {
         RestAssured.given().log().all()
                 .when().delete("/themes/3")
                 .then().log().all()

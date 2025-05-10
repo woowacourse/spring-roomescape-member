@@ -3,7 +3,7 @@ package roomescape.theme.domain;
 import java.util.Objects;
 import roomescape.exception.custom.InvalidInputException;
 
-public class RoomTheme {
+public class Theme {
 
     private static final int NON_SAVED_STATUS = 0;
     private static final int MAX_LENGTH = 255;
@@ -13,7 +13,7 @@ public class RoomTheme {
     private final String description;
     private final String thumbnail;
 
-    public RoomTheme(final long id, final String name, final String description, final String thumbnail) {
+    public Theme(final long id, final String name, final String description, final String thumbnail) {
         validateInvalidInput(name, description, thumbnail);
 
         this.id = id;
@@ -22,11 +22,11 @@ public class RoomTheme {
         this.thumbnail = thumbnail;
     }
 
-    public RoomTheme(final String name, final String description, final String thumbnail) {
+    public Theme(final String name, final String description, final String thumbnail) {
         this(NON_SAVED_STATUS, name, description, thumbnail);
     }
 
-    public RoomTheme(final long id, final RoomTheme savedRoomTheme) {
+    public Theme(final long id, final Theme savedRoomTheme) {
         this(id, savedRoomTheme.getName(), savedRoomTheme.getDescription(), savedRoomTheme.getThumbnail());
     }
 

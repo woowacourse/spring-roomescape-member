@@ -12,23 +12,23 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.theme.domain.RoomTheme;
+import roomescape.theme.domain.Theme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class JdbcRoomThemeDaoTest {
+class JdbcThemeDaoTest {
 
     @Autowired
-    private RoomThemeDao roomThemeDAO;
+    private ThemeDao themeDAO;
 
     @DisplayName("데이터 베이스에 방 테마를 추가하고 id 값을 반환한다")
     @Test
     void insertTest() {
         // given
-        final RoomTheme roomTheme = new RoomTheme("공포", "공포 테마 입니다", "url");
+        final Theme roomTheme = new Theme("공포", "공포 테마 입니다", "url");
 
         // when
-        final long result = roomThemeDAO.insert(roomTheme);
+        final long result = themeDAO.insert(roomTheme);
 
         // then
         assertThat(result).isEqualTo(4L);
@@ -38,7 +38,7 @@ class JdbcRoomThemeDaoTest {
     @Test
     void existsByNameTest() {
         // given // when
-        final boolean result = roomThemeDAO.existsByName("예시 1");
+        final boolean result = themeDAO.existsByName("예시 1");
 
         // then
         assertThat(result).isTrue();
@@ -48,7 +48,7 @@ class JdbcRoomThemeDaoTest {
     @Test
     void findAllTest() {
         // given // when
-        final List<RoomTheme> result = roomThemeDAO.findAll();
+        final List<Theme> result = themeDAO.findAll();
 
         // then
         Assertions.assertNotNull(result);
@@ -67,7 +67,7 @@ class JdbcRoomThemeDaoTest {
         final long id = 1L;
 
         // when
-        final Optional<RoomTheme> resultOptional = roomThemeDAO.findById(id);
+        final Optional<Theme> resultOptional = themeDAO.findById(id);
 
         // then
         assertThat(resultOptional).isPresent();
@@ -78,7 +78,7 @@ class JdbcRoomThemeDaoTest {
     @Test
     void findPopularThemesTest() {
         // given // when
-        List<RoomTheme> popularThemes = roomThemeDAO.findPopularThemes(
+        List<Theme> popularThemes = themeDAO.findPopularThemes(
                 LocalDate.of(2024, 10, 1), LocalDate.of(2025, 5, 1), 10);
 
         // then
@@ -99,7 +99,7 @@ class JdbcRoomThemeDaoTest {
         final long id = 3L;
 
         // when
-        final boolean result = roomThemeDAO.deleteById(id);
+        final boolean result = themeDAO.deleteById(id);
 
         // then
         assertThat(result).isTrue();

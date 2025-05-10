@@ -13,20 +13,20 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.service.dto.CreateReservationServiceRequest;
 import roomescape.reservationtime.dao.ReservationTimeDao;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.theme.dao.RoomThemeDao;
-import roomescape.theme.domain.RoomTheme;
+import roomescape.theme.dao.ThemeDao;
+import roomescape.theme.domain.Theme;
 
 @Service
 public class ReservationService {
 
     private final ReservationDao reservationDAO;
     private final ReservationTimeDao reservationTimeDAO;
-    private final RoomThemeDao themeDAO;
+    private final ThemeDao themeDAO;
     private final MemberDao memberDao;
 
     public ReservationService(final ReservationDao reservationDAO,
                               final ReservationTimeDao reservationTimeDAO,
-                              final RoomThemeDao themeDAO,
+                              final ThemeDao themeDAO,
                               final MemberDao memberDao) {
         this.reservationDAO = reservationDAO;
         this.reservationTimeDAO = reservationTimeDAO;
@@ -36,7 +36,7 @@ public class ReservationService {
 
     public Reservation addReservation(final CreateReservationServiceRequest creation) {
         final ReservationTime reservationTime = findReservationTimeByTimeId(creation.timeId());
-        final RoomTheme theme = findThemeByThemeId(creation.themeId());
+        final Theme theme = findThemeByThemeId(creation.themeId());
         final Member member = findMemberByMemberId(creation.memberId());
         final Reservation reservation = new Reservation(creation.date(), reservationTime, theme, member);
 
@@ -52,7 +52,7 @@ public class ReservationService {
                 .orElseThrow(() -> new NotExistedValueException("존재하지 않는 예약 가능 시간입니다: timeId=%d".formatted(timeId)));
     }
 
-    private RoomTheme findThemeByThemeId(final long themeId) {
+    private Theme findThemeByThemeId(final long themeId) {
         return themeDAO.findById(themeId)
                 .orElseThrow(() -> new NotExistedValueException("존재하지 않는 테마 입니다"));
     }

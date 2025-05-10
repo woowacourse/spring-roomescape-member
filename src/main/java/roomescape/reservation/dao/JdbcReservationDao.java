@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.theme.domain.RoomTheme;
+import roomescape.theme.domain.Theme;
 
 @Repository
 public class JdbcReservationDao implements ReservationDao {
@@ -27,7 +27,7 @@ public class JdbcReservationDao implements ReservationDao {
                     resultSet.getLong("time_id"),
                     resultSet.getTime("time_value").toLocalTime()),
 
-            new RoomTheme(
+            new Theme(
                     resultSet.getString("theme_name"),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail")),

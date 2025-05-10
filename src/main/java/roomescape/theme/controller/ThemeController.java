@@ -10,45 +10,45 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.theme.controller.dto.CreateRoomThemeRequest;
-import roomescape.theme.service.dto.CreateRoomThemeServiceRequest;
+import roomescape.theme.controller.dto.CreateThemeRequest;
 import roomescape.theme.controller.dto.PopularThemeResponse;
-import roomescape.theme.domain.RoomTheme;
-import roomescape.theme.controller.dto.RoomThemeResponse;
-import roomescape.theme.service.RoomThemeService;
+import roomescape.theme.controller.dto.ThemeResponse;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.service.ThemeService;
+import roomescape.theme.service.dto.CreateThemeServiceRequest;
 
 @RequestMapping("/themes")
 @RestController
-public class RoomThemeController {
+public class ThemeController {
 
-    private final RoomThemeService roomThemeService;
+    private final ThemeService themeService;
 
-    public RoomThemeController(final RoomThemeService roomThemeService) {
-        this.roomThemeService = roomThemeService;
+    public ThemeController(final ThemeService themeService) {
+        this.themeService = themeService;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RoomThemeResponse addTheme(@RequestBody CreateRoomThemeRequest request) {
-        final CreateRoomThemeServiceRequest creation = CreateRoomThemeServiceRequest.from(
+    public ThemeResponse addTheme(@RequestBody CreateThemeRequest request) {
+        final CreateThemeServiceRequest creation = CreateThemeServiceRequest.from(
                 request);
-        final RoomTheme savedTheme = roomThemeService.addTheme(creation);
-        return RoomThemeResponse.from(savedTheme);
+        final Theme savedTheme = themeService.addTheme(creation);
+        return ThemeResponse.from(savedTheme);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<RoomThemeResponse> findAllThemes() {
-        return roomThemeService.findAllThemes()
+    public List<ThemeResponse> findAllThemes() {
+        return themeService.findAllThemes()
                 .stream()
-                .map(RoomThemeResponse::from)
+                .map(ThemeResponse::from)
                 .toList();
     }
 
     @GetMapping("/popular")
     @ResponseStatus(HttpStatus.OK)
     public List<PopularThemeResponse> findPopularThemes() {
-        return roomThemeService.findPopularThemes()
+        return themeService.findPopularThemes()
                 .stream()
                 .map(PopularThemeResponse::from)
                 .toList();
@@ -57,6 +57,6 @@ public class RoomThemeController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTheme(@PathVariable long id) {
-        roomThemeService.deleteTheme(id);
+        themeService.deleteTheme(id);
     }
 }
