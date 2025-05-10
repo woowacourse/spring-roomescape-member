@@ -57,4 +57,5 @@ VALUES -- 테마 1-10 (각 2개씩)
 ;
 
 INSERT INTO users(name, email, password)
-VALUES ('asdf', 'qwer', '1234')
+VALUES ('name1', 'email1', '1234'),
+       ('name2', 'email2', '1234')
