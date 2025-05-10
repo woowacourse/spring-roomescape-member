@@ -15,7 +15,7 @@ class MemberRestControllerTest {
 
     @Test
     void 회원_생성_요청_성공() {
-        final Map<String, String> params = MemberApiFixture.createSignUpParams();
+        final Map<String, String> params = MemberApiFixture.memberSignUpParams();
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

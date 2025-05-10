@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 
 public class MemberApiFixture {
 
-    public static Map<String, String> createSignUpParams() {
+    public static Map<String, String> memberSignUpParams() {
         final Map<String, String> params = new HashMap<>();
         params.put("email", "test@imtest.com");
         params.put("password", "impassword");
