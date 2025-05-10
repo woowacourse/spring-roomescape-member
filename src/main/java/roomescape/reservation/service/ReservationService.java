@@ -7,8 +7,9 @@ import org.springframework.stereotype.Service;
 import roomescape.global.error.exception.BadRequestException;
 import roomescape.global.error.exception.ConflictException;
 import roomescape.global.error.exception.NotFoundException;
-import roomescape.reservation.dto.request.ReservationRequest;
-import roomescape.reservation.dto.response.ReservationResponse;
+import roomescape.reservation.dto.request.ReservationRequest.ReservationCreateRequest;
+import roomescape.reservation.dto.response.ReservationResponse.ReservationCreateResponse;
+import roomescape.reservation.dto.response.ReservationResponse.ReservationReadResponse;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.entity.ReservationTime;
 import roomescape.reservation.repository.ReservationRepository;
@@ -24,7 +25,7 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationResponse createReservation(ReservationRequest request) {
+    public ReservationCreateResponse createReservation(ReservationCreateRequest request) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 시간 입니다."));
         Theme theme = themeRepository.findById(request.themeId())
@@ -35,15 +36,15 @@ public class ReservationService {
         validateDuplicated(newReservation);
 
         Reservation saved = reservationRepository.save(newReservation);
-        return ReservationResponse.from(saved, theme);
+        return ReservationCreateResponse.from(saved, theme);
     }
 
-    public List<ReservationResponse> getAllReservations() {
+    public List<ReservationReadResponse> getAllReservations() {
         return reservationRepository.findAll().stream()
                 .map(reservation -> {
                     Theme theme = themeRepository.findById(reservation.getThemeId())
                             .orElseThrow(() -> new NotFoundException("존재하지 않는 테마 입니다."));
-                    return ReservationResponse.from(reservation, theme);
+                    return ReservationReadResponse.from(reservation, theme);
                 })
                 .toList();
     }

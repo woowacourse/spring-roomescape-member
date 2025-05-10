@@ -5,14 +5,16 @@ import java.time.LocalDate;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.entity.ReservationTime;
 
-public record ReservationRequest(
-        @NotNull LocalDate date,
-        @NotNull String name,
-        @NotNull Long timeId,
-        @NotNull Long themeId
-) {
+public class ReservationRequest {
 
-    public Reservation toEntity(ReservationTime reservationTime) {
-        return new Reservation(0L, name, date, reservationTime, themeId);
+    public record ReservationCreateRequest(
+            @NotNull LocalDate date,
+            @NotNull String name,
+            @NotNull Long timeId,
+            @NotNull Long themeId
+    ) {
+        public Reservation toEntity(ReservationTime reservationTime) {
+            return new Reservation(0L, name, date, reservationTime, themeId);
+        }
     }
 }

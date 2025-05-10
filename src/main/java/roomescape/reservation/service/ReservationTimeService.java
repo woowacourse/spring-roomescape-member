@@ -7,9 +7,10 @@ import org.springframework.stereotype.Service;
 import roomescape.global.error.exception.BadRequestException;
 import roomescape.global.error.exception.ConflictException;
 import roomescape.global.error.exception.NotFoundException;
-import roomescape.reservation.dto.request.ReservationTimeRequest;
-import roomescape.reservation.dto.response.AvailableReservationTimeResponse;
-import roomescape.reservation.dto.response.ReservationTimeResponse;
+import roomescape.reservation.dto.request.ReservationTimeRequest.ReservationTimeCreateRequest;
+import roomescape.reservation.dto.response.ReservationTimeResponse.AvailableReservationTimeResponse;
+import roomescape.reservation.dto.response.ReservationTimeResponse.ReservationTimeCreateResponse;
+import roomescape.reservation.dto.response.ReservationTimeResponse.ReservationTimeReadResponse;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.entity.ReservationTime;
 import roomescape.reservation.repository.ReservationRepository;
@@ -22,17 +23,17 @@ public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationTimeResponse createTime(ReservationTimeRequest request) {
+    public ReservationTimeCreateResponse createTime(ReservationTimeCreateRequest request) {
         ReservationTime time = request.toEntity();
         validateOperatingTime(time);
         validateDuplicated(time);
         ReservationTime saved = reservationTimeRepository.save(time);
-        return ReservationTimeResponse.from(saved);
+        return ReservationTimeCreateResponse.from(saved);
     }
 
-    public List<ReservationTimeResponse> getAllTimes() {
+    public List<ReservationTimeReadResponse> getAllTimes() {
         return reservationTimeRepository.findAll().stream()
-                .map(ReservationTimeResponse::from)
+                .map(ReservationTimeReadResponse::from)
                 .toList();
     }
 

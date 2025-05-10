@@ -5,11 +5,15 @@ import roomescape.global.auth.LoginMember;
 public class AuthResponse {
 
     public record LoginResponse(
-            String name
+            Long id,
+            String name,
+            String role
     ) {
         public static LoginResponse from(LoginMember loginMember) {
             return new LoginResponse(
-                    loginMember.name()
+                    loginMember.id(),
+                    loginMember.name(),
+                    loginMember.role().name()
             );
         }
     }
