@@ -1,9 +1,8 @@
 package roomescape.auth.service;
 
-import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.auth.infrastructure.jwt.TokenProvider;
+import roomescape.auth.service.in.TokenProvider;
 import roomescape.auth.web.controller.request.LoginRequest;
 import roomescape.auth.web.controller.response.MemberNameResponse;
 import roomescape.member.domain.Member;
@@ -36,14 +35,5 @@ public class AuthService {
 
     public Long getMemberId(String token) {
         return tokenProvider.getMemberId(token);
-    }
-
-    public String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
     }
 }

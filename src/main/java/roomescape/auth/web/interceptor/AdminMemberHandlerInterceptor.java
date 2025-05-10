@@ -7,12 +7,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.service.AuthService;
+import roomescape.auth.web.cookie.TokenCookieProvider;
 
 @RequiredArgsConstructor
 @Component
 public class AdminMemberHandlerInterceptor implements HandlerInterceptor {
 
     private final AuthService authService;
+    private final TokenCookieProvider tokenCookieProvider;
 
     @Override
     public boolean preHandle(
@@ -21,7 +23,7 @@ public class AdminMemberHandlerInterceptor implements HandlerInterceptor {
             Object handler
     ) {
         Cookie[] cookies = request.getCookies();
-        String token = authService.extractTokenFromCookie(cookies);
+        String token = tokenCookieProvider.extractTokenFromCookie(cookies);
 
         boolean isAdmin = authService.isAdmin(token);
         if (!isAdmin) {

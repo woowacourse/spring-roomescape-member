@@ -1,6 +1,5 @@
 package roomescape.auth.web.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.service.AuthService;
 import roomescape.auth.web.controller.request.LoginRequest;
 import roomescape.auth.web.controller.response.MemberNameResponse;
+import roomescape.auth.web.cookie.TokenCookieProvider;
 import roomescape.auth.web.resolver.Authenticated;
 
 @RequiredArgsConstructor
@@ -19,26 +19,20 @@ import roomescape.auth.web.resolver.Authenticated;
 public class AuthController {
 
     private final AuthService authService;
+    private final TokenCookieProvider tokenCookieProvider;
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest request, HttpServletResponse response) {
         String accessToken = authService.login(request);
 
-        Cookie cookie = new Cookie("token", accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        response.addCookie(tokenCookieProvider.createTokenCookie(accessToken));
 
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        Cookie expiredCookie = new Cookie("token", null);
-        expiredCookie.setPath("/");
-        expiredCookie.setMaxAge(0);
-        expiredCookie.setHttpOnly(true);
-        response.addCookie(expiredCookie);
+        response.addCookie(tokenCookieProvider.createExpiredTokenCookie());
 
         return ResponseEntity.ok().build();
     }

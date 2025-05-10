@@ -39,7 +39,7 @@ public class ReservationTimeApiController {
     public ResponseEntity<ApiResponse<ReservationTimeResponse>> createTime(
             @RequestBody @Valid ReservationTimeCreateRequest request
     ) {
-        ReservationTimeResponse response = reservationTimeService.create(request);
+        ReservationTimeResponse response = reservationTimeService.open(request);
 
         return ResponseEntity
                 .status(CREATED)

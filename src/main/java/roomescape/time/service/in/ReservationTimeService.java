@@ -1,4 +1,4 @@
-package roomescape.time.service;
+package roomescape.time.service.in;
 
 
 import java.util.List;
@@ -10,7 +10,7 @@ import roomescape.time.domain.ReservationTime;
 
 public interface ReservationTimeService {
 
-    ReservationTimeResponse create(ReservationTimeCreateRequest request);
+    ReservationTimeResponse open(ReservationTimeCreateRequest request);
 
     List<ReservationTimeResponse> getAll();
 

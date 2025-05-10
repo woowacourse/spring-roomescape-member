@@ -2,7 +2,6 @@ package roomescape.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,7 +10,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.auth.infrastructure.jwt.TokenProvider;
+import roomescape.auth.service.in.TokenProvider;
 import roomescape.auth.stub.StubTokenProvider;
 import roomescape.auth.web.controller.request.LoginRequest;
 import roomescape.auth.web.controller.response.MemberNameResponse;
@@ -83,15 +82,5 @@ public class AuthServiceTest {
         Long memberId = authService.getMemberId(token);
 
         assertThat(memberId).isEqualTo(StubTokenProvider.STUB_MEMBER_ID);
-    }
-
-    @Test
-    void 쿠키에서_토큰을_추출한다() {
-        String token = "user_stub_token";
-        Cookie[] cookies = {new Cookie("token", token)};
-
-        String extractedToken = authService.extractTokenFromCookie(cookies);
-
-        assertThat(extractedToken).isEqualTo(token);
     }
 }

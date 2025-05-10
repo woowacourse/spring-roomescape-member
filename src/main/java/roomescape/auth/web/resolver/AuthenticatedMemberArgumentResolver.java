@@ -10,12 +10,14 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.service.AuthService;
+import roomescape.auth.web.cookie.TokenCookieProvider;
 
 @RequiredArgsConstructor
 @Component
 public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthService authService;
+    private final TokenCookieProvider tokenCookieProvider;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -28,7 +30,7 @@ public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumen
                                   NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        String token = authService.extractTokenFromCookie(request.getCookies());
+        String token = tokenCookieProvider.extractTokenFromCookie(request.getCookies());
 
         if (token == null || token.isBlank()) {
             throw new AuthenticationException("[ERROR] 쿠키에 토큰이 존재하지 않습니다.");

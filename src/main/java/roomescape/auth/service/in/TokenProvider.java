@@ -1,4 +1,4 @@
-package roomescape.auth.infrastructure.jwt;
+package roomescape.auth.service.in;
 
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;

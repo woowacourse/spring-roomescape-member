@@ -12,7 +12,7 @@ public class ReservationTime {
         this.startAt = time;
     }
 
-    public static ReservationTime create(LocalTime time) {
+    public static ReservationTime open(LocalTime time) {
         return new ReservationTime(null, time);
     }
 

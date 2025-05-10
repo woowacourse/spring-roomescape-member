@@ -10,6 +10,8 @@ import roomescape.time.controller.request.ReservationTimeCreateRequest;
 import roomescape.time.controller.response.AvailableReservationTimeResponse;
 import roomescape.time.controller.response.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.service.in.ReservationTimeService;
+import roomescape.time.service.out.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeServiceImpl implements ReservationTimeService {
@@ -23,16 +25,20 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public ReservationTimeResponse create(ReservationTimeCreateRequest request) {
+    public ReservationTimeResponse open(ReservationTimeCreateRequest request) {
         LocalTime startAt = request.startAt();
-        if (reservationTimeRepository.existByStartAt(startAt)) {
-            throw new IllegalArgumentException("[ERROR] 이미 존재하는 예약 시간입니다.");
-        }
+        isAlreadyOpened(startAt);
 
-        ReservationTime reservationTime = ReservationTime.create(request.startAt());
+        ReservationTime reservationTime = ReservationTime.open(request.startAt());
         ReservationTime created = reservationTimeRepository.save(reservationTime);
 
         return ReservationTimeResponse.from(created);
+    }
+
+    private void isAlreadyOpened(LocalTime startAt) {
+        if (reservationTimeRepository.existByStartAt(startAt)) {
+            throw new IllegalArgumentException("[ERROR] 이미 존재하는 예약 시간입니다.");
+        }
     }
 
     public List<ReservationTimeResponse> getAll() {

@@ -20,6 +20,7 @@ import roomescape.time.controller.request.ReservationTimeCreateRequest;
 import roomescape.time.controller.response.AvailableReservationTimeResponse;
 import roomescape.time.controller.response.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.service.in.ReservationTimeService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class ReservationTimeServiceTest {
@@ -44,7 +45,7 @@ class ReservationTimeServiceTest {
                 LocalTime.of(10, 0)
         );
 
-        ReservationTimeResponse response = reservationTimeService.create(request);
+        ReservationTimeResponse response = reservationTimeService.open(request);
 
         assertThat(response.id()).isNotNull();
         assertThat(response.startAt()).isEqualTo("10:00");
@@ -55,7 +56,7 @@ class ReservationTimeServiceTest {
         ReservationTime reservationTime = reservationTimeDbFixture.열시();
         ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(reservationTime.getStartAt());
 
-        assertThatThrownBy(() -> reservationTimeService.create(request))
+        assertThatThrownBy(() -> reservationTimeService.open(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 이미 존재하는 예약 시간입니다.");
     }

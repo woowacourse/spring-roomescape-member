@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.service.ReservationTimeRepository;
+import roomescape.time.service.out.ReservationTimeRepository;
 
 @Repository
 public class ReservationTimeJdbcRepository implements ReservationTimeRepository {
