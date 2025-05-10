@@ -10,6 +10,9 @@ public class JwtCookieResolver {
 
     public static String getTokenFromCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            throw new AuthenticationException("로그인이 필요한 요청입니다.");
+        }
         return extractTokenFromCookie(cookies);
     }
 

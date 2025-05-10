@@ -41,7 +41,8 @@ VALUES (1, 'user1', 'USER', 'user1@example.com', 'user1123'),
        (7, 'user7', 'USER', 'user7@example.com', 'user7123'),
        (8, 'user8', 'USER', 'user8@example.com', 'user8123'),
        (9, 'user9', 'USER', 'user9@example.com', 'user9123'),
-       (10, 'user10', 'USER', 'user10@example.com', 'user10123');
+       (10, 'user10', 'USER', 'user10@example.com', 'user10123'),
+       (11, 'admin', 'ADMIN', 'admin@example.com', 'admin123123');
 
 -- reservation 데이터 삽입
 INSERT INTO reservation (date, time_id, theme_id, member_id)

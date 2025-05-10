@@ -4,9 +4,12 @@ import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import roomescape.infrastructure.intercepter.AdminRequestMapper;
 import roomescape.infrastructure.intercepter.AuthenticationPrincipalResolver;
+import roomescape.infrastructure.intercepter.PreHandlerInterceptor;
 import roomescape.infrastructure.jwt.JwtTokenProvider;
 
 @Configuration
@@ -25,6 +28,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
 
     @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new PreHandlerInterceptor(jwtTokenProvider, List.of(new AdminRequestMapper())));
+    }
+
+    @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/login").setViewName("/login");
         registry.addViewController("/").setViewName("/index");
@@ -32,7 +40,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         //admin
         registry.addViewController("/admin").setViewName("/admin/index");
-        registry.addViewController("/admin/reservation").setViewName("/admin/reservation-with-member");
+        registry.addViewController("/admin/reservation").setViewName("/admin/reservation-new");
         registry.addViewController("/admin/time").setViewName("/admin/time");
         registry.addViewController("/admin/theme").setViewName("/admin/theme");
     }
