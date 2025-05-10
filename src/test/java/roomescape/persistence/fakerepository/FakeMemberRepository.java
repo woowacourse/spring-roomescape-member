@@ -14,11 +14,11 @@ public final class FakeMemberRepository implements MemberRepository, FakeReposit
     private final AtomicLong idGenerator = new AtomicLong(1);
 
     @Override
-    public Long save(Member member) {
+    public Member save(Member member) {
         MemberEntity newMemberEntity = MemberEntity.fromDomain(member)
                         .copyWithId(idGenerator.getAndIncrement());
         members.add(newMemberEntity);
-        return newMemberEntity.getId();
+        return newMemberEntity.toDomain();
     }
 
     @Override

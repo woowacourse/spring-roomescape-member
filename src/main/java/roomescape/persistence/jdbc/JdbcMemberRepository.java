@@ -27,14 +27,15 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Long save(Member member) {
+    public Member save(Member member) {
         MemberEntity memberEntity = MemberEntity.fromDomain(member);
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", memberEntity.getName());
         parameters.put("email", memberEntity.getEmail());
         parameters.put("password", memberEntity.getPassword());
         parameters.put("role", memberEntity.getRole());
-        return jdbcInsert.executeAndReturnKey(parameters).longValue();
+        long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
+        return memberEntity.copyWithId(id).toDomain();
     }
 
     @Override

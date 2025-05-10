@@ -29,7 +29,7 @@ public class MemberService {
                 memberRequestDto.email(),
                 memberRequestDto.password()
         );
-        return memberRepository.save(member);
+        return memberRepository.save(member).getId();
     }
 
     public AccessToken login(LoginRequestDto loginRequestDto) {

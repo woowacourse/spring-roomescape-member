@@ -52,7 +52,7 @@ class AdminReservationControllerTest extends AbstractControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        memberId = memberRepository.save(new Member("벨로", "bello@email.com", "1234", MemberRole.ADMIN));
+        memberId = memberRepository.save(new Member("벨로", "bello@email.com", "1234", MemberRole.ADMIN)).getId();
         token = testLoginAndReturnToken();
     }
 

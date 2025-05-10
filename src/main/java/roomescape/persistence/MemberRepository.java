@@ -6,7 +6,7 @@ import roomescape.business.domain.member.Member;
 
 public interface MemberRepository {
 
-    Long save(Member member);
+    Member save(Member member);
 
     Optional<Member> findById(Long id);
 
