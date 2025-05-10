@@ -17,16 +17,18 @@ import java.util.List;
 public class MemberService {
 
     private final MemberDao memberDao;
+    private final JwtProvider jwtProvider;
 
-    public MemberService(MemberDao memberDao) {
+    public MemberService(MemberDao memberDao, JwtProvider jwtProvider) {
         this.memberDao = memberDao;
+        this.jwtProvider = jwtProvider;
     }
 
     public LoginResponse login(LoginRequest request) {
         LoginMember loginMember = memberDao.findByEmailAndPassword(request.email(), request.password())
             .orElseThrow(() -> new AuthenticationException("로그인 정보를 찾을 수 없습니다."));
 
-        String accessToken = JwtProvider.generateToken(loginMember);
+        String accessToken = jwtProvider.generateToken(loginMember);
         return LoginResponse.from(accessToken);
     }
 

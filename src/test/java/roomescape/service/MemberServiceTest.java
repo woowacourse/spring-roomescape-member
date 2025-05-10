@@ -3,6 +3,7 @@ package roomescape.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import roomescape.auth.JwtProvider;
 import roomescape.dto.request.LoginCheckRequest;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.LoginCheckResponse;
@@ -20,13 +21,17 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 class MemberServiceTest {
 
+    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+
     private MemberDao memberDao;
     private MemberService memberService;
+    private JwtProvider jwtProvider;
 
     @BeforeEach
     void setUp() {
         memberDao = Mockito.mock(MemberDao.class);
-        memberService = new MemberService(memberDao);
+        jwtProvider = new JwtProvider(SECRET_KEY);
+        memberService = new MemberService(memberDao, jwtProvider);
     }
 
     @Test

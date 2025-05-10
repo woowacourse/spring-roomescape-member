@@ -15,9 +15,11 @@ import roomescape.service.MemberService;
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberService memberService;
+    private final JwtProvider jwtProvider;
 
-    public LoginMemberArgumentResolver(MemberService memberService) {
+    public LoginMemberArgumentResolver(MemberService memberService, JwtProvider jwtProvider) {
         this.memberService = memberService;
+        this.jwtProvider = jwtProvider;
     }
 
     @Override
@@ -34,7 +36,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             throw new AuthenticationException("로그인 정보가 없습니다.");
         }
 
-        Long memberId = JwtProvider.extractMemberId(token);
+        Long memberId = jwtProvider.extractMemberId(token);
         return memberService.findById(memberId);
     }
 

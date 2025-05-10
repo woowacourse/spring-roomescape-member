@@ -6,6 +6,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistration
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import roomescape.auth.JwtProvider;
 import roomescape.service.MemberService;
 
 import java.util.List;
@@ -14,9 +15,11 @@ import java.util.List;
 public class RoomEscapeConfiguration implements WebMvcConfigurer {
 
     private final MemberService memberService;
+    private final JwtProvider jwtProvider;
 
-    public RoomEscapeConfiguration(MemberService memberService) {
+    public RoomEscapeConfiguration(MemberService memberService, JwtProvider jwtProvider) {
         this.memberService = memberService;
+        this.jwtProvider = jwtProvider;
     }
 
     @Override
@@ -31,12 +34,12 @@ public class RoomEscapeConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberArgumentResolver(memberService));
+        resolvers.add(new LoginMemberArgumentResolver(memberService, jwtProvider));
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        InterceptorRegistration interceptorRegistration = registry.addInterceptor(new AdminInterceptor(memberService));
+        InterceptorRegistration interceptorRegistration = registry.addInterceptor(new AdminInterceptor(memberService, jwtProvider));
         interceptorRegistration.addPathPatterns("/admin/**");
     }
 }

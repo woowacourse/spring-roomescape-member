@@ -13,9 +13,11 @@ import roomescape.service.MemberService;
 public class AdminInterceptor implements HandlerInterceptor {
 
     private final MemberService memberService;
+    private final JwtProvider jwtProvider;
 
-    public AdminInterceptor(MemberService memberService) {
+    public AdminInterceptor(MemberService memberService, JwtProvider jwtProvider) {
         this.memberService = memberService;
+        this.jwtProvider = jwtProvider;
     }
 
     @Override
@@ -27,7 +29,7 @@ public class AdminInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        Long memberId = JwtProvider.extractMemberId(token);
+        Long memberId = jwtProvider.extractMemberId(token);
         LoginCheckRequest login = memberService.findById(memberId);
         if (login == null || login.role() != Role.ADMIN) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
