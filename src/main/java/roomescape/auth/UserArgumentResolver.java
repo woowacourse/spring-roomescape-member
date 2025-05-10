@@ -14,14 +14,15 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import roomescape.service.UserService;
+import roomescape.exception.InvalidTokenException;
+import roomescape.repository.UserRepository;
 
 @Component
 @RequiredArgsConstructor
 public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtProvider jwtProvider;
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -32,9 +33,9 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+        // TODO: util로 중복 제거 고민
         if (request == null || request.getCookies() == null) {
-            // TODO: 예외처리
-            throw new AuthenticationException();
+            throw new IllegalArgumentException();
         }
         String token = null;
         for (var cookie : request.getCookies()) {
@@ -46,13 +47,10 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
         try {
             Long userId = Long.valueOf(jwtProvider.getPayload(token));
-            return userService.getById(userId);
-            // TODO: user notfound 대응 시 여기도 수정 필요
+            return userRepository.getById(userId);
         } catch (ExpiredJwtException e) {
-            // TODO: 예외 구체화 ; 핸들러에서 쿠키 제거
-            throw new RuntimeException("로그아웃하세요");
+            throw new InvalidTokenException(e);
         } catch (IllegalArgumentException e) {
-            // TODO: 예외 구체화 고민
             throw new AuthenticationException("로그인 정보가 잘못되었습니다.");
         }
     }

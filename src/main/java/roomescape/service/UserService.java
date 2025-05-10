@@ -41,10 +41,6 @@ public class UserService {
         userRepository.save(new User(request.name(), request.email(), request.password()));
     }
 
-    public User getById(Long id) {
-        return userRepository.getById(id);
-    }
-
     public List<MemberResponse> getAll() {
         return userRepository.findAll().stream()
                 .map(MemberResponse::from)

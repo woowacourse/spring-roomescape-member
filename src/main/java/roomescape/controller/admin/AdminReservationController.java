@@ -21,7 +21,6 @@ public class AdminReservationController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public void create(@RequestBody CreateAdminReservationRequest request) {
-        // TODO: admin인 경우만 허용 -> Interceptor
         reservationService.create(request.memberId(), request.date(), request.timeId(), request.themeId());
     }
 
