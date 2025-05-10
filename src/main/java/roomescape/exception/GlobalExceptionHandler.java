@@ -15,24 +15,28 @@ public final class GlobalExceptionHandler {
 
     @ExceptionHandler(value = ReservationException.class)
     public ResponseEntity<ErrorResponseDto> handleReservationException(ReservationException exception) {
+        log.warn("예약 관련 예외 발생: {}", exception.getMessage(), exception);
         return ResponseEntity.badRequest()
                 .body(new ErrorResponseDto(exception.getMessage()));
     }
 
     @ExceptionHandler(value = ReservationThemeException.class)
     public ResponseEntity<ErrorResponseDto> handleReservationThemeException(ReservationThemeException exception) {
+        log.warn("테마 관련 예외 발생: {}", exception.getMessage(), exception);
         return ResponseEntity.badRequest()
                 .body(new ErrorResponseDto(exception.getMessage()));
     }
 
     @ExceptionHandler(value = ReservationTimeException.class)
     public ResponseEntity<ErrorResponseDto> handleReservationTimeException(ReservationTimeException exception) {
+        log.warn("예약 시간 관련 예외 발생: {}", exception.getMessage(), exception);
         return ResponseEntity.badRequest()
                 .body(new ErrorResponseDto(exception.getMessage()));
     }
 
     @ExceptionHandler(value = MemberException.class)
     public ResponseEntity<ErrorResponseDto> handleMemberException(MemberException exception) {
+        log.warn("사용자 관련 예외 발생: {}", exception.getMessage(), exception);
         return ResponseEntity.badRequest()
                 .body(new ErrorResponseDto(exception.getMessage()));
     }
