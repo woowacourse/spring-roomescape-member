@@ -1,5 +1,6 @@
 package roomescape.repository.impl;
 
+import java.util.List;
 import org.springframework.stereotype.Component;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
@@ -30,5 +31,16 @@ public class MemberRepositoryImpl implements MemberRepository {
     public Member findByEmailAndPassword(String email, String password) {
         return memberDao.findByEmailAndPassword(email, password)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+    }
+
+    @Override
+    public Member findById(Long id) {
+        return memberDao.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+    }
+
+    @Override
+    public List<Member> findAll() {
+        return memberDao.findAll();
     }
 }

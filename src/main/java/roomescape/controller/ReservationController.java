@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Member;
+import roomescape.dto.request.AdminReservationRequest;
 import roomescape.dto.request.ReservationRequestDto;
+import roomescape.dto.response.AdminReservationResponse;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.service.ReservationService;
 
@@ -33,6 +35,13 @@ public class ReservationController {
     public ReservationResponseDto createReservation(
         @RequestBody ReservationRequestDto reservationRequestDto, Member member) {
         return reservationService.saveReservation(reservationRequestDto, member);
+    }
+
+    @PostMapping("admin/reservations")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AdminReservationResponse createReservationOfAdmin(
+        @RequestBody AdminReservationRequest adminReservationRequest, Member member) {
+        return reservationService.saveReservation(adminReservationRequest);
     }
 
     @DeleteMapping("/reservations/{id}")
