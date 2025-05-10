@@ -45,7 +45,7 @@ class MemberTest {
                     .isInstanceOf(IllegalArgumentException.class);
             soft.assertThatThrownBy(() -> new Member(1L, "a", "b", null, "MEMBER"))
                     .isInstanceOf(IllegalArgumentException.class);
-            soft.assertThatThrownBy(() -> new Member(1L, "a", "b", "c", null))
+            soft.assertThatThrownBy(() -> new Member(1L, "a", "b", "c", (String) null))
                     .isInstanceOf(IllegalArgumentException.class);
         });
     }
