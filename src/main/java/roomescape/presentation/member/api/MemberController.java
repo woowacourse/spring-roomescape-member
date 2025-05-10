@@ -1,7 +1,6 @@
 package roomescape.presentation.member.api;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -12,8 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.config.AccessToken;
 import roomescape.business.service.member.MemberService;
+import roomescape.config.AccessToken;
 import roomescape.config.LoginMember;
 import roomescape.presentation.member.dto.LoginCheckResponseDto;
 import roomescape.presentation.member.dto.LoginRequestDto;
@@ -50,10 +49,7 @@ public final class MemberController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-        Cookie[] cookies = request.getCookies();
-        // TODO: 토큰을 어떻게 만료시킬 것인가?
-        String accessToken = extractTokenFromCookie(cookies);
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
         clearCookie(response);
         return ResponseEntity.ok().build();
     }
@@ -76,14 +72,5 @@ public final class MemberController {
         cookie.setMaxAge(0);
         cookie.setPath("/");
         response.addCookie(cookie);
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
     }
 }
