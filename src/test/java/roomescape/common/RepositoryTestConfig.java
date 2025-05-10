@@ -7,35 +7,39 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import roomescape.integration.fixture.MemberDbFixture;
-import roomescape.repository.MemberRepository;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ThemeRepository;
-import roomescape.repository.ReservationTimeRepository;
 import roomescape.integration.fixture.ReservationDbFixture;
 import roomescape.integration.fixture.ReservationTimeDbFixture;
 import roomescape.integration.fixture.ThemeDbFixture;
+import roomescape.repository.MemberRepository;
+import roomescape.repository.MemberRepositoryImpl;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationRepositoryImpl;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ReservationTimeRepositoryImpl;
+import roomescape.repository.ThemeRepository;
+import roomescape.repository.ThemeRepositoryImpl;
 
 @TestConfiguration
 public class RepositoryTestConfig {
 
     @Bean
     public ThemeRepository themeRepository(JdbcTemplate jdbcTemplate) {
-        return new ThemeRepository(jdbcTemplate);
+        return new ThemeRepositoryImpl(jdbcTemplate);
     }
 
     @Bean
     public ReservationRepository reservationRepository(JdbcTemplate jdbcTemplate) {
-        return new ReservationRepository(jdbcTemplate);
+        return new ReservationRepositoryImpl(jdbcTemplate);
     }
 
     @Bean
     public ReservationTimeRepository reservationTimeRepository(JdbcTemplate jdbcTemplate) {
-        return new ReservationTimeRepository(jdbcTemplate);
+        return new ReservationTimeRepositoryImpl(jdbcTemplate);
     }
 
     @Bean
     public MemberRepository memberRepository(JdbcTemplate jdbcTemplate) {
-        return new MemberRepository(jdbcTemplate);
+        return new MemberRepositoryImpl(jdbcTemplate);
     }
 
     @Bean

@@ -28,10 +28,11 @@ public class ReservationService {
     private final Clock clock;
 
     public ReservationService(
-            ReservationRepository reservationRepository,
-            ReservationTimeRepository reservationTimeRepository,
-            ThemeRepository themeRepository, final MemberRepository memberRepository,
-            Clock clock
+            final ReservationRepository reservationRepository,
+            final ReservationTimeRepository reservationTimeRepository,
+            final ThemeRepository themeRepository,
+            final MemberRepository memberRepository,
+            final Clock clock
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
@@ -91,7 +92,7 @@ public class ReservationService {
 
     private void validateReservationAvailability(ReservationDateTime dateTime) {
         if (reservationRepository.existSameDateTime(dateTime.getReservationDate(), dateTime.getTimeId())) {
-            throw new IllegalArgumentException("이미 예약이 찼습니다.");
+            throw new IllegalStateException("이미 예약이 찼습니다.");
         }
     }
 

@@ -17,4 +17,20 @@ public class ReservationDate {
     public LocalDate getDate() {
         return date;
     }
+
+    @Override
+    public boolean equals(final Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof ReservationDate that)) {
+            return false;
+        }
+        return Objects.equals(getDate(), that.getDate());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getDate());
+    }
 }

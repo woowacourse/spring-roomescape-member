@@ -4,15 +4,15 @@ import java.time.Clock;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
-import roomescape.service.request.CreateThemeRequest;
-import roomescape.service.response.ThemeResponse;
-import roomescape.domain.theme.LastWeekRange;
+import roomescape.domain.theme.DateRange;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeDescription;
 import roomescape.domain.theme.ThemeName;
 import roomescape.domain.theme.ThemeThumbnail;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.request.CreateThemeRequest;
+import roomescape.service.response.ThemeResponse;
 
 @Service
 public class ThemeService {
@@ -54,8 +54,8 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getWeeklyPopularThemes() {
-        LastWeekRange lastWeekRange = new LastWeekRange(clock);
-        List<Theme> themes = themeRepository.findPopularThemeDuringAWeek(10L, lastWeekRange);
+        DateRange dateRange = new DateRange(clock);
+        List<Theme> themes = themeRepository.findPopularThemeDuringAWeek(10L, dateRange);
         return ThemeResponse.from(themes);
     }
 

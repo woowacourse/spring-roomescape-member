@@ -1,7 +1,7 @@
 package roomescape.integration.repository;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.SoftAssertions.*;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static roomescape.common.Constant.FIXED_CLOCK;
 
 import java.time.LocalDate;
@@ -9,12 +9,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import roomescape.common.Constant;
 import roomescape.common.RepositoryBaseTest;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
@@ -23,12 +19,12 @@ import roomescape.domain.theme.Theme;
 import roomescape.domain.time.AvailableReservationTime;
 import roomescape.domain.time.ReservationTime;
 import roomescape.integration.fixture.MemberDbFixture;
-import roomescape.repository.DynamicReservationSelectQuery;
-import roomescape.repository.ReservationTimeRepository;
 import roomescape.integration.fixture.ReservationDateFixture;
 import roomescape.integration.fixture.ReservationDbFixture;
 import roomescape.integration.fixture.ReservationTimeDbFixture;
 import roomescape.integration.fixture.ThemeDbFixture;
+import roomescape.repository.DynamicReservationSelectQuery;
+import roomescape.repository.ReservationTimeRepository;
 
 class ReservationTimeRepositoryTest extends RepositoryBaseTest {
 

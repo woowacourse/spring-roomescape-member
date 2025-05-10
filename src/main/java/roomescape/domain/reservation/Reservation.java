@@ -62,4 +62,8 @@ public class Reservation {
     public Theme getTheme() {
         return theme;
     }
+
+    public ReservationDate getReservationDate() {
+        return reservationDate;
+    }
 }

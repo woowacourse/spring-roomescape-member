@@ -5,13 +5,13 @@ import static roomescape.common.Constant.FIXED_CLOCK;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.theme.LastWeekRange;
+import roomescape.domain.theme.DateRange;
 
-class LastWeekRangeTest {
+class DateRangeTest {
 
     @Test
     void clock은_null일_수_없다() {
-        assertThatThrownBy(() -> new LastWeekRange(null))
+        assertThatThrownBy(() -> new DateRange(null))
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -19,10 +19,10 @@ class LastWeekRangeTest {
     void 시작일은_현재_기준_7일_전이다() {
         // given
         LocalDate beforeSevenDays = LocalDate.now(FIXED_CLOCK);
-        LastWeekRange lastWeekRange = new LastWeekRange(FIXED_CLOCK);
+        DateRange dateRange = new DateRange(FIXED_CLOCK);
 
         // when
-        LocalDate start = lastWeekRange.getStartDate();
+        LocalDate start = dateRange.getStartDate();
 
         // then
         assertThat(start).isEqualTo(beforeSevenDays.minusDays(7));
@@ -32,10 +32,10 @@ class LastWeekRangeTest {
     void 종료일은_현재_기준_하루_전이다() {
         // given
         LocalDate beforeSevenDays = LocalDate.now(FIXED_CLOCK);
-        LastWeekRange lastWeekRange = new LastWeekRange(FIXED_CLOCK);
+        DateRange dateRange = new DateRange(FIXED_CLOCK);
 
         // when
-        LocalDate end = lastWeekRange.getEndDate();
+        LocalDate end = dateRange.getEndDate();
 
         // then
         assertThat(end).isEqualTo(beforeSevenDays.minusDays(1));

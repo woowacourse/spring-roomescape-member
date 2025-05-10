@@ -1,7 +1,7 @@
 package roomescape.integration.repository;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.SoftAssertions.*;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static roomescape.common.Constant.FIXED_CLOCK;
 
 import java.util.ArrayList;
@@ -9,25 +9,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.LongStream;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.common.RepositoryBaseTest;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservation.ReservationDate;
-import roomescape.domain.theme.LastWeekRange;
+import roomescape.domain.theme.DateRange;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeDescription;
 import roomescape.domain.theme.ThemeName;
 import roomescape.domain.theme.ThemeThumbnail;
+import roomescape.domain.time.ReservationTime;
 import roomescape.integration.fixture.MemberDbFixture;
 import roomescape.integration.fixture.ReservationDateFixture;
-import roomescape.integration.fixture.ReservationTimeDbFixture;
-import roomescape.repository.ThemeRepository;
-import roomescape.domain.time.ReservationTime;
 import roomescape.integration.fixture.ReservationDbFixture;
+import roomescape.integration.fixture.ReservationTimeDbFixture;
 import roomescape.integration.fixture.ThemeDbFixture;
+import roomescape.repository.ThemeRepository;
 
 class ThemeRepositoryTest extends RepositoryBaseTest {
 
@@ -147,7 +146,7 @@ class ThemeRepositoryTest extends RepositoryBaseTest {
         }
 
         // when
-        LastWeekRange range = new LastWeekRange(FIXED_CLOCK);
+        DateRange range = new DateRange(FIXED_CLOCK);
         List<Theme> popularThemes = themeRepository.findPopularThemeDuringAWeek(10, range);
 
         // then
