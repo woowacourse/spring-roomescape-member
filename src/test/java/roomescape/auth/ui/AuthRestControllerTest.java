@@ -36,7 +36,7 @@ class AuthRestControllerTest {
 
     @Test
     void 회원가입한_사용자는_일반_회원_권한을_가진다() {
-        final Map<String, String> signUpParams = MemberApiFixture.createMemberRequestParams();
+        final Map<String, String> signUpParams = MemberApiFixture.createSignUpParams();
         signUp(signUpParams);
 
         final Map<String, String> loginParams = Map.of(
@@ -50,7 +50,6 @@ class AuthRestControllerTest {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract().cookies();
-        System.out.println(cookies);
 
         final String accessToken = cookies.get("token");
         final AuthRole authRole = authTokenProvider.getRole(accessToken);
@@ -60,7 +59,7 @@ class AuthRestControllerTest {
 
     @Test
     void 로그인_체크_요청_시_회원의_이름을_응답한다() {
-        final Map<String, String> signUpParams = MemberApiFixture.createMemberRequestParams();
+        final Map<String, String> signUpParams = MemberApiFixture.createSignUpParams();
         signUp(signUpParams);
 
         final Map<String, String> loginParams = Map.of(
