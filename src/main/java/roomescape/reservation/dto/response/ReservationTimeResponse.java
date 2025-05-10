@@ -8,7 +8,6 @@ public class ReservationTimeResponse {
             Long id,
             String startAt
     ) {
-
         public static ReservationTimeCreateResponse from(ReservationTime reservationTime) {
             return new ReservationTimeCreateResponse(reservationTime.getId(), reservationTime.getFormattedTime());
         }
@@ -18,7 +17,6 @@ public class ReservationTimeResponse {
             Long id,
             String startAt
     ) {
-
         public static ReservationTimeReadResponse from(ReservationTime reservationTime) {
             return new ReservationTimeReadResponse(reservationTime.getId(), reservationTime.getFormattedTime());
         }

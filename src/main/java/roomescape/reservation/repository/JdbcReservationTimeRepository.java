@@ -9,6 +9,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.dto.response.ReservationTimeResponse.AvailableReservationTimeResponse;
@@ -19,17 +20,16 @@ import roomescape.reservation.entity.ReservationTime;
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final RowMapper<ReservationTime> rowMapper = (resultSet, rowNum) -> {
-        Long id = resultSet.getLong("id");
-        LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
-        return new ReservationTime(id, startAt);
-    };
+    private final RowMapper<ReservationTime> rowMapper = (resultSet, rowNum) -> new ReservationTime(
+            resultSet.getLong("id"),
+            resultSet.getObject("start_at", LocalTime.class)
+    );
 
     @Override
     public ReservationTime save(ReservationTime time) {
         String sql = "INSERT INTO reservation_time (start_at) VALUES (:start_at)";
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
+        SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", time.getStartAt());
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
@@ -63,7 +63,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 ORDER BY rt.start_at
                 """;
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
+        SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date", date.toString())
                 .addValue("themeId", themeId);
 
@@ -84,7 +84,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public Optional<ReservationTime> findById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = :id";
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
+        SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
 
         try {
@@ -99,7 +99,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public boolean deleteById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = :id";
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
+        SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
 
         int updated = jdbcTemplate.update(sql, params);

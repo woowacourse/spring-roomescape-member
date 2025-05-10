@@ -79,7 +79,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 FETCH FIRST :limit ROWS ONLY
                 """;
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
+        SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("startDate", startDate)
                 .addValue("endDate", endDate)
                 .addValue("limit", limit);
@@ -90,7 +90,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public Optional<Theme> findById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = :id";
-        MapSqlParameterSource params = new MapSqlParameterSource()
+        SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
 
         try {
@@ -104,7 +104,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public Optional<Theme> findByName(String name) {
         String sql = "SELECT * FROM theme WHERE name = :name";
-        MapSqlParameterSource params = new MapSqlParameterSource()
+        SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", name);
 
         try {
@@ -118,7 +118,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public boolean deleteById(Long id) {
         String sql = "DELETE FROM theme WHERE id = :id";
-        MapSqlParameterSource params = new MapSqlParameterSource()
+        SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
 
         int updated = jdbcTemplate.update(sql, params);
