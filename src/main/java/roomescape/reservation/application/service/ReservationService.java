@@ -17,6 +17,7 @@ import roomescape.reservation.application.dto.CreateReservationRequest;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.application.repository.ThemeRepository;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -114,5 +115,13 @@ public class ReservationService {
         if (reservationRepository.existsByDateTime(reservationDateTime)) {
             throw new DuplicateReservationException("[ERROR] 중복된 일시의 예약은 불가능합니다.");
         }
+    }
+
+    public List<ReservationResponse> getFilteredReservations(Long themeId, Long memberId, LocalDate dateFrom,
+                                                             LocalDate dateTo) {
+        List<Reservation> reservations = reservationRepository.findAllByFilters(themeId, memberId, dateFrom, dateTo);
+        return reservations.stream()
+                .map(ReservationResponse::new)
+                .toList();
     }
 }

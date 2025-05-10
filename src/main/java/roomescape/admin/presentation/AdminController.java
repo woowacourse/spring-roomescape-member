@@ -1,10 +1,14 @@
 package roomescape.admin.presentation;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.admin.presentation.dto.AdminReservationRequest;
 import roomescape.reservation.application.service.ReservationService;
@@ -26,6 +30,18 @@ public class AdminController {
     ) {
         ReservationResponse reservation = reservationService.createReservation(request);
         return ResponseEntity.status(201).body(reservation);
+    }
+
+    @GetMapping("/reservations")
+    public ResponseEntity<List<ReservationResponse>> getFilteredReservations(
+            final @RequestParam(required = false) Long themeId,
+            final @RequestParam(required = false) Long memberId,
+            final @RequestParam(required = false) LocalDate dateFrom,
+            final @RequestParam(required = false) LocalDate dateTo
+    ) {
+        List<ReservationResponse> reservations = reservationService.getFilteredReservations(
+                themeId, memberId, dateFrom, dateTo);
+        return ResponseEntity.ok().body(reservations);
     }
 
 }
