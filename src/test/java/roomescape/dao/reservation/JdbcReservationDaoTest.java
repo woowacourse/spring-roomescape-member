@@ -13,15 +13,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.dao.meber.JdbcMemberDao;
 import roomescape.dao.reservationTime.JdbcReservationTimeDao;
 import roomescape.dao.theme.JdbcThemeDao;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 @JdbcTest
-@Import({JdbcReservationTimeDao.class, JdbcReservationDao.class, JdbcThemeDao.class})
-@Sql({"/test-schema.sql", "/test-data.sql"})
+@Import({JdbcReservationTimeDao.class, JdbcReservationDao.class, JdbcThemeDao.class, JdbcMemberDao.class})
+@Sql({"/schema.sql", "/test-data.sql"})
 class JdbcReservationDaoTest {
 
     @Autowired
@@ -29,6 +32,9 @@ class JdbcReservationDaoTest {
 
     @Autowired
     private JdbcReservationTimeDao jdbcReservationTimeDao;
+
+    @Autowired
+    private JdbcMemberDao jdbcMemberDao;
 
     @Autowired
     private JdbcThemeDao jdbcThemeDao;
@@ -42,14 +48,15 @@ class JdbcReservationDaoTest {
         final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
         final Theme theme = new Theme("test", "test", "test");
         final Theme savedTheme = jdbcThemeDao.create(theme);
-        final Reservation reservation = Reservation.create("체체", LocalDate.now(),
-                savedReservationTime, savedTheme);
+        final Member member = new Member(1L, "test", "test", "test", MemberRole.USER);
+        final Reservation reservation = Reservation.create(LocalDate.now(),
+                savedReservationTime, savedTheme, member);
 
         // when
         final Reservation savedReservation = jdbcReservationDao.create(reservation);
 
         // then
-        assertThat(savedReservation.getName()).isEqualTo("체체");
+        assertThat(savedReservation.getMember().getId()).isEqualTo(1L);
     }
 
     @DisplayName("에약을 데이터베이스에서 조회한다.")
