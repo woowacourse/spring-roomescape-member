@@ -2,7 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
-import roomescape.dto.auth.MemberNameResponseDto;
+import roomescape.dto.member.MemberResponseDto;
 import roomescape.exception.UnauthorizationException;
 import roomescape.repository.MemberRepository;
 
@@ -21,9 +21,9 @@ public class MemberService {
         return memberRepository.findById(id).orElseThrow(() -> new UnauthorizationException("[ERROR] 유저를 찾을 수 없습니다. ID : " + id));
     }
 
-    public List<MemberNameResponseDto> findAllMembers() {
+    public List<MemberResponseDto> findAllMembers() {
         return memberRepository.findAll().stream()
-                .map(member -> new MemberNameResponseDto(member.getName()))
+                .map(member -> new MemberResponseDto(member.getId(), member.getName(), member.getEmail(), member.getRole()))
                 .toList();
     }
 }

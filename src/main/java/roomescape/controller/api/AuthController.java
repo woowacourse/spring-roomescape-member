@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.dto.auth.LoginInfo;
 import roomescape.dto.auth.LoginRequestDto;
-import roomescape.dto.auth.MemberNameResponseDto;
+import roomescape.dto.member.MemberNameResponseDto;
 import roomescape.service.AuthService;
 
 @RestController

@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.auth.MemberNameResponseDto;
+import roomescape.dto.member.MemberResponseDto;
 import roomescape.service.MemberService;
 
 import java.util.List;
@@ -20,8 +20,8 @@ public class MemberController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MemberNameResponseDto>> getMembers() {
-        List<MemberNameResponseDto> allMembers = memberService.findAllMembers();
+    public ResponseEntity<List<MemberResponseDto>> getMembers() {
+        List<MemberResponseDto> allMembers = memberService.findAllMembers();
         return ResponseEntity.ok(allMembers);
     }
 }
