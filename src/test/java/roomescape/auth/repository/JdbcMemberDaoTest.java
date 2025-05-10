@@ -27,7 +27,7 @@ class JdbcMemberDaoTest {
 
     @AfterEach
     void dropTable() {
-        String dropSql = "DROP TABLE IF EXISTS member";
+        String dropSql = "DROP TABLE IF EXISTS reservation, reservation_time, theme, member";
         jdbcTemplate.execute(dropSql);
     }
 

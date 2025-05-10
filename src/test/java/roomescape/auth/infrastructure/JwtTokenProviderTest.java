@@ -11,6 +11,7 @@ import java.util.Date;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.enums.Role;
 
 class JwtTokenProviderTest {
 
@@ -26,8 +27,9 @@ class JwtTokenProviderTest {
         String name = "행성이";
         String email = "woowa@woowa.com";
         String password = "woowa123";
+        Role role = Role.USER;
 
-        Member member = new Member(id, name, email, password);
+        Member member = new Member(id, name, email, password, role);
 
         // when
         String token = jwtTokenProvider.createToken(member);
@@ -54,8 +56,9 @@ class JwtTokenProviderTest {
         String name = "행성이";
         String email = "woowa@woowa.com";
         String password = "woowa123";
+        Role role = Role.USER;
 
-        Member member = new Member(id, name, email, password);
+        Member member = new Member(id, name, email, password, role);
         String token = jwtTokenProvider.createToken(member);
 
         // when

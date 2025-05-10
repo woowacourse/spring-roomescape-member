@@ -1,4 +1,4 @@
-package roomescape.auth.repository;
+package roomescape.reservation.repository.fake;
 
 import java.util.List;
 import java.util.Map;
@@ -6,9 +6,10 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.enums.Role;
 import roomescape.member.repository.MemberRepository;
 
-public class FakeMemberDao implements MemberRepository {
+public class MemberFakeRepository implements MemberRepository {
 
     private final Map<Long, Member> members = new ConcurrentHashMap<>();
     private final AtomicLong idGenerator = new AtomicLong();
@@ -31,7 +32,7 @@ public class FakeMemberDao implements MemberRepository {
 
     public Long save(String name, String email, String password) {
         Long generatedId = idGenerator.incrementAndGet();
-        Member member = new Member(generatedId, name, email, password);
+        Member member = new Member(generatedId, name, email, password, Role.USER);
         members.put(generatedId, member);
         return generatedId;
     }

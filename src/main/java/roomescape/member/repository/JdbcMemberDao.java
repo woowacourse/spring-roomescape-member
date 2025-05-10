@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.enums.Role;
 
 @Repository
 public class JdbcMemberDao implements MemberRepository {
@@ -15,7 +16,8 @@ public class JdbcMemberDao implements MemberRepository {
                     rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("email"),
-                    rs.getString("password")
+                    rs.getString("password"),
+                    Role.valueOf(rs.getString("role"))
             );
     private final JdbcTemplate jdbcTemplate;
 
@@ -25,7 +27,7 @@ public class JdbcMemberDao implements MemberRepository {
 
     @Override
     public Optional<Member> findByEmail(String email) {
-        String sql = "SELECT id, name, email, password FROM member where email = ?";
+        String sql = "SELECT id, name, email, password, role FROM member where email = ?";
 
         List<Member> findMembers = jdbcTemplate.query(sql, rowMapper, email);
 
@@ -41,7 +43,7 @@ public class JdbcMemberDao implements MemberRepository {
 
     @Override
     public Optional<Member> findById(Long id) {
-        String sql = "SELECT id, name, email, password FROM member where id = ?";
+        String sql = "SELECT id, name, email, password, role FROM member where id = ?";
         List<Member> findMembers = jdbcTemplate.query(sql, rowMapper, id);
 
         if (findMembers.isEmpty()) {

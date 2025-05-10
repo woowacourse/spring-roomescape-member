@@ -91,18 +91,11 @@ class ReservationServiceTest {
                 .map(Reservation::getDate)
                 .toList();
 
-        List<String> expectedNames = reservations.stream()
-                .map(Reservation::getName)
-                .toList();
-
         assertAll(
                 () -> assertThat(reservationResponses).hasSize(reservations.size()),
                 () -> assertThat(reservationResponses)
                         .extracting(ReservationResponse::date)
-                        .containsExactlyInAnyOrderElementsOf(expectedDates),
-                () -> assertThat(reservationResponses)
-                        .extracting(ReservationResponse::name)
-                        .containsExactlyInAnyOrderElementsOf(expectedNames)
+                        .containsExactlyInAnyOrderElementsOf(expectedDates)
         );
     }
 
@@ -120,8 +113,7 @@ class ReservationServiceTest {
         assertAll(
                 () -> assertThat(response.id()).isEqualTo(savedReservation.getId()),
                 () -> assertThat(response.theme().id()).isEqualTo(savedReservation.getThemeId()),
-                () -> assertThat(response.time().id()).isEqualTo(savedReservation.getTimeId()),
-                () -> assertThat(response.name()).isEqualTo(savedReservation.getName())
+                () -> assertThat(response.time().id()).isEqualTo(savedReservation.getTimeId())
         );
     }
 
@@ -142,7 +134,7 @@ class ReservationServiceTest {
     @Test
     void past_day_exception_test() {
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.now(clock).minusDays(1), 4L, 3L);
+        ReservationRequest request = new ReservationRequest(LocalDate.now(clock).minusDays(1), 4L, 3L, 1L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.add(request))
@@ -154,7 +146,7 @@ class ReservationServiceTest {
     @Test
     void past_time_exception_test() {
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.now(clock), 1L, 3L);
+        ReservationRequest request = new ReservationRequest(LocalDate.now(clock), 1L, 3L, 1L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.add(request))
@@ -166,7 +158,7 @@ class ReservationServiceTest {
     @Test
     void future_test() {
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.now(clock).plusDays(3), 1L, 1L);
+        ReservationRequest request = new ReservationRequest(LocalDate.now(clock).plusDays(3), 1L, 1L, 1L);
 
         // when
         ReservationResponse response = reservationService.add(request);
@@ -186,7 +178,7 @@ class ReservationServiceTest {
     @Test
     void reservation_duplicate_exception() {
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.of(2025, 5, 15), 3L, 3L);
+        ReservationRequest request = new ReservationRequest(LocalDate.of(2025, 5, 15), 3L, 3L, 1L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.add(request))

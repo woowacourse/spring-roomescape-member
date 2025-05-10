@@ -48,34 +48,27 @@ class ReservationIntegrationTest {
 
         // then
         List<Reservation> savedReservations = reservationRepository.findAll();
-        assertAll(
-                () -> assertThat(reservations)
-                        .extracting(ReservationResponse::name)
-                        .containsExactlyInAnyOrderElementsOf(
-                                savedReservations.stream()
-                                        .map(Reservation::getName)
-                                        .toList()
-                        ),
-                () -> assertThat(reservations)
-                        .extracting(ReservationResponse::date)
-                        .containsExactlyInAnyOrderElementsOf(
-                                savedReservations.stream()
-                                        .map(Reservation::getDate)
-                                        .toList()
-                        )
-        );
-
+        assertThat(reservations)
+                .extracting(ReservationResponse::date)
+                .containsExactlyInAnyOrderElementsOf(
+                        savedReservations.stream()
+                                .map(Reservation::getDate)
+                                .toList()
+                );
     }
 
     @DisplayName("예약을 생성하면 DB에 예약 데이터가 저장된다")
     @Test
     void add_reservation_test() {
         //given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", "2026-08-05");
-        params.put("timeId", "6");
-        params.put("themeId", "2");
+        String token = AuthFixture.createUserToken(authService);
+
+        Map<String, String> params = Map.of(
+                "date", "2026-08-05",
+                "timeId", "6",
+                "themeId", "2",
+                "memberId", "2"
+        );
 
         // when
         RestAssured.given().log().all()
@@ -91,7 +84,6 @@ class ReservationIntegrationTest {
 
         assertAll(
                 () -> assertThat(savedReservation.getId()).isEqualTo(17L),
-                () -> assertThat(savedReservation.getName()).isEqualTo("브라운"),
                 () -> assertThat(savedReservation.getDate()).isEqualTo(LocalDate.of(2026, 8, 5)),
                 () -> assertThat(savedReservation.getTimeId()).isEqualTo(6L),
                 () -> assertThat(savedReservation.getThemeId()).isEqualTo(2L)
@@ -158,10 +150,10 @@ class ReservationIntegrationTest {
     void add_reservation_date_format_exception(String inputDateString) {
         // given
         Map<String, String> requestBody = Map.of(
-                "name", "루키",
                 "date", inputDateString,
-                "timeId", "1L",
-                "themeId", "1L"
+                "timeId", "1",
+                "themeId", "1",
+                "memberId", "2"
         );
 
         // when & then
@@ -180,10 +172,10 @@ class ReservationIntegrationTest {
     void add_reservation_time_id_exception() {
         // given
         Map<String, String> requestBody = Map.of(
-                "name", "루키",
                 "date", "2025-05-06",
                 "timeId", "200",
-                "themeId", "1"
+                "themeId", "1",
+                "memberId", "3"
         );
 
         // when & then
@@ -204,7 +196,8 @@ class ReservationIntegrationTest {
                 "name", "루키",
                 "date", "2025-05-06",
                 "timeId", "1",
-                "themeId", "200"
+                "themeId", "200",
+                "memberId", "1"
         );
 
         // when & then

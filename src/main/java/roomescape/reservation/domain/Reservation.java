@@ -1,33 +1,30 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import roomescape.member.domain.Member;
 
 public class Reservation {
 
     private final Long id;
-    private final String name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
+    private final Member member;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, LocalDate date, ReservationTime time, Theme theme, Member member) {
         this.id = id;
-        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.member = member;
     }
 
     public Reservation withId(Long id) {
-        return new Reservation(id, this.name, this.date, this.time, this.theme);
+        return new Reservation(id, this.date, this.time, this.theme, this.member);
     }
 
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public LocalDate getDate() {
@@ -36,6 +33,10 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     public Theme getTheme() {
@@ -48,6 +49,10 @@ public class Reservation {
 
     public Long getThemeId() {
         return theme.getId();
+    }
+
+    public Long getMemberId() {
+        return member.getId();
     }
 
     public boolean hasTimeId(Long timeId) {

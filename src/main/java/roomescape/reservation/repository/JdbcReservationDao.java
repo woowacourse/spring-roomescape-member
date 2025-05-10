@@ -11,13 +11,39 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.member.domain.enums.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
+import roomescape.member.domain.Member;
 
 @Repository
 public class JdbcReservationDao implements ReservationRepository {
 
+    private static final String FIND_ALL_SQL =
+"""
+    SELECT
+                    r.id AS reservation_id,
+                    r.date AS reservation_date,
+                    t.id AS time_id,
+                    t.start_at AS time_start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_des,
+                    th.thumbnail AS theme_thumb,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.password AS member_password,
+                    m.role AS member_role
+                FROM reservation AS r
+                INNER JOIN reservation_time AS t 
+                ON r.time_id = t.id
+                INNER JOIN theme AS th
+                ON r.theme_id = th.id
+                INNER JOIN member as m
+                ON r.member_id = m.id
+""";
     private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Reservation> rowMapper =
@@ -44,7 +70,6 @@ public class JdbcReservationDao implements ReservationRepository {
 
                 return new Reservation(
                         rs.getLong("reservation_id"),
-                        rs.getString("reservation_name"),
                         LocalDate.parse(rs.getString("reservation_date")),
                         time,
                         theme,
@@ -58,16 +83,16 @@ public class JdbcReservationDao implements ReservationRepository {
 
     @Override
     public Long saveAndReturnId(Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> {
                     PreparedStatement preparedStatement = connection.prepareStatement(sql,
                             Statement.RETURN_GENERATED_KEYS);
-                    preparedStatement.setString(1, reservation.getName());
-                    preparedStatement.setString(2, reservation.getDate().toString());
-                    preparedStatement.setLong(3, reservation.getTime().getId());
-                    preparedStatement.setLong(4, reservation.getTheme().getId());
+                    preparedStatement.setString(1, reservation.getDate().toString());
+                    preparedStatement.setLong(2, reservation.getTimeId());
+                    preparedStatement.setLong(3, reservation.getThemeId());
+                    preparedStatement.setLong(4, reservation.getMemberId());
                     return preparedStatement;
                 },
                 keyHolder
@@ -84,24 +109,7 @@ public class JdbcReservationDao implements ReservationRepository {
 
     @Override
     public Optional<Reservation> findById(Long reservationId) {
-        String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    r.name AS reservation_name,
-                    r.date AS reservation_date,
-                    t.id AS time_id,
-                    t.start_at AS time_start_at,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_des,
-                    th.thumbnail AS theme_thumb
-                FROM reservation AS r
-                INNER JOIN reservation_time AS t 
-                ON r.time_id = t.id
-                INNER JOIN theme AS th
-                ON r.theme_id = th.id
-                WHERE r.id = ?
-                """;
+        String sql = FIND_ALL_SQL + " WHERE r.id = ?";
 
         List<Reservation> findReservations = jdbcTemplate.query(sql, rowMapper, reservationId);
 
@@ -116,69 +124,18 @@ public class JdbcReservationDao implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    r.name AS reservation_name,
-                    r.date AS reservation_date,
-                    t.id AS time_id,
-                    t.start_at AS time_start_at,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_des,
-                    th.thumbnail AS theme_thumb
-                FROM reservation AS r
-                INNER JOIN reservation_time AS t 
-                ON r.time_id = t.id
-                INNER JOIN theme AS th
-                ON r.theme_id = th.id
-                """;
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(FIND_ALL_SQL, rowMapper);
     }
 
     @Override
     public List<Reservation> findAllByTimeId(Long timeId) {
-        String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    r.name AS reservation_name,
-                    r.date AS reservation_date,
-                    t.id AS time_id,
-                    t.start_at AS time_start_at,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_des,
-                    th.thumbnail AS theme_thumb
-                FROM reservation AS r
-                INNER JOIN reservation_time AS t 
-                ON r.time_id = t.id
-                INNER JOIN theme AS th
-                ON r.theme_id = th.id
-                WHERE r.time_id = ?
-                """;
+        String sql = FIND_ALL_SQL + " WHERE r.time_id = ?";
         return jdbcTemplate.query(sql, rowMapper, timeId);
     }
 
     @Override
     public List<Reservation> findAllByThemeId(Long themeId) {
-        String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    r.name AS reservation_name,
-                    r.date AS reservation_date,
-                    t.id AS time_id,
-                    t.start_at AS time_start_at,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_des,
-                    th.thumbnail AS theme_thumb
-                FROM reservation AS r
-                INNER JOIN reservation_time AS t 
-                ON r.time_id = t.id
-                INNER JOIN theme AS th
-                ON r.theme_id = th.id
-                WHERE r.theme_id = ?
-                """;
+        String sql = FIND_ALL_SQL + " WHERE r.theme_id = ?";
         return jdbcTemplate.query(sql, rowMapper, themeId);
     }
 }
