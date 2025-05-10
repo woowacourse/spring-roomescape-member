@@ -11,6 +11,7 @@ import roomescape.global.jwt.AuthorizationExtractor;
 import roomescape.global.jwt.CookieAuthorizationExtractor;
 import roomescape.global.jwt.TokenProvider;
 import roomescape.member.application.service.MemberService;
+import roomescape.member.domain.Member;
 
 @Component
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -27,11 +28,11 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(LoginMember.class);
+        return parameter.getParameterType().equals(Member.class);
     }
 
     @Override
-    public Object resolveArgument(
+    public Member resolveArgument(
             final MethodParameter parameter,
             final ModelAndViewContainer mavContainer,
             final NativeWebRequest webRequest,
