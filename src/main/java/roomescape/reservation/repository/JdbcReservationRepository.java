@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
@@ -35,19 +36,22 @@ public class JdbcReservationRepository implements ReservationRepository {
     };
 
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcReservationRepository(final DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource).withTableName("reservation")
                 .usingGeneratedKeyColumns("id")
                 .usingColumns("date", "time_id", "theme_id", "member_id");
     }
 
     @Override
-    public List<Reservation> findAll() {
+    public List<Reservation> findByCriteria(final Long themeId, final Long memberId, final LocalDate fromDate,
+                                            final LocalDate toDate) {
         final String sql = """
-                select 
+                select
                     r.id, 
                     r.date, 
                     t.id as time_id, 
@@ -68,8 +72,18 @@ public class JdbcReservationRepository implements ReservationRepository {
                 on r.theme_id = th.id
                 inner join member as m 
                 on r.member_id = m.id
+                WHERE (:themeId   IS NULL OR r.theme_id = :themeId)
+                AND (:memberId  IS NULL OR r.member_id = :memberId)
+                AND (:fromDate  IS NULL OR r.date     >= :fromDate)
+                AND (:toDate    IS NULL OR r.date     <= :toDate)
                 """;
-        return jdbcTemplate.query(sql, reservationRowMapper);
+
+        final MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("themeId", themeId)
+                .addValue("memberId", memberId)
+                .addValue("fromDate", fromDate)
+                .addValue("toDate", toDate);
+        return namedParameterJdbcTemplate.query(sql, params, reservationRowMapper);
     }
 
     @Override
@@ -81,8 +95,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     inner join reservation_time rt
                     where r.date = ? 
                         and rt.start_at = ?
-                        and r.time_id = ?
-                
+                        and r.theme_id = ?
                 );
                 """;
         final Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, date, time, themeId);

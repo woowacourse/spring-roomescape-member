@@ -13,6 +13,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.AdminReservationRequest;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ReservationSearchRequest;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
@@ -29,8 +30,10 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
 
-    public List<ReservationResponse> findAllReservation() {
-        final List<Reservation> reservations = reservationRepository.findAll();
+    public List<ReservationResponse> findReservationsByCriteria(final ReservationSearchRequest request) {
+        final List<Reservation> reservations = reservationRepository.findByCriteria(request.themeId(),
+                request.memberId(), request.dateFrom(),
+                request.dateTo());
         return reservations.stream()
                 .map(ReservationResponse::new)
                 .toList();

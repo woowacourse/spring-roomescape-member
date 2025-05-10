@@ -1,4 +1,4 @@
-package roomescape.config;
+package roomescape.auth.infrastructure;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import roomescape.auth.infrastructure.JwtTokenProvider;
 
 @RequiredArgsConstructor
 @Component
