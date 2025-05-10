@@ -2,6 +2,7 @@ package roomescape.auth.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,26 +25,30 @@ public class AuthApiController {
 
 
     @PostMapping("/members")
-    public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<SignupResponse> signup(@RequestBody @Valid SignupRequest signupRequest) {
         Member member = authService.register(
-                signupRequest.getName(),
-                signupRequest.getEmail(),
-                signupRequest.getPassword()
+                signupRequest.name(),
+                signupRequest.email(),
+                signupRequest.password()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(SignupResponse.from(member));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody TokenRequest tokenRequest, HttpServletResponse response) {
-        String jwtToken = authService.login(tokenRequest.getEmail(), tokenRequest.getPassword());
+    public ResponseEntity<Void> login(@RequestBody @Valid TokenRequest tokenRequest, HttpServletResponse response) {
+        String jwtToken = authService.login(tokenRequest.email(), tokenRequest.password());
 
         // Set token as HttpOnly cookie
         Cookie cookie = new Cookie("token", jwtToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setMaxAge(60 * 60); // 1 hour (optional)
         response.addCookie(cookie);
 
-        return ResponseEntity.ok().build(); // 응답 본문 없이 200 OK만
+        return ResponseEntity.ok().build();
     }
+
+  /*  @GetMapping("/login/check")
+    public void checkAuthenticationInfo() {
+
+    }*/
 }

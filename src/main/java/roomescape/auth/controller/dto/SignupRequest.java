@@ -1,25 +1,30 @@
 package roomescape.auth.controller.dto;
 
-public class SignupRequest {
-    private final String name;
-    private final String email;
-    private final String password;
+import jakarta.validation.constraints.NotBlank;
 
+public record SignupRequest(
+        @NotBlank String name,
+        @NotBlank String email,
+        @NotBlank String password
+) {
     public SignupRequest(final String name, final String email, final String password) {
         this.name = name;
         this.email = email;
         this.password = password;
     }
 
-    public String getName() {
+    @Override
+    public String name() {
         return name;
     }
 
-    public String getEmail() {
+    @Override
+    public String email() {
         return email;
     }
 
-    public String getPassword() {
+    @Override
+    public String password() {
         return password;
     }
 }
