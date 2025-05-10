@@ -3,6 +3,7 @@ package roomescape.infrastructure;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,10 +15,10 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.repository.dto.ReservationSearchFilter;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
-
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER =
             (rs, rowNum) -> {
                 Long id = rs.getLong("reservation_id");
@@ -41,6 +42,28 @@ public class JdbcReservationRepository implements ReservationRepository {
                 );
             };
     private final JdbcTemplate jdbcTemplate;
+    private final String findAllSql = """
+            SELECT
+                r.id as reservation_id,
+                m.id as member_id,
+                m.name as member_name,
+                m.email as member_email,
+                m.password as member_password,
+                r.date as reservation_date,
+                t.id as time_id,
+                t.start_at as time_value,
+                th.id as theme_id,
+                th.name as theme_name,
+                th.description as theme_description,
+                th.thumbnail as theme_thumbnail
+            FROM reservation as r
+            join reservation_time as t
+                on r.time_id = t.id
+            join theme as th 
+                on r.theme_id = th.id
+            join member as m
+                on r.member_id = m.id
+            """;
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -48,28 +71,6 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String findAllSql = """
-                SELECT
-                    r.id as reservation_id,
-                    m.id as member_id,
-                    m.name as member_name,
-                    m.email as member_email,
-                    m.password as member_password,
-                    r.date as reservation_date,
-                    t.id as time_id,
-                    t.start_at as time_value,
-                    th.id as theme_id,
-                    th.name as theme_name,
-                    th.description as theme_description,
-                    th.thumbnail as theme_thumbnail
-                FROM reservation as r
-                join reservation_time as t
-                    on r.time_id = t.id
-                join theme as th 
-                    on r.theme_id = th.id
-                join member as m
-                    on r.member_id = m.id
-                """;
         return jdbcTemplate.query(findAllSql, RESERVATION_ROW_MAPPER);
     }
 
@@ -94,5 +95,39 @@ public class JdbcReservationRepository implements ReservationRepository {
     public boolean deleteById(Long id) {
         String deleteSql = "DELETE FROM reservation WHERE id=?";
         return jdbcTemplate.update(deleteSql, id) > 0;
+    }
+
+    @Override
+    public List<Reservation> search(ReservationSearchFilter reservationSearchFilter) {
+        if (reservationSearchFilter.isEmpty()) {
+            return jdbcTemplate.query(findAllSql, RESERVATION_ROW_MAPPER);
+        }
+
+        String sql = findAllSql + " WHERE ";
+        List<Object> params = new ArrayList<>();
+        List<String> whereStatements = new ArrayList<>();
+
+        if (reservationSearchFilter.themeId() != null) {
+            whereStatements.add("theme_id = ?");
+            params.add(reservationSearchFilter.themeId());
+        }
+
+        if (reservationSearchFilter.memberId() != null) {
+            whereStatements.add("member_id = ?");
+            params.add(reservationSearchFilter.memberId());
+        }
+
+        if (reservationSearchFilter.dateFrom() != null) {
+            whereStatements.add("date >= ?");
+            params.add(reservationSearchFilter.dateFrom());
+        }
+
+        if (reservationSearchFilter.dateTo() != null) {
+            whereStatements.add("date <= ?");
+            params.add(reservationSearchFilter.dateTo());
+        }
+
+        return jdbcTemplate.query(sql + String.join(" AND ", whereStatements), RESERVATION_ROW_MAPPER,
+                params.toArray());
     }
 }

@@ -2,6 +2,7 @@ package roomescape.domain.repository;
 
 import java.util.List;
 import roomescape.domain.Reservation;
+import roomescape.domain.repository.dto.ReservationSearchFilter;
 
 public interface ReservationRepository {
     List<Reservation> findAll();
@@ -9,4 +10,6 @@ public interface ReservationRepository {
     Long save(Reservation reservation);
 
     boolean deleteById(Long id);
+
+    List<Reservation> search(ReservationSearchFilter reservationSearchFilter);
 }

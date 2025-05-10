@@ -11,6 +11,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.repository.dto.ReservationSearchFilter;
 import roomescape.exception.NotFoundException;
 
 @Service
@@ -69,6 +70,11 @@ public class ReservationService {
 
     public List<ReservationDto> getAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
+        return ReservationDto.from(reservations);
+    }
+
+    public List<ReservationDto> searchReservations(ReservationSearchFilter reservationSearchFilter) {
+        List<Reservation> reservations = reservationRepository.search(reservationSearchFilter);
         return ReservationDto.from(reservations);
     }
 

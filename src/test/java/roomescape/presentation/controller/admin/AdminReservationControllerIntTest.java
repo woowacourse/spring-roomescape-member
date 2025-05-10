@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.dto.MemberDto;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -49,7 +50,6 @@ public class AdminReservationControllerIntTest {
     @BeforeEach
     void cleanDatabase() {
         RestAssured.port = port;
-        resetH2TableIds(jdbcTemplate);
 
         tokenForAdmin = jwtTokenProvider.createToken(MemberDto.from(MEMBER1));
         tokenForUser = jwtTokenProvider.createToken(MemberDto.from(MEMBER2));
@@ -58,6 +58,7 @@ public class AdminReservationControllerIntTest {
     @DisplayName("/admin/reservations 요청 시 201 CREATED")
     @Test
     public void request_addReservation() {
+        resetH2TableIds(jdbcTemplate);
         JdbcHelper.insertMember(jdbcTemplate, MEMBER1);
         JdbcHelper.insertMember(jdbcTemplate, MEMBER2);
         JdbcHelper.insertTheme(jdbcTemplate, Theme.withoutId("테마1", "테마 1입니다.", "썸네일입니다."));
@@ -79,9 +80,10 @@ public class AdminReservationControllerIntTest {
         assertThat(afterAddSize).isEqualTo(expectedSize);
     }
 
-    @DisplayName("관리자가 아닌 일반 유저가 /admin/reservations 요청 시 401 Unauthorized")
+    @DisplayName("관리자가 아닌 일반 유저가 POST /admin/reservations 요청 시 401 Unauthorized")
     @Test
     public void request_addReservation_unauthorized() {
+        resetH2TableIds(jdbcTemplate);
         JdbcHelper.insertMember(jdbcTemplate, MEMBER2);
 
         RestAssured.given().log().all()
@@ -91,5 +93,48 @@ public class AdminReservationControllerIntTest {
                 .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(401);
+    }
+
+    @DisplayName("어드민에서 조회 조건에 따라 예약 목록 조회 성공")
+    @Test
+    @Sql("/test-admin-get-reservations-data.sql")
+    public void request_getReservations() {
+        RestAssured.given().log().all()
+                .param("themeId", 1)
+                .param("memberId", 3)
+                .param("dateFrom", "2025-04-25")
+                .param("dateTo", "2025-04-26")
+                .cookie("token", tokenForAdmin)
+                .when().get("/admin/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
+    }
+
+    @DisplayName("어드민에서 조회 조건에 themeId를 없이 예약 목록을 조회해도 조회 성공")
+    @Test
+    @Sql("/test-admin-get-reservations-data.sql")
+    public void request_getReservationsWithoutThemeId() {
+        RestAssured.given().log().all()
+                .param("memberId", 3)
+                .param("dateFrom", "2025-04-23")
+                .param("dateTo", "2025-04-26")
+                .cookie("token", tokenForAdmin)
+                .when().get("/admin/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(11));
+    }
+
+    @DisplayName("어드민에서 조회 조건 없이 예약 목록을 조회해도 조회 성공")
+    @Test
+    @Sql("/test-admin-get-reservations-data.sql")
+    public void request_getReservationsWithNoConditons() {
+        RestAssured.given().log().all()
+                .cookie("token", tokenForAdmin)
+                .when().get("/admin/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(15));
     }
 }

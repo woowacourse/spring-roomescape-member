@@ -1,3 +1,14 @@
+SET REFERENTIAL_INTEGRITY FALSE;
+TRUNCATE TABLE reservation;
+ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1;
+TRUNCATE TABLE reservation_time;
+ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1;
+TRUNCATE TABLE theme;
+ALTER TABLE theme ALTER COLUMN id RESTART WITH 1;
+TRUNCATE TABLE member;
+ALTER TABLE member ALTER COLUMN id RESTART WITH 1;
+SET REFERENTIAL_INTEGRITY TRUE;
+
 INSERT INTO reservation_time (start_at)
 VALUES ('10:00'),
        ('11:00');
@@ -16,10 +27,10 @@ VALUES ('테마1', '테마 1입니다', '썸네일1'),
        ('테마11', '테마 11입니다', '썸네일11');
 
 INSERT INTO member (name, email, password, role)
-VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN'),
+VALUES ('어드민222', 'admin@email.com', 'password', 'ADMIN'),
        ('브라운', 'brown@email.com', 'brown', 'USER'),
-       ('브리', 'brie@email.com', 'brie', null),
-       ('솔라', 'solar@email.com', 'solar', null);
+       ('브리', 'brie@email.com', 'brie', 'USER'),
+       ('솔라', 'solar@email.com', 'solar', 'USER');
 
 INSERT INTO reservation (member_id, theme_id, date, time_id)
 VALUES (2, 1, '2025-04-29', 1),
