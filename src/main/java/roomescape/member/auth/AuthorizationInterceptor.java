@@ -8,7 +8,7 @@ import roomescape.member.domain.Member;
 import roomescape.member.service.AuthService;
 
 @RequiredArgsConstructor
-public class CheckLoginInterceptor implements HandlerInterceptor {
+public class AuthorizationInterceptor implements HandlerInterceptor {
 
     private final AuthService authService;
 
