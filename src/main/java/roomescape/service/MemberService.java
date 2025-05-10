@@ -5,9 +5,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.dao.meber.MemberDao;
 import roomescape.domain.Member;
-import roomescape.dto.request.MemberCreateRequest;
 import roomescape.dto.request.TokenRequest;
-import roomescape.dto.response.MemberCreateResponse;
 import roomescape.dto.response.MemberResponse;
 import roomescape.dto.response.TokenResponse;
 import roomescape.support.auth.JwtTokenProvider;
@@ -18,16 +16,9 @@ public class MemberService {
     private final MemberDao memberDao;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberService(MemberDao memberDao, final JwtTokenProvider jwtTokenProvider) {
+    public MemberService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
         this.memberDao = memberDao;
         this.jwtTokenProvider = jwtTokenProvider;
-    }
-
-    public MemberCreateResponse create(final MemberCreateRequest memberCreateRequest) {
-        final Member member = new Member(memberCreateRequest.name(), memberCreateRequest.email(),
-                memberCreateRequest.password());
-        memberDao.create(member);
-        return MemberCreateResponse.from(member);
     }
 
     public TokenResponse create(final TokenRequest tokenRequest) {

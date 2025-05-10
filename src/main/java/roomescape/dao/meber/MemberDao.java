@@ -7,7 +7,5 @@ public interface MemberDao {
 
     Member create(Member member);
 
-    boolean existsByEmail(String email);
-
     Optional<Member> findByEmail(String email);
 }

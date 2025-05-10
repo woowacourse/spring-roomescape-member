@@ -39,17 +39,6 @@ public class JdbcMemberDao implements MemberDao {
     }
 
     @Override
-    public boolean existsByEmail(final String email) {
-        final String sql = """
-                SELECT COUNT(*)
-                FROM member
-                WHERE email =? AND password = ?
-                """;
-        final Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
-        return count != null && count > 0;
-    }
-
-    @Override
     public Optional<Member> findByEmail(final String email) {
         final String sql = """
                 SELECT *
