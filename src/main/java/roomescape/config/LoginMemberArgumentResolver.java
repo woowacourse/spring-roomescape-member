@@ -1,26 +1,19 @@
 package roomescape.config;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
+import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
+import static roomescape.config.AuthenticationInterceptor.LOGIN_MEMBER_ATTRIBUTE_NAME;
+
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.AccessToken;
-import roomescape.business.service.member.MemberService;
 
+/**
+ * 로그인한 회원 정보를 컨트롤러 메서드의 인자로 주입하는 ArgumentResolver입니다.
+ */
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-
-    public static final String ACCESS_TOKEN_COOKIE_NAME = "token";
-
-    private final MemberService memberService;
-
-    public LoginMemberArgumentResolver(MemberService memberService) {
-        this.memberService = memberService;
-    }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -32,35 +25,10 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   ModelAndViewContainer mavContainer,
                                   @NonNull NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) {
-        AccessToken accessToken = getAccessToken(webRequest);
-        return memberService.getMemberFromToken(accessToken);
+        return getLoginMember(webRequest);
     }
 
-    private AccessToken getAccessToken(NativeWebRequest webRequest) {
-        HttpServletRequest httpServletRequest = getHttpServletRequest(webRequest);
-        String accessTokenValue = getAccessTokenFromCookies(httpServletRequest.getCookies());
-        if (accessTokenValue == null) {
-            throw new IllegalArgumentException("로그인이 필요합니다.");
-        }
-        return AccessToken.of(accessTokenValue);
-    }
-
-    private HttpServletRequest getHttpServletRequest(NativeWebRequest webRequest) {
-        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        if (request == null) {
-            throw new IllegalStateException("개발자에게 문의하세요.");
-        }
-        return request;
-    }
-
-    private String getAccessTokenFromCookies(Cookie[] cookies) {
-        if (cookies == null) {
-            return null;
-        }
-        return Arrays.stream(cookies)
-                .filter(cookie -> ACCESS_TOKEN_COOKIE_NAME.equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
+    private LoginMember getLoginMember(NativeWebRequest webRequest) {
+        return (LoginMember) webRequest.getAttribute(LOGIN_MEMBER_ATTRIBUTE_NAME, SCOPE_REQUEST);
     }
 }
