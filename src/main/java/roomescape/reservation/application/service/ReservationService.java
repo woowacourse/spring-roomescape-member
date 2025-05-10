@@ -75,12 +75,6 @@ public class ReservationService {
         return new ReservationResponse(reservationRepository.insert(createReservationRequest));
     }
 
-    public List<ReservationResponse> getReservations() {
-        return reservationRepository.findAllReservations().stream()
-                .map(ReservationResponse::new)
-                .toList();
-    }
-
     public List<ReservationResponse> getReservations(Long memberId, Long themeId, LocalDate dateFrom,
                                                      LocalDate dateTo) {
         return reservationRepository.findReservationsBy(memberId, themeId, dateFrom, dateTo).stream()
