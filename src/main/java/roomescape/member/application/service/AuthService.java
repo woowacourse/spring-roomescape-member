@@ -3,7 +3,7 @@ package roomescape.member.application.service;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import roomescape.member.InvalidMemberException;
+import roomescape.global.exception.InvalidMemberException;
 import roomescape.member.application.dto.CreateMemberRequest;
 import roomescape.member.application.dto.GetMemberResponse;
 import roomescape.member.application.repository.MemberRepository;

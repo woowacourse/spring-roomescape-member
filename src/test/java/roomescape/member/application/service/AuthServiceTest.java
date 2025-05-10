@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import roomescape.member.InvalidMemberException;
+import roomescape.global.exception.InvalidMemberException;
 import roomescape.member.application.dto.GetMemberResponse;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;

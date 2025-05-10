@@ -1,11 +1,12 @@
-package roomescape.member;
+package roomescape.global.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class InvalidTokenException extends RuntimeException {
+public class InvalidMemberException extends RuntimeException {
+
     private final HttpStatus statusCode;
 
-    public InvalidTokenException(HttpStatus statusCode, String message) {
+    public InvalidMemberException(String message, HttpStatus statusCode) {
         super(message);
         this.statusCode = statusCode;
     }
