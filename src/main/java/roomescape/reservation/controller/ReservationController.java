@@ -31,8 +31,9 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponseDto> add(@RequestBody ReservationRequestDto requestDto) {
-        ReservationResponseDto resDto = service.add(requestDto);
+    public ResponseEntity<ReservationResponseDto> add(@RequestBody ReservationRequestDto requestDto,
+                                                      User user) {
+        ReservationResponseDto resDto = service.add(requestDto, user);
         return ResponseEntity.status(HttpStatus.CREATED).body(resDto);
     }
 

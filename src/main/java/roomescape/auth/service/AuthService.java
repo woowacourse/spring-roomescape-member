@@ -31,13 +31,13 @@ public class AuthService {
             throw new InvalidTokenException();
         }
         String payload = jwtTokenProvider.getPayload(token);
-        return findMember(payload);
+        User user = findMember(payload);
+        return UserResponseDto.of(user);
     }
 
-    public UserResponseDto findMember(String email) {
-        User user = userRepository.findUseByEmail(email)
+    public User findMember(String email) {
+        return userRepository.findUseByEmail(email)
                 .orElseThrow(NotFoundUserException::new);
-        return UserResponseDto.of(user);
     }
 
     public TokenResponseDto login(TokenRequestDto tokenRequestDto) {
