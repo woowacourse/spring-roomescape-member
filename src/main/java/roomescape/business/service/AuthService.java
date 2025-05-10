@@ -64,7 +64,7 @@ public class AuthService {
                     claims.get("name", String.class),
                     Role.valueOf(claims.get("role", String.class))
             );
-        } catch (JwtException e) {
+        } catch (JwtException | IllegalArgumentException e) {
             throw new InvalidCredentialsException();
         }
     }
