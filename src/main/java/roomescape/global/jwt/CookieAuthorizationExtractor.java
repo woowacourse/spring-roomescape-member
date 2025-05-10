@@ -3,7 +3,9 @@ package roomescape.global.jwt;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CookieAuthorizationExtractor implements AuthorizationExtractor {
 
     @Override

@@ -7,12 +7,10 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.global.jwt.AuthorizationExtractor;
+import roomescape.global.jwt.CookieAuthorizationExtractor;
 import roomescape.global.jwt.TokenProvider;
 import roomescape.member.application.service.MemberService;
-import roomescape.global.jwt.CookieAuthorizationExtractor;
-import roomescape.global.jwt.AuthorizationExtractor;
-import roomescape.member.domain.Member;
-import roomescape.member.presentation.dto.MemberResponse;
 
 @Component
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -21,9 +19,9 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final TokenProvider tokenProvider;
     private final MemberService memberService;
 
-    public MemberArgumentResolver(TokenProvider tokenProvider, MemberService memberService) {
+    public MemberArgumentResolver(TokenProvider tokenProvider, CookieAuthorizationExtractor cookieAuthorizationExtractor, MemberService memberService) {
         this.tokenProvider = tokenProvider;
-        this.authorizationExtractor = new CookieAuthorizationExtractor();
+        this.authorizationExtractor = cookieAuthorizationExtractor;
         this.memberService = memberService;
     }
 
