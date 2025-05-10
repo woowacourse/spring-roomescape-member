@@ -53,14 +53,14 @@ public class MissionStepTest {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    private String tokenForMember1;
+    private String tokenForAdmin;
 
     @BeforeEach
     void cleanDatabase() {
         RestAssured.port = port;
 
         resetH2TableIds(jdbcTemplate);
-        tokenForMember1 = jwtTokenProvider.createToken(MemberDto.from(MEMBER1));
+        tokenForAdmin = jwtTokenProvider.createToken(MemberDto.from(MEMBER1));
     }
 
     @DisplayName("/ 요청 시 200 OK 반환")
@@ -76,7 +76,10 @@ public class MissionStepTest {
     @DisplayName("/admin 요청 시 200 OK 응답")
     @Test
     void request_adminPage_then_200() {
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER1);
+
         RestAssured.given().log().all()
+                .cookie("token", tokenForAdmin)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -85,8 +88,12 @@ public class MissionStepTest {
     @DisplayName("1단계 - /admin/reservation 요청 시 200 OK")
     @Test
     void request_ReservationAdminPage_then_200() {
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER1);
+
         RestAssured.given().log().all()
-                .when().get("/admin/reservation")
+                .cookie("token", tokenForAdmin)
+                .when()
+                .get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
     }
@@ -115,7 +122,7 @@ public class MissionStepTest {
         int expectedSize = repositorySize + 1;
 
         RestAssured.given().log().all()
-                .cookie("token", tokenForMember1)
+                .cookie("token", tokenForAdmin)
                 .contentType(ContentType.JSON)
                 .body(RESERVATION_BODY)
                 .when().post("/reservations")
@@ -191,7 +198,7 @@ public class MissionStepTest {
         int beforeCount = reservationRepository.findAll().size();
 
         RestAssured.given().log().all()
-                .cookie("token", tokenForMember1)
+                .cookie("token", tokenForAdmin)
                 .contentType(ContentType.JSON)
                 .body(RESERVATION_BODY)
                 .when().post("/reservations")
@@ -247,7 +254,7 @@ public class MissionStepTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", tokenForMember1)
+                .cookie("token", tokenForAdmin)
                 .body(RESERVATION_BODY)
                 .when().post("/reservations")
                 .then().log().all()
@@ -305,7 +312,7 @@ public class MissionStepTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", tokenForMember1)
+                .cookie("token", tokenForAdmin)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -343,7 +350,10 @@ public class MissionStepTest {
     @DisplayName("/admin/theme 요청 시 200 OK 응답")
     @Test
     void request_adminThemePage_then_200() {
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER1);
+
         RestAssured.given().log().all()
+                .cookie("token", tokenForAdmin)
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200);

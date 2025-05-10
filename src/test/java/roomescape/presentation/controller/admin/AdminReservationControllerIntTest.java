@@ -83,11 +83,6 @@ public class AdminReservationControllerIntTest {
     @Test
     public void request_addReservation_unauthorized() {
         JdbcHelper.insertMember(jdbcTemplate, MEMBER2);
-        JdbcHelper.insertTheme(jdbcTemplate, Theme.withoutId("테마1", "테마 1입니다.", "썸네일입니다."));
-        JdbcHelper.insertReservationTime(jdbcTemplate, ReservationTime.of(1L, LocalTime.of(10, 0)));
-
-        int repositorySize = reservationRepository.findAll().size();
-        int expectedSize = repositorySize + 1;
 
         RestAssured.given().log().all()
                 .cookie("token", tokenForUser)
@@ -95,10 +90,6 @@ public class AdminReservationControllerIntTest {
                 .body(createAdminReservationCreateDto(2L))
                 .when().post("/admin/reservations")
                 .then().log().all()
-                .statusCode(401)
-                .body("id", is(expectedSize));
-
-        int afterAddSize = reservationRepository.findAll().size();
-        assertThat(afterAddSize).isEqualTo(expectedSize);
+                .statusCode(401);
     }
 }

@@ -1,8 +1,10 @@
 package roomescape.infrastructure;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.stereotype.Component;
 import roomescape.auth.dto.MemberAuthRequest;
 
+@Component
 public class MemberAuthRequestExtractor {
     private final TokenExtractor tokenExtractor;
     private final JwtTokenProvider jwtTokenProvider;

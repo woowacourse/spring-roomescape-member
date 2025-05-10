@@ -2,15 +2,18 @@ package roomescape.application.dto;
 
 import java.util.List;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 
 public record MemberDto(
         Long id,
         String name,
         String email,
-        String password
+        String password,
+        Role role
 ) {
     public static MemberDto from(Member member) {
-        return new MemberDto(member.getId(), member.getName(), member.getEmail(), member.getPassword());
+        return new MemberDto(member.getId(), member.getName(), member.getEmail(), member.getPassword(),
+                member.getRole());
     }
 
     public static List<MemberDto> from(List<Member> members) {
@@ -20,6 +23,6 @@ public record MemberDto(
     }
 
     public Member toEntity() {
-        return Member.of(id, name, email, password);
+        return Member.of(id, name, email, password, role);
     }
 }
