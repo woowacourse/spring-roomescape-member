@@ -14,6 +14,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.NotFoundReservationException;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
+import roomescape.user.domain.User;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -81,14 +82,31 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByThemeAndDate(Theme theme, LocalDate date) {
+    public List<Reservation> findByThemeAndDate(Theme theme, LocalDate date, User user) {
         String sql =
-                "SELECT r.id AS id, r.name AS name, r.date AS date, t.id AS reservation_time_id, t.start_at AS reservation_time_start_at "
-                        + "FROM reservation AS r INNER JOIN reservation_time AS t "
-                        + "ON r.reservation_time_id = t.id "
-                        + "WHERE r.date = ? AND r.theme_id = ?";
+                "SELECT reservation.id AS reservation_id,\n" +
+                        "       reservation.name AS reservation_name,\n" +
+                        "       reservation.date AS reservation_date,\n" +
+                        "       reservation_time.id AS reservation_time_id,\n" +
+                        "       reservation_time.start_at AS reservation_time_start_at,\n" +
+                        "       theme.id AS theme_id,\n" +
+                        "       theme.name AS theme_name,\n" +
+                        "       theme.description AS theme_description,\n" +
+                        "       theme.thumbnail AS theme_thumbnail,\n" +
+                        "       users.id AS user_id,\n" +
+                        "       users.name AS user_name,\n" +
+                        "       users.email AS user_email,\n" +
+                        "       users.password AS user_password\n" +
+                        "FROM reservation\n" +
+                        "    JOIN reservation_time\n" +
+                        "    ON reservation.time_id = reservation_time.id\n" +
+                        "    JOIN theme\n" +
+                        "    ON reservation.theme_id = theme.id\n" +
+                        "    JOIN users\n" +
+                        "    ON reservation.user_id = users.id\n" +
+                        "WHERE theme.id = ? AND reservation.date = ? AND users.id = ?";
 
-        return jdbcTemplate.query(sql, RowMapperManager.reservationRowMapper);
+        return jdbcTemplate.query(sql, RowMapperManager.reservationRowMapper, theme.getId(), date, user.getId());
     }
 
     @Override

@@ -17,6 +17,7 @@ import roomescape.reservationTime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.InvalidThemeException;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.user.domain.User;
 
 @Service
 public class ReservationTimeService {
@@ -43,11 +44,13 @@ public class ReservationTimeService {
     }
 
     public List<AvailableReservationTimeResponseDto> findReservationTimesWithAvailableStatus(Long themeId,
-                                                                                             LocalDate date) {
+                                                                                             LocalDate date,
+                                                                                             User user) {
         List<ReservationTime> allTime = repository.findAll();
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(InvalidThemeException::new);
-        Set<ReservationTime> reservationTimesByThemeAndDate = reservationRepository.findByThemeAndDate(theme, date)
+        Set<ReservationTime> reservationTimesByThemeAndDate = reservationRepository.findByThemeAndDate(theme, date,
+                        user)
                 .stream()
                 .map(Reservation::getReservationTime)
                 .collect(Collectors.toSet());

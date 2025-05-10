@@ -16,6 +16,7 @@ import roomescape.reservationTime.domain.dto.AvailableReservationTimeResponseDto
 import roomescape.reservationTime.domain.dto.ReservationTimeRequestDto;
 import roomescape.reservationTime.domain.dto.ReservationTimeResponseDto;
 import roomescape.reservationTime.service.ReservationTimeService;
+import roomescape.user.domain.User;
 
 @RestController
 @RequestMapping("/times")
@@ -35,10 +36,11 @@ public class ReservationTimeController {
 
     @GetMapping("/available")
     public ResponseEntity<List<AvailableReservationTimeResponseDto>> findReservationTimesWithAvailableStatus(
-            @RequestParam("themeId") Long themeId, @RequestParam("date") LocalDate date) {
+            @RequestParam("themeId") Long themeId, @RequestParam("date") LocalDate date, User user) {
         List<AvailableReservationTimeResponseDto> availableReservationTimeResponseDtos = service.findReservationTimesWithAvailableStatus(
                 themeId,
-                date);
+                date,
+                user);
         return ResponseEntity.ok(availableReservationTimeResponseDtos);
     }
 

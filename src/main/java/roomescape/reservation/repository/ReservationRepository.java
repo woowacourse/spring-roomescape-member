@@ -6,6 +6,7 @@ import java.util.Optional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
+import roomescape.user.domain.User;
 
 public interface ReservationRepository {
 
@@ -15,7 +16,7 @@ public interface ReservationRepository {
 
     Reservation findByIdOrThrow(Long id);
 
-    List<Reservation> findByThemeAndDate(Theme theme, LocalDate date);
+    List<Reservation> findByThemeAndDate(Theme theme, LocalDate date, User user);
 
     Reservation add(Reservation reservation);
 
