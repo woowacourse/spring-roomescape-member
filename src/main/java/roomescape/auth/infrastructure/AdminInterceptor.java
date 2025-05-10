@@ -2,17 +2,20 @@ package roomescape.auth.infrastructure;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.error.ForbiddenException;
+import roomescape.error.UnauthorizedException;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AdminInterceptor implements HandlerInterceptor {
 
     private final MemberRepository memberRepository;
@@ -23,20 +26,20 @@ public class AdminInterceptor implements HandlerInterceptor {
             final HttpServletResponse response,
             final Object handler
     ) {
-
+        // 컨트롤러 메서드에만 적용
         if (!(handler instanceof HandlerMethod)) {
             return true;
         }
 
-        final Long memberId = (Long) request.getAttribute("memberId");
-        if (memberId == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
-        }
+        final Long memberId = Optional.ofNullable(request.getAttribute("memberId"))
+                .filter(Long.class::isInstance)
+                .map(Long.class::cast)
+                .orElseThrow(() -> new UnauthorizedException("유효하지 않은 인증 정보입니다."));
 
         final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new UnauthorizedException("존재하지 않는 회원입니다."));
         if (!member.getRole().isAdmin()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "관리자 권한이 필요합니다.");
+            throw new ForbiddenException("관리자 권한이 필요합니다.");
         }
         return true;
     }
