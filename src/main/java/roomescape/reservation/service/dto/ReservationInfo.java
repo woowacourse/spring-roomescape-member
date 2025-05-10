@@ -1,11 +1,12 @@
 package roomescape.reservation.service.dto;
 
 import java.time.LocalDate;
+import roomescape.member.service.dto.MemberInfo;
 import roomescape.reservation.domain.Reservation;
 
 public record ReservationInfo(
         Long id,
-        String name,
+        MemberInfo member,
         LocalDate date,
         ReservationTimeInfo time,
         ThemeInfo theme
@@ -14,7 +15,7 @@ public record ReservationInfo(
     public ReservationInfo(final Reservation reservation) {
         this(
                 reservation.getId(),
-                reservation.getName(),
+                new MemberInfo(reservation.getMember()),
                 reservation.getDate(),
                 new ReservationTimeInfo(reservation.getTime()),
                 new ThemeInfo(reservation.getTheme())
