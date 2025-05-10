@@ -69,28 +69,6 @@ class JwtTokenContainerTest {
     }
 
     @Test
-    @DisplayName("정상적인 토큰인 경우 맴버 이름를 가져온다.")
-    void getMemberName_test() {
-        // given
-        Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
-        String jwtToken = jwtTokenContainer.createJwtToken(member);
-        // when
-        String name = jwtTokenContainer.getMemberName(jwtToken);
-        // then
-        assertThat(name).isEqualTo("a");
-    }
-
-    @Test
-    @DisplayName("정상적이지 않은 토큰일 경우 이름을 가져오는 도중 예외를 발생한다.")
-    void getMemberName_exception() {
-        // given
-        String strangeToken = "asdasdasdsad";
-        // when
-        assertThatThrownBy(() -> jwtTokenContainer.getMemberName(strangeToken))
-                .isInstanceOf(LoginException.class);
-    }
-
-    @Test
     @DisplayName("정상적인 토큰인 경우 맴버 권한을 가져온다.")
     void getMemberRole_test() {
         // given

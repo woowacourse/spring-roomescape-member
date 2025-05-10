@@ -72,7 +72,6 @@ class LoginServiceTest {
         LoginMember loginMember = loginService.loginCheck(token);
         // then
         assertThat(loginMember).isEqualTo(new LoginMember(1L, "코기"));
-
     }
 
 }

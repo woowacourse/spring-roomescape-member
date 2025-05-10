@@ -31,8 +31,12 @@ public class LoginService {
 
     public LoginMember loginCheck(String token) {
         jwtTokenContainer.validateToken(token);
-        String name = jwtTokenContainer.getMemberName(token);
         Long memberId = jwtTokenContainer.getMemberId(token);
-        return new LoginMember(memberId, name);
+        Optional<Member> member = memberRepository.findById(memberId);
+        if (member.isEmpty()) {
+            throw new LoginException("유효하지 않은 회원입니다.");
+        }
+        Member findMember = member.get();
+        return new LoginMember(memberId, findMember.getName());
     }
 }

@@ -23,7 +23,6 @@ public class JwtTokenContainer {
     public String createJwtToken(Member member) {
         return Jwts.builder()
                 .subject(member.getId().toString())
-                .claim("name", member.getName())
                 .claim("role", member.getRole())
                 .signWith(secretKey)
                 .compact();
@@ -51,19 +50,6 @@ public class JwtTokenContainer {
                     .getPayload()
                     .getSubject();
             return Long.parseLong(id);
-        } catch (JwtException e) {
-            throw new LoginException("올바르지 않은 토큰 형태입니다.");
-        }
-    }
-
-    public String getMemberName(String token) {
-        try {
-            return Jwts.parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload()
-                    .get("name").toString();
         } catch (JwtException e) {
             throw new LoginException("올바르지 않은 토큰 형태입니다.");
         }
