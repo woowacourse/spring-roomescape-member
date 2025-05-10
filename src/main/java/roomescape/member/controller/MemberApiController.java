@@ -1,7 +1,6 @@
 package roomescape.member.controller;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +13,7 @@ import roomescape.member.controller.request.LoginRequest;
 import roomescape.member.controller.request.SignUpRequest;
 import roomescape.member.controller.response.MemberNameResponse;
 import roomescape.member.controller.response.MemberResponse;
+import roomescape.member.resolver.Authenticated;
 import roomescape.member.service.MemberService;
 
 @RequiredArgsConstructor
@@ -35,22 +35,10 @@ public class MemberApiController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberNameResponse> check(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
-
-        MemberNameResponse response = memberService.check(token);
+    public ResponseEntity<MemberNameResponse> check(@Authenticated Long memberId) {
+        MemberNameResponse response = memberService.check(memberId);
 
         return ResponseEntity.ok(response);
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
     }
 
     @PostMapping("/members")
