@@ -3,12 +3,15 @@ package roomescape.domain.auth.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import jakarta.servlet.http.Cookie;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.auth.config.JwtProperties;
 import roomescape.domain.auth.dto.LoginUserDto;
 import roomescape.domain.auth.dto.UserInfoResponse;
 import roomescape.domain.auth.entity.Name;
@@ -29,6 +32,16 @@ public class AuthServiceIntegrationTest {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private JwtProperties jwtProperties;
+
+    private String cookieKey;
+
+    @BeforeEach
+    void init() {
+        cookieKey = jwtProperties.getCookieKey();
+    }
 
     @DisplayName("유저 정보 조회")
     @Nested
@@ -95,6 +108,35 @@ public class AuthServiceIntegrationTest {
             assertThatThrownBy(() -> {
                 authService.getLoginUser(invalidToken);
             }).isInstanceOf(InvalidAuthorizationException.class);
+        }
+
+        @DisplayName("쿠키를 통해 로그인 정보를 검증한다.")
+        @Test
+        void loginUserByCookieTest() {
+            // given
+            final Name name = new Name("쿠키유저");
+            final String email = "cookie@naver.com";
+            final User savedUser = userRepository.save(User.withoutId(name, email, "pw", Roles.USER));
+            final String token = jwtManager.createToken(savedUser);
+            final Cookie[] cookies = {new Cookie(cookieKey, token)};
+            final LoginUserDto expected = LoginUserDto.from(savedUser);
+
+            // when
+            final LoginUserDto result = authService.getLoginUser(cookies);
+
+            // then
+            assertThat(result).isEqualTo(expected);
+        }
+
+        @DisplayName("쿠키에 토큰이 없으면 예외를 반환한다.")
+        @Test
+        void loginUserByCookie_noToken_throwsException() {
+            // given
+            final Cookie[] cookies = {new Cookie(cookieKey, "")};
+
+            // when & then
+            assertThatThrownBy(() -> authService.getLoginUser(cookies)).isInstanceOf(
+                    InvalidAuthorizationException.class);
         }
     }
 }
