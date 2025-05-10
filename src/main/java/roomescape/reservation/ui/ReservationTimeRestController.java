@@ -1,5 +1,6 @@
 package roomescape.reservation.ui;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class ReservationTimeRestController {
     @PostMapping
     @RequiresRole(authRoles = {AuthRole.ADMIN})
     public ResponseEntity<ReservationTimeResponse> create(
-            @RequestBody final CreateReservationTimeRequest request
+            @RequestBody @Valid final CreateReservationTimeRequest request
     ) {
         final ReservationTimeResponse response = reservationTimeService.create(request);
 
