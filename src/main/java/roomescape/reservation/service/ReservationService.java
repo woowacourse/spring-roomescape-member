@@ -82,4 +82,20 @@ public class ReservationService {
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 예약을 찾을 수 없습니다."));
     }
+
+    public List<ReservationResponse> getFilteredReservations(Long themeId,
+                                                             Long memberId,
+                                                             LocalDate from,
+                                                             LocalDate to
+    ) {
+        if (themeId == null && memberId == null && from == null && to == null) {
+            return getAllReservations();
+        }
+
+        List<Reservation> reservations = reservationRepository.findFilteredReservations(
+                themeId, memberId, from, to
+        );
+
+        return ReservationResponse.from(reservations);
+    }
 }

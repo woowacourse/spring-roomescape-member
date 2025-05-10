@@ -215,4 +215,60 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 date, themeId
         );
     }
+
+    @Override
+    public List<Reservation> findFilteredReservations(Long themeId, Long memberId, LocalDate from, LocalDate to) {
+        String sql = """
+                SELECT r.id as id, 
+                       m.id as member_id,
+                       m.name as member_name,
+                       m.role as role,
+                       m.email as email,
+                       m.password as password,
+                       r.date, 
+                       t.id as time_id, 
+                       t.start_at as start_at,
+                       th.id as theme_id, 
+                       th.name as theme_name, 
+                       th.description as theme_description, 
+                       th.thumbnail as theme_thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as t ON r.time_id = t.id
+                INNER JOIN theme as th ON r.theme_id = th.id
+                INNER JOIN member as m ON r.member_id = m.id
+                WHERE (r.theme_id = ? OR ? IS NULL)
+                    AND (r.member_id = ? OR ? IS NULL)
+                    AND (r.date >= ? OR ? IS NULL)
+                    AND (r.date <= ? OR ? IS NULL)
+                """;
+
+        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
+                        Reservation.load(
+                                resultSet.getLong("id"),
+                                Member.load(
+                                        resultSet.getLong("member_id"),
+                                        resultSet.getString("member_name"),
+                                        Role.valueOf(resultSet.getString("role")),
+                                        resultSet.getString("email"),
+                                        resultSet.getString("password")
+                                ),
+                                ReservationDateTime.load(
+                                        new ReservationDate(
+                                                LocalDate.parse(resultSet.getString("date")
+                                                )),
+                                        ReservationTime.load(
+                                                resultSet.getLong("time_id"),
+                                                LocalTime.parse(resultSet.getString("start_at"))
+                                        )),
+                                new Theme(
+                                        resultSet.getLong("theme_id"),
+                                        resultSet.getString("theme_name"),
+                                        resultSet.getString("theme_description"),
+                                        resultSet.getString("theme_thumbnail")
+                                )),
+                themeId, themeId,
+                memberId, memberId,
+                from, from,
+                to, to);
+    }
 }

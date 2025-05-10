@@ -3,12 +3,16 @@ package roomescape.admin;
 import static roomescape.reservation.controller.response.ReservationSuccessCode.RESERVE;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.global.response.ApiResponse;
 import roomescape.reservation.controller.response.ReservationResponse;
@@ -30,5 +34,16 @@ public class AdminApiController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(RESERVE, response));
+    }
+
+    @GetMapping("/reservations/search")
+    public ResponseEntity<List<ReservationResponse>> searchReservations(
+            @RequestParam(required = false) Long themeId,
+            @RequestParam(required = false) Long memberId,
+            @RequestParam(required = false) LocalDate from,
+            @RequestParam(required = false) LocalDate to
+    ) {
+        List<ReservationResponse> responses = reservationService.getFilteredReservations(themeId, memberId, from, to);
+        return ResponseEntity.ok(responses);
     }
 }

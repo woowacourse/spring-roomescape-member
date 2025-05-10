@@ -24,4 +24,6 @@ public interface ReservationRepository {
     int countReservationByThemeIdAndDuration(LocalDate from, LocalDate to, Long themeId);
 
     List<Long> findReservedTimeIdsByDateAndTheme(LocalDate date, Long themeId);
+
+    List<Reservation> findFilteredReservations(Long themeId, Long memberId, LocalDate from, LocalDate to);
 }
