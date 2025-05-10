@@ -32,7 +32,7 @@ class ReservationTimeServiceTest {
     @CsvSource(value = {
             "10:00", "22:00"
     })
-    void 예약시간을_추가한다(final LocalTime startAt) {
+    void 예약_시간을_추가한다(final LocalTime startAt) {
         // given
         final CreateReservationTimeRequest request = new CreateReservationTimeRequest(startAt);
 
@@ -42,7 +42,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void 예약시간을_삭제한다() {
+    void 예약_시간을_삭제한다() {
         // given
         final LocalTime startAt = LocalTime.of(20, 28);
         final Long id = reservationTimeRepository.save(new ReservationTime(startAt));
@@ -53,7 +53,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void 이미_존재하는_예약시간을_추가하면_예외가_발생한다() {
+    void 이미_존재하는_예약_시간을_추가하면_예외가_발생한다() {
         // given
         final LocalTime startAt = LocalTime.of(19, 55);
         reservationTimeRepository.save(new ReservationTime(startAt));
@@ -68,7 +68,7 @@ class ReservationTimeServiceTest {
     // TODO: 테스트 추가: 해당_예약_시간으로_등록된_예약이_있으면_삭제할_수_없다
 
     @Test
-    void 삭제할_예약시간이_없으면_예외가_발생한다() {
+    void 삭제할_예약_시간이_없으면_예외가_발생한다() {
         // given
         final Long id = Long.MAX_VALUE;
 
