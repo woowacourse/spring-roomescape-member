@@ -4,9 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.common.exception.AuthorizationException;
-import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
-import roomescape.service.JwtTokenProvider;
+import roomescape.infrastructure.AuthorizationExtractor;
+import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.service.MemberService;
 
 public class CheckMemberRoleInterceptor implements HandlerInterceptor {

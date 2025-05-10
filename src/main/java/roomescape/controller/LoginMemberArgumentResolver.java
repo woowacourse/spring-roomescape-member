@@ -9,7 +9,8 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.common.exception.AuthorizationException;
 import roomescape.domain.Member;
 import roomescape.dto.request.LoginMemberRequest;
-import roomescape.service.JwtTokenProvider;
+import roomescape.infrastructure.AuthorizationExtractor;
+import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.service.MemberService;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {

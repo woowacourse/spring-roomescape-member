@@ -4,10 +4,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.controller.AuthorizationExtractor;
+import roomescape.infrastructure.AuthorizationExtractor;
 import roomescape.controller.CheckMemberRoleInterceptor;
 import roomescape.controller.LoginMemberArgumentResolver;
-import roomescape.service.JwtTokenProvider;
+import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.service.MemberService;
 
 import java.util.List;

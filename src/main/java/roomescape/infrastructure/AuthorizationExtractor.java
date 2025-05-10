@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.infrastructure;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -6,8 +6,6 @@ import org.springframework.stereotype.Component;
 import roomescape.common.exception.AuthorizationException;
 
 import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Optional;
 
 @Component
 public class AuthorizationExtractor {

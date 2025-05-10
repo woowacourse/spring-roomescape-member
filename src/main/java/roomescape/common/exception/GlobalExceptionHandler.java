@@ -13,12 +13,11 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    /*@ExceptionHandler(Exception.class)
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<String> nonExpectedExceptionHandler(Exception exception) {
         System.out.println(exception.getCause().getClass());
-        System.out.println(exception.getStackTrace());
         return new ResponseEntity<>("예상하지 못한 예외가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
-    }*/
+    }
 
     @ExceptionHandler(DomainValidationException.class)
     public ResponseEntity<String> invalidDomainExceptionHandler(DomainValidationException exception) {
