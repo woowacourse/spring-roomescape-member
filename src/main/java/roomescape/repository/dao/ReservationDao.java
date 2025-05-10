@@ -70,7 +70,7 @@ public class ReservationDao {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insertQuery, new String[] {"id"});
             ps.setLong(1, reservation.member().id());
-            ps.setString(2, reservation.date().toString());
+            ps.setObject(2, reservation.date());
             ps.setLong(3, reservation.time().id());
             ps.setLong(4, reservation.theme().id());
             return ps;
