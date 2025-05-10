@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import roomescape.common.exception.BusinessRuleViolationException;
 import roomescape.common.exception.NotFoundEntityException;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -77,10 +78,12 @@ class ReservationTimeServiceTest extends ServiceIntegrationTest {
     @Test
     void time_id를_사용하는_예약이_존재하면_예외를_던진다() {
         //given
+        insertMember("test1", "email1", "password");
         themeRepository.create(new Theme(1L, "name", "description", "thumbnail"));
         reservationTimeRepository.create(new ReservationTime(1L, LocalTime.of(12, 1)));
         reservationRepository.create(
-                new Reservation(1L, "test1", LocalDate.of(2025, 4, 30), new ReservationTime(1L, LocalTime.of(12, 1)),
+                new Reservation(1L, new Member(1L, "test1", "email1", "password"), LocalDate.of(2025, 4, 30),
+                        new ReservationTime(1L, LocalTime.of(12, 1)),
                         new Theme(1L, "name", "description", "thumbnail")));
 
         //when & then
@@ -92,14 +95,16 @@ class ReservationTimeServiceTest extends ServiceIntegrationTest {
     @Test
     void 특정테마의_특정날짜에_예약된_시간_정보를_조회할_수_있다() {
         //given
+        insertMember("test1", "email1", "password");
+        insertMember("test2", "email2", "password");
         themeRepository.create(new Theme(1L, "name", "description", "thumbnail"));
 
         reservationTimeRepository.create(new ReservationTime(1L, LocalTime.of(12, 0)));
         reservationTimeRepository.create(new ReservationTime(1L, LocalTime.of(12, 10)));
         reservationTimeRepository.create(new ReservationTime(1L, LocalTime.of(12, 20)));
 
-        insertReservation("test1", LocalDate.now(clock), 1L, 1L);
-        insertReservation("test2", LocalDate.now(clock), 3L, 1L);
+        insertReservation(1L, LocalDate.now(clock), 1L, 1L);
+        insertReservation(2L, LocalDate.now(clock), 3L, 1L);
 
         //when
         List<AvailableReservationTimeResult> availableTimesByThemeIdAndDate = reservationTimeService.findAvailableTimesByThemeIdAndDate(

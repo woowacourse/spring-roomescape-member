@@ -33,6 +33,17 @@ public abstract class JdbcSupportTest {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
     }
 
+    public void insertMember(String name, String email, String password) {
+        jdbcTemplate.update(
+                "INSERT INTO member(name, email, password) VALUES (?, ?, ?)", name, email, password);
+    }
+
+    public void insertMember() {
+        jdbcTemplate.update(
+                "INSERT INTO member(name, email, password) VALUES (?, ?, ?)", "member1", "email", "password");
+    }
+
+
     public void insertReservationTime(LocalTime startTime) {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", startTime);
     }
@@ -47,9 +58,10 @@ public abstract class JdbcSupportTest {
                 "INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?)", name, description, thumbnail);
     }
 
-    public void insertReservation(String name, LocalDate date, Long timeId, Long themeId) {
+    public void insertReservation(Long memberId, LocalDate date, Long timeId, Long themeId) {
         jdbcTemplate.update(
-                "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", name, date, timeId,
+                "INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)", memberId, date,
+                timeId,
                 themeId);
     }
 }

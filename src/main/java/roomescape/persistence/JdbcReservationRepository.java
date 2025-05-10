@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
@@ -23,7 +24,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final RowMapper<Reservation> reservationRowMapper = (rs, rowNum) ->
             new Reservation(
                     rs.getLong("reservation_id"),
-                    rs.getString("name"),
+                    new Member(rs.getLong("member_id"), rs.getString("member_name"), rs.getString("member_email"),
+                            rs.getString("member_password")),
                     rs.getDate("date").toLocalDate(),
                     new ReservationTime(rs.getLong("time_id"), rs.getTime("time_value").toLocalTime()),
                     new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("theme_description"),
@@ -45,19 +47,28 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 SELECT
                     r.id as reservation_id,
-                    r.name,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email as member_email,
+                    m.password as member_password,
                     r.date,
                     t.id as time_id,
                     t.start_at as time_value,
                     r.theme_id,
                     tm.name as theme_name,
                     tm.description as theme_description,
-                    tm.thumbnail as theme_thumbnail
+                    tm.thumbnail as theme_thumbnail,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email as member_email,
+                    m.password as member_password
                 FROM reservation as r
                 INNER JOIN reservation_time as t
                     ON r.time_id = t.id
                 INNER JOIN theme as tm
                     ON r.theme_id = tm.id
+                INNER JOIN member as m
+                    ON r.member_id = m.id
                 """;
         return namedParameterJdbcTemplate.query(sql, reservationRowMapper);
     }
@@ -65,7 +76,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Long create(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
+                .addValue("member_id", reservation.getMember().getId())
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTime().id())
                 .addValue("theme_id", reservation.getTheme().getId());
@@ -83,19 +94,24 @@ public class JdbcReservationRepository implements ReservationRepository {
             String sql = """
                     SELECT
                         r.id as reservation_id,
-                        r.name,
                         r.date,
                         t.id as time_id,
                         t.start_at as time_value,
                         r.theme_id,
                         tm.name as theme_name,
                         tm.description as theme_description,
-                        tm.thumbnail as theme_thumbnail
+                        tm.thumbnail as theme_thumbnail,
+                        m.id as member_id,
+                        m.name as member_name,
+                        m.email as member_email,
+                        m.password as member_password
                     FROM reservation as r
                     INNER JOIN reservation_time as t
                         ON r.time_id = t.id
                     INNER JOIN theme as tm
                         ON r.theme_id = tm.id
+                    INNER JOIN member as m
+                        ON r.member_id = m.id
                     WHERE r.id = :id
                     """;
 
@@ -138,19 +154,24 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 SELECT
                     r.id as reservation_id,
-                    r.name,
                     r.date,
                     t.id as time_id,
                     t.start_at as time_value,
                     r.theme_id,
                     tm.name as theme_name,
                     tm.description as theme_description,
-                    tm.thumbnail as theme_thumbnail
+                    tm.thumbnail as theme_thumbnail,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email as member_email,
+                    m.password as member_password
                 FROM reservation as r
                 INNER JOIN reservation_time as t
                     ON r.time_id = t.id
                 INNER JOIN theme as tm
                     ON r.theme_id = tm.id
+                INNER JOIN member as m
+                    ON r.member_id = m.id
                 WHERE r.theme_id = :themeId
                   AND r.date = :date
                 """;

@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import roomescape.common.exception.BusinessRuleViolationException;
 import roomescape.common.exception.NotFoundEntityException;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -81,10 +82,11 @@ class ThemeServiceTest extends ServiceIntegrationTest {
     @Test
     void id값으로_테마를_삭제할떄_예약에서_id가_사용중이라면_예외를_발생시킨다() {
         //given
+        insertMember("test1", "email1", "password");
         themeRepository.create(new Theme("test1", "description1", "thumbnail1"));
         reservationTimeRepository.create(new ReservationTime(1L, LocalTime.of(12, 0)));
         reservationRepository.create(new Reservation(
-                "test",
+                new Member(1L, "test1", "email1", "password"),
                 LocalDate.of(2025, 5, 1),
                 new ReservationTime(1L, LocalTime.of(12, 0)),
                 new Theme(1L, "test1", "description1", "thumbnail1")));
@@ -98,6 +100,7 @@ class ThemeServiceTest extends ServiceIntegrationTest {
     @Test
     void 최근_일주일간_예약_건수가_많은_테마를_내림차순으로_찾을_수_있다() {
         //given
+        insertMember();
         themeRepository.create(new Theme("test1", "description1", "thumbnail1"));
         themeRepository.create(new Theme("test2", "description2", "thumbnail2"));
         themeRepository.create(new Theme("test3", "description3", "thumbnail3"));
@@ -105,16 +108,16 @@ class ThemeServiceTest extends ServiceIntegrationTest {
 
         reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
 
-        insertReservation("test1", LocalDate.now(clock).minusDays(1), 1L, 3L);
-        insertReservation("test1", LocalDate.now(clock).minusDays(1), 1L, 3L);
-        insertReservation("test2", LocalDate.now(clock).minusDays(1), 1L, 3L);
-        insertReservation("test3", LocalDate.now(clock).minusDays(1), 1L, 3L);
-        insertReservation("test4", LocalDate.now(clock).minusDays(3), 1L, 2L);
-        insertReservation("test5", LocalDate.now(clock).minusDays(3), 1L, 2L);
-        insertReservation("test6", LocalDate.now(clock).minusDays(4), 1L, 4L);
-        insertReservation("test7", LocalDate.now(clock).minusDays(8), 1L, 4L);
-        insertReservation("test8", LocalDate.now(clock).minusDays(8), 1L, 4L);
-        insertReservation("test9", LocalDate.now(clock).minusDays(8), 1L, 4L);
+        insertReservation(1L, LocalDate.now(clock).minusDays(1), 1L, 3L);
+        insertReservation(1L, LocalDate.now(clock).minusDays(1), 1L, 3L);
+        insertReservation(1L, LocalDate.now(clock).minusDays(1), 1L, 3L);
+        insertReservation(1L, LocalDate.now(clock).minusDays(1), 1L, 3L);
+        insertReservation(1L, LocalDate.now(clock).minusDays(3), 1L, 2L);
+        insertReservation(1L, LocalDate.now(clock).minusDays(3), 1L, 2L);
+        insertReservation(1L, LocalDate.now(clock).minusDays(4), 1L, 4L);
+        insertReservation(1L, LocalDate.now(clock).minusDays(8), 1L, 4L);
+        insertReservation(1L, LocalDate.now(clock).minusDays(8), 1L, 4L);
+        insertReservation(1L, LocalDate.now(clock).minusDays(8), 1L, 4L);
 
         //when
         List<ThemeResult> rankBetweenDate = themeService.findRankBetweenDate();

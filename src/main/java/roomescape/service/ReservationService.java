@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.BusinessRuleViolationException;
 import roomescape.common.exception.NotFoundEntityException;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRepository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
@@ -13,6 +15,7 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.service.param.CreateReservationParam;
+import roomescape.service.result.MemberResult;
 import roomescape.service.result.ReservationResult;
 import roomescape.service.result.ReservationTimeResult;
 import roomescape.service.result.ThemeResult;
@@ -23,19 +26,24 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTImeRepository;
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
     private final Clock clock;
 
     public ReservationService(ReservationTimeRepository reservationTImeRepository,
                               ReservationRepository reservationRepository,
-                              ThemeRepository themeRepository,
+                              ThemeRepository themeRepository, MemberRepository memberRepository,
                               Clock clock) {
         this.reservationTImeRepository = reservationTImeRepository;
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
         this.clock = clock;
     }
 
     public Long create(CreateReservationParam createReservationParam) {
+        Member member = memberRepository.findById(createReservationParam.memberId())
+                .orElseThrow(() -> new NotFoundEntityException(
+                        createReservationParam.timeId() + "에 해당하는 member 튜플이 없습니다."));
         ReservationTime reservationTime = reservationTImeRepository.findById(createReservationParam.timeId())
                 .orElseThrow(
                         () -> new NotFoundEntityException(
@@ -48,7 +56,7 @@ public class ReservationService {
         }
 
         Reservation reservation = new Reservation(
-                createReservationParam.name(),
+                member,
                 createReservationParam.date(),
                 reservationTime,
                 theme);
@@ -77,7 +85,7 @@ public class ReservationService {
     private ReservationResult toReservationResult(Reservation reservation) {
         return new ReservationResult(
                 reservation.getId(),
-                reservation.getName(),
+                MemberResult.from(reservation.getMember()),
                 reservation.getDate(),
                 ReservationTimeResult.from(reservation.getTime()),
                 ThemeResult.from(reservation.getTheme()));

@@ -33,10 +33,13 @@ public class AuthInfoArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie cookie = getTokenCookie(request);
         JwtPayload jwtPayload = jwtProvider.extractPayload(cookie.getValue());
-        return new AuthInfo(jwtPayload.name());
+        return new AuthInfo(jwtPayload.memberId(), jwtPayload.name());
     }
 
     private static Cookie getTokenCookie(HttpServletRequest request) {
+        if (request.getCookies() == null) {
+            throw new UnauthorizedException("인증 쿠키값이 존재하지 않습니다.");
+        }
         return Arrays.stream(request.getCookies())
                 .filter(each -> each.getName().equals("token"))
                 .findFirst()

@@ -5,7 +5,7 @@ import roomescape.service.result.ReservationResult;
 
 public record ReservationResponse(
         Long id,
-        String name,
+        MemberResponse member,
         LocalDate date,
         ReservationTimeResponse time,
         ThemeResponse theme
@@ -15,7 +15,7 @@ public record ReservationResponse(
     public static ReservationResponse from(ReservationResult reservationResult) {
         return new ReservationResponse(
                 reservationResult.id(),
-                reservationResult.name(),
+                MemberResponse.from(reservationResult.memberResult()),
                 reservationResult.date(),
                 ReservationTimeResponse.from(reservationResult.time()),
                 ThemeResponse.from(reservationResult.theme())

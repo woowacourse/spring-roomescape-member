@@ -35,7 +35,7 @@ public record CreateReservationRequest(
         }
     }
 
-    public CreateReservationParam toServiceParam(String name) {
-        return new CreateReservationParam(name, date, timeId, themeId);
+    public CreateReservationParam toServiceParam(Long memberId) {
+        return new CreateReservationParam(date, timeId, themeId, memberId);
     }
 }

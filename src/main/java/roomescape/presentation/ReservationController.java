@@ -40,7 +40,7 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> createReservation(
             @AuthPrincipal AuthInfo authInfo,
             @RequestBody CreateReservationRequest createReservationRequest) {
-        Long reservationId = reservationService.create(createReservationRequest.toServiceParam(authInfo.name()));
+        Long reservationId = reservationService.create(createReservationRequest.toServiceParam(authInfo.memberId()));
         ReservationResult reservationResult = reservationService.findById(reservationId);
         return ResponseEntity.status(HttpStatus.CREATED).body(ReservationResponse.from(reservationResult));
     }

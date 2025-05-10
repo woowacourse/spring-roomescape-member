@@ -9,21 +9,18 @@ import roomescape.common.exception.BusinessRuleViolationException;
 public class Reservation {
 
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, member, date, time, theme);
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        if (name.length() < 2 || name.length() > 5) {
-            throw new BusinessRuleViolationException("예약자명은 2글자에서 5글자까지만 가능합니다.");
-        }
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -44,8 +41,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
@@ -65,17 +62,24 @@ public class Reservation {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
         Reservation that = (Reservation) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(date, that.date)
-                && Objects.equals(time, that.time) && Objects.equals(theme, that.theme);
+        return Objects.equals(id, that.id) && Objects.equals(member, that.member)
+                && Objects.equals(date, that.date) && Objects.equals(time, that.time)
+                && Objects.equals(theme, that.theme);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, date, time, theme);
+        int result = Objects.hashCode(id);
+        result = 31 * result + Objects.hashCode(member);
+        result = 31 * result + Objects.hashCode(date);
+        result = 31 * result + Objects.hashCode(time);
+        result = 31 * result + Objects.hashCode(theme);
+        return result;
     }
 }
