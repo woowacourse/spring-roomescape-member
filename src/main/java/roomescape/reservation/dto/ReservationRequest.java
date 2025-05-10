@@ -4,18 +4,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import roomescape.common.exception.InvalidDateException;
 import roomescape.common.exception.InvalidIdException;
-import roomescape.common.exception.InvalidNameException;
 
 public record ReservationRequest(
-        String name,
         @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
         Long timeId,
         Long themeId
 ) {
     public ReservationRequest {
-        if (name == null || name.isBlank()) {
-            throw new InvalidNameException("이름을 입력해주세요");
-        }
         if (date == null) {
             throw new InvalidDateException("날짜를 입력해주세요");
         }

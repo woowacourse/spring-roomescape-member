@@ -51,14 +51,14 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse add(final ReservationRequest reservationRequest) {
+    public ReservationResponse add(final String memberName, final ReservationRequest reservationRequest) {
         ReservationTime reservationTimeResult = searchReservationTime(reservationRequest);
         validateTime(reservationRequest, reservationTimeResult);
         validateAvailability(reservationRequest, reservationTimeResult);
         Theme themeResult = searchTheme(reservationRequest);
 
         Reservation newReservation = new Reservation(
-                reservationRequest.name(),
+                memberName,
                 reservationRequest.date(),
                 reservationTimeResult,
                 themeResult
