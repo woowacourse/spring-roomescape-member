@@ -1,18 +1,16 @@
 package roomescape.reservation;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -30,30 +28,6 @@ public class ReservationIntegrationTest {
     @BeforeEach
     void beforeEach() {
         RestAssured.port = this.port;
-    }
-
-    @DisplayName("잘못된 예약자명으로 생성 요청 시 400 응답을 준다.")
-    @ParameterizedTest
-    @NullAndEmptySource
-    void when_given_wrong_name(final String name) {
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", name);
-        reservation.put("date", "2023-08-05");
-        reservation.put("timeId", 1);
-
-        ExceptionResponse expected = new ExceptionResponse("[ERROR] 이름은 비어있을 수 없습니다.", "/reservations");
-
-        Response response = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400)
-                .extract()
-                .response();
-
-        ExceptionResponse actual = response.as(ExceptionResponse.class);
-        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("날짜가 null인 상태로 생성 요청 시 400 응답을 준다.")

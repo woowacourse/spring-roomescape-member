@@ -15,6 +15,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRepository;
+import roomescape.member.domain.Role;
+import roomescape.member.infrastructure.JdbcMemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservationTime.domain.ReservationTime;
@@ -32,14 +36,19 @@ class JdbcReservationRepositoryTest {
     private ReservationRepository reservationRepository;
     private Long themeId;
     private Long timeId;
+    private Long memberId;
 
     @BeforeEach
     void beforeEach() {
         reservationRepository = new JdbcReservationRepository(dataSource);
         ThemeRepository themeRepository = new JdbcThemeRepository(dataSource);
         ReservationTimeRepository timeRepository = new JdbcReservationTimeRepository(dataSource);
+        MemberRepository memberRepository = new JdbcMemberRepository(dataSource);
 
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 10));
+        Member member = Member.createWithoutId("a", "a", "a", Role.USER);
+
+        memberId = memberRepository.save(member);
         timeId = timeRepository.save(reservationTime);
         Theme theme = Theme.createWithoutId("a", "a", "a");
         themeId = themeRepository.save(theme);
@@ -50,8 +59,9 @@ class JdbcReservationRepositoryTest {
     void save_test() {
         ReservationTime reservationTime = ReservationTime.createWithId(timeId, LocalTime.of(10, 10));
         Theme theme = Theme.createWithId(themeId, "a", "a", "a");
+        Member member = Member.createWithId(memberId, "a", "a", "a", Role.USER);
         Reservation reservation = Reservation.createWithoutId(
-                LocalDateTime.of(1999, 11, 2, 20, 10), "a", LocalDate.of(2000, 11, 2), reservationTime, theme);
+                LocalDateTime.of(1999, 11, 2, 20, 10), member, LocalDate.of(2000, 11, 2), reservationTime, theme);
 
         Long save = reservationRepository.save(reservation);
 
@@ -63,25 +73,21 @@ class JdbcReservationRepositoryTest {
     void find_by_themeId_and_date() {
         ReservationTime reservationTime = ReservationTime.createWithId(timeId, LocalTime.of(10, 10));
         Theme theme = Theme.createWithId(themeId, "a", "a", "a");
-        Reservation reservation1 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "a",
+        Member member = Member.createWithId(memberId, "a", "a", "a", Role.USER);
+        Reservation reservation1 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 2), reservationTime, theme);
-        Reservation reservation2 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "b",
+        Reservation reservation2 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 10, 2), reservationTime, theme);
-        Reservation reservation3 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "c",
+        Reservation reservation3 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 2), reservationTime, theme);
         reservationRepository.save(reservation1);
         reservationRepository.save(reservation2);
         reservationRepository.save(reservation3);
 
         List<Reservation> reservations = reservationRepository.findByDateAndThemeId(LocalDate.of(2000, 11, 2), themeId);
-        List<String> names = reservations.stream()
-                .map(Reservation::getName)
-                .toList();
 
-        assertAll(
-                () -> assertThat(reservations).hasSize(2),
-                () -> assertThat(names).contains("a", "c")
-        );
+        assertThat(reservations).hasSize(2);
+
     }
 
     @ParameterizedTest
@@ -90,7 +96,8 @@ class JdbcReservationRepositoryTest {
     void delete_test(Long plus, boolean expected) {
         ReservationTime reservationTime = ReservationTime.createWithId(timeId, LocalTime.of(10, 10));
         Theme theme = Theme.createWithId(themeId, "a", "a", "a");
-        Reservation reservation = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "a",
+        Member member = Member.createWithId(memberId, "a", "a", "a", Role.USER);
+        Reservation reservation = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 2), reservationTime, theme);
         reservationRepository.save(reservation);
 
@@ -104,25 +111,22 @@ class JdbcReservationRepositoryTest {
     void find_all_test() {
         ReservationTime reservationTime = ReservationTime.createWithId(timeId, LocalTime.of(10, 10));
         Theme theme = Theme.createWithId(themeId, "a", "a", "a");
-        Reservation reservation1 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "a",
+        Member member = Member.createWithId(memberId, "a", "a", "a", Role.USER);
+
+        Reservation reservation1 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 2), reservationTime, theme);
-        Reservation reservation2 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "b",
+        Reservation reservation2 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 10, 2), reservationTime, theme);
-        Reservation reservation3 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "c",
+        Reservation reservation3 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 2), reservationTime, theme);
         reservationRepository.save(reservation1);
         reservationRepository.save(reservation2);
         reservationRepository.save(reservation3);
 
         List<Reservation> reservations = reservationRepository.findAll();
-        List<String> names = reservations.stream()
-                .map(Reservation::getName)
-                .toList();
 
-        assertAll(
-                () -> assertThat(reservations).hasSize(3),
-                () -> assertThat(names).contains("a", "b", "c")
-        );
+        assertThat(reservations).hasSize(3);
+
     }
 
     @ParameterizedTest
@@ -131,7 +135,8 @@ class JdbcReservationRepositoryTest {
     void exist_by_time(Long plus, boolean expected) {
         ReservationTime reservationTime = ReservationTime.createWithId(timeId, LocalTime.of(10, 10));
         Theme theme = Theme.createWithId(themeId, "a", "a", "a");
-        Reservation reservation = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "a",
+        Member member = Member.createWithId(memberId, "a", "a", "a", Role.USER);
+        Reservation reservation = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 2), reservationTime, theme);
         reservationRepository.save(reservation);
 
@@ -145,7 +150,8 @@ class JdbcReservationRepositoryTest {
     void exist_by_test() {
         ReservationTime reservationTime = ReservationTime.createWithId(timeId, LocalTime.of(10, 10));
         Theme theme = Theme.createWithId(timeId, "a", "a", "a");
-        Reservation reservation = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "a",
+        Member member = Member.createWithId(memberId, "a", "a", "a", Role.USER);
+        Reservation reservation = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 2), reservationTime, theme);
         reservationRepository.save(reservation);
 
@@ -168,7 +174,8 @@ class JdbcReservationRepositoryTest {
     private Reservation createReservationForTestBy(Long themeId, LocalDate localDate, LocalTime localTime) {
         ReservationTime reservationTime = ReservationTime.createWithId(1L, localTime);
         Theme theme = Theme.createWithId(themeId, "a", "a", "a");
-        return Reservation.createWithId(1L, "a", localDate, reservationTime, theme);
+        Member member = Member.createWithId(memberId, "a", "a", "a", Role.USER);
+        return Reservation.createWithId(1L, member, localDate, reservationTime, theme);
     }
 
 
@@ -178,7 +185,8 @@ class JdbcReservationRepositoryTest {
     void exist_by_theme(Long plus, boolean expected) {
         ReservationTime reservationTime = ReservationTime.createWithId(timeId, LocalTime.of(10, 10));
         Theme theme = Theme.createWithId(themeId, "a", "a", "a");
-        Reservation reservation = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "a",
+        Member member = Member.createWithId(memberId, "a", "a", "a", Role.USER);
+        Reservation reservation = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 2), reservationTime, theme);
         reservationRepository.save(reservation);
 

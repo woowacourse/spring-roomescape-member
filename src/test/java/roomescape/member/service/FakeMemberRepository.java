@@ -1,5 +1,6 @@
 package roomescape.member.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -43,5 +44,10 @@ public class FakeMemberRepository implements MemberRepository {
         return members.stream()
                 .filter(member -> member.getEmail().equals(email) && member.getPassword().equals(password))
                 .findAny();
+    }
+
+    @Override
+    public List<Member> findAll() {
+        return Collections.unmodifiableList(members);
     }
 }

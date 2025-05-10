@@ -1,6 +1,5 @@
 package roomescape.reservation.service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -44,7 +43,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
                 .filter(reservation -> Objects.equals(reservation.getId(), id))
                 .findAny();
 
-        if(findReservationTime.isEmpty()){
+        if (findReservationTime.isEmpty()) {
             return false;
         }
 

@@ -15,6 +15,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRepository;
+import roomescape.member.domain.Role;
+import roomescape.member.infrastructure.JdbcMemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationPeriod;
 import roomescape.reservation.domain.ReservationRepository;
@@ -108,6 +112,7 @@ class JdbcReservationThemeRepositoryTest {
     void find_popular_theme_no_time_and_count_condition() {
         ReservationRepository reservationRepository = new JdbcReservationRepository(dataSource);
         ReservationTimeRepository reservationTimeRepository = new JdbcReservationTimeRepository(dataSource);
+        MemberRepository memberRepository = new JdbcMemberRepository(dataSource);
         ReservationTime reservationTime1 = ReservationTime.createWithoutId(LocalTime.of(10, 10));
         ReservationTime reservationTime2 = ReservationTime.createWithoutId(LocalTime.of(10, 11));
         Theme theme1 = Theme.createWithoutId("a", "a", "a");
@@ -116,17 +121,22 @@ class JdbcReservationThemeRepositoryTest {
 
         Long timeId1 = reservationTimeRepository.save(reservationTime1);
         Long timeId2 = reservationTimeRepository.save(reservationTime2);
+
+        Member member = Member.createWithoutId("a", "a", "a", Role.USER);
+        Long memberId = memberRepository.save(member);
+        member = member.assignId(memberId);
+
         Long themeId1 = repository.save(theme1);
         Long themeId2 = repository.save(theme2);
         repository.save(theme3);
 
-        Reservation reservation1 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "a",
+        Reservation reservation1 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 2),
                 reservationTime1.assignId(timeId1), theme1.assignId(themeId1));
-        Reservation reservation2 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "b",
+        Reservation reservation2 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 3),
                 reservationTime2.assignId(timeId2), theme1.assignId(themeId1));
-        Reservation reservation3 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "c",
+        Reservation reservation3 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 3),
                 reservationTime1.assignId(timeId1), theme2.assignId(themeId2));
         reservationRepository.save(reservation1);
@@ -148,6 +158,7 @@ class JdbcReservationThemeRepositoryTest {
     void find_popular_theme_no_count_condition() {
         ReservationRepository reservationRepository = new JdbcReservationRepository(dataSource);
         ReservationTimeRepository reservationTimeRepository = new JdbcReservationTimeRepository(dataSource);
+        MemberRepository memberRepository = new JdbcMemberRepository(dataSource);
         ReservationTime reservationTime1 = ReservationTime.createWithoutId(LocalTime.of(10, 10));
         ReservationTime reservationTime2 = ReservationTime.createWithoutId(LocalTime.of(10, 11));
         Theme theme1 = Theme.createWithoutId("a", "a", "a");
@@ -160,16 +171,20 @@ class JdbcReservationThemeRepositoryTest {
         Long themeId2 = repository.save(theme2);
         repository.save(theme3);
 
-        Reservation reservation1 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "a",
+        Member member = Member.createWithoutId("a", "a", "a", Role.USER);
+        Long memberId = memberRepository.save(member);
+        member = member.assignId(memberId);
+
+        Reservation reservation1 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 2),
                 reservationTime1.assignId(timeId1), theme1.assignId(themeId1));
-        Reservation reservation2 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "b",
+        Reservation reservation2 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 3),
                 reservationTime2.assignId(timeId2), theme1.assignId(themeId1));
-        Reservation reservation3 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "c",
+        Reservation reservation3 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 3),
                 reservationTime1.assignId(timeId1), theme2.assignId(themeId2));
-        Reservation reservation4 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "c",
+        Reservation reservation4 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 4),
                 reservationTime1.assignId(timeId1), theme2.assignId(themeId2));
         reservationRepository.save(reservation1);
@@ -192,6 +207,7 @@ class JdbcReservationThemeRepositoryTest {
     void find_popular_theme() {
         ReservationRepository reservationRepository = new JdbcReservationRepository(dataSource);
         ReservationTimeRepository reservationTimeRepository = new JdbcReservationTimeRepository(dataSource);
+        MemberRepository memberRepository = new JdbcMemberRepository(dataSource);
         ReservationTime reservationTime1 = ReservationTime.createWithoutId(LocalTime.of(10, 10));
         ReservationTime reservationTime2 = ReservationTime.createWithoutId(LocalTime.of(10, 11));
         Theme theme1 = Theme.createWithoutId("a", "a", "a");
@@ -204,16 +220,20 @@ class JdbcReservationThemeRepositoryTest {
         Long themeId2 = repository.save(theme2);
         repository.save(theme3);
 
+        Member member = Member.createWithoutId("a", "a", "a", Role.USER);
+        Long memberId = memberRepository.save(member);
+        member = member.assignId(memberId);
+
         Reservation reservation1 = Reservation.createWithoutId(
-                LocalDateTime.of(1999, 11, 2, 20, 10), "a", LocalDate.of(2000, 11, 2),
+                LocalDateTime.of(1999, 11, 2, 20, 10), member, LocalDate.of(2000, 11, 2),
                 reservationTime1.assignId(timeId1), theme1.assignId(themeId1));
-        Reservation reservation2 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "b",
+        Reservation reservation2 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 3),
                 reservationTime2.assignId(timeId2), theme1.assignId(themeId1));
-        Reservation reservation3 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "c",
+        Reservation reservation3 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 3),
                 reservationTime1.assignId(timeId1), theme2.assignId(themeId2));
-        Reservation reservation4 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "c",
+        Reservation reservation4 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 4),
                 reservationTime1.assignId(timeId1), theme2.assignId(themeId2));
         reservationRepository.save(reservation1);

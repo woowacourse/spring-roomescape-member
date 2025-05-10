@@ -1,10 +1,9 @@
 package roomescape.common.exceptionHandler;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,41 +20,6 @@ class GlobalExceptionHandlerTest {
 
     @LocalServerPort
     private int port;
-
-    @TestConfiguration
-    static class TestControllerConfig {
-        @RestController
-        static class TestController {
-            @GetMapping("/illegalArgumentException")
-            public void illegalArgumentException() {
-                throw new IllegalArgumentException("IllegalArgumentException 예외 테스트");
-            }
-
-            @GetMapping("/nullPointerException")
-            public void nullPointerException() {
-                throw new NullPointerException("NullPointerException 예외 테스트");
-            }
-
-            @GetMapping("/httpMessageNotReadableException")
-            public void httpMessageNotReadableException() {
-                throw new HttpMessageNotReadableException("HttpMessageNotReadableException 예외 테스트");
-            }
-
-            @GetMapping("/httpMessageNotReadableException2")
-            public void httpMessageNotReadableException2() {
-                try {
-                    throw new IllegalArgumentException("IllegalArgumentException 감싼 예외 테스트");
-                } catch (IllegalArgumentException e) {
-                    throw new HttpMessageNotReadableException(e.getMessage(), e);
-                }
-            }
-
-            @GetMapping("/unknown")
-            public void unknownException() {
-                throw new IllegalStateException("예상치 못한 오류");
-            }
-        }
-    }
 
     @BeforeEach
     void beforeEach() {
@@ -145,5 +109,40 @@ class GlobalExceptionHandlerTest {
 
         ExceptionResponse actual = response.as(ExceptionResponse.class);
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @TestConfiguration
+    static class TestControllerConfig {
+        @RestController
+        static class TestController {
+            @GetMapping("/illegalArgumentException")
+            public void illegalArgumentException() {
+                throw new IllegalArgumentException("IllegalArgumentException 예외 테스트");
+            }
+
+            @GetMapping("/nullPointerException")
+            public void nullPointerException() {
+                throw new NullPointerException("NullPointerException 예외 테스트");
+            }
+
+            @GetMapping("/httpMessageNotReadableException")
+            public void httpMessageNotReadableException() {
+                throw new HttpMessageNotReadableException("HttpMessageNotReadableException 예외 테스트");
+            }
+
+            @GetMapping("/httpMessageNotReadableException2")
+            public void httpMessageNotReadableException2() {
+                try {
+                    throw new IllegalArgumentException("IllegalArgumentException 감싼 예외 테스트");
+                } catch (IllegalArgumentException e) {
+                    throw new HttpMessageNotReadableException(e.getMessage(), e);
+                }
+            }
+
+            @GetMapping("/unknown")
+            public void unknownException() {
+                throw new IllegalStateException("예상치 못한 오류");
+            }
+        }
     }
 }

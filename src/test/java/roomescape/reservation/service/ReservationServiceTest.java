@@ -1,6 +1,6 @@
 package roomescape.reservation.service;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -8,7 +8,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +15,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import roomescape.common.util.DateTime;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRepository;
+import roomescape.member.domain.Role;
+import roomescape.member.service.FakeMemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.dto.ReservationRequest;
@@ -34,37 +37,19 @@ class ReservationServiceTest {
 
         @Override
         public LocalDate nowDate() {
-            return LocalDate.of(2025,10,5);
+            return LocalDate.of(2025, 10, 5);
         }
     };
 
     private List<Reservation> reservations = new ArrayList<>();
     private List<Theme> themes = new ArrayList<>();
     private List<ReservationTime> reservationTimes = new ArrayList<>();
-    private ThemeRepository themeRepository = new FakeThemeRepository(themes,reservations);
+    private ThemeRepository themeRepository = new FakeThemeRepository(themes, reservations);
     private ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(reservationTimes);
     private ReservationRepository reservationRepository = new FakeReservationRepository(reservations);
-    private ReservationService reservationService = new ReservationService(dateTime, reservationRepository, reservationTimeRepository, themeRepository);
-
-    @BeforeEach
-    void beforeEach() {
-        Theme theme = Theme.createWithId(1L, "테스트1", "설명", "localhost:8080");
-        themeRepository.save(theme);
-        ReservationTime reservationTime1 = ReservationTime.createWithoutId(LocalTime.of(10, 0));
-        ReservationTime reservationTime2 = ReservationTime.createWithoutId(LocalTime.of(9, 0));
-        reservationTimeRepository.save(reservationTime1);
-        reservationTimeRepository.save(reservationTime2);
-        reservationRepository.save(Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"홍길동", LocalDate.of(2024, 10, 6), reservationTime1, theme));
-    }
-
-    @DisplayName("지나간 날짜와 시간에 대한 예약을 생성할 수 없다.")
-    @ParameterizedTest
-    @MethodSource
-    void cant_not_reserve_before_now(final LocalDate date, final Long timeId) {
-        assertThatThrownBy(
-                        () -> reservationService.createReservation(new ReservationRequest("홍길동", date, timeId, 1L)))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
+    private MemberRepository memberRepository = new FakeMemberRepository(new ArrayList<>());
+    private ReservationService reservationService = new ReservationService(dateTime, reservationRepository,
+            reservationTimeRepository, themeRepository, memberRepository);
 
     private static Stream<Arguments> cant_not_reserve_before_now() {
         return Stream.of(
@@ -75,11 +60,35 @@ class ReservationServiceTest {
         );
     }
 
+    @BeforeEach
+    void beforeEach() {
+        Theme theme = Theme.createWithId(1L, "테스트1", "설명", "localhost:8080");
+        themeRepository.save(theme);
+        ReservationTime reservationTime1 = ReservationTime.createWithoutId(LocalTime.of(10, 0));
+        ReservationTime reservationTime2 = ReservationTime.createWithoutId(LocalTime.of(9, 0));
+        Member member = Member.createWithId(1L, "홍길동", "a", "a", Role.USER);
+        memberRepository.save(member);
+        reservationTimeRepository.save(reservationTime1);
+        reservationTimeRepository.save(reservationTime2);
+        reservationRepository.save(
+                Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member, LocalDate.of(2024, 10, 6),
+                        reservationTime1, theme));
+    }
+
+    @DisplayName("지나간 날짜와 시간에 대한 예약을 생성할 수 없다.")
+    @ParameterizedTest
+    @MethodSource
+    void cant_not_reserve_before_now(final LocalDate date, final Long timeId) {
+        assertThatThrownBy(
+                () -> reservationService.createReservation(new ReservationRequest(date, timeId, 1L), 1L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     @DisplayName("중복 예약이 불가하다.")
     @Test
     void cant_not_reserve_duplicate() {
         assertThatThrownBy(() -> reservationService.createReservation(
-                        new ReservationRequest("홍길동", LocalDate.of(2024, 10, 6), 1L, 1L)))
+                new ReservationRequest(LocalDate.of(2024, 10, 6), 1L, 1L), 1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

@@ -9,6 +9,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.service.FakeReservationRepository;
@@ -37,8 +39,9 @@ class ReservationTimeServiceTest {
 
         reservationTime1 = reservationTimeRepository.findById(id);
         ReservationRepository reservationRepository = new FakeReservationRepository(reservations);
+        Member member = Member.createWithId(1L, "홍길동", "a", "a", Role.USER);
         reservationRepository.save(Reservation.createWithoutId(
-                LocalDateTime.of(1999,11,2,20,10),"홍길동", LocalDate.of(2024, 10, 6), reservationTime1, theme));
+                LocalDateTime.of(1999, 11, 2, 20, 10), member, LocalDate.of(2024, 10, 6), reservationTime1, theme));
 
         reservationTimeService = new ReservationTimeService(reservationRepository, reservationTimeRepository);
     }
@@ -62,6 +65,6 @@ class ReservationTimeServiceTest {
         Assertions.assertThat(responses).containsExactlyInAnyOrder(
                 new TimeConditionResponse(1L, LocalTime.of(10, 0), true),
                 new TimeConditionResponse(2L, LocalTime.of(11, 0), false)
-                );
+        );
     }
 }
