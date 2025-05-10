@@ -1,4 +1,4 @@
-package roomescape.reservationtime.stub;
+package roomescape.reservationtime.fake;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -8,11 +8,11 @@ import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 
-public class StubReservationTimeRepository implements ReservationTimeRepository {
+public class FakeReservationTimeRepository implements ReservationTimeRepository {
 
     private final List<ReservationTime> data = new ArrayList<>();
 
-    public StubReservationTimeRepository(final ReservationTime... times) {
+    public FakeReservationTimeRepository(final ReservationTime... times) {
         data.addAll(List.of(times));
     }
 

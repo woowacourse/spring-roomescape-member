@@ -1,4 +1,4 @@
-package roomescape.theme.stub;
+package roomescape.theme.fake;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,12 +8,12 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.repository.ThemeRepository;
 
-public class StubThemeRepository implements ThemeRepository {
+public class FakeThemeRepository implements ThemeRepository {
 
     private final List<Theme> data = new ArrayList<>();
     private final AtomicLong atomicLong = new AtomicLong();
 
-    public StubThemeRepository(final Theme... themes) {
+    public FakeThemeRepository(final Theme... themes) {
         data.addAll(List.of(themes));
         long maxId = data.stream()
                 .mapToLong(Theme::getId)

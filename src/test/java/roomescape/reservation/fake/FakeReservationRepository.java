@@ -1,4 +1,5 @@
-package roomescape.reservation.stub;
+package roomescape.reservation.fake;
+
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -9,14 +10,14 @@ import java.util.concurrent.atomic.AtomicLong;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 
-public class StubReservationRepository implements ReservationRepository {
+public class FakeReservationRepository implements ReservationRepository {
 
     private final List<Reservation> data = new ArrayList<>();
     private final AtomicLong atomicLong = new AtomicLong();
     private boolean existsByReservationTimeId = false;
     private boolean existsByThemeId = false;
 
-    public StubReservationRepository(Reservation... inputReservations) {
+    public FakeReservationRepository(Reservation... inputReservations) {
         data.addAll(List.of(inputReservations));
         long maxId = data.stream()
                 .mapToLong(Reservation::getId)
@@ -26,8 +27,9 @@ public class StubReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
-        return List.copyOf(data);
+    public List<Reservation> findByCriteria(final Long themeId, final Long memberId, final LocalDate localDateFrom,
+                                            final LocalDate localDateTo) {
+        return data;
     }
 
     @Override
@@ -43,10 +45,10 @@ public class StubReservationRepository implements ReservationRepository {
         long newId = atomicLong.incrementAndGet();
         Reservation newReservation = new Reservation(
                 newId,
-                reservation.getName(),
                 reservation.getDate(),
                 reservation.getTime(),
-                reservation.getTheme()
+                reservation.getTheme(),
+                reservation.getMember()
         );
         data.add(newReservation);
         return newReservation;
