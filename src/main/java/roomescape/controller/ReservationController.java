@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.domain.LoginMember;
 import roomescape.domain.Reservation;
 import roomescape.dto.request.CreateReservationRequest;
@@ -53,8 +54,12 @@ public class ReservationController {
         Reservation reservation = reservationService.addReservation(request, loginMember);
         ReservationResponse response = ReservationResponse.from(reservation);
 
-        return ResponseEntity.created(URI.create("/reservations/" + response.id()))
-                .body(response);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+
+        return ResponseEntity.created(location).body(response);
     }
 
     @DeleteMapping("/{id}")

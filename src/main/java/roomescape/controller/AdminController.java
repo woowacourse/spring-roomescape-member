@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.domain.Reservation;
 import roomescape.dto.request.AdminCreateReservationRequest;
 import roomescape.dto.response.ReservationResponse;
@@ -48,7 +49,11 @@ public class AdminController {
         Reservation reservation = reservationService.addReservationByAdmin(request);
         ReservationResponse response = ReservationResponse.from(reservation);
 
-        return ResponseEntity.created(URI.create("/reservations/" + response.id()))
-                .body(response);
+        URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/reservations/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+
+        return ResponseEntity.created(location).body(response);
     }
 }

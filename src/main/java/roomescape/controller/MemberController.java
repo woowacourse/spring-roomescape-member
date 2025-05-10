@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.domain.Member;
 import roomescape.dto.request.SignupRequest;
 import roomescape.dto.response.MemberResponse;
@@ -48,6 +49,11 @@ public class MemberController {
         Member member = memberService.addMember(request);
         MemberResponse response = MemberResponse.from(member);
 
-        return ResponseEntity.created(URI.create("/members/" + response.id())).body(response);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+
+        return ResponseEntity.created(location).body(response);
     }
 }

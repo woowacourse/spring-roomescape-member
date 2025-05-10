@@ -12,28 +12,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.domain.ReservationSlot;
 import roomescape.domain.ReservationSlots;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.request.CreateReservationTimeRequest;
 import roomescape.dto.request.AvailableTimeRequest;
+import roomescape.dto.request.CreateReservationTimeRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeSlotResponse;
-import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 
 @RestController
 @RequestMapping("/times")
 public class ReservationTimeController {
 
-    private final ReservationService reservationService;
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(
-            ReservationService reservationService,
-            ReservationTimeService reservationTimeService
-    ) {
-        this.reservationService = reservationService;
+    public ReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
@@ -75,8 +70,12 @@ public class ReservationTimeController {
         ReservationTime reservationTime = reservationTimeService.addReservationTime(request);
         ReservationTimeResponse response = ReservationTimeResponse.from(reservationTime);
 
-        return ResponseEntity.created(URI.create("/times/" + response.id()))
-                .body(response);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+
+        return ResponseEntity.created(location).body(response);
     }
 
     @DeleteMapping("/{id}")
