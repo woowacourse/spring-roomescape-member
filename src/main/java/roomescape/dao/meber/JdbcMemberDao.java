@@ -16,7 +16,7 @@ public class JdbcMemberDao implements MemberDao {
             resultSet.getString("name"),
             resultSet.getString("email"),
             resultSet.getString("password"),
-            resultSet.getObject("role", MemberRole.class)
+            MemberRole.valueOf(resultSet.getString("role"))
     );
 
     public JdbcMemberDao(JdbcTemplate jdbcTemplate) {

@@ -38,7 +38,7 @@ public class JdbcReservationDao implements ReservationDao {
                 resultSet.getString("member_name"),
                 resultSet.getString("member_email"),
                 resultSet.getString("member_password"),
-                resultSet.getObject("member_role", MemberRole.class)
+                MemberRole.valueOf(resultSet.getString("member_role"))
         );
 
         return Reservation.load(
@@ -69,7 +69,8 @@ public class JdbcReservationDao implements ReservationDao {
                     me.id as member_id,
                     me.name as member_name,
                     me.email as member_email,
-                    me.password as member_password
+                    me.password as member_password,
+                    me.role as member_role
                 FROM reservation r
                 INNER JOIN reservation_time t
                     ON r.time_id = t.id
