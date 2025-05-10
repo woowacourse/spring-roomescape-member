@@ -3,6 +3,7 @@ package roomescape.member.infrastructure;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,5 +81,19 @@ class JdbcMemberRepositoryTest {
         Optional<Member> findMember = jdbcMemberRepository.findByEmailAndPassword(email, password);
         // then
         assertThat(findMember.isPresent()).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("모든 회원 조회 테스트")
+    void findAll_test() {
+        // given
+        Member member1 = Member.createWithoutId("a", "a", "a", Role.USER);
+        jdbcMemberRepository.save(member1);
+        Member member2 = Member.createWithoutId("b", "b", "b", Role.USER);
+        jdbcMemberRepository.save(member2);
+        // when
+        List<Member> members = jdbcMemberRepository.findAll();
+        // then
+        assertThat(members).hasSize(2);
     }
 }
