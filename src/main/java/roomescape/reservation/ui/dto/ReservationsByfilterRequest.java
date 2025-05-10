@@ -3,7 +3,8 @@ package roomescape.reservation.ui.dto;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
-public record ReservationsByCriteriaRequest(
+public record ReservationsByfilterRequest(
+        
         @NotNull
         Long themeId,
         @NotNull
