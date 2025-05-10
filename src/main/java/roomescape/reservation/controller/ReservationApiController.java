@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.common.authentication.AuthenticationPrincipal;
-import roomescape.login.dto.MemberResponse;
-import roomescape.reservation.dto.ReservationRequest;
+import roomescape.member.dto.MemberResponse;
+import roomescape.member.login.authentication.AuthenticationPrincipal;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.user.UserReservationRequest;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
@@ -32,11 +32,14 @@ public class ReservationApiController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> add(
-            @RequestBody ReservationRequest reservationRequest,
+            @RequestBody UserReservationRequest userReservationRequest,
             @AuthenticationPrincipal MemberResponse memberResponse
     ) {
-        ReservationResponse reservationResponse = reservationService.add(memberResponse.name(), reservationRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
+        ReservationResponse ReservationResponse = reservationService.add(
+                memberResponse.id(),
+                userReservationRequest
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(ReservationResponse);
     }
 
     @DeleteMapping("/{id}")

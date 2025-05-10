@@ -1,16 +1,17 @@
-package roomescape.reservation.dto;
+package roomescape.reservation.dto.admin;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import roomescape.common.exception.InvalidDateException;
 import roomescape.common.exception.InvalidIdException;
 
-public record ReservationRequest(
+public record AdminReservationRequest(
         @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
         Long timeId,
-        Long themeId
+        Long themeId,
+        Long memberId
 ) {
-    public ReservationRequest {
+    public AdminReservationRequest {
         if (date == null) {
             throw new InvalidDateException("날짜를 입력해주세요");
         }
@@ -22,6 +23,9 @@ public record ReservationRequest(
         }
         if (themeId == null) {
             throw new InvalidIdException("테마 아이디를 입력해주세요");
+        }
+        if (memberId == null) {
+            throw new InvalidIdException("멤버 아이디를 입력해주세요");
         }
     }
 }
