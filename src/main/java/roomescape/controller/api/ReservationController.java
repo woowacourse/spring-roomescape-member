@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import roomescape.auth.RequestUser;
-import roomescape.domain.User;
+import roomescape.auth.RequestMember;
+import roomescape.domain.Member;
 import roomescape.dto.request.CreateReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
@@ -36,8 +36,8 @@ public class ReservationController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public void create(@RequestUser User user, @RequestBody CreateReservationRequest request) {
-        reservationService.create(user.id(), request.date(), request.timeId(), request.themeId());
+    public void create(@RequestMember Member member, @RequestBody CreateReservationRequest request) {
+        reservationService.create(member.id(), request.date(), request.timeId(), request.themeId());
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

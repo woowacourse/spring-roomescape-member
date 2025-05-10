@@ -12,13 +12,13 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import roomescape.domain.User;
+import roomescape.domain.Member;
 
 @Component
 @RequiredArgsConstructor
-public class UserDao {
+public class MemberDao {
 
-    private static final RowMapper<User> DEFAULT_ROW_MAPPER = (resultSet, rowNum) -> new User(
+    private static final RowMapper<Member> DEFAULT_ROW_MAPPER = (resultSet, rowNum) -> new Member(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
@@ -28,24 +28,24 @@ public class UserDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public User insertAndGet(User user) {
-        String insertQuery = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
+    public Member insertAndGet(Member member) {
+        String insertQuery = "INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insertQuery, new String[] {"id"});
-            ps.setString(1, user.name());
-            ps.setString(2, user.email());
-            ps.setString(3, user.password());
+            ps.setString(1, member.name());
+            ps.setString(2, member.email());
+            ps.setString(3, member.password());
             return ps;
         }, keyHolder);
         Long id = keyHolder.getKey().longValue();
 
-        return user.withId(id);
+        return member.withId(id);
     }
 
-    public Optional<User> selectById(Long id) {
-        String selectQuery = "SELECT id, name, email, password, role FROM users WHERE id = ?";
+    public Optional<Member> selectById(Long id) {
+        String selectQuery = "SELECT id, name, email, password, role FROM member WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(selectQuery, DEFAULT_ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
@@ -53,8 +53,8 @@ public class UserDao {
         }
     }
 
-    public Optional<User> selectByEmail(String email) {
-        String selectQuery = "SELECT id, name, email, password, role FROM users WHERE email = ?";
+    public Optional<Member> selectByEmail(String email) {
+        String selectQuery = "SELECT id, name, email, password, role FROM member WHERE email = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(selectQuery, DEFAULT_ROW_MAPPER, email));
         } catch (EmptyResultDataAccessException e) {
@@ -62,8 +62,8 @@ public class UserDao {
         }
     }
 
-    public List<User> selectAll() {
-        String selectQuery = "SELECT id, name, email, password, role FROM users";
+    public List<Member> selectAll() {
+        String selectQuery = "SELECT id, name, email, password, role FROM member";
         return jdbcTemplate.query(selectQuery, DEFAULT_ROW_MAPPER);
     }
 }

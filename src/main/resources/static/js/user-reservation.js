@@ -158,7 +158,7 @@ function onReservationButtonClick() {
     })
         .then(response => {
           if (!response.ok) throw new Error('Reservation failed');
-          return response.json();
+          return response;
         })
         .then(data => {
           alert("Reservation successful!");

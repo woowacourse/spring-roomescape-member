@@ -394,7 +394,7 @@ Content-Type: application/json
 ]
 ```
 
-## User
+## Member
 
 ### [로그인 API]
 

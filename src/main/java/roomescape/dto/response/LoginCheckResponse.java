@@ -1,12 +1,12 @@
 package roomescape.dto.response;
 
-import roomescape.domain.User;
+import roomescape.domain.Member;
 
 public record LoginCheckResponse(
         String name
 ) {
 
-    public static LoginCheckResponse from(User user) {
-        return new LoginCheckResponse(user.name());
+    public static LoginCheckResponse from(Member member) {
+        return new LoginCheckResponse(member.name());
     }
 }

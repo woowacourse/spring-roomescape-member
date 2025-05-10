@@ -12,24 +12,24 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import roomescape.auth.RequestUser;
-import roomescape.domain.User;
+import roomescape.auth.RequestMember;
+import roomescape.domain.Member;
 import roomescape.dto.SignupRequest;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.LoginCheckResponse;
 import roomescape.dto.response.MemberResponse;
-import roomescape.service.UserService;
+import roomescape.service.MemberService;
 
 @RestController
 @RequiredArgsConstructor
-public class UserController {
+public class MemberController {
 
-    private final UserService userService;
+    private final MemberService memberService;
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
     public void login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        String token = userService.login(request);
+        String token = memberService.login(request);
         Cookie cookie = new Cookie("token", token);
         cookie.setPath("/");
         response.addCookie(cookie);
@@ -48,24 +48,19 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/members")
     public List<MemberResponse> members() {
-        return userService.getAll();
+        return memberService.getAll();
     }
-
-    /**
-     * TODO
-     * - Reservation 조회 시 join으로 사용자 정보 불러와야함. 객체 연관관계 재매핑해야함.
-     */
 
     // TODO: 비로그인 상태인 경우 UserId(required=false)와 같이 변경(현재는 비로그인 상태 시 400 에러 발생: [ERROR] JWT String argument cannot be null or empty.)
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/login/check")
-    public LoginCheckResponse loginCheck(@RequestUser User user) {
-        return userService.loginCheck(user);
+    public LoginCheckResponse loginCheck(@RequestMember Member member) {
+        return memberService.loginCheck(member);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/signup")
     public void signup(@RequestBody SignupRequest request) {
-        userService.signup(request);
+        memberService.signup(request);
     }
 }

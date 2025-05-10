@@ -15,18 +15,18 @@ import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import roomescape.exception.InvalidTokenException;
-import roomescape.repository.UserRepository;
+import roomescape.repository.MemberRepository;
 
 @Component
 @RequiredArgsConstructor
-public class UserArgumentResolver implements HandlerMethodArgumentResolver {
+public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtProvider jwtProvider;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(RequestUser.class);
+        return parameter.hasParameterAnnotation(RequestMember.class);
     }
 
     @Override
@@ -46,8 +46,8 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         }
 
         try {
-            Long userId = Long.valueOf(jwtProvider.getPayload(token));
-            return userRepository.getById(userId);
+            Long memberId = Long.valueOf(jwtProvider.getPayload(token));
+            return memberRepository.getById(memberId);
         } catch (ExpiredJwtException e) {
             throw new InvalidTokenException(e);
         } catch (IllegalArgumentException e) {

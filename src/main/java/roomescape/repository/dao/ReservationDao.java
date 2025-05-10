@@ -16,10 +16,10 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.User;
 
 @Component
 @RequiredArgsConstructor
@@ -27,12 +27,12 @@ public class ReservationDao {
 
     private static final RowMapper<Reservation> DEFAULT_ROW_MAPPER = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("id"),
-            new User(
-                    resultSet.getLong("user_id"),
-                    resultSet.getString("user_name"),
-                    resultSet.getString("user_email"),
-                    resultSet.getString("user_password"),
-                    resultSet.getString("user_role")
+            new Member(
+                    resultSet.getLong("member_id"),
+                    resultSet.getString("member_name"),
+                    resultSet.getString("member_email"),
+                    resultSet.getString("member_password"),
+                    resultSet.getString("member_role")
             ),
             resultSet.getDate("date").toLocalDate(),
             new ReservationTime(
@@ -52,11 +52,11 @@ public class ReservationDao {
     public List<Reservation> selectAll() {
         String selectAllQuery = """
                 SELECT r.id, r.date, r.time_id, r.theme_id,
-                        u.id AS user_id, u.name AS user_name, u.email AS user_email, u.password AS user_password, u.role AS user_role,
+                        m.id AS member_id, m.name AS member_name, m.email AS member_email, m.password AS member_password, m.role AS member_role,
                         rt.start_at, th.name AS th_name,
                         th.description AS th_description, th.thumbnail AS th_thumbnail
                 FROM reservation r
-                INNER JOIN users u ON r.user_id = u.id
+                INNER JOIN members u ON r.member_id = m.id
                 INNER JOIN reservation_time rt ON r.time_id = rt.id
                 INNER JOIN theme th ON r.theme_id = th.id
                 """;
@@ -64,12 +64,12 @@ public class ReservationDao {
     }
 
     public Reservation insertAndGet(Reservation reservation) {
-        String insertQuery = "INSERT INTO reservation (user_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insertQuery, new String[] {"id"});
-            ps.setLong(1, reservation.user().id());
+            ps.setLong(1, reservation.member().id());
             ps.setString(2, reservation.date().toString());
             ps.setLong(3, reservation.time().id());
             ps.setLong(4, reservation.theme().id());
@@ -83,11 +83,11 @@ public class ReservationDao {
     public Optional<Reservation> selectById(Long id) {
         String selectQuery = """
                 SELECT r.id, r.date, r.time_id, r.theme_id,
-                        u.id AS user_id, u.name AS user_name, u.email AS user_email, u.password AS user_password, u.role AS user_role,
+                        m.id AS member_id, m.name AS member_name, m.email AS member_email, m.password AS member_password, m.role AS member_role,
                         rt.start_at, th.name AS th_name,
                         th.description AS th_description, th.thumbnail AS th_thumbnail
                 FROM reservation r
-                INNER JOIN users u ON r.user_id = u.id
+                INNER JOIN members u ON r.member_id = m.id
                 INNER JOIN reservation_time rt ON r.time_id = rt.id
                 INNER JOIN theme th ON r.theme_id = th.id
                 WHERE r.id = ?
@@ -116,21 +116,21 @@ public class ReservationDao {
                 .orElse(false);
     }
 
-    public List<Reservation> selectAllByThemeIdAndUserIdInDateRange(Long themeId, Long userId, LocalDate dateFrom,
+    public List<Reservation> selectAllByThemeIdAndMemberIdInDateRange(Long themeId, Long memberId, LocalDate dateFrom,
             LocalDate dateTo) {
         String baseQuery = """
                 SELECT r.id, r.date, r.time_id, r.theme_id,
-                        u.id AS user_id, u.name AS user_name, u.email AS user_email, u.password AS user_password, u.role AS user_role,
+                        m.id AS member_id, m.name AS member_name, m.email AS member_email, m.password AS member_password, m.role AS member_role,
                         rt.start_at, th.name AS th_name,
                         th.description AS th_description, th.thumbnail AS th_thumbnail
                 FROM reservation r
-                INNER JOIN users u ON r.user_id = u.id
+                INNER JOIN members u ON r.member_id = m.id
                 INNER JOIN reservation_time rt ON r.time_id = rt.id
                 INNER JOIN theme th ON r.theme_id = th.id
                 """;
         Map<String, Object> whereParams = new HashMap<>();
         whereParams.put("r.theme_id = ?", themeId);
-        whereParams.put("r.user_id = ?", userId);
+        whereParams.put("r.member_id = ?", memberId);
         whereParams.put("? <= r.date", dateFrom);
         whereParams.put("r.date <= ?", dateTo);
         List<Object> params = new ArrayList<>();

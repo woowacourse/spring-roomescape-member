@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public record Reservation(
         Long id,
-        User user,
+        Member member,
         LocalDate date,
         ReservationTime time,
         ReservationTheme theme
@@ -16,11 +16,11 @@ public record Reservation(
         }
     }
 
-    public Reservation(User user, LocalDate date, ReservationTime time, ReservationTheme theme) {
-        this(null, user, date, time, theme);
+    public Reservation(Member member, LocalDate date, ReservationTime time, ReservationTheme theme) {
+        this(null, member, date, time, theme);
     }
 
     public Reservation withId(Long id) {
-        return new Reservation(id, user, date, time, theme);
+        return new Reservation(id, member, date, time, theme);
     }
 }

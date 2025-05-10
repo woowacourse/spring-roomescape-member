@@ -7,15 +7,15 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.User;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationThemeRepository;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -24,14 +24,14 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationThemeRepository reservationThemeRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
-    public ReservationResponse create(Long userId, LocalDate date, Long timeId, Long themeId) {
-        User user = userRepository.getById(userId);
+    public ReservationResponse create(Long memberId, LocalDate date, Long timeId, Long themeId) {
+        Member member = memberRepository.getById(memberId);
         ReservationTime reservationTime = reservationTimeRepository.getById(timeId);
         validateReservationTime(date, timeId, themeId, reservationTime);
         ReservationTheme reservationTheme = reservationThemeRepository.getById(themeId);
-        Reservation reservation = new Reservation(user, date, reservationTime, reservationTheme);
+        Reservation reservation = new Reservation(member, date, reservationTime, reservationTheme);
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(savedReservation);
     }
@@ -60,8 +60,8 @@ public class ReservationService {
 
     public List<ReservationResponse> search(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
         ReservationTheme theme = getNullableTheme(themeId);
-        User user = getNullableMember(memberId);
-        return reservationRepository.findAllByThemeAndUserInDateRange(theme, user, dateFrom, dateTo).stream()
+        Member member = getNullableMember(memberId);
+        return reservationRepository.findAllByThemeAndMemberInDateRange(theme, member, dateFrom, dateTo).stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
@@ -73,10 +73,10 @@ public class ReservationService {
         return reservationThemeRepository.getById(themeId);
     }
 
-    private User getNullableMember(Long userId) {
-        if (userId == null) {
+    private Member getNullableMember(Long memberId) {
+        if (memberId == null) {
             return null;
         }
-        return userRepository.getById(userId);
+        return memberRepository.getById(memberId);
     }
 }

@@ -12,16 +12,16 @@ import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import roomescape.domain.User;
+import roomescape.domain.Member;
 import roomescape.exception.InvalidTokenException;
-import roomescape.repository.UserRepository;
+import roomescape.repository.MemberRepository;
 
 @Component
 @RequiredArgsConstructor
 public class AdminInterceptor implements HandlerInterceptor {
 
     private final JwtProvider jwtProvider;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws
@@ -38,9 +38,9 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         try {
-            Long userId = Long.valueOf(jwtProvider.getPayload(token));
-            Optional<User> user = userRepository.findById(userId);
-            if (user.isEmpty() || !user.get().role().equals("admin")) {
+            Long memberId = Long.valueOf(jwtProvider.getPayload(token));
+            Optional<Member> member = memberRepository.findById(memberId);
+            if (member.isEmpty() || !member.get().role().equals("admin")) {
                 throw new AuthenticationException("일반 사용자는 접근할 수 없습니다.");
             }
 

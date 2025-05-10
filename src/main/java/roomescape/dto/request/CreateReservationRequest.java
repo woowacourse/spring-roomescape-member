@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.User;
+import roomescape.domain.Member;
 
 public record CreateReservationRequest(
         LocalDate date,
@@ -27,7 +27,7 @@ public record CreateReservationRequest(
     }
 
     // TODO: 이 메서드를 쓰지말고 엔티티 변환을 다른 곳에서 하는 건 어떨지?
-    public Reservation toReservation(User user, ReservationTime reservationTime, ReservationTheme reservationTheme) {
-        return new Reservation(user , date, reservationTime, reservationTheme);
+    public Reservation toReservation(Member member, ReservationTime reservationTime, ReservationTheme reservationTheme) {
+        return new Reservation(member, date, reservationTime, reservationTheme);
     }
 }

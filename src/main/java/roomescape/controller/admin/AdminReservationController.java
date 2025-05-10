@@ -23,6 +23,4 @@ public class AdminReservationController {
     public void create(@RequestBody CreateAdminReservationRequest request) {
         reservationService.create(request.memberId(), request.date(), request.timeId(), request.themeId());
     }
-
-    // TODO: user -> member
 }

@@ -7,9 +7,9 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
-import roomescape.domain.User;
 import roomescape.repository.dao.ReservationDao;
 
 @Repository
@@ -42,16 +42,16 @@ public class ReservationRepository {
         return reservationDao.existDuplicatedDateTime(date, timeId, themeId);
     }
 
-    public List<Reservation> findAllByThemeAndUserInDateRange(ReservationTheme theme, User user, LocalDate dateFrom,
+    public List<Reservation> findAllByThemeAndMemberInDateRange(ReservationTheme theme, Member member, LocalDate dateFrom,
             LocalDate dateTo) {
         Long themeId = null;
         if (theme != null) {
             themeId = theme.id();
         }
-        Long userId = null;
-        if (user != null) {
-            userId = user.id();
+        Long memberId = null;
+        if (member != null) {
+            memberId = member.id();
         }
-        return reservationDao.selectAllByThemeIdAndUserIdInDateRange(themeId, userId, dateFrom, dateTo);
+        return reservationDao.selectAllByThemeIdAndMemberIdInDateRange(themeId, memberId, dateFrom, dateTo);
     }
 }

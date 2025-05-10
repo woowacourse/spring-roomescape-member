@@ -1,6 +1,6 @@
 package roomescape.domain;
 
-public record User(
+public record Member(
         Long id,
         String name,
         String email,
@@ -10,15 +10,15 @@ public record User(
 
     private static final String DEFAULT_ROLE = "normal";
 
-    public User(String name, String email, String password) {
+    public Member(String name, String email, String password) {
         this(null, name, email, password, DEFAULT_ROLE);
     }
 
-    public User(String name, String email, String password, String role) {
+    public Member(String name, String email, String password, String role) {
         this(null, name, email, password, role);
     }
 
-    public User withId(Long id) {
-        return new User(id, name, email, password, role);
+    public Member withId(Long id) {
+        return new Member(id, name, email, password, role);
     }
 }

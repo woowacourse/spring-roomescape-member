@@ -6,37 +6,37 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
-import roomescape.domain.User;
-import roomescape.repository.dao.UserDao;
+import roomescape.domain.Member;
+import roomescape.repository.dao.MemberDao;
 
 @Repository
 @RequiredArgsConstructor
-public class UserRepository {
+public class MemberRepository {
 
-    private final UserDao userDao;
+    private final MemberDao memberDao;
 
-    public User save(User user) {
-        return userDao.insertAndGet(user);
+    public Member save(Member member) {
+        return memberDao.insertAndGet(member);
     }
 
-    public Optional<User> findById(Long id) {
-        return userDao.selectById(id);
+    public Optional<Member> findById(Long id) {
+        return memberDao.selectById(id);
     }
 
-    public User getById(Long id) {
+    public Member getById(Long id) {
         return findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
     }
 
-    public Optional<User> findByEmail(String email) {
-        return userDao.selectByEmail(email);
+    public Optional<Member> findByEmail(String email) {
+        return memberDao.selectByEmail(email);
     }
 
     // TODO: id or pw not found 시 커스텀 익셉션 반환하도록 변경
-    public User getByEmail(String email) {
+    public Member getByEmail(String email) {
         return findByEmail(email).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디 또는 패스워드입니다."));
     }
 
-    public List<User> findAll() {
-        return userDao.selectAll();
+    public List<Member> findAll() {
+        return memberDao.selectAll();
     }
 }
