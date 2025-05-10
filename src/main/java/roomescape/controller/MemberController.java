@@ -1,4 +1,4 @@
-package roomescape.controller.view;
+package roomescape.controller;
 
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,11 @@ import roomescape.service.MemberService;
 @RequestMapping("members")
 public class MemberController {
 
-    private MemberService memberService;
+    private final MemberService memberService;
+
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
+    }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
