@@ -1,4 +1,4 @@
-package roomescape.persistence;
+package roomescape.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.domain.Theme;
+import roomescape.infrastructure.persistance.JdbcThemeRepository;
 
 class JdbcThemeRepositoryTest extends JdbcSupportTest {
 

@@ -1,4 +1,4 @@
-package roomescape.persistence;
+package roomescape.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,6 +13,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
+import roomescape.infrastructure.persistance.JdbcReservationRepository;
 
 class JdbcReservationRepositoryTest extends JdbcSupportTest {
 

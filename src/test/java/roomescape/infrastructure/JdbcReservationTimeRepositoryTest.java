@@ -1,4 +1,4 @@
-package roomescape.persistence;
+package roomescape.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.domain.ReservationTime;
+import roomescape.infrastructure.persistance.JdbcReservationTimeRepository;
 
 class JdbcReservationTimeRepositoryTest extends JdbcSupportTest {
 

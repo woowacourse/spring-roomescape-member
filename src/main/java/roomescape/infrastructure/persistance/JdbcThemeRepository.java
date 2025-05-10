@@ -1,4 +1,4 @@
-package roomescape.persistence;
+package roomescape.infrastructure.persistance;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -68,8 +68,8 @@ public class JdbcThemeRepository implements ThemeRepository {
         String sql = """
                     SELECT t.id, t.name, t.description, t.thumbnail
                     FROM theme t
-                    INNER JOIN reservation r ON t.id = r.theme_id
-                    WHERE r.date BETWEEN :startDate AND :endDate
+                    LEFT JOIN reservation r
+                        ON t.id = r.theme_id AND r.date BETWEEN :startDate AND :endDate
                     GROUP BY t.id
                     ORDER BY COUNT(r.id) DESC
                     LIMIT :limit;

@@ -8,11 +8,11 @@ import roomescape.domain.MemberRepository;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.ThemeRepository;
-import roomescape.persistence.JdbcMemberRepository;
-import roomescape.persistence.JdbcReservationRepository;
-import roomescape.persistence.JdbcReservationTimeRepository;
-import roomescape.persistence.JdbcSupportTest;
-import roomescape.persistence.JdbcThemeRepository;
+import roomescape.infrastructure.JdbcSupportTest;
+import roomescape.infrastructure.persistance.JdbcMemberRepository;
+import roomescape.infrastructure.persistance.JdbcReservationRepository;
+import roomescape.infrastructure.persistance.JdbcReservationTimeRepository;
+import roomescape.infrastructure.persistance.JdbcThemeRepository;
 
 public abstract class ServiceIntegrationTest extends JdbcSupportTest {
 

@@ -1,4 +1,4 @@
-package roomescape.application;
+package roomescape.infrastructure.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -9,6 +9,7 @@ import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.application.JwtPayload;
 import roomescape.common.exception.UnauthorizedException;
 import roomescape.domain.Role;
 
@@ -62,8 +63,5 @@ public class JwtProvider {
 
     private SecretKey getSecretKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
-    }
-
-    public record JwtPayload(Long memberId, String name, Role role) {
     }
 }

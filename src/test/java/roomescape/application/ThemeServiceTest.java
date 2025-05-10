@@ -127,7 +127,8 @@ class ThemeServiceTest extends ServiceIntegrationTest {
         assertThat(rankBetweenDate).isEqualTo(List.of(
                 new ThemeResult(3L, "test3", "description3", "thumbnail3"),
                 new ThemeResult(2L, "test2", "description2", "thumbnail2"),
-                new ThemeResult(4L, "test4", "description4", "thumbnail4")
+                new ThemeResult(4L, "test4", "description4", "thumbnail4"),
+                new ThemeResult(1L, "test1", "description1", "thumbnail1")
         ));
     }
 
