@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.dto.MemberProfileResponse;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.service.AuthService;
-import roomescape.global.resolver.annotation.LoginMemberId;
+import roomescape.auth.controller.resolver.annotation.LoginMemberId;
 import roomescape.member.service.MemberService;
 
 @RestController
