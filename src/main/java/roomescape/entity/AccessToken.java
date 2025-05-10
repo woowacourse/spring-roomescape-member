@@ -3,9 +3,11 @@ package roomescape.entity;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import java.util.Date;
 import roomescape.exception.InvalidAccessTokenException;
 
 public class AccessToken {
+    private static final long EXPIRE_LENGTH = 3600000;
     private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
 
     private final String value;
@@ -15,9 +17,14 @@ public class AccessToken {
     }
 
     public AccessToken(Member member) {
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + EXPIRE_LENGTH);
+
         String accessToken = Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("role", member.getRole().name())
+                .setIssuedAt(now)
+                .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
         this.value = accessToken;
