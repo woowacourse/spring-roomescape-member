@@ -9,6 +9,7 @@ import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.dto.request.ReservationAdminCreateRequest;
@@ -16,6 +17,7 @@ import roomescape.dto.response.ReservationCreateResponse;
 import roomescape.service.ReservationService;
 
 @RestController
+@RequestMapping("/admin")
 public class AdminReservationController {
 
     private final ReservationService reservationService;
@@ -24,7 +26,7 @@ public class AdminReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping
+    @PostMapping("/reservations")
     @Operation(
             summary = "어드민 예약 생성",
             description = "어드민이 새로운 예약을 생성합니다.",
