@@ -1,5 +1,6 @@
 package roomescape.controller.api;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.UserLoginRequest;
+import roomescape.dto.request.UserSignupRequest;
+import roomescape.dto.response.SignUpSuccessResponse;
 import roomescape.dto.response.UserLoginCheckResponse;
 import roomescape.service.MemberService;
 
@@ -21,14 +24,20 @@ public class MemberController {
         this.memberService = memberService;
     }
 
+    @PostMapping("/members")
+    public ResponseEntity<SignUpSuccessResponse> signup(@Valid @RequestBody UserSignupRequest userSignupRequest) {
+        memberService.signup(userSignupRequest);
+        return ResponseEntity.ok(new SignUpSuccessResponse("회원가입에 성공하였습니다."));
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody UserLoginRequest userLoginRequest) {
+    public ResponseEntity<Void> login(@Valid @RequestBody UserLoginRequest userLoginRequest) {
         String jwtToken = memberService.login(userLoginRequest);
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, setCookieByToken(jwtToken).toString()).build();
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<UserLoginCheckResponse> checkUserLogin(@CookieValue("token") String token) {
+    public ResponseEntity<UserLoginCheckResponse> checkUserLogin(@CookieValue(name = "token", required = false) String token) {
         UserLoginCheckResponse userLoginCheckResponse = memberService.getUserNameFromToken(token);
         return ResponseEntity.ok(userLoginCheckResponse);
     }

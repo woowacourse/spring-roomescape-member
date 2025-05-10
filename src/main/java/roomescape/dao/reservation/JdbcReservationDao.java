@@ -18,6 +18,7 @@ import roomescape.domain.Theme;
 public class JdbcReservationDao implements ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Reservation> reservationMapper = (resultSet, rowNum) -> {
         ReservationTime time = ReservationTime.load(
                 resultSet.getLong("time_id"),
@@ -42,6 +43,9 @@ public class JdbcReservationDao implements ReservationDao {
 
     public JdbcReservationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -68,16 +72,12 @@ public class JdbcReservationDao implements ReservationDao {
 
     @Override
     public Reservation create(final Reservation reservation) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
-
         Map<String, Object> parameters = new HashMap<>(Map.of(
                 "name", reservation.getName(),
                 "date", reservation.getDate(),
                 "time_id", reservation.getTime().getId(),
                 "theme_id", reservation.getTheme().getId()));
-        Number key = jdbcInsert.executeAndReturnKey(parameters);
+        Number key = simpleJdbcInsert.executeAndReturnKey(parameters);
         return Reservation.load(key.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime(),
                 reservation.getTheme());
     }

@@ -5,6 +5,7 @@ public class Member {
     private final Long id;
     private final String name;
     private final String email;
+    //TODO :  password 형식 검증
     private final String password;
     private final Role role;
 
@@ -14,6 +15,10 @@ public class Member {
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+    public static Member createWithoutId(String name, String email, String password, Role role) {
+        return new Member(null, name, email, password, role);
     }
 
     public Long getId() {

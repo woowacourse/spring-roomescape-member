@@ -13,17 +13,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(JsonMappingException.class)
-    public ResponseEntity<FailureResponse> handleJsonMappingException(JsonMappingException ex) {
-        String errorPath = ex.getPath().stream()
-                .map(Reference::getFieldName)
-                .collect(Collectors.joining("."));
-        return createBadRequestResponse("형식이 잘못됨 : " + errorPath);
+    @ExceptionHandler(InvalidJwtException.class)
+    public ResponseEntity<FailureResponse> handleInvalidJwtException(InvalidJwtException ex) {
+        return createBadRequestResponse(ex.getMessage());
     }
 
-    @ExceptionHandler(JsonParseException.class)
-    public ResponseEntity<FailureResponse> handleHttpMessageNotReadableException(JsonParseException ex) {
-        return createBadRequestResponse("Json 형식이 잘못되었습니다.");
+    @ExceptionHandler(MemberExistException.class)
+    public ResponseEntity<FailureResponse> handleHttpMessageNotReadableException(MemberExistException ex) {
+        return createBadRequestResponse(ex.getMessage());
     }
 
     @ExceptionHandler(MemberNotFoundException.class)

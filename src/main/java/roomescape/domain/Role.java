@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 public class Role {
+
     private final Long id;
     private final String name;
 
