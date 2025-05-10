@@ -2,7 +2,7 @@ package roomescape.infra;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import java.nio.charset.StandardCharsets;
+import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,5 +16,23 @@ public class JwtTokenProvider {
                 .claim("role", role)
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
+    }
+
+    public static String extractTokenFromCookies(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+        return "";
+    }
+
+    public static Long getUserId(String token) {
+        return Long.valueOf(Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody().getSubject()
+        );
     }
 }

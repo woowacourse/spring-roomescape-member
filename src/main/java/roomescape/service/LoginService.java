@@ -1,8 +1,11 @@
 package roomescape.service;
 
+import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.dao.UserDao;
 import roomescape.dto.LoginRequest;
+import roomescape.dto.UserResponse;
+import roomescape.infra.JwtTokenProvider;
 import roomescape.model.User;
 
 @Service
@@ -21,5 +24,13 @@ public class LoginService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         return user;
+    }
+
+    public UserResponse findUserFromToken(Cookie[] cookies) {
+        String token = JwtTokenProvider.extractTokenFromCookies(cookies);
+        Long id = JwtTokenProvider.getUserId(token);
+        User user = userDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 ID가 없습니다."));
+        return UserResponse.from(user);
     }
 }

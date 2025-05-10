@@ -39,4 +39,26 @@ public class UserDao {
             return Optional.empty();
         }
     }
+
+    public Optional<User> findById(Long id) {
+        String sql = """
+                SELECT id, name, email, password
+                FROM users
+                WHERE id = :id
+                """;
+        try {
+            User user = namedParameterJdbcTemplate.queryForObject(
+                    sql,
+                    Map.of("id", id),
+                    (rs, rowNum) -> new User(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("password")
+                    ));
+            return Optional.ofNullable(user);
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }
