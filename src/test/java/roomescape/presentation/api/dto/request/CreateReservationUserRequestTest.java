@@ -29,32 +29,26 @@ class CreateReservationUserRequestTest {
     @DisplayName("예약 생성시 값이 유효하지 않다면 예외를 발생시킨다")
     @ParameterizedTest(name = "[{index}] name={0}, date={1}, timeId={2}, themeId={3}")
     @CsvSource({
-            // 유효하지 않은 name
-            "'', 2025-05-10, 1, 1",
-            "'   ', 2025-05-10, 1, 1",
-            "null, 2025-05-10, 1, 1",
-
             // 유효하지 않은 date
-            "'홍길동', null, 1, 1",
+            "null, 1, 1",
 
             // 유효하지 않은 timeId
-            "'홍길동', 2025-05-10, null, 1",
+            "2025-05-10, null, 1",
 
             // 유효하지 않은 themeId
-            "'홍길동', 2025-05-10, 1, null",
+            "2025-05-10, 1, null",
 
             // 복수의 필드가 유효하지 않음
-            "null, null, null, null",
-            "'', null, null, null",
-            "'   ', null, 1, null",
+            "null, null, null",
+            "null, null, null",
+            "null, 1, null",
     })
-    void InvalidCreateFutureReservationReservationRequest(String name, String dateStr, String timeIdStr, String themeIdStr) {
+    void InvalidCreateFutureReservationReservationRequest(String dateStr, String timeIdStr, String themeIdStr) {
         LocalDate date = "null".equals(dateStr) ? null : LocalDate.parse(dateStr);
         Long timeId = "null".equals(timeIdStr) ? null : Long.valueOf(timeIdStr);
         Long themeId = "null".equals(themeIdStr) ? null : Long.valueOf(themeIdStr);
-        if ("null".equals(name)) name = null;
 
-        CreateReservationUserRequest request = new CreateReservationUserRequest(name, date, timeId, themeId);
+        CreateReservationUserRequest request = new CreateReservationUserRequest(date, timeId, themeId);
 
         Set<ConstraintViolation<CreateReservationUserRequest>> violations = validator.validate(request);
 

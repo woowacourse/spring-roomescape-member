@@ -24,6 +24,7 @@ class ReservationTest {
         //given
         ReservationDetails details = new ReservationDetails(
                 "웨이드",
+                1L,
                 LocalDate.now().plusDays(10),
                 new ReservationTime(LocalTime.of(10, 0)),
                 new ReservationTheme("테마 이름", "테마 설명", "테마 url")
@@ -43,6 +44,7 @@ class ReservationTest {
         //given
         ReservationDetails details = new ReservationDetails(
                 "홍길동",
+                1L,
                 LocalDate.now().minusDays(1),
                 new ReservationTime(LocalTime.of(10, 0)),
                 new ReservationTheme("테마 이름", "테마 설명", "테마 url")

@@ -42,7 +42,7 @@ class UserReservationServiceTest extends IntegrationTestSupport {
         LocalDate date = LocalDate.now().plusDays(20);
         Long timeId = 1L;
         Long themeId = 1L;
-        CreateReservationServiceRequest request = new CreateReservationServiceRequest(name, date, timeId, themeId);
+        CreateReservationServiceRequest request = new CreateReservationServiceRequest(name, 1L, date, timeId, themeId);
 
         // when
         userReservationService.create(request);
@@ -64,7 +64,7 @@ class UserReservationServiceTest extends IntegrationTestSupport {
         LocalDate date = LocalDate.now().minusDays(10);
         Long timeId = 1L;
         Long themeId = 1L;
-        CreateReservationServiceRequest request = new CreateReservationServiceRequest(name, date, timeId, themeId);
+        CreateReservationServiceRequest request = new CreateReservationServiceRequest(name, 1L, date, timeId, themeId);
 
         // when & then
         Assertions.assertThatThrownBy(() -> userReservationService.create(request))
@@ -82,7 +82,8 @@ class UserReservationServiceTest extends IntegrationTestSupport {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", name, date,
                 timeId, themeId);
         String anotherName = "검프";
-        CreateReservationServiceRequest request = new CreateReservationServiceRequest(anotherName, date, timeId, themeId);
+        Long memberId = 1L;
+        CreateReservationServiceRequest request = new CreateReservationServiceRequest(anotherName, memberId, date, timeId, themeId);
 
         // when & then
         Assertions.assertThatThrownBy(() -> userReservationService.create(request))
