@@ -10,7 +10,7 @@
 ## 사용자 페이지
 
 - `http://localhost:8080/`: 인기 테마 페이지
-- `http://localhost:8080/reservation`: 사용자 예약 페이지
+- `http://localhost:8080/reservation`: 방탈출 예약 페이지
 
 ## 회원 관리 페이지
 

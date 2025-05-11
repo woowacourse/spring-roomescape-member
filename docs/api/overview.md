@@ -16,5 +16,6 @@
     - 인기 테마 목록 조회
 - [멤버 API](member.md)
     - 회원 가입
-- [로그인 API](login.md)
+- [인증 API](auth.md)
     - 로그인
+    - 인증 정보 조회

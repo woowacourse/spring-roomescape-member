@@ -1,9 +1,9 @@
 package roomescape.fixture;
 
-import roomescape.business.domain.theme.Theme;
-import roomescape.business.domain.theme.ThemeDescription;
-import roomescape.business.domain.theme.ThemeName;
-import roomescape.business.domain.theme.ThemeThumbnail;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeDescription;
+import roomescape.theme.domain.ThemeName;
+import roomescape.theme.domain.ThemeThumbnail;
 
 public class ThemeFixture {
 

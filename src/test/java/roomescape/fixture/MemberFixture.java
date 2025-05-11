@@ -1,8 +1,8 @@
 package roomescape.fixture;
 
-import roomescape.business.domain.member.Member;
-import roomescape.business.domain.member.MemberEmail;
-import roomescape.business.domain.member.MemberName;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberEmail;
+import roomescape.member.domain.MemberName;
 
 public class MemberFixture {
 
