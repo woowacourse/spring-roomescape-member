@@ -66,6 +66,18 @@ public class JdbcMemberDao implements MemberDao {
     }
 
     @Override
+    public void deleteById(long id) {
+        String sql = "delete from member where id = ?";
+        int deletedCount = jdbcTemplate.update(
+                sql,
+                id
+        );
+        if (deletedCount == 0) {
+            throw new IllegalArgumentException("존재하지 않는 회원입니다.");
+        }
+    }
+
+    @Override
     public boolean existsByEmailAndPassword(String email, String password) {
         String sql = "select exists (select 1 from member where email = ? and password = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(

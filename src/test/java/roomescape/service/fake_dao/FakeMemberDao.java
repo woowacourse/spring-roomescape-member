@@ -35,4 +35,8 @@ public class FakeMemberDao implements MemberDao {
     public List<Member> findAll() {
         return List.of();
     }
+
+    @Override
+    public void deleteById(long id) {
+    }
 }

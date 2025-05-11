@@ -11,6 +11,8 @@ public interface MemberDao {
 
     Member create(Member member);
 
+    void deleteById(long id);
+
     boolean existsByEmailAndPassword(String email, String password);
 
     boolean existsByEmail(Member member);
