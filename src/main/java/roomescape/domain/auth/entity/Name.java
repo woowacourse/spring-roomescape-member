@@ -17,7 +17,7 @@ public class Name {
 
     private void validateName() {
         if (name == null || name.isBlank() || name.length() > MAX_NAME_LENGTH) {
-            throw new InvalidArgumentException("invalid name");
+            throw new InvalidArgumentException("이름은 null이거나 비어있을 수 없으며, 최대 " + MAX_NAME_LENGTH + "자를 초과할 수 없습니다.");
         }
     }
 }
