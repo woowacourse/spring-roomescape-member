@@ -39,7 +39,7 @@ public class ReservationService {
     public ReservationResponse createReservation(final ReservationRequest reservationRequest, final Member member) {
         final Reservation reservation = convertToReservation(reservationRequest, member);
         final Reservation savedReservation = reservationRepository.save(reservation);
-        return new ReservationResponse(savedReservation, member);
+        return new ReservationResponse(savedReservation);
     }
 
     public ReservationResponse createReservation(final AdminReservationRequest reservationRequest) {
@@ -47,17 +47,14 @@ public class ReservationService {
                 .orElseThrow(() -> new BadRequestException("예약자를 찾을 수 없습니다."));
         final Reservation reservation = convertToReservation(reservationRequest, member);
         final Reservation savedReservation = reservationRepository.save(reservation);
-        return new ReservationResponse(savedReservation, member);
+        return new ReservationResponse(savedReservation);
     }
 
     public List<ReservationResponse> getReservations() {
         final List<Reservation> reservations = reservationRepository.findAll();
-        final List<Member> members = memberRepository.findAll();
-        return reservations.stream().flatMap(reservation ->
-                members.stream()
-                        .filter(member -> member.getName().equals(reservation.getName()))
-                        .map(member -> new ReservationResponse(reservation, member))
-        ).toList();
+        return reservations.stream()
+                .map(ReservationResponse::new)
+                .toList();
     }
 
     public void cancelReservationById(final long id) {
@@ -74,10 +71,11 @@ public class ReservationService {
                 reservationRequest.date());
     }
 
-    private Reservation convertToReservation(final Member member, final long l, final long l2, final LocalDate date) {
-        final Theme theme = themeRepository.findById(l)
+    private Reservation convertToReservation(final Member member, final long themeId, final long timeId,
+                                             final LocalDate date) {
+        final Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new BadRequestException("테마가 존재하지 않습니다."));
-        final ReservationTime time = reservationTimeRepository.findById(l2)
+        final ReservationTime time = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new BadRequestException("예약 시간이 존재하지 않습니다."));
         final ReservationDateTime dateTime = new ReservationDateTime(date, time);
         if (dateTime.isBefore(LocalDateTime.now())) {
@@ -87,6 +85,6 @@ public class ReservationService {
                 theme.getId())) {
             throw new BadRequestException("해당 시간에 이미 예약이 존재합니다.");
         }
-        return Reservation.register(member.getName(), date, time, theme);
+        return Reservation.register(member, date, time, theme);
     }
 }

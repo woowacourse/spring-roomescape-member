@@ -3,14 +3,15 @@ package roomescape.business.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.fixture.MemberFixture.MEMBER;
+import static roomescape.fixture.ThemeFixture.THEME;
+import static roomescape.fixture.TimeFixture.TIME;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.business.domain.reservation.Reservation;
-import roomescape.business.domain.reservation.ReservationTime;
 import roomescape.business.domain.theme.Theme;
 import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeReservationTimeDao;
@@ -77,14 +78,10 @@ class ThemeServiceTest {
     @Test
     void testIllegalDelete() {
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(11, 0));
-        ReservationTime saveTime = fakeReservationTimeDao.save(reservationTime);
-        Theme theme = new Theme(null, "우테코방탈출", "탈출탈출탈출", "포비솔라브라운");
-        Theme savedTheme = fakeThemeDao.save(theme);
-        fakeReservationDao.save(Reservation.register("노랑", LocalDate.now().plusDays(1), saveTime, savedTheme));
+        fakeReservationDao.save(Reservation.register(MEMBER, LocalDate.now().plusDays(1), TIME, THEME));
         // when
         // then
-        assertThatThrownBy(() -> themeService.deleteThemeById(savedTheme.getId()))
+        assertThatThrownBy(() -> themeService.deleteThemeById(THEME.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약이 존재하는 테마는 삭제할 수 없습니다.");
     }

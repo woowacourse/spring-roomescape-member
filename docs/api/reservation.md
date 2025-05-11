@@ -28,7 +28,8 @@ Content-Type: application/json
     "name" : {
         "id": 1,
         "name": "브라운",
-    }
+        "email": "aaa@gmail.com"
+    },
     "date": "2023-08-05",
     "time" : {
         "id": 1,
@@ -58,7 +59,11 @@ GET /reservations HTTP/1.1
 [
     {
         "id": 1,
-        "name": "브라운",
+        "name" : {
+            "id": 1,
+            "name": "브라운",
+            "email": "aaa@gmail.com"
+        },      
         "date": "2023-08-05",
         "time": {
             "id": 1,

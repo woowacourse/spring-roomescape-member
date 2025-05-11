@@ -12,13 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.business.domain.member.Member;
 import roomescape.business.domain.reservation.Reservation;
 import roomescape.business.domain.reservation.ReservationTime;
 import roomescape.business.domain.theme.Theme;
 
 @JdbcTest
-@Import({JdbcReservationDao.class, JdbcThemeDao.class, JdbcReservationTimeDao.class})
-@Sql({"/test-schema.sql", "/test-reservation-data.sql"})
+@Import({JdbcReservationDao.class, JdbcThemeDao.class, JdbcReservationTimeDao.class, JdbcMemberDao.class})
+@Sql({"/test-schema.sql", "/test-member-data.sql", "/test-time-data.sql", "/test-theme-data.sql",
+        "/test-reservation-data.sql"})
 class JdbcReservationDaoTest {
 
     @Autowired
@@ -30,13 +32,17 @@ class JdbcReservationDaoTest {
     @Autowired
     private JdbcThemeDao jdbcThemeDao;
 
+    @Autowired
+    private JdbcMemberDao jdbcMemberDao;
+
     @DisplayName("새로운 예약을 생성할 수 있다.")
     @Test
     void testSave() {
         // given
         ReservationTime time = jdbcReservationTimeDao.findById(1L).orElseThrow();
         Theme theme = jdbcThemeDao.findById(1L).orElseThrow();
-        Reservation reservation = Reservation.register("leo", LocalDate.now().plusDays(1), time, theme);
+        Member member = jdbcMemberDao.findById(1L).orElseThrow();
+        Reservation reservation = Reservation.register(member, LocalDate.now().plusDays(1), time, theme);
         // when
         Reservation savedReservation = jdbcReservationDao.save(reservation);
         // then

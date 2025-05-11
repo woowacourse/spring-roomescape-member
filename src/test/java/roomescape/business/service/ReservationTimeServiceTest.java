@@ -3,6 +3,9 @@ package roomescape.business.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.fixture.MemberFixture.MEMBER;
+import static roomescape.fixture.ThemeFixture.THEME;
+import static roomescape.fixture.TimeFixture.TIME;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -11,7 +14,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.business.domain.reservation.Reservation;
 import roomescape.business.domain.reservation.ReservationTime;
-import roomescape.business.domain.theme.Theme;
 import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeReservationTimeDao;
 import roomescape.presentation.dto.ReservationTimeRequest;
@@ -84,14 +86,10 @@ class ReservationTimeServiceTest {
     @Test
     void testIllegalDelete() {
         // given
-        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(11, 0));
-        ReservationTimeResponse response = reservationTimeService.createReservationTime(request);
-        ReservationTime time = new ReservationTime(response.id(), response.startAt());
-        Theme theme = new Theme(1L, "우테코방탈출", "탈출탈출탈출", "abcdefg");
-        reservationDao.save(Reservation.register("노랑", LocalDate.now().plusDays(1), time, theme));
+        reservationDao.save(Reservation.register(MEMBER, LocalDate.now().plusDays(1), TIME, THEME));
         // when
         // then
-        assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(response.id()))
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(TIME.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약이 존재하는 시간은 삭제할 수 없습니다.");
     }

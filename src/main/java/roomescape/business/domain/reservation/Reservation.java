@@ -3,46 +3,40 @@ package roomescape.business.domain.reservation;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import roomescape.business.domain.member.MemberName;
+import roomescape.business.domain.member.Member;
 import roomescape.business.domain.theme.Theme;
 
 public final class Reservation {
 
     private final Long id;
-    private final MemberName name;
+    private final Member member;
     private final ReservationDateTime dateTime;
     private final Theme theme;
 
-    public Reservation(final Long id, final MemberName name, final ReservationDateTime dateTime, final Theme theme) {
-        validateNotNull(name, dateTime, theme);
+    public Reservation(final Long id, final Member member, final ReservationDateTime dateTime, final Theme theme) {
+        validateNotNull(member, dateTime, theme);
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.dateTime = dateTime;
         this.theme = theme;
     }
 
-    public Reservation(final Long id, final String name,
-                       final LocalDate date, final ReservationTime time,
-                       final Theme theme) {
-        this(id, new MemberName(name), new ReservationDateTime(date, time), theme);
-    }
-
-    public static Reservation register(final String name, final LocalDate date,
+    public static Reservation register(final Member member, final LocalDate date,
                                        final ReservationTime time, final Theme theme) {
         final ReservationDateTime dateTime = new ReservationDateTime(date, time);
         if (dateTime.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("지나간 날짜와 시간은 예약 불가합니다.");
         }
-        return new Reservation(null, new MemberName(name), dateTime, theme);
+        return new Reservation(null, member, dateTime, theme);
     }
 
     public Reservation withId(final long id) {
-        return new Reservation(id, name, dateTime, theme);
+        return new Reservation(id, member, dateTime, theme);
     }
 
-    private void validateNotNull(final MemberName name, final ReservationDateTime dateTime, final Theme theme) {
-        if (name == null) {
-            throw new IllegalArgumentException("이름을 입력해야 합니다.");
+    private void validateNotNull(final Member member, final ReservationDateTime dateTime, final Theme theme) {
+        if (member == null) {
+            throw new IllegalArgumentException("사용자를 입력해야 합니다.");
         }
         if (dateTime == null) {
             throw new IllegalArgumentException("날짜와 시간을 입력해야 합니다.");
@@ -52,40 +46,36 @@ public final class Reservation {
         }
     }
 
-    public Long getTimeId() {
-        return dateTime.getTimeId();
-    }
-
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name.getName();
+    public Member getMember() {
+        return member;
     }
 
-    public LocalDate getDate() {
-        return dateTime.getDate();
-    }
-
-    public ReservationTime getTime() {
-        return dateTime.getTime();
+    public ReservationDateTime getDateTime() {
+        return dateTime;
     }
 
     public Theme getTheme() {
         return theme;
     }
 
-    public long getThemeId() {
-        return theme.getId();
+    public ReservationTime getTime() {
+        return dateTime.getTime();
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (object == null || getClass() != object.getClass()) {
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Reservation that = (Reservation) object;
+
+        final Reservation that = (Reservation) o;
         return Objects.equals(id, that.id);
     }
 

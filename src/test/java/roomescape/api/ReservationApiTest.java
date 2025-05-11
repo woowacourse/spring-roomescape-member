@@ -17,7 +17,8 @@ import roomescape.presentation.dto.LoginRequest;
 import roomescape.presentation.dto.ReservationRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@Sql({"/test-schema.sql", "/test-member-data.sql", "/test-reservation-data.sql"})
+@Sql({"/test-schema.sql", "/test-time-data.sql", "/test-theme-data.sql", "/test-member-data.sql",
+        "/test-reservation-data.sql"})
 public class ReservationApiTest {
 
     @DisplayName("예약 생성 API 테스트")
@@ -49,7 +50,7 @@ public class ReservationApiTest {
                     .then().log().all()
                     .statusCode(201)
                     .body("id", Matchers.equalTo(4))
-                    .body("name", Matchers.equalTo("사용자1"));
+                    .body("member.name", Matchers.equalTo("사용자1"));
         }
 
         @DisplayName("쿠키 정보가 올바르지 않을 경우 401을 반환한다.")
@@ -134,7 +135,7 @@ public class ReservationApiTest {
                     .then().log().all()
                     .statusCode(201)
                     .body("id", Matchers.equalTo(4))
-                    .body("name", Matchers.equalTo("사용자1"));
+                    .body("member.name", Matchers.equalTo("사용자1"));
         }
 
         @DisplayName("쿠키 정보가 올바르지 않을 경우 401을 반환한다.")

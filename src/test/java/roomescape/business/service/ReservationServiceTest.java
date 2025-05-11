@@ -61,7 +61,7 @@ class ReservationServiceTest {
             Reservation savedReservation = reservationDao.findById(3L);
             assertAll(
                     () -> assertThat(result.id()).isEqualTo(3L),
-                    () -> assertThat(result.name()).isEqualTo(MEMBER.getName()),
+                    () -> assertThat(result.member().name()).isEqualTo(MEMBER.getName()),
                     () -> assertThat(result.date()).isEqualTo(REQUEST.date()),
                     () -> assertThat(result.time().startAt()).isEqualTo(TIME.getStartAt()),
                     () -> assertThat(result.time().id()).isEqualTo(REQUEST.timeId()),
@@ -71,9 +71,9 @@ class ReservationServiceTest {
                     () -> assertThat(result.theme().description()).isEqualTo(THEME.getDescription()),
                     () -> assertThat(result.theme().thumbnail()).isEqualTo(THEME.getThumbnail()),
 
-                    () -> assertThat(savedReservation.getDate()).isEqualTo(REQUEST.date()),
+                    () -> assertThat(savedReservation.getDateTime().getDate()).isEqualTo(REQUEST.date()),
                     () -> assertThat(savedReservation.getTime().getStartAt()).isEqualTo(TIME.getStartAt()),
-                    () -> assertThat(savedReservation.getTimeId()).isEqualTo(REQUEST.timeId()),
+                    () -> assertThat(savedReservation.getTime().getId()).isEqualTo(REQUEST.timeId()),
 
                     () -> assertThat(savedReservation.getTheme().getId()).isEqualTo(THEME.getId()),
                     () -> assertThat(savedReservation.getTheme().getName()).isEqualTo(THEME.getName()),

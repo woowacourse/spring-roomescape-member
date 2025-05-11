@@ -9,7 +9,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.business.domain.member.Member;
 import roomescape.business.domain.reservation.Reservation;
+import roomescape.business.domain.reservation.ReservationDateTime;
 import roomescape.business.domain.reservation.ReservationTime;
 import roomescape.business.domain.theme.Theme;
 
@@ -21,11 +23,18 @@ public class JdbcReservationDao implements ReservationRepository {
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) ->
             new Reservation(
                     resultSet.getLong("reservation_id"),
-                    resultSet.getString("name"),
-                    resultSet.getDate("date").toLocalDate(),
-                    new ReservationTime(
-                            resultSet.getLong("time_id"),
-                            resultSet.getTime("time_value").toLocalTime()
+                    new Member(
+                            resultSet.getLong("member_id"),
+                            resultSet.getString("member_name"),
+                            resultSet.getString("member_email"),
+                            resultSet.getString("member_password")
+                    ),
+                    new ReservationDateTime(
+                            resultSet.getDate("date").toLocalDate(),
+                            new ReservationTime(
+                                    resultSet.getLong("time_id"),
+                                    resultSet.getTime("time_value").toLocalTime()
+                            )
                     ),
                     new Theme(
                             resultSet.getLong("theme_id"),
@@ -45,9 +54,9 @@ public class JdbcReservationDao implements ReservationRepository {
     @Override
     public Reservation save(final Reservation reservation) {
         final Map<String, Object> parameters = Map.of(
-                "name", reservation.getName(),
-                "date", Date.valueOf(reservation.getDate()),
-                "time_id", reservation.getTimeId(),
+                "date", Date.valueOf(reservation.getDateTime().getDate()),
+                "member_id", reservation.getMember().getId(),
+                "time_id", reservation.getDateTime().getTimeId(),
                 "theme_id", reservation.getTheme().getId()
         );
         final long id = reservationInserter.executeAndReturnKey(parameters).longValue();
@@ -59,8 +68,11 @@ public class JdbcReservationDao implements ReservationRepository {
         final String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
                     r.date,
+                    m.id AS member_id,
+                    m.name AS member_name, 
+                    m.email AS member_email,
+                    m.password AS member_password,
                     t.id AS time_id,
                     t.start_at AS time_value,
                     th.id AS theme_id,
@@ -70,6 +82,7 @@ public class JdbcReservationDao implements ReservationRepository {
                 FROM reservation AS r 
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
+                INNER JOIN member AS m ON r.member_id = m.id
                 """;
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
