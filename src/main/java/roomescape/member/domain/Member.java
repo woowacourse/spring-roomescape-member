@@ -1,5 +1,6 @@
 package roomescape.member.domain;
 
+import java.util.Objects;
 import roomescape.member.domain.enums.Role;
 
 public class Member {
@@ -16,6 +17,14 @@ public class Member {
         this.email = email;
         this.password = password;
         this.role = role;
+        validate();
+    }
+
+    private void validate(){
+        Objects.requireNonNull(name, "이름은 null일 수 없습니다.");
+        Objects.requireNonNull(email, "이메일은 null일 수 없습니다.");
+        Objects.requireNonNull(password, "비밀번호는 null일 수 없습니다.");
+        Objects.requireNonNull(role, "권한은 null일 수 없습니다.");
     }
 
     public Long getId() {

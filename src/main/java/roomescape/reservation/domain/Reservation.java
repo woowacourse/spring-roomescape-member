@@ -1,6 +1,7 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import roomescape.member.domain.Member;
 
 public class Reservation {
@@ -17,6 +18,14 @@ public class Reservation {
         this.time = time;
         this.theme = theme;
         this.member = member;
+        validate();
+    }
+
+    private void validate(){
+        Objects.requireNonNull(date, "예약 날짜는 null일 수 없습니다.");
+        Objects.requireNonNull(time, "예약 시간은 null일 수 없습니다.");
+        Objects.requireNonNull(theme, "테마는 null일 수 없습니다.");
+        Objects.requireNonNull(member, "사용자는 null일 수 없습니다.");
     }
 
     public Reservation withId(Long id) {
@@ -75,8 +84,8 @@ public class Reservation {
         return !this.date.isBefore(from);
     }
 
-    public boolean isSameOrBefore(LocalDate to) {
-        return !this.date.isAfter(to);
+    public boolean isSameOrBefore(LocalDate from) {
+        return !this.date.isAfter(from);
     }
 
 }
