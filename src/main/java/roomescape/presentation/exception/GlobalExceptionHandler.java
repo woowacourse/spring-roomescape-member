@@ -20,9 +20,13 @@ public class GlobalExceptionHandler {
     private static final String PREFIX_FOR_ERROR_MESSAGE = "알 수 없는 문제 발생, ";
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<Void> handleNoSuchElementException(NoSuchElementException e) {
-        log.info(e.getMessage());
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<ErrorResponse> handleNoSuchElementException(NoSuchElementException e) {
+        String message = e.getMessage();
+        log.info(message);
+        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.NOT_FOUND, message);
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(errorResponse);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

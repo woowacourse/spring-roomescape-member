@@ -20,7 +20,7 @@ public class MemberService {
 
     public Member findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
-                .orElseThrow(() ->  new NoSuchElementException("[ERROR] 해당 이메일로 가입한 회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당 이메일로 가입한 회원이 존재하지 않습니다."));
     }
 
     public List<MemberResponse> getMembers() {
