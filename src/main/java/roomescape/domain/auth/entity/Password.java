@@ -26,8 +26,12 @@ public class Password {
     }
 
     public static void validateRawPassword(final String rawPassword) {
-        if (rawPassword == null || rawPassword.isBlank() || rawPassword.length() > MAX_PASSWORD_LENGTH) {
-            throw new InvalidArgumentException("패스워드 는 null이거나 25자 이상일 수 없습니다.");
+        if (rawPassword == null) {
+            throw new InvalidArgumentException("패스워드는 null일 수 없습니다.");
+        }
+
+        if (rawPassword.isBlank() || rawPassword.length() > MAX_PASSWORD_LENGTH) {
+            throw new InvalidArgumentException("패스워드는 공백이거나" + MAX_PASSWORD_LENGTH + "자 이하의 길이여야 합니다.");
         }
     }
 
@@ -35,7 +39,6 @@ public class Password {
         if (encryptedPassword == null || encryptedPassword.isBlank()) {
             throw new IllegalArgumentException("Password cannot be null or blank");
         }
-
     }
 
     public boolean matches(final String rawPassword, final PasswordEncryptor encryptor) {
