@@ -32,7 +32,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         var request = (HttpServletRequest) webRequest.getNativeRequest();
         var tokenCookie = AuthenticationTokenCookie.fromRequest(request);
         if (tokenCookie.hasToken()) {
-            authenticationService.getUserByToken(tokenCookie.token());
+            return authenticationService.getUserByToken(tokenCookie.token());
         }
         throw new AuthorizationException("사용자 인증이 필요합니다.");
     }
