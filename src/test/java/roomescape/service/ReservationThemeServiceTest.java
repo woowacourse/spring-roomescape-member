@@ -13,20 +13,20 @@ import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import roomescape.dto.request.CreateReservationThemeRequest;
-import roomescape.dto.response.ReservationThemeResponse;
 import roomescape.DataBasedTest;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.request.CreateReservationThemeRequest;
+import roomescape.dto.response.ReservationThemeResponse;
 import roomescape.exception.DBFKException;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationThemeRepository;
 import roomescape.repository.ReservationTimeRepository;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ReservationThemeServiceTest extends DataBasedTest {
 
     @Autowired
@@ -40,6 +40,9 @@ class ReservationThemeServiceTest extends DataBasedTest {
 
     @Autowired
     ReservationRepository reservationRepository;
+
+    @Autowired
+    MemberRepository memberRepository;
 
     @Test
     void create() {
@@ -89,9 +92,10 @@ class ReservationThemeServiceTest extends DataBasedTest {
     @DisplayName("삭제 대상 테마에 대한 예약이 존재하면 예외를 반환한다.")
     void deleteException() {
         // given
+        Member member = memberRepository.save(new Member("pobi", "pobi@example.com", "password"));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
         ReservationTheme theme = reservationThemeRepository.save(new ReservationTheme("theme", "desc", "thumb"));
-        reservationRepository.save(new Reservation("moko", LocalDate.now().plusDays(1), time, theme));
+        reservationRepository.save(new Reservation(member, LocalDate.now().plusDays(1), time, theme));
 
         // when
         ThrowableAssert.ThrowingCallable throwingCallable = () -> reservationThemeService.delete(theme.id());
@@ -105,16 +109,17 @@ class ReservationThemeServiceTest extends DataBasedTest {
     @Test
     void getPopularThemes() {
         // given
+        Member member = memberRepository.save(new Member("pobi", "pobi@example.com", "password"));
         ReservationTheme theme1 = reservationThemeRepository.getById(1L);
         ReservationTheme theme2 = reservationThemeRepository.getById(2L);
         ReservationTheme theme3 = reservationThemeRepository.getById(3L);
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
-        reservationRepository.save(new Reservation("moko", LocalDate.now().plusDays(1), time, theme1));
-        reservationRepository.save(new Reservation("moko", LocalDate.now().plusDays(2), time, theme2));
-        reservationRepository.save(new Reservation("moko", LocalDate.now().plusDays(3), time, theme2));
-        reservationRepository.save(new Reservation("moko", LocalDate.now().plusDays(4), time, theme3));
-        reservationRepository.save(new Reservation("moko", LocalDate.now().plusDays(5), time, theme3));
-        reservationRepository.save(new Reservation("moko", LocalDate.now().plusDays(6), time, theme3));
+        reservationRepository.save(new Reservation(member, LocalDate.now().plusDays(1), time, theme1));
+        reservationRepository.save(new Reservation(member, LocalDate.now().plusDays(2), time, theme2));
+        reservationRepository.save(new Reservation(member, LocalDate.now().plusDays(3), time, theme2));
+        reservationRepository.save(new Reservation(member, LocalDate.now().plusDays(4), time, theme3));
+        reservationRepository.save(new Reservation(member, LocalDate.now().plusDays(5), time, theme3));
+        reservationRepository.save(new Reservation(member, LocalDate.now().plusDays(6), time, theme3));
 
         // when
         List<ReservationThemeResponse> popularThemes = reservationThemeService.getPopularThemes(3);

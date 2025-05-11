@@ -14,20 +14,20 @@ import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import roomescape.dto.request.CreateReservationTimeRequest;
-import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.DataBasedTest;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.request.CreateReservationTimeRequest;
+import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.exception.DBFKException;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationThemeRepository;
 import roomescape.repository.ReservationTimeRepository;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ReservationTimeServiceTest extends DataBasedTest {
 
     @Autowired
@@ -41,8 +41,9 @@ class ReservationTimeServiceTest extends DataBasedTest {
 
     @Autowired
     ReservationThemeRepository reservationThemeRepository;
+
     @Autowired
-    private ReservationThemeService reservationThemeService;
+    MemberRepository memberRepository;
 
     @Test
     void create() {
@@ -68,11 +69,12 @@ class ReservationTimeServiceTest extends DataBasedTest {
     @Test
     void getAllByThemeIdAndDate() {
         // given
+        Member member = memberRepository.save(new Member("pobi", "pobi@example.com", "password"));
         ReservationTheme theme = reservationThemeRepository.save(new ReservationTheme("theme", "desc", "thumb"));
         LocalDate date = LocalDate.of(2024, 5, 1);
         ReservationTime time1 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(5, 10)));
         ReservationTime time2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(6, 10)));
-        reservationRepository.save(new Reservation("moko", date, time1, theme));
+        reservationRepository.save(new Reservation(member, date, time1, theme));
 
         // when
         List<ReservationTimeResponse> all = reservationTimeService.getAllByThemeIdAndDate(theme.id(), date);
@@ -117,9 +119,10 @@ class ReservationTimeServiceTest extends DataBasedTest {
     @DisplayName("삭제 대상 시간에 대한 예약이 존재하면 예외를 반환한다.")
     void deleteException() {
         // given
+        Member member = memberRepository.save(new Member("pobi", "pobi@example.com", "password"));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
         ReservationTheme theme = reservationThemeRepository.save(new ReservationTheme("theme", "desc", "thumb"));
-        reservationRepository.save(new Reservation("moko", LocalDate.now().plusDays(1), time, theme));
+        reservationRepository.save(new Reservation(member, LocalDate.now().plusDays(1), time, theme));
 
         // when
         ThrowableAssert.ThrowingCallable throwingCallable = () -> reservationTimeService.delete(time.id());
