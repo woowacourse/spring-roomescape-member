@@ -3,6 +3,7 @@ package roomescape.controller.api;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,8 +41,14 @@ public class AdminReservationController {
     public List<ReservationResponse> searchAllReservationsByCriteria(
             @RequestParam(required = false) Long memberId,
             @RequestParam(required = false) Long themeId,
-            @RequestParam(required = false, value = "dateFrom") LocalDate from,
-            @RequestParam(required = false, value = "dateTo") LocalDate to) {
+
+            @RequestParam(required = false, value = "dateFrom")
+            @DateTimeFormat(pattern = "yyyy-MM-dd")
+            LocalDate from,
+
+            @RequestParam(required = false, value = "dateTo")
+            @DateTimeFormat(pattern = "yyyy-MM-dd")
+            LocalDate to) {
 
         ReservationCriteriaCreation creation = new ReservationCriteriaCreation(memberId, themeId, from, to);
         return reservationService.getAllReservationByCriteria(creation)
