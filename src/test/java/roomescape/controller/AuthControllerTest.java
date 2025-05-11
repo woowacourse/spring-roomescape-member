@@ -63,7 +63,7 @@ class AuthControllerTest {
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
-                .body("name", is("테스트"));
+                .body("name", is("테스트1"));
     }
 
     private Map<String, Object> createLoginRequest() {

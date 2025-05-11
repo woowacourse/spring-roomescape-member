@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import roomescape.application.dto.LoginRequest;
 import roomescape.application.dto.MemberResponse;
 import roomescape.application.service.AuthService;
-import roomescape.domain.Member;
+import roomescape.domain.LoginMember;
 import roomescape.global.config.AuthenticationPrincipal;
 
 @Controller
@@ -31,8 +31,8 @@ public class AuthController {
 
     @GetMapping("check")
     @ResponseBody
-    public MemberResponse checkAuthentication(@AuthenticationPrincipal Member member) {
-        return new MemberResponse(member);
+    public MemberResponse checkAuthentication(@AuthenticationPrincipal LoginMember loginMember) {
+        return new MemberResponse(loginMember);
     }
 
     @PostMapping
