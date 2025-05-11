@@ -27,7 +27,7 @@ public class ExceptionController {
 
     @ExceptionHandler({IllegalStateException.class, IllegalArgumentException.class, NoSuchElementException.class,
             DateTimeException.class})
-    public ResponseEntity<String> handleBadRequest(IllegalStateException e) {
+    public ResponseEntity<String> handleBadRequest(RuntimeException e) {
         return ResponseEntity.badRequest().body(PREFIX + e.getMessage());
     }
 
