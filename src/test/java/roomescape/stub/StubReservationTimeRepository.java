@@ -2,9 +2,12 @@ package roomescape.stub;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
+import lombok.Setter;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.response.AvailableReservationTimeResponse;
 import roomescape.repository.ReservationTimeRepository;
@@ -13,6 +16,8 @@ public class StubReservationTimeRepository implements ReservationTimeRepository 
 
     private final List<ReservationTime> data = new ArrayList<>();
     private final AtomicLong idSequence = new AtomicLong();
+    @Setter
+    private Set<Long> bookedTimeIds = new HashSet<>();
 
     public StubReservationTimeRepository(ReservationTime... initialReservationTimes) {
         data.addAll(List.of(initialReservationTimes));
@@ -37,7 +42,10 @@ public class StubReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<AvailableReservationTimeResponse> findAllAvailable(LocalDate date, Long themeId) {
-        return List.of();  // TODO. Stub이기 때문에 Setter로 구현하는 방식을 어떻게 생각하시는지 지노에게 여쭤보기
+        return data.stream()
+                .map(time -> new AvailableReservationTimeResponse(time.getId(), time.getStartAt(),
+                        bookedTimeIds.contains(time.getId())))
+                .toList();
     }
 
     @Override
