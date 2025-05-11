@@ -1,103 +1,98 @@
 package roomescape.member.acceptance;
 
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import roomescape.helper.TestHelper;
 import roomescape.member.dto.request.MemberRequest.MemberCreateRequest;
 import roomescape.member.entity.Member;
 import roomescape.member.entity.RoleType;
 import roomescape.member.unit.repository.MemberRepository;
 
-// @formatter:off
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class MemberAcceptanceTest {
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private static final String DEFAULT_EMAIL = "miso@email.com";
+    private static final String DEFAULT_PASSWORD = "miso";
+    private static final String DEFAULT_NAME = "미소";
 
     @Autowired
     private MemberRepository memberRepository;
 
+    @BeforeEach
+    void setUp() {
+        Member member = new Member(0L, DEFAULT_NAME, DEFAULT_EMAIL, DEFAULT_PASSWORD, RoleType.ADMIN);
+        memberRepository.save(member);
+    }
+
     @Test
     @DisplayName("회원을 생성한다.")
-    void createMember() throws Exception {
+    void createMember() {
         // given
-        var request = new MemberCreateRequest("미소", "miso@email.com", "password");
+        var request = new MemberCreateRequest("테스트", "test@email.com", "password");
 
         // when & then
-        given()
-                .contentType(ContentType.JSON)
-                .body(objectMapper.writeValueAsString(request))
-        .when()
-                .post("/members")
-        .then()
-                .statusCode(200)
-                .body("name", equalTo("미소"))
-                .body("email", equalTo("miso@email.com"))
-                .body("role", equalTo("USER"));
+        TestHelper.post("/members", request)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("name", is("테스트"))
+                .body("email", is("test@email.com"))
+                .body("role", is("USER"));
     }
 
     @Test
     @DisplayName("모든 회원을 조회한다.")
-    void getAllMembers() throws Exception {
+    void getAllMembers() {
         // given
-        var member1 = new Member(0L, "미소", "miso@email.com", "password", RoleType.USER);
-        var member2 = new Member(0L, "브라운", "brown@email.com", "password", RoleType.USER);
-        memberRepository.save(member1);
-        memberRepository.save(member2);
+        TestHelper.login(DEFAULT_EMAIL, DEFAULT_PASSWORD);
 
         // when & then
-        given()
-        .when()
-                .get("/members")
-        .then()
-                .statusCode(200)
-                .body("$", hasSize(2))
-                .body("[0].name", equalTo("미소"))
-                .body("[1].name", equalTo("브라운"));
+        TestHelper.get("/members")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("$", hasSize(1))
+                .body("[0].name", is(DEFAULT_NAME));
     }
 
     @Test
     @DisplayName("회원을 삭제한다.")
-    void deleteMember() throws Exception {
+    void deleteMember() {
         // given
-        var member = new Member(0L, "미소", "miso@email.com", "password", RoleType.USER);
-        var savedMember = memberRepository.save(member);
+        String token = TestHelper.login(DEFAULT_EMAIL, DEFAULT_PASSWORD);
 
         // when & then
-        given()
-        .when()
-                .delete("/members/" + savedMember.getId())
-        .then()
-                .statusCode(200);
+        TestHelper.deleteWithToken("/members/" + 1, token)
+                .then()
+                .statusCode(HttpStatus.OK.value());
 
-        given()
-        .when()
-                .get("/members")
-        .then()
-                .statusCode(200)
+        TestHelper.get("/members")
+                .then()
+                .statusCode(HttpStatus.OK.value())
                 .body("$", hasSize(0));
     }
 
     @Test
     @DisplayName("존재하지 않는 회원을 삭제하면 예외가 발생한다.")
     void deleteNonExistentMember() {
+        // given
+        String token = TestHelper.login(DEFAULT_EMAIL, DEFAULT_PASSWORD);
+
         // when & then
-        given()
-        .when()
-                .delete("/members/1")
-        .then()
-                .statusCode(404)
-                .body("message", equalTo("존재하지 않는 id 입니다."));
+        TestHelper.deleteWithToken("/members/999", token)
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .body(equalTo("존재하지 않는 id 입니다."));
     }
 }
