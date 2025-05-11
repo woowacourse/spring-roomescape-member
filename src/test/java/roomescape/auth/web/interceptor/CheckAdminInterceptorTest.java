@@ -1,6 +1,7 @@
 package roomescape.auth.web.interceptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 import jakarta.servlet.http.Cookie;
@@ -17,6 +18,7 @@ import roomescape.auth.dto.AuthenticatedMember;
 import roomescape.auth.infrastructure.TokenService;
 import roomescape.auth.web.constant.AuthConstant;
 import roomescape.domain.member.model.Role;
+import roomescape.global.exception.AuthorizationException;
 
 @ExtendWith(MockitoExtension.class)
 class CheckAdminInterceptorTest {
@@ -55,7 +57,7 @@ class CheckAdminInterceptorTest {
         assertThat(isPass).isTrue();
     }
 
-    @DisplayName("admin 권한이 없는 사용자가 접근하면, false를 반환한다")
+    @DisplayName("admin 권한이 없는 사용자가 접근하면 예외를 발생시킨다")
     @Test
     void userFail() throws Exception {
         // given
@@ -67,10 +69,8 @@ class CheckAdminInterceptorTest {
         AuthenticatedMember authenticatedMember = new AuthenticatedMember(1L, "email", "어드민", Role.USER);
         given(tokenService.resolveAuthenticatedMember(token)).willReturn(authenticatedMember);
 
-        // when
-        boolean isPass = interceptor.preHandle(request, response, null);
-
-        // then
-        assertThat(isPass).isFalse();
+        // when & then
+        assertThatThrownBy(() -> interceptor.preHandle(request, response, null))
+                .isInstanceOf(AuthorizationException.class);
     }
 }

@@ -4,13 +4,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.dto.AuthenticatedMember;
 import roomescape.auth.infrastructure.TokenService;
 import roomescape.auth.web.support.CookieAuthorizationExtractor;
 import roomescape.domain.member.model.Role;
+import roomescape.global.exception.AuthorizationException;
 
 @Component
 @RequiredArgsConstructor
@@ -26,10 +26,6 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        // TODO : HandlerExceptionResolver 커스텀 클래스 구현해 처리하기
-        response.setStatus(HttpStatus.FORBIDDEN.value());
-        response.setContentType("application/json; charset=UTF-8");
-        response.getWriter().write("{\"message\": \"관리자 권한이 필요합니다.\"}");
-        return false;
+        throw new AuthorizationException("관리자 권한이 필요합니다.");
     }
 }

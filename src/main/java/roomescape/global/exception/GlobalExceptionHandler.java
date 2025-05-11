@@ -2,6 +2,7 @@ package roomescape.global.exception;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -95,5 +96,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ExceptionResponse handleAuthenticationException(AuthenticationException e) {
         return new ExceptionResponse(UNAUTHORIZED.value(), e.getMessage(), LocalDateTime.now());
+    }
+
+    @ResponseStatus(FORBIDDEN)
+    @ExceptionHandler(AuthorizationException.class)
+    public ExceptionResponse handleAuthorizationException(AuthorizationException e) {
+        return new ExceptionResponse(FORBIDDEN.value(), e.getMessage(), LocalDateTime.now());
     }
 }
