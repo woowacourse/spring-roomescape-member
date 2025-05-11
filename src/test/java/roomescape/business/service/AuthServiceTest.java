@@ -70,13 +70,15 @@ class AuthServiceTest {
     void 잘못된_비밀번호로_인증_시_예외가_발생한다() {
         // given
         String email = "test@example.com";
-        String password = "wrongPassword";
-        User user = User.restore("user-id", "USER", "Test User", email, "correctPassword");
+        String wrongPassword = "wrongPassword";
+        String correctPassword = "correctPassword";
+        String encodedPassword = new BCryptPasswordEncoder().encode(correctPassword);
+        User user = User.restore("user-id", "USER", "Test User", email, encodedPassword);
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
         // when, then
-        assertThatThrownBy(() -> sut.authenticate(email, password))
+        assertThatThrownBy(() -> sut.authenticate(email, wrongPassword))
                 .isInstanceOf(AuthenticationException.class);
 
         verify(userRepository).findByEmail(email);
