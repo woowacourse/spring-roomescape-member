@@ -3,7 +3,7 @@ package roomescape.model;
 import roomescape.common.exception.InvalidInputException;
 
 public class Theme {
-    private Long id;
+    private final Long id;
     private final String name;
     private final String description;
     private final String thumbnail;
@@ -20,6 +20,7 @@ public class Theme {
     public Theme(String name, String description, String thumbnail) {
         validateRequiredFields(name, description, thumbnail);
 
+        this.id = null;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
