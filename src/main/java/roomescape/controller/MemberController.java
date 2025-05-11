@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.model.user.User;
+import roomescape.model.user.Member;
 import roomescape.service.MemberService;
 
 @RestController
@@ -16,7 +16,7 @@ public class MemberController {
     }
 
     @GetMapping("/members")
-    public ResponseEntity<List<User>> getUsers() {
+    public ResponseEntity<List<Member>> getUsers() {
         return ResponseEntity.ok().body(memberService.getAllUsers());
     }
 }

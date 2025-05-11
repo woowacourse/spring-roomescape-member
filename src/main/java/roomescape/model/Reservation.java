@@ -2,27 +2,27 @@ package roomescape.model;
 
 import java.time.LocalDateTime;
 import roomescape.dto.UserReservationRequest;
-import roomescape.model.user.UserName;
+import roomescape.model.user.Name;
 
 public class Reservation {
     private final Long id;
-    private final UserName userName;
+    private final Name name;
     private final ReservationDateTime reservationDateTime;
     private final Theme theme;
 
-    public Reservation(Long id, UserName userName, ReservationDateTime reservationDateTime, Theme theme) {
+    public Reservation(Long id, Name name, ReservationDateTime reservationDateTime, Theme theme) {
         this.id = id;
-        this.userName = userName;
+        this.name = name;
         this.reservationDateTime = reservationDateTime;
         this.theme = theme;
     }
 
-    public static Reservation createWithNoId(UserName userName, UserReservationRequest userReservationRequest,
+    public static Reservation createWithNoId(Name name, UserReservationRequest userReservationRequest,
                                              ReservationTime reservationTime,
                                              Theme theme) {
         validateFuture(userReservationRequest, reservationTime);
         return new Reservation(null,
-                userName,
+                name,
                 new ReservationDateTime(userReservationRequest.date(), reservationTime),
                 theme);
     }
@@ -40,8 +40,8 @@ public class Reservation {
         return id;
     }
 
-    public UserName getUserName() {
-        return userName;
+    public Name getName() {
+        return name;
     }
 
     public ReservationDateTime getReservationDateTime() {

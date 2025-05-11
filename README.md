@@ -34,4 +34,4 @@
     - [x] 클라이언트 코드 변경
     - [x] HandlerMethodArgumentResolver을 활용하여 회원 객체를 컨트롤러 메서드에 주입
     - [x] 기존 예약 추가 방식(이름을 필드에 입력하는 방식) -> 쿠키에서 멤버 이름 조회해서 name 의 not null
-- 
+- [ ] 

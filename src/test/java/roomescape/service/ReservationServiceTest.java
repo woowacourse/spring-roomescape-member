@@ -18,7 +18,7 @@ import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
-import roomescape.model.user.UserName;
+import roomescape.model.user.Name;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservedChecker;
 
@@ -36,13 +36,13 @@ class ReservationServiceTest {
         // given
         Reservation reservation1 = new Reservation(
                 1L,
-                new UserName("띠용"),
+                new Name("띠용"),
                 new ReservationDateTime(LocalDate.now().minusDays(1), new ReservationTime(1L, LocalTime.of(11, 0))),
                 new Theme(1L, "테마명1", "테마설명1", "테마썸네일링크1")
         );
         Reservation reservation2 = new Reservation(
                 2L,
-                new UserName("띠용투"),
+                new Name("띠용투"),
                 new ReservationDateTime(LocalDate.now().minusDays(1), new ReservationTime(1L, LocalTime.of(11, 0))),
                 new Theme(2L, "테마명2", "테마설명2", "테마썸네일링크2")
         );
@@ -74,7 +74,7 @@ class ReservationServiceTest {
         when(themeService.getThemeById(1L)).thenReturn(theme1);
         when(reservedChecker.contains(LocalDate.now().plusDays(1), 1L, 1L)).thenReturn(false);
 
-        assertThatCode(() -> reservationService.addReservation(new UserName("유저명"),
+        assertThatCode(() -> reservationService.addReservation(new Name("유저명"),
                 userReservationRequest)).doesNotThrowAnyException();
     }
 

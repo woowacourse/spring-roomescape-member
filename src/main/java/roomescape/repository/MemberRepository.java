@@ -1,15 +1,15 @@
 package roomescape.repository;
 
 import java.util.List;
-import roomescape.model.user.User;
-import roomescape.model.user.UserName;
+import roomescape.model.user.Member;
+import roomescape.model.user.Name;
 
 public interface MemberRepository {
-    User login(String username, String password);
+    Member login(String username, String password);
 
-    UserName findUserNameByUserEmail(String userEmail);
+    Name findUserNameByUserEmail(String userEmail);
 
-    List<User> findAllUsers();
+    List<Member> findAllUsers();
 
-    UserName findUserNameByUserId(Long userId);
+    Name findUserNameByUserId(Long userId);
 }

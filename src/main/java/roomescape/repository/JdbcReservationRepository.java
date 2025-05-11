@@ -12,18 +12,15 @@ import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
-import roomescape.model.user.UserName;
+import roomescape.model.user.Name;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository, ReservedTimeChecker, ReservedThemeChecker,
         ReservedChecker {
     private final JdbcTemplate jdbcTemplate;
-    private final JdbcReservationTimeRepository jdbcReservationTimeRepository;
 
-    public JdbcReservationRepository(JdbcTemplate jdbcTemplate,
-                                     JdbcReservationTimeRepository jdbcReservationTimeRepository) {
+    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcReservationTimeRepository = jdbcReservationTimeRepository;
     }
 
     @Override
@@ -33,14 +30,13 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
                 FROM reservation as r inner join reservation_time as t on r.time_id = t.id 
                 inner join theme as th on r.theme_id = th.id""";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            System.out.println(rs.getString("name"));
-            UserName userName = new UserName(rs.getString("name"));
+            Name name = new Name(rs.getString("name"));
             ReservationDateTime dateTime = new ReservationDateTime(LocalDate.parse(rs.getString("date")),
                     new ReservationTime(rs.getLong("time_id"), rs.getTime("start_at").toLocalTime()));
             Theme theme = new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("description"),
                     rs.getString("thumbnail"));
 
-            return new Reservation(rs.getLong("id"), userName, dateTime, theme);
+            return new Reservation(rs.getLong("id"), name, dateTime, theme);
         });
     }
 
@@ -57,14 +53,14 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     sql, new String[]{"id"});
-            ps.setString(1, reservationWithNoId.getUserName().getValue());
+            ps.setString(1, reservationWithNoId.getName().getValue());
             ps.setString(2, reservationWithNoId.getReservationDateTime().getDate().toString());
             ps.setLong(3, reservationWithNoId.getReservationDateTime().getTime().getId());
             ps.setLong(4, reservationWithNoId.getTheme().getId());
             return ps;
         }, keyHolder);
         return new Reservation(Objects.requireNonNull(keyHolder.getKey()).longValue(),
-                reservationWithNoId.getUserName(),
+                reservationWithNoId.getName(),
                 reservationWithNoId.getReservationDateTime(), reservationWithNoId.getTheme());
     }
 

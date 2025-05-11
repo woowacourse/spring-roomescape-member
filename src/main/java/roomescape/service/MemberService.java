@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.TokenResponse;
 import roomescape.infra.JwtTokenProcessor;
-import roomescape.model.user.User;
-import roomescape.model.user.UserName;
+import roomescape.model.user.Member;
+import roomescape.model.user.Name;
 import roomescape.repository.MemberRepository;
 
 @Service
@@ -19,10 +19,10 @@ public class MemberService {
         this.jwtTokenProcessor = jwtTokenProcessor;
     }
 
-    public User login(String email, String password) {
-        User user = memberRepository.login(email, password);
-        System.out.println(user);
-        return user;
+    public Member login(String email, String password) {
+        Member member = memberRepository.login(email, password);
+        System.out.println(member);
+        return member;
     }
 
     public TokenResponse createToken(String payload) {
@@ -41,17 +41,17 @@ public class MemberService {
         return jwtTokenProcessor.extractUserEmailFromCookie(cookies);
     }
 
-    public UserName getUserNameByUserEmail(String userEmail) {
+    public Name getUserNameByUserEmail(String userEmail) {
         return memberRepository.findUserNameByUserEmail(userEmail);
     }
 
-    public UserName getUserNameByUserId(Long userId) {
+    public Name getUserNameByUserId(Long userId) {
         return memberRepository.findUserNameByUserId(userId);
     }
 
-    public List<User> getAllUsers() {
-        List<User> users = memberRepository.findAllUsers();
-        System.out.println(users.getFirst().getName());
-        return users;
+    public List<Member> getAllUsers() {
+        List<Member> members = memberRepository.findAllUsers();
+        System.out.println(members.getFirst().getName());
+        return members;
     }
 }

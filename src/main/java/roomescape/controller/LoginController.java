@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.LoginRequest;
-import roomescape.dto.UserNameResponse;
-import roomescape.model.user.User;
-import roomescape.model.user.UserName;
+import roomescape.dto.NameResponse;
+import roomescape.model.user.Member;
+import roomescape.model.user.Name;
 import roomescape.service.MemberService;
 
 @RestController
@@ -30,8 +30,8 @@ public class LoginController {
     @PostMapping
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest loginRequest,
                                       HttpServletResponse response) throws BadRequestException {
-        User user = memberService.login(loginRequest.email(), loginRequest.password());
-        String token = memberService.createToken(user.getEmail()).token();
+        Member member = memberService.login(loginRequest.email(), loginRequest.password());
+        String token = memberService.createToken(member.getEmail()).token();
 
         Cookie cookie = memberService.createCookie(token);
         response.addCookie(cookie);
@@ -40,13 +40,13 @@ public class LoginController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<UserNameResponse> checkLogin(HttpServletRequest request) throws BadRequestException {
+    public ResponseEntity<NameResponse> checkLogin(HttpServletRequest request) throws BadRequestException {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             String userEmail = memberService.extractUserEmailFromCookies(cookies);
             // userEmail로 user 이름 반환
-            UserName userName = memberService.getUserNameByUserEmail(userEmail);
-            return ResponseEntity.ok(new UserNameResponse(userName.getValue()));
+            Name name = memberService.getUserNameByUserEmail(userEmail);
+            return ResponseEntity.ok(new NameResponse(name.getValue()));
         }
         throw new BadRequestException("인증 실패");
     }

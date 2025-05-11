@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.AdminReservationRequest;
 import roomescape.dto.UserReservationRequest;
-import roomescape.model.user.UserName;
+import roomescape.model.user.Name;
 import roomescape.service.MemberService;
 import roomescape.service.ReservationService;
 
@@ -22,10 +22,10 @@ public class AdminController {
     }
 
     @PostMapping("/admin/reservations")
-    public ResponseEntity<UserName> reservation(@RequestBody AdminReservationRequest request) {
-        UserName userName = memberService.getUserNameByUserId(request.userId());
-        reservationService.addReservation(userName,
+    public ResponseEntity<Name> reservation(@RequestBody AdminReservationRequest request) {
+        Name name = memberService.getUserNameByUserId(request.userId());
+        reservationService.addReservation(name,
                 UserReservationRequest.of(request.date(), request.timeId(), request.themeId()));
-        return ResponseEntity.status(HttpStatus.CREATED).body(userName);
+        return ResponseEntity.status(HttpStatus.CREATED).body(name);
     }
 }
