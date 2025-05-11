@@ -29,7 +29,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         String token = extractTokenFromCookie(request);
 
         LoginMember loginMember = authService.findMemberByToken(token);
-        if (loginMember == null || loginMember.role() == Role.USER) {
+        if (loginMember == null || loginMember.role() != Role.ADMIN) {
             throw new AuthException("[ERROR] 권한이 필요합니다.", HttpStatus.FORBIDDEN);
         }
         return true;

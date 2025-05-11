@@ -13,6 +13,7 @@ import roomescape.presentation.dto.request.AdminReservationCreateRequest;
 import roomescape.presentation.dto.request.ReservationCreateRequest;
 import roomescape.presentation.dto.response.ReservationResponse;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -73,7 +74,7 @@ public class ReservationService {
         return ReservationResponse.from(created);
     }
 
-    private ReservationDateTime getReservationDateTime(final Long timeId, final ReservationDate reservationDate) {
+    private ReservationDateTime getReservationDateTime(Long timeId, ReservationDate reservationDate) {
         ReservationTime reservationTime = reservationTimeService.findReservationTimeById(timeId);
         return ReservationDateTime.create(reservationDate, reservationTime, currentTimeService.now());
     }
@@ -92,5 +93,16 @@ public class ReservationService {
     private Reservation findReservationById(Long id) {
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 예약을 찾을 수 없습니다."));
+    }
+
+    public List<ReservationResponse> getReservationsByFilter(
+            Long themeId,
+            Long memberId,
+            LocalDate dateFrom,
+            LocalDate dateTo
+    ) {
+        List<Reservation> reservations = reservationRepository.findAllByMemberIdAndThemeIdAndDateBetween(themeId, memberId, dateFrom, dateTo);
+
+        return ReservationResponse.from(reservations);
     }
 }
