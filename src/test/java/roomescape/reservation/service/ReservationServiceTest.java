@@ -27,7 +27,7 @@ class ReservationServiceTest {
     private static final LocalDate FUTURE_DATE = LocalDate.of(30000, 1, 1);
 
     @Autowired
-    ReservationService reservationService;
+    private ReservationService reservationService;
 
     @Test
     @DisplayName("예약 정보를 저장한 다음 저장 정보를 리턴한다")
