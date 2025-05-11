@@ -1,6 +1,7 @@
 package roomescape.user.repository;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,6 +25,12 @@ public class JdbcUserRepository implements UserRepository {
     public User save(User user) {
         Long id = insertWithKeyHolder(user);
         return findByIdOrThrow(id);
+    }
+
+    @Override
+    public List<User> findAll() {
+        String sql = "select id AS user_id, role AS user_role, name AS user_name, email AS user_email, password AS user_password from users";
+        return jdbcTemplate.query(sql, RowMapperManager.userRowMapper);
     }
 
     @Override
