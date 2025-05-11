@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.login.domain.Member;
 import roomescape.reservation.controller.dto.AvailableReservationTimeRequest;
 import roomescape.reservation.controller.dto.AvailableReservationTimeResponse;
 import roomescape.reservation.controller.dto.CreateReservationRequest;
@@ -28,10 +29,11 @@ public class ReservationRestController {
 
     @PostMapping
     public ResponseEntity<CreateReservationResponse> createReservation(
-            @RequestBody final CreateReservationRequest createReservationRequest
+            @RequestBody final CreateReservationRequest createReservationRequest,
+            final Member member
     ) {
         final Long id = reservationService.save(
-                createReservationRequest.name(),
+                member,
                 createReservationRequest.date(),
                 createReservationRequest.timeId(),
                 createReservationRequest.themeId()

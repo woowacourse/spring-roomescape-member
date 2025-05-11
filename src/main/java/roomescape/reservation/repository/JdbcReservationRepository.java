@@ -15,6 +15,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.exception.DataExistException;
 import roomescape.exception.SaveException;
+import roomescape.login.domain.Member;
+import roomescape.login.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
@@ -26,7 +28,13 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (rs, rowNum) ->
             new Reservation(
                     rs.getLong("id"),
-                    rs.getString("name"),
+                    new Member(
+                            rs.getLong("member_id"),
+                            rs.getString("member_name"),
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            Role.valueOf(rs.getString("role"))
+                    ),
                     rs.getDate("date").toLocalDate(),
                     new ReservationTime(
                             rs.getLong("time_id"),
@@ -43,13 +51,13 @@ public class JdbcReservationRepository implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Long save(Reservation reservation) {
-        String sql = "INSERT INTO reservations (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
+    public Long save(final Reservation reservation) {
+        String sql = "INSERT INTO reservations (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         final int rowAffected = jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservation.getName());
+            ps.setLong(1, reservation.getMember().getId());
             ps.setDate(2, Date.valueOf(reservation.getDate()));
             ps.setLong(3, reservation.getTime().getId());
             ps.setLong(4, reservation.getTheme().getId());
@@ -112,8 +120,12 @@ public class JdbcReservationRepository implements ReservationRepository {
         final String sql = """
                 SELECT 
                     r.id AS id,
-                    r.name AS name,
                     r.date AS date,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS email,
+                    m.password AS password,
+                    m.role AS role,
                     rt.id AS time_id,
                     rt.start_at AS start_at,
                     th.id AS theme_id,
@@ -125,6 +137,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 ON r.time_id = rt.id
                 INNER JOIN themes AS th
                 ON r.theme_id = th.id
+                INNER JOIN members AS m
+                ON r.member_id = m.id
                 WHERE r.id = ?
                 """;
         final List<Reservation> reservations = jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id);
@@ -139,8 +153,12 @@ public class JdbcReservationRepository implements ReservationRepository {
         final String sql = """
                 SELECT 
                     r.id AS id,
-                    r.name AS name,
                     r.date AS date,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS email,
+                    m.password AS password,
+                    m.role AS role,
                     rt.id AS time_id,
                     rt.start_at AS start_at,
                     th.id AS theme_id,
@@ -152,6 +170,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 ON r.time_id = rt.id
                 INNER JOIN themes AS th
                 ON r.theme_id = th.id
+                INNER JOIN members AS m
+                ON r.member_id = m.id
                 """;
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
     }
