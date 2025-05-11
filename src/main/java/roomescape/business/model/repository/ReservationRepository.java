@@ -10,19 +10,21 @@ import java.util.Optional;
 
 public interface ReservationRepository {
 
-    Reservation save(Reservation reservation);
+    void save(Reservation reservation);
 
     List<Reservation> findAll();
 
-    Optional<Reservation> findById(long id);
+    List<Reservation> findAllWithFilter(final String themeId, final String memberId, final LocalDate dateFrom, final LocalDate dateTo);
 
-    boolean existById(long id);
+    Optional<Reservation> findById(String id);
 
-    boolean existByTimeId(long timeId);
+    boolean existById(String id);
 
-    boolean existByThemeId(long themeId);
+    boolean existByTimeId(String timeId);
+
+    boolean existByThemeId(String themeId);
 
     boolean isDuplicateDateAndTimeAndTheme(LocalDate date, LocalTime time, Theme theme);
 
-    void deleteById(long id);
+    void deleteById(String id);
 }

@@ -1,51 +1,52 @@
 package roomescape.business.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.business.model.entity.ReservationTime;
 import roomescape.business.model.repository.ReservationRepository;
 import roomescape.business.model.repository.ReservationTimeRepository;
-import roomescape.exception.impl.ConnectedReservationExistException;
-import roomescape.exception.impl.HasDuplicatedTimeException;
-import roomescape.exception.impl.ReservationTimeIntervalException;
-import roomescape.exception.impl.ReservationTimeNotFoundException;
+import roomescape.exception.business.DuplicatedException;
+import roomescape.exception.business.InvalidCreateArgumentException;
+import roomescape.exception.business.NotFoundException;
+import roomescape.exception.business.RelatedEntityExistException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
+
+import static roomescape.exception.ErrorCode.RESERVATION_NOT_EXIST;
+import static roomescape.exception.ErrorCode.RESERVATION_TIME_ALREADY_EXIST;
+import static roomescape.exception.ErrorCode.RESERVATION_TIME_INTERVAL_INVALID;
+import static roomescape.exception.ErrorCode.RESERVED_RESERVATION_TIME;
 
 @Service
+@RequiredArgsConstructor
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(
-            final ReservationTimeRepository reservationTimeRepository,
-            final ReservationRepository reservationRepository
-    ) {
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.reservationRepository = reservationRepository;
-    }
-
     public ReservationTime addAndGet(final LocalTime time) {
-        ReservationTime reservationTime = ReservationTime.beforeSave(time);
+        ReservationTime reservationTime = ReservationTime.create(time);
         validateNoDuplication(reservationTime);
         validateTimeInterval(reservationTime);
 
-        return reservationTimeRepository.save(reservationTime);
+        reservationTimeRepository.save(reservationTime);
+        return reservationTime;
     }
 
     private void validateNoDuplication(final ReservationTime reservationTime) {
-        boolean isExist = reservationTimeRepository.existByTime(reservationTime.getStartAt());
+        boolean isExist = reservationTimeRepository.existByTime(reservationTime.startAt());
         if (isExist) {
-            throw new HasDuplicatedTimeException();
+            throw new DuplicatedException(RESERVATION_TIME_ALREADY_EXIST);
         }
     }
 
     private void validateTimeInterval(final ReservationTime reservationTime) {
         boolean existInInterval = reservationTimeRepository.existBetween(reservationTime.startInterval(), reservationTime.endInterval());
         if (existInInterval) {
-            throw new ReservationTimeIntervalException();
+            throw new InvalidCreateArgumentException(RESERVATION_TIME_INTERVAL_INVALID);
         }
     }
 
@@ -53,16 +54,22 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAll();
     }
 
-    public List<ReservationTime> getAvailableReservationTimesByDateAndThemeId(final LocalDate date, final long themeId) {
-        return reservationTimeRepository.findAvailableReservationTimesByDateAndThemeId(date, themeId);
+    public Map<Boolean, List<ReservationTime>> getAllByDateAndThemeId(final LocalDate date, final String themeId) {
+        final List<ReservationTime> available = reservationTimeRepository.findAvailableByDateAndThemeId(date, themeId);
+        final List<ReservationTime> notAvailable = reservationTimeRepository.findNotAvailableByDateAndThemeId(date, themeId);
+
+        return Map.of(
+                true, available,
+                false, notAvailable
+        );
     }
 
-    public void delete(final long id) {
+    public void delete(final String id) {
         if (reservationRepository.existByTimeId(id)) {
-            throw new ConnectedReservationExistException();
+            throw new RelatedEntityExistException(RESERVED_RESERVATION_TIME);
         }
         if (!reservationTimeRepository.existById(id)) {
-            throw new ReservationTimeNotFoundException();
+            throw new NotFoundException(RESERVATION_NOT_EXIST);
         }
         reservationTimeRepository.deleteById(id);
     }

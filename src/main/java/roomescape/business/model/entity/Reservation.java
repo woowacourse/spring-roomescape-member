@@ -1,106 +1,69 @@
 package roomescape.business.model.entity;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 import roomescape.business.model.vo.Id;
-import roomescape.exception.impl.*;
+import roomescape.business.model.vo.ReservationDate;
 
 import java.time.LocalDate;
-import java.time.Period;
+import java.util.Objects;
 
+@ToString
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Reservation {
 
-    private static final int MAX_NAME_LENGTH = 10;
-    private static final int DAY_INTERVAL_FROM_NOW = 7;
-
     private final Id id;
-    private final String name;
-    private final LocalDate date;
+    private final User user;
+    private final ReservationDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    private Reservation(
-            final Id id,
-            final String name,
-            final LocalDate date,
-            final ReservationTime time,
-            final Theme theme
-    ) {
-        validateMaxNameLength(name);
-        validateNameDoesNotContainsNumber(name);
-        if (time == null) {
-            throw new ReservationTimeNotFoundException();
-        }
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
+    public static Reservation create(final User user, final LocalDate date, final ReservationTime time, final Theme theme) {
+        return new Reservation(Id.issue(), user, new ReservationDate(date), time, theme);
     }
 
-    private void validateNameDoesNotContainsNumber(final String name) {
-        for (char c : name.toCharArray()) {
-            if (Character.isDigit(c)) {
-                throw new NameContainsNumberException();
-            }
-        }
+    public static Reservation restore(final String id, final User user, final LocalDate date, final ReservationTime time, final Theme theme) {
+        return new Reservation(Id.create(id), user, new ReservationDate(date), time, theme);
     }
 
-    private void validateMaxNameLength(final String name) {
-        if (name.length() > MAX_NAME_LENGTH) {
-            throw new OverMaxNameLengthException();
-        }
+    public boolean isSameReserver(final String userId) {
+        return user.id().equals(userId);
     }
 
-    public static Reservation beforeSave(
-            final String name,
-            final LocalDate date,
-            final ReservationTime time,
-            final Theme theme
-    ) {
-        validateDateIsNotPast(date);
-        validateDateInterval(date);
-        return new Reservation(Id.nullId(), name, date, time, theme);
+    public String id() {
+        return id.value();
     }
 
-    private static void validateDateInterval(final LocalDate date) {
-        long minusDays = Period.between(LocalDate.now(), date).getDays();
-        if (minusDays > DAY_INTERVAL_FROM_NOW) {
-            throw new ReservationBeforeStartException();
-        }
+    public String reserverName() {
+        return user.name();
     }
 
-    private static void validateDateIsNotPast(final LocalDate date) {
-        if (date.isBefore(LocalDate.now())) {
-            throw new PastDateException();
-        }
+    public LocalDate date() {
+        return date.value();
     }
 
-    public static Reservation afterSave(
-            final long id,
-            final String name,
-            final LocalDate date,
-            final ReservationTime time,
-            final Theme theme
-    ) {
-        return new Reservation(Id.create(id), name, date, time, theme);
-    }
-
-    public Long getId() {
-        return id.longValue();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public ReservationTime getTime() {
+    public ReservationTime time() {
         return time;
     }
 
-    public Theme getTheme() {
+    public Theme theme() {
         return theme;
+    }
+
+    public User reserver() {
+        return user;
+    }
+
+    @Override
+    public final boolean equals(final Object o) {
+        if (!(o instanceof final Reservation that)) return false;
+
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

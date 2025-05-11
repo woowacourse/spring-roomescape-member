@@ -1,70 +1,55 @@
 package roomescape.business.model.entity;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 import roomescape.business.model.vo.Id;
-import roomescape.exception.impl.ThemeNameMaxLengthExceedException;
+import roomescape.business.model.vo.ThemeName;
 
+import java.util.Objects;
+
+@ToString
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Theme {
 
-    private static final int MAX_NAME_LENGTH = 20;
-
     private final Id id;
-    private final String name;
+    private final ThemeName name;
     private final String description;
     private final String thumbnail;
 
-    private Theme(
-            final Id id,
-            final String name,
-            final String description,
-            final String thumbnail
-    ) {
-        validateMaxNameLength(name);
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.thumbnail = thumbnail;
+    public static Theme create(final String name, final String description, final String thumbnail) {
+        return new Theme(Id.issue(), new ThemeName(name), description, thumbnail);
     }
 
-    private void validateMaxNameLength(final String name) {
-        if (name.length() > MAX_NAME_LENGTH) {
-            throw new ThemeNameMaxLengthExceedException();
-        }
+    public static Theme restore(final String id, final String name, final String description, final String thumbnail) {
+        return new Theme(Id.create(id), new ThemeName(name), description, thumbnail);
     }
 
-    public static Theme beforeSave(
-            final String name,
-            final String description,
-            final String thumbnail
-    ) {
-        return new Theme(Id.nullId(), name, description, thumbnail);
+    public String id() {
+        return id.value();
     }
 
-    public static Theme afterSave(final long id, final Theme theme) {
-        return afterSave(id, theme.name, theme.description, theme.thumbnail);
+    public String name() {
+        return name.value();
     }
 
-    public static Theme afterSave(
-            final long id,
-            final String name,
-            final String description,
-            final String thumbnail
-    ) {
-        return new Theme(Id.create(id), name, description, thumbnail);
-    }
-
-    public Long getId() {
-        return id.longValue();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
+    public String description() {
         return description;
     }
 
-    public String getThumbnail() {
+    public String thumbnail() {
         return thumbnail;
+    }
+
+    @Override
+    public final boolean equals(final Object o) {
+        if (!(o instanceof final Theme theme)) return false;
+
+        return Objects.equals(id, theme.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

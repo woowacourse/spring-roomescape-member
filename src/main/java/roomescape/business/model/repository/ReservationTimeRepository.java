@@ -9,19 +9,21 @@ import java.util.Optional;
 
 public interface ReservationTimeRepository {
 
-    ReservationTime save(ReservationTime time);
+    void save(ReservationTime time);
 
     List<ReservationTime> findAll();
 
-    List<ReservationTime> findAvailableReservationTimesByDateAndThemeId(LocalDate date, long themeId);
+    List<ReservationTime> findAvailableByDateAndThemeId(LocalDate date, String themeId);
 
-    Optional<ReservationTime> findById(long timeId);
+    List<ReservationTime> findNotAvailableByDateAndThemeId(LocalDate date, String themeId);
+
+    Optional<ReservationTime> findById(String timeId);
 
     boolean existBetween(LocalTime startInclusive, LocalTime endExclusive);
 
-    boolean existById(long timeId);
+    boolean existById(String timeId);
 
     boolean existByTime(LocalTime createTime);
 
-    void deleteById(long timeId);
+    void deleteById(String timeId);
 }
