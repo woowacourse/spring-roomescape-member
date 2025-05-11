@@ -37,7 +37,8 @@ public class FakeMemberRepository implements MemberRepository {
                 idGenerator.getAndIncrement(),
                 member.getName(),
                 member.getEmail(),
-                member.getPassword()
+                member.getPassword(),
+                member.getRole()
         );
         members.add(savedMember);
         return savedMember.getId();

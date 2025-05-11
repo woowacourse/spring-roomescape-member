@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.business.Member;
+import roomescape.business.MemberRole;
 import roomescape.business.Reservation;
 import roomescape.business.ReservationTheme;
 import roomescape.business.fakerepository.FakeMemberRepository;
@@ -69,11 +70,15 @@ class ReservationThemeServiceTest {
     void deleteReferencedTheme() {
         // given
         Long themeId = reservationThemeRepository.add(new ReservationTheme("수양", "수양테마", "수양썸네일"));
-        Member member = new Member("사용자", "user@user.com", "1234");
+        Member member = new Member("사용자", "user@user.com", "1234", MemberRole.ADMIN);
         Long memberId = memberRepository.add(member);
         reservationRepository.add(
                 new Reservation(
-                        new Member(memberId, member.getName(), member.getEmail(), member.getPassword()),
+                        new Member(memberId,
+                                member.getName(),
+                                member.getEmail(),
+                                member.getPassword(),
+                                member.getRole()),
                         LocalDate.now(ZoneId.of("Asia/Seoul")).plusDays(1),
                         null,
                         new ReservationTheme(themeId, "수양", "수양테마", "수양썸네일")));

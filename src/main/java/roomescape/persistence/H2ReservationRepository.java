@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.Member;
+import roomescape.business.MemberRole;
 import roomescape.business.Reservation;
 import roomescape.business.ReservationTheme;
 import roomescape.business.ReservationTime;
@@ -37,7 +38,8 @@ public class H2ReservationRepository implements ReservationRepository {
                             rs.getLong("member_id"),
                             rs.getString("name"),
                             rs.getString("email"),
-                            rs.getString("password")
+                            rs.getString("password"),
+                            MemberRole.valueOf(rs.getString("role"))
                     ),
                     rs.getObject("date", LocalDate.class),
                     new ReservationTime(
@@ -58,7 +60,7 @@ public class H2ReservationRepository implements ReservationRepository {
         String query = """
                 SELECT
                     r.id AS reservation_id, r.date,
-                    m.id AS member_id, m.name, m.email, m.password,
+                    m.id AS member_id, m.name, m.email, m.password, m.role,
                     t.id AS time_id, t.start_at,
                     th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail
                 FROM reservation AS r
@@ -75,7 +77,7 @@ public class H2ReservationRepository implements ReservationRepository {
         String query = """
                 SELECT
                     r.id AS reservation_id, r.date,
-                    m.id AS member_id, m.name, m.email, m.password,
+                    m.id AS member_id, m.name, m.email, m.password, m.role,
                     t.id AS time_id, t.start_at,
                     th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail
                 FROM reservation AS r

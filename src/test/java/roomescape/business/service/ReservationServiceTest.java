@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.business.Member;
+import roomescape.business.MemberRole;
 import roomescape.business.ReservationTheme;
 import roomescape.business.ReservationTime;
 import roomescape.business.fakerepository.FakeMemberRepository;
@@ -52,7 +53,7 @@ class ReservationServiceTest {
         LocalDate tomorrow = LocalDate.now(ZoneId.of("Asia/Seoul")).plusDays(1);
         Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now(ZoneId.of("Asia/Seoul"))));
         Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일"));
-        Long memberId = memberRepository.add(new Member("예약자", "hi@hi.hi", "1234"));
+        Long memberId = memberRepository.add(new Member("예약자", "hi@hi.hi", "1234", MemberRole.ADMIN));
 
         // when
         reservationService.createReservation(new ReservationRequestDto(tomorrow, timeId, themeId), memberId);
@@ -69,7 +70,7 @@ class ReservationServiceTest {
         LocalDateTime pastDateTime = LocalDateTime.now(ZoneId.of("Asia/Seoul")).minusDays(1);
         Long timeId = reservationTimeRepository.add(new ReservationTime(pastDateTime.toLocalTime()));
         Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일"));
-        Long memberId = memberRepository.add(new Member("예약자", "hi@hi.hi", "1234"));
+        Long memberId = memberRepository.add(new Member("예약자", "hi@hi.hi", "1234", MemberRole.ADMIN));
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto(pastDateTime.toLocalDate(), timeId,
                 themeId);
 
@@ -87,7 +88,7 @@ class ReservationServiceTest {
         LocalDate tomorrow = LocalDate.now(ZoneId.of("Asia/Seoul")).plusDays(1);
         Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now(ZoneId.of("Asia/Seoul"))));
         Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일"));
-        Long memberId = memberRepository.add(new Member("예약자", "hi@hi.hi", "1234"));
+        Long memberId = memberRepository.add(new Member("예약자", "hi@hi.hi", "1234", MemberRole.ADMIN));
         reservationService.createReservation(new ReservationRequestDto(tomorrow, timeId, themeId), memberId);
 
         // when
@@ -106,7 +107,7 @@ class ReservationServiceTest {
         // given
         Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now(ZoneId.of("Asia/Seoul"))));
         Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일"));
-        Long memberId = memberRepository.add(new Member("예약자", "hi@hi.hi", "1234"));
+        Long memberId = memberRepository.add(new Member("예약자", "hi@hi.hi", "1234", MemberRole.ADMIN));
         Long id = reservationService.createReservation(new ReservationRequestDto(
                         LocalDate.now(ZoneId.of("Asia/Seoul")).plusDays(1),
                         timeId,
@@ -127,7 +128,7 @@ class ReservationServiceTest {
         // given
         Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now(ZoneId.of("Asia/Seoul"))));
         Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일"));
-        Long memberId = memberRepository.add(new Member("예약자", "hi@hi.hi", "1234"));
+        Long memberId = memberRepository.add(new Member("예약자", "hi@hi.hi", "1234", MemberRole.ADMIN));
         Long id = reservationService.createReservation(
                 new ReservationRequestDto(
                         LocalDate.now(ZoneId.of("Asia/Seoul")).plusDays(1),

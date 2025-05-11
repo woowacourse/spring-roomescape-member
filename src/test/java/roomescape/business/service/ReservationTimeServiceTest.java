@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.business.Member;
+import roomescape.business.MemberRole;
 import roomescape.business.Reservation;
 import roomescape.business.ReservationTime;
 import roomescape.business.fakerepository.FakeMemberRepository;
@@ -102,7 +103,7 @@ class ReservationTimeServiceTest {
                 .plusDays(1);
         LocalDate date = tomorrow.toLocalDate();
         LocalTime time = tomorrow.toLocalTime();
-        Member member = new Member("사용자", "user@user.com", "1234");
+        Member member = new Member("사용자", "user@user.com", "1234", MemberRole.ADMIN);
         Long timeId = reservationTimeRepository.add(new ReservationTime(time));
         Long memberId = memberRepository.add(member);
         reservationRepository.add(new Reservation(
@@ -110,7 +111,8 @@ class ReservationTimeServiceTest {
                         memberId,
                         member.getName(),
                         member.getEmail(),
-                        member.getPassword()
+                        member.getPassword(),
+                        member.getRole()
                 ), date,
                 new ReservationTime(
                         timeId,

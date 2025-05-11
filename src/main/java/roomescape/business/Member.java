@@ -45,4 +45,8 @@ public final class Member {
     public MemberRole getRole() {
         return role;
     }
+
+    public boolean isAdmin() {
+        return this.role == MemberRole.ADMIN;
+    }
 }

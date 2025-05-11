@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.Member;
+import roomescape.business.MemberRole;
 
 @Repository
 public class H2MemberRepository implements MemberRepository {
@@ -30,14 +31,15 @@ public class H2MemberRepository implements MemberRepository {
                     rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("email"),
-                    rs.getString("password")
+                    rs.getString("password"),
+                    MemberRole.valueOf(rs.getString("role"))
             )
     );
 
     @Override
     public List<Member> findAll() {
         String query = """
-                SELECT id, name, email, password
+                SELECT id, name, email, password, role
                 FROM member
                 """;
         return jdbcTemplate.query(query, memberRowMapper);
@@ -46,7 +48,7 @@ public class H2MemberRepository implements MemberRepository {
     @Override
     public Optional<Member> findById(Long id) {
         String query = """
-                SELECT id, name, email, password
+                SELECT id, name, email, password, role
                 FROM member
                 WHERE id = ?
                 """;
@@ -58,7 +60,7 @@ public class H2MemberRepository implements MemberRepository {
     @Override
     public Optional<Member> findByEmail(String email) {
         String query = """
-                SELECT id, name, email, password
+                SELECT id, name, email, password, role
                 FROM member
                 WHERE email = ?
                 """;
