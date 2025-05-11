@@ -29,7 +29,7 @@ class ReservationTimeServiceTest {
 
     @ParameterizedTest
     @CsvSource(value = {
-            "10:00", "22:00"
+            "20:00", "22:00"
     })
     void 예약시간을_추가한다(final LocalTime startAt) {
         // when & then
