@@ -39,8 +39,6 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
                 """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            System.out.println("rs.getString(\"member_name\") = " + rs.getString("member_name"));
-
             MemberName memberName = new MemberName(rs.getString("member_name"));
             Member member = new Member(rs.getLong("member_id"), Role.valueOf(rs.getString("role")), memberName,
                     rs.getString("email"), rs.getString("password"));
@@ -104,5 +102,35 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
                 endDate.toString()
         );
         return longs;
+    }
+
+    @Override
+    public List<Reservation> findBy(final Long memberId, final Long themeId, final LocalDate fromDate,
+                                    final LocalDate toDate) {
+        String sql = """
+                SELECT r.id, r.date, r.time_id,
+                       r.theme_id, r.member_id,
+                       t.start_at, 
+                       th.name AS theme_name, th.description, th.thumbnail,
+                       m.role, m.name AS member_name, m.email, m.password
+                FROM reservation r
+                JOIN reservation_time t ON r.time_id = t.id
+                JOIN theme th ON r.theme_id = th.id
+                JOIN member m ON r.member_id = m.id
+                WHERE r.date BETWEEN ? AND ?
+                  AND r.member_id = ?
+                  AND r.theme_id = ?
+                """;
+
+        return jdbcTemplate.query(sql, (rs, rn) -> {
+            MemberName memberName = new MemberName(rs.getString("member_name"));
+            Member member = new Member(rs.getLong("member_id"), Role.valueOf(rs.getString("role")), memberName,
+                    rs.getString("email"), rs.getString("password"));
+            ReservationDateTime dateTime = new ReservationDateTime(LocalDate.parse(rs.getString("date")),
+                    new ReservationTime(rs.getLong("time_id"), rs.getTime("start_at").toLocalTime()));
+            Theme theme = new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("description"),
+                    rs.getString("thumbnail"));
+            return new Reservation(rs.getLong("id"), member, dateTime, theme);
+        }, fromDate.toString(), toDate.toString(), memberId, themeId);
     }
 }

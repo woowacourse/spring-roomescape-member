@@ -102,4 +102,8 @@ public class ReservationService {
     }
 
 
+    public List<Reservation> getFilteredReservations(final Long memberId, final Long themeId, final LocalDate fromDate,
+                                                     final LocalDate toDate) {
+        return reservationRepository.findBy(memberId, themeId, fromDate, toDate);
+    }
 }

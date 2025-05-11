@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.model.Reservation;
@@ -24,9 +26,17 @@ public class ReservationController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<Reservation>> getReservations() {
-        return ResponseEntity.ok().body(reservationService.getAllReservations());
-
+    public ResponseEntity<List<Reservation>> getReservations(
+            @RequestParam(value = "memberId", required = false) Long memberId,
+            @RequestParam(value = "themeId", required = false) Long themeId,
+            @RequestParam(value = "from", required = false) LocalDate fromDate,
+            @RequestParam(value = "to", required = false) LocalDate toDate
+    ) {
+        if (memberId == null || themeId == null || fromDate == null || toDate == null) {
+            return ResponseEntity.ok().body(reservationService.getAllReservations());
+        }
+        return ResponseEntity.ok()
+                .body(reservationService.getFilteredReservations(memberId, themeId, fromDate, toDate));
     }
 
     @PostMapping()

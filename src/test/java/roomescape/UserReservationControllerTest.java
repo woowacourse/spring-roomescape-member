@@ -55,7 +55,6 @@ public class UserReservationControllerTest {
                 .extract().response();
         String setCookie = response.getHeader("Set-Cookie");
         token = response.getCookie("token");
-        System.out.println("token = " + token);
     }
 
     @Test
