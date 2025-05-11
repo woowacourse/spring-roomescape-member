@@ -3,10 +3,6 @@ package roomescape.dto.request;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 
 public record CreateReservationRequest(
         @FutureOrPresent(message = "날짜는 현재보다 미래여야합니다.") LocalDate date,

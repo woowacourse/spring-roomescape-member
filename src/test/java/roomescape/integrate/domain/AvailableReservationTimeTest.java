@@ -24,8 +24,8 @@ import roomescape.dto.request.LoginRequest;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class AvailableReservationTimeTest {
 
-    private final String EMAIL = "test@test.com";
-    private final String PASSWORD = "test";
+    private final String EMAIL = "admin@admin.com";
+    private final String PASSWORD = "admin";
 
     private String token;
 
@@ -69,6 +69,7 @@ class AvailableReservationTimeTest {
 
         long timeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(timeParam)
                 .when().post("/times")
                 .then().log().all()
@@ -77,6 +78,7 @@ class AvailableReservationTimeTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(timeParam2)
                 .when().post("/times")
                 .then().log().all()
@@ -84,6 +86,7 @@ class AvailableReservationTimeTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(timeParam3)
                 .when().post("/times")
                 .then().log().all()
@@ -91,6 +94,7 @@ class AvailableReservationTimeTest {
 
         long themeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(themeParam)
                 .when().post("/themes")
                 .then().log().all()

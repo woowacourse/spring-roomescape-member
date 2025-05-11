@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import roomescape.config.CheckRole;
 import roomescape.domain.LoginMember;
 import roomescape.domain.Reservation;
+import roomescape.domain.Role;
 import roomescape.dto.request.CreateReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
@@ -47,6 +49,7 @@ public class ReservationController {
     }
 
     @PostMapping
+    @CheckRole(value = {Role.ADMIN, Role.USER})
     public ResponseEntity<ReservationResponse> addReservations(
             @RequestBody @Valid CreateReservationRequest request,
             LoginMember loginMember
@@ -63,6 +66,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
+    @CheckRole(value = {Role.ADMIN, Role.USER})
     public ResponseEntity<Void> deleteReservations(@PathVariable Long id) {
         reservationService.deleteReservation(id);
 

@@ -11,11 +11,14 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final LoginMemberArgumentResolver loginMemberArgumentResolver;
     private final AdminHandlerInterceptor adminHandlerInterceptor;
+    private final CheckRoleHandlerInterceptor checkRoleHandlerInterceptor;
 
     public WebMvcConfiguration(LoginMemberArgumentResolver loginMemberArgumentResolver,
-                               AdminHandlerInterceptor adminHandlerInterceptor) {
+                               AdminHandlerInterceptor adminHandlerInterceptor,
+                               CheckRoleHandlerInterceptor checkRoleHandlerInterceptor) {
         this.loginMemberArgumentResolver = loginMemberArgumentResolver;
         this.adminHandlerInterceptor = adminHandlerInterceptor;
+        this.checkRoleHandlerInterceptor = checkRoleHandlerInterceptor;
     }
 
     @Override
@@ -26,5 +29,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(adminHandlerInterceptor).addPathPatterns("/admin/**");
+        registry.addInterceptor(checkRoleHandlerInterceptor).addPathPatterns("/**")
+                .excludePathPatterns("/admin/**");
     }
 }

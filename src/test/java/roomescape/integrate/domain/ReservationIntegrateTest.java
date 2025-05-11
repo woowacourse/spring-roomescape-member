@@ -40,8 +40,8 @@ import roomescape.service.ThemeService;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ReservationIntegrateTest {
 
-    private final String EMAIL = "test@test.com";
-    private final String PASSWORD = "test";
+    private final String EMAIL = "admin@admin.com";
+    private final String PASSWORD = "admin";
 
     private String token;
 
@@ -118,6 +118,7 @@ class ReservationIntegrateTest {
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .when().delete("/reservations/" + reservation.getId())
                 .then().log().all()
                 .statusCode(204);
