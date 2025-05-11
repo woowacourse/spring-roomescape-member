@@ -17,6 +17,7 @@ import roomescape.theme.domain.dto.ThemeResponseDto;
 import roomescape.theme.exception.InvalidThemeException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.user.domain.User;
+import roomescape.user.domain.dto.UserResponseDto;
 
 @Service
 public class ReservationService {
@@ -74,6 +75,7 @@ public class ReservationService {
         ReservationTimeResponseDto reservationTimeResponseDto = ReservationTimeResponseDto.of(
                 reservation.getReservationTime());
         ThemeResponseDto themeResponseDto = ThemeResponseDto.of(reservation.getTheme());
-        return ReservationResponseDto.from(reservation, reservationTimeResponseDto, themeResponseDto);
+        UserResponseDto userResponseDto = UserResponseDto.of(reservation.getUser());
+        return ReservationResponseDto.from(reservation, reservationTimeResponseDto, themeResponseDto, userResponseDto);
     }
 }
