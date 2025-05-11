@@ -19,4 +19,6 @@ public interface ReservationRepository {
     long add(Reservation reservation);
 
     void deleteById(long id);
+
+    List<Reservation> saerch(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo);
 }

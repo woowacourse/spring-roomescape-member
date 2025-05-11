@@ -67,6 +67,29 @@ public class H2ReservationRepository implements ReservationRepository {
         return template.query(sql, mapper);
     }
 
+    @Override
+    public List<Reservation> saerch(
+            final Long themeId,
+            final Long memberId,
+            final LocalDate dateFrom,
+            final LocalDate dateTo
+    ) {
+        String sql = "SELECT "
+                + "r.id as reservation_id, r.date,"
+                + "m.id as member_id, m.name as member_name, m.email, m.password, m.role,"
+                + "rt.id as time_id, rt.start_at, "
+                + "t.id as theme_id, t.name as theme_name, t.description, t.thumbnail "
+                + "FROM reservation AS r "
+                + "INNER JOIN member AS m ON r.member_id = m.id "
+                + "INNER JOIN reservation_time AS rt ON r.time_id = rt.id "
+                + "INNER JOIN theme AS t ON r.theme_id = t.id "
+                + "WHERE t.id = ? "
+                + "AND m.id = ? "
+                + "AND r.date >= ? AND r.date <= ?";
+
+        return template.query(sql, mapper, themeId, memberId, dateFrom, dateTo);
+    }
+
     public Optional<Reservation> findById(long id) {
         String sql = "SELECT "
                 + "r.id as reservation_id, r.date,"

@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +29,16 @@ public class ReservationController {
     @GetMapping
     public List<ReservationResponse> getReservations() {
         return reservationService.getAllReservations();
+    }
+
+    @GetMapping("/search/{themeId}/{memberId}/{dateFrom}/{dateTo}")
+    public List<ReservationResponse> searchReservations(
+            @PathVariable("themeId") Long themeId,
+            @PathVariable("memberId") Long memberId,
+            @PathVariable("dateFrom") LocalDate dateFrom,
+            @PathVariable("dateTo") LocalDate dateTo
+    ) {
+        return reservationService.searchReservation(themeId, memberId, dateFrom, dateTo);
     }
 
     @PostMapping
