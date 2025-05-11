@@ -23,17 +23,25 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
         this.jdbcTemplate = jdbcTemplate;
     }
 
+
     @Override
     public List<Reservation> getAllReservations() {
         String sql = """
                 SELECT r.id, r.name, r.date, r.time_id, t.start_at, r.theme_id, th.name AS theme_name, th.description, th.thumbnail
-                FROM reservation as r inner join reservation_time as t on r.time_id = t.id 
+                FROM reservation as r inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on r.theme_id = th.id""";
+
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             Name name = new Name(rs.getString("name"));
-            ReservationDateTime dateTime = new ReservationDateTime(LocalDate.parse(rs.getString("date")),
-                    new ReservationTime(rs.getLong("time_id"), rs.getTime("start_at").toLocalTime()));
-            Theme theme = new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("description"),
+
+            ReservationDateTime dateTime = new ReservationDateTime(
+                    LocalDate.parse(rs.getString("date")),
+                    new ReservationTime(rs.getLong("time_id"),
+                            rs.getTime("start_at").toLocalTime()));
+
+            Theme theme = new Theme(rs.getLong("theme_id"),
+                    rs.getString("theme_name"),
+                    rs.getString("description"),
                     rs.getString("thumbnail"));
 
             return new Reservation(rs.getLong("id"), name, dateTime, theme);

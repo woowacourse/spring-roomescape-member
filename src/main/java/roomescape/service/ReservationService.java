@@ -52,4 +52,8 @@ public class ReservationService {
         reservationRepository.deleteReservation(id);
     }
 
+    public List<Reservation> getFilteredReservation(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+
+        return reservationRepository.getFilteredReservations(themeId, memberId, dateFrom, dateTo);
+    }
 }

@@ -6,7 +6,7 @@ import roomescape.model.user.Name;
 
 public class Reservation {
     private final Long id;
-    private final Name name;
+    private final Name name;    // member로 변경 -> 이거 다 터짐
     private final ReservationDateTime reservationDateTime;
     private final Theme theme;
 
