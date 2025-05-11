@@ -1,5 +1,7 @@
 package roomescape.reservation.service;
 
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
@@ -26,7 +28,8 @@ import roomescape.user.fixture.UserFixture;
 import roomescape.user.repository.UserRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@DirtiesContext(classMode = AFTER_CLASS)
 class ReservationServiceTest {
 
     @Autowired

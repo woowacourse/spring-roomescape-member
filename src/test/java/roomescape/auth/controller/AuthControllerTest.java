@@ -1,28 +1,53 @@
 package roomescape.auth.controller;
 
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS;
+
+import io.jsonwebtoken.Claims;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
+import roomescape.auth.JwtTokenProvider;
 import roomescape.auth.domain.dto.TokenRequestDto;
+import roomescape.auth.domain.dto.TokenResponseDto;
+import roomescape.auth.fixture.AuthFixture;
+import roomescape.auth.service.AuthService;
+import roomescape.user.AdminTestDataConfig;
+import roomescape.user.MemberTestDataConfig;
 import roomescape.user.domain.Role;
-import roomescape.user.fixture.UserFixture;
-import roomescape.user.service.UserService;
+import roomescape.user.domain.User;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+        classes = {
+                MemberTestDataConfig.class,
+                AdminTestDataConfig.class
+        })
+//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@DirtiesContext(classMode = AFTER_CLASS)
 class AuthControllerTest {
 
-    private static final String EMAIL = "user@email.com";
-    private static final String PASSWORD = "password";
+    private static final String TOKEN_NAME_FILED = "token";
 
     @Autowired
-    private UserService userService;
+    private AuthService authService;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private MemberTestDataConfig memberConfig;
+    @Autowired
+    private AdminTestDataConfig adminConfig;
+
+    private User member;
+    private User admin;
 
     @LocalServerPort
     int port;
@@ -30,23 +55,20 @@ class AuthControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        member = memberConfig.getSavedMember();
+        admin = adminConfig.getSavedAdmin();
     }
 
     @Nested
     @DisplayName("로그인 기능")
     class login {
 
-        @BeforeEach
-        void setUPLogin() {
-            userService.add(UserFixture.createRequestDto(Role.ROLE_MEMBER, "name", EMAIL, PASSWORD));
-        }
-
         @DisplayName("유효한 이메일과 비밀번호로 로그인을 성공한다.")
         @Test
         void login_success() {
             // given
             // when
-            TokenRequestDto requestDto = new TokenRequestDto(EMAIL, PASSWORD);
+            TokenRequestDto requestDto = new TokenRequestDto(member.getEmail(), member.getPassword());
 
             // then
             RestAssured
@@ -63,9 +85,8 @@ class AuthControllerTest {
         @Test
         void login_throwException_byInvalidEmail() {
             // given
-
             // when
-            TokenRequestDto requestDto = new TokenRequestDto("invalidEmail@example.com", PASSWORD);
+            TokenRequestDto requestDto = new TokenRequestDto("invalidEmail@example.com", member.getPassword());
 
             // then
             RestAssured
@@ -79,5 +100,57 @@ class AuthControllerTest {
         }
     }
 
+    @Nested
+    @DisplayName("토큰 기반 유저 조회 API 테스트")
+    class checkAuth {
+
+        @DisplayName("ROLE_MEMBER 토큰으로 유저 조회 시 200 OK 반환")
+        @Test
+        void checkAuth_success_withRoleISMember() {
+            // given
+            TokenRequestDto requestDto = AuthFixture.createTokenRequestDto(member.getEmail(), member.getPassword());
+            TokenResponseDto responseDto = authService.login(requestDto);
+
+            // when
+            String token = responseDto.accessToken();
+
+            // then
+            RestAssured
+                    .given().log().all()
+                    .cookie(TOKEN_NAME_FILED, token)
+                    .when().get("/login/check")
+                    .then().log().all()
+                    .statusCode(HttpStatus.OK.value());
+
+            Claims claims = jwtTokenProvider.getClaims(token);
+            String actualRoleName = claims.get("role", String.class);
+
+            Assertions.assertThat(actualRoleName).isEqualTo(Role.ROLE_MEMBER.name());
+        }
+
+        @DisplayName("ROLE_ADMIN 토큰으로 유저 조회 시 200 OK 반환")
+        @Test
+        void checkAuth_success_withRoleISAdmin() {
+            // given
+            TokenRequestDto requestDto = AuthFixture.createTokenRequestDto(admin.getEmail(), admin.getPassword());
+            TokenResponseDto responseDto = authService.login(requestDto);
+
+            // when
+            String token = responseDto.accessToken();
+
+            // then
+            RestAssured
+                    .given().log().all()
+                    .cookie(TOKEN_NAME_FILED, token)
+                    .when().get("/login/check")
+                    .then().log().all()
+                    .statusCode(HttpStatus.OK.value());
+
+            Claims claims = jwtTokenProvider.getClaims(token);
+            String actualRoleName = claims.get("role", String.class);
+
+            Assertions.assertThat(actualRoleName).isEqualTo(Role.ROLE_ADMIN.name());
+        }
+    }
 
 }
