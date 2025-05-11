@@ -101,7 +101,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 JOIN reservation_time AS t
                 JOIN theme AS th
                 JOIN member AS m
-                ON r.time_id = t.id AND r.theme_id = th.id
+                ON r.time_id = t.id AND r.theme_id = th.id AND r.member_id = m.id
                 WHERE r.id = ?
                 """;
         return jdbcTemplate.query(
