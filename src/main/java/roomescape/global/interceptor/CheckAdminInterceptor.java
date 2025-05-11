@@ -3,31 +3,32 @@ package roomescape.global.interceptor;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.AuthenticationService;
+import roomescape.auth.JwtProvider;
 import roomescape.dto.TokenInfo;
 import roomescape.model.Role;
 
 @Component
 public class CheckAdminInterceptor implements HandlerInterceptor {
-    private final AuthenticationService authenticationService;
+    private final JwtProvider jwtProvider;
 
-    public CheckAdminInterceptor(final AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
+    public CheckAdminInterceptor(final JwtProvider jwtProvider) {
+        this.jwtProvider = jwtProvider;
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws IOException {
         Cookie[] cookies = request.getCookies();
         String accessToken = extractTokenFromCookie(cookies);
         if (accessToken == null) {
-            throw new IllegalArgumentException("토큰이 존재하지 않습니다.");
+            response.sendRedirect(request.getContextPath() + "/login");
+            return false;
         }
-        TokenInfo tokenInfo = authenticationService.validateTokenAndGetInfo(accessToken);
+        TokenInfo tokenInfo = jwtProvider.validateTokenAndGetInfo(accessToken);
         if (tokenInfo.role().equals(Role.USER.toString())) {
-            System.out.println(tokenInfo.role());
-            System.out.println(Role.USER.toString());
             response.setStatus(401);
             return false;
         }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.auth.AuthenticationService;
+import roomescape.auth.JwtProvider;
 import roomescape.dto.request.LoginMember;
 import roomescape.dto.request.LoginMemberRequest;
 import roomescape.dto.response.MemberResponse;
@@ -19,26 +19,22 @@ import roomescape.service.MemberService;
 @RestController
 @RequestMapping()
 public class MemberController {
-    private final AuthenticationService authenticationService;
+    private final JwtProvider jwtProvider;
     private final MemberService memberService;
 
-    public MemberController(final AuthenticationService authenticationService, final MemberService memberService) {
-        this.authenticationService = authenticationService;
+    public MemberController(final JwtProvider jwtProvider, final MemberService memberService) {
+        this.jwtProvider = jwtProvider;
         this.memberService = memberService;
     }
 
     @PostMapping("/auth/login")
     public ResponseEntity<Void> loginUser(@RequestBody LoginMemberRequest loginMemberRequest,
                                           HttpServletResponse response) {
-        String accessToken = memberService.loginMember(loginMemberRequest);
-
-        Cookie cookie = new Cookie("token", accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-
+        LoginMember loginMember = memberService.loginMember(loginMemberRequest);
+        String accessToken = jwtProvider.generateToken(loginMember);
+        Cookie cookie = createCookie(accessToken);
         response.addCookie(cookie);
         response.setHeader("Keep-Alive", "timeout=60");
-
         return ResponseEntity.ok().build();
 
     }
@@ -53,5 +49,11 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getAllMembers());
     }
 
+    private Cookie createCookie(final String accessToken) {
+        Cookie cookie = new Cookie("token", accessToken);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        return cookie;
+    }
 }
 

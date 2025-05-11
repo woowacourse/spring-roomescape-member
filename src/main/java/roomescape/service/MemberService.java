@@ -2,7 +2,6 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.auth.AuthenticationService;
 import roomescape.dto.request.LoginMember;
 import roomescape.dto.request.LoginMemberRequest;
 import roomescape.dto.response.MemberResponse;
@@ -12,26 +11,22 @@ import roomescape.repository.MemberRepository;
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final AuthenticationService authenticationService;
 
     private final MemberFinder memberFinder;
 
-    public MemberService(final MemberRepository memberRepository, final AuthenticationService authenticationService,
-                         final MemberFinder memberFinder) {
+    public MemberService(final MemberRepository memberRepository, final MemberFinder memberFinder) {
         this.memberRepository = memberRepository;
-        this.authenticationService = authenticationService;
         this.memberFinder = memberFinder;
     }
 
-    public String loginMember(LoginMemberRequest loginMemberRequest) {
+    public LoginMember loginMember(LoginMemberRequest loginMemberRequest) {
 
         Member member = memberRepository.findByEmail(loginMemberRequest.email())
                 .orElseThrow(() -> new IllegalArgumentException("이메일에 해당하는 유저가 없습니다"));
         if (!member.getPassword().equals(loginMemberRequest.password())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
-        return authenticationService.generateToken(member);
-
+        return LoginMember.from(member);
     }
 
     public LoginMember getMemberById(Long id) {
