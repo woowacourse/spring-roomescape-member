@@ -28,7 +28,7 @@ class JdbcMemberDaoTest {
     @DisplayName("같은 이메일 사용자를 조회한다")
     void findMemberByEmail() {
         // given
-        String email = "test@email.com";
+        String email = "test1@email.com";
 
         // when
         Optional<Member> result = jdbcMemberDao.findByEmail(email);
@@ -36,7 +36,7 @@ class JdbcMemberDaoTest {
         // then
         assertThat(result.get())
                 .extracting("id", "name", "email", "password")
-                .containsExactly(1L, "테스트", "test@email.com", "password");
+                .containsExactly(1L, "테스트1", "test1@email.com", "password1");
     }
 
     @Test

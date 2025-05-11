@@ -68,8 +68,8 @@ class AuthControllerTest {
 
     private Map<String, Object> createLoginRequest() {
         return Map.of(
-                "password", "password",
-                "email", "test@email.com"
+                "password", "password1",
+                "email", "test1@email.com"
         );
     }
 }

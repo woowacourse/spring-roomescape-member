@@ -21,12 +21,10 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationControllerTest {
 
-    private static final String NAME = "테스트";
     private static final String DATE = LocalDate.MAX.toString();
     private static final Long TEST_ID = 1L;
     private static final Long TIME_ID = 1L;
     private static final Long THEME_ID = 1L;
-    private static final Long MEMBER_ID = 1L;
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -38,7 +36,7 @@ public class ReservationControllerTest {
                 .when().get("reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(10));
     }
 
     @Test
@@ -61,11 +59,10 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(201)
                 .body("id", not(nullValue()),
-                        "name", is(NAME),
                         "date", is(DATE),
-                        "reservationTime.id", is(TIME_ID),
-                        "theme.id", is(THEME_ID),
-                        "member.id", is(MEMBER_ID)
+                        "reservationTime.id", is(1),
+                        "theme.id", is(1),
+                        "member.id", is(1)
                 );
     }
 

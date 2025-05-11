@@ -42,7 +42,7 @@ class JdbcReservationDaoTest {
 
         // then
         assertAll(
-                () -> assertThat(reservations).hasSize(1),
+                () -> assertThat(reservations).hasSize(10),
                 () -> assertThat(reservation)
                         .extracting("id", "date")
                         .containsExactly(1L, LocalDate.of(2025, 1, 1))
@@ -146,7 +146,7 @@ class JdbcReservationDaoTest {
     @ParameterizedTest
     @CsvSource({
             "1, TRUE",
-            "2, FALSE"
+            "999, FALSE"
     })
     @DisplayName("테마 ID로 예약 존재 여부를 판단한다")
     void existsReservationByThemeId(long themeId, boolean expected) {
@@ -160,9 +160,9 @@ class JdbcReservationDaoTest {
     @ParameterizedTest
     @CsvSource({
             "2025-01-01, 1, TRUE",
-            "2025-01-01, 2, FALSE",
-            "2025-01-02, 1, FALSE",
-            "2025-01-02, 2, FALSE"
+            "2025-01-01, 999, FALSE",
+            "2999-01-02, 1, FALSE",
+            "2999-01-02, 999, FALSE"
     })
     @DisplayName("예약 날짜, 예약 시간 ID로 예약 존재 여부를 판단한다")
     void existsReservationByDateAndTimeId(LocalDate date, Long timeId, boolean expected) {
@@ -176,11 +176,11 @@ class JdbcReservationDaoTest {
     @ParameterizedTest
     @CsvSource({
             "2025-01-01, 1, 1, TRUE",
-            "2025-01-01, 1, 2, FALSE",
-            "2025-01-01, 2, 1, FALSE",
-            "2025-01-02, 1, 1, FALSE",
-            "2025-01-02, 1, 2, FALSE",
-            "2025-01-02, 2, 2, FALSE"
+            "2025-01-15, 1, 2, FALSE",
+            "2025-01-15, 2, 1, FALSE",
+            "2025-01-16, 1, 1, FALSE",
+            "2025-01-16, 1, 2, FALSE",
+            "2025-02-03, 1, 4, TRUE"
     })
     @DisplayName("예약 날짜, 시간 ID, 테마 ID로 예약 존재 여부를 판단한다")
     void existsReservationByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId, boolean expected) {
