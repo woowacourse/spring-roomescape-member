@@ -9,13 +9,14 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
+import roomescape.member.service.out.MemberRepository;
 
 @Repository
-public class MemberRepository {
+public class MemberJdbcRepository implements MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public MemberRepository(JdbcTemplate jdbcTemplate) {
+    public MemberJdbcRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

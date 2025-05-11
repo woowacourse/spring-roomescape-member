@@ -2,7 +2,7 @@ package roomescape.fixture;
 
 import org.springframework.stereotype.Component;
 import roomescape.member.domain.Member;
-import roomescape.member.repository.MemberRepository;
+import roomescape.member.service.out.MemberRepository;
 
 @Component
 public class MemberDbFixture {

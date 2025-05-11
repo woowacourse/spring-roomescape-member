@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.member.controller.request.SignUpRequest;
 import roomescape.member.controller.response.MemberResponse;
 import roomescape.member.domain.Member;
-import roomescape.member.repository.MemberRepository;
+import roomescape.member.service.out.MemberRepository;
 
 @RequiredArgsConstructor
 @Service
