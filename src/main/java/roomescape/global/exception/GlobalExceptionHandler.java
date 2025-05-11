@@ -1,9 +1,13 @@
 package roomescape.global.exception;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -23,6 +27,18 @@ public class GlobalExceptionHandler {
     public String handleBadRequestException(InvalidRequestException exception) {
         LOGGER.error(exception.getMessage());
         return exception.getMessage();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationException(MethodArgumentNotValidException exception) {
+        Map<String, String> body = new HashMap<>();
+
+        for (FieldError fieldError : exception.getBindingResult().getFieldErrors()) {
+            body.put(fieldError.getField(), fieldError.getDefaultMessage());
+        }
+
+        return body;
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -65,7 +81,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public String handleException(Exception exception) {
         LOGGER.error(exception.getMessage());
-        exception.printStackTrace();
         return "서버 내부에서 오류가 발생했습니다.";
     }
 

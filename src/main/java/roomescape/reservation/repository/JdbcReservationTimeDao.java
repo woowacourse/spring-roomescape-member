@@ -70,9 +70,9 @@ public class JdbcReservationTimeDao implements ReservationTimeRepository {
     public Boolean existSameStartAt(LocalTime time) {
         String sql = """
                 SELECT EXISTS(
-                    SELECT 1 
-                    FROM reservation_time 
-                    WHERE start_at =  ?
+                    SELECT 1
+                    FROM reservation_time
+                    WHERE start_at = ?
                 )
                 """;
         return jdbcTemplate.queryForObject(sql, Boolean.class, time);

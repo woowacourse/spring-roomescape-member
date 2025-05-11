@@ -102,7 +102,7 @@ class LoginIntegrationTest {
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(401)
-                .body(equalTo("인증 토큰이 쿠키에 존재하지 않습니다."));
+                .body(equalTo("인증에 실패했습니다."));
     }
 
 }

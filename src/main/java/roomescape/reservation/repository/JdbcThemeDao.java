@@ -91,7 +91,7 @@ public class JdbcThemeDao implements ThemeRepository {
         }
         String holders = String.join(", ", Collections.nCopies(ids.size(), "?"));
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id IN (" + holders + ")";
-        return jdbcTemplate.query(sql, ids.toArray(), rowMapper);
+        return jdbcTemplate.query(sql, rowMapper, ids.toArray());
     }
 
 }

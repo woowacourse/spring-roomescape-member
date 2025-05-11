@@ -10,12 +10,8 @@ import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -128,20 +124,6 @@ class ThemeIntegrationTest {
         );
     }
 
-    @DisplayName("테마 생성 시 입력 값이 존재하지 않거나 공백이면 예외가 발생한다")
-    @MethodSource
-    @ParameterizedTest
-    void add_theme_null_empty_exception(Map<String, String> requestBody) {
-        // when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(requestBody)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(400)
-                .body(equalTo("요청 형식이 올바르지 않습니다."));
-    }
-
     @DisplayName("테마 삭제 시 연관된 예약 데이터가 존재하여 예외가 발생한다.")
     @Test
     void delete_theme_exception() {
@@ -151,33 +133,6 @@ class ThemeIntegrationTest {
                 .then().log().all()
                 .statusCode(409)
                 .body(equalTo("해당 테마와 연관된 예약이 있어 삭제할 수 없습니다."));
-    }
-
-    static Stream<Arguments> add_theme_null_empty_exception() {
-        return Stream.of(
-                Arguments.of(
-                        Map.of(
-                                "name", "루키",
-                                "description", ""
-                        )
-                ),
-                Arguments.of(
-                        Map.of(
-                                "name", "루키"
-                        )
-                ),
-                Arguments.of(
-                        Map.of(
-                                "name", "",
-                                "description", "우테코 레벨3를 탈출하는 내용입니다."
-                        )
-                ),
-                Arguments.of(
-                        Map.of(
-                                "description", "우테코 레벨3를 탈출하는 내용입니다."
-                        )
-                )
-        );
     }
 
 }

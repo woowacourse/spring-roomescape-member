@@ -1,26 +1,18 @@
 package roomescape.reservation.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
-import roomescape.global.exception.error.InvalidRequestException;
 import roomescape.reservation.domain.ReservationTime;
 
 public record ReservationTimeRequest(
-        @JsonFormat(pattern = "HH:mm", timezone = "Asia/Seoul") LocalTime startAt
+        @NotNull(message = "시작 시간을 입력해 주세요.")
+        @JsonFormat(pattern = "HH:mm", timezone = "Asia/Seoul")
+        LocalTime startAt
 ) {
-
-    public ReservationTimeRequest {
-        validateStartAt(startAt);
-    }
 
     public ReservationTime toTimeWithoutId() {
         return new ReservationTime(null, startAt);
-    }
-
-    private void validateStartAt(LocalTime startAt) {
-        if (startAt == null) {
-            throw new InvalidRequestException("시작 시각은 필수입니다.");
-        }
     }
 
 }

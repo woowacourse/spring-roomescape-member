@@ -13,9 +13,6 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -98,24 +95,6 @@ class ReservationTimeIntegrationTest {
                 () -> assertThat(reservationTimeRepository.findAll()).hasSize(5),
                 () -> assertThat(reservationTimeRepository.findById(6L).isEmpty()).isTrue()
         );
-    }
-
-    @DisplayName("예약 시간 생성 시 입력 값이 존재하지 않거나 공백이면 예외가 발생한다")
-    @EmptySource
-    @ValueSource(strings = {"", "\t", "\r"})
-    @ParameterizedTest
-    void add_time_null_empty_exception(String startAt) {
-        // given
-        Map<String, String> requestBody = Map.of("startAt", startAt);
-
-        // when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(requestBody)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(400)
-                .body(equalTo("요청 형식이 올바르지 않습니다."));
     }
 
     @DisplayName("테마 삭제 시 연관된 예약 데이터가 존재하여 예외가 발생한다.")

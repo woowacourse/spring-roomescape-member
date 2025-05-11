@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,7 +38,7 @@ public class ThemeController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ThemeResponse addTheme(@RequestBody ThemeRequest request) {
+    public ThemeResponse addTheme(@Valid @RequestBody ThemeRequest request) {
         return themeService.add(request);
     }
 

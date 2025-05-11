@@ -1,4 +1,4 @@
-package roomescape.auth.view;
+package roomescape.view;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
