@@ -41,9 +41,22 @@ public class MemberController {
         return ResponseEntity.ok(memberService.findAll());
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        expireCookie(response);
+        return ResponseEntity.ok().build();
+    }
+
     private static void createCookie(HttpServletResponse response, LoginResponse loginResponse) {
         Cookie cookie = new Cookie("token", loginResponse.token());
         cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+    }
+
+    private void expireCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setMaxAge(0);
         cookie.setPath("/");
         response.addCookie(cookie);
     }
