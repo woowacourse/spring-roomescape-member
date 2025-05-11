@@ -7,7 +7,7 @@ import roomescape.auth.sign.application.usecase.SignInUseCase;
 import roomescape.auth.sign.application.usecase.SignUpUseCase;
 import roomescape.auth.sign.ui.dto.SignInWebRequest;
 import roomescape.auth.sign.ui.dto.SignUpWebRequest;
-import roomescape.user.application.dto.UserPublicInfoResponse;
+import roomescape.auth.sign.ui.dto.UserSessionResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +25,8 @@ public class SignFacadeImpl implements SignFacade {
     }
 
     @Override
-    public UserPublicInfoResponse signUp(final SignUpWebRequest request) {
-        return UserPublicInfoResponse.from(
+    public UserSessionResponse signUp(final SignUpWebRequest request) {
+        return UserSessionResponse.from(
                 signUpUseCase.execute(request.toServiceRequest()));
     }
 

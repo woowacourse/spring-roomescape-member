@@ -14,7 +14,6 @@ import roomescape.auth.sign.ui.dto.SignInWebRequest;
 import roomescape.auth.sign.ui.dto.SignUpWebRequest;
 import roomescape.auth.sign.ui.dto.UserSessionResponse;
 import roomescape.common.uri.UriFactory;
-import roomescape.user.application.dto.UserPublicInfoResponse;
 
 import java.net.URI;
 
@@ -38,10 +37,12 @@ public class SignController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<Void> create(@RequestBody final SignUpWebRequest request) {
-        final UserPublicInfoResponse response = signFacade.signUp(request);
+    public ResponseEntity<UserSessionResponse> create(@RequestBody final SignUpWebRequest request) {
+        final UserSessionResponse response = signFacade.signUp(request);
+
         // TODO add UserController
-        final URI location = UriFactory.buildPath("/users", String.valueOf(response.id()));
-        return ResponseEntity.created(location).build();
+        final URI location = UriFactory.buildPath("/users", String.valueOf(response.userId()));
+        return ResponseEntity.created(location)
+                .body(response);
     }
 }

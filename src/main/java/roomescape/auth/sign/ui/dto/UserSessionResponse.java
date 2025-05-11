@@ -5,6 +5,7 @@ import lombok.experimental.FieldNameConstants;
 import roomescape.auth.resolver.UserSession;
 import roomescape.common.domain.DomainTerm;
 import roomescape.common.validate.Validator;
+import roomescape.user.domain.User;
 
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 public record UserSessionResponse(Long userId,
@@ -20,6 +21,14 @@ public record UserSessionResponse(Long userId,
                 session.id().getValue(),
                 session.name().getValue(),
                 session.role().name()
+        );
+    }
+
+    public static UserSessionResponse from(final User user) {
+        return new UserSessionResponse(
+                user.getId().getValue(),
+                user.getName().getValue(),
+                user.getRole().name()
         );
     }
 
