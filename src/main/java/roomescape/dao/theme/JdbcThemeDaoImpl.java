@@ -20,7 +20,7 @@ public class JdbcThemeDaoImpl implements ThemeDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertActor;
 
-    public JdbcThemeDaoImpl(JdbcTemplate jdbcTemplate) {
+    public JdbcThemeDaoImpl(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.insertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
@@ -29,28 +29,28 @@ public class JdbcThemeDaoImpl implements ThemeDao {
 
     @Override
     public List<Theme> findAllTheme() {
-        String query = "select * from theme";
+        final String query = "select * from theme";
         return jdbcTemplate.query(query, getThemeRowMapper());
     }
 
     @Override
-    public void saveTheme(Theme theme) {
-        Map<String, Object> parameters = new HashMap<>(3);
+    public void saveTheme(final Theme theme) {
+        final Map<String, Object> parameters = new HashMap<>(3);
         parameters.put("name", theme.getName());
         parameters.put("description", theme.getDescription());
         parameters.put("thumbnail", theme.getThumbnail());
-        Number newId = insertActor.executeAndReturnKey(parameters);
+        final Number newId = insertActor.executeAndReturnKey(parameters);
         theme.setId(newId.longValue());
     }
 
     @Override
-    public void deleteTheme(Long id) {
-        String query = "delete from theme where id = ?";
+    public void deleteTheme(final Long id) {
+        final String query = "delete from theme where id = ?";
 
         try {
-            int deletedRowCount = jdbcTemplate.update(query, id);
+            final int deletedRowCount = jdbcTemplate.update(query, id);
             validateDeleteRowCount(deletedRowCount);
-        } catch (DataIntegrityViolationException e) {
+        } catch (final DataIntegrityViolationException e) {
             throw new InvalidThemeException("삭제하려는 테마는 이미 예약 되어있는 테마 입니다.");
         }
     }
@@ -62,20 +62,21 @@ public class JdbcThemeDaoImpl implements ThemeDao {
     }
 
     @Override
-    public Optional<Theme> findById(Long id) {
-        String query = "select * from theme where id = ?";
+    public Optional<Theme> findById(final Long id) {
+        final String query = "select * from theme where id = ?";
         try {
             return Optional.ofNullable(
                     jdbcTemplate.queryForObject(query, getThemeRowMapper(), id)
             );
-        } catch (EmptyResultDataAccessException e) {
+        } catch (final EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public List<Theme> findAllThemeOfRankBy(LocalDate startDate, LocalDate currentDate, int limitCount) {
-        String query = """
+    public List<Theme> findAllThemeOfRankBy(final LocalDate startDate, final LocalDate currentDate,
+                                            final int limitCount) {
+        final String query = """
                 SELECT id, name, description, thumbnail
                         FROM (
                             SELECT theme_id, COUNT(*) AS reservation_count
@@ -92,7 +93,7 @@ public class JdbcThemeDaoImpl implements ThemeDao {
     }
 
     private RowMapper<Theme> getThemeRowMapper() {
-        return (resultSet, RowNum) -> new Theme(
+        return (resultSet, rowNum) -> new Theme(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),

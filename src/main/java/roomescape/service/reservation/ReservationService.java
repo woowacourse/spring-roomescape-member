@@ -44,20 +44,20 @@ public class ReservationService {
     }
 
     public List<ReservationResponseDto> getAllReservations() {
-        List<Reservation> allReservation = reservationDao.findAllReservation();
+        final List<Reservation> allReservation = reservationDao.findAllReservation();
         return allReservation.stream()
                 .map(ReservationResponseDto::from)
                 .toList();
     }
 
     public ReservationResponseDto saveReservation(final ReservationRequestDto request, final LoginMember loginMember) {
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        ReservationDate reservationDate = getReservationDate((LocalDate.parse(request.date())), currentDateTime);
-        ReservationTime reservationTime = getReservationTime(request.timeId());
-        Theme theme = getTheme(request.themeId());
-        Member member = findMember(loginMember.getId());
+        final LocalDateTime currentDateTime = LocalDateTime.now();
+        final ReservationDate reservationDate = getReservationDate((LocalDate.parse(request.date())), currentDateTime);
+        final ReservationTime reservationTime = getReservationTime(request.timeId());
+        final Theme theme = getTheme(request.themeId());
+        final Member member = findMember(loginMember.id());
 
-        Reservation reservation = createReservation(member, reservationDate, reservationTime, theme);
+        final Reservation reservation = createReservation(member, reservationDate, reservationTime, theme);
         reservation.validateDateTime(reservationDate, reservationTime, currentDateTime);
         validateAlreadyReservation(reservationDate, request.timeId(), request.themeId());
 
@@ -66,13 +66,13 @@ public class ReservationService {
     }
 
     public ReservationResponseDto saveReservation(final AdminReservationRequest request) {
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        ReservationDate reservationDate = getReservationDate(request.date(), currentDateTime);
-        ReservationTime reservationTime = getReservationTime(request.timeId());
-        Theme theme = getTheme(request.themeId());
-        Member member = findMember(request.memberId());
+        final LocalDateTime currentDateTime = LocalDateTime.now();
+        final ReservationDate reservationDate = getReservationDate(request.date(), currentDateTime);
+        final ReservationTime reservationTime = getReservationTime(request.timeId());
+        final Theme theme = getTheme(request.themeId());
+        final Member member = findMember(request.memberId());
 
-        Reservation reservation = createReservation(member, reservationDate, reservationTime, theme);
+        final Reservation reservation = createReservation(member, reservationDate, reservationTime, theme);
         reservation.validateDateTime(reservationDate, reservationTime, currentDateTime);
         validateAlreadyReservation(reservationDate, request.timeId(), request.themeId());
 
@@ -81,7 +81,7 @@ public class ReservationService {
     }
 
     private ReservationDate getReservationDate(final LocalDate date, final LocalDateTime currentDateTime) {
-        ReservationDate reservationDate = new ReservationDate(date);
+        final ReservationDate reservationDate = new ReservationDate(date);
         reservationDate.validateDate(currentDateTime.toLocalDate());
         return reservationDate;
     }
@@ -106,45 +106,45 @@ public class ReservationService {
                 .orElseThrow(() -> new MemberException("로그인하지 않은 회원입니다. 로그인 후에 예약을 할 수 있습니다."));
     }
 
-    private void validateAlreadyReservation(ReservationDate date, Long timeId, Long themeId) {
-        if (reservationDao.existsReservationBy(date.getDate(), timeId, themeId)) {
+    private void validateAlreadyReservation(final ReservationDate date, final Long timeId, final Long themeId) {
+        if (reservationDao.existsReservationBy(date.date(), timeId, themeId)) {
             throw new InvalidReservationException("해당 날짜와 시간에 이미 같은 테마가 예약되어 있습니다.");
         }
     }
 
-    public void deleteReservation(Long id) {
+    public void deleteReservation(final Long id) {
         reservationDao.deleteReservation(id);
     }
 
     public List<AvailableReservationTimeResponseDto> getAvailableReservationTimes(
-            AvailableReservationTimeRequestDto request) {
-        List<ReservationTime> times = reservationTimeDao.findAllReservationTimes();
+            final AvailableReservationTimeRequestDto request) {
+        final List<ReservationTime> times = reservationTimeDao.findAllReservationTimes();
         return times.stream()
                 .map(time -> createAvailableReservationTimeResponseDto(request, time))
                 .toList();
     }
 
     private AvailableReservationTimeResponseDto createAvailableReservationTimeResponseDto(
-            AvailableReservationTimeRequestDto request,
-            ReservationTime time) {
+            final AvailableReservationTimeRequestDto request,
+            final ReservationTime time) {
         if (isAlreadyBookedTime(request.date(), time.getId(), request.themeId())) {
             return AvailableReservationTimeResponseDto.from(time, true);
         }
         return AvailableReservationTimeResponseDto.from(time, false);
     }
 
-    private boolean isAlreadyBookedTime(LocalDate date, Long timeId, Long themeId) {
+    private boolean isAlreadyBookedTime(final LocalDate date, final Long timeId, final Long themeId) {
         return reservationDao.existsReservationBy(date, timeId, themeId);
     }
 
     public List<ReservationResponseDto> findByCondition(final SearchConditionRequest request) {
-        Long themeId = request.themeId();
-        Long memberId = request.memberId();
-        LocalDate dateFrom = request.dateFrom();
-        LocalDate dateTo = request.dateTo();
+        final Long themeId = request.themeId();
+        final Long memberId = request.memberId();
+        final LocalDate dateFrom = request.dateFrom();
+        final LocalDate dateTo = request.dateTo();
 
-        List<Reservation> reservations = reservationDao.findByDate(dateFrom, dateTo);
-        List<Reservation> filterReservations = reservations.stream()
+        final List<Reservation> reservations = reservationDao.findByDate(dateFrom, dateTo);
+        final List<Reservation> filterReservations = reservations.stream()
                 .filter(reservation -> reservation.getMemberId().equals(memberId))
                 .filter(reservation -> reservation.getThemeId().equals(themeId))
                 .toList();

@@ -23,7 +23,7 @@ public class AuthService {
     }
 
     public String createToken(final LoginRequest request) {
-        Member member = findMemberByEmail(request.email());
+        final Member member = findMemberByEmail(request.email());
         member.validatePassword(request.password());
         return jwtTokenProvider.createToken(member);
     }
@@ -34,17 +34,17 @@ public class AuthService {
     }
 
     public MemberNameResponse checkLogin(final String token) {
-        Member member = findMemberByToken(token);
+        final Member member = findMemberByToken(token);
         return MemberNameResponse.from(member);
     }
 
     public LoginMember findLoginMemberByToken(final String token) {
-        Member member = findMemberByToken(token);
+        final Member member = findMemberByToken(token);
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
     private Member findMemberByToken(final String token) {
-        Long id = jwtTokenProvider.getSubjectFromPayloadBy(token);
+        final Long id = jwtTokenProvider.getSubjectFromPayloadBy(token);
         return findMemberById(id);
     }
 

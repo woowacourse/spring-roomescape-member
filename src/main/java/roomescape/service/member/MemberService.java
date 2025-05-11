@@ -24,7 +24,7 @@ public class MemberService {
     }
 
     public List<MemberResponse> findAll() {
-        List<Member> members = memberDao.findAll();
+        final List<Member> members = memberDao.findAll();
         return members.stream()
                 .map(MemberResponse::from)
                 .toList();

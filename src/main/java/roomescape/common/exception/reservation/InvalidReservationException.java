@@ -2,7 +2,7 @@ package roomescape.common.exception.reservation;
 
 public class InvalidReservationException extends RuntimeException {
 
-    public InvalidReservationException(String message) {
+    public InvalidReservationException(final String message) {
         super(message);
     }
 }

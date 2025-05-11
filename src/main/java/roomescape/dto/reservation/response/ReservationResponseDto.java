@@ -13,7 +13,7 @@ public record ReservationResponseDto(
         ReservationTimeResponseDto time,
         ThemeResponseDto theme) {
 
-    public static ReservationResponseDto from(Reservation reservation) {
+    public static ReservationResponseDto from(final Reservation reservation) {
         Member member = reservation.getMember();
         return new ReservationResponseDto(
                 reservation.getId(),

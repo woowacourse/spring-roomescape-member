@@ -32,24 +32,25 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest request, HttpServletResponse response) {
+    public ResponseEntity<Void> login(@RequestBody @Valid final LoginRequest request,
+                                      final HttpServletResponse response) {
         final String accessToken = authService.createToken(request);
-        Cookie cookie = cookieProvider.createCookie(COOKIE_NAME, accessToken);
+        final Cookie cookie = cookieProvider.createCookie(COOKIE_NAME, accessToken);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberNameResponse> checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = jwtExtractor.extractTokenFromCookie(COOKIE_NAME, cookies);
-        MemberNameResponse response = authService.checkLogin(token);
+    public ResponseEntity<MemberNameResponse> checkLogin(final HttpServletRequest request) {
+        final Cookie[] cookies = request.getCookies();
+        final String token = jwtExtractor.extractTokenFromCookie(COOKIE_NAME, cookies);
+        final MemberNameResponse response = authService.checkLogin(token);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
-        Cookie expireCookie = cookieProvider.createExpireCookie(COOKIE_NAME);
+    public ResponseEntity<Void> logout(final HttpServletResponse response) {
+        final Cookie expireCookie = cookieProvider.createExpireCookie(COOKIE_NAME);
         response.addCookie(expireCookie);
         return ResponseEntity.ok().build();
     }

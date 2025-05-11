@@ -35,20 +35,20 @@ public class ReservationController {
 
     @PostMapping("/available-times")
     public List<AvailableReservationTimeResponseDto> readAvailableReservationTimes(
-            @RequestBody AvailableReservationTimeRequestDto request) {
+            @RequestBody final AvailableReservationTimeRequestDto request) {
         return reservationService.getAvailableReservationTimes(request);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponseDto createReservation(
-            @RequestBody @Valid ReservationRequestDto request, LoginMember member) {
+            @RequestBody @Valid final ReservationRequestDto request, final LoginMember member) {
         return reservationService.saveReservation(request, member);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteReservation(@PathVariable(name = "id") Long id) {
+    public void deleteReservation(@PathVariable(name = "id") final Long id) {
         reservationService.deleteReservation(id);
     }
 }

@@ -12,7 +12,7 @@ public class ReservationTimeService {
 
     private final ReservationTimeDao reservationTimeDao;
 
-    public ReservationTimeService(ReservationTimeDao reservationTimeDao) {
+    public ReservationTimeService(final ReservationTimeDao reservationTimeDao) {
         this.reservationTimeDao = reservationTimeDao;
     }
 
@@ -22,14 +22,14 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public ReservationTimeResponseDto saveReservationTime(
-            ReservationTimeRequestDto reservationTimeRequestDto) {
-        ReservationTime reservationTime = reservationTimeRequestDto.toReservationTime();
+    public ReservationTimeResponseDto saveReservationTime(final ReservationTimeRequestDto request) {
+        final ReservationTime reservationTime = request.toReservationTime();
         reservationTimeDao.saveReservationTime(reservationTime);
+
         return ReservationTimeResponseDto.from(reservationTime);
     }
 
-    public void deleteReservationTime(Long id) {
+    public void deleteReservationTime(final Long id) {
         reservationTimeDao.deleteReservationTime(id);
     }
 }

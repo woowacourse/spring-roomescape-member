@@ -20,7 +20,7 @@ public class JdbcMemberDaoImpl implements MemberDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertActor;
 
-    public JdbcMemberDaoImpl(JdbcTemplate jdbcTemplate) {
+    public JdbcMemberDaoImpl(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.insertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("member")
@@ -29,13 +29,13 @@ public class JdbcMemberDaoImpl implements MemberDao {
 
     @Override
     public Long save(final Member member) {
-        Map<String, Object> parameters = new HashMap<>(MEMBER_INITIAL_CAPACITY);
+        final Map<String, Object> parameters = new HashMap<>(MEMBER_INITIAL_CAPACITY);
         parameters.put("name", member.getName());
         parameters.put("email", member.getEmail());
         parameters.put("password", member.getPassword());
         parameters.put("role", member.getRole());
 
-        Number number = insertActor.executeAndReturnKey(parameters);
+        final Number number = insertActor.executeAndReturnKey(parameters);
         return getGeneratedId(number);
     }
 
@@ -45,7 +45,7 @@ public class JdbcMemberDaoImpl implements MemberDao {
 
     @Override
     public Optional<Member> findByEmail(final String email) {
-        String query = "select * from member where email = ?";
+        final String query = "select * from member where email = ?";
         try {
             Member member = jdbcTemplate.queryForObject(query, getMemberRowMapper(), email);
             return Optional.ofNullable(member);
@@ -56,7 +56,7 @@ public class JdbcMemberDaoImpl implements MemberDao {
 
     @Override
     public Optional<Member> findById(final Long id) {
-        String query = "select * from member where id = ?";
+        final String query = "select * from member where id = ?";
         try {
             Member member = jdbcTemplate.queryForObject(query, getMemberRowMapper(), id);
             return Optional.ofNullable(member);
@@ -67,7 +67,7 @@ public class JdbcMemberDaoImpl implements MemberDao {
 
     @Override
     public List<Member> findAll() {
-        String query = "select * from member";
+        final String query = "select * from member";
         return jdbcTemplate.query(query, getMemberRowMapper());
     }
 

@@ -26,13 +26,13 @@ public class MemberController {
 
     @GetMapping
     public ResponseEntity<List<MemberResponse>> getMembers() {
-        List<MemberResponse> response = memberService.findAll();
+        final List<MemberResponse> response = memberService.findAll();
         return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<MemberRegisterResponse> register(@RequestBody @Valid MemberRegisterRequest request) {
-        MemberRegisterResponse response = memberService.register(request);
+    public ResponseEntity<MemberRegisterResponse> register(@RequestBody @Valid final MemberRegisterRequest request) {
+        final MemberRegisterResponse response = memberService.register(request);
         return ResponseEntity.created(URI.create("/members/" + response.id())).body(response);
     }
 

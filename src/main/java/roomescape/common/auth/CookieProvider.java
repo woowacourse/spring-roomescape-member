@@ -14,7 +14,7 @@ public class CookieProvider {
     }
 
     public Cookie createExpireCookie(final String name) {
-        Cookie expireCookie = new Cookie(name, null);
+        final Cookie expireCookie = new Cookie(name, null);
         expireCookie.setMaxAge(0);
         expireCookie.setPath("/");
         return expireCookie;

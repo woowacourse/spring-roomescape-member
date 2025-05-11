@@ -8,20 +8,20 @@ public class ReservationTime {
     private Long id;
     private final LocalTime startAt;
 
-    public ReservationTime(Long id, LocalTime startAt) {
+    public ReservationTime(final Long id, final LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
     }
 
-    public ReservationTime(LocalTime startAt) {
+    public ReservationTime(final LocalTime startAt) {
         this(null, startAt);
     }
 
-    public boolean isBefore(LocalTime currentTime) {
-        return this.startAt.isBefore(currentTime);
+    public boolean isBefore(final LocalTime currentTime) {
+        return startAt.isBefore(currentTime);
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 

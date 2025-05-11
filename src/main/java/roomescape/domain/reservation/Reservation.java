@@ -28,16 +28,17 @@ public class Reservation {
 
     public Reservation(final Member member, final ReservationDate date, final ReservationTime reservationTime,
                        final Theme theme) {
-        this.id = null;
+        id = null;
         this.member = member;
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
     }
 
-    public void validateDateTime(ReservationDate date, ReservationTime time, LocalDateTime currentDateTime) {
-        LocalDate today = currentDateTime.toLocalDate();
-        LocalTime todayTime = currentDateTime.toLocalTime();
+    public void validateDateTime(final ReservationDate date, final ReservationTime time,
+                                 final LocalDateTime currentDateTime) {
+        final LocalDate today = currentDateTime.toLocalDate();
+        final LocalTime todayTime = currentDateTime.toLocalTime();
         if (date.isCurrentDay(today) && time.isBefore(todayTime)) {
             throw new InvalidReservationException("과거 시간으로는 예약할 수 없습니다.");
         }
@@ -47,7 +48,7 @@ public class Reservation {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -60,7 +61,7 @@ public class Reservation {
     }
 
     public LocalDate getDate() {
-        return date.getDate();
+        return date.date();
     }
 
     public ReservationTime getReservationTime() {

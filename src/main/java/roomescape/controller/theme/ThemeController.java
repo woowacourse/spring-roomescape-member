@@ -21,7 +21,7 @@ public class ThemeController {
 
     private final ThemeService themeService;
 
-    public ThemeController(ThemeService themeService) {
+    public ThemeController(final ThemeService themeService) {
         this.themeService = themeService;
     }
 
@@ -37,13 +37,13 @@ public class ThemeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ThemeResponseDto saveTheme(@RequestBody @Valid ThemeRequestDto request) {
+    public ThemeResponseDto saveTheme(@RequestBody @Valid final ThemeRequestDto request) {
         return themeService.saveTheme(request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTheme(@PathVariable Long id) {
+    public void deleteTheme(@PathVariable final Long id) {
         themeService.deleteTheme(id);
     }
 }
