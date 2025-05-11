@@ -50,7 +50,7 @@ public class AuthService {
 
     private Member findMemberById(final Long id) {
         return memberDao.findById(id)
-                .orElseThrow(() -> new InvalidAuthException("회원 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new InvalidAuthException("회원 정보를 찾을 수 없습니다. 회원가입 또는 로그인을 해주세요"));
     }
 
 }
