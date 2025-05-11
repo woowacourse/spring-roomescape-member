@@ -18,7 +18,7 @@ public class AuthService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public String publishToken(LoginRequestDto loginRequestDto) {
+    public String publishLoginToken(LoginRequestDto loginRequestDto) {
         String email = loginRequestDto.email();
         String password = loginRequestDto.password();
 
