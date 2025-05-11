@@ -8,7 +8,7 @@ import roomescape.business.domain.member.Member;
 
 public final class AccessToken {
 
-    private static final Date ACCESS_TOKEN_EXPIRATION = Date.from(Instant.now().plusSeconds(60 * 60 * 24));
+    private static final long ACCESS_TOKEN_VALIDITY_SECONDS = 60 * 60 * 24;
     private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
 
     private final String value;
@@ -26,10 +26,10 @@ public final class AccessToken {
     }
 
     private static String buildTokenByMember(Member member) {
+        Date expiration = Date.from(Instant.now().plusSeconds(ACCESS_TOKEN_VALIDITY_SECONDS));
         return Jwts.builder()
                 .subject(member.getId().toString())
-                .claim("role", member.getRole().value())
-                .expiration(ACCESS_TOKEN_EXPIRATION)
+                .expiration(expiration)
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
     }
