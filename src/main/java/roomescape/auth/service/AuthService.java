@@ -2,9 +2,9 @@ package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.auth.entity.Member;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.auth.repository.JdbcAuthRepository;
+import roomescape.entity.Member;
 import roomescape.exception.impl.HasDuplicatedEmailException;
 import roomescape.exception.impl.MemberNotFountException;
 

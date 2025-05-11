@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.auth.repository.JdbcAuthRepository;
+import roomescape.entity.Member;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
@@ -28,6 +30,9 @@ public class ReservationTimeServiceTest {
     private JdbcReservationTimeRepository reservationTimeRepository;
 
     @Autowired
+    private JdbcAuthRepository authRepository;
+
+    @Autowired
     private JdbcReservationRepository reservationRepository;
 
     @Autowired
@@ -39,6 +44,12 @@ public class ReservationTimeServiceTest {
 
     @BeforeEach
     void setUP() {
+        //사용자 생성
+        Member member = authRepository.save(Member.beforeSave(
+                "레몬",
+                "ywcsuwon@naver.com",
+                "123")
+        );
         //테마 생성
         Theme theme = themeRepository.save(Theme.afterSave(
                 1,
@@ -52,7 +63,13 @@ public class ReservationTimeServiceTest {
                 LocalTime.of(19, 0)
         ));
 
-        Reservation reservation = reservationRepository.save(Reservation.afterSave(1, "레몬", LocalDate.now(), reservationTime, theme));
+        Reservation reservation = reservationRepository.save(Reservation.afterSave(
+                1,
+                LocalDate.now(),
+                member,
+                reservationTime,
+                theme)
+        );
     }
 
     @Test

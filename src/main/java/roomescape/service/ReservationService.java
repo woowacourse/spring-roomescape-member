@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.entity.Member;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
@@ -31,7 +32,7 @@ public class ReservationService {
     }
 
     public Reservation createReservation(
-            final String name,
+            final Member member,
             final LocalDate date,
             final long timeId,
             final long themeId
@@ -43,7 +44,7 @@ public class ReservationService {
             throw new AlreadyReservedException();
         }
 
-        Reservation reservation = Reservation.beforeSave(name, date, reservationTime, theme);
+        Reservation reservation = Reservation.beforeSave(date, member, reservationTime, theme);
         return reservationRepository.save(reservation);
     }
 

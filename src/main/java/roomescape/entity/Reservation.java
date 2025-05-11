@@ -1,52 +1,39 @@
 package roomescape.entity;
 
-import roomescape.exception.impl.*;
+import roomescape.exception.impl.PastDateException;
+import roomescape.exception.impl.ReservationBeforeOpenDayException;
+import roomescape.exception.impl.ReservationThemeNotFoundException;
+import roomescape.exception.impl.ReservationTimeNotFoundException;
 
 import java.time.LocalDate;
 import java.time.Period;
 
 public class Reservation {
 
-    private static final int MAX_NAME_LENGTH = 10;
     private static final int RESERVATION_START_INTERVAL = 7;
 
     private final Long id;
-    private final String name;
     private final LocalDate date;
+    private final Member member;
     private final ReservationTime time;
     private final Theme theme;
 
     private Reservation(
             final Long id,
-            final String name,
+            final Member member,
             final LocalDate date,
             final ReservationTime time,
             final Theme theme
     ) {
-        validateMaxNameLength(name);
-        validateNameDoesNotContainsNumber(name);
         validateTimeIsNull(time);
         validateThemeIsNull(theme);
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    private void validateMaxNameLength(final String name) {
-        if (name.length() > MAX_NAME_LENGTH) {
-            throw new OverMaxNameLengthException();
-        }
-    }
-
-    private void validateNameDoesNotContainsNumber(final String name) {
-        for (char c : name.toCharArray()) {
-            if (Character.isDigit(c)) {
-                throw new NameContainsNumberException();
-            }
-        }
-    }
 
     private void validateTimeIsNull(final ReservationTime time) {
         if (time == null) {
@@ -61,19 +48,18 @@ public class Reservation {
     }
 
     public static Reservation beforeSave(
-            final String name,
             final LocalDate date,
+            final Member member,
             final ReservationTime time,
             final Theme theme
     ) {
         validateDateIsNotPast(date);
         validateDateInterval(date);
-        return new Reservation(null, name, date, time, theme);
+        return new Reservation(null, member, date, time, theme);
     }
 
     private static void validateDateInterval(final LocalDate date) {
         long minusDays = Period.between(LocalDate.now(), date).getDays();
-        System.out.println(minusDays);
         if (minusDays > RESERVATION_START_INTERVAL) {
             throw new ReservationBeforeOpenDayException();
         }
@@ -87,20 +73,20 @@ public class Reservation {
 
     public static Reservation afterSave(
             final long id,
-            final String name,
             final LocalDate date,
+            final Member member,
             final ReservationTime time,
             final Theme theme
     ) {
-        return new Reservation(id, name, date, time, theme);
+        return new Reservation(id, member, date, time, theme);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {

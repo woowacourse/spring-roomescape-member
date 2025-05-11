@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.dto.reservation.ReservationRequest;
 import roomescape.controller.dto.reservation.ReservationResponse;
+import roomescape.entity.Member;
 import roomescape.entity.Reservation;
 import roomescape.service.ReservationService;
 
@@ -28,8 +29,17 @@ public class ReservationApiController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid ReservationRequest request) {
-        Reservation reservation = reservationService.createReservation(request.name(), request.date(), request.timeId(), request.themeId());
+    public ResponseEntity<ReservationResponse> createReservation(
+            @RequestBody @Valid ReservationRequest request,
+            Member member
+    ) {
+
+        Reservation reservation = reservationService.createReservation(
+                member,
+                request.date(),
+                request.timeId(),
+                request.themeId()
+        );
         ReservationResponse response = ReservationResponse.from(reservation);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

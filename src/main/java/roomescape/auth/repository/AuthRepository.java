@@ -1,6 +1,6 @@
 package roomescape.auth.repository;
 
-import roomescape.auth.entity.Member;
+import roomescape.entity.Member;
 
 public interface AuthRepository {
     boolean isExistEmail(String email);

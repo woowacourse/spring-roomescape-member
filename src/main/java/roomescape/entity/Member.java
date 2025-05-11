@@ -1,8 +1,13 @@
-package roomescape.auth.entity;
+package roomescape.entity;
 
 import roomescape.exception.impl.InvalidLoginException;
+import roomescape.exception.impl.NameContainsNumberException;
+import roomescape.exception.impl.OverMaxNameLengthException;
 
 public class Member {
+
+    private static final int MAX_NAME_LENGTH = 10;
+
     private final Long id;
     private final String name;
     private final String email;
@@ -16,6 +21,8 @@ public class Member {
             final String password,
             final Role role
     ) {
+        validateMaxNameLength(name);
+        validateNameDoesNotContainsNumber(name);
         this.id = id;
         this.name = name;
         this.email = email;
@@ -35,6 +42,20 @@ public class Member {
             Role role
     ) {
         return new Member(id, name, email, password, role);
+    }
+
+    private void validateMaxNameLength(final String name) {
+        if (name.length() > MAX_NAME_LENGTH) {
+            throw new OverMaxNameLengthException();
+        }
+    }
+
+    private void validateNameDoesNotContainsNumber(final String name) {
+        for (char c : name.toCharArray()) {
+            if (Character.isDigit(c)) {
+                throw new NameContainsNumberException();
+            }
+        }
     }
 
     public Long getId() {

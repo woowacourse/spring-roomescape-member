@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.auth.repository.JdbcAuthRepository;
+import roomescape.entity.Member;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
@@ -27,6 +29,9 @@ public class ReservationServiceTest {
     private JdbcReservationRepository reservationRepository;
 
     @Autowired
+    private JdbcAuthRepository authRepository;
+
+    @Autowired
     private JdbcReservationTimeRepository reservationTimeRepository;
 
     @Autowired
@@ -34,6 +39,13 @@ public class ReservationServiceTest {
 
     @BeforeEach
     void setUP() {
+        //사용자 생성
+        Member member = authRepository.save(Member.beforeSave(
+                "레몬",
+                "ywcsuwon@naver.com",
+                "123")
+        );
+
         //테마 생성
         Theme theme = themeRepository.save(Theme.afterSave(
                 1,
@@ -49,8 +61,8 @@ public class ReservationServiceTest {
         //예약 생성
         reservationRepository.save(Reservation.afterSave(
                 1,
-                "레몬",
                 LocalDate.now(),
+                member,
                 reservationTime,
                 theme
         ));
@@ -65,7 +77,7 @@ public class ReservationServiceTest {
         // given
         // when
         // then
-        Assertions.assertThatThrownBy(() -> reservationService.createReservation("모코", LocalDate.now(), 1, 1))
+        Assertions.assertThatThrownBy(() -> reservationService.createReservation(Member.beforeSave("모코", "ywcsuwon@naver.com", "123"), LocalDate.now(), 1, 1))
                 .isInstanceOf(AlreadyReservedException.class);
 
     }
