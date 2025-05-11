@@ -22,6 +22,7 @@ import roomescape.application.dto.ReservationResponse;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -39,6 +40,9 @@ class ReservationServiceTest {
 
     @Mock
     private ReservationTimeDao reservationTimeDao;
+
+    @Mock
+    private MemberService memberService;
 
     @Mock
     private ThemeDao themeDao;
@@ -83,10 +87,14 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가한다")
     void createReservation() {
         // given
+        LoginMember loginMember = new LoginMember(1L, "name");
         Member member = new Member("name", "test@email.com", "password", Role.ADMIN);
         ReservationRequest request = new ReservationRequest(LocalDate.now(), 1L, 1L);
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         Theme theme = new Theme(1L, "테마", "설명", "썸네일");
+
+        doReturn(member).when(memberService)
+                .findById(1L);
 
         doReturn(reservationTime).when(reservationTimeDao)
                 .findById(1L);
@@ -98,14 +106,15 @@ class ReservationServiceTest {
                 .save(any());
 
         // when
-        ReservationResponse response = reservationService.createReservation(member, request);
+        ReservationResponse response = reservationService.createReservation(loginMember, request);
 
         // then
         assertThat(response)
-                .extracting("id", "name", "date")
-                .containsExactly(1L, "name", LocalDate.now());
+                .extracting("id", "date")
+                .containsExactly(1L, LocalDate.now());
 
         // verify
+        verify(memberService, times(1)).findById(1L);
         verify(reservationTimeDao, times(1)).findById(1L);
         verify(themeDao, times(1)).findById(1L);
         verify(reservationDao, times(1)).save(any());

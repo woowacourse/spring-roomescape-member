@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 import roomescape.application.dto.AdminReservationCreateRequest;
 import roomescape.application.dto.ReservationRequest;
 import roomescape.application.dto.ReservationResponse;
-import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -23,14 +23,14 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
-    private final MemberDao memberDao;
+    private final MemberService memberService;
 
     public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao,
-                              ThemeDao themeDao, MemberDao memberDao) {
+                              ThemeDao themeDao, MemberService memberService) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
-        this.memberDao = memberDao;
+        this.memberService = memberService;
     }
 
     public List<ReservationResponse> findAllReservations() {
@@ -52,7 +52,9 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse createReservation(Member member, ReservationRequest request) {
+    public ReservationResponse createReservation(LoginMember loginMember, ReservationRequest request) {
+        Member member = memberService.findById(loginMember.getId());
+
         Reservation reservationWithoutId = toReservation(member, request);
         validateForCreation(reservationWithoutId);
 
@@ -61,8 +63,7 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(AdminReservationCreateRequest request) {
-        Member member = memberDao.findById(request.memberId())
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자가 없습니다."));
+        Member member = memberService.findById(request.memberId());
 
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
         Theme theme = themeDao.findById(request.themeId());
