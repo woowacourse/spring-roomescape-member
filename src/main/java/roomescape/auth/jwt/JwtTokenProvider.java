@@ -26,7 +26,7 @@ public class JwtTokenProvider {
 
     @PostConstruct
     public void init() {
-        byte[] keyBytes = Base64.getDecoder().decode(secretKey);
+        final byte[] keyBytes = Base64.getDecoder().decode(secretKey);
 
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
@@ -34,8 +34,8 @@ public class JwtTokenProvider {
     public String createToken(Member member) {
         Claims claims = Jwts.claims().setSubject(String.valueOf(member.getId()));
 
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
+        final Date now = new Date();
+        final Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
                 .setClaims(claims)

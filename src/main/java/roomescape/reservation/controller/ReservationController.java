@@ -37,7 +37,7 @@ public class ReservationController {
 
         final CreateReservationServiceRequest creation =
                 CreateReservationServiceRequest.fromUserRequestAndMember(request, member);
-        Reservation savedReservation = reservationService.addReservation(creation);
+        final Reservation savedReservation = reservationService.addReservation(creation);
 
         return ReservationResponse.from(savedReservation);
     }
@@ -49,7 +49,7 @@ public class ReservationController {
 
         final CreateReservationServiceRequest creation =
                 CreateReservationServiceRequest.fromAdminRequestAndMember(request);
-        Reservation savedReservation = reservationService.addReservation(creation);
+        final Reservation savedReservation = reservationService.addReservation(creation);
 
         return ReservationResponse.from(savedReservation);
     }

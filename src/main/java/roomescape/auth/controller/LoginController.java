@@ -26,19 +26,19 @@ public class LoginController {
 
     @PostMapping("/login")
     public void tokenLogin(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        CreateTokenServiceRequest request = CreateTokenServiceRequest.from(loginRequest);
+        final CreateTokenServiceRequest request = CreateTokenServiceRequest.from(loginRequest);
 
-        String token = authService.createToken(request);
-        ResponseCookie cookie = authService.createCookie(token);
+        final String token = authService.createToken(request);
+        final ResponseCookie cookie = authService.createCookie(token);
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
     @GetMapping("/login/check")
     public MemberNameResponse checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = authService.extractTokenFromCookie(cookies);
-        Member member = authService.findMember(token);
+        final Cookie[] cookies = request.getCookies();
+        final String token = authService.extractTokenFromCookie(cookies);
+        final Member member = authService.findMember(token);
 
         return MemberNameResponse.from(member);
     }

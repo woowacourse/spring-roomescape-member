@@ -23,7 +23,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
         final Cookie[] cookies = request.getCookies();
 
         final String token = authService.extractTokenFromCookie(cookies);
-        Member member = authService.findMember(token);
+        final Member member = authService.findMember(token);
 
         if (member == null || !member.getRole().equals("Admin")) {
             response.setStatus(401);

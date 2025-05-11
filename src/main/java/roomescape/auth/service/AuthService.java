@@ -17,24 +17,24 @@ public class AuthService {
     private final MemberDao memberDao;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthService(final MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
+    public AuthService(final MemberDao memberDao, final JwtTokenProvider jwtTokenProvider) {
         this.memberDao = memberDao;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public String createToken(CreateTokenServiceRequest request) {
-        Member member = findMemberByEmail(request.email());
+    public String createToken(final CreateTokenServiceRequest request) {
+        final Member member = findMemberByEmail(request.email());
         member.validateRightPassword(request.password());
 
         return jwtTokenProvider.createToken(member);
     }
 
-    private Member findMemberByEmail(String email) {
+    private Member findMemberByEmail(final String email) {
         return memberDao.findByEmail(email)
                 .orElseThrow(() -> new AuthorizationException("존재하지 않는 이메일 입니다"));
     }
 
-    public ResponseCookie createCookie(String accessToken) {
+    public ResponseCookie createCookie(final String accessToken) {
         return ResponseCookie.from("token", accessToken)
                 .httpOnly(true)
                 .secure(false)
