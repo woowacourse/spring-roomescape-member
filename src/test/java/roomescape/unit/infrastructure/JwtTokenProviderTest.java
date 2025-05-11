@@ -31,7 +31,7 @@ class JwtTokenProviderTest {
         // given
         tokenProvider = new JwtTokenProvider(
                 "testtesttesttesttestkeykeykeykeykeykeykeykeykey",
-                100L
+                0L
         );
         String token = tokenProvider.createToken("payload", Role.MEMBER);
         // when & then
