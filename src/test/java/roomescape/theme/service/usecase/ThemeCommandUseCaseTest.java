@@ -1,10 +1,11 @@
 package roomescape.theme.service.usecase;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.NotFoundException;
+import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.service.dto.CreateThemeServiceRequest;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
@@ -19,15 +20,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@SpringBootTest
 @Transactional
 class ThemeCommandUseCaseTest {
 
-    @Autowired
     private ThemeCommandUseCase themeCommandUseCase;
-
-    @Autowired
     private ThemeRepository themeRepository;
+
+    @BeforeEach
+    void setUp() {
+        themeRepository = new FakeThemeRepository();
+        themeCommandUseCase = new ThemeCommandUseCase(themeRepository);
+    }
 
     @Test
     @DisplayName("테마를 저장할 수 있다")
@@ -84,12 +87,11 @@ class ThemeCommandUseCaseTest {
     @DisplayName("저장되지 않은 테마를 삭제할 수 없다")
     void cannotDelete() {
         // given
-        final ThemeId unassigned = ThemeId.unassigned();
+        final ThemeId themeId = ThemeId.from(100L);
 
         // when
         // then
-        assertThatThrownBy(() -> themeCommandUseCase.delete(unassigned))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("저장되지 않아 식별할 수 없습니다.");
+        assertThatThrownBy(() -> themeCommandUseCase.delete(themeId))
+                .isInstanceOf(NotFoundException.class);
     }
 }

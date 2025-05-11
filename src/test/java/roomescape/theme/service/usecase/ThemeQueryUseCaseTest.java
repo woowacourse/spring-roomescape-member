@@ -1,44 +1,63 @@
 package roomescape.theme.service.usecase;
 
 import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.member.domain.Account;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberEmail;
+import roomescape.member.domain.MemberName;
+import roomescape.member.domain.Password;
+import roomescape.member.domain.Role;
+import roomescape.member.repository.FakeMemberRepository;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
+import roomescape.reservation.repository.FakeReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.domain.ReserverName;
+import roomescape.reservation.service.usecase.ReservationQueryUseCase;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeName;
+import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.FakeReservationTimeRepository;
 import roomescape.time.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import roomescape.time.service.usecase.ReservationTimeQueryUseCase;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
 @Transactional
 class ThemeQueryUseCaseTest {
 
-    @Autowired
     private ThemeQueryUseCase themeQueryUseCase;
-
-    @Autowired
     private ThemeRepository themeRepository;
-
-    @Autowired
     private ReservationRepository reservationRepository;
-
-    @Autowired
     private ReservationTimeRepository reservationTimeRepository;
+    private MemberRepository memberRepository;
+
+    @BeforeEach
+    void setUp() {
+        themeRepository = new FakeThemeRepository();
+        reservationRepository = new FakeReservationRepository();
+        reservationTimeRepository = new FakeReservationTimeRepository();
+        memberRepository = new FakeMemberRepository();
+
+        ReservationTimeQueryUseCase reservationTimeQueryUseCase = new ReservationTimeQueryUseCase(
+                reservationTimeRepository);
+        ReservationQueryUseCase reservationQueryUseCase = new ReservationQueryUseCase(reservationRepository,
+                reservationTimeQueryUseCase);
+
+        themeQueryUseCase = new ThemeQueryUseCase(themeRepository, reservationQueryUseCase);
+    }
 
     @Test
     @DisplayName("테마를 모두 조회할 수 있다")
@@ -135,19 +154,27 @@ class ThemeQueryUseCaseTest {
                 ThemeThumbnail.from("https://example.com/train.jpg")));
 
         final ReservationDate date = ReservationDate.from(LocalDate.now().plusDays(1L));
+
         final ReservationTime time = reservationTimeRepository.save(
-                ReservationTime.withoutId(LocalTime.of(12, 0)));
+                ReservationTime.withoutId(LocalTime.of(20, 0)));
 
         final Theme[] themes = {
                 theme1, theme2, theme3, theme4, theme5, theme6,
                 theme7, theme8, theme9, theme10, theme11, theme12
         };
 
+        final Member member = memberRepository.save(
+                Account.of(
+                        Member.withoutId(MemberName.from("강산"),
+                                MemberEmail.from("123@gmail.com"),
+                                Role.MEMBER),
+                        Password.from("1234")));
+
         for (int i = 0; i < themes.length; i++) {
             if (i == 3) {
                 for (int j = 0; j < 20; j++) {
                     reservationRepository.save(Reservation.withoutId(
-                            ReserverName.from("member" + i + "_" + j),
+                            member,
                             ReservationDate.from(date.getValue().plusDays(j)),
                             time,
                             themes[i]));
@@ -155,7 +182,7 @@ class ThemeQueryUseCaseTest {
             } else {
                 for (int j = 0; j < 11 - i; j++) {
                     reservationRepository.save(Reservation.withoutId(
-                            ReserverName.from("member" + i + "_" + j),
+                            member,
                             ReservationDate.from(date.getValue().plusDays(j)),
                             time,
                             themes[i]

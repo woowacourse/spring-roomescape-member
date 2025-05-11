@@ -1,17 +1,24 @@
 package roomescape.reservation.service.usecase;
 
 import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.member.domain.Account;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberEmail;
+import roomescape.member.domain.MemberName;
+import roomescape.member.domain.Password;
+import roomescape.member.domain.Role;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.service.dto.AvailableReservationTimeServiceRequest;
 import roomescape.reservation.service.dto.AvailableReservationTimeServiceResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.domain.ReserverName;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeName;
@@ -43,27 +50,41 @@ class ReservationQueryUseCaseTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
+    private ReservationTime reservationTime;
+
+    @BeforeEach
+    void setUp() {
+        reservationTime = reservationTimeRepository.save(
+                ReservationTime.withoutId(LocalTime.of(18, 0)));
+    }
+
     @Test
     @DisplayName("예약을 조회할 수 있다")
     void createAndFindReservation() {
         // given
-        final ReservationTime reservationTime = reservationTimeRepository.save(
-                ReservationTime.withoutId(
-                        LocalTime.of(10, 0)));
-
         final Theme theme = themeRepository.save(
                 Theme.withoutId(ThemeName.from("공포"),
                         ThemeDescription.from("지구별 방탈출 최고"),
                         ThemeThumbnail.from("www.making.com")));
 
+        final Member member = memberRepository.save(
+                Account.of(Member.withoutId(
+                                MemberName.from("강산"),
+                                MemberEmail.from("123@gmail.com"),
+                                Role.MEMBER),
+                        Password.from("1234")));
+
         final Reservation given1 = Reservation.withoutId(
-                ReserverName.from("강산"),
+                member,
                 ReservationDate.from(LocalDate.now().plusDays(1)),
                 reservationTime,
                 theme);
 
         final Reservation given2 = Reservation.withoutId(
-                ReserverName.from("강산2"),
+                member,
                 ReservationDate.from(LocalDate.now().plusDays(1)),
                 reservationTime,
                 theme);
@@ -91,21 +112,29 @@ class ReservationQueryUseCaseTest {
         // given
         final ReservationTime booked = reservationTimeRepository.save(
                 ReservationTime.withoutId(
-                        LocalTime.of(10, 0)));
+                        LocalTime.of(10, 18)));
 
         final ReservationTime unbooked = reservationTimeRepository.save(
                 ReservationTime.withoutId(
-                        LocalTime.of(11, 0)));
+                        LocalTime.of(22, 45)));
 
         final Theme theme = themeRepository.save(
                 Theme.withoutId(ThemeName.from("공포"),
                         ThemeDescription.from("지구별 방탈출 최고"),
                         ThemeThumbnail.from("www.making.com")));
 
+        final Member member = memberRepository.save(
+                Account.of(Member.withoutId(
+                                MemberName.from("강산"),
+                                MemberEmail.from("123@gmail.com"),
+                                Role.MEMBER),
+                        Password.from("1234"))
+        );
+
         final ReservationDate date = ReservationDate.from(LocalDate.now().plusDays(1));
 
         final Reservation reservation = reservationRepository.save(Reservation.withoutId(
-                ReserverName.from("강산"),
+                member,
                 date,
                 booked,
                 theme));
@@ -118,7 +147,7 @@ class ReservationQueryUseCaseTest {
         SoftAssertions.assertSoftly(softAssertions -> {
 
             assertThat(timesWithAvailability)
-                    .hasSize(2);
+                    .hasSize(4);
 
             assertThat(timesWithAvailability.stream().filter(AvailableReservationTimeServiceResponse::isBooked))
                     .hasSize(1);

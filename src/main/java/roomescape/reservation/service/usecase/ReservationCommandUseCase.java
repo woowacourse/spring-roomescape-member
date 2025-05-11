@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.common.exception.ConflictException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberId;
-import roomescape.member.service.MemberService;
+import roomescape.member.service.usecase.MemberQueryUseCase;
 import roomescape.reservation.service.converter.ReservationConverter;
 import roomescape.reservation.service.dto.CreateReservationServiceRequest;
 import roomescape.reservation.domain.Reservation;
@@ -27,7 +27,7 @@ public class ReservationCommandUseCase {
     private final ReservationQueryUseCase reservationQueryUseCase;
     private final ReservationTimeQueryUseCase reservationTimeQueryUseCase;
     private final ThemeQueryUseCase themeQueryUseCase;
-    private final MemberService memberService;
+    private final MemberQueryUseCase memberQueryUseCase;
 
     public Reservation create(final CreateReservationServiceRequest createReservationServiceRequest) {
         if (reservationQueryUseCase.existsByParams(
@@ -44,7 +44,7 @@ public class ReservationCommandUseCase {
         final Theme theme = themeQueryUseCase.get(
                 ThemeId.from(createReservationServiceRequest.themeId()));
 
-        final Member member = memberService.get(
+        final Member member = memberQueryUseCase.get(
                 MemberId.from(createReservationServiceRequest.memberId()));
 
         return reservationRepository.save(
