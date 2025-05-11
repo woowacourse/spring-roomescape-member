@@ -39,6 +39,7 @@ class ReservationTest extends BaseTest {
     private static final Map<String, Object> authOfMember = new HashMap<>();
     private static final Map<String, String> admin = new HashMap<>();
     private static final Map<String, Object> authOfAdmin = new HashMap<>();
+    private static final Map<String, Object> adminReservation = new HashMap<>();
 
     @BeforeEach
     void setUp() {
@@ -48,6 +49,7 @@ class ReservationTest extends BaseTest {
         setUpMemberAndLogin();
         setUpReservation();
         setUpAdminAndLogin();
+        setUpAdminReservation();
     }
 
     private void setUpTime() {
@@ -82,6 +84,13 @@ class ReservationTest extends BaseTest {
 
         authOfAdmin.put("email", "test2@email.com");
         authOfAdmin.put("password", "pass2");
+    }
+
+    private void setUpAdminReservation() {
+        adminReservation.put("date", "2025-08-05");
+        adminReservation.put("timeId", 1);
+        adminReservation.put("themeId", 1);
+        adminReservation.put("memberId", 1);
     }
 
     @Nested
@@ -164,7 +173,7 @@ class ReservationTest extends BaseTest {
     class Reservation {
 
         @Test
-        void 방탈출_예약을_생성_조회_삭제한다() {
+        void 사용자가_방탈출_예약을_생성_조회_삭제한다() {
             givenCreatedReservationTime();
             givenCreatedTheme();
             givenCreatedMember();
@@ -197,6 +206,22 @@ class ReservationTest extends BaseTest {
                     .then().log().all()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", is(0));
+        }
+
+        @Test
+        void 관리자가_방탈출_예약을_생성한다() {
+            givenCreatedReservationTime();
+            givenCreatedTheme();
+            givenCreatedAdmin();
+            String token = givenAdminLoginToken();
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .cookie("token", token)
+                    .body(adminReservation)
+                    .when().post("/admin/reservations")
+                    .then().log().all()
+                    .statusCode(HttpStatus.CREATED.value());
         }
 
         @Test
