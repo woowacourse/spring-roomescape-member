@@ -1,5 +1,6 @@
 let isEditing = false;
 const RESERVATION_API_ENDPOINT = '/reservations';
+const QUERY_RESERVATION_API_ENDPOINT = '/reservations/filter';
 const TIME_API_ENDPOINT = '/times';
 const THEME_API_ENDPOINT = '/themes';
 const MEMBER_API_ENDPOINT = '/members';
@@ -195,11 +196,41 @@ function applyFilter(event) {
   const dateFrom = document.getElementById('date-from').value;
   const dateTo = document.getElementById('date-to').value;
 
-  /*
-  TODO: [6단계] 예약 검색 - 조건에 따른 예약 조회 API 호출
-        요청 포맷에 맞게 설정
-  */
-  fetch('/', { // 예약 검색 API 호출
+  /* [6단계] 예약 검색 - 조건에 따른 예약 조회 API 호출
+     요청 포맷에 맞게 설정*/
+
+  let endPoint = QUERY_RESERVATION_API_ENDPOINT;
+  let isAppend = false;
+  if (themeId) {
+    endPoint += '?themeId=' + themeId;
+    isAppend = true;
+  }
+  if (memberId) {
+    if (isAppend) {
+      endPoint += '&memberId=' + memberId;
+    } else {
+      endPoint += '?memberId=' + memberId;
+    }
+    isAppend = true;
+  }
+  if (dateFrom) {
+    if (isAppend) {
+      endPoint += '&dateFrom=' + dateFrom;
+    } else {
+      endPoint += '?dateFrom=' + dateFrom;
+    }
+    isAppend = true;
+  }
+  if (dateTo) {
+    if (isAppend) {
+      endPoint += '&dateTo=' + dateTo;
+    } else {
+      endPoint += '?dateTo=' + dateTo;
+    }
+    isAppend = true;
+  }
+
+  fetch(endPoint.toString(), { // 예약 검색 API 호출
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

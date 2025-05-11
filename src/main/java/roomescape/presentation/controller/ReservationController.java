@@ -53,6 +53,20 @@ public class ReservationController {
         return ResponseEntity.ok(reservationResponses);
     }
 
+    @GetMapping("/filter")
+    public ResponseEntity<List<ReservationResponse>> readFilter(
+            @RequestParam(required = false) final Long memberId,
+            @RequestParam(required = false) final Long themeId,
+            @RequestParam(required = false) final LocalDate dateFrom,
+            @RequestParam(required = false) final LocalDate dateTo
+    ) {
+        final List<ReservationResponse> reservationResponses = reservationService.findAllFilter(
+                memberId, themeId, dateFrom, dateTo
+        );
+
+        return ResponseEntity.ok(reservationResponses);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final Long id) {
         reservationService.deleteById(id);

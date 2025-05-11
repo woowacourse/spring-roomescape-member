@@ -11,6 +11,8 @@ public interface ReservationDao {
 
     List<Reservation> findAll();
 
+    List<Reservation> findAllByFilter(Long memberId, Long themeId, LocalDate startDate, LocalDate endDate);
+
     Optional<Reservation> findById(Long id);
 
     List<Reservation> findByDateBetween(String startDate, String endDate);

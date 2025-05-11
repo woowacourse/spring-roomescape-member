@@ -54,15 +54,31 @@ public class ReservationServiceTest {
     @DisplayName("방탈출 예약 요청 객체로 방탈출 예약을 저장한다")
     void insert() {
         // when
-        final ReservationResponse reservationResponse = reservationService.insert(MAX_DATE_FIXTURE, memberId, timeId, themeId);
+        final ReservationResponse reservationResponse = reservationService.insert(MAX_DATE_FIXTURE, memberId, timeId,
+                themeId);
 
         // then
         assertAll(
-                // TODO response 본문 전부 테스트하기
                 () -> assertThat(reservationResponse.date()).isEqualTo(MAX_DATE_FIXTURE),
-                () -> assertThat(reservationResponse.member().id()).isEqualTo(memberId),
-                () -> assertThat(reservationResponse.time().id()).isEqualTo(timeId),
-                () -> assertThat(reservationResponse.theme().id()).isEqualTo(themeId)
+                // member
+                () -> assertThat(reservationResponse.member()
+                        .id()).isEqualTo(memberId),
+                ()-> assertThat(reservationResponse.member()
+                        .name()).isEqualTo("kim"),
+                () -> assertThat(reservationResponse.member()
+                        .email()).isEqualTo("email@test.com"),
+                // reservation_time
+                () -> assertThat(reservationResponse.time()
+                        .id()).isEqualTo(timeId),
+                () -> assertThat(reservationResponse.time()
+                        .startAt()).isEqualTo("14:00"),
+                // theme
+                () -> assertThat(reservationResponse.theme()
+                        .id()).isEqualTo(themeId),
+                () -> assertThat(reservationResponse.theme()
+                        .name()).isEqualTo("평범"),
+                () -> assertThat(reservationResponse.theme()
+                        .description()).isEqualTo("평범한 테마입니다.")
         );
     }
 
@@ -127,25 +143,40 @@ public class ReservationServiceTest {
     @DisplayName("모든 방탈출 예약을 조회한다")
     void findAll() {
         // given
-        final ReservationResponse expected1 = reservationService.insert(MAX_DATE_FIXTURE, memberId, timeId, themeId);
-        final ReservationResponse expected2 = reservationService.insert(MAX_DATE_FIXTURE.minusDays(1), memberId, timeId,
-                themeId);
+        // sql-data-reservationService.sql
+        // 4개의 방탈출 예약이 존재한다.
 
         // when
         final List<ReservationResponse> reservationResponses = reservationService.findAll();
 
         // then
-        assertAll(
-                () -> assertThat(reservationResponses).hasSize(2),
-                () -> assertThat(reservationResponses).contains(expected1, expected2)
-        );
+        assertThat(reservationResponses).hasSize(4);
+    }
+
+    @Test
+    @DisplayName("모든 방탈출 예약을 필터링하여 조회한다")
+    void findAllFilter() {
+        // given
+        // sql-data-reservationService.sql
+        final Long memberId = 100L;
+        final Long themeId = 100L;
+        final LocalDate startDate = LocalDate.of(2025, 5, 9);
+        final LocalDate endDate = null;
+
+        // when
+        final List<ReservationResponse> reservationResponses = reservationService.findAllFilter(memberId, themeId,
+                startDate, endDate);
+
+        // then
+        assertThat(reservationResponses).hasSize(2);
     }
 
     @Test
     @DisplayName("id를 통해 방탈출 예약을 삭제한다")
     void deleteById() {
         // given
-        final ReservationResponse reservationResponse = reservationService.insert(MAX_DATE_FIXTURE, memberId, timeId, themeId);
+        final ReservationResponse reservationResponse = reservationService.insert(MAX_DATE_FIXTURE, memberId, timeId,
+                themeId);
         final Long id = reservationResponse.id();
 
         // when

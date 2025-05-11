@@ -36,7 +36,7 @@ public class ReservationService {
     }
 
     public ReservationResponse insert(final LocalDate date, final Long memberId, final Long timeId,
-                                       final Long themeId
+                                      final Long themeId
     ) {
         validateMemberIdExists(memberId);
         validateTimeIdExists(timeId);
@@ -87,6 +87,14 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationDao.findAll()
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    public List<ReservationResponse> findAllFilter(final Long memberId, final Long themeId, final LocalDate startDate,
+                                                   final LocalDate endDate) {
+        return reservationDao.findAllByFilter(memberId, themeId, startDate, endDate)
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();

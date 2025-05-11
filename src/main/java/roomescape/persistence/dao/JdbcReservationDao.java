@@ -2,6 +2,7 @@ package roomescape.persistence.dao;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,6 +105,57 @@ public class JdbcReservationDao implements ReservationDao {
                         ON r.theme_id = t.id
                 """;
         return jdbcTemplate.query(sql, reservationFullRowMapper);
+    }
+
+    @Override
+    public List<Reservation> findAllByFilter(final Long memberId, final Long themeId, final LocalDate startDate,
+                                             final LocalDate endDate) {
+        final StringBuilder sql = new StringBuilder("""
+                SELECT
+                    r.id AS id,
+                    r.date AS date,
+                
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.role AS member_role,
+                    m.email AS member_email,
+                    m.password AS member_password,
+                
+                    rt.id AS time_id,
+                    rt.start_at AS time_start_at,
+                
+                    t.id AS theme_id,
+                    t.name AS theme_name,
+                    t.description AS theme_description,
+                    t.thumbnail AS theme_thumbnail
+                FROM reservation AS r
+                    INNER JOIN member AS m
+                        ON r.member_id = m.id
+                    INNER JOIN reservation_time AS rt
+                        ON r.time_id = rt.id
+                    INNER JOIN theme AS t
+                        ON r.theme_id = t.id
+                WHERE 1 = 1
+                """
+        );
+        final List<Object> params = new ArrayList<>();
+        if (memberId != null) {
+            sql.append(" AND r.member_id = ?");
+            params.add(memberId);
+        }
+        if (themeId != null) {
+            sql.append(" AND r.theme_id = ?");
+            params.add(themeId);
+        }
+        if (startDate != null) {
+            sql.append(" AND r.date >= ?");
+            params.add(startDate);
+        }
+        if (endDate != null) {
+            sql.append(" AND r.date <= ?");
+            params.add(endDate);
+        }
+        return jdbcTemplate.query(sql.toString(), reservationFullRowMapper, params.toArray());
     }
 
     @Override
