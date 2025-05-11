@@ -76,6 +76,7 @@ class AuthenticationServiceTest {
         // when
         User foundUser = service.getUserByToken(issuedToken);
 
+        // then
         assertThat(foundUser).isEqualTo(user);
     }
 
@@ -93,7 +94,7 @@ class AuthenticationServiceTest {
 
         var issuedToken = service.issueToken(user.email(), user.password());
 
-        // when
+        // when & then
         assertThatThrownBy(() -> service.getUserByToken(issuedToken))
             .isInstanceOf(AuthorizationException.class);
     }

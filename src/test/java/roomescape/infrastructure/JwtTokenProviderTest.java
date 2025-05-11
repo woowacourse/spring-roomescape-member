@@ -73,6 +73,7 @@ class JwtTokenProviderTest {
         var authenticationInfo = new AuthenticationInfo(1L, UserRole.ADMIN);
         var token = tokenProvider.createToken(authenticationInfo);
         var forgedToken = token.substring(0, token.length() - 1);
+
         // when
         boolean isValidToken = tokenProvider.isValidToken(forgedToken);
 
