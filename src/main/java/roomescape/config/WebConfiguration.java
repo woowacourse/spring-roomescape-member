@@ -1,0 +1,24 @@
+package roomescape.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import roomescape.auth.service.AuthService;
+import roomescape.common.resolver.LoginMemberArgumentResolver;
+
+import java.util.List;
+
+@Configuration
+public class WebConfiguration implements WebMvcConfigurer {
+
+    private final AuthService authService;
+
+    public WebConfiguration(AuthService authService) {
+        this.authService = authService;
+    }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(new LoginMemberArgumentResolver(authService));
+    }
+}
