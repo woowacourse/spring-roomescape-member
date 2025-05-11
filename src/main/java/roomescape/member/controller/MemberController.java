@@ -16,7 +16,7 @@ import roomescape.member.dto.request.MemberRequest.MemberCreateRequest;
 import roomescape.member.dto.response.MemberResponse.MemberCreateResponse;
 import roomescape.member.dto.response.MemberResponse.MemberReadResponse;
 import roomescape.member.entity.RoleType;
-import roomescape.member.service.MemberService;
+import roomescape.member.unit.service.MemberService;
 
 @RestController
 @RequiredArgsConstructor

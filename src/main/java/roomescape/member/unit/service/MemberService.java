@@ -1,4 +1,4 @@
-package roomescape.member.service;
+package roomescape.member.unit.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +8,7 @@ import roomescape.member.dto.request.MemberRequest.MemberCreateRequest;
 import roomescape.member.dto.response.MemberResponse.MemberCreateResponse;
 import roomescape.member.dto.response.MemberResponse.MemberReadResponse;
 import roomescape.member.entity.Member;
-import roomescape.member.repository.MemberRepository;
+import roomescape.member.unit.repository.MemberRepository;
 
 @Service
 @RequiredArgsConstructor

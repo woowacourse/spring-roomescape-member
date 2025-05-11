@@ -1,4 +1,4 @@
-package roomescape.member.repository;
+package roomescape.member.unit.repository;
 
 import java.util.List;
 import java.util.Optional;

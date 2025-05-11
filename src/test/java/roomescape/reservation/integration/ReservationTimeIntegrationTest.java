@@ -15,7 +15,7 @@ import roomescape.global.error.exception.ConflictException;
 import roomescape.global.error.exception.NotFoundException;
 import roomescape.member.entity.Member;
 import roomescape.member.entity.RoleType;
-import roomescape.member.repository.MemberRepository;
+import roomescape.member.unit.repository.MemberRepository;
 import roomescape.reservation.dto.request.ReservationTimeRequest.ReservationTimeCreateRequest;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.entity.ReservationTime;

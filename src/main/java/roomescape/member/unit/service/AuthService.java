@@ -1,4 +1,4 @@
-package roomescape.member.service;
+package roomescape.member.unit.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -7,7 +7,7 @@ import roomescape.global.auth.LoginMember;
 import roomescape.global.error.exception.BadRequestException;
 import roomescape.member.dto.request.AuthRequest.LoginRequest;
 import roomescape.member.entity.Member;
-import roomescape.member.repository.MemberRepository;
+import roomescape.member.unit.repository.MemberRepository;
 
 @Service
 @RequiredArgsConstructor

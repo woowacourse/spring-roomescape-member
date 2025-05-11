@@ -8,7 +8,7 @@ import roomescape.global.error.exception.BadRequestException;
 import roomescape.global.error.exception.ConflictException;
 import roomescape.global.error.exception.NotFoundException;
 import roomescape.member.entity.Member;
-import roomescape.member.repository.MemberRepository;
+import roomescape.member.unit.repository.MemberRepository;
 import roomescape.reservation.dto.request.ReservationRequest.ReservationAdminCreateRequest;
 import roomescape.reservation.dto.request.ReservationRequest.ReservationCreateRequest;
 import roomescape.reservation.dto.request.ReservationRequest.ReservationReadFilteredRequest;

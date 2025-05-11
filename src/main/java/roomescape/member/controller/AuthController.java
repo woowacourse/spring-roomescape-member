@@ -15,7 +15,7 @@ import roomescape.global.auth.CookieUtil;
 import roomescape.global.auth.LoginMember;
 import roomescape.member.dto.request.AuthRequest.LoginRequest;
 import roomescape.member.dto.response.AuthResponse.LoginResponse;
-import roomescape.member.service.AuthService;
+import roomescape.member.unit.service.AuthService;
 
 @RestController
 @RequiredArgsConstructor

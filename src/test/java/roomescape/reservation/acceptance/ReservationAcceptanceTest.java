@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.member.entity.Member;
 import roomescape.member.entity.RoleType;
-import roomescape.member.repository.MemberRepository;
+import roomescape.member.unit.repository.MemberRepository;
 import roomescape.reservation.dto.request.ReservationRequest.ReservationAdminCreateRequest;
 import roomescape.reservation.dto.request.ReservationRequest.ReservationCreateRequest;
 import roomescape.reservation.dto.request.ReservationRequest.ReservationReadFilteredRequest;
