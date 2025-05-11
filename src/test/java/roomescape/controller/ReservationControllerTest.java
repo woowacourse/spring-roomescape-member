@@ -1,9 +1,9 @@
-package roomescape;
+package roomescape.controller;
 
 import static org.hamcrest.Matchers.containsString;
-import static roomescape.ApiTestFixture.createReservationTime;
-import static roomescape.ApiTestFixture.createTheme;
-import static roomescape.ApiTestFixture.loginAndGetToken;
+import static roomescape.controller.ApiTestFixture.createReservationTime;
+import static roomescape.controller.ApiTestFixture.createTheme;
+import static roomescape.controller.ApiTestFixture.loginAndGetToken;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;

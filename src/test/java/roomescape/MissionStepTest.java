@@ -2,7 +2,7 @@ package roomescape;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
-import static roomescape.ApiTestFixture.loginAndGetToken;
+import static roomescape.controller.ApiTestFixture.loginAndGetToken;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
