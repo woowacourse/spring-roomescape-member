@@ -1,7 +1,7 @@
 package roomescape.model;
 
 import java.time.LocalDateTime;
-import roomescape.dto.ReservationRequest;
+import roomescape.dto.UserReservationRequest;
 import roomescape.model.user.UserName;
 
 public class Reservation {
@@ -17,18 +17,18 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static Reservation createWithNoId(UserName userName, ReservationRequest reservationRequest,
+    public static Reservation createWithNoId(UserName userName, UserReservationRequest userReservationRequest,
                                              ReservationTime reservationTime,
                                              Theme theme) {
-        validateFuture(reservationRequest, reservationTime);
+        validateFuture(userReservationRequest, reservationTime);
         return new Reservation(null,
                 userName,
-                new ReservationDateTime(reservationRequest.date(), reservationTime),
+                new ReservationDateTime(userReservationRequest.date(), reservationTime),
                 theme);
     }
 
-    private static void validateFuture(ReservationRequest reservationRequest, ReservationTime reservationTime) {
-        LocalDateTime dateTime = LocalDateTime.of(reservationRequest.date(),
+    private static void validateFuture(UserReservationRequest userReservationRequest, ReservationTime reservationTime) {
+        LocalDateTime dateTime = LocalDateTime.of(userReservationRequest.date(),
                 reservationTime.getStartAt());
         LocalDateTime now = LocalDateTime.now();
         if (dateTime.isBefore(now)) {

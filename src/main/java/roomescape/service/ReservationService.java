@@ -3,7 +3,7 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dto.ReservationRequest;
+import roomescape.dto.UserReservationRequest;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -30,14 +30,15 @@ public class ReservationService {
         return reservationRepository.getAllReservations();
     }
 
-    public Reservation addReservation(UserName userName, ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = reservationTimeService.getReservationTimeById(reservationRequest.timeId());
-        Theme theme = themeService.getThemeById(reservationRequest.themeId());
-        Reservation reservationWithNoId = Reservation.createWithNoId(userName, reservationRequest, reservationTime,
+    public Reservation addReservation(UserName userName, UserReservationRequest userReservationRequest) {
+        ReservationTime reservationTime = reservationTimeService.getReservationTimeById(
+                userReservationRequest.timeId());
+        Theme theme = themeService.getThemeById(userReservationRequest.themeId());
+        Reservation reservationWithNoId = Reservation.createWithNoId(userName, userReservationRequest, reservationTime,
                 theme);
 
-        validateUniqueReservation(reservationRequest.date(), reservationRequest.timeId(),
-                reservationRequest.themeId());
+        validateUniqueReservation(userReservationRequest.date(), userReservationRequest.timeId(),
+                userReservationRequest.themeId());
         return reservationRepository.addReservation(reservationWithNoId);
     }
 
