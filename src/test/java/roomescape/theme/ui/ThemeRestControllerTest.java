@@ -43,7 +43,7 @@ class ThemeRestControllerTest {
                 .body(themeParams)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(HttpStatus.UNAUTHORIZED.value());
+                .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
 

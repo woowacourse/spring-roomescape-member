@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 
 public class LoginApiFixture {
 
+    private LoginApiFixture() {
+    }
+
     public static Map<String, String> memberLoginAndGetCookies(final Map<String, String> loginParams) {
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

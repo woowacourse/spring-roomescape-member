@@ -1,7 +1,7 @@
 package roomescape.reservation.application;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.exception.auth.AuthorizationException;
@@ -13,10 +13,10 @@ import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.ReservationTimeRepository;
 import roomescape.reservation.ui.dto.request.AvailableReservationTimeRequest;
-import roomescape.reservation.ui.dto.response.AvailableReservationTimeResponse;
 import roomescape.reservation.ui.dto.request.CreateReservationRequest;
-import roomescape.reservation.ui.dto.response.ReservationResponse;
 import roomescape.reservation.ui.dto.request.ReservationsByfilterRequest;
+import roomescape.reservation.ui.dto.response.AvailableReservationTimeResponse;
+import roomescape.reservation.ui.dto.response.ReservationResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 
@@ -47,22 +47,20 @@ public class ReservationService {
         return ReservationResponse.from(found);
     }
 
-    public void deleteIfOwner(final Long id, final Member member) {
-        final Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 데이터가 존재하지 않습니다. id = " + id));
+    public void deleteIfOwner(final Long reservationId, final Member member) {
+        final Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 데이터가 존재하지 않습니다. id = " + reservationId));
 
-        if(reservation.getMember() != member) {
+        if (member.isAdmin()) {
+            reservationRepository.deleteById(reservationId);
+            return;
+        }
+
+        if (!Objects.equals(reservation.getMember(), member)) {
             throw new AuthorizationException("삭제할 권한이 없습니다.");
         }
 
-        reservationRepository.deleteById(id);
-    }
-
-    public void delete(final Long id) {
-        reservationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 데이터가 존재하지 않습니다. id = " + id));
-
-        reservationRepository.deleteById(id);
+        reservationRepository.deleteById(reservationId);
     }
 
     public List<ReservationResponse> findAll() {
@@ -86,23 +84,21 @@ public class ReservationService {
     }
 
     public List<AvailableReservationTimeResponse> findAvailableReservationTimes(
-            AvailableReservationTimeRequest request
+            final AvailableReservationTimeRequest request
     ) {
-        final List<AvailableReservationTimeResponse> availableReservationTimeResponses = new ArrayList<>();
         final List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
-        for (ReservationTime reservationTime : reservationTimes) {
-            availableReservationTimeResponses.add(new AvailableReservationTimeResponse(
-                    reservationTime.getId(),
-                    reservationTime.getStartAt(),
-                    reservationRepository.existsByDateAndStartAtAndThemeId(
-                            request.date(),
-                            reservationTime.getStartAt(),
-                            request.themeId()
-                    ))
-            );
-        }
-
-        return availableReservationTimeResponses;
+        return reservationTimes.stream()
+                .map(reservationTime ->
+                        new AvailableReservationTimeResponse(
+                                reservationTime.getId(),
+                                reservationTime.getStartAt(),
+                                reservationRepository.existsByDateAndStartAtAndThemeId(
+                                        request.date(),
+                                        reservationTime.getStartAt(),
+                                        request.themeId()
+                                )
+                        )
+                ).toList();
     }
 }

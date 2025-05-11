@@ -33,7 +33,7 @@ class ReservationTimeRestControllerTest {
     }
 
     @Test
-    void 회원_권한으로_예약_시간을_추가한다() {
+    void 회원_권한으로_예약_시간을_추가할_수_없다() {
         final Map<String, String> singUpParams = MemberApiFixture.signUpParams1();
         MemberApiFixture.signUp(singUpParams);
         final Map<String, String> cookies = LoginApiFixture.memberLoginAndGetCookies(singUpParams);
@@ -46,7 +46,7 @@ class ReservationTimeRestControllerTest {
                 .body(reservationTimeParams)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(HttpStatus.UNAUTHORIZED.value());
+                .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
     @Test

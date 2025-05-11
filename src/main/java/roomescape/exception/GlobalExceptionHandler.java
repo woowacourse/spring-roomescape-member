@@ -21,12 +21,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Void> handleDataNotFoundException(final ResourceNotFoundException e) {
+    public ResponseEntity<Void> handleResourceNotFoundException(final ResourceNotFoundException e) {
         return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(AlreadyExistException.class)
-    public ResponseEntity<Void> handDataExistException(final AlreadyExistException e) {
+    public ResponseEntity<Void> handleAlreadyExistException(final AlreadyExistException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 

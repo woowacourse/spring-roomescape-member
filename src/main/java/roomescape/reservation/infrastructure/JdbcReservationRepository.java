@@ -81,7 +81,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndStartAtAndThemeId(final LocalDate date, final LocalTime startAt,
+    public Boolean existsByDateAndStartAtAndThemeId(final LocalDate date, final LocalTime startAt,
                                                     final Long themeId) {
         final String sql = """
                 SELECT EXISTS(
@@ -100,7 +100,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
+    public Boolean existsByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
         final String sql = """
                 SELECT EXISTS(
                     SELECT 1

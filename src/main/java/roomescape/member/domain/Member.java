@@ -1,10 +1,13 @@
 package roomescape.member.domain;
 
 
+import java.util.regex.Pattern;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import roomescape.auth.domain.AuthRole;
 
 @Getter
+@EqualsAndHashCode(of = {"id"})
 public class Member {
 
     private final Long id;
@@ -30,28 +33,31 @@ public class Member {
         this(null, name, email, password, role);
     }
 
-    private void validateName(String name) {
+    private void validateName(final String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("이름은 null 이거나 빈 문자열일 수 없습니다.");
         }
     }
 
-    private void validateEmail(String email) {
+    private void validateEmail(final String email) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("이메일은 null 이거나 빈 문자열일 수 없습니다.");
         }
-        if (!email.contains("@")) {
+        if (!Pattern.matches(
+                "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}$",
+                email)
+        ) {
             throw new IllegalArgumentException("이메일 형식이 올바르지 않습니다.");
         }
     }
 
-    private void validatePassword(String password) {
+    private void validatePassword(final String password) {
         if (password == null || password.isBlank()) {
             throw new IllegalArgumentException("비밀번호는 null 이거나 빈 문자열일 수 없습니다.");
         }
     }
 
-    private void validateRole(AuthRole role) {
+    private void validateRole(final AuthRole role) {
         if (role == null) {
             throw new IllegalArgumentException("역할은 null 일 수 없습니다.");
         }
@@ -59,6 +65,10 @@ public class Member {
 
     public boolean isWrongPassword(final String password) {
         return !this.password.equals(password);
+    }
+
+    public boolean isAdmin() {
+        return role == AuthRole.ADMIN;
     }
 
     public String getRoleName() {

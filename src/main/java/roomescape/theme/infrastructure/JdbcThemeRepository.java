@@ -64,7 +64,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public boolean existsByName(final String name) {
+    public Boolean existsByName(final String name) {
         final String sql = """
                 SELECT EXISTS(
                     SELECT 1
@@ -111,10 +111,11 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findTop10ThemesByReservationCountWithin7Days() {
-        final LocalDate endDate = LocalDate.now();
-        final LocalDate startDate = endDate.minusDays(7);
-
+    public List<Theme> findTopNThemesByReservationCountInDateRange(
+            final LocalDate dateFrom,
+            final LocalDate dateTo,
+            final int limit
+    ) {
         final String sql = """
                 SELECT
                     t.id AS id,
@@ -127,9 +128,9 @@ public class JdbcThemeRepository implements ThemeRepository {
                     ON t.id = r.theme_id AND r.date BETWEEN ? AND ?
                 GROUP BY t.id, t.name, t.description, t.thumbnail
                 ORDER BY reservation_count DESC
-                LIMIT 10;
+                LIMIT ?;
                 """;
 
-        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, startDate, endDate);
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, dateFrom, dateTo, limit);
     }
 }

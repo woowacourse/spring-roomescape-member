@@ -1,5 +1,6 @@
 package roomescape.theme.applcation;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -50,7 +51,11 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findPopularThemes() {
-        return themeRepository.findTop10ThemesByReservationCountWithin7Days()
+        final LocalDate dateTo = LocalDate.now();
+        final LocalDate dateFrom = dateTo.minusDays(7);
+        final int limit = 10;
+
+        return themeRepository.findTopNThemesByReservationCountInDateRange(dateFrom, dateTo, limit)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();

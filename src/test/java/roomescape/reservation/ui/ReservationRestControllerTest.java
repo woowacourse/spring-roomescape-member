@@ -2,9 +2,16 @@ package roomescape.reservation.ui;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
+import static roomescape.fixture.ui.LoginApiFixture.adminLoginAndGetCookies;
+import static roomescape.fixture.ui.LoginApiFixture.memberLoginAndGetCookies;
+import static roomescape.fixture.ui.MemberApiFixture.signUpMembers;
+import static roomescape.fixture.ui.MemberApiFixture.signUpParams1;
+import static roomescape.fixture.ui.ReservationTimeApiFixture.createReservationTimes;
+import static roomescape.fixture.ui.ThemeApiFixture.createThemes;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.response.ValidatableResponse;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -15,91 +22,36 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.fixture.ui.LoginApiFixture;
-import roomescape.fixture.ui.MemberApiFixture;
-import roomescape.fixture.ui.ReservationTimeApiFixture;
-import roomescape.fixture.ui.ThemeApiFixture;
 import roomescape.reservation.ui.dto.response.AvailableReservationTimeResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ReservationRestControllerTest {
-
-    private final Map<String, String> signupParams1 = MemberApiFixture.signUpParams1();
-    private final Map<String, String> signupParams2 = MemberApiFixture.signUpParams2();
     private final String date = LocalDate.now().plusDays(1).toString();
+    private List<ValidatableResponse> createReservationTimeResponses;
+    private List<ValidatableResponse> createThemeResponses;
+    private List<ValidatableResponse> createMemberResponses;
 
     @BeforeEach
     void setUp() {
-        final Map<String, String> adminCookies = LoginApiFixture.adminLoginAndGetCookies();
+        final Map<String, String> adminCookies = adminLoginAndGetCookies();
         // 관리자 권한으로 예약 시간 추가 (3개)
-        final Map<String, String> reservationTimeParams1 = ReservationTimeApiFixture.reservationTimeParams1();
-        final Map<String, String> reservationTimeParams2 = ReservationTimeApiFixture.reservationTimeParams2();
-        final Map<String, String> reservationTimeParams3 = ReservationTimeApiFixture.reservationTimeParams3();
-        RestAssured.given().log().all()
-                .cookies(adminCookies)
-                .contentType(ContentType.JSON)
-                .body(reservationTimeParams1)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
-        RestAssured.given().log().all()
-                .cookies(adminCookies)
-                .contentType(ContentType.JSON)
-                .body(reservationTimeParams2)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
-        RestAssured.given().log().all()
-                .cookies(adminCookies)
-                .contentType(ContentType.JSON)
-                .body(reservationTimeParams3)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
-
-        // 테마 추가 (2개)
-        final Map<String, String> themeParams1 = ThemeApiFixture.themeParams1();
-        final Map<String, String> themeParams2 = ThemeApiFixture.themeParams2();
-        RestAssured.given().log().all()
-                .cookies(adminCookies)
-                .contentType(ContentType.JSON)
-                .body(themeParams1)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
-        RestAssured.given().log().all()
-                .cookies(adminCookies)
-                .contentType(ContentType.JSON)
-                .body(themeParams2)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
-
+        createReservationTimeResponses = createReservationTimes(adminCookies, 3);
+        // 관리자 권한으로 테마 추가 (2개)
+        createThemeResponses = createThemes(adminCookies, 2);
         // 회원 추가 (2명)
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(signupParams1)
-                .when().post("/members")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(signupParams2)
-                .when().post("/members")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
+        createMemberResponses = signUpMembers(2);
     }
 
 
     @Test
     void 예약을_추가한다() {
-        final Map<String, String> cookies = LoginApiFixture.memberLoginAndGetCookies(signupParams1);
+        final Map<String, String> memberCookies = memberLoginAndGetCookies(signUpParams1());
         final Map<String, String> reservationParams = reservationParams1();
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookies(cookies)
+                .cookies(memberCookies)
                 .body(reservationParams)
                 .when().post("/reservations")
                 .then().log().all()
@@ -120,13 +72,13 @@ class ReservationRestControllerTest {
 
     @Test
     void 예약을_삭제한다() {
-        final Map<String, String> adminCookies = LoginApiFixture.adminLoginAndGetCookies();
-        final Map<String, String> member1Cookies = LoginApiFixture.memberLoginAndGetCookies(signupParams1);
+        final Map<String, String> adminCookies = adminLoginAndGetCookies();
+        final Map<String, String> memberCookies = memberLoginAndGetCookies(signUpParams1());
         final Map<String, String> reservationParams = reservationParams1();
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookies(member1Cookies)
+                .cookies(memberCookies)
                 .body(reservationParams)
                 .when().post("/reservations")
                 .then().log().all()
@@ -155,7 +107,7 @@ class ReservationRestControllerTest {
 
     @Test
     void 삭제할_예약이_없는_경우_not_found를_반환한다() {
-        final Map<String, String> adminCookies = LoginApiFixture.adminLoginAndGetCookies();
+        final Map<String, String> adminCookies = adminLoginAndGetCookies();
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -167,7 +119,7 @@ class ReservationRestControllerTest {
 
     @Test
     void 예약_목록을_조회한다() {
-        final Map<String, String> adminCookies = LoginApiFixture.adminLoginAndGetCookies();
+        final Map<String, String> adminCookies = adminLoginAndGetCookies();
         final Map<String, String> reservationParams = reservationParams1();
 
         final int sizeBeforeCreate = RestAssured.given().log().all()
@@ -200,8 +152,8 @@ class ReservationRestControllerTest {
 
     @Test
     void 예약_가능한_시간_목록을_조회한다() {
-        final Map<String, String> adminCookies = LoginApiFixture.adminLoginAndGetCookies();
-        final Map<String, String> member1Cookies = LoginApiFixture.memberLoginAndGetCookies(signupParams1);
+        final Map<String, String> adminCookies = adminLoginAndGetCookies();
+        final Map<String, String> member1Cookies = memberLoginAndGetCookies(signUpParams1());
         final Map<String, String> reservationParams1 = reservationParams1();
         final Map<String, String> reservationParams2 = reservationParams2();
 
@@ -238,15 +190,23 @@ class ReservationRestControllerTest {
     }
 
     private Map<String, String> reservationParams1() {
-        final String timeId = "1";
-        final String themeId = "1";
+        final String timeId = createReservationTimeResponses.get(0).extract().body()
+                .as(Map.class)
+                .get("id").toString();
+        final String themeId = createThemeResponses.get(0).extract().body()
+                .as(Map.class)
+                .get("id").toString();
 
         return createReservationParams(date, timeId, themeId);
     }
 
     private Map<String, String> reservationParams2() {
-        final String timeId = "2";
-        final String themeId = "1";
+        final String timeId = createReservationTimeResponses.get(1).extract().body()
+                .as(Map.class)
+                .get("id").toString();
+        final String themeId = createThemeResponses.get(0).extract().body()
+                .as(Map.class)
+                .get("id").toString();
 
         return createReservationParams(date, timeId, themeId);
     }
