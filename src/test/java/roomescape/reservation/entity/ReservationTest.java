@@ -2,7 +2,7 @@ package roomescape.reservation.entity;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.badRequest.BadRequestException;
+import roomescape.global.exception.badRequest.BadRequestException;
 import roomescape.time.entity.ReservationTime;
 
 import java.time.LocalDate;

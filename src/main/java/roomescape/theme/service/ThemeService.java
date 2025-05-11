@@ -1,9 +1,9 @@
 package roomescape.theme.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.exception.badRequest.BadRequestException;
-import roomescape.exception.conflict.ThemeNameConflictException;
-import roomescape.exception.notFound.ThemeNotFoundException;
+import roomescape.global.exception.badRequest.BadRequestException;
+import roomescape.global.exception.conflict.ThemeNameConflictException;
+import roomescape.global.exception.notFound.ThemeNotFoundException;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.request.ThemeRequest;

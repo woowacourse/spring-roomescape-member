@@ -1,9 +1,9 @@
 package roomescape.time.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.exception.badRequest.BadRequestException;
-import roomescape.exception.conflict.ReservationTimeConflictException;
-import roomescape.exception.notFound.ReservationTimeNotFoundException;
+import roomescape.global.exception.badRequest.BadRequestException;
+import roomescape.global.exception.conflict.ReservationTimeConflictException;
+import roomescape.global.exception.notFound.ReservationTimeNotFoundException;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.entity.ReservationTime;

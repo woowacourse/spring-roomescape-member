@@ -1,7 +1,7 @@
 package roomescape.auth.repository;
 
 import roomescape.auth.entity.Member;
-import roomescape.exception.conflict.MemberEmailConflictException;
+import roomescape.global.exception.conflict.MemberEmailConflictException;
 
 import java.util.ArrayList;
 import java.util.Collections;

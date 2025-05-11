@@ -8,11 +8,11 @@ import roomescape.auth.service.dto.request.LoginRequest;
 import roomescape.auth.service.dto.request.UserSignupRequest;
 import roomescape.auth.service.dto.response.LoginResponse;
 import roomescape.auth.service.dto.response.MemberIdAndNameResponse;
-import roomescape.exception.badRequest.BadRequestException;
-import roomescape.exception.conflict.MemberEmailConflictException;
-import roomescape.exception.notFound.MemberNotFoundException;
-import roomescape.exception.unauthorized.MemberUnauthorizedException;
-import roomescape.infrastructure.JwtTokenProvider;
+import roomescape.global.exception.badRequest.BadRequestException;
+import roomescape.global.exception.conflict.MemberEmailConflictException;
+import roomescape.global.exception.notFound.MemberNotFoundException;
+import roomescape.global.exception.unauthorized.MemberUnauthorizedException;
+import roomescape.global.infrastructure.JwtTokenProvider;
 
 import java.util.List;
 

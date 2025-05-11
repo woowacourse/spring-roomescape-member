@@ -8,9 +8,9 @@ import roomescape.auth.repository.FakeMemberRepository;
 import roomescape.auth.repository.MemberRepository;
 import roomescape.auth.service.dto.request.LoginRequest;
 import roomescape.auth.service.dto.request.UserSignupRequest;
-import roomescape.exception.conflict.MemberEmailConflictException;
-import roomescape.exception.unauthorized.MemberUnauthorizedException;
-import roomescape.infrastructure.JwtTokenProvider;
+import roomescape.global.exception.conflict.MemberEmailConflictException;
+import roomescape.global.exception.unauthorized.MemberUnauthorizedException;
+import roomescape.global.infrastructure.JwtTokenProvider;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;

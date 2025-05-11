@@ -1,6 +1,6 @@
 package roomescape.reservation.entity;
 
-import roomescape.exception.badRequest.BadRequestException;
+import roomescape.global.exception.badRequest.BadRequestException;
 import roomescape.time.entity.ReservationTime;
 
 import java.time.LocalDate;

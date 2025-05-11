@@ -1,6 +1,6 @@
 package roomescape.theme.entity;
 
-import roomescape.exception.badRequest.BadRequestException;
+import roomescape.global.exception.badRequest.BadRequestException;
 
 public class Theme {
 
