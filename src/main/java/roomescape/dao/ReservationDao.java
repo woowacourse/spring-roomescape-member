@@ -36,7 +36,7 @@ public class ReservationDao {
 
             var theme = new Theme(
                     rs.getLong("theme_id"),
-                    new ThemeName(rs.getString("name")),
+                    new ThemeName(rs.getString("theme_name")),
                     rs.getString("description"),
                     rs.getString("thumbnail")
             );
@@ -94,7 +94,7 @@ public class ReservationDao {
                     t.id as time_id,
                     t.start_at as time_value,
                     th.id as theme_id,
-                    th.name,
+                    th.name as theme_name,
                     th.description,
                     th.thumbnail
                 FROM reservation as r
