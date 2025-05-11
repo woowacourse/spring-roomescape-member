@@ -7,6 +7,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.AdminInterceptor;
 import roomescape.auth.JwtProvider;
+import roomescape.auth.LoginMemberArgumentResolver;
 import roomescape.service.MemberService;
 
 import java.util.List;
