@@ -5,11 +5,16 @@ import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Map;
+import roomescape.reservation.presentation.dto.AdminReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ThemeRequest;
 
 public class ReservationFixture {
+
+    public AdminReservationRequest createAdminReservationRequest(LocalDate date, Long themeId, Long timeId, Long memberId) {
+        return new AdminReservationRequest(date, themeId, timeId, memberId);
+    }
 
     public ReservationRequest createReservationRequest(LocalDate date, Long themeId, Long timeId) {
         return new ReservationRequest(date, themeId, timeId);
