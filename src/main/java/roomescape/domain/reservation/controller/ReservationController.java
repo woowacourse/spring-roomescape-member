@@ -17,9 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.auth.config.AuthenticationPrincipal;
 import roomescape.domain.auth.dto.LoginUserDto;
-import roomescape.domain.reservation.dto.BookedReservationTimeResponse;
-import roomescape.domain.reservation.dto.ReservationCreateRequest;
-import roomescape.domain.reservation.dto.ReservationResponse;
+import roomescape.domain.reservation.dto.reservation.ReservationCreateDto;
+import roomescape.domain.reservation.dto.reservation.ReservationResponse;
+import roomescape.domain.reservation.dto.reservation.ReservationUserCreateRequest;
+import roomescape.domain.reservation.dto.reservationtime.BookedReservationTimeResponse;
 import roomescape.domain.reservation.service.ReservationService;
 
 @Slf4j
@@ -54,9 +55,12 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> create(@Valid @RequestBody final ReservationCreateRequest request,
+    public ResponseEntity<ReservationResponse> create(@Valid @RequestBody final ReservationUserCreateRequest request,
                                                       @AuthenticationPrincipal final LoginUserDto userDto) {
-        final ReservationResponse response = reservationService.create(request, userDto.id());
+        final ReservationCreateDto createDto = new ReservationCreateDto(userDto.id(), request.timeId(), request.themeId(),
+                request.date());
+
+        final ReservationResponse response = reservationService.create(createDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);

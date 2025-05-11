@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.reservation.dto.ThemeRequest;
-import roomescape.domain.reservation.dto.ThemeResponse;
+import roomescape.domain.reservation.dto.theme.ThemeRequest;
+import roomescape.domain.reservation.dto.theme.ThemeResponse;
 import roomescape.domain.reservation.service.ThemeService;
 
 @RequestMapping("/themes")

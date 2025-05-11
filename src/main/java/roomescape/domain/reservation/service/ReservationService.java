@@ -15,10 +15,10 @@ import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.repository.UserRepository;
-import roomescape.domain.reservation.dto.BookedReservationTimeResponse;
-import roomescape.domain.reservation.dto.ReservationCreateRequest;
-import roomescape.domain.reservation.dto.ReservationResponse;
-import roomescape.domain.reservation.dto.ReservationTimeResponse;
+import roomescape.domain.reservation.dto.reservation.ReservationCreateDto;
+import roomescape.domain.reservation.dto.reservation.ReservationResponse;
+import roomescape.domain.reservation.dto.reservationtime.BookedReservationTimeResponse;
+import roomescape.domain.reservation.dto.reservationtime.ReservationTimeResponse;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
@@ -70,15 +70,16 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse create(final ReservationCreateRequest request, final Long userId) {
-        if (reservationRepository.existsByDateAndTimeId(request.date(), request.timeId())) {
+    public ReservationResponse create(final ReservationCreateDto createDto) {
+        if (reservationRepository.existsByDateAndTimeId(createDto.date(), createDto.timeId())) {
             throw new AlreadyInUseException("해당 예약은 이미 존재합니다!");
         }
 
-        final User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 유저가 존재하지 않습니다!"));
+        final User user = getUser(createDto.userId());
+        final ReservationTime reservationTime = getReservationTime(createDto.timeId());
+        final Theme theme = getTheme(createDto.themeId());
 
-        final Reservation reservation = getReservation(request, user);
+        final Reservation reservation = Reservation.withoutId(user, createDto.date(), reservationTime, theme);
         reservation.validateNotPastReservation(LocalDateTime.now());
 
         final Reservation savedReservation = reservationRepository.save(reservation);
@@ -86,24 +87,19 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
-    private Reservation getReservation(final ReservationCreateRequest request, final User user) {
-        final ReservationTime reservationTime = getReservationTime(request);
-        final Theme theme = getTheme(request);
-
-        return Reservation.withoutId(user, request.date(), reservationTime, theme);
+    private Theme getTheme(final Long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new EntityNotFoundException("theme not found id =" + themeId));
     }
 
-    private ReservationTime getReservationTime(final ReservationCreateRequest request) {
-        final Long timeId = request.timeId();
-
+    private ReservationTime getReservationTime(final Long timeId) {
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new EntityNotFoundException("reservationsTime not found id =" + timeId));
     }
 
-    private Theme getTheme(final ReservationCreateRequest request) {
-        final Long themeId = request.themeId();
-        return themeRepository.findById(themeId)
-                .orElseThrow(() -> new EntityNotFoundException("theme not found id =" + themeId));
+    private User getUser(final Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 유저가 존재하지 않습니다! id =" + userId));
     }
 
     @Transactional
