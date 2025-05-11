@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.config;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;

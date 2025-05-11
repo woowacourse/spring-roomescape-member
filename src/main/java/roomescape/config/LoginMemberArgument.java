@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.config;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
