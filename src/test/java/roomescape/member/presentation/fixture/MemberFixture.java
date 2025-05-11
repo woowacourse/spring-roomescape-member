@@ -1,4 +1,4 @@
-package roomescape.member.presentation;
+package roomescape.member.presentation.fixture;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
