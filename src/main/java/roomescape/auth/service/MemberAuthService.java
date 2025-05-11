@@ -1,7 +1,7 @@
 package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.auth.service.dto.response.LoginMemberResponse;
+import roomescape.auth.service.dto.response.LoginMember;
 import roomescape.auth.entity.Member;
 import roomescape.auth.repository.MemberRepository;
 import roomescape.auth.service.dto.request.LoginRequest;
@@ -45,13 +45,13 @@ public class MemberAuthService {
     }
 
     // TODO: 파라미터 토큰 ? user id?
-    public LoginMemberResponse getLoginMemberByToken(String token) {
+    public LoginMember getLoginMemberByToken(String token) {
         String subject = jwtTokenProvider.resolve(token);
         try {
             final long userId = Long.parseLong(subject);
             Member member = memberRepository.findById(userId)
                     .orElseThrow(() -> new MemberNotFoundException(userId));
-            return new LoginMemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
+            return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
         } catch (NumberFormatException e) {
             throw new BadRequestException("잘못된 형식의 토큰입니다.");
         }

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.auth.service.dto.response.LoginMemberResponse;
+import roomescape.auth.service.dto.response.LoginMember;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.dto.request.CreateReservationRequest;
 import roomescape.reservation.service.dto.request.ReservationRequest;
@@ -39,11 +39,11 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody @Valid ReservationRequest requestDto,
-            LoginMemberResponse loginMemberResponse
+            LoginMember loginMember
     ) {
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
                 requestDto.date(),
-                loginMemberResponse.id(),
+                loginMember.id(),
                 requestDto.timeId(),
                 requestDto.themeId()
         );

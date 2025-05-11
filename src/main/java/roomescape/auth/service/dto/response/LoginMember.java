@@ -2,7 +2,7 @@ package roomescape.auth.service.dto.response;
 
 import roomescape.auth.entity.Role;
 
-public record LoginMemberResponse(
+public record LoginMember(
         Long id,
         String name,
         String email,
