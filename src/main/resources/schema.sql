@@ -5,7 +5,9 @@ CREATE TABLE USERS
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     name     varchar(255) NOT NULL,
     email    varchar(255) NOT NULL,
-    password varchar(255) NOT NULL
+    password varchar(255) NOT NULL,
+    roles    varchar(255) NOT NULL,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE RESERVATION_TIME
@@ -27,11 +29,12 @@ CREATE TABLE theme
 CREATE TABLE reservation
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
-    name     VARCHAR(255) NOT NULL,
     date     VARCHAR(255) NOT NULL,
+    user_id  BIGINT       NOT NULL,
     time_id  BIGINT,
     theme_id BIGINT,
     PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES USERS (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );

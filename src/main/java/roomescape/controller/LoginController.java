@@ -3,6 +3,7 @@ package roomescape.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.LoginRequest;
+import roomescape.dto.response.BriefUserResponse;
 import roomescape.dto.response.LoginCheckResponse;
 import roomescape.model.UserPrinciple;
 import roomescape.service.LoginService;
@@ -47,5 +49,11 @@ public class LoginController {
     @GetMapping("/login/check-v2")
     public ResponseEntity<String> test(UserPrinciple userPrinciple) {
         return ResponseEntity.ok(userPrinciple.name() + " " + userPrinciple.email());
+    }
+
+    @GetMapping("/users/all")
+    public ResponseEntity<List<BriefUserResponse>> getAllUsers() {
+        List<BriefUserResponse> users = loginService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 }

@@ -1,5 +1,7 @@
 package roomescape.model;
 
+import java.util.List;
+
 public class User {
 
     private final Long id;
@@ -10,11 +12,14 @@ public class User {
 
     private final String password;
 
-    public User(Long id, String name, String email, String password) {
+    private final List<Role> roles;
+
+    public User(Long id, String name, String email, String password, List<Role> roles) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.roles = roles;
     }
 
     public Long getId() {
@@ -31,5 +36,9 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
     }
 }

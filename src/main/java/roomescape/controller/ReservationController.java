@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationsWithTotalPageResponse;
+import roomescape.model.UserPrinciple;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -35,8 +36,8 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> addReservation(
-            @RequestBody @Valid ReservationRequest reservationRequest) {
-        ReservationResponse newReservation = reservationService.addReservation(reservationRequest);
+            @RequestBody @Valid ReservationRequest reservationRequest, UserPrinciple userPrinciple) {
+        ReservationResponse newReservation = reservationService.addReservation(reservationRequest, userPrinciple);
         Long id = newReservation.id();
         return ResponseEntity.created(URI.create("/reservations/" + id)).body(newReservation);
     }

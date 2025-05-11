@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,12 @@ public class ReservationTimeController {
         ReservationTimesWithTotalPageResponse reservationTimesByPage = reservationTimeService.getReservationTimesByPage(
                 page);
         return ResponseEntity.ok(reservationTimesByPage);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<ReservationTimeResponse>> getAllTimes() {
+        List<ReservationTimeResponse> reservationTimes = reservationTimeService.getReservationTimes();
+        return ResponseEntity.ok(reservationTimes);
     }
 
     @PostMapping

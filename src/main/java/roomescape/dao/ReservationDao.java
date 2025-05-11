@@ -11,7 +11,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
+import roomescape.model.Role;
 import roomescape.model.Theme;
+import roomescape.model.User;
 
 @Repository
 public class ReservationDao {
@@ -25,7 +27,13 @@ public class ReservationDao {
     private static RowMapper<Reservation> reservationRowMapper() {
         return (rs, rowNum) -> new Reservation(
                 rs.getLong("reservation_id"),
-                rs.getString("name"),
+                new User(
+                        rs.getLong("user_id"),
+                        rs.getString("user_name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        Role.toList(rs.getString("roles"))
+                ),
                 rs.getDate("date").toLocalDate(),
                 new ReservationTime(
                         rs.getLong("time_id"),
@@ -33,7 +41,7 @@ public class ReservationDao {
                 ),
                 new Theme(
                         rs.getLong("theme_id"),
-                        rs.getString("name"),
+                        rs.getString("theme_name"),
                         rs.getString("description"),
                         rs.getString("thumbnail")
                 )
@@ -44,9 +52,9 @@ public class ReservationDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
                     PreparedStatement ps = connection.prepareStatement(
-                            "INSERT INTO reservation(name, date, time_id, theme_id) VALUES(?, ?, ?, ?)",
+                            "INSERT INTO reservation(user_id, date, time_id, theme_id) VALUES(?, ?, ?, ?)",
                             new String[]{"id"});
-                    ps.setString(1, reservation.getName());
+                    ps.setLong(1, reservation.getUser().getId());
                     ps.setDate(2, Date.valueOf(reservation.getDate()));
                     ps.setLong(3, reservation.getReservationTime().getId());
                     ps.setLong(4, reservation.getTheme().getId());
@@ -58,7 +66,7 @@ public class ReservationDao {
 
         return new Reservation(
                 id,
-                reservation.getName(),
+                reservation.getUser(),
                 reservation.getDate(),
                 reservation.getReservationTime(),
                 reservation.getTheme()
@@ -76,24 +84,30 @@ public class ReservationDao {
     public List<Reservation> findReservationsWithPage(int startRowNumber, int endRowNumber) {
         String sql = """
                 SELECT r.id as reservation_id,
-                                r.name,
-                                r.date,
-                                t.id as time_id,
-                                t.start_at as time_value,
-                                th.id as theme_id,
-                                th.name as theme_name,
-                                th.description,
-                                th.thumbnail
-                            FROM (
-                                SELECT ROW_NUMBER() OVER() as row_num, *
-                                FROM reservation
-                            ) as r
-                            INNER JOIN reservation_time as t
-                            ON r.time_id = t.id
-                            INNER JOIN theme as th
-                            ON r.theme_id = th.id
-                            WHERE r.row_num BETWEEN ? AND ?
-                            ORDER BY r.row_num
+                    u.id as user_id,
+                    u.name as user_name,
+                    u.email,
+                    u.password,
+                    u.roles,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description,
+                    th.thumbnail
+                FROM (
+                    SELECT ROW_NUMBER() OVER() as row_num, *
+                    FROM reservation
+                ) as r
+                INNER JOIN users as u
+                ON r.user_id = u.id
+                INNER JOIN reservation_time as t
+                ON r.time_id = t.id
+                INNER JOIN theme as th
+                ON r.theme_id = th.id
+                WHERE r.row_num BETWEEN ? AND ?
+                ORDER BY r.row_num
                 """;
         return jdbcTemplate.query(
                 sql,
@@ -130,15 +144,21 @@ public class ReservationDao {
     public List<Reservation> findByThemeIdAndDate(Long themeId, LocalDate date) {
         String sql = """
                 SELECT r.id as reservation_id,
-                    r.name,
+                    u.id as user_id,
+                    u.name as user_name,
+                    u.email,
+                    u.password,
+                    u.roles,
                     r.date,
                     t.id as time_id,
                     t.start_at as time_value,
                     th.id as theme_id,
-                    th.name,
+                    th.name as theme_name,
                     th.description,
                     th.thumbnail
                 FROM reservation as r
+                INNER JOIN users as u
+                ON r.user_id = u.id
                 INNER JOIN reservation_time as t
                 ON r.time_id = t.id
                 INNER JOIN theme as th

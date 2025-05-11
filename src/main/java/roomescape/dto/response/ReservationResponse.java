@@ -12,7 +12,7 @@ public record ReservationResponse(
     public static ReservationResponse fromEntity(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getName(),
+                reservation.getUser().getName(),
                 reservation.getDate().toString(),
                 ThemeResponse.from(reservation.getTheme()),
                 ReservationTimeResponse.fromEntity(reservation.getReservationTime())

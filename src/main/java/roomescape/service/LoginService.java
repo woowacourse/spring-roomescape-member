@@ -1,8 +1,10 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.UserDao;
 import roomescape.dto.request.LoginRequest;
+import roomescape.dto.response.BriefUserResponse;
 import roomescape.dto.response.LoginCheckResponse;
 import roomescape.exception.RoomEscapeException.BadRequestException;
 import roomescape.exception.RoomEscapeException.ResourceNotFoundException;
@@ -41,5 +43,12 @@ public class LoginService {
         User user = userDao.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 이메일입니다."));
         return new LoginCheckResponse(user.getName());
+    }
+
+    public List<BriefUserResponse> getAllUsers() {
+        return userDao.findAll()
+                .stream()
+                .map(BriefUserResponse::from)
+                .toList();
     }
 }

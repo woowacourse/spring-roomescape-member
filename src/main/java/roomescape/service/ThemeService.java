@@ -11,6 +11,7 @@ import roomescape.dao.ThemeDao;
 import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.request.ThemesWithTotalPageRequest;
 import roomescape.dto.response.AvailableReservationResponse;
+import roomescape.dto.response.BriefThemeResponse;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.exception.RoomEscapeException.BadRequestException;
 import roomescape.exception.RoomEscapeException.ResourceNotFoundException;
@@ -53,6 +54,13 @@ public class ThemeService {
                 .map(ThemeResponse::from)
                 .toList();
         return new ThemesWithTotalPageRequest(totalPage, themes);
+    }
+
+    public List<BriefThemeResponse> getAllThemes() {
+        return themeDao.findAll()
+                .stream()
+                .map(BriefThemeResponse::from)
+                .toList();
     }
 
     public List<ThemeResponse> getTopTenTheme() {

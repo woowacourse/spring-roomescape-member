@@ -133,4 +133,20 @@ public class ThemeDao {
                 endRowNumber
         );
     }
+
+    public List<Theme> findAll() {
+        String sql = """
+                SELECT id, name, description, thumbnail
+                FROM theme
+                """;
+        return jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> new Theme(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getString("thumbnail")
+                )
+        );
+    }
 }
