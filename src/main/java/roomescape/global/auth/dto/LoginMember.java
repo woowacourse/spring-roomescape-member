@@ -1,4 +1,4 @@
-package roomescape.global.auth;
+package roomescape.global.auth.dto;
 
 import roomescape.member.entity.RoleType;
 

@@ -1,4 +1,4 @@
-package roomescape.global.auth;
+package roomescape.global.auth.interceptor;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.global.auth.annotation.RoleRequired;
+import roomescape.global.auth.util.CookieUtil;
+import roomescape.global.auth.util.JwtUtil;
 import roomescape.global.error.exception.UnauthorizedException;
 import roomescape.member.entity.RoleType;
 

@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.member.entity.Member;
+import roomescape.member.repository.MemberRepository;
 
 public class FakeMemberRepository implements MemberRepository {
 

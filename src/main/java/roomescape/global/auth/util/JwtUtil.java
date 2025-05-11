@@ -1,4 +1,4 @@
-package roomescape.global.auth;
+package roomescape.global.auth.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.global.auth.dto.LoginMember;
 
 @Component
 public class JwtUtil {

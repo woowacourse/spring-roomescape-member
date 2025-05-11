@@ -13,8 +13,8 @@ import roomescape.global.error.exception.NotFoundException;
 import roomescape.member.dto.request.MemberRequest.MemberCreateRequest;
 import roomescape.member.entity.Member;
 import roomescape.member.entity.RoleType;
-import roomescape.member.unit.repository.MemberRepository;
-import roomescape.member.unit.service.MemberService;
+import roomescape.member.repository.MemberRepository;
+import roomescape.member.service.MemberService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)

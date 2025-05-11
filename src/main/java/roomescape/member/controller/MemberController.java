@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.global.auth.RoleRequired;
+import roomescape.global.auth.annotation.RoleRequired;
 import roomescape.member.dto.request.MemberRequest.MemberCreateRequest;
 import roomescape.member.dto.response.MemberResponse.MemberCreateResponse;
 import roomescape.member.dto.response.MemberResponse.MemberReadResponse;
 import roomescape.member.entity.RoleType;
-import roomescape.member.unit.service.MemberService;
+import roomescape.member.service.MemberService;
 
 @RestController
 @RequiredArgsConstructor

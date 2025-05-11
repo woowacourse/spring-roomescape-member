@@ -9,8 +9,9 @@ import org.junit.jupiter.api.Test;
 import roomescape.global.error.exception.NotFoundException;
 import roomescape.member.dto.request.MemberRequest.MemberCreateRequest;
 import roomescape.member.entity.RoleType;
+import roomescape.member.repository.MemberRepository;
+import roomescape.member.service.MemberService;
 import roomescape.member.unit.repository.FakeMemberRepository;
-import roomescape.member.unit.repository.MemberRepository;
 
 class MemberServiceTest {
 

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.global.auth.RoleRequired;
+import roomescape.global.auth.annotation.RoleRequired;
 import roomescape.member.entity.RoleType;
 import roomescape.theme.dto.request.ThemeRequest.ThemeCreateRequest;
 import roomescape.theme.dto.response.ThemeResponse.ThemeCreateResponse;

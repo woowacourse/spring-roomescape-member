@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.global.auth.AuthenticationInterceptor;
-import roomescape.global.auth.AuthorizationArgumentResolver;
-import roomescape.global.auth.CookieUtil;
-import roomescape.global.auth.JwtUtil;
+import roomescape.global.auth.interceptor.AuthenticationInterceptor;
+import roomescape.global.auth.resolver.AuthorizationArgumentResolver;
+import roomescape.global.auth.util.CookieUtil;
+import roomescape.global.auth.util.JwtUtil;
 
 @Configuration
 @RequiredArgsConstructor

@@ -15,7 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.helper.TestHelper;
 import roomescape.member.entity.Member;
 import roomescape.member.entity.RoleType;
-import roomescape.member.unit.repository.MemberRepository;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.dto.request.ReservationTimeRequest.ReservationTimeCreateRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
