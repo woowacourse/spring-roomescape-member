@@ -87,20 +87,21 @@
 
 ### 관리자(Admin)
 
-| URL                   | 메서드    | 기능              |
-|-----------------------|--------|-----------------|
-| `/admin`              | GET    | 어드민 페이지 보기      |
-| `/admin/reservation`  | GET    | 예약 관리 페이지 보기    |
-| `/admin/time`         | GET    | 예약 시간 관리 페이지 보기 |
-| `/admin/theme`        | GET    | 테마 관리 페이지 보기    |
-| `/admin/reservations` | POST   | 예약 추가           |
-| `/reservations/{id}`  | DELETE | 예약 삭제           |
-| `/members`            | GET    | 사용자 모두 조회       |
-| `/times`              | GET    | 예약 가능 시간 모두 조회  |
-| `/times`              | POST   | 예약 시간 추가        |
-| `/times/{id}`         | DELETE | 예약 시간 삭제        |
-| `/themes`             | POST   | 테마 추가           |
-| `/themes/{id}`        | DELETE | 테마 삭제           |
+| URL                    | 메서드    | 기능              |
+|------------------------|--------|-----------------|
+| `/admin`               | GET    | 어드민 페이지 보기      |
+| `/admin/reservation`   | GET    | 예약 관리 페이지 보기    |
+| `/admin/time`          | GET    | 예약 시간 관리 페이지 보기 |
+| `/admin/theme`         | GET    | 테마 관리 페이지 보기    |
+| `/admin/reservations`  | POST   | 예약 추가           |
+| `/reservations/{id}`   | DELETE | 예약 삭제           |
+| `/reservations/filter` | GET    | 예약 필터링 조회       |
+| `/members`             | GET    | 사용자 모두 조회       |
+| `/times`               | GET    | 예약 가능 시간 모두 조회  |
+| `/times`               | POST   | 예약 시간 추가        |
+| `/times/{id}`          | DELETE | 예약 시간 삭제        |
+| `/themes`              | POST   | 테마 추가           |
+| `/themes/{id}`         | DELETE | 테마 삭제           |
 
 ### 사용자(User)
 
