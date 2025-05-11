@@ -13,16 +13,16 @@ import roomescape.member.service.MemberService;
 @RestController
 public class MemberController {
 
-    private final MemberService loginMemberService;
+    private final MemberService memberService;
 
-    public MemberController(final MemberService loginMemberService) {
-        this.loginMemberService = loginMemberService;
+    public MemberController(final MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<MemberResponse> findAllLoginMembers() {
-        return loginMemberService.findAllLoginMembers()
+        return memberService.findAllLoginMembers()
                 .stream()
                 .map(MemberResponse::from)
                 .toList();
