@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.NotFoundException;
+import roomescape.exception.UnauthorizedException;
 
 class GlobalExceptionHandlerTest {
 
@@ -56,5 +57,21 @@ class GlobalExceptionHandlerTest {
         // then
         HttpStatusCode responseHttpStatusCode = responseEntity.getStatusCode();
         assertThat(responseHttpStatusCode).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("인증과 인가 과정에서 발생하는 예외를 핸들러에서 401 응답 코드를 반환한다")
+    void handleUnauthorizedException() {
+        // given
+        UnauthorizedException unauthorizedException = new UnauthorizedException("인증, 인가 중 에러가 발생했습니다.");
+        GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
+
+        // when
+        ResponseEntity<Void> responseEntity = globalExceptionHandler.handleUnauthorizedException(
+                unauthorizedException);
+
+        // then
+        HttpStatusCode responseHttpStatusCode = responseEntity.getStatusCode();
+        assertThat(responseHttpStatusCode).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 }

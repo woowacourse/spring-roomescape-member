@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.business.service.AuthService;
+import roomescape.exception.UnauthorizedException;
 import roomescape.presentation.dto.LoginCheckResponse;
 import roomescape.presentation.dto.LoginRequest;
 
@@ -44,13 +45,17 @@ public class LoginController {
 
     @GetMapping("/check")
     public ResponseEntity<LoginCheckResponse> checkLogin(final HttpServletRequest request) {
-        final String accessToken = Arrays.stream(request.getCookies())
+        final String accessToken = getAccessToken(request);
+        final LoginCheckResponse loginCheckResponse = authService.getMemberNameByAccessToken(accessToken);
+        return ResponseEntity.ok(loginCheckResponse);
+    }
+
+    private String getAccessToken(final HttpServletRequest request) {
+        return Arrays.stream(request.getCookies())
                 .filter(cookie -> cookie.getName()
                         .equals("token"))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("로그인 정보가 없습니다."))
+                .orElseThrow(() -> new UnauthorizedException("로그인 정보가 없습니다."))
                 .getValue();
-        final LoginCheckResponse loginCheckResponse = authService.getMemberNameByAccessToken(accessToken);
-        return ResponseEntity.ok(loginCheckResponse);
     }
 }

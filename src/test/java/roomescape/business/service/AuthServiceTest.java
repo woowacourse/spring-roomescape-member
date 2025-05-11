@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.exception.NotFoundException;
+import roomescape.exception.UnauthorizedException;
 import roomescape.persistence.dao.JdbcMemberDao;
 import roomescape.persistence.dao.MemberDao;
 
@@ -49,7 +49,7 @@ class AuthServiceTest {
 
         // when & then
         assertThatThrownBy(() -> authService.login(email, password))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(UnauthorizedException.class);
     }
 
     @Test

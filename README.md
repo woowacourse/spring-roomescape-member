@@ -53,9 +53,9 @@
 ### 로그인 기능
 - [x] 로그인 페이지를 응답한다
 - [x] 사용자 도메인을 추가
-- [-] 로그인 기능을 구현
+- [x] 로그인 기능을 구현
     - [x] 로그인 성공시 jwt 쿠키에 담아 HTTP status code 200을 응답한다.
-    - [ ] 로그인 실패시 HTTP status code 401을 응답한다.
-- [-] 로그인 사용자 정보 조회 API 구현
+    - [x] 로그인 실패시 HTTP status code 401을 응답한다.
+- [x] 로그인 사용자 정보 조회 API 구현
     - [x] 조회에 성공하면 name 필드에 사용자 이름을 담아 HTTP status code 200을 응답한다.
-    - [ ] 조회에 실패하면 HTTP status code 401을 응답한다.
+    - [x] 조회에 실패하면 HTTP status code 401을 응답한다.

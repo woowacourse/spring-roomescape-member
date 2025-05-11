@@ -5,7 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.Member;
-import roomescape.exception.NotFoundException;
+import roomescape.exception.UnauthorizedException;
 import roomescape.persistence.dao.MemberDao;
 import roomescape.presentation.dto.LoginCheckResponse;
 
@@ -21,7 +21,7 @@ public class AuthService {
 
     public String login(final String email, final String password) {
         Member member = memberDao.findByEmailAndPassword(email, password)
-                .orElseThrow(() -> new NotFoundException("해당하는 사용자를 찾을 수 없습니다. email: %s".formatted(email)));
+                .orElseThrow(() -> new UnauthorizedException("해당하는 사용자를 찾을 수 없습니다. email: %s".formatted(email)));
 
         final String accessToken = createAccessToken(member.getId(), member.getName(), member.getEmail());
         return accessToken;
@@ -44,7 +44,7 @@ public class AuthService {
                     .parseSignedClaims(accessToken).getPayload().get("name",String.class);
             return new LoginCheckResponse(name);
         } catch (JwtException e) {
-            throw new IllegalArgumentException("유효하지 않은 AccessToken 입니다.");
+            throw new UnauthorizedException("유효하지 않은 AccessToken 입니다.");
         }
     }
 }

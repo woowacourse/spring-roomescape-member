@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.NotFoundException;
+import roomescape.exception.UnauthorizedException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -26,5 +27,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Void> handleIllegalArgumentException(final IllegalArgumentException e) {
         e.printStackTrace();
         return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Void> handleUnauthorizedException(final UnauthorizedException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
