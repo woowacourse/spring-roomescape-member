@@ -52,7 +52,7 @@ class AdminReservationControllerTest extends AbstractControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        memberId = memberRepository.save(new Member("벨로", "bello@email.com", "1234", MemberRole.ADMIN)).getId();
+        memberId = memberRepository.save(new Member("벨로", "bello@email.com", "bziTlUMky2GC3ji0qgiFVA==", MemberRole.ADMIN)).getId();
         token = testLoginAndReturnToken();
     }
 
@@ -143,7 +143,7 @@ class AdminReservationControllerTest extends AbstractControllerTest {
         reservationTimeRepository.add(new ReservationTime(LocalTime.of(10, 0)));
         reservationThemeRepository.add(new ReservationTheme("테마1", "설명1", "테마1.jpg"));
         reservationRepository.add(new Reservation(
-                        new Member(1L, "수양", "test@email.com", "1234"),
+                        new Member(1L, "수양", "test@email.com", "password"),
                         LocalDate.now().plusDays(1),
                         reservationTimeRepository.findById(1L).get(),
                         reservationThemeRepository.findById(1L).get()
@@ -184,7 +184,7 @@ class AdminReservationControllerTest extends AbstractControllerTest {
         reservationTimeRepository.add(new ReservationTime(LocalTime.of(10, 0)));
         reservationThemeRepository.add(new ReservationTheme("테마1", "설명1", "테마1.jpg"));
         Long id = reservationRepository.add(new Reservation(
-                        new Member(1L, "수양", "test@email.com", "1234"),
+                        new Member(1L, "수양", "test@email.com", "password"),
                         LocalDate.now().plusDays(1),
                         reservationTimeRepository.findById(1L).get(),
                         reservationThemeRepository.findById(1L).get()
@@ -212,7 +212,7 @@ class AdminReservationControllerTest extends AbstractControllerTest {
                 .log().all()
                 .contentType(ContentType.JSON)
                 .cookie("token", token)
-                .body(new LoginRequestDto("bello@email.com", "1234"))
+                .body(new LoginRequestDto("bello@email.com", "password"))
                 .when()
                 .post("/login")
                 .then()

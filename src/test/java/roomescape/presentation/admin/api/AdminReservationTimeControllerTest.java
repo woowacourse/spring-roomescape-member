@@ -39,7 +39,7 @@ class AdminReservationTimeControllerTest extends AbstractControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        memberRepository.save(new Member("벨로", "bello@email.com", "1234", MemberRole.ADMIN));
+        memberRepository.save(new Member("벨로", "bello@email.com", "bziTlUMky2GC3ji0qgiFVA==", MemberRole.ADMIN));
         token = testLoginAndReturnToken();
     }
 
@@ -135,7 +135,7 @@ class AdminReservationTimeControllerTest extends AbstractControllerTest {
                 .log().all()
                 .contentType(ContentType.JSON)
                 .cookie("token", token)
-                .body(new LoginRequestDto("bello@email.com", "1234"))
+                .body(new LoginRequestDto("bello@email.com", "password"))
                 .when()
                 .post("/login")
                 .then()
