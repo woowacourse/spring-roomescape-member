@@ -58,6 +58,8 @@ INSERT INTO reservation (member_id, date, time_id, theme_id)
 VALUES (1, '2025-05-05', 4, 5);
 
 INSERT INTO member (email, password, name, role)
-VALUES ('a@gmail.com', 'a', '하루', 'member');
+VALUES ('a@gmail.com', 'a', '하루', 'MEMBER');
 INSERT INTO member (email, password, name, role)
-VALUES ('b@gmail.com', 'b', '제이미', 'member');
+VALUES ('b@gmail.com', 'b', '제이미', 'MEMBER');
+INSERT INTO member (email, password, name, role)
+VALUES ('admin@gmail.com', 'a', '어드민', 'ADMIN');

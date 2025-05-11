@@ -5,7 +5,7 @@ import roomescape.member.domain.Member;
 public record SignupRequest(String email, String password, String name) {
 
     public Member toMemberWithoutId() {
-        return new Member(null, email, password, name, "member");
+        return new Member(null, email, password, name, "MEMBER");
     }
 
 }
