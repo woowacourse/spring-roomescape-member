@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import roomescape.exception.DuplicateException;
+import roomescape.exception.InvalidDateAndTimeException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.UnauthorizedException;
 
@@ -32,5 +33,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<Void> handleUnauthorizedException(final UnauthorizedException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @ExceptionHandler(InvalidDateAndTimeException.class)
+    public ResponseEntity<Void> handleInvalidDateAndTimeException(final InvalidDateAndTimeException e) {
+        e.printStackTrace();
+        return ResponseEntity.badRequest().build();
     }
 }

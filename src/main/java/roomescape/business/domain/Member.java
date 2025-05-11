@@ -14,6 +14,13 @@ public class Member {
         this.password = password;
     }
 
+    public Member(final Long id){
+        this.id = id;
+        this.name = null;
+        this.email = null;
+        this.password = null;
+    }
+
     public Long getId() {
         return id;
     }

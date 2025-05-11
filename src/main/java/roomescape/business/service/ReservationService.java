@@ -5,47 +5,55 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.business.domain.Member;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
 import roomescape.business.domain.Theme;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.InvalidDateAndTimeException;
 import roomescape.exception.NotFoundException;
+import roomescape.persistence.dao.MemberDao;
 import roomescape.persistence.dao.PlayTimeDao;
 import roomescape.persistence.dao.ReservationDao;
 import roomescape.persistence.dao.ThemeDao;
-import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
 
 @Service
 public class ReservationService {
 
     private final ReservationDao reservationDao;
+    private final MemberDao memberDao;
     private final PlayTimeDao playTimeDao;
     private final ThemeDao themeDao;
 
-    public ReservationService(final ReservationDao reservationDao, final PlayTimeDao playTimeDao,
-                              final ThemeDao themeDao) {
+    public ReservationService(final ReservationDao reservationDao, final MemberDao memberDao,
+                              final PlayTimeDao playTimeDao, final ThemeDao themeDao) {
         this.reservationDao = reservationDao;
+        this.memberDao = memberDao;
         this.playTimeDao = playTimeDao;
         this.themeDao = themeDao;
     }
 
-    public ReservationResponse insert(final ReservationRequest reservationRequest) {
-        validateTimeIdExists(reservationRequest.timeId());
-        validateThemeIdExists(reservationRequest.themeId());
-        validateIsDuplicate(reservationRequest.date(), reservationRequest.timeId(), reservationRequest.themeId());
-        final PlayTime playTime = playTimeDao.findById(reservationRequest.timeId()).get();
-        validateDateAndTimeIsFuture(reservationRequest.date(), playTime.getStartAt());
+    public ReservationResponse insert(final LocalDate date, final Long memberId, final Long timeId,
+                                       final Long themeId) {
+        validateMemberIdExists(memberId);
+        validateTimeIdExists(timeId);
+        validateThemeIdExists(themeId);
+        validateIsDuplicate(date, timeId, themeId);
+        final PlayTime playTime = playTimeDao.findById(timeId).get();
+        validateDateAndTimeIsFuture(date, playTime.getStartAt());
 
-        final Theme theme = themeDao.findById(reservationRequest.themeId()).get();
-        final Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), playTime,
-                theme);
-        final Long id = reservationDao.insert(reservation)
-                .getId();
-        final Reservation savedReservation = new Reservation(id, reservationRequest.name(), reservationRequest.date(),
-                playTime, theme);
+        final Theme theme = themeDao.findById(themeId).get();
+        final Member member = memberDao.findById(memberId).get();
+        final Reservation reservation = new Reservation(date, member, playTime, theme);
+        final Reservation savedReservation = reservationDao.insert(reservation);
         return ReservationResponse.from(savedReservation);
+    }
+
+    private void validateMemberIdExists(final Long memberId) {
+        if (!memberDao.existsById(memberId)) {
+            throw new NotFoundException("해당하는 사용자를 찾을 수 없습니다. 사용자 id: %d".formatted(memberId));
+        }
     }
 
     private void validateTimeIdExists(final Long timeId) {

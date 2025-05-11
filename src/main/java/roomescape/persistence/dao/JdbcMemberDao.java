@@ -28,6 +28,24 @@ public class JdbcMemberDao implements MemberDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
+    public Optional<Member> findById(final Long memberId) {
+        final String sql = """
+                SELECT
+                    id, name, email, password
+                FROM
+                    member
+                WHERE
+                    id = ?
+                """;
+        try {
+            final Member member = jdbcTemplate.queryForObject(sql, memberRowMapper, memberId);
+            return Optional.of(member);
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
     public Optional<Member> findByEmailAndPassword(String email, String password) {
         final String sql = """
                 SELECT
@@ -43,5 +61,18 @@ public class JdbcMemberDao implements MemberDao {
         } catch (DataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public boolean existsById(final Long memberId) {
+        final String sql = """
+                SELECT EXISTS(
+                    SELECT 1 
+                    FROM member 
+                    WHERE id = ?
+                ) AS is_exist
+                """;
+        final int flag = jdbcTemplate.queryForObject(sql, Integer.class, memberId);
+        return flag == 1;
     }
 }

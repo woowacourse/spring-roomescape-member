@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.business.service.PlayTimeService;
 import roomescape.business.service.ReservationService;
-import roomescape.exception.InvalidDateAndTimeException;
+import roomescape.presentation.dto.LoginMember;
 import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
@@ -32,17 +32,16 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> create(
-            @RequestBody final ReservationRequest reservationRequest
-    ) {
-        try {
-            final ReservationResponse reservationResponse = reservationService.insert(reservationRequest);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(reservationResponse);
-        } catch (InvalidDateAndTimeException e) {
-            return ResponseEntity.unprocessableEntity()
-                    .build();
-        }
+    public ResponseEntity<ReservationResponse> createByLoginMember(@RequestBody final ReservationRequest reservationRequest,
+                                                                   final LoginMember loginMember) {
+        final ReservationResponse reservationResponse = reservationService.insert(
+                reservationRequest.date(),
+                loginMember.id(),
+                reservationRequest.timeId(),
+                reservationRequest.themeId());
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(reservationResponse);
     }
 
     @GetMapping
