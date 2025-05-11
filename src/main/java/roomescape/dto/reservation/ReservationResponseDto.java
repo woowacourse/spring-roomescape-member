@@ -16,7 +16,7 @@ public record ReservationResponseDto(Long id, MemberNameResponseDto member,
                                      ReservationTimeResponseDto time) {
 
     public static ReservationResponseDto of(Reservation reservation, ReservationTime reservationTime, Theme theme) {
-        MemberNameResponseDto memberResponseDto = new MemberNameResponseDto(reservation.getName());
+        MemberNameResponseDto memberResponseDto = new MemberNameResponseDto(reservation.getMember().getName());
         ReservationTimeResponseDto timeResponseDto = ReservationTimeResponseDto.from(reservationTime);
         ThemeResponseDto themeResponseDto = ThemeResponseDto.from(theme);
 

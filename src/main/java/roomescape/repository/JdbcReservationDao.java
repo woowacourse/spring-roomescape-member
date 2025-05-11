@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
@@ -25,6 +27,7 @@ public class JdbcReservationDao implements ReservationRepository {
         String date = rs.getString("date");
         Long timeId = rs.getLong("reservation_time_id");
         String timeValue = rs.getString("start_at");
+        String roleName = rs.getString("auth_role");
         ReservationTime reservationTime = new ReservationTime(timeId, LocalTime.parse(timeValue));
         Theme theme = new Theme(
                 rs.getLong("reservation_theme_id"),
@@ -33,13 +36,22 @@ public class JdbcReservationDao implements ReservationRepository {
                 rs.getString("thumbnail")
         );
 
+        Member member = new Member(
+                rs.getLong("reservation_member_id"),
+                rs.getString("member_name"),
+                rs.getString("email"),
+                Role.valueOf(roleName),
+                rs.getString("password")
+        );
+
         Reservation reservation = new Reservation(
                 rs.getLong("id"),
-                rs.getString("name"),
+                member,
                 LocalDate.parse(date),
                 reservationTime,
                 theme
         );
+
         return reservation;
     };
 
@@ -57,13 +69,13 @@ public class JdbcReservationDao implements ReservationRepository {
     public Reservation save(final Reservation reservation) {
         try {
             SqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("name", reservation.getName())
                     .addValue("date", reservation.getDate())
                     .addValue("time_id", reservation.getTime().id())
-                    .addValue("theme_id", reservation.getTheme().id());
+                    .addValue("theme_id", reservation.getTheme().id())
+                    .addValue("member_id", reservation.getMember().getId());
 
             long id = jdbcInsert.executeAndReturnKey(params).longValue();
-            return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+            return new Reservation(id, reservation.getMember(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
         } catch (DuplicateKeyException e) {
             throw new IllegalStateException("[ERROR] 이미 등록된 예약 입니다.");
         }
@@ -75,16 +87,20 @@ public class JdbcReservationDao implements ReservationRepository {
                 SELECT
                 r.id,
                 r.date,
-                m.name,
                 r.time_id as reservation_time_id,
                 r.theme_id as reservation_theme_id,
+                r.member_id as reservation_member_id,
                 t.start_at,
                 th.name as theme_name,
                 th.description,
-                th.thumbnail
+                th.thumbnail,
+                m.name as member_name,
+                m.email,
+                m.auth_role,
+                m.password
                 FROM reservation as r
                 inner join reservation_time as t on r.time_id = t.id 
-                inner join member as m on r.member_id = m.member_id
+                inner join member as m on r.member_id = m.id
                 inner join theme as th on r.theme_id = th.id
                 """;
         return jdbcTemplate.query(sql, rowMapper);
@@ -96,16 +112,21 @@ public class JdbcReservationDao implements ReservationRepository {
                 SELECT
                 r.id,
                 r.date,
-                m.name,
                 r.time_id as reservation_time_id,
                 r.theme_id as reservation_theme_id,
+                r.member_id as reservation_member_id,
                 t.start_at,
                 th.name as theme_name,
                 th.description,
-                th.thumbnail
+                th.thumbnail,
+                m.name as member_name,
+                m.email,
+                m.auth_role,
+                m.password
+                FROM reservati
                 FROM reservation as r
                 inner join reservation_time as t on r.time_id = t.id 
-                inner join member as m on r.member_id = m.member_id
+                inner join member as m on r.member_id = m.id
                 inner join theme as th on r.theme_id = th.id
                 where r.id = ?
                 """;
@@ -122,16 +143,20 @@ public class JdbcReservationDao implements ReservationRepository {
                 SELECT
                 r.id,
                 r.date,
-                m.name,
                 r.time_id as reservation_time_id,
                 r.theme_id as reservation_theme_id,
+                r.member_id as reservation_member_id,
                 t.start_at,
                 th.name as theme_name,
                 th.description,
-                th.thumbnail
+                th.thumbnail,
+                m.name as member_name,
+                m.email,
+                m.auth_role,
+                m.password
                 FROM reservation as r
                 inner join reservation_time as t on r.time_id = t.id 
-                inner join member as m on r.member_id = m.member_id
+                inner join member as m on r.member_id = m.id
                 inner join theme as th on r.theme_id = th.id
                 where r.date = ? and t.start_at = ? and r.theme_id = ?
                 """;
@@ -144,16 +169,20 @@ public class JdbcReservationDao implements ReservationRepository {
                 SELECT
                 r.id,
                 r.date,
-                m.name,
                 r.time_id as reservation_time_id,
                 r.theme_id as reservation_theme_id,
+                r.member_id as reservation_member_id,
                 t.start_at,
                 th.name as theme_name,
                 th.description,
-                th.thumbnail
+                th.thumbnail,
+                m.name as member_name,
+                m.email,
+                m.auth_role,
+                m.password
                 FROM reservation as r
                 inner join reservation_time as t on r.time_id = t.id 
-                inner join member as m on r.member_id = m.member_id
+                inner join member as m on r.member_id = m.id
                 inner join theme as th on r.theme_id = th.id
                 WHERE r.date = ? AND th.id = ?
                 """;
@@ -166,18 +195,22 @@ public class JdbcReservationDao implements ReservationRepository {
                 SELECT
                 r.id,
                 r.date,
-                m.name,
                 r.time_id as reservation_time_id,
                 r.theme_id as reservation_theme_id,
+                r.member_id as reservation_member_id,
                 t.start_at,
                 th.name as theme_name,
                 th.description,
-                th.thumbnail
+                th.thumbnail,
+                m.name as member_name,
+                m.email,
+                m.auth_role,
+                m.password
                 FROM reservation as r
                 INNER JOIN reservation_time as t on r.time_id = t.id
                 INNER JOIN theme as th on r.theme_id = th.id
-                INNER JOIN member as m on r.member_id = m.member_id
-                WHERE r.date >= ? AND r.date <= ? AND th.id = ? AND m.member_id = ?
+                INNER JOIN member as m on r.member_id = m.id
+                WHERE r.date >= ? AND r.date <= ? AND th.id = ? AND m.id = ?
                 """;
         return jdbcTemplate.query(sql, rowMapper, from, to, themeId, memberId);
     }

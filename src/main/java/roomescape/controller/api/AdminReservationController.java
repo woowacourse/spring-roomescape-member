@@ -28,7 +28,7 @@ public class AdminReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponseDto> addReservation(@RequestBody AdminReservationCreateRequestDto requestDto) {
         Member memberById = memberService.findMemberById(requestDto.memberId());
-        ReservationCreateDto createDto = new ReservationCreateDto(memberById.getName(), requestDto.date(), requestDto.timeId(), requestDto.themeId());
+        ReservationCreateDto createDto = new ReservationCreateDto(requestDto.date(), requestDto.timeId(), requestDto.themeId(), requestDto.memberId());
         ReservationResponseDto responseDto = reservationService.createReservation(createDto);
         return ResponseEntity.created(URI.create("reservations/" + responseDto.id())).body(responseDto);
     }

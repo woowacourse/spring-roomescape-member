@@ -14,7 +14,7 @@ public class Member {
 
     public Member(Long id, String name, String email, Role role, String password) {
         validateName(name);
-        validateEmail(email);
+        validateEamil(email);
         validatePassword(password);
 
         this.id = id;
@@ -38,7 +38,7 @@ public class Member {
         }
     }
 
-    private void validateEmail(String email) {
+    private void validateEamil(String email) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 이메일은 1글자 이상으로 이루어져야 합니다. ");
         }

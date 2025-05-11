@@ -1,11 +1,11 @@
 CREATE TABLE member
 (
-    member_id  BIGINT        NOT NULL AUTO_INCREMENT,
+    id  BIGINT        NOT NULL AUTO_INCREMENT,
     name     VARCHAR(255)  NOT NULL,
     email    VARCHAR(255)  NOT NULL UNIQUE,
     password VARCHAR(255)  NOT NULL,
-    role     VARCHAR(255)  NOT NULL,
-    PRIMARY KEY (member_id)
+    auth_role     VARCHAR(255)  NOT NULL,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE reservation_time
@@ -34,5 +34,5 @@ CREATE TABLE reservation
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id),
-    FOREIGN KEY (member_id) REFERENCES member (member_id)
+    FOREIGN KEY (member_id) REFERENCES member (id)
 );

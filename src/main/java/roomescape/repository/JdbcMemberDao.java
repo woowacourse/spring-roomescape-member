@@ -19,10 +19,10 @@ import java.util.Optional;
 public class JdbcMemberDao implements MemberRepository {
 
     private final static RowMapper<Member> rowMapper = (rs, rows) -> {
-        long memberId = rs.getLong("member_id");
+        long memberId = rs.getLong("id");
         String name = rs.getString("name");
         String email = rs.getString("email");
-        String role = rs.getString("role");
+        String role = rs.getString("auth_role");
         String password = rs.getString("password");
 
         return new Member(memberId, name, email, Role.valueOf(role), password);
@@ -35,7 +35,7 @@ public class JdbcMemberDao implements MemberRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("member")
-                .usingGeneratedKeyColumns("member_id");
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -44,7 +44,7 @@ public class JdbcMemberDao implements MemberRepository {
             SqlParameterSource params = new MapSqlParameterSource()
                     .addValue("name", member.getName())
                     .addValue("email", member.getEmail())
-                    .addValue("role", member.getRole())
+                    .addValue("auth_role", member.getRole())
                     .addValue("password", member.getPassword());
 
             long id = jdbcInsert.executeAndReturnKey(params).longValue();
@@ -58,7 +58,7 @@ public class JdbcMemberDao implements MemberRepository {
     public Optional<Member> findByEmailAndPassword(String email, String password) {
         try {
             String sql = """
-                    SELECT member_id, name, email, role, password
+                    SELECT id, name, email, auth_role, password
                     FROM member
                     WHERE email = ? AND password = ?
                     """;
@@ -72,9 +72,9 @@ public class JdbcMemberDao implements MemberRepository {
     public Optional<Member> findById(long id) {
         try {
             String sql = """
-                    SELECT member_id, name, email, role, password
+                    SELECT id, name, email, auth_role, password
                     FROM member
-                    WHERE member_id = ?
+                    WHERE id = ?
                     """;
             return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (EmptyResultDataAccessException e) {
@@ -85,7 +85,7 @@ public class JdbcMemberDao implements MemberRepository {
     @Override
     public List<Member> findAll() {
         String sql = """
-                SELECT member_id, name, email, role, password
+                SELECT id, name, email, auth_role, password
                 FROM member
                 """;
         return jdbcTemplate.query(sql, rowMapper);
