@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ClockConfig {
 
-    // TODO : Test Configuration과 분리
     @Bean
     public Clock clock() {
         return Clock.fixed(

@@ -35,7 +35,9 @@ public class AdminReservationApiController {
     }
 
     @PostMapping("/admin/reservations")
-    public ResponseEntity<ReservationResponse> addByAdmin(@RequestBody AdminReservationRequest adminReservationRequest) {
+    public ResponseEntity<ReservationResponse> addByAdmin(
+            @RequestBody AdminReservationRequest adminReservationRequest) {
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(reservationService.addByAdmin(adminReservationRequest));
     }
