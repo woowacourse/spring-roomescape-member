@@ -70,6 +70,7 @@ public class MemberController {
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/");
+        cookie.setAttribute("SameSite", "Strict");
         cookie.setMaxAge(maxAge);
         servletResponse.addCookie(cookie);
     }
