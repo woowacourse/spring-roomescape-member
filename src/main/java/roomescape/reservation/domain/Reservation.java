@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
-import roomescape.common.domain.Id;
+import roomescape.global.domain.Id;
 import roomescape.member.domain.Member;
 import roomescape.reservation.exception.InvalidReservationException;
 import roomescape.reservationtime.domain.ReservationTime;

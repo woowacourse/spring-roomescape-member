@@ -1,6 +1,6 @@
 package roomescape.theme.domain;
 
-import roomescape.common.domain.Id;
+import roomescape.global.domain.Id;
 import roomescape.theme.exception.InvalidThemeException;
 
 public class Theme {

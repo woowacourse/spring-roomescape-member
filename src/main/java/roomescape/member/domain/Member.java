@@ -1,6 +1,6 @@
 package roomescape.member.domain;
 
-import roomescape.common.domain.Id;
+import roomescape.global.domain.Id;
 import roomescape.member.exception.InvalidMemberException;
 
 public class Member {
