@@ -3,7 +3,7 @@ package roomescape.theme.service;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.common.exception.EntityNotFoundException;
+import roomescape.global.exception.EntityNotFoundException;
 import roomescape.theme.exception.ThemeDuplicateException;
 import roomescape.fake.ThemeFakeRepository;
 import roomescape.theme.dto.ThemeRequest;

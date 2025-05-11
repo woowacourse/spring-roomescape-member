@@ -6,10 +6,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.RoleRequired;
 import roomescape.auth.dto.LoginMember;
+import roomescape.member.entity.Role;
+import roomescape.reservation.dto.AdminReservationRequest;
 import roomescape.reservation.dto.ReservationAvailableTimeResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -20,7 +22,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/reservations")
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -29,25 +30,33 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping
+    @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> postReservation(@RequestBody ReservationRequest request, LoginMember loginMember) {
         ReservationResponse reservationResponse = reservationService.createReservation(request, loginMember);
         URI location = URI.create("/reservations/" + reservationResponse.id());
         return ResponseEntity.created(location).body(reservationResponse);
     }
 
-    @GetMapping
+    @PostMapping("/admin/reservations")
+    @RoleRequired(Role.ADMIN)
+    public ResponseEntity<ReservationResponse> postReservation(@RequestBody AdminReservationRequest request) {
+        ReservationResponse reservationResponse = reservationService.createReservation(request);
+        URI location = URI.create("/admin/reservations/" + reservationResponse.id());
+        return ResponseEntity.created(location).body(reservationResponse);
+    }
+
+    @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponse>> getReservations() {
         return ResponseEntity.ok(reservationService.readReservations());
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservationById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/times")
+    @GetMapping("/reservations/times")
     public List<ReservationAvailableTimeResponse> getAvailableReservationTimes(
             @RequestParam LocalDate date, @RequestParam long themeId
     ) {

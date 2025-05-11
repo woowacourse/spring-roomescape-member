@@ -42,36 +42,16 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse createReservation(ReservationRequest request, LoginMember loginMember) {
-        Member member = memberRepository.findById(loginMember.getId())
-                .orElseThrow(() -> new NoSuchElementException("해당 사용자는 존재하지 않습니다."));
-        ReservationTime time = reservationTimeRepository.findById(request.timeId());
-        Theme theme = themeRepository.findById(request.themeId());
-        Reservation reservation = Reservation.createIfDateTimeValid(member, request.date(), time, theme);
-
-        if (isDuplicate(reservation)) {
-            throw new ReservationDuplicateException("해당 시각의 중복된 예약이 존재합니다.", reservation.getDate(),
-                    reservation.getTime().getStartAt(), reservation.getTheme().getName());
-        }
-
-        Reservation newReservation = reservationRepository.save(reservation);
-        return ReservationResponse.from(newReservation);
+        Member member = memberRepository.findById(loginMember.id())
+                .orElseThrow(() -> new NoSuchElementException("로그인 정보가 존재하지 않습니다."));
+        return createReservationInternal(request.timeId(), request.themeId(), member, request.date());
     }
 
     @Transactional
     public ReservationResponse createReservation(AdminReservationRequest request) {
         Member member = memberRepository.findById(request.memberId())
                 .orElseThrow(() -> new NoSuchElementException("해당 사용자는 존재하지 않습니다."));
-        ReservationTime time = reservationTimeRepository.findById(request.timeId());
-        Theme theme = themeRepository.findById(request.themeId());
-        Reservation reservation = Reservation.createIfDateTimeValid(member, request.date(), time, theme);
-
-        if (isDuplicate(reservation)) {
-            throw new ReservationDuplicateException("해당 시각의 중복된 예약이 존재합니다.", reservation.getDate(),
-                    reservation.getTime().getStartAt(), reservation.getTheme().getName());
-        }
-
-        Reservation newReservation = reservationRepository.save(reservation);
-        return ReservationResponse.from(newReservation);
+        return createReservationInternal(request.timeId(), request.themeId(), member, request.date());
     }
 
     public List<ReservationResponse> readReservations() {
@@ -97,5 +77,19 @@ public class ReservationService {
         return reservationTimes.stream()
                 .map(time -> ReservationAvailableTimeResponse.of(time, bookedTimeIds.contains(time.getId())))
                 .toList();
+    }
+
+    private ReservationResponse createReservationInternal(Long request, Long request1, Member member, LocalDate request2) {
+        ReservationTime time = reservationTimeRepository.findById(request);
+        Theme theme = themeRepository.findById(request1);
+        Reservation reservation = Reservation.createIfDateTimeValid(member, request2, time, theme);
+
+        if (isDuplicate(reservation)) {
+            throw new ReservationDuplicateException("해당 시각의 중복된 예약이 존재합니다.", reservation.getDate(),
+                    reservation.getTime().getStartAt(), reservation.getTheme().getName());
+        }
+
+        Reservation newReservation = reservationRepository.save(reservation);
+        return ReservationResponse.from(newReservation);
     }
 }
