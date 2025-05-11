@@ -2,7 +2,9 @@ package roomescape.common.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import lombok.Getter;
 
+@Getter
 public class ErrorResponse {
 
     private final int status;

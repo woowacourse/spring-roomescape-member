@@ -16,7 +16,6 @@ public class Member {
     private final MemberId id;
     private final MemberName name;
     private final MemberEmail email;
-    // TODO: consider moving role to Account
     private final Role role;
 
     private static Member of(final MemberId id, final MemberName name, final MemberEmail email, final Role role) {

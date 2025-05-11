@@ -17,6 +17,7 @@ public record SignupRequest(
     private void validate(final String email, final String password, final String name) {
         Validator.of(SignupRequest.class)
                 .notNullField(Fields.email, email)
-                .notNullField(Fields.password, password);
+                .notNullField(Fields.password, password)
+                .notBlankField(Fields.name, name);
     }
 }

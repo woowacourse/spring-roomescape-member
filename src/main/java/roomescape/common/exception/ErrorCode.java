@@ -10,7 +10,7 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다."),
     CONFLICT(HttpStatus.CONFLICT, "이미 존재하는 자원입니다."),
 
-    INVALID_INPUT(HttpStatus.BAD_REQUEST, "잘못된 입력입니다."),
+    INVALID_INPUT(HttpStatus.BAD_REQUEST, "잘못된 형식의 입력입니다."),
     INVALID_DATETIME_FORMAT(HttpStatus.BAD_REQUEST, "잘못된 날짜/시간 형식입니다."),
     USER_NOT_FOUND(HttpStatus.UNAUTHORIZED, "사용자를 찾을 수 없습니다."),
     INVALID_MEMBER_INFO(HttpStatus.UNAUTHORIZED, "가입되지 않은 이메일이거나, 비밀번호가 잘못되었습니다."),

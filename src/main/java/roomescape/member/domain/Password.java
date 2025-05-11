@@ -13,7 +13,6 @@ import roomescape.common.utils.Validator;
 @EqualsAndHashCode
 public class Password {
 
-    // TODO: Add password encryption logic
     private final String value;
 
     public static Password from(final String password) {
@@ -23,11 +22,6 @@ public class Password {
 
     private static void validate(final String value) {
         Validator.of(Password.class)
-                .notNullField(Password.Fields.value, value)
                 .notBlankField(Password.Fields.value, value.strip());
-    }
-
-    public boolean matches(final String password) {
-        return value.equals(password);
     }
 }

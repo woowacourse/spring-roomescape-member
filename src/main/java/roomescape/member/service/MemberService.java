@@ -3,6 +3,7 @@ package roomescape.member.service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.common.exception.AuthenticationException;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.ErrorCode;
 import roomescape.common.exception.NotFoundException;
@@ -24,7 +25,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public MemberInfo signup(SignupRequest signupRequest) {
+    public MemberInfo create(SignupRequest signupRequest) {
         if (memberRepository.existsByEmail(MemberEmail.from(signupRequest.email()))) {
             throw new ConflictException("이미 존재하는 이메일입니다.");
         }
@@ -48,7 +49,7 @@ public class MemberService {
 
     public Member get(MemberId id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("등록된 회원이 아닙니다.", ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new AuthenticationException("등록된 회원이 아닙니다.", ErrorCode.USER_NOT_FOUND));
     }
 
     public List<MemberInfo> getAll() {

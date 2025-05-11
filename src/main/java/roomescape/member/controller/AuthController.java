@@ -13,14 +13,12 @@ import roomescape.member.controller.dto.LoginRequest;
 import roomescape.member.auth.dto.MemberInfo;
 import roomescape.member.controller.dto.SignupRequest;
 import roomescape.member.service.AuthService;
-import roomescape.member.service.MemberService;
 
 @RequiredArgsConstructor
 @RestController
 public class AuthController {
 
     private final AuthService authService;
-    private final MemberService memberService;
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest) {
@@ -48,6 +46,6 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<MemberInfo> signup(@RequestBody SignupRequest signupRequest) {
-        return ResponseEntity.ok(memberService.signup(signupRequest));
+        return ResponseEntity.ok(authService.signup(signupRequest));
     }
 }
