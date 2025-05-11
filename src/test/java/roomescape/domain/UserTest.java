@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class UserTest {
 
@@ -17,6 +19,19 @@ class UserTest {
             "여섯글자이름",
             UserRole.USER,
             "email@email.com",
+            "password")
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @ParameterizedTest
+    @DisplayName("이메일 형식이 맞지 않으면 예외가 발생한다")
+    @CsvSource({"abc@email", "abc@email.", "abc@.com", "abc@.", "@email.com", "@email"})
+    void emailFormatException(final String invalidEmail) {
+        assertThatThrownBy(() -> new User(
+            1L,
+            "이름",
+            UserRole.USER,
+            invalidEmail,
             "password")
         ).isInstanceOf(IllegalArgumentException.class);
     }
