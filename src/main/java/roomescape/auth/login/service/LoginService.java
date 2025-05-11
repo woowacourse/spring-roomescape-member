@@ -28,7 +28,7 @@ public class LoginService {
         Admin admin = adminService.findByEmail(request.email());
         validateAdminSamePassword(request, admin);
 
-        return jwtTokenManager.crateToken(admin.getId(), "ADMIN");
+        return jwtTokenManager.createToken(admin.getId(), "ADMIN");
     }
 
     public String createMemberToken(final LoginRequest request) {
@@ -37,7 +37,7 @@ public class LoginService {
         Member member = memberService.findByEmail(request.email());
         validateMemberSamePassword(request, member);
 
-        return jwtTokenManager.crateToken(member.getId(), "MEMBER");
+        return jwtTokenManager.createToken(member.getId(), "MEMBER");
     }
 
     private static void validateAdminSamePassword(final LoginRequest request, final Admin admin) {

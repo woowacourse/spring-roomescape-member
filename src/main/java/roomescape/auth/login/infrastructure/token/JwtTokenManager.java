@@ -15,7 +15,7 @@ public class JwtTokenManager {
     @Value("${secret.key}")
     private String SECRET_KEY;
 
-    public String crateToken(final Long id, final String role) {
+    public String createToken(final Long id, final String role) {
         SecretKeySpec key = new SecretKeySpec(SECRET_KEY.getBytes(), "HmacSHA256");
 
         return Jwts.builder()
