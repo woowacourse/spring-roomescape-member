@@ -159,4 +159,31 @@ class JdbcReservationRepositoryTest {
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("삭제하려고 하는 예약이 존재하지 않습니다. 999");
     }
+
+    @DisplayName("조건에 따라 예약을 조회할 수 있다")
+    @Test
+    void search() {
+        // given
+        var otherMember = memberRepository.save(new Member(null, "김철수", "kim@example.com", "pw456", Role.USER));
+        var otherTime = timeRepository.save(new ReservationTime(null, LocalTime.of(11, 0)));
+        var otherTheme = themeRepository.save(new Theme(null, "공포의 방", "무서운 테마", "scary.jpg"));
+
+        sut.save(new Reservation(null, savedMember, LocalDate.of(2025, 7, 1), savedTime, savedTheme));
+        sut.save(new Reservation(null, otherMember, LocalDate.of(2025, 7, 2), savedTime, savedTheme));
+        sut.save(new Reservation(null, savedMember, LocalDate.of(2025, 7, 3), otherTime, otherTheme));
+
+        // when
+        var resultsByTheme = sut.search(savedTheme.getId(), null, null, null);
+        var resultsByMember = sut.search(null, savedMember.getId(), null, null);
+        var resultsByDate = sut.search(null, null, LocalDate.of(2025, 7, 2), LocalDate.of(2025, 7, 3));
+        var resultByThemeAndMemberAndDate = sut.search(savedTheme.getId(), savedMember.getId(),
+                LocalDate.of(2025, 7, 1), LocalDate.of(2025, 7, 3));
+        // then
+        assertSoftly(soft -> {
+            soft.assertThat(resultsByTheme).hasSize(2);
+            soft.assertThat(resultsByMember).hasSize(2);
+            soft.assertThat(resultsByDate).hasSize(2);
+            soft.assertThat(resultByThemeAndMemberAndDate).hasSize(1);
+        });
+    }
 }
