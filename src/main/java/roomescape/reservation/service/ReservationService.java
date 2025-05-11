@@ -13,6 +13,7 @@ import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.admin.AdminReservationRequest;
+import roomescape.reservation.dto.admin.AdminReservationSearchRequest;
 import roomescape.reservation.dto.user.UserReservationRequest;
 import roomescape.reservationTime.dao.ReservationTimeDao;
 import roomescape.reservationTime.domain.ReservationTime;
@@ -58,9 +59,28 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<ReservationResponse> findAllByMemberId(Long memberId) {
+    public List<ReservationResponse> findAllByMemberId(final Long memberId) {
         return reservationDao.findAllByMemberId(memberId).stream()
                 .map(reservation -> new ReservationResponse(
+                        reservation.getId(),
+                        reservation.getMember(),
+                        reservation.getTheme(),
+                        reservation.getDate(),
+                        ReservationTimeResponse.from(reservation.getTime()))
+                )
+                .toList();
+    }
+
+    public List<ReservationResponse> findAllByMemberAndThemeAndDate(
+            final AdminReservationSearchRequest adminReservationSearchRequest
+    ) {
+        Long memberId = adminReservationSearchRequest.memberId();
+        Long themeId = adminReservationSearchRequest.themeId();
+        LocalDate dateFrom = adminReservationSearchRequest.dateFrom();
+        LocalDate dateTo = adminReservationSearchRequest.dateTo();
+
+        return reservationDao.findAllByMemberAndThemeAndDate(memberId, themeId, dateFrom, dateTo)
+                .stream().map(reservation -> new ReservationResponse(
                         reservation.getId(),
                         reservation.getMember(),
                         reservation.getTheme(),

@@ -72,7 +72,43 @@ public class ReservationDaoImpl implements ReservationDao {
                 WHERE m.id = :memberId
                 """;
         Map<String, Object> parameter = Map.of("memberId", memberId);
-        
+
+        return namedParameterJdbcTemplate.query(sql, parameter, (resultSet, rowNum) -> createReservation(resultSet));
+    }
+
+    @Override
+    public List<Reservation> findAllByMemberAndThemeAndDate(
+            Long memberId,
+            Long themeId,
+            LocalDate dateFrom,
+            LocalDate dateTo
+    ) {
+        String sql = """
+                SELECT r.id AS reservation_id, r.name, r.date, 
+                       m.id AS member_id, m.name AS member_name,
+                       m.email, m.password, 
+                       t.id AS time_id, t.start_at AS time_value, 
+                       e.id AS theme_id, e.name AS theme_name, 
+                       e.description AS theme_description, 
+                       e.thumbnail AS theme_thumbnail 
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t 
+                ON r.time_id = t.id 
+                INNER JOIN theme AS e 
+                ON r.theme_id = e.id 
+                INNER JOIN member AS m
+                ON r.member_id = m.id 
+                WHERE m.id = :memberId AND e.id = :themeId 
+                AND r.date BETWEEN :dateFrom AND :dateTo
+                """;
+
+        Map<String, Object> parameter = Map.of(
+                "memberId", memberId,
+                "themeId", themeId,
+                "dateFrom", dateFrom,
+                "dateTo", dateTo
+        );
+
         return namedParameterJdbcTemplate.query(sql, parameter, (resultSet, rowNum) -> createReservation(resultSet));
     }
 
