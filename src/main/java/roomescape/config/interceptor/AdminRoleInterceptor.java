@@ -42,7 +42,12 @@ public class AdminRoleInterceptor implements HandlerInterceptor {
 
     private static boolean checkAdmin(final HttpServletResponse response,
                                       final JwtRequest jwtRequest) throws IOException {
-        if (jwtRequest == null || jwtRequest.role() != MemberRoleType.ADMIN) {
+        if (jwtRequest == null) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유저 인증에 실패했습니다.");
+            return false;
+        }
+
+        if (jwtRequest.role() != MemberRoleType.ADMIN) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "관리자만 접근 가능합니다.");
             return false;
         }
