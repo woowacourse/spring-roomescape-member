@@ -23,7 +23,7 @@ class ReservationTimeTest {
         ReservationTime otherTime = new ReservationTime(2L, duplicateTime);
 
         // when
-        final boolean isDuplicated = reservationTime.isDuplicatedWith(otherTime);
+        boolean isDuplicated = reservationTime.isDuplicatedWith(otherTime);
 
         // then
         assertThat(isDuplicated).isTrue();
@@ -39,7 +39,7 @@ class ReservationTimeTest {
         ReservationTime otherTime = new ReservationTime(2L, duplicateTime);
 
         // when
-        final boolean isDuplicated = reservationTime.isDuplicatedWith(otherTime);
+        boolean isDuplicated = reservationTime.isDuplicatedWith(otherTime);
 
         // then
         assertThat(isDuplicated).isFalse();
@@ -48,12 +48,12 @@ class ReservationTimeTest {
     @DisplayName("예약 시간이 운영 시간에 포함되는지 판단할 수 있다.")
     @ParameterizedTest
     @MethodSource
-    void checkIsAvailable(LocalTime startAt, final boolean expected) {
+    void checkIsAvailable(LocalTime startAt, boolean expected) {
         // given
         ReservationTime time = new ReservationTime(null, startAt);
 
         // when
-        final boolean actual = time.isAvailable();
+        boolean actual = time.isAvailable();
 
         // then
         assertThat(actual).isEqualTo(expected);

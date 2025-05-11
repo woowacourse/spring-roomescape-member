@@ -47,7 +47,7 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularDescendingUpTo(LocalDate startDate, LocalDate endDate, final int limit) {
+    public List<Theme> findPopularDescendingUpTo(LocalDate startDate, LocalDate endDate, int limit) {
         Map<Long, Long> reservationCountByTheme = reservations.stream()
                 .filter(r -> !r.getDate().isBefore(startDate) && !r.getDate().isAfter(endDate))
                 .collect(Collectors.groupingBy(
