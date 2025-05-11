@@ -16,6 +16,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.dto.request.ReservationTimeRequest.ReservationTimeCreateRequest;
 import roomescape.reservation.repository.ReservationTimeRepository;
 
+// @formatter:off
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeAcceptanceTest {
@@ -37,9 +38,9 @@ class ReservationTimeAcceptanceTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .post("/times")
-                .then()
+        .then()
                 .statusCode(200)
                 .body("startAt", equalTo(startAt.toString()));
     }
@@ -55,9 +56,9 @@ class ReservationTimeAcceptanceTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .post("/times")
-                .then()
+        .then()
                 .statusCode(400)
                 .body("message", equalTo("운영 시간은 10:00부터 22:00까지입니다."));
     }
@@ -72,18 +73,18 @@ class ReservationTimeAcceptanceTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .post("/times")
-                .then()
+        .then()
                 .statusCode(200);
 
         // when & then
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .post("/times")
-                .then()
+        .then()
                 .statusCode(409)
                 .body("message", equalTo("이미 존재하는 예약 시간입니다."));
     }
@@ -98,16 +99,16 @@ class ReservationTimeAcceptanceTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .post("/times")
-                .then()
+        .then()
                 .statusCode(200);
 
         // when & then
         given()
-                .when()
+        .when()
                 .get("/times")
-                .then()
+        .then()
                 .statusCode(200)
                 .body("$", hasSize(1))
                 .body("[0].startAt", equalTo(startAt.toString()));
@@ -123,22 +124,22 @@ class ReservationTimeAcceptanceTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .post("/times")
-                .then()
+        .then()
                 .statusCode(200);
 
         // when & then
         given()
-                .when()
+        .when()
                 .delete("/times/1")
-                .then()
+        .then()
                 .statusCode(200);
 
         given()
-                .when()
+        .when()
                 .get("/times")
-                .then()
+        .then()
                 .statusCode(200)
                 .body("$", hasSize(0));
     }
@@ -148,9 +149,9 @@ class ReservationTimeAcceptanceTest {
     void deleteNonExistentTime() {
         // when & then
         given()
-                .when()
+        .when()
                 .delete("/times/1")
-                .then()
+        .then()
                 .statusCode(404)
                 .body("message", equalTo("존재하지 않는 id 입니다."));
     }
