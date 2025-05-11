@@ -2,6 +2,7 @@ package roomescape.config;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -32,19 +33,19 @@ public class LoginCustomerResolver implements HandlerMethodArgumentResolver {
             throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
+        String token = extractTokenFromCookie(cookies).orElse("");
         return authService.findByToken(token);
     }
 
-    private String extractTokenFromCookie(Cookie[] cookies) {
+    private Optional<String> extractTokenFromCookie(Cookie[] cookies) {
         if (cookies == null){
-            return "";
+            return Optional.empty();
         }
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
-                return cookie.getValue();
+                return Optional.ofNullable(cookie.getValue());
             }
         }
-        return "";
+        return Optional.empty();
     }
 }
