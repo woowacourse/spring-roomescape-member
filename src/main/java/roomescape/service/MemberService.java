@@ -63,4 +63,8 @@ public class MemberService {
                 .orElseThrow(() -> new AuthorizationException("회원 정보가 존재하지 않습니다."));
         return MemberResponse.from(member);
     }
+
+    public Boolean isValidToken(final String token) {
+        return jwtTokenProvider.validateToken(token);
+    }
 }
