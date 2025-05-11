@@ -266,7 +266,7 @@ public class ReservationServiceTest {
             }).isInstanceOf(ReservationNotExistsMemberException.class);
         }
 
-        @DisplayName("이미 해당 시간, 날짜에 예약이 존재한다면 예외가 발생한다.")
+        @DisplayName("이미 해당 시간, 날짜, 테마에 예약이 존재한다면 예외가 발생한다.")
         @Test
         void create3() {
             // given
@@ -276,9 +276,10 @@ public class ReservationServiceTest {
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
             fakeThemeRepository.save(new Theme("1", "2", "3"));
             fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", MemberRole.MEMBER));
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", MemberRole.MEMBER));
             fakeReservationRepository.save(
                     new Reservation(LocalDate.now().plusDays(1)),
-                    1L, 1L, 1L
+                    1L, 1L, 2L
             );
 
 
