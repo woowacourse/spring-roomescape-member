@@ -126,8 +126,7 @@ public class ReservationService {
     private ReservationResponseDto buildReservationResponseDto(Long id, Reservation reservation) {
         ReservationTime time = reservation.getTime();
         Theme theme = reservation.getTheme();
-        Member member = memberDao.findById(reservation.getMember().getId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 member_id 입니다."));
+        Member member = reservation.getMember();
 
         return new ReservationResponseDto(
                 id,
