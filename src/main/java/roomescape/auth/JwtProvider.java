@@ -15,7 +15,7 @@ public class JwtProvider {
 
     private final String secretKey = "regjeoigjroigji3j2io3io4h2bjasbdjaksbdkjqu3hu23hru3rhashudhausdhas";
     private final Key key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
-    private final Long validityInMilliseconds = 60_000L;
+    private final Long validityInMilliseconds = 3600_000L;
 
     public String provideToken(final String payload) {
         final Claims claims = Jwts.claims().setSubject(payload);
