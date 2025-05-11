@@ -15,7 +15,6 @@ public class MemberFinder {
     public Member getMemberById(Long id) {
         return memberRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("아이디 해당하는 멤버 없습니다"));
-
     }
 
 }

@@ -19,17 +19,17 @@ import roomescape.repository.ReservedChecker;
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservedChecker reservedChecker;
-    private final ReservationTimeService reservationTimeService;
-    private final ThemeService themeService;
+    private final ReservationTimeFinder reservationTimeFinder;
+    private final ThemeFinder themeFinder;
     private final MemberFinder memberFinder;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservedChecker reservedChecker,
-                              ReservationTimeService reservationTimeService, ThemeService themeService,
+    public ReservationService(final ReservationRepository reservationRepository, final ReservedChecker reservedChecker,
+                              final ReservationTimeFinder reservationTimeFinder, final ThemeFinder themeFinder,
                               final MemberFinder memberFinder) {
         this.reservationRepository = reservationRepository;
         this.reservedChecker = reservedChecker;
-        this.reservationTimeService = reservationTimeService;
-        this.themeService = themeService;
+        this.reservationTimeFinder = reservationTimeFinder;
+        this.themeFinder = themeFinder;
         this.memberFinder = memberFinder;
     }
 
@@ -40,7 +40,7 @@ public class ReservationService {
     public Reservation addReservationByAdmin(ReservationRequest reservationRequest) {
         ReservationDateTime reservationDateTime = validateAndGetDateTime(reservationRequest.date(),
                 reservationRequest.timeId(), reservationRequest.themeId());
-        Theme theme = themeService.getThemeById(reservationRequest.themeId());
+        Theme theme = themeFinder.getThemeById(reservationRequest.themeId());
         Member member = memberFinder.getMemberById(reservationRequest.memberId());
         return reservationRepository.addReservation(new Reservation(null, member, reservationDateTime, theme));
     }
@@ -50,7 +50,7 @@ public class ReservationService {
 
         ReservationDateTime reservationDateTime = validateAndGetDateTime(userReservationRequest.date(),
                 userReservationRequest.timeId(), userReservationRequest.themeId());
-        Theme theme = themeService.getThemeById(userReservationRequest.themeId());
+        Theme theme = themeFinder.getThemeById(userReservationRequest.themeId());
         Member member = loginMember.toEntity();
         return reservationRepository.addReservation(new Reservation(null, member, reservationDateTime, theme));
     }
@@ -58,7 +58,7 @@ public class ReservationService {
     private ReservationDateTime validateAndGetDateTime(LocalDate date,
                                                        Long timeId,
                                                        Long themeId) {
-        ReservationTime reservationTime = reservationTimeService.getReservationTimeById(timeId);
+        ReservationTime reservationTime = reservationTimeFinder.getReservationTimeById(timeId);
         ReservationDateTime reservationDateTime = new ReservationDateTime(date, reservationTime);
         validateFutureDateTime(reservationDateTime);
         if (isAlreadyExist(reservationDateTime.getDate(), timeId, themeId)) {
