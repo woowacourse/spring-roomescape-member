@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(LoginFailException.class)
     public ResponseEntity<ErrorResponse> handle(LoginFailException e) {
         logger.warn("Handled LoginFailException: {}", e.getMessage(), e);
-        return createResponse(HttpStatus.UNAUTHORIZED, e);
+        return createResponse(HttpStatus.UNAUTHORIZED, e, "로그인에 실패하였습니다.");
     }
 
     @ExceptionHandler(LoginExpiredException.class)
@@ -54,5 +54,9 @@ public class GlobalExceptionHandler {
 
     private static ResponseEntity<ErrorResponse> createResponse(HttpStatus status, Exception e) {
         return ResponseEntity.status(status).body(ErrorResponse.withDetailMessage(status, e));
+    }
+
+    private static ResponseEntity<ErrorResponse> createResponse(HttpStatus status, Exception e, String message) {
+        return ResponseEntity.status(status).body(ErrorResponse.withDetailMessage(status, e, message));
     }
 }

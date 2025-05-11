@@ -17,10 +17,10 @@ public class AuthService {
 
     public AuthToken authenticate(final String email, final String password) {
         final User user = userRepository.findByEmail(email)
-                .orElseThrow(LoginFailException::new);
+                .orElseThrow(() -> new LoginFailException("이메일이 잘못되었습니다."));
 
         if (!user.isPasswordCorrect(password)) {
-            throw new LoginFailException();
+            throw new LoginFailException("비밀번호가 잘못되었습니다.");
         }
 
         return jwtUtil.createToken(user);

@@ -10,13 +10,17 @@ public record ErrorResponse(
         String exceptionType,
         String message
 ) {
-    public static ErrorResponse withDetailMessage(HttpStatus httpStatus, Exception e) {
+    public static ErrorResponse withDetailMessage(HttpStatus httpStatus, Exception e, String message) {
         return new ErrorResponse(
                 LocalDateTime.now(),
                 httpStatus,
                 e.getClass().getSimpleName(),
-                e.getMessage()
+                message
         );
+    }
+
+    public static ErrorResponse withDetailMessage(HttpStatus httpStatus, Exception e) {
+        return withDetailMessage(httpStatus, e, e.getMessage());
     }
 
     public static ErrorResponse withoutDetailMessage() {

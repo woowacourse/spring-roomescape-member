@@ -7,4 +7,8 @@ public class LoginFailException extends RuntimeException {
     public LoginFailException() {
         super(MESSAGE);
     }
+
+    public LoginFailException(String message) {
+        super(message);
+    }
 }
