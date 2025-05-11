@@ -3,13 +3,15 @@ package roomescape.presentation.controller.auth;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/logout")
 public class TokenLogoutController {
 
-    @PostMapping("/logout")
-    public ResponseEntity<Void> login() {
+    @PostMapping
+    public ResponseEntity<Void> logout() {
         return ResponseEntity
                 .status(HttpStatus.SEE_OTHER)
                 .header("Location", "/")
