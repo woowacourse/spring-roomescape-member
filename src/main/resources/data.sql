@@ -1,6 +1,10 @@
 -- member
 INSERT INTO member (name, email, password)
 VALUES ('사용자1', 'test@email.com', 'pass1');
+INSERT INTO member (name, email, password)
+VALUES ('사용자2', 'test2@email.com', 'pass2');
+INSERT INTO member (name, email, password)
+VALUES ('사용자3', 'test3@email.com', 'pass3');
 
 -- reservation_time
 INSERT INTO reservation_time (start_at)
@@ -22,57 +26,57 @@ VALUES ('지하 감옥',
 
 -- reservation: 오래된 데이터
 -- 2025-04-11 ~ 2025-04-20
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오래된예약자10', '2025-04-20', 2, 1);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오래된예약자9', '2025-04-19', 3, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오래된예약자8', '2025-04-18', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오래된예약자7', '2025-04-17', 2, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오래된예약자6', '2025-04-16', 3, 1);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오래된예약자5', '2025-04-15', 1, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오래된예약자4', '2025-04-14', 2, 1);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오래된예약자3', '2025-04-13', 3, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오래된예약자2', '2025-04-12', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오래된예약자1', '2025-04-11', 2, 2);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-04-20', 2, 1, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-04-19', 3, 2, 2);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-04-18', 1, 1, 3);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-04-17', 2, 2, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-04-16', 3, 1, 2);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-04-15', 1, 2, 3);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-04-14', 2, 1, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-04-13', 3, 2, 2);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-04-12', 1, 1, 3);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-04-11', 2, 2, 1);
 
--- reservation: 오래된 데이터2
+-- reservation: 오래된 데이터
 -- 2025-04-23 ~ 2025-04-29
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오래된예약자17', '2025-04-29', 2, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오래된예약자16', '2025-04-28', 3, 1);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오래된예약자15', '2025-04-27', 1, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오래된예약자14', '2025-04-26', 2, 1);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오래된예약자13', '2025-04-25', 3, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오래된예약자12', '2025-04-24', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오래된예약자11', '2025-04-23', 2, 2);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-04-29', 2, 2, 2);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-04-28', 3, 1, 3);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-04-27', 1, 2, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-04-26', 2, 1, 2);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-04-25', 3, 2, 3);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-04-24', 1, 1, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-04-23', 2, 2, 2);
 
 -- reservation: 최근 데이터
 -- 2025-04-30 ~ 2025-05-06
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('최근예약자1', '2025-05-06', 2, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('최근예약자2', '2025-05-05', 3, 1);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('최근예약자3', '2025-05-04', 1, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('최근예약자4', '2025-05-03', 2, 1);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('최근예약자5', '2025-05-02', 3, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('최근예약자6', '2025-05-01', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('최근예약자7', '2025-04-30', 2, 2);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-05-06', 2, 2, 3);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-05-05', 3, 1, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-05-04', 1, 2, 2);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-05-03', 2, 1, 3);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-05-02', 3, 2, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-05-01', 1, 1, 2);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2025-04-30', 2, 2, 3);
