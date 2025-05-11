@@ -248,6 +248,6 @@ class ReservationCommandServiceImplTest {
         // then
         assertThatThrownBy(() -> reservationCommandService.delete(id))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage( "[RESERVATION] not found. params={ReservationId=ReservationId(-1)}");
+                .hasMessage("[RESERVATION] not found. params={ReservationId=ReservationId(-1)}");
     }
 }

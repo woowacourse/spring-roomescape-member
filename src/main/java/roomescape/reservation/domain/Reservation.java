@@ -12,7 +12,6 @@ import roomescape.reservation.exception.PastDateReservationException;
 import roomescape.reservation.exception.PastTimeReservationException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
-import roomescape.user.domain.User;
 import roomescape.user.domain.UserId;
 
 import java.time.LocalDateTime;
