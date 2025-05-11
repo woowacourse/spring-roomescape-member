@@ -1,8 +1,9 @@
 package roomescape.global.auth.infrastructure;
 
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.NativeWebRequest;
-import roomescape.global.auth.exception.AuthException;
 
 @Component
 public class AuthorizationExtractor {
@@ -12,11 +13,25 @@ public class AuthorizationExtractor {
 
     public String extract(final NativeWebRequest webRequest) {
         String cookie = webRequest.getHeader(COOKIE);
-        if (cookie == null || !cookie.toLowerCase().startsWith(AUTHORIZATION_KEY.toLowerCase())) {
-            throw new AuthException("로그인이 필요합니다.");
+        if (cookie != null && cookie.toLowerCase().startsWith(AUTHORIZATION_KEY.toLowerCase())) {
+            return extractToken(cookie);
         }
+        return null;
+    }
+
+    public String extract(final HttpServletRequest httpServletRequest) {
+        Enumeration<String> headers = httpServletRequest.getHeaders(COOKIE);
+        while (headers.hasMoreElements()) {
+            String cookie = headers.nextElement();
+            if (cookie.toLowerCase().startsWith(AUTHORIZATION_KEY.toLowerCase())) {
+                return extractToken(cookie);
+            }
+        }
+        return null;
+    }
+
+    private String extractToken(final String cookie) {
         String authHeaderValue = cookie.substring(AUTHORIZATION_KEY.length()).trim();
-        System.out.println(authHeaderValue);
         int semicolonIndex = authHeaderValue.indexOf(";");
         if (semicolonIndex > 0) {
             authHeaderValue = authHeaderValue.substring(0, semicolonIndex);

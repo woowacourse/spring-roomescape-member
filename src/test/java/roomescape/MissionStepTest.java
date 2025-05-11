@@ -35,11 +35,10 @@ import roomescape.reservation.controller.ReservationController;
 })
 public class MissionStepTest {
 
-    private static final String NAME = "User";
-    private static final String PASSWORD = "password";
     private static final String USER_EMAIL = "user@gmail.com";
-    private static final String futureDate = LocalDate.now().plusDays(1).toString();
     private static final String ADMIN_EMAIL = "admin@gmail.com";
+    private static final String PASSWORD = "password";
+    private static final String futureDate = LocalDate.now().plusDays(1).toString();
     private static final String TOKEN = "token";
 
     @Nested
@@ -52,7 +51,10 @@ public class MissionStepTest {
 
         @Test
         void step1_accessAdminPage() {
+            String authToken = loginAndGetAuthToken(ADMIN_EMAIL, PASSWORD);
+
             RestAssured.given().log().all()
+                    .cookie(TOKEN, authToken)
                     .when().get("/admin")
                     .then().log().all()
                     .statusCode(200);
@@ -60,7 +62,10 @@ public class MissionStepTest {
 
         @Test
         void step2_accessAdminReservationPage() {
+            String authToken = loginAndGetAuthToken(ADMIN_EMAIL, PASSWORD);
+
             RestAssured.given().log().all()
+                    .cookie(TOKEN, authToken)
                     .when().get("/admin/reservation")
                     .then().log().all()
                     .statusCode(200);
@@ -191,17 +196,18 @@ public class MissionStepTest {
     @Nested
     class UserTest {
 
+        private static final String ADMIN_TOKEN = loginAndGetAuthToken(ADMIN_EMAIL, PASSWORD);
+        private static final String USER_TOKEN = loginAndGetAuthToken(USER_EMAIL, PASSWORD);
+
         @Test
         void step1_exceptionHandle() {
-            String authToken = loginAndGetAuthToken(ADMIN_EMAIL, PASSWORD);
-
             Map<String, String> reservationTime = new HashMap<>();
             reservationTime.put("startAt", "10 00");
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
                     .body(reservationTime)
-                    .cookie(TOKEN, authToken)
+                    .cookie(TOKEN, ADMIN_TOKEN)
                     .when().post("/times")
                     .then().log().all()
                     .statusCode(400);
@@ -209,13 +215,11 @@ public class MissionStepTest {
 
         @Test
         void step2_createAndDeleteTheme() {
-            String authToken = loginAndGetAuthToken(ADMIN_EMAIL, PASSWORD);
-
             createTheme("추리");
             findThemesBySize(1);
 
             RestAssured.given().log().all()
-                    .cookie(TOKEN, authToken)
+                    .cookie(TOKEN, ADMIN_TOKEN)
                     .when().delete("/themes/1")
                     .then().log().all()
                     .statusCode(204);
@@ -266,8 +270,6 @@ public class MissionStepTest {
 
         @Test
         void step4_login() {
-            step4_signup();
-
             RestAssured.given().log().all()
                     .body(new LoginRequest(USER_EMAIL, PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -279,13 +281,10 @@ public class MissionStepTest {
 
         @Test
         void step4_logout() {
-            step4_signup();
-            String authToken = loginAndGetAuthToken(USER_EMAIL, PASSWORD);
-
             RestAssured.given().log().all()
                     .body(new LoginRequest(USER_EMAIL, PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .cookie(TOKEN, authToken)
+                    .cookie(TOKEN, USER_TOKEN)
                     .when().post("/logout")
                     .then().log().all()
                     .statusCode(204);
@@ -293,14 +292,10 @@ public class MissionStepTest {
 
         @Test
         void step4_loginCheck() {
-            step4_signup();
-
-            String authToken = loginAndGetAuthToken(USER_EMAIL, PASSWORD);
-
             CheckLoginResponse checkLoginResponse = RestAssured.given().log().all()
                     .body(new LoginRequest(USER_EMAIL, PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .cookie(TOKEN, authToken)
+                    .cookie(TOKEN, USER_TOKEN)
                     .when().get("/login/check")
                     .then().log().all()
                     .statusCode(200)
@@ -314,8 +309,6 @@ public class MissionStepTest {
         void step5_admin_reservation() {
             createReservationTime();
             createTheme("추리");
-            String authToken = loginAndGetAuthToken(ADMIN_EMAIL, PASSWORD);
-            signup();
 
             Map<String, Object> reservation = new HashMap<>();
             reservation.put("date", futureDate);
@@ -326,7 +319,7 @@ public class MissionStepTest {
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
                     .body(reservation)
-                    .cookie(TOKEN, authToken)
+                    .cookie(TOKEN, ADMIN_TOKEN)
                     .when().post("/admin/reservations")
                     .then().log().all()
                     .statusCode(201);
@@ -334,24 +327,50 @@ public class MissionStepTest {
 
         @Test
         void step5_findAllUsers() {
-            String authToken = loginAndGetAuthToken(ADMIN_EMAIL, PASSWORD);
-            signup();
-
             List<MemberResponse> memberResponses = RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .cookie(TOKEN, authToken)
+                    .cookie(TOKEN, ADMIN_TOKEN)
                     .when().get("/members")
                     .then().log().all()
                     .statusCode(200)
                     .extract()
-                    .as(new TypeRef<>() {});
+                    .as(new TypeRef<>() {
+                    });
             assertThat(memberResponses.size()).isEqualTo(1);
         }
+
+        @Test
+        void step6_responseUnAuthorizedWhenUserAccessAdminPage() {
+            RestAssured.given().log().all()
+                    .when().get("/admin/reservation")
+                    .then().log().all()
+                    .statusCode(401);
+        }
+
+        @Test
+        void step6_responseForbiddenWhenUserAccessAdminPage() {
+            RestAssured.given().log().all()
+                    .cookie(TOKEN, USER_TOKEN)
+                    .when().get("/admin/reservation")
+                    .then().log().all()
+                    .statusCode(403);
+        }
+    }
+
+    private static String loginAndGetAuthToken(final String email, final String password) {
+        return RestAssured.given().log().all()
+                .body(new LoginRequest(email, password))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .cookie(TOKEN);
     }
 
     private void signup() {
         RestAssured.given().log().all()
-                .body(new SignupRequest(USER_EMAIL, PASSWORD, NAME))
+                .body(new SignupRequest("testuser@gmail.com", PASSWORD, "testUser"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/members")
                 .then().log().all()
@@ -359,7 +378,6 @@ public class MissionStepTest {
     }
 
     private void createUserReservation() {
-        signup();
         String authToken = loginAndGetAuthToken(USER_EMAIL, PASSWORD);
 
         Map<String, Object> reservation = new HashMap<>();
@@ -414,16 +432,5 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(size));
-    }
-
-    private String loginAndGetAuthToken(final String email, final String password) {
-        return RestAssured.given().log().all()
-                .body(new LoginRequest(email, password))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .cookie(TOKEN);
     }
 }

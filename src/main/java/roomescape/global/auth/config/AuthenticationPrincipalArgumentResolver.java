@@ -35,7 +35,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
                                   final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory)
             throws Exception {
         String accessToken = authorizationExtractor.extract(webRequest);
-        return authService.makeLoginMember(accessToken, getMemberRole(parameter));
+        return authService.makeUserInfo(accessToken, getMemberRole(parameter));
     }
 
     private MemberRole getMemberRole(final MethodParameter parameter) {
