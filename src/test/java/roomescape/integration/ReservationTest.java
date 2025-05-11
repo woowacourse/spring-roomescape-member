@@ -1,15 +1,7 @@
 package roomescape.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -21,8 +13,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.common.BaseTest;
 import roomescape.presentation.dto.response.ReservationResponse;
-import roomescape.domain.Theme;
-import roomescape.infrastructure.repository.ThemeRepository;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ReservationTest extends BaseTest {
@@ -36,17 +35,46 @@ class ReservationTest extends BaseTest {
     private Map<String, Object> reservation;
     private Map<String, String> reservationTime;
     private Map<String, String> theme;
+    private Map<String, String> member;
+    private Map<String, Object> auth;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        setUpTime();
+        setUpTheme();
+        setUpMemberAndLogin();
+        setUpReservation();
+    }
+
+    private void setUpTime() {
+        reservationTime = new HashMap<>();
+        reservationTime.put("startAt", "10:00");
+    }
+
+    private void setUpTheme() {
+        theme = new HashMap<>();
+        theme.put("name", "테마1");
+        theme.put("description", "설명1");
+        theme.put("thumbnail", "썸네일1");
+    }
+
+    private void setUpMemberAndLogin() {
+        member = new HashMap<>();
+        member.put("name", "브라운");
+        member.put("email", "test@email.com");
+        member.put("password", "pass1");
+
+        auth = new HashMap<>();
+        auth.put("email", "test@email.com");
+        auth.put("password", "pass1");
+    }
+
+    private void setUpReservation() {
         reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", "2025-08-05");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
-        reservationTime = Map.of("startAt", "10:00");
-        theme = Map.of("name", "테마1", "description", "설명1", "thumbnail", "썸네일1");
     }
 
     @Nested
@@ -114,33 +142,28 @@ class ReservationTest extends BaseTest {
 
         @Test
         void 방탈출_예약을_생성_조회_삭제한다() {
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(reservationTime)
-                    .when().post("/times")
-                    .then().log().all()
-                    .statusCode(HttpStatus.CREATED.value());
+            givenCreatedReservationTime();
+            givenCreatedTheme();
+            givenCreatedMember();
+            String token = givenLoginToken();
 
+            // 생성
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .body(theme)
-                    .when().post("/themes")
-                    .then().log().all()
-                    .statusCode(HttpStatus.CREATED.value());
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
+                    .cookie("token", token)
                     .body(reservation)
                     .when().post("/reservations")
                     .then().log().all()
                     .statusCode(HttpStatus.CREATED.value());
 
+            // 조회
             RestAssured.given().log().all()
                     .when().get("/reservations")
                     .then().log().all()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", is(1));
 
+            // 삭제
             RestAssured.given().log().all()
                     .when().delete("/reservations/1")
                     .then().log().all()
@@ -160,25 +183,6 @@ class ReservationTest extends BaseTest {
                     .then().log().all()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", is(0));
-        }
-
-        @Test
-        void 방탈출_예약_생성시_예약자_이름이_비어있으면_예외를_응답한다() {
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(reservationTime)
-                    .when().post("/times")
-                    .then().log().all()
-                    .statusCode(HttpStatus.CREATED.value());
-
-            reservation.remove("name");
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(reservation)
-                    .when().post("/reservations")
-                    .then().log().all()
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
         }
 
         @Test
@@ -224,26 +228,10 @@ class ReservationTest extends BaseTest {
 
         @Test
         void 예약_시간_삭제시_이미_예약이_존재하면_예외를_응답한다() {
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(reservationTime)
-                    .when().post("/times")
-                    .then().log().all()
-                    .statusCode(HttpStatus.CREATED.value());
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(theme)
-                    .when().post("/themes")
-                    .then().log().all()
-                    .statusCode(HttpStatus.CREATED.value());
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(reservation)
-                    .when().post("/reservations")
-                    .then().log().all()
-                    .statusCode(HttpStatus.CREATED.value());
+            givenCreatedReservationTime();
+            givenCreatedTheme();
+            givenCreatedMember();
+            givenCreatedReservation();
 
             RestAssured.given().log().all()
                     .when().delete("/times/1")
@@ -286,26 +274,10 @@ class ReservationTest extends BaseTest {
 
         @Test
         void 테마_삭제시_이미_예약이_존재하면_예외를_응답한다() {
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(reservationTime)
-                    .when().post("/times")
-                    .then().log().all()
-                    .statusCode(HttpStatus.CREATED.value());
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(theme)
-                    .when().post("/themes")
-                    .then().log().all()
-                    .statusCode(HttpStatus.CREATED.value());
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(reservation)
-                    .when().post("/reservations")
-                    .then().log().all()
-                    .statusCode(HttpStatus.CREATED.value());
+            givenCreatedReservationTime();
+            givenCreatedTheme();
+            givenCreatedMember();
+            givenCreatedReservation();
 
             RestAssured.given().log().all()
                     .when().delete("/themes/1")
@@ -334,8 +306,10 @@ class ReservationTest extends BaseTest {
                     "10:00");
             jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                     "테마1", "설명1", "썸네일1");
-            jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                    "브라운", "2025-08-05", 1, 1);
+            jdbcTemplate.update("INSERT INTO member (name, email, password) VALUES (?, ?, ?)",
+                    "브라운", "test@eamil.com", "pass1");
+            jdbcTemplate.update("INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+                    "2025-08-05", 1, 1, 1);
 
             List<ReservationResponse> response = RestAssured.given().log().all()
                     .when().get("/reservations")
@@ -354,9 +328,13 @@ class ReservationTest extends BaseTest {
                     "10:00");
             jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                     "테마1", "설명1", "썸네일1");
+            jdbcTemplate.update("INSERT INTO member (name, email, password) VALUES (?, ?, ?)",
+                    "브라운", "test@email.com", "pass1");
+            String token = givenLoginToken();
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
+                    .cookie("token", token)
                     .body(reservation)
                     .when().post("/reservations")
                     .then().log().all()
@@ -372,5 +350,52 @@ class ReservationTest extends BaseTest {
             Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
             assertThat(countAfterDelete).isEqualTo(0);
         }
+    }
+
+    private void givenCreatedReservationTime() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationTime)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
+    }
+
+    private void givenCreatedTheme() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
+    }
+
+    private void givenCreatedMember() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(member)
+                .when().post("/members")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
+    }
+
+    private String givenLoginToken() {
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(auth)
+                .when().post("/login")
+                .then()
+                .extract().response().cookie("token");
+    }
+
+    private void givenCreatedReservation() {
+        String token = givenLoginToken();
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", token)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
     }
 }
