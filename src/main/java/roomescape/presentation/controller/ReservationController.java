@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.business.service.PlayTimeService;
 import roomescape.business.service.ReservationService;
 import roomescape.exception.InvalidDateAndTimeException;
 import roomescape.presentation.dto.ReservationAvailableTimeResponse;
@@ -23,9 +24,11 @@ import roomescape.presentation.dto.ReservationResponse;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final PlayTimeService playTimeService;
 
-    public ReservationController(final ReservationService reservationService) {
+    public ReservationController(final ReservationService reservationService, final PlayTimeService playTimeService) {
         this.reservationService = reservationService;
+        this.playTimeService = playTimeService;
     }
 
     @PostMapping
@@ -34,9 +37,11 @@ public class ReservationController {
     ) {
         try {
             final ReservationResponse reservationResponse = reservationService.insert(reservationRequest);
-            return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(reservationResponse);
         } catch (InvalidDateAndTimeException e) {
-            return ResponseEntity.unprocessableEntity().build();
+            return ResponseEntity.unprocessableEntity()
+                    .build();
         }
     }
 
@@ -51,7 +56,8 @@ public class ReservationController {
     public ResponseEntity<Void> delete(@PathVariable("id") final Long id) {
         reservationService.deleteById(id);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
 
     @GetMapping("/available-times")
@@ -60,7 +66,7 @@ public class ReservationController {
             @RequestParam("themeId") final Long themeId
     ) {
         final List<ReservationAvailableTimeResponse> availableTimeResponses =
-                reservationService.findAvailableTimes(date, themeId);
+                playTimeService.findAvailableTimes(date, themeId);
 
         return ResponseEntity.ok(availableTimeResponses);
     }

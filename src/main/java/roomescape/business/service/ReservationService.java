@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
@@ -15,7 +14,6 @@ import roomescape.exception.NotFoundException;
 import roomescape.persistence.dao.PlayTimeDao;
 import roomescape.persistence.dao.ReservationDao;
 import roomescape.persistence.dao.ThemeDao;
-import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
 
@@ -88,21 +86,5 @@ public class ReservationService {
         if (!reservationDao.deleteById(id)) {
             throw new NotFoundException("해당하는 방탈출 예약을 찾을 수 없습니다. 방탈출 id: %d".formatted(id));
         }
-    }
-
-    public List<ReservationAvailableTimeResponse> findAvailableTimes(final LocalDate date, final Long themeId) {
-        final List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
-        final List<PlayTime> playTimes = playTimeDao.findAll();
-        return playTimes.stream()
-                .map(playTime -> {
-                    boolean isAlreadyBooked = containPlayTime(reservations, playTime);
-                    return new ReservationAvailableTimeResponse(playTime, isAlreadyBooked);
-                })
-                .collect(Collectors.toList());
-    }
-
-    private boolean containPlayTime(final List<Reservation> reservations, final PlayTime playTime) {
-        return reservations.stream()
-                .anyMatch(reservation -> reservation.isSamePlayTime(playTime));
     }
 }
