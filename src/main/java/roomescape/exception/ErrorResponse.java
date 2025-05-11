@@ -20,12 +20,12 @@ public record ErrorResponse(
         );
     }
 
-    public static ErrorResponse securedResponse(HttpStatus httpStatus, SecurityErrorCode errorCode) {
+    public static ErrorResponse securedResponse(HttpStatus httpStatus, String message) {
         return new ErrorResponse(
                 LocalDateTime.now(),
                 httpStatus,
                 "",
-                errorCode.clientMessage()
+                message
         );
     }
 

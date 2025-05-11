@@ -9,7 +9,15 @@ public class RootSecurityException extends RuntimeException {
         this.code = code;
     }
 
-    public SecurityErrorCode code() {
-        return code;
+    public String codeName() {
+        return code.name();
+    }
+
+    public String detailMessage() {
+        return code.detailMessage();
+    }
+
+    public String clientMessage() {
+        return code.clientMessage();
     }
 }

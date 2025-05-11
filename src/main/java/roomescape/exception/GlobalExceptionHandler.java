@@ -22,14 +22,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handle(AuthenticationException e) {
-        logger.warn("Handled AuthenticatedException: {}", e.getMessage(), e);
-        return ErrorResponse.securedResponse(HttpStatus.UNAUTHORIZED, e.code()).toResponseEntity();
+        logger.warn("Handled AuthenticatedException: {}", e.detailMessage(), e);
+        return ErrorResponse.securedResponse(HttpStatus.UNAUTHORIZED, e.clientMessage()).toResponseEntity();
     }
 
     @ExceptionHandler(AuthorizationException.class)
     public ResponseEntity<ErrorResponse> handle(AuthorizationException e) {
-        logger.warn("Handled AuthorizationException: {}", e.getMessage(), e);
-        return ErrorResponse.securedResponse(HttpStatus.FORBIDDEN, e.code()).toResponseEntity();
+        logger.warn("Handled AuthorizationException: {}", e.detailMessage(), e);
+        return ErrorResponse.securedResponse(HttpStatus.FORBIDDEN, e.clientMessage()).toResponseEntity();
     }
 
     @ExceptionHandler(Exception.class)
