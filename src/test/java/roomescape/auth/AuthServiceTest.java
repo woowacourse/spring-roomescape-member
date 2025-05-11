@@ -6,11 +6,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.auth.dto.LoginMember;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.exception.custom.reason.auth.AuthNotExistsEmailException;
 import roomescape.exception.custom.reason.auth.AuthNotValidPasswordException;
-import roomescape.exception.custom.reason.auth.AuthNotValidTokenException;
 import roomescape.member.FakeMemberRepository;
 import roomescape.member.Member;
 import roomescape.member.MemberRole;
@@ -69,47 +67,5 @@ public class AuthServiceTest {
             }).isInstanceOf(AuthNotValidPasswordException.class);
         }
     }
-
-    @Nested
-    @DisplayName("토큰으로 유저 정보 조회")
-    class FindLoginMemberByToken {
-        @DisplayName("토큰으로 유저 정보를 조회한다.")
-        @Test
-        void findLoginMemberByToken() {
-            // given
-            fakeMemberRepository.saveMember(new Member("admin@email.com", "pw1234", "부기", MemberRole.MEMBER));
-            final String token = jwtProvider.provideToken("admin@email.com");
-
-            // when
-            final LoginMember actual = authService.findLoginMemberByToken(token);
-
-            // then
-            assertThat(actual).isEqualTo(new LoginMember(1L, "부기", "admin@email.com", MemberRole.MEMBER));
-        }
-
-        @DisplayName("토큰이 유효하지 않다면, 예외가 발생한다.")
-        @Test
-        void findLoginMemberByToken1() {
-            // given
-            fakeMemberRepository.saveMember(new Member("admin@email.com", "pw1234", "부기", MemberRole.MEMBER));
-            final String notValidToken = jwtProvider.provideToken("admin@email.com") + "a";
-
-            // when & then
-            assertThatThrownBy(() -> {
-                authService.findLoginMemberByToken(notValidToken);
-            }).isInstanceOf(AuthNotValidTokenException.class);
-        }
-
-        @DisplayName("토큰에 해당하는 이메일의 member가 존재하지 않는다면, 예외가 발생한다.")
-        @Test
-        void findLoginMemberByToken2() {
-            // given
-            final String token = jwtProvider.provideToken("admin@email.com");
-
-            // when & then
-            assertThatThrownBy(() -> {
-                authService.findLoginMemberByToken(token);
-            }).isInstanceOf(AuthNotExistsEmailException.class);
-        }
-    }
+    
 }

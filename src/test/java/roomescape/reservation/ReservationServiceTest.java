@@ -62,7 +62,6 @@ public class ReservationServiceTest {
     @Nested
     @DisplayName("예약 생성")
     class Create {
-
         @DisplayName("reservation request를 생성하면 response 값을 반환한다.")
         @Test
         void create() {
@@ -70,7 +69,7 @@ public class ReservationServiceTest {
             final ReservationRequest request = new ReservationRequest(
                     LocalDate.now().plusDays(1),
                     1L, 1L);
-            final LoginMember loginMember = new LoginMember(1L, "boogie", "asd@email.com", MemberRole.MEMBER);
+            final LoginMember loginMember = new LoginMember("boogie", "asd@email.com", MemberRole.MEMBER);
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
             fakeThemeRepository.save(new Theme("1", "2", "3"));
             fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", MemberRole.MEMBER));
@@ -92,7 +91,7 @@ public class ReservationServiceTest {
             final ReservationRequest request = new ReservationRequest(
                     LocalDate.now().plusDays(1),
                     1L, 1L);
-            final LoginMember loginMember = new LoginMember(1L, "로키", "asd@email.com", MemberRole.MEMBER);
+            final LoginMember loginMember = new LoginMember("로키", "asd@email.com", MemberRole.MEMBER);
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
             fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", MemberRole.MEMBER));
 
@@ -109,7 +108,7 @@ public class ReservationServiceTest {
             final ReservationRequest request = new ReservationRequest(
                     LocalDate.now().plusDays(1),
                     1L, 1L);
-            final LoginMember loginMember = new LoginMember(1L, "로키", "asd@email.com", MemberRole.MEMBER);
+            final LoginMember loginMember = new LoginMember("로키", "asd@email.com", MemberRole.MEMBER);
             fakeThemeRepository.save(new Theme("1", "2", "3"));
             fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", MemberRole.MEMBER));
 
@@ -126,7 +125,7 @@ public class ReservationServiceTest {
             final ReservationRequest request = new ReservationRequest(
                     LocalDate.now().plusDays(1),
                     1L, 1L);
-            final LoginMember loginMember = new LoginMember(1L, "로키", "asd@email.com", MemberRole.MEMBER);
+            final LoginMember loginMember = new LoginMember("로키", "asd@email.com", MemberRole.MEMBER);
             fakeThemeRepository.save(new Theme("1", "2", "3"));
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
 
@@ -144,7 +143,7 @@ public class ReservationServiceTest {
             final ReservationRequest request = new ReservationRequest(
                     LocalDate.now().plusDays(1),
                     1L, 1L);
-            final LoginMember loginMember = new LoginMember(1L, "로키", "asd@email.com", MemberRole.MEMBER);
+            final LoginMember loginMember = new LoginMember("로키", "asd@email.com", MemberRole.MEMBER);
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
             fakeThemeRepository.save(new Theme("1", "2", "3"));
             fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", MemberRole.MEMBER));
@@ -152,7 +151,6 @@ public class ReservationServiceTest {
                     new Reservation(LocalDate.now().plusDays(1)),
                     1L, 1L, 1L
             );
-
 
             // when & then
             assertThatThrownBy(() -> {
@@ -167,7 +165,7 @@ public class ReservationServiceTest {
             final ReservationRequest request = new ReservationRequest(
                     LocalDate.now().minusDays(1),
                     1L, 1L);
-            final LoginMember loginMember = new LoginMember(1L, "로키", "asd@email.com", MemberRole.MEMBER);
+            final LoginMember loginMember = new LoginMember("로키", "asd@email.com", MemberRole.MEMBER);
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
             fakeThemeRepository.save(new Theme("1", "2", "3"));
             fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", MemberRole.MEMBER));
@@ -185,7 +183,7 @@ public class ReservationServiceTest {
             final ReservationRequest request = new ReservationRequest(
                     LocalDate.now(),
                     1L, 1L);
-            final LoginMember loginMember = new LoginMember(1L, "로키", "asd@email.com", MemberRole.MEMBER);
+            final LoginMember loginMember = new LoginMember("로키", "asd@email.com", MemberRole.MEMBER);
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.now().minusHours(1)));
             fakeThemeRepository.save(new Theme("1", "2", "3"));
             fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", MemberRole.MEMBER));
