@@ -1,5 +1,6 @@
 package roomescape.business.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.member.Member;
 import roomescape.business.domain.member.MemberEmail;
@@ -30,5 +31,12 @@ public class MemberService {
         final Member savedMember = memberRepository.save(
                 Member.register(name, email, member.password()));
         return new MemberResponse(savedMember);
+    }
+
+    public List<MemberResponse> findAll() {
+        final List<Member> members = memberRepository.findAll();
+        return members.stream()
+                .map(MemberResponse::new)
+                .toList();
     }
 }
