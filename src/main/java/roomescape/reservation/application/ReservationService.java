@@ -51,6 +51,11 @@ public class ReservationService {
         final Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 예약 데이터가 존재하지 않습니다. id = " + reservationId));
 
+        if (member.isAdmin()) {
+            reservationRepository.deleteById(reservationId);
+            return;
+        }
+
         if (!Objects.equals(reservation.getMember(), member)) {
             throw new AuthorizationException("삭제할 권한이 없습니다.");
         }

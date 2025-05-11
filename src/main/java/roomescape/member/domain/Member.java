@@ -67,6 +67,10 @@ public class Member {
         return !this.password.equals(password);
     }
 
+    public boolean isAdmin() {
+        return role == AuthRole.ADMIN;
+    }
+
     public String getRoleName() {
         return role.getRoleName();
     }
