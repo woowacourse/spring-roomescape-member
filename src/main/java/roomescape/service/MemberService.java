@@ -1,7 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
 import roomescape.dto.request.MemberPostRequest;
 import roomescape.dto.response.MemberSafeResponse;
@@ -9,7 +9,7 @@ import roomescape.entity.Member;
 import roomescape.entity.MemberRole;
 import roomescape.web.LoginMember;
 
-@Component
+@Service
 public class MemberService {
 
     private final MemberDao memberDao;

@@ -1,12 +1,12 @@
 package roomescape.service;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
 import roomescape.dto.request.LoginRequest;
 import roomescape.entity.AccessToken;
 import roomescape.entity.Member;
 
-@Component
+@Service
 public class AuthorizationService {
 
     private final MemberDao memberDao;
