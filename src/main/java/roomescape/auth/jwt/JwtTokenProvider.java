@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -14,20 +13,19 @@ import roomescape.member.domain.Member;
 
 @Component
 public class JwtTokenProvider implements AuthTokenProvider {
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
-    @Value("${security.jwt.token.expire-length}")
-    private long validityInMilliseconds;
 
-    private Key key;
+    private final Key key;
+    private final long validityInMilliseconds;
 
-    @PostConstruct
-    public void init() {
-        final byte[] keyBytes = Base64.getDecoder().decode(secretKey);
-
+    public JwtTokenProvider(
+            @Value("${security.jwt.token.secret-key}") String secretKey,
+            @Value("${security.jwt.token.expire-length}") long validityInMilliseconds
+    ) {
+        byte[] keyBytes = Base64.getDecoder().decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.validityInMilliseconds = validityInMilliseconds;
     }
-
+    
     @Override
     public String createTokenFromMember(Member member) {
         Claims claims = Jwts.claims().setSubject(String.valueOf(member.getId()));

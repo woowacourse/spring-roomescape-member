@@ -5,7 +5,6 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -16,17 +15,10 @@ import roomescape.exception.custom.AuthorizationException;
 @Component
 public class JwtTokenExtractor implements AuthTokenExtractor {
 
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
-    @Value("${security.jwt.token.expire-length}")
-    private long validityInMilliseconds;
+    private final Key key;
 
-    private Key key;
-
-    @PostConstruct
-    public void init() {
-        final byte[] keyBytes = Base64.getDecoder().decode(secretKey);
-
+    public JwtTokenExtractor(@Value("${security.jwt.token.secret-key}") String secretKey) {
+        byte[] keyBytes = Base64.getDecoder().decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
