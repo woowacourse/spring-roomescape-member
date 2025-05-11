@@ -16,6 +16,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
 
         Cookie tokenCookie = null;
         if (cookies == null) {
+            response.setStatus(401);
             return false;
         }
         for (Cookie cookie : cookies) {
@@ -26,6 +27,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         }
 
         if (tokenCookie == null) {
+            response.setStatus(401);
             return false;
         }
 

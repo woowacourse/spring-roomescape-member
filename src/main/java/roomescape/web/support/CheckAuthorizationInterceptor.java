@@ -16,6 +16,7 @@ public class CheckAuthorizationInterceptor implements HandlerInterceptor {
 
         Cookie tokenCookie = null;
         if (cookies == null) {
+            response.setStatus(401);
             return false;
         }
         for (Cookie cookie : cookies) {
@@ -26,6 +27,8 @@ public class CheckAuthorizationInterceptor implements HandlerInterceptor {
         }
 
         if (tokenCookie == null) {
+            //TODO 코드중복 없애기
+            response.setStatus(401);
             return false;
         }
 

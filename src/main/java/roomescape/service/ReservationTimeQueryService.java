@@ -30,6 +30,7 @@ public class ReservationTimeQueryService {
         List<ReservationTime> times = reservationTimeDao.findAll();
         return times.stream()
                 .map(time -> {
+                    //TODO : themeId가 아예 없는 것이어도 일단 에러가 안남
                     boolean alreadyBooked = reservationDao.existByDateTimeAndTheme(date, time, themeId);
                     return new ReservationTimeAvailableResponse(time, alreadyBooked);
                 }).toList();

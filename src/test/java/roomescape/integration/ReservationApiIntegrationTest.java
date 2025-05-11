@@ -37,8 +37,8 @@ public class ReservationApiIntegrationTest {
     }
 
     @Test
-    @DisplayName("예약을 생성한다.")
-    void createReservation() {
+    @DisplayName("사용자가 예약을 생성한다.")
+    void postReservation() {
         //given
         String date = "2025-08-05";
 
@@ -70,25 +70,22 @@ public class ReservationApiIntegrationTest {
     }
 
     @Test
-    @DisplayName("전체 예약을 조회한다.")
-    void readAllReservations() {
-        Member member = new Member(1L, "moda", "moda_email", "moda_password", MemberRole.ADMIN);
-        AccessToken accessToken = new AccessToken(member);
+    @DisplayName("토큰이 없을 경우 예약 생성 시 예외가 발생한다.")
+    void failPostReservation() {
+        //given
+        String date = "2025-08-05";
 
-        RestAssured.given().log().all()
-                .cookie("token", accessToken.getValue())
-                .when().get("/admin/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
-    }
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("date", date);
+        reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
-    @Test
-    @DisplayName("예약을 삭제한다.")
-    void deleteReservation() {
+        //when
         RestAssured.given().log().all()
-                .when().delete("/admin/reservations/1")
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200); //TODO : 204가 떠야함
+                .statusCode(401);
     }
 }

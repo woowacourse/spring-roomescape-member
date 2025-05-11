@@ -15,6 +15,7 @@ import roomescape.dao.ThemeDao;
 import roomescape.dto.request.ReservationPostRequestByUser;
 import roomescape.dto.response.ReservationPostResponse;
 import roomescape.dto.response.ReservationTimePostResponse;
+import roomescape.entity.MemberRole;
 import roomescape.entity.ReservationTime;
 import roomescape.service.fake_dao.FakeMemberDao;
 import roomescape.service.fake_dao.FakeReservationDao;
@@ -43,7 +44,7 @@ class ReservationServiceTest {
         ReservationPostResponse reservation = reservationCommandService.createReservationOfLoginMember(
                 new ReservationPostRequestByUser(
                         LocalDate.of(2025, 4, 27), 1L, 1L
-                ), new LoginMember(1L));
+                ), new LoginMember(1L, "moda", MemberRole.ADMIN));
 
         assertAll(
                 () -> assertThat(reservation.id()).isEqualTo(1),

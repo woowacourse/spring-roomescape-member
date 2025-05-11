@@ -4,8 +4,6 @@ import static org.hamcrest.CoreMatchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,52 +21,30 @@ class ReservationTimeApiIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private AccessToken accessToken;
+    private AccessToken adminToken;
 
     @BeforeEach
     void setUpData() {
         String memberSetUp = "insert into member (name, email, password, role) values ('moda', 'moda_email', 'moda_password', 'ADMIN')";
-        String reservationTimeSetUp = "insert into reservation_time (start_at) values ('10:00')";
+        String reservationTimeSetUp = "insert into reservation_time (start_at) values ('10:00'), ('11:00')";
         jdbcTemplate.update(memberSetUp);
         jdbcTemplate.update(reservationTimeSetUp);
 
-        Member member = new Member(1L, "moda", "moda_email", "moda_password", MemberRole.ADMIN);
-        accessToken = new AccessToken(member);
+        Member admin = new Member(1L, "moda", "moda_email", "moda_password", MemberRole.ADMIN);
+        adminToken = new AccessToken(admin);
     }
 
     @Test
-    @DisplayName("시간을 생성한다.")
-    void createTime() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "11:00");
-
+    @DisplayName("이용 가능한 시간을 조회한다.")
+    void readAvailableTimes() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
-                .cookie("token", accessToken.getValue())
-                .when().post("/admin/times")
-                .then().log().all()
-                .statusCode(201);
-    }
-
-    @Test
-    @DisplayName("전체 시간 데이터를 조회한다.")
-    void readTimes() {
-        RestAssured.given().log().all()
-                .cookie("token", accessToken.getValue())
-                .when().get("/admin/times")
+                .param("date", "2025-08-04")
+                .param("themeId", 1)
+                .cookie("token", adminToken.getValue())
+                .when().get("/times/available")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
-    }
-
-    @Test
-    @DisplayName("시간을 삭제한다.")
-    void deleteTime() {
-        RestAssured.given().log().all()
-                .cookie("token", accessToken.getValue())
-                .when().delete("/admin/times/1")
-                .then().log().all()
-                .statusCode(204);
+                .body("size()", is(2));
     }
 }
