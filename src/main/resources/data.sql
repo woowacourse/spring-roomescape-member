@@ -32,3 +32,6 @@ INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (1, '2025-05
 INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (3, '2025-05-10', 2, 2);
 INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (4, '2025-05-10', 3, 2);
 INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (5, '2025-05-11', 1, 2);
+INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (5, '2025-05-12', 2, 2);
+INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (5, '2025-05-13', 4, 5);
+INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (5, '2025-05-14', 1, 1);

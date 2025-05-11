@@ -2,7 +2,9 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -16,6 +18,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationName;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.util.WhereClauseParamSet;
+import roomescape.util.WhereClauseParamSetBuilder;
 
 @Repository
 public class JdbcReservationDao implements ReservationRepository {
@@ -162,6 +166,42 @@ public class JdbcReservationDao implements ReservationRepository {
                 """;
         try {
             return jdbcTemplate.query(sql, rowMapper, date, themeId);
+        } catch (EmptyResultDataAccessException e) {
+            return List.of();
+        }
+    }
+
+    @Override
+    public List<Reservation> findByThemeMemberDateRange(Long themeId, Long memberId, LocalDate from, LocalDate to) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("r.theme_id = ?", themeId);
+        params.put("r.member_id = ?", memberId);
+        params.put("r.date >= ?", from);
+        params.put("r.date <= ?", to);
+
+        WhereClauseParamSet paramSet = WhereClauseParamSetBuilder.makeFrom(params);
+
+        if (paramSet.isEmpty()) return findAll();
+
+        String sql = """
+                SELECT
+                r.id,
+                r.date,
+                m.name as member_name,
+                r.member_id,
+                r.time_id as reservation_time_id,
+                r.theme_id as reservation_theme_id,
+                t.start_at,
+                th.name as theme_name,
+                th.description,
+                th.thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as t on r.time_id = t.id
+                INNER JOIN theme as th on r.theme_id = th.id
+                INNER JOIN member as m on r.member_id = m.id
+                """ + "\n" + paramSet.getWhereClause();
+        try {
+            return jdbcTemplate.query(sql, rowMapper, paramSet.params().toArray());
         } catch (EmptyResultDataAccessException e) {
             return List.of();
         }
