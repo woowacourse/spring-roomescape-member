@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.exception.NotFoundException;
 import roomescape.common.utils.ExecuteResult;
 import roomescape.common.utils.JdbcUtils;
 import roomescape.theme.domain.ThemeDescription;
@@ -85,7 +86,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         ExecuteResult result = ExecuteResult.of(jdbcTemplate.update(sql, id.getValue()));
 
         if (result == ExecuteResult.FAIL) {
-            throw new NoSuchElementException("삭제할 테마를 찾을 수 없습니다.");
+            throw new NotFoundException("삭제할 테마를 찾을 수 없습니다.");
         }
     }
 }

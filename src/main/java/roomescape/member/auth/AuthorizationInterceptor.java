@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.common.exception.AuthorizationException;
 import roomescape.member.domain.Member;
 import roomescape.member.service.AuthService;
 
@@ -17,8 +18,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         Member member = authService.get(request.getCookies());
 
         if (!member.isAdmin()) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return false;
+            throw new AuthorizationException();
         }
 
         return true;
