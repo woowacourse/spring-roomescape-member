@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public class CookieParser {
 
+    public static final String NOT_EXISTED_COOKIE = "";
+
     public static String getTokenCookie(final HttpServletRequest request, String target) {
         if (request == null || target == null) {
             throw new IllegalArgumentException("유효하지 않은 입력입니다");
@@ -12,13 +14,13 @@ public class CookieParser {
 
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            return "";
+            return NOT_EXISTED_COOKIE;
         }
         for (Cookie cookie : cookies) {
             if (target.equals(cookie.getName())) {
                 return cookie.getValue();
             }
         }
-        return "";
+        return NOT_EXISTED_COOKIE;
     }
 }
