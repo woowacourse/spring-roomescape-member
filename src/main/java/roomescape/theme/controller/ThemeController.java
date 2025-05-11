@@ -1,0 +1,69 @@
+package roomescape.theme.controller;
+
+import jakarta.validation.Valid;
+import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.theme.dto.request.ThemeRequest;
+import roomescape.theme.dto.request.ThemesWithTotalPageRequest;
+import roomescape.reservation.dto.response.AvailableReservationResponse;
+import roomescape.theme.dto.response.BriefThemeResponse;
+import roomescape.theme.dto.response.ThemeResponse;
+import roomescape.theme.service.ThemeService;
+
+@RestController
+@RequestMapping("/themes")
+public class ThemeController {
+    private final ThemeService themeService;
+
+    public ThemeController(ThemeService themeService) {
+        this.themeService = themeService;
+    }
+
+    @PostMapping
+    public ResponseEntity<ThemeResponse> addTheme(@RequestBody @Valid ThemeRequest request) {
+        ThemeResponse themeResponse = themeService.addTheme(request);
+        return ResponseEntity.created(URI.create("/themes/" + themeResponse.id())).body(themeResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<ThemesWithTotalPageRequest> getThemesWithPage(
+            @RequestParam(required = false, defaultValue = "1") int page) {
+        return ResponseEntity.ok(themeService.getThemesByPage(page));
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeResponse>> getTopTenTheme() {
+        return ResponseEntity.ok(themeService.getTopTenTheme());
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<BriefThemeResponse>> getAllThemes() {
+        List<BriefThemeResponse> themes = themeService.getAllThemes();
+        return ResponseEntity.ok(themes);
+    }
+
+    @GetMapping("/{id}/times")
+    public ResponseEntity<List<AvailableReservationResponse>> getThemesTimesWithStatus(
+            @PathVariable(name = "id") Long themeId,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date
+    ) {
+        return ResponseEntity.ok(themeService.getThemesTimesWithStatus(themeId, date));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTheme(@PathVariable(value = "id") Long id) {
+        themeService.deleteTheme(id);
+        return ResponseEntity.noContent().build();
+    }
+}

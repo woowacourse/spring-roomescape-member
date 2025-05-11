@@ -31,4 +31,4 @@ server:
 jwt:
   secret: "testtesttesttesttesttest"
   expiration:
-    access-token: 3600000
+    access-token: 100
