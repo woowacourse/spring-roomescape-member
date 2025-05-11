@@ -1,10 +1,7 @@
 package roomescape.presentation;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.NoSuchElementException;
-import java.util.function.Predicate;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -37,24 +34,11 @@ public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentR
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
         try {
-            final Cookie tokenCookie = findCookieBy(
-                    request.getCookies(),
-                    cookie -> cookie.getName().equals("token")
-            );
-            return authService.verifyTokenAndGetLoginUser(tokenCookie.getValue());
+            final String token = CookieExtractor.extractToken(request);
+
+            return authService.verifyTokenAndGetLoginUser(token);
         } catch (NoSuchElementException e) {
             return LoginUser.unknown();
         }
-    }
-
-    private Cookie findCookieBy(final Cookie[] cookies, final Predicate<Cookie> condition) {
-        if (cookies == null) {
-            throw new NoSuchElementException();
-        }
-
-        return Arrays.stream(cookies)
-                .filter(condition)
-                .findAny()
-                .orElseThrow(NoSuchElementException::new);
     }
 }
