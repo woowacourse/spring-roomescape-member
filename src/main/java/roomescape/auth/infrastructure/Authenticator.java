@@ -16,11 +16,16 @@ import roomescape.auth.domain.Token;
 
 @Component
 public class Authenticator {
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
 
-    @Value("${security.jwt.token.expire-length}")
-    private long validityInMilliseconds;
+    private final SecretKey signingKey;
+    private final long validityInMilliseconds;
+
+    public Authenticator(@Value("${security.jwt.token.secret-key}") String secretKey,
+                         @Value("${security.jwt.token.expire-length}") long validityInMilliseconds) {
+
+        this.signingKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+        this.validityInMilliseconds = validityInMilliseconds;
+    }
 
     public Token authenticate(Payload payload) {
         Date now = new Date();
@@ -30,7 +35,7 @@ public class Authenticator {
                 .claim("role", payload.getRoleExpression())
                 .setIssuedAt(now)
                 .setExpiration(expiredAt)
-                .signWith(getSigningKey())
+                .signWith(signingKey)
                 .compact();
         return new Token(token);
     }
@@ -38,13 +43,12 @@ public class Authenticator {
     public boolean isInvalidAuthentication(Token token) {
         try {
             Jws<Claims> claims = Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
+                    .setSigningKey(signingKey)
                     .build()
                     .parseClaimsJws(token.value());
             return claims.getBody().getExpiration().before(new Date());
-        }
-        catch (JwtException | IllegalArgumentException e) {
-            return false;
+        } catch (JwtException | IllegalArgumentException e) {
+            return true;
         }
     }
 
@@ -54,22 +58,16 @@ public class Authenticator {
             String role = claims.get("role", String.class);
 
             return Payload.from(claims.getSubject(), role);
-        }
-        catch (JwtException | IllegalArgumentException exception) {
+        } catch (JwtException | IllegalArgumentException exception) {
             throw new AuthorizationException();
         }
     }
 
     private Claims getClaims(Token token) {
         return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+                .setSigningKey(signingKey)
                 .build()
                 .parseClaimsJws(token.value())
                 .getBody();
-    }
-
-    private SecretKey getSigningKey() {
-        byte[] secretKeyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(secretKeyBytes);
     }
 }
