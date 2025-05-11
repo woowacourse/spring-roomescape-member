@@ -7,28 +7,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.LoginCheckResponse;
-import roomescape.service.LoginService;
+import roomescape.service.AuthService;
 
-@RequestMapping("/login")
 @RestController
-public class LoginController {
+public class AuthController {
 
-    private final LoginService loginService;
+    private final AuthService authService;
 
-    public LoginController(LoginService loginService) {
-        this.loginService = loginService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<Void> login(
             @RequestBody LoginRequest loginRequest,
             HttpServletResponse response
             ) {
-        String token = loginService.loginAndGetToken(loginRequest);
+        String token = authService.loginAndGetToken(loginRequest);
 
         Cookie cookie = new Cookie("token", token);
         cookie.setPath("/");
@@ -38,10 +36,19 @@ public class LoginController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/check")
+    @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> check(HttpServletRequest request) {
-        LoginCheckResponse userFromToken = loginService.findUserFromToken(request.getCookies());
+        LoginCheckResponse userFromToken = authService.findUserFromToken(request.getCookies());
         return ResponseEntity.ok(userFromToken);
     }
-}
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
+    }
+}

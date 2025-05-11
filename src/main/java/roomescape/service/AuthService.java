@@ -6,15 +6,14 @@ import roomescape.dao.UserDao;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.LoginCheckResponse;
 import roomescape.infra.JwtTokenProvider;
-import roomescape.model.Role;
 import roomescape.model.User;
 
 @Service
-public class LoginService {
+public class AuthService {
     private final UserDao userDao;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginService(UserDao userDao, JwtTokenProvider jwtTokenProvider) {
+    public AuthService(UserDao userDao, JwtTokenProvider jwtTokenProvider) {
         this.userDao = userDao;
         this.jwtTokenProvider = jwtTokenProvider;
     }

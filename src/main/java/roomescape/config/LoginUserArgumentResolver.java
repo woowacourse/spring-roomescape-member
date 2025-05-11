@@ -8,15 +8,15 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.service.LoginService;
+import roomescape.service.AuthService;
 
 @Component
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final LoginService loginService;
+    private final AuthService authService;
 
-    public LoginUserArgumentResolver(LoginService loginService) {
-        this.loginService = loginService;
+    public LoginUserArgumentResolver(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -33,8 +33,8 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
     ) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = request.getCookies();
-        String token = loginService.extractTokenFromCookies(cookies);
-        Long id = loginService.getUserId(token);
-        return loginService.findById(id);
+        String token = authService.extractTokenFromCookies(cookies);
+        Long id = authService.getUserId(token);
+        return authService.findById(id);
     }
 }
