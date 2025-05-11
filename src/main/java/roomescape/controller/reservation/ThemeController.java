@@ -46,7 +46,7 @@ public class ThemeController {
         service.deleteTheme(id);
     }
 
-    @GetMapping("/rankings")
+    @GetMapping("/popular")
     public List<ThemeResponse> readPopularThemesByPeriod(
             @RequestParam(value = "period", defaultValue = "7") int period,
             @RequestParam(value = "maxResults", defaultValue = "10") int maxResults) {

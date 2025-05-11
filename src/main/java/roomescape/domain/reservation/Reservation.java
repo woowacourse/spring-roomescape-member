@@ -103,23 +103,14 @@ public class Reservation {
     }
 
     public Long getTimeId() {
-        if (time == null) {
-            return null;
-        }
-        return time.getId();
+        return time != null ? time.getId() : null;
     }
 
     public Long getThemeId() {
-        if (theme == null) {
-            return null;
-        }
-        return theme.getId();
+        return theme != null ? theme.getId() : null;
     }
 
     public Long getMemberId() {
-        if (member == null) {
-            return null;
-        }
-        return member.getId();
+        return member != null ? member.getId() : null;
     }
 }

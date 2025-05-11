@@ -124,7 +124,7 @@ class ThemeControllerTest {
         given(themeService.readPopularThemesByPeriod(7, 10)).willReturn(themeResponses);
 
         RestAssuredMockMvc.given().log().all()
-                .when().get("/themes/rankings")
+                .when().get("/themes/popular")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1))
