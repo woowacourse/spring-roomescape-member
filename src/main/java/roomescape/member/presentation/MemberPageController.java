@@ -12,7 +12,7 @@ public class MemberPageController {
     }
 
     @GetMapping("/signup")
-    public String signup(){
+    public String signup() {
         return "signup";
     }
 }

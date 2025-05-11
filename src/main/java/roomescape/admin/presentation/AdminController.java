@@ -17,10 +17,10 @@ import roomescape.reservation.service.ReservationService;
 @RequestMapping(ADMIN_BASE_URL)
 public class AdminController {
 
-    private final ReservationService reservationService;
-
     public static final String ADMIN_BASE_URL = "/admin";
     private static final String SLASH = "/";
+
+    private final ReservationService reservationService;
 
     public AdminController(ReservationService reservationService) {
         this.reservationService = reservationService;

@@ -32,7 +32,7 @@ public class ReservationConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminInterceptor(tokenCookieManager,jwtTokenContainer))
+        registry.addInterceptor(new AdminInterceptor(tokenCookieManager, jwtTokenContainer))
                 .addPathPatterns("/admin/**");
     }
 }

@@ -35,7 +35,7 @@ public class TokenCookieManager {
         return "";
     }
 
-    private static Cookie[] getCookies(HttpServletRequest request) {
+    private Cookie[] getCookies(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
             throw new LoginException("로그인 되어있지 않습니다.");
