@@ -113,8 +113,8 @@
 
 ### 고민해본 내용
 
-- resolver에서 멤버로 만드려면 인증 과정을 거쳐야 한다 -> 나중에 인터셉터에서 admin 검사(인증함)
-- 인증의 책임을 인터셉터라고 정의하자.
+- resolver에서 멤버로 만드려면 인증 과정을 거쳐야 한다 -> 나중에 인터셉터에서 admin 검사(인증함) ->인증의 책임을 인터셉터라고 정의하자.
+
 - 서비스에서 LoginResponse(dto, not domain model)를 반환하자.
     - 서비스에서 Entity를 반환하게 해 controller 등에서 entity를 알게 하는 것이 싫다
     - 문제 벌샹 : 이 경우 서비스에서 시비스를 의존할 때 문제가 발생한다. ReservationService에서 new Reservation을 해야되는데 MemberService가 LoginMember라는
@@ -126,9 +126,8 @@
     - 해결 3 : 모든 서비스는 일종의 dto 반환, 서비스 내부에서 공통 로직을 따로 분리? 서비스끼리 계층을 나눈다
         - 그러면 공통 로직을 차라리 분리하는 게 더 낫다. 그러니까 서비스끼리 계층을 나눠서 내부에서 같이 사용하는 거를 공통으로?
 
-- 사용자 예약 시 LoginResolver를 통해 LoginMember를 만들고 쓰는 게 맞나 - 어차피 예약할 때는 id만 필요한다
-- 따라서 굳이 db 조회할 것 없이 그냥 멤버 이걸 쓰면 미리 멤버서비스에서 찾아주기에
-- controller와 entity를 분리하자. entity의 변경이 controller가 속한 계층에까지 영향 끼치는 걸 막고 싶다. 캡슐화
+- 사용자 예약 시 LoginResolver를 통해 LoginMember를 만들고 쓰는 게 맞나 - 어차피 예약할 때는 id만 필요한다 - 따라서 굳이 db 조회할 것 없이 그냥 멤버 이걸 쓰면 미리 멤버서비스에서
+  찾아주기에
 
 ## 6단계
 

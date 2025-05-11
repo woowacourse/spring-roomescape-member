@@ -2,14 +2,29 @@ package roomescape.global.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleException(IllegalArgumentException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[ERROR] " + e.getMessage());
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<String> handleInvalidJson(HttpMessageNotReadableException ex) {
+        Throwable cause = ex.getCause();
+        if (cause instanceof IllegalArgumentException) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("[ERROR] " + cause.getMessage());
+        }
+        return ResponseEntity
+                .badRequest()
+                .body("[ERROR] 요청 JSON이 잘못되었습니다.");
     }
 
     @ExceptionHandler(Exception.class)
