@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.application.exception.AuthException;
 import roomescape.presentation.dto.response.ErrorResponse;
 
 @RestControllerAdvice
@@ -36,6 +37,16 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.CONFLICT, message);
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<ErrorResponse> handleAuthException(AuthException e) {
+        String message = e.getMessage();
+        log.warn(message);
+        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.CONFLICT, message);
+        return ResponseEntity
+                .status(e.getStatus())
                 .body(errorResponse);
     }
 

@@ -28,6 +28,6 @@ public class AuthService {
     public LoginMember findMemberByToken(String token) {
         String payload = jwtTokenProvider.getPayload(token);
         Member member = memberService.findMemberByEmail(payload);
-        return new LoginMember(member.getId(), member.getName(), member.getEmail());
+        return new LoginMember(member.getId(), member.getName(), member.getRole(), member.getEmail());
     }
 }
