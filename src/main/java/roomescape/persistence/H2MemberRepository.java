@@ -1,9 +1,13 @@
 package roomescape.persistence;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import org.springframework.beans.factory.SmartFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.Member;
 
@@ -11,10 +15,14 @@ import roomescape.business.Member;
 public class H2MemberRepository implements MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
     @Autowired
     public H2MemberRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id");
     }
 
     private final RowMapper<Member> memberRowMapper = (rs, rowNum) -> (
@@ -48,5 +56,14 @@ public class H2MemberRepository implements MemberRepository {
         return jdbcTemplate.query(query, memberRowMapper, id)
                 .stream()
                 .findFirst();
+    }
+
+    @Override
+    public Long add(Member member) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("name", member.getName());
+        parameters.put("email", member.getEmail());
+        parameters.put("password", member.getPassword());
+        return (Long) jdbcInsert.executeAndReturnKey(parameters);
     }
 }

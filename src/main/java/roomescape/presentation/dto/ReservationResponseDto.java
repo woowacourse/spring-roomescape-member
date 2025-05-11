@@ -4,8 +4,8 @@ import java.time.LocalDate;
 
 public record ReservationResponseDto(
         long id,
-        String name,
         LocalDate date,
+        MemberResponseDto member,
         ReservationTimeResponseDto time,
         ReservationThemeResponseDto theme
 ) {

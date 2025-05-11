@@ -8,4 +8,6 @@ public interface MemberRepository {
     Optional<Member> findByEmail(String email);
 
     Optional<Member> findById(Long id);
+
+    Long add(Member member);
 }

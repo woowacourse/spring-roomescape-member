@@ -29,7 +29,7 @@ public final class FakeReservationRepository implements ReservationRepository {
     public Long add(Reservation reservation) {
         Reservation savedReservation = new Reservation(
                 idGenerator.getAndIncrement(),
-                reservation.getName(),
+                reservation.getMember(),
                 reservation.getDate(),
                 reservation.getTime(),
                 reservation.getTheme()
