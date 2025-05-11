@@ -1,6 +1,8 @@
 package roomescape.application;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import roomescape.application.exception.AuthException;
 import roomescape.domain.Member;
 import roomescape.infrastructure.jwt.JwtTokenProvider;
 import roomescape.presentation.dto.request.LoginMember;
@@ -26,6 +28,9 @@ public class AuthService {
     }
 
     public LoginMember findMemberByToken(String token) {
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new AuthException("[ERROR] 유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED);
+        }
         String payload = jwtTokenProvider.getPayload(token);
         Member member = memberService.findMemberByEmail(payload);
         return new LoginMember(member.getId(), member.getName(), member.getRole(), member.getEmail());
