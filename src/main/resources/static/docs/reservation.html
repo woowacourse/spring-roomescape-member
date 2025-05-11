@@ -451,9 +451,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /reservations HTTP/1.1
 Content-Type: application/json
-Host: localhost:60483
+Host: localhost:52477
 Content-Length: 60
-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDY4MjM2NDUsImV4cCI6MTc0NjgyNzI0NX0.Jwr7iCoQGH-WSukQjVwXtiZxejodPt9dN5IgNKvCqn4
+Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDY4NjkyOTYsImV4cCI6MTc0Njg3Mjg5Nn0.vXhwcqieuCxQ7Xr8E8BdsvJe1Olt13LU4QC_TSMrp5o
 
 {
   "date" : "2025-05-11",
@@ -502,15 +502,15 @@ Content-Length: 281
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /admin/reservations HTTP/1.1
 Content-Type: application/json
-Host: localhost:60483
+Host: localhost:52477
 Content-Length: 78
-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzQ2ODIzNjQ1LCJleHAiOjE3NDY4MjcyNDV9.GE_KOqKBFf0qA1nGZ13TtY-fFD02fktBueJj4vqbjw0
+Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzQ2ODY5Mjk2LCJleHAiOjE3NDY4NzI4OTZ9.S43gomnCUy84urCdrYIod4Vddo94oKzpbVZw1TXePpA
 
 {
-  "timeId" : 1,
-  "date" : "2025-05-11",
+  "themeId" : 1,
   "memberId" : 1,
-  "themeId" : 1
+  "date" : "2025-05-11",
+  "timeId" : 1
 }</code></pre>
 </div>
 </div>
@@ -553,7 +553,8 @@ Content-Length: 281
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /reservations/1 HTTP/1.1
-Host: localhost:60483</code></pre>
+Host: localhost:52477
+Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDY4NjkyOTYsImV4cCI6MTc0Njg3Mjg5Nn0.vXhwcqieuCxQ7Xr8E8BdsvJe1Olt13LU4QC_TSMrp5o</code></pre>
 </div>
 </div>
 </div>
@@ -573,7 +574,8 @@ Host: localhost:60483</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /reservations HTTP/1.1
-Host: localhost:60483</code></pre>
+Host: localhost:52477
+Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDY4NjkyOTYsImV4cCI6MTc0Njg3Mjg5Nn0.vXhwcqieuCxQ7Xr8E8BdsvJe1Olt13LU4QC_TSMrp5o</code></pre>
 </div>
 </div>
 </div>
