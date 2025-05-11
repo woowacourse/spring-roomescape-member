@@ -1,4 +1,4 @@
-package roomescape.auth.support;
+package roomescape.auth.web.support;
 
 import static roomescape.auth.web.constant.AuthConstant.AUTH_COOKIE_KEY;
 

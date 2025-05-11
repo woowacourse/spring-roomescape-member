@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.dto.AuthenticatedMember;
 import roomescape.auth.infrastructure.TokenService;
-import roomescape.auth.support.CookieAuthorizationExtractor;
+import roomescape.auth.web.support.CookieAuthorizationExtractor;
 import roomescape.domain.member.model.Role;
 
 @Component

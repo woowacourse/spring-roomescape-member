@@ -1,4 +1,4 @@
-package roomescape.auth.support;
+package roomescape.auth.web.config;
 
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtParser;

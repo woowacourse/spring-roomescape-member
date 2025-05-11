@@ -1,4 +1,4 @@
-package roomescape.auth.web.controller;
+package roomescape.auth.controller;
 
 import static roomescape.auth.web.constant.AuthConstant.AUTH_COOKIE_KEY;
 
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.controller.dto.LoginRequest;
 import roomescape.auth.dto.AuthenticatedMember;
 import roomescape.auth.application.AuthService;
-import roomescape.auth.support.CookieAuthorizationExtractor;
-import roomescape.auth.web.controller.dto.LoginRequest;
+import roomescape.auth.web.support.CookieAuthorizationExtractor;
 import roomescape.global.exception.AuthenticationException;
 import roomescape.global.util.CookieUtils;
 
