@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.annotation.AdminOnly;
 import roomescape.controller.dto.request.MemberLoginRequest;
 import roomescape.controller.dto.request.MemberSignUpRequest;
-import roomescape.controller.dto.request.MemberSignUpResponse;
 import roomescape.controller.dto.response.MemberLoginCheckResponse;
 import roomescape.controller.dto.response.MemberResponse;
+import roomescape.controller.dto.response.MemberSignUpResponse;
 import roomescape.domain.LoginMember;
 import roomescape.domain.MemberRoleType;
 import roomescape.service.MemberService;
@@ -48,32 +48,29 @@ public class MemberController {
         return MemberSignUpResponse.from(signUpResult);
     }
 
-    @PostMapping("/login")
-    public void login(@RequestBody @Valid final MemberLoginRequest request,
-                      final HttpServletResponse servletResponse) {
-        String loginToken = memberService.publishAccessToken(MemberLoginCreation.from(request));
-        addCookieToken(servletResponse, loginToken);
-    }
-
-    private void addCookieToken(final HttpServletResponse servletResponse, final String token) {
-        Cookie cookie = new Cookie("token", token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(1000 * 60 * 60 * 24);
-        servletResponse.addCookie(cookie);
-    }
-
     @GetMapping("/login/check")
     public ResponseEntity<MemberLoginCheckResponse> checkLogin(LoginMember loginMember) {
         return ResponseEntity.ok(MemberLoginCheckResponse.from(loginMember));
     }
 
+    @PostMapping("/login")
+    public void login(@RequestBody @Valid final MemberLoginRequest request,
+                      final HttpServletResponse servletResponse) {
+        String loginToken = memberService.publishAccessToken(MemberLoginCreation.from(request));
+        addCookieToken(servletResponse, loginToken, 1000 * 60 * 60 * 24);
+    }
+
     @PostMapping("/logout")
     public void logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", null);
+        addCookieToken(response, "", 0);
+    }
+
+    private void addCookieToken(final HttpServletResponse servletResponse, final String token, final int maxAge) {
+        Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        cookie.setMaxAge(maxAge);
+        servletResponse.addCookie(cookie);
     }
 }
