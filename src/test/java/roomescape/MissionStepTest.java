@@ -25,7 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.application.dto.MemberDto;
+import roomescape.application.auth.dto.MemberIdDto;
 import roomescape.application.dto.ReservationDto;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.TimeRepository;
@@ -50,6 +50,7 @@ public class MissionStepTest {
 
     @Autowired
     private ReservationController reservationController;
+
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
@@ -60,7 +61,7 @@ public class MissionStepTest {
         RestAssured.port = port;
 
         resetH2TableIds(jdbcTemplate);
-        tokenForAdmin = jwtTokenProvider.createToken(MemberDto.from(MEMBER1_ADMIN));
+        tokenForAdmin = jwtTokenProvider.createToken(new MemberIdDto(MEMBER1_ADMIN.getId()));
     }
 
     @DisplayName("/ 요청 시 200 OK 반환")

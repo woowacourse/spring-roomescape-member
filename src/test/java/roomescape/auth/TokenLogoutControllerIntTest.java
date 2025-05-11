@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import roomescape.application.dto.MemberDto;
+import roomescape.application.auth.dto.MemberIdDto;
 import roomescape.infrastructure.jwt.JwtTokenProvider;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -27,7 +27,7 @@ class TokenLogoutControllerIntTest {
 
     @Test
     public void request_logout() {
-        String tokenForAdmin = jwtTokenProvider.createToken(MemberDto.from(MEMBER1_ADMIN));
+        String tokenForAdmin = jwtTokenProvider.createToken(new MemberIdDto(MEMBER1_ADMIN.getId()));
 
         RestAssured.given()
                 .redirects()

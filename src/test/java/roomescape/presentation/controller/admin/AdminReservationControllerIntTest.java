@@ -7,7 +7,6 @@ import static roomescape.testFixture.Fixture.MEMBER2_USER;
 import static roomescape.testFixture.Fixture.createReservationBody;
 import static roomescape.testFixture.Fixture.resetH2TableIds;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalTime;
@@ -19,7 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.application.dto.MemberDto;
+import roomescape.application.auth.dto.MemberIdDto;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ReservationRepository;
@@ -41,9 +40,6 @@ public class AdminReservationControllerIntTest {
     @Autowired
     private ReservationRepository reservationRepository;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     private String tokenForAdmin;
     private String tokenForUser;
 
@@ -51,8 +47,8 @@ public class AdminReservationControllerIntTest {
     void cleanDatabase() {
         RestAssured.port = port;
 
-        tokenForAdmin = jwtTokenProvider.createToken(MemberDto.from(MEMBER1_ADMIN));
-        tokenForUser = jwtTokenProvider.createToken(MemberDto.from(MEMBER2_USER));
+        tokenForAdmin = jwtTokenProvider.createToken(new MemberIdDto(MEMBER1_ADMIN.getId()));
+        tokenForUser = jwtTokenProvider.createToken(new MemberIdDto(MEMBER2_USER.getId()));
     }
 
     @DisplayName("/admin/reservations 요청 시 201 CREATED")
