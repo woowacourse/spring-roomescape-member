@@ -9,7 +9,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.UserReservationRequest;
+import roomescape.reservation.dto.MemberReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.infrastructure.ReservationRepository;
 import roomescape.theme.domain.Theme;
@@ -42,7 +42,7 @@ class ReservationServiceTest {
         Long timeId = 1L;
         Long themeId = 2L;
 
-        UserReservationRequest request = new UserReservationRequest("미미", date, timeId, themeId);
+        MemberReservationRequest request = new MemberReservationRequest("미미", date, timeId, themeId);
         Time time = mock(Time.class);
         Theme theme = mock(Theme.class);
 
@@ -69,7 +69,7 @@ class ReservationServiceTest {
         Long timeId = 1L;
         Long themeId = 2L;
 
-        UserReservationRequest request = new UserReservationRequest("미미", date, timeId, themeId);
+        MemberReservationRequest request = new MemberReservationRequest("미미", date, timeId, themeId);
         given(timeRepository.findById(timeId)).willReturn(Optional.of(mock(Time.class)));
         given(themeRepository.findById(themeId)).willReturn(Optional.of(mock(Theme.class)));
         given(reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)).willReturn(true);
@@ -88,7 +88,7 @@ class ReservationServiceTest {
         Long timeId = 1L;
         Long themeId = 2L;
 
-        UserReservationRequest request = new UserReservationRequest("미미", today, timeId, themeId);
+        MemberReservationRequest request = new MemberReservationRequest("미미", today, timeId, themeId);
         Time time = mock(Time.class);
 
         given(timeRepository.findById(timeId)).willReturn(Optional.of(time));

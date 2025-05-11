@@ -14,14 +14,18 @@ public enum Role {
         this.expression = expression;
     }
 
-    public String getExpression() {
-        return expression;
-    }
-
     public static Role getByExpression(String expression) {
         return EnumSet.allOf(Role.class).stream()
                 .filter(role -> role.getExpression().equalsIgnoreCase(expression))
                 .findAny()
                 .orElseThrow(RoleNotFoundException::new);
+    }
+
+    public String getExpression() {
+        return expression;
+    }
+
+    public boolean isAuthorizedFor(Role requiredRole) {
+        return this == requiredRole;
     }
 }

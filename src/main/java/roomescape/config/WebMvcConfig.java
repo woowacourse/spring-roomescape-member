@@ -13,6 +13,8 @@ import roomescape.auth.ui.AuthenticationPrincipalArgumentResolver;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
+    public static final String ADMIN_PATH_PATTERN = "/admin/**";
+
     private final AuthService authService;
     private final MemberService memberService;
 
@@ -29,6 +31,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AdminRoleInterceptor(authService))
-                .addPathPatterns("/admin/**");
+                .addPathPatterns(ADMIN_PATH_PATTERN);
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservation.dto.UserReservationRequest;
+import roomescape.reservation.dto.MemberReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.application.ReservationService;
 import roomescape.member.domain.Member;
@@ -27,10 +27,10 @@ public class ReservationApiController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> addByUser(@RequestBody UserReservationRequest userReservationRequest,
+    public ResponseEntity<ReservationResponse> addByUser(@RequestBody MemberReservationRequest memberReservationRequest,
                                                          @AuthenticationPrincipal Member member) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(reservationService.addByUser(userReservationRequest, member));
+                .body(reservationService.addByUser(memberReservationRequest, member));
     }
 
     @GetMapping

@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.AdminReservationRequest;
-import roomescape.reservation.dto.UserReservationRequest;
+import roomescape.reservation.dto.MemberReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.infrastructure.ReservationRepository;
 import roomescape.time.domain.Time;
@@ -35,7 +35,7 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public ReservationResponse addByUser(UserReservationRequest request, Member user) {
+    public ReservationResponse addByUser(MemberReservationRequest request, Member user) {
         Time time = findReservationTimeOrThrow(request.timeId());
 
         LocalDate date = request.date();

@@ -18,7 +18,7 @@ class MemberReservationRequestTest {
         Long themeId = 2L;
 
         // when & then
-        assertThatCode(() -> new UserReservationRequest(name, date, timeId, themeId))
+        assertThatCode(() -> new MemberReservationRequest(name, date, timeId, themeId))
                 .doesNotThrowAnyException();
     }
 
@@ -26,7 +26,7 @@ class MemberReservationRequestTest {
     @DisplayName("이름이 null이면 예외가 발생한다")
     void test2() {
         assertThatThrownBy(() ->
-                new UserReservationRequest(null, LocalDate.now().plusDays(1), 1L, 2L))
+                new MemberReservationRequest(null, LocalDate.now().plusDays(1), 1L, 2L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 이름을 입력해주세요.");
     }
@@ -35,7 +35,7 @@ class MemberReservationRequestTest {
     @DisplayName("이름이 공백이면 예외가 발생한다")
     void test3() {
         assertThatThrownBy(() ->
-                new UserReservationRequest("   ", LocalDate.now().plusDays(1), 1L, 2L))
+                new MemberReservationRequest("   ", LocalDate.now().plusDays(1), 1L, 2L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 이름을 입력해주세요.");
     }
@@ -44,7 +44,7 @@ class MemberReservationRequestTest {
     @DisplayName("날짜가 null이면 예외가 발생한다")
     void test4() {
         assertThatThrownBy(() ->
-                new UserReservationRequest("미미", null, 1L, 2L))
+                new MemberReservationRequest("미미", null, 1L, 2L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 날짜를 입력해주세요.");
     }
@@ -57,7 +57,7 @@ class MemberReservationRequestTest {
 
         // when & then
         assertThatThrownBy(() ->
-                new UserReservationRequest("미미", pastDate, 1L, 2L))
+                new MemberReservationRequest("미미", pastDate, 1L, 2L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 지난 날짜로는 예약할 수 없습니다.");
     }
@@ -66,7 +66,7 @@ class MemberReservationRequestTest {
     @DisplayName("시간 id가 null이면 예외가 발생한다")
     void test6() {
         assertThatThrownBy(() ->
-                new UserReservationRequest("미미", LocalDate.now().plusDays(1), null, 2L))
+                new MemberReservationRequest("미미", LocalDate.now().plusDays(1), null, 2L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 시간 id를 입력해주세요.");
     }
@@ -75,7 +75,7 @@ class MemberReservationRequestTest {
     @DisplayName("테마 id가 null이면 예외가 발생한다")
     void test7() {
         assertThatThrownBy(() ->
-                new UserReservationRequest("미미", LocalDate.now().plusDays(1), 1L, null))
+                new MemberReservationRequest("미미", LocalDate.now().plusDays(1), 1L, null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 테마 id를 입력해주세요.");
     }

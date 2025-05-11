@@ -33,6 +33,10 @@ public record Payload(Long memberId, Role role) {
         return role.getExpression();
     }
 
+    public boolean isAuthorizedFor(Role requiredRole) {
+        return role.isAuthorizedFor(requiredRole);
+    }
+
     private static Long parseMemberId(String expression) {
         try {
             return Long.valueOf(expression);

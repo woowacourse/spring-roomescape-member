@@ -3,11 +3,11 @@ package roomescape.reservation.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 
-public record UserReservationRequest(@JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
-                                     Long timeId,
-                                     Long themeId) {
+public record MemberReservationRequest(@JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
+                                       Long timeId,
+                                       Long themeId) {
 
-    public UserReservationRequest {
+    public MemberReservationRequest {
         if (date == null) {
             throw new IllegalArgumentException("[ERROR] 날짜를 입력해주세요.");
         }
