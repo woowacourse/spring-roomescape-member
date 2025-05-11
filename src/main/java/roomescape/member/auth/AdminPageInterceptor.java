@@ -11,11 +11,13 @@ import roomescape.member.service.AuthService;
 @RequiredArgsConstructor
 public class AdminPageInterceptor implements HandlerInterceptor {
 
+    private final JwtTokenExtractor jwtTokenExtractor;
     private final AuthService authService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        Member member = authService.get(request.getCookies());
+        final String token = jwtTokenExtractor.extractTokenFromCookie(request.getCookies());
+        final Member member = authService.get(token);
 
         if (!member.isAdmin()) {
             throw new AuthorizationException();

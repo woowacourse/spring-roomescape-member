@@ -16,19 +16,7 @@ public class JwtTokenExtractor {
     @Value("${jwt.key}")
     private String SECRET_KEY;
 
-    public MemberName extractMemberNameFromCookie(Cookie[] cookies) {
-        String name = extractClaimsFromToken(extractTokenFromCookie(cookies))
-                .get("name").toString();
-        return MemberName.from(name);
-    }
-
-    public MemberId extractMemberIdFromCookie(Cookie[] cookies) {
-        String token = extractTokenFromCookie(cookies);
-        Long id = Long.valueOf(extractClaimsFromToken(token).getSubject());
-        return MemberId.from(id);
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
+    public String extractTokenFromCookie(Cookie[] cookies) {
         if (cookies == null) {
             throw new AuthorizationException("로그인이 필요합니다.", ErrorCode.MUST_BE_MEMBER);
         }
@@ -40,6 +28,17 @@ public class JwtTokenExtractor {
         }
 
         throw new AuthorizationException("로그인이 필요합니다.", ErrorCode.MUST_BE_MEMBER);
+    }
+
+    public MemberName extractMemberNameFromToken(String token) {
+        String name = extractClaimsFromToken(token)
+                .get("name").toString();
+        return MemberName.from(name);
+    }
+
+    public MemberId extractMemberIdFromToken(String token) {
+        Long id = Long.valueOf(extractClaimsFromToken(token).getSubject());
+        return MemberId.from(id);
     }
 
     private Claims extractClaimsFromToken(String token) {

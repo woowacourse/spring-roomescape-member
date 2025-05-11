@@ -10,6 +10,7 @@ import roomescape.member.service.AuthService;
 @RequiredArgsConstructor
 public class AuthorizationInterceptor implements HandlerInterceptor {
 
+    private final JwtTokenExtractor jwtTokenExtractor;
     private final AuthService authService;
 
     @Override
@@ -22,7 +23,8 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        authService.getMemberInfo(request.getCookies());
+        final String token = jwtTokenExtractor.extractTokenFromCookie(request.getCookies());
+        authService.getMemberInfo(token);
         return true;
     }
 }

@@ -13,6 +13,7 @@ import roomescape.member.service.AuthService;
 @RequiredArgsConstructor
 public class MemberInfoArgumentResolver implements HandlerMethodArgumentResolver {
 
+    private final JwtTokenExtractor jwtTokenExtractor;
     private final AuthService authService;
 
     @Override
@@ -27,6 +28,7 @@ public class MemberInfoArgumentResolver implements HandlerMethodArgumentResolver
                                       final WebDataBinderFactory binderFactory) {
 
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        return authService.getMemberInfo(request.getCookies());
+        final String token = jwtTokenExtractor.extractTokenFromCookie(request.getCookies());
+        return authService.getMemberInfo(token);
     }
 }

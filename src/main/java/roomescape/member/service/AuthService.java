@@ -1,6 +1,5 @@
 package roomescape.member.service;
 
-import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,16 +39,16 @@ public class AuthService {
         return jwtTokenProvider.generateToken(account);
     }
 
-    public LoginCheckResponse checkLogin(Cookie[] cookies) {
-        MemberName name = jwtTokenExtractor.extractMemberNameFromCookie(cookies);
+    public LoginCheckResponse checkLogin(final String token) {
+        MemberName name = jwtTokenExtractor.extractMemberNameFromToken(token);
         return new LoginCheckResponse(name.getValue());
     }
 
-    public MemberInfo getMemberInfo(Cookie[] cookies) {
-        return MemberConverter.toDto(memberService.get(jwtTokenExtractor.extractMemberIdFromCookie(cookies)));
+    public MemberInfo getMemberInfo(final String token) {
+        return MemberConverter.toDto(memberService.get(jwtTokenExtractor.extractMemberIdFromToken(token)));
     }
 
-    public Member get(Cookie[] cookies) {
-        return memberService.get(jwtTokenExtractor.extractMemberIdFromCookie(cookies));
+    public Member get(final String token) {
+        return memberService.get(jwtTokenExtractor.extractMemberIdFromToken(token));
     }
 }

@@ -80,10 +80,9 @@ class AuthServiceTest {
         final LoginRequest request = new LoginRequest(memberInfo.email(), password);
 
         final String token = authService.login(request);
-        final Cookie[] cookies = {new Cookie("token", token)};
 
         // when & then
-        assertThat(authService.checkLogin(cookies).name())
+        assertThat(authService.checkLogin(token).name())
                 .isEqualTo(memberInfo.name());
     }
 
@@ -95,9 +94,8 @@ class AuthServiceTest {
         final LoginRequest request = new LoginRequest(memberInfo.email(), password);
 
         final String token = authService.login(request);
-        final Cookie[] cookies = {new Cookie("token", token)};
 
-        assertThat(authService.getMemberInfo(cookies))
+        assertThat(authService.getMemberInfo(token))
                 .isEqualTo(memberInfo);
     }
 
@@ -109,9 +107,8 @@ class AuthServiceTest {
         final LoginRequest request = new LoginRequest(memberInfo.email(), password);
 
         final String token = authService.login(request);
-        final Cookie[] cookies = {new Cookie("token", token)};
-
-        assertThat(authService.get(cookies))
+        
+        assertThat(authService.get(token))
                 .isEqualTo(MemberConverter.toDomain(memberInfo));
     }
 }
