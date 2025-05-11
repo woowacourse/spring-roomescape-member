@@ -13,7 +13,6 @@ import roomescape.common.utils.Validator;
 @EqualsAndHashCode
 public class MemberEmail {
 
-    // TODO: Add email validation logic
     private final String value;
 
     public static MemberEmail from(final String name) {
@@ -23,7 +22,6 @@ public class MemberEmail {
 
     private static void validate(final String value) {
         Validator.of(MemberEmail.class)
-                .notNullField(MemberEmail.Fields.value, value)
-                .notBlankField(MemberEmail.Fields.value, value.strip());
+                .emailField(MemberEmail.Fields.value, value);
     }
 }
