@@ -56,13 +56,13 @@ public class JDBCReservationRepository implements ReservationRepository {
             + "m.password as member_password, "
             + "m.role as member_role "
             + "FROM reservation as r "
-            + "inner join reservation_time as t "
-            + "on r.time_id = t.id "
-            + "inner join theme as th "
-            + "on r.theme_id = th.id and r.theme_id = ? "
+            + "inner join reservation_time as t on r.time_id = t.id "
+            + "inner join theme as th on r.theme_id = th.id "
             + "inner join member as m "
-            + "on r.member_id = m.id and r.member_id = ? "
-            + "WHERE PARSEDATETIME(r.date, 'yyyy-MM-dd') between ? and ? ";
+            + "on r.member_id = m.id "
+            + "WHERE r.theme_id = ? "
+            + "AND r.member_id = ? "
+            + "AND r.date between ? and ? ";
 
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> {
         ReservationTimeEntity timeEntity = new ReservationTimeEntity(
@@ -95,10 +95,7 @@ public class JDBCReservationRepository implements ReservationRepository {
     private static final String RESERVATION_TIME_ALREADY_BOOKED = "SELECT rt.id, rt.start_at, "
             + "CASE WHEN r.id IS NOT NULL THEN true ELSE false END AS already_booked "
             + "FROM reservation_time AS rt "
-            + "LEFT JOIN ( "
-            + "    SELECT time_id, id FROM reservation "
-            + "    WHERE date = ? AND theme_id = ? "
-            + ") r ON rt.id = r.time_id "
+            + "LEFT JOIN reservation r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ? "
             + "ORDER BY rt.start_at";
 
     private final JdbcTemplate jdbcTemplate;

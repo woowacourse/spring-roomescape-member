@@ -84,7 +84,7 @@ public class JDBCThemeRepository implements ThemeRepository {
                         + "FROM theme as th "
                         + "left join reservation as r "
                         + "on th.id = r.theme_id "
-                        + "and PARSEDATETIME(r.date, 'yyyy-MM-dd') between ? and ? "
+                        + "and r.date between ? and ? "
                         + "group by th.id "
                         + "order by count(r.id) desc, "
                         + "th.name asc "
