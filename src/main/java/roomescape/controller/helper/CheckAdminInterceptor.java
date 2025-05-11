@@ -22,7 +22,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
-        return false;
+        return true;
     }
 
     private Member findMember(final HttpServletRequest request) {

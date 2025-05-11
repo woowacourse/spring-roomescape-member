@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.api.reservation.dto.AddAdminReservationRequest;
 import roomescape.controller.api.reservation.dto.AddReservationRequest;
 import roomescape.controller.api.reservation.dto.ReservationResponse;
+import roomescape.controller.api.reservation.dto.ReservationSearchFilter;
 import roomescape.exception.RoomescapeException;
 import roomescape.model.Member;
 import roomescape.model.Reservation;
@@ -61,6 +62,11 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         final List<Reservation> reservations = reservationRepository.findAll();
+        return ReservationResponse.from(reservations);
+    }
+
+    public List<ReservationResponse> findAll(final ReservationSearchFilter searchFilter) {
+        final List<Reservation> reservations = reservationRepository.findAllByFilter(searchFilter);
         return ReservationResponse.from(reservations);
     }
 

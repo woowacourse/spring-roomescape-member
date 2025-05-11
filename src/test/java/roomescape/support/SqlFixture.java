@@ -1,11 +1,10 @@
-package roomescape;
+package roomescape.support;
 
-import java.time.LocalDate;
 import java.util.List;
 
-public class Fixtures {
+public class SqlFixture {
 
-    public static final String SQL_INSERT_MEMBERS = """
+    public static final String INSERT_MEMBERS = """
         INSERT INTO MEMBER (NAME, EMAIL, PASSWORD, ROLE)
         VALUES
             ('어드민1', 'admin1@email.com', 'adminpw1', 'ADMIN'),
@@ -14,7 +13,7 @@ public class Fixtures {
             ('유저2', 'user2email.com', 'userpw2', 'USER');
     """;
 
-    public static final String SQL_INSERT_RESERVATION_TIMES = """
+    public static final String INSERT_RESERVATION_TIMES = """
         INSERT INTO RESERVATION_TIME (START_AT)
         VALUES
             ('10:00'),
@@ -25,7 +24,7 @@ public class Fixtures {
             ('20:00');
     """;
 
-    public static final String SQL_INSERT_THEMES = """
+    public static final String INSERT_THEMES = """
         INSERT INTO THEME (NAME, DESCRIPTION, THUMBNAIL)
         VALUES
             ('레벨1 탈출', '우테코 레벨1을 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
@@ -35,7 +34,7 @@ public class Fixtures {
             ('레벨5 탈출', '우테코 레벨5를 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
     """;
 
-    public static final String SQL_INSERT_RESERVATIONS = """
+    public static final String INSERT_RESERVATIONS = """
         INSERT INTO RESERVATION (MEMBER_ID, DATE, TIME_ID, THEME_ID)
         VALUES
             (1, '2025-05-04', 1, 2),
@@ -48,14 +47,10 @@ public class Fixtures {
             (2, '2025-05-03', 5, 5);
     """;
 
-    public static final List<String> SQL_INSERT_ALL = List.of(
-            SQL_INSERT_MEMBERS,
-            SQL_INSERT_RESERVATION_TIMES,
-            SQL_INSERT_THEMES,
-            SQL_INSERT_RESERVATIONS
+    public static final List<String> INSERT_ALL = List.of(
+            INSERT_MEMBERS,
+            INSERT_RESERVATION_TIMES,
+            INSERT_THEMES,
+            INSERT_RESERVATIONS
     );
-
-    public static LocalDate getDateOfTomorrow() {
-        return LocalDate.now().plusDays(1);
-    }
 }

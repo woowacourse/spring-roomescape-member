@@ -1,15 +1,18 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import javax.sql.DataSource;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+
+import roomescape.controller.api.reservation.dto.ReservationSearchFilter;
 import roomescape.model.Member;
 import roomescape.model.Reservation;
 import roomescape.model.Role;
@@ -59,23 +62,64 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAllByTimeSlotId(Long id) {
-        return findWithCondition("RT.ID = ?", id);
+    public List<Reservation> findAllByFilter(final ReservationSearchFilter filter) {
+        final SqlCondition sqlCondition = createConditionClauseOfFilter(filter);
+        return findAllByCondition(sqlCondition);
     }
 
     @Override
-    public List<Reservation> findAllByThemeId(Long id) {
-        return findWithCondition("T.ID = ?", id);
+    public List<Reservation> findAllByTimeSlotId(final Long id) {
+        final SqlCondition sqlCondition = createConditionClause(List.of("RT.ID = ?"), id);
+        return findAllByCondition(sqlCondition);
     }
 
     @Override
-    public List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId) {
-        return findWithCondition("R.DATE = ? AND T.ID = ?", date, themeId);
+    public List<Reservation> findAllByThemeId(final Long id) {
+        final SqlCondition sqlCondition = createConditionClause(List.of("T.ID = ?"), id);
+        return findAllByCondition(sqlCondition);
     }
 
-    private List<Reservation> findWithCondition(String condition, Object... params) {
-        final String sql = BASE_SELECT_SQL + " WHERE " + condition;
-        return jdbcTemplate.query(sql, createReservationRowMapper(), params);
+    @Override
+    public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
+        final SqlCondition sqlCondition = createConditionClause(List.of("R.DATE = ?", "T.ID = ?"), date, themeId);
+        return findAllByCondition(sqlCondition);
+    }
+
+    private List<Reservation> findAllByCondition(final SqlCondition sqlCondition) {
+        final StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+        if (sqlCondition != null && sqlCondition.clause() != null && !sqlCondition.clause().isBlank()) {
+            sql.append(" WHERE ").append(sqlCondition.clause());
+        }
+        return jdbcTemplate.query(sql.toString(), createReservationRowMapper(), sqlCondition.params());
+    }
+
+    private SqlCondition createConditionClause(final List<String> conditions, final Object... params) {
+        if (conditions.isEmpty()) {
+            return new SqlCondition("", new Object[]{});
+        }
+        final String clause = String.join(" AND ", conditions);
+        return new SqlCondition(clause, params);
+    }
+
+    private SqlCondition createConditionClauseOfFilter(final ReservationSearchFilter filter) {
+        final List<String> conditions = new ArrayList<>();
+        final List<Object> params = new ArrayList<>();
+
+        addCondition(conditions, params, "R.MEMBER_ID = ?", filter.memberId());
+        addCondition(conditions, params, "R.THEME_ID = ?", filter.themeId());
+        addCondition(conditions, params, "R.DATE >= ?", filter.dateFrom());
+        addCondition(conditions, params, "R.DATE <= ?", filter.dateTo());
+
+        final String clause = conditions.isEmpty() ? "" : String.join(" AND ", conditions);
+        System.out.println(clause);
+        return new SqlCondition(clause, params.toArray());
+    }
+
+    private <T> void addCondition(List<String> conditions, List<Object> params, String sql, T value) {
+        if (value != null) {
+            conditions.add(sql);
+            params.add(value);
+        }
     }
 
     @Override
@@ -111,12 +155,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findById(Long id) {
-        final String sql = "SELECT * FROM RESERVATION WHERE ID = ?";
-        return jdbcTemplate.query(sql, createSimpleReservationRowMapper(), id).stream().findAny();
-    }
-
-    @Override
     public Boolean removeById(Long id) {
         final String sql = "DELETE FROM RESERVATION WHERE ID = ?";
         return jdbcTemplate.update(sql, id) > 0;
@@ -146,13 +184,6 @@ public class JdbcReservationRepository implements ReservationRepository {
         );
     }
 
-    private RowMapper<Reservation> createSimpleReservationRowMapper() {
-        return (rs, rowNum) -> new Reservation(
-                rs.getLong("ID"),
-                new Member(rs.getLong("MEMBER_ID"), null, null, null, null),
-                rs.getDate("DATE").toLocalDate(),
-                new TimeSlot(rs.getLong("TIME_ID"), null),
-                new Theme(rs.getLong("THEME_ID"), null, null, null)
-        );
+    private record SqlCondition(String clause, Object[] params) {
     }
 }

@@ -3,10 +3,6 @@ package roomescape;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.Fixtures.SQL_INSERT_ALL;
-import static roomescape.Fixtures.SQL_INSERT_MEMBERS;
-import static roomescape.Fixtures.SQL_INSERT_RESERVATION_TIMES;
-import static roomescape.Fixtures.SQL_INSERT_THEMES;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -23,8 +19,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.controller.api.member.dto.MemberLoginRequest;
 import roomescape.controller.api.reservation.ReservationApiController;
 import roomescape.controller.api.reservation.dto.ReservationResponse;
+import roomescape.service.MemberService;
+import roomescape.support.DateUtil;
+import roomescape.support.SqlFixture;
 
 @Sql(scripts = {"/schema.sql"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -35,10 +35,18 @@ public class MissionStepTest {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private ReservationApiController reservationApiController;
+    @Autowired
+    private MemberService memberService;
 
     @Test
     void 일단계() {
+        // given
+        insertDummyDataExceptReservation();
+        final String token = extractTokenOfLoginMember();
+
+        // when & then
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value());
@@ -48,9 +56,11 @@ public class MissionStepTest {
     void 이단계() {
         // given
         insertDummyDatas();
+        final String token = extractTokenOfLoginMember();
 
         // when & then
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value());
@@ -60,8 +70,7 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .contentType("application/json")
-                .body("size()",
-                        is(8));
+                .body("size()", is(8));
     }
 
     @Test
@@ -69,11 +78,13 @@ public class MissionStepTest {
         // given
         insertDummyDataExceptReservation();
         Map<String, Object> params = createDummyReservationParams();
+        final String token = extractTokenOfLoginMember();
 
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
+                .cookie("token", token)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
@@ -117,7 +128,7 @@ public class MissionStepTest {
         insertDummyDataExceptReservation();
 
         // when & then
-        jdbcTemplate.update("INSERT INTO RESERVATION (MEMBER_ID, DATE, TIME_ID, THEME_ID) VALUES (?, ?, ?, ?)", 1, Fixtures.getDateOfTomorrow().toString(), 1, 1);
+        jdbcTemplate.update("SqlFixture.INSERT INTO RESERVATION (MEMBER_ID, DATE, TIME_ID, THEME_ID) VALUES (?, ?, ?, ?)", 1, DateUtil.tomorrow().toString(), 1, 1);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -125,7 +136,7 @@ public class MissionStepTest {
                 .statusCode(HttpStatus.OK.value()).extract()
                 .jsonPath().getList(".", ReservationResponse.class);
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM RESERVATION", Integer.class);
 
         assertThat(reservations.size()).isEqualTo(count);
     }
@@ -135,10 +146,12 @@ public class MissionStepTest {
         // given
         insertDummyDataExceptReservation();
         Map<String, Object> params = createDummyReservationParams();
+        final String token = extractTokenOfLoginMember();
 
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -187,10 +200,12 @@ public class MissionStepTest {
         // given
         insertDummyDataExceptReservation();
         Map<String, Object> params = createDummyReservationParams();
+        final String token = extractTokenOfLoginMember();
 
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -224,21 +239,25 @@ public class MissionStepTest {
     }
 
     private void insertDummyDataExceptReservation() {
-        insertDummyData(SQL_INSERT_MEMBERS);
-        insertDummyData(SQL_INSERT_RESERVATION_TIMES);
-        insertDummyData(SQL_INSERT_THEMES);
+        insertDummyData(SqlFixture.INSERT_MEMBERS);
+        insertDummyData(SqlFixture.INSERT_RESERVATION_TIMES);
+        insertDummyData(SqlFixture.INSERT_THEMES);
     }
 
     private void insertDummyDatas() {
-        SQL_INSERT_ALL.forEach(jdbcTemplate::update);
+        SqlFixture.INSERT_ALL.forEach(jdbcTemplate::update);
     }
 
     private Map<String, Object> createDummyReservationParams() {
         Map<String, Object> params = new HashMap<>();
         params.put("memberId", "1");
-        params.put("date", Fixtures.getDateOfTomorrow().toString());
+        params.put("date", DateUtil.tomorrow().toString());
         params.put("timeId", "1");
         params.put("themeId", "1");
         return params;
+    }
+
+    private String extractTokenOfLoginMember() {
+        return memberService.login(new MemberLoginRequest("admin1@email.com", "adminpw1"));
     }
 }
