@@ -1,7 +1,5 @@
 package roomescape.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
@@ -9,9 +7,10 @@ import roomescape.dto.request.ThemeCreateRequest;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.repository.ThemeRepository;
 
+import java.util.List;
+
 @Service
 public class ThemeService {
-    // todo: Service naming 다시 생각해보기
     private final ThemeRepository themeRepository;
 
     @Autowired

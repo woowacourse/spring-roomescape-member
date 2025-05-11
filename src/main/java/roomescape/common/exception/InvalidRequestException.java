@@ -1,6 +1,6 @@
 package roomescape.common.exception;
 
-public class InvalidRequestException extends RuntimeException{
+public class InvalidRequestException extends RuntimeException {
     public InvalidRequestException() {
     }
 

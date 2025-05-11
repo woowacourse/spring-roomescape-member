@@ -1,38 +1,57 @@
 package roomescape.dto;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import roomescape.common.exception.InvalidRequestException;
 import roomescape.dto.request.ThemeCreateRequest;
 
-import java.util.function.Supplier;
+import java.util.Set;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ThemeCreateRequestValidationTest {
+
+    private static ValidatorFactory factory;
+    private static Validator validator;
+
+    @BeforeAll
+    public static void init() {
+        factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
+
     @Test
     @DisplayName("ThemeCreateRequest 생성 테스트")
     void generateThemeCreateRequest() {
-        assertThatCode(() -> new ThemeCreateRequest("히스타", "설명", "img.jpg")).doesNotThrowAnyException();
+        ThemeCreateRequest request = new ThemeCreateRequest("히스타", "설명", "img.jpg");
+        Set<ConstraintViolation<ThemeCreateRequest>> violations = validator.validate(request);
+        assertThat(violations.size()).isEqualTo(0);
     }
 
 
     @ParameterizedTest
-    @MethodSource("getInvalidThemeCreateRequestName")
-    @DisplayName("ThemeCreateRequest 필수 값 검증 테스트")
-    void invalidThemeCreateRequestName(Supplier<ThemeCreateRequest> supplier) {
-        assertThatThrownBy(supplier::get).isInstanceOf(InvalidRequestException.class);
+    @MethodSource("getEmptyNameThemeCreateRequests")
+    @DisplayName("ThemeCreateRequest Name 빈 값인 경우 예외 처리")
+    void invalidThemeCreateRequestName(ThemeCreateRequest request) {
+        Set<ConstraintViolation<ThemeCreateRequest>> violations = validator.validate(request);
+        for (ConstraintViolation<ThemeCreateRequest> violation : violations) {
+            assertThat(violation.getMessage()).isEqualTo("이름은 빈 값이 올 수 없습니다");
+        }
     }
 
-    static Stream<Arguments> getInvalidThemeCreateRequestName() {
+    static Stream<Arguments> getEmptyNameThemeCreateRequests() {
         return Stream.of(
-                Arguments.arguments((Supplier<ThemeCreateRequest>) () -> new ThemeCreateRequest(null, "설명", "img.jpg")),
-                Arguments.arguments((Supplier<ThemeCreateRequest>) () -> new ThemeCreateRequest("", "설명", "img.jpg"))
+                Arguments.arguments(new ThemeCreateRequest(null, "테마 설명", "테마 이미지")),
+                Arguments.arguments(new ThemeCreateRequest("", "테마 설명", "테마 이미지")),
+                Arguments.arguments(new ThemeCreateRequest(" ", "테마 설명", "테마 이미지"))
         );
     }
 }

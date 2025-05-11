@@ -1,7 +1,8 @@
 package roomescape.repository;
 
-import java.util.List;
 import roomescape.domain.Reservation;
+
+import java.util.List;
 
 public interface ReservationRepository {
     Reservation save(Reservation reservation);
@@ -11,4 +12,6 @@ public interface ReservationRepository {
     void deleteById(Long id);
 
     boolean existsByTimeId(Long id);
+
+    List<Reservation> findByMemberAndThemeAndVisitDateBetween(Long themeId, Long memberId, String dateFrom, String dateTo);
 }

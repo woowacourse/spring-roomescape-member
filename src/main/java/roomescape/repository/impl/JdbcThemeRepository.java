@@ -1,8 +1,5 @@
 package roomescape.repository.impl;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,6 +8,10 @@ import org.springframework.stereotype.Repository;
 import roomescape.common.exception.NotAbleDeleteException;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {

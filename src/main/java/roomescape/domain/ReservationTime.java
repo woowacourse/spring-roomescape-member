@@ -1,6 +1,5 @@
 package roomescape.domain;
 
-import roomescape.common.exception.DomainValidationException;
 import roomescape.common.exception.ReservationTimeValidationException;
 
 import java.time.LocalTime;

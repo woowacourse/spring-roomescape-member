@@ -2,6 +2,7 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.InstanceOfAssertFactories.map;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
@@ -17,9 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import roomescape.common.exception.DeleteReservationException;
 import roomescape.common.exception.NotAbleDeleteException;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.request.ReservationCreateRequest;
-import roomescape.dto.request.ReservationTimeCreateRequest;
-import roomescape.dto.request.ThemeCreateRequest;
+import roomescape.dto.request.*;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.search.ReservationTimeResponseWithBookedStatus;
 
@@ -30,12 +29,14 @@ public class ReservationTimeServiceTest {
 
     private final ReservationService reservationService;
     private final ThemeService themeService;
+    private final MemberService memberService;
     private final ReservationTimeService reservationTimeService;
 
     @Autowired
-    public ReservationTimeServiceTest(ReservationService reservationService, ThemeService themeService,ReservationTimeService reservationTimeService) {
+    public ReservationTimeServiceTest(ReservationService reservationService, ThemeService themeService, MemberService memberService, ReservationTimeService reservationTimeService) {
         this.reservationService = reservationService;
         this.themeService = themeService;
+        this.memberService = memberService;
         this.reservationTimeService = reservationTimeService;
     }
 
@@ -99,7 +100,8 @@ public class ReservationTimeServiceTest {
         reservationTimeService.createReservationTime(request);
         ThemeCreateRequest themeCreateRequest = new ThemeCreateRequest("테마1","테마 설명", "테마 사진");
         themeService.createTheme(themeCreateRequest);
-        reservationService.createReservation(new ReservationCreateRequest("히스타",LocalDate.now().plusDays(1),1L, 1L));
+        memberService.signup(new MemberSignUpRequest("히포", "test@test.com", "1234"));
+        reservationService.createReservation(new ReservationCreateRequest(LocalDate.now().plusDays(1),1L, 1L), 1L);
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(1L)).isInstanceOf(DeleteReservationException.class);
     }

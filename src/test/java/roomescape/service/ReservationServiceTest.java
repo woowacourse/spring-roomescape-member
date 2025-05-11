@@ -9,7 +9,6 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,6 +22,8 @@ import org.springframework.test.context.ActiveProfiles;
 import roomescape.common.exception.*;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.dto.request.LoginMemberRequest;
+import roomescape.dto.request.MemberSignUpRequest;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.repository.ReservationTimeRepository;
@@ -34,14 +35,17 @@ import roomescape.repository.ThemeRepository;
 public class ReservationServiceTest {
     private final ReservationService reservationService;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final MemberService memberService;
     private final ThemeRepository themeRepository;
 
     @Autowired
     public ReservationServiceTest(ReservationService reservationService,
                                    ReservationTimeRepository reservationTimeRepository,
+                                   MemberService memberService,
                                    ThemeRepository themeRepository) {
         this.reservationService = reservationService;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.memberService = memberService;
         this.themeRepository = themeRepository;
     }
 
@@ -53,20 +57,24 @@ public class ReservationServiceTest {
         themeRepository.save(
                 new Theme(1L, "Test Theme", "Test Description", "image.jpg")
         );
+        memberService.signup(
+                new MemberSignUpRequest("히스타", "test@test.com", "1234")
+        );
+        memberService.signup(
+                new MemberSignUpRequest("히포", "test2@test.com", "1234")
+        );
     }
 
     @Test
     void createReservationTest() {
         // given
         LocalDate givenDate = LocalDate.now().plusDays(1);
-        ReservationCreateRequest request = new ReservationCreateRequest("히스타", givenDate, 1L, 1L);
-
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(givenDate, 1L, 1L);
         // when
-        ReservationResponse reservationResponse = reservationService.createReservation(request);
-
+        ReservationResponse reservationResponse = reservationService.createReservation(reservationCreateRequest, 1L);
         // then
         assertAll(
-                () -> assertThat(reservationResponse.name()).isEqualTo("히스타"),
+                () -> assertThat(reservationResponse.loginMemberResponse().name()).isEqualTo("히스타"),
                 () -> assertThat(reservationResponse.reservationTimeResponse().id()).isEqualTo(1L),
                 () -> assertThat(reservationResponse.date()).isEqualTo(givenDate),
                 () -> assertThat(reservationResponse.reservationTimeResponse().startAt()).isEqualTo("10:00"),
@@ -79,16 +87,16 @@ public class ReservationServiceTest {
 
     @ParameterizedTest
     @MethodSource("getInvalidReservationCreateRequest")
-    void createReservationFailureTest(ReservationCreateRequest request, Class<Exception> exceptionClass) {
-        assertThatThrownBy(() -> reservationService.createReservation(request)).isInstanceOf(exceptionClass);
+    void createReservationFailureTest(ReservationCreateRequest reservationCreateRequest, Long memberId, Class<Exception> exceptionClass) {
+        assertThatThrownBy(() -> reservationService.createReservation(reservationCreateRequest, memberId)).isInstanceOf(exceptionClass);
     }
 
     static Stream<Arguments> getInvalidReservationCreateRequest() {
         LocalDate givenDate = LocalDate.now().plusDays(1);
         return Stream.of(
-                Arguments.arguments(new ReservationCreateRequest("히스타",LocalDate.now().minusDays(1), 1L, 1L), NotAbleReservationException.class),
-                Arguments.arguments(new ReservationCreateRequest("히스타", givenDate, 2L, 1L),NotFoundReservationTimeException.class),
-                Arguments.arguments(new ReservationCreateRequest("히스타", givenDate, 1L, 2L),NotFoundThemeException.class)
+                Arguments.arguments(new ReservationCreateRequest(LocalDate.now().minusDays(1), 1L, 1L), 1L, NotAbleReservationException.class),
+                Arguments.arguments(new ReservationCreateRequest(givenDate, 2L, 1L), 1L, NotFoundReservationTimeException.class),
+                Arguments.arguments(new ReservationCreateRequest(givenDate, 1L, 2L), 1L, NotFoundThemeException.class)
         );
     }
 
@@ -96,16 +104,15 @@ public class ReservationServiceTest {
     void findAllTest() {
         // given
         LocalDate givenDate = LocalDate.now().plusDays(1);
-        ReservationCreateRequest request = new ReservationCreateRequest("히스타", givenDate, 1L, 1L);
-        reservationService.createReservation(request);
-
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(givenDate, 1L, 1L);
+        reservationService.createReservation(reservationCreateRequest, 1L);
         // when
         List<ReservationResponse> reservationResponses = reservationService.findAll();
-
         // then
         assertThat(reservationResponses).hasSize(1);
         assertAll(
-                () -> assertThat(reservationResponses.getFirst().name()).isEqualTo("히스타"),
+                () -> assertThat(reservationResponses.getFirst().loginMemberResponse().id()).isEqualTo(1L),
+                () -> assertThat(reservationResponses.getFirst().loginMemberResponse().name()).isEqualTo("히스타"),
                 () -> assertThat(reservationResponses.getFirst().date()).isEqualTo(givenDate),
                 () -> assertThat(reservationResponses.getFirst().reservationTimeResponse().id()).isEqualTo(1L),
                 () -> assertThat(reservationResponses.getFirst().themeResponse().id()).isEqualTo(1L),
@@ -120,14 +127,12 @@ public class ReservationServiceTest {
     void deleteReservationByIdReservationTest() {
         // given
         LocalDate givenDate = LocalDate.now().plusDays(1);
-        ReservationCreateRequest request = new ReservationCreateRequest("히스타", givenDate, 1L, 1L);
-        reservationService.createReservation(request);
-
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(givenDate, 1L, 1L);
+        reservationService.createReservation(reservationCreateRequest, 1L);
         // when
         List<ReservationResponse> reservationResponsesBeforeDelete = reservationService.findAll();
         reservationService.deleteReservationById(reservationResponsesBeforeDelete.get(0).id());
         List<ReservationResponse> reservationResponsesAfterDelete = reservationService.findAll();
-
         // then
         assertAll(
                 () -> assertThat(reservationResponsesBeforeDelete).hasSize(1),
@@ -139,52 +144,44 @@ public class ReservationServiceTest {
     void createReservationWithPastDateTest() {
         // given
         LocalDate givenDate = LocalDate.now().minusDays(1);
-        ReservationCreateRequest request = new ReservationCreateRequest("히스타", givenDate, 1L, 1L);
-
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(givenDate, 1L, 1L);
         // when
-        assertThrows(NotAbleReservationException.class, () -> reservationService.createReservation(request));
+        assertThrows(NotAbleReservationException.class, () -> reservationService.createReservation(reservationCreateRequest, 1L));
     }
 
     @Test
     void createReservationWithAlreadyBookedTimeTest() {
         // given
         LocalDate givenDate = LocalDate.now().plusDays(1);
-        ReservationCreateRequest request1 = new ReservationCreateRequest("히스타", givenDate, 1L, 1L);
-        ReservationCreateRequest request2 = new ReservationCreateRequest("히스타2", givenDate, 1L, 1L);
-        reservationService.createReservation(request1);
-
+        ReservationCreateRequest request1 = new ReservationCreateRequest(givenDate, 1L, 1L);
+        reservationService.createReservation(request1, 1L);
+        ReservationCreateRequest request2 = new ReservationCreateRequest(givenDate, 1L, 1L);
         // when
-        assertThrows(NotAbleReservationException.class, () -> reservationService.createReservation(request2));
+        assertThrows(NotAbleReservationException.class, () -> reservationService.createReservation(request2, 2L));
     }
 
     @Test
     void createReservationWithInvalidThemeTest() {
         // given
         LocalDate givenDate = LocalDate.now().plusDays(1);
-        ReservationCreateRequest request = new ReservationCreateRequest("히스타", givenDate, 1L, 2L);
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(givenDate, 1L, 2L);
 
         // when
-        assertThrows(NotFoundThemeException.class, () -> reservationService.createReservation(request));
+        assertThrows(NotFoundThemeException.class, () -> reservationService.createReservation(reservationCreateRequest, 1L));
     }
 
     @Test
     void createReservationWithInvalidTimeTest() {
         // given
         LocalDate givenDate = LocalDate.now().plusDays(1);
-        ReservationCreateRequest request = new ReservationCreateRequest("히스타", givenDate, 2L, 1L);
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(givenDate, 2L, 1L);
 
         // when
-        assertThrows(NotFoundReservationTimeException.class, () -> reservationService.createReservation(request));
+        assertThrows(NotFoundReservationTimeException.class, () -> reservationService.createReservation(reservationCreateRequest, 1L));
     }
 
     @Test
     void deleteReservationByIdReservationWithInvalidIdTest() {
-        // given
-        LocalDate givenDate = LocalDate.now().plusDays(1);
-        ReservationCreateRequest request = new ReservationCreateRequest("히스타", givenDate, 1L, 1L);
-        reservationService.createReservation(request);
-
-        // when
         assertThrows(NotAbleDeleteException.class, () -> reservationService.deleteReservationById(2L));
     }
 }

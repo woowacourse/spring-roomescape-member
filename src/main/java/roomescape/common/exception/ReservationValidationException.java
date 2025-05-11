@@ -1,6 +1,6 @@
 package roomescape.common.exception;
 
-public class ReservationValidationException extends DomainValidationException{
+public class ReservationValidationException extends DomainValidationException {
     public ReservationValidationException() {
     }
 
