@@ -1,10 +1,10 @@
 -- member
-INSERT INTO member (name, email, password)
-VALUES ('사용자1', 'test@email.com', 'pass1');
-INSERT INTO member (name, email, password)
-VALUES ('사용자2', 'test2@email.com', 'pass2');
-INSERT INTO member (name, email, password)
-VALUES ('사용자3', 'test3@email.com', 'pass3');
+INSERT INTO member (name, role, email, password)
+VALUES ('사용자1', 'ADMIN', 'test@email.com', 'pass1');
+INSERT INTO member (name, role, email, password)
+VALUES ('사용자2', 'USER', 'test2@email.com', 'pass2');
+INSERT INTO member (name, role, email, password)
+VALUES ('사용자3', 'USER', 'test3@email.com', 'pass3');
 
 -- reservation_time
 INSERT INTO reservation_time (start_at)
