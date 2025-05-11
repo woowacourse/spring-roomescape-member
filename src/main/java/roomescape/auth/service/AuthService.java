@@ -1,12 +1,12 @@
-package roomescape.member.service;
+package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.auth.dto.request.TokenRequest;
+import roomescape.auth.dto.response.TokenResponse;
 import roomescape.exception.ArgumentNullException;
 import roomescape.member.Member;
 import roomescape.member.dao.JdbcMemberDao;
-import roomescape.member.dto.request.TokenRequest;
 import roomescape.member.dto.response.MemberResponse;
-import roomescape.member.dto.response.TokenResponse;
 import roomescape.member.infra.JwtProvider;
 
 @Service

@@ -46,6 +46,12 @@
 - [x] 사용자의 정보를 조회하여 상단바 우측 로그인 상태를 표현할 수 있다.
     - [x] /login/check 요청 시 사용자의 정보를 조회한다.
 
+### 5단계 - 로그인 리팩터링
+
+- [ ] 사용자의 정보를 조회하는 로직을 리팩터링 한다.
+    - [ ] Cookie에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 로직을 분리한다.
+- [ ] 예약 생성 API 및 기능을 리팩터링 한다.
+
 # API 명세
 
 ### 예약 목록 조회
@@ -242,5 +248,21 @@ Transfer-Encoding: chunked
 
 {
     "name": "어드민"
+}
+```
+
+### 쿠키를 이용한 예약 생성
+
+```
+Request
+POST /reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
+
+{
+    "date": "2024-03-01",
+    "themeId": 1,
+    "timeId": 1
 }
 ```
