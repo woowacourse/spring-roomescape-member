@@ -173,7 +173,7 @@ public class H2ReservationDao implements ReservationDao {
     private RowMapper<Reservation> getReservationRowMapper() {
         return (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("id"),
-            new LoginMember(
+            new Member(
                 resultSet.getLong("member_id"),
                 resultSet.getString("member_name"),
                 resultSet.getString("member_email"),

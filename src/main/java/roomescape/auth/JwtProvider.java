@@ -4,7 +4,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.entity.LoginMember;
+import roomescape.entity.Member;
 
 @Component
 public class JwtProvider {
@@ -15,11 +15,11 @@ public class JwtProvider {
         this.secretKey = secretKey;
     }
 
-    public String generateToken(LoginMember loginMember) {
+    public String generateToken(Member member) {
         return Jwts.builder()
-            .setSubject(loginMember.getId().toString())
-            .claim("name", loginMember.getName())
-            .claim("role", loginMember.getRole())
+            .setSubject(member.getId().toString())
+            .claim("name", member.getName())
+            .claim("role", member.getRole())
             .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
             .compact();
     }

@@ -6,7 +6,7 @@ import roomescape.dto.request.LoginCheckRequest;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.AvailableReservationTimeResponse;
 import roomescape.dto.response.ReservationResponse;
-import roomescape.entity.LoginMember;
+import roomescape.entity.Member;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
@@ -52,17 +52,17 @@ public class ReservationService {
     }
 
     public ReservationResponse addByAdmin(AdminReservationRequest request) {
-        LoginMember loginMember = memberDao.findById(request.memberId())
+        Member member = memberDao.findById(request.memberId())
             .orElseThrow(() -> new AuthenticationException("로그인 정보가 존재하지 않습니다."));
-        return createReservation(request.date(), request.timeId(), request.themeId(), loginMember);
+        return createReservation(request.date(), request.timeId(), request.themeId(), member);
     }
 
     public ReservationResponse add(ReservationRequest requestDto, LoginCheckRequest loginCheckRequest) {
-        LoginMember loginMember = createLoginMember(loginCheckRequest);
-        return createReservation(requestDto.date(), requestDto.timeId(), requestDto.themeId(), loginMember);
+        Member member = createLoginMember(loginCheckRequest);
+        return createReservation(requestDto.date(), requestDto.timeId(), requestDto.themeId(), member);
     }
 
-    private ReservationResponse createReservation(LocalDate date, Long timeId, Long themeId, LoginMember loginMember) {
+    private ReservationResponse createReservation(LocalDate date, Long timeId, Long themeId, Member member) {
         ReservationTime reservationTime = getReservationTime(timeId);
         Theme theme = getTheme(themeId);
         List<Reservation> sameTimeReservations = reservationDao.findByDateAndThemeId(date, themeId);
@@ -70,7 +70,7 @@ public class ReservationService {
         validateIsBooked(sameTimeReservations, reservationTime, theme);
         validatePastDateTime(date, reservationTime.getStartAt());
 
-        Reservation reservation = new Reservation(loginMember, date, reservationTime, theme);
+        Reservation reservation = new Reservation(member, date, reservationTime, theme);
         Reservation saved = reservationDao.save(reservation);
         return ReservationResponse.of(saved);
     }
@@ -95,8 +95,8 @@ public class ReservationService {
             .toList();
     }
 
-    private LoginMember createLoginMember(LoginCheckRequest loginCheckRequest) {
-        return new LoginMember(
+    private Member createLoginMember(LoginCheckRequest loginCheckRequest) {
+        return new Member(
             loginCheckRequest.id(), loginCheckRequest.name(), loginCheckRequest.email(), loginCheckRequest.role());
     }
 

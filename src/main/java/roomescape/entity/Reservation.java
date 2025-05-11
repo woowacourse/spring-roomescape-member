@@ -7,12 +7,12 @@ import java.util.Objects;
 public class Reservation {
 
     private final Long id;
-    private final LoginMember member;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, LoginMember member, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.member = member;
         this.date = date;
@@ -20,7 +20,7 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation(LoginMember member, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Member member, LocalDate date, ReservationTime time, Theme theme) {
         this(null, member, date, time, theme);
     }
 
@@ -33,7 +33,7 @@ public class Reservation {
         return id;
     }
 
-    public LoginMember getMember() {
+    public Member getMember() {
         return member;
     }
 

@@ -6,7 +6,7 @@ import roomescape.dto.request.LoginRequest;
 import roomescape.dto.request.LoginCheckRequest;
 import roomescape.dto.response.LoginCheckResponse;
 import roomescape.dto.response.LoginResponse;
-import roomescape.entity.LoginMember;
+import roomescape.entity.Member;
 import roomescape.exception.AuthenticationException;
 import roomescape.repository.MemberDao;
 
@@ -25,21 +25,21 @@ public class MemberService {
     }
 
     public LoginResponse login(LoginRequest request) {
-        LoginMember loginMember = memberDao.findByEmailAndPassword(request.email(), request.password())
+        Member member = memberDao.findByEmailAndPassword(request.email(), request.password())
             .orElseThrow(() -> new AuthenticationException("로그인 정보를 찾을 수 없습니다."));
 
-        String accessToken = jwtProvider.generateToken(loginMember);
+        String accessToken = jwtProvider.generateToken(member);
         return LoginResponse.from(accessToken);
     }
 
     public LoginCheckRequest findById(Long memberId) {
-        LoginMember findLoginMember = memberDao.findById(memberId)
+        Member findMember = memberDao.findById(memberId)
             .orElseThrow(() -> new AuthenticationException("로그인 정보가 일치하지 않습니다."));
-        return LoginCheckRequest.of(findLoginMember.getId(), findLoginMember.getName(), findLoginMember.getEmail(), findLoginMember.getRole());
+        return LoginCheckRequest.of(findMember.getId(), findMember.getName(), findMember.getEmail(), findMember.getRole());
     }
 
     public List<LoginCheckResponse> findAll() {
-        List<LoginMember> allMembers = memberDao.findAll();
+        List<Member> allMembers = memberDao.findAll();
         return allMembers.stream()
             .map(member -> LoginCheckResponse.from(member.getId(), member.getName()))
             .toList();

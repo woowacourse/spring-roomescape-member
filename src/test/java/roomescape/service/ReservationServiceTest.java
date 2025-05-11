@@ -41,8 +41,8 @@ class ReservationServiceTest {
     void 예약기록을_조회한다() {
         Mockito.when(reservationDao.findAll())
             .thenReturn(List.of(
-                new Reservation(1L, new LoginMember(1L, "어드민", "admin@email.com", Role.ADMIN), LocalDate.of(2025, 1, 1), new ReservationTime(1L, LocalTime.of(10, 0)), new Theme(1L, "테마1", "", "")),
-                new Reservation(2L, new LoginMember(2L, "브라운", "brown@email.com", Role.USER), LocalDate.of(2025, 1, 2), new ReservationTime(1L, LocalTime.of(10, 0)), new Theme(1L, "테마1", "", ""))
+                new Reservation(1L, new Member(1L, "어드민", "admin@email.com", Role.ADMIN), LocalDate.of(2025, 1, 1), new ReservationTime(1L, LocalTime.of(10, 0)), new Theme(1L, "테마1", "", "")),
+                new Reservation(2L, new Member(2L, "브라운", "brown@email.com", Role.USER), LocalDate.of(2025, 1, 2), new ReservationTime(1L, LocalTime.of(10, 0)), new Theme(1L, "테마1", "", ""))
             ));
 
         assertThat(reservationService.findAll()).isEqualTo(
@@ -64,7 +64,7 @@ class ReservationServiceTest {
             .thenReturn(List.of());
         Mockito.when(reservationDao.save(Mockito.any()))
             .thenReturn(
-                new Reservation(1L, new LoginMember(1L, "어드민", "email@email.com", Role.ADMIN),
+                new Reservation(1L, new Member(1L, "어드민", "email@email.com", Role.ADMIN),
                     LocalDate.now().plusDays(1),
                     new ReservationTime(1L, LocalTime.of(10, 0)),
                     new Theme(1L, "인터스텔라", "", "")
@@ -85,7 +85,7 @@ class ReservationServiceTest {
     void 예약을_삭제한다() {
         Long id = 1L;
         Mockito.when(reservationDao.findById(Mockito.any()))
-            .thenReturn(Optional.of(new Reservation(1L, new LoginMember(1L, "어드민", "email@email.com", Role.ADMIN)
+            .thenReturn(Optional.of(new Reservation(1L, new Member(1L, "어드민", "email@email.com", Role.ADMIN)
                 , null, null, null)));
 
 
@@ -123,7 +123,7 @@ class ReservationServiceTest {
         LocalDate to = LocalDate.of(2025, 1, 3);
 
         List<Reservation> reservations = List.of(
-            new Reservation(1L, new LoginMember(memberId, "어드민", "admin@email.com", Role.ADMIN),
+            new Reservation(1L, new Member(memberId, "어드민", "admin@email.com", Role.ADMIN),
                 LocalDate.of(2025, 1, 2),
                 new ReservationTime(1L, LocalTime.of(10, 0)),
                 new Theme(themeId, "테마1", "", ""))

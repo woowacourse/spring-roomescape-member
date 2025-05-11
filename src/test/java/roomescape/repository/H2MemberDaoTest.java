@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.entity.LoginMember;
+import roomescape.entity.Member;
 import roomescape.entity.Role;
 
 import java.util.List;
@@ -35,7 +35,7 @@ class H2MemberDaoTest {
 
     @Test
     void 이메일과_비밀번호로_회원_조회() {
-        Optional<LoginMember> member = memberDao.findByEmailAndPassword("admin@email.com", "password");
+        Optional<Member> member = memberDao.findByEmailAndPassword("admin@email.com", "password");
 
         assertAll(
             () -> assertThat(member).isPresent(),
@@ -46,14 +46,14 @@ class H2MemberDaoTest {
 
     @Test
     void 잘못된_이메일_또는_비밀번호로_회원_조회시_빈값_반환() {
-        Optional<LoginMember> member = memberDao.findByEmailAndPassword("wrong@email.com", "wrongpass");
+        Optional<Member> member = memberDao.findByEmailAndPassword("wrong@email.com", "wrongpass");
 
         assertThat(member).isEmpty();
     }
 
     @Test
     void ID로_회원_조회() {
-        Optional<LoginMember> member = memberDao.findById(1L);
+        Optional<Member> member = memberDao.findById(1L);
 
         assertAll(
             () -> assertThat(member).isPresent(),
@@ -64,14 +64,14 @@ class H2MemberDaoTest {
 
     @Test
     void 존재하지_않는_ID로_조회시_빈값_반환() {
-        Optional<LoginMember> member = memberDao.findById(999L);
+        Optional<Member> member = memberDao.findById(999L);
 
         assertThat(member).isEmpty();
     }
 
     @Test
     void 모든_회원_조회() {
-        List<LoginMember> members = memberDao.findAll();
+        List<Member> members = memberDao.findAll();
 
         assertAll(
             () -> assertThat(members).hasSize(2),

@@ -8,7 +8,7 @@ import roomescape.dto.request.LoginCheckRequest;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.LoginCheckResponse;
 import roomescape.dto.response.LoginResponse;
-import roomescape.entity.LoginMember;
+import roomescape.entity.Member;
 import roomescape.entity.Role;
 import roomescape.exception.AuthenticationException;
 import roomescape.repository.MemberDao;
@@ -37,7 +37,7 @@ class MemberServiceTest {
     @Test
     void 로그인에_성공하면_토큰을_반환한다() {
         LoginRequest request = new LoginRequest("admin@email.com", "password");
-        LoginMember member = new LoginMember(1L, "어드민", "admin@email.com", Role.ADMIN);
+        Member member = new Member(1L, "어드민", "admin@email.com", Role.ADMIN);
 
         Mockito.when(memberDao.findByEmailAndPassword(request.email(), request.password()))
             .thenReturn(Optional.of(member));
@@ -62,7 +62,7 @@ class MemberServiceTest {
 
     @Test
     void ID로_회원정보를_조회한다() {
-        LoginMember member = new LoginMember(1L, "어드민", "admin@email.com", Role.ADMIN);
+        Member member = new Member(1L, "어드민", "admin@email.com", Role.ADMIN);
         Mockito.when(memberDao.findById(1L)).thenReturn(Optional.of(member));
 
         LoginCheckRequest request = memberService.findById(1L);
@@ -84,9 +84,9 @@ class MemberServiceTest {
 
     @Test
     void 모든_회원의_이름을_조회한다() {
-        List<LoginMember> members = List.of(
-            new LoginMember(1L, "어드민", "admin@email.com", Role.ADMIN),
-            new LoginMember(2L, "브라운", "brown@email.com", Role.USER)
+        List<Member> members = List.of(
+            new Member(1L, "어드민", "admin@email.com", Role.ADMIN),
+            new Member(2L, "브라운", "brown@email.com", Role.USER)
         );
         Mockito.when(memberDao.findAll()).thenReturn(members);
 

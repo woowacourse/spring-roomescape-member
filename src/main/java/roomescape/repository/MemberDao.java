@@ -1,15 +1,15 @@
 package roomescape.repository;
 
-import roomescape.entity.LoginMember;
+import roomescape.entity.Member;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface MemberDao {
 
-    Optional<LoginMember> findByEmailAndPassword(String email, String password);
+    Optional<Member> findByEmailAndPassword(String email, String password);
 
-    Optional<LoginMember> findById(Long memberId);
+    Optional<Member> findById(Long memberId);
 
-    List<LoginMember> findAll();
+    List<Member> findAll();
 }

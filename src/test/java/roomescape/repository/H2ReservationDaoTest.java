@@ -43,13 +43,13 @@ class H2ReservationDaoTest {
 
     @Test
     void 예약을_추가한다() {
-        Reservation reservation = new Reservation(new LoginMember(1L, "어드민", "email@email.com", Role.ADMIN), LocalDate.now().plusDays(1),
+        Reservation reservation = new Reservation(new Member(1L, "어드민", "email@email.com", Role.ADMIN), LocalDate.now().plusDays(1),
             new ReservationTime(1L, LocalTime.of(10, 0)),
             new Theme(1L, "", "", ""));
 
         Reservation saved = reservationDao.save(reservation);
 
-        Reservation expected = new Reservation(7L, new LoginMember(1L, "어드민", "email@email.com", Role.ADMIN), LocalDate.now().plusDays(1),
+        Reservation expected = new Reservation(7L, new Member(1L, "어드민", "email@email.com", Role.ADMIN), LocalDate.now().plusDays(1),
             new ReservationTime(1L, LocalTime.of(10, 0)),
             new Theme(1L, "", "", ""));
         assertThat(saved).isEqualTo(expected);
@@ -69,7 +69,7 @@ class H2ReservationDaoTest {
 
         assertThat(findReservation.get())
             .isEqualTo(new Reservation(1L,
-                new LoginMember(1L, "어드민", "email@email.com", Role.ADMIN),
+                new Member(1L, "어드민", "email@email.com", Role.ADMIN),
                 LocalDate.now().plusDays(1),
                 new ReservationTime(1L, LocalTime.of(10, 0)),
                 new Theme(1L, "", "", ""))
@@ -90,7 +90,7 @@ class H2ReservationDaoTest {
 
         List<Reservation> expected = List.of(new Reservation(
             2L,
-            new LoginMember(1L, "어드민", "email@email.com", Role.ADMIN),
+            new Member(1L, "어드민", "email@email.com", Role.ADMIN),
             LocalDate.of(2025, 4, 25),
             new ReservationTime(2L, LocalTime.of(12, 0)),
             new Theme(2L, "", "", "")));
@@ -108,7 +108,7 @@ class H2ReservationDaoTest {
 
         List<Reservation> expected = List.of(new Reservation(
             6L,
-            new LoginMember(2L, "브라운", "brown@email.com", Role.USER),
+            new Member(2L, "브라운", "brown@email.com", Role.USER),
             LocalDate.of(2025, 4, 25),
             new ReservationTime(4L, LocalTime.of(16, 0)),
             new Theme(3L, "", "", "")
