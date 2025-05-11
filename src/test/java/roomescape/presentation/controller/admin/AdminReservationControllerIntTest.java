@@ -98,7 +98,7 @@ public class AdminReservationControllerIntTest {
     @DisplayName("어드민에서 조회 조건에 따라 예약 목록 조회 성공")
     @Test
     @Sql("/test-admin-get-reservations-data.sql")
-    public void request_getReservations() {
+    public void request_getReservationsUsingFilter() {
         RestAssured.given().log().all()
                 .param("themeId", 1)
                 .param("memberId", 3)

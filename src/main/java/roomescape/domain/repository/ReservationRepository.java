@@ -11,5 +11,5 @@ public interface ReservationRepository {
 
     boolean deleteById(Long id);
 
-    List<Reservation> search(ReservationSearchFilter reservationSearchFilter);
+    List<Reservation> searchWith(ReservationSearchFilter reservationSearchFilter);
 }

@@ -31,7 +31,7 @@ public class AdminReservationController {
     }
 
     @GetMapping
-    public List<ReservationDto> getReservations(ReservationSearchFilter reservationSearchFilter) {
-        return service.searchReservations(reservationSearchFilter);
+    public List<ReservationDto> getReservationsMatching(ReservationSearchFilter reservationSearchFilter) {
+        return service.searchReservationsWith(reservationSearchFilter);
     }
 }

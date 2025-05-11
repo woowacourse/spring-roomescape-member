@@ -73,8 +73,8 @@ public class ReservationService {
         return ReservationDto.from(reservations);
     }
 
-    public List<ReservationDto> searchReservations(ReservationSearchFilter reservationSearchFilter) {
-        List<Reservation> reservations = reservationRepository.search(reservationSearchFilter);
+    public List<ReservationDto> searchReservationsWith(ReservationSearchFilter reservationSearchFilter) {
+        List<Reservation> reservations = reservationRepository.searchWith(reservationSearchFilter);
         return ReservationDto.from(reservations);
     }
 

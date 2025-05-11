@@ -19,6 +19,7 @@ import roomescape.domain.repository.dto.ReservationSearchFilter;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
+
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER =
             (rs, rowNum) -> {
                 Long id = rs.getLong("reservation_id");
@@ -41,7 +42,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                         ReservationTime.of(timeId, time)
                 );
             };
-    private final JdbcTemplate jdbcTemplate;
     private final String findAllSql = """
             SELECT
                 r.id as reservation_id,
@@ -64,6 +64,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             join member as m
                 on r.member_id = m.id
             """;
+    private final JdbcTemplate jdbcTemplate;
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -98,14 +99,14 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> search(ReservationSearchFilter reservationSearchFilter) {
+    public List<Reservation> searchWith(ReservationSearchFilter reservationSearchFilter) {
         if (reservationSearchFilter.isEmpty()) {
             return jdbcTemplate.query(findAllSql, RESERVATION_ROW_MAPPER);
         }
 
         String sql = findAllSql + " WHERE ";
-        List<Object> params = new ArrayList<>();
         List<String> whereStatements = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
 
         if (reservationSearchFilter.themeId() != null) {
             whereStatements.add("theme_id = ?");
@@ -127,7 +128,8 @@ public class JdbcReservationRepository implements ReservationRepository {
             params.add(reservationSearchFilter.dateTo());
         }
 
-        return jdbcTemplate.query(sql + String.join(" AND ", whereStatements), RESERVATION_ROW_MAPPER,
-                params.toArray());
+        return jdbcTemplate.query(
+                sql + String.join(" AND ", whereStatements), RESERVATION_ROW_MAPPER, params.toArray()
+        );
     }
 }

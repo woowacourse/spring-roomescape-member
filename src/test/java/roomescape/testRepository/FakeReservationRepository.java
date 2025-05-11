@@ -33,7 +33,7 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> search(ReservationSearchFilter reservationSearchFilter) {
+    public List<Reservation> searchWith(ReservationSearchFilter reservationSearchFilter) {
         return List.of();
     }
 
