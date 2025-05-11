@@ -4,19 +4,22 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.dto.TokenInfo;
-import roomescape.model.Member;
+import roomescape.dto.request.LoginMember;
 
 @Service
-public class AuthenticationService {
-    public static String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+public class JwtProvider {
+
+    @Value("${jwt.secret}")
+    private String secretKey;
 
 
-    public String generateToken(Member member) {
+    public String generateToken(LoginMember member) {
         return Jwts.builder()
-                .subject(member.getId().toString())
-                .claim("role", member.getRole())
+                .subject(member.id().toString())
+                .claim("role", member.role().toString())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
 
