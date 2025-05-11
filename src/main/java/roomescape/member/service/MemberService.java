@@ -61,9 +61,14 @@ public class MemberService {
         return memberOptional.get();
     }
 
-    public List<MemberResponse> findAllMembers() {
-        return memberDao.findAll().stream()
+    public List<MemberResponse> findAllUsers() {
+        return findAllMembers().stream()
+                .filter(member -> member.getRole().equals(USER_ROLE))
                 .map(MemberResponse::from)
                 .toList();
+    }
+
+    private List<Member> findAllMembers() {
+        return memberDao.findAll();
     }
 }
