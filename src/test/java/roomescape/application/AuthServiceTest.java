@@ -9,7 +9,7 @@ import roomescape.domain.Member;
 import roomescape.fixture.MemberDbFixture;
 import roomescape.infrastructure.jwt.JwtTokenProvider;
 import roomescape.presentation.dto.request.LoginRequest;
-import roomescape.presentation.dto.LoginMember;
+import roomescape.presentation.dto.request.LoginMember;
 
 import java.util.NoSuchElementException;
 
