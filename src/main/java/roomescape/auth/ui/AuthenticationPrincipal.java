@@ -1,4 +1,4 @@
-package roomescape.member.ui;
+package roomescape.auth.ui;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
