@@ -2,6 +2,7 @@ package roomescape.common.exception.handler;
 
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,7 +17,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ExceptionResponse> handleNullPointer(final NullPointerException exception, final HttpServletRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
-                500, "[ERROR] " + exception.getMessage(), request.getRequestURI()
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), "[ERROR] " + exception.getMessage(), request.getRequestURI()
         );
 
         return ResponseEntity.internalServerError().body(exceptionResponse);
@@ -25,7 +26,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ExceptionResponse> handleIllegalArgument(final IllegalArgumentException exception, final HttpServletRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
-                400, "[ERROR] " + exception.getMessage(), request.getRequestURI()
+                HttpStatus.BAD_REQUEST.value(), "[ERROR] " + exception.getMessage(), request.getRequestURI()
         );
 
         return ResponseEntity.badRequest().body(exceptionResponse);
@@ -34,28 +35,28 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SignatureException.class)
     public ResponseEntity<ExceptionResponse> handleSignature(final SignatureException exception, final HttpServletRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
-                401, "[ERROR] " + exception.getMessage(), request.getRequestURI()
+                HttpStatus.UNAUTHORIZED.value(), "[ERROR] " + exception.getMessage(), request.getRequestURI()
         );
 
-        return ResponseEntity.status(401).body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(exceptionResponse);
     }
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ExceptionResponse> handleUnauthorize(final UnauthorizedException exception, final HttpServletRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
-                401, "[ERROR] " + exception.getMessage(), request.getRequestURI()
+                HttpStatus.UNAUTHORIZED.value(), "[ERROR] " + exception.getMessage(), request.getRequestURI()
         );
 
-        return ResponseEntity.status(401).body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(exceptionResponse);
     }
 
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<ExceptionResponse> handleForbidden(final ForbiddenException exception, final HttpServletRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
-                403, "[ERROR] " + exception.getMessage(), request.getRequestURI()
+                HttpStatus.FORBIDDEN.value(), "[ERROR] " + exception.getMessage(), request.getRequestURI()
         );
 
-        return ResponseEntity.status(403).body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN.value()).body(exceptionResponse);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -65,13 +66,13 @@ public class GlobalExceptionHandler {
         Throwable rootCause = exception.getRootCause();
         if (rootCause instanceof IllegalArgumentException) {
             ExceptionResponse exceptionResponse = new ExceptionResponse(
-                    400, "[ERROR] " + rootCause.getMessage(), request.getRequestURI()
+                    HttpStatus.BAD_REQUEST.value(), "[ERROR] " + rootCause.getMessage(), request.getRequestURI()
             );
             return ResponseEntity.badRequest().body(exceptionResponse);
         }
 
         ExceptionResponse exceptionResponse = new ExceptionResponse(
-                400, "[ERROR] 요청 입력이 잘못되었습니다.", request.getRequestURI()
+                HttpStatus.BAD_REQUEST.value(), "[ERROR] 요청 입력이 잘못되었습니다.", request.getRequestURI()
         );
         return ResponseEntity.badRequest().body(exceptionResponse);
     }
@@ -79,7 +80,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<ExceptionResponse> handleIllegalState(final Exception exception, final HttpServletRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
-                400, "[ERROR] " + exception.getMessage(), request.getRequestURI()
+                HttpStatus.BAD_REQUEST.value(), "[ERROR] " + exception.getMessage(), request.getRequestURI()
         );
 
         return ResponseEntity.badRequest().body(exceptionResponse);
