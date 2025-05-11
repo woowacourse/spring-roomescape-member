@@ -114,7 +114,7 @@ public class ThemeDAO implements ThemeRepository {
         final int updateRowCount = jdbcTemplate.update(sql, params);
 
         if (updateRowCount == 0) {
-            throw new EntityNotFoundException("ReservationTime with id " + theme.getId() + " not found");
+            throw new EntityNotFoundException("Theme with id " + theme.getId() + " not found");
         }
 
         return theme;
