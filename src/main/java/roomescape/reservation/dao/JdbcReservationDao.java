@@ -32,7 +32,7 @@ public class JdbcReservationDao implements ReservationDao {
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail")),
 
-            new Member(
+            Member.of(
                     resultSet.getLong("member_id"),
                     resultSet.getString("role"),
                     resultSet.getString("name"),

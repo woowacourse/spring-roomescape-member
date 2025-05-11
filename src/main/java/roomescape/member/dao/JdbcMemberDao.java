@@ -12,7 +12,7 @@ public class JdbcMemberDao implements MemberDao {
 
     private static final RowMapper<Member> MEMBER_ROW_MAPPER =
             (resultSet, rowNumber) ->
-                    new Member(
+                    Member.of(
                             resultSet.getLong("id"),
                             resultSet.getString("role"),
                             resultSet.getString("name"),

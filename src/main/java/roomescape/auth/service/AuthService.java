@@ -80,6 +80,6 @@ public class AuthService {
     }
 
     public boolean isAdmin(final String token) {
-        return authTokenExtractor.extractMemberRoleFromToken(token).equals("Admin");
+        return authTokenExtractor.extractMemberRoleFromToken(token).equals("ADMIN");
     }
 }

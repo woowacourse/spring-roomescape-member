@@ -21,10 +21,10 @@ VALUES ('예시 3',
         'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
 INSERT INTO member(role, name, email, password)
-VALUES ('Admin', '어드민', 'admin@email.com', 'password');
+VALUES ('ADMIN', '어드민', 'admin@email.com', 'password');
 
 INSERT INTO member(role, name, email, password)
-VALUES ('User', '사용자', 'user@email.com', 'password');
+VALUES ('USER', '사용자', 'user@email.com', 'password');
 
 INSERT INTO reservation(date, time_id, theme_id, member_id)
 VALUES ('2025-04-26', 1, 1, 1);

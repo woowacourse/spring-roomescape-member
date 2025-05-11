@@ -49,7 +49,7 @@ class ReservationServiceTest {
         // given
         reservationService.addReservation(CreateReservationServiceRequest.fromUserRequestAndMember(
                 new CreateUserReservationRequest(FUTURE_DATE, 1L, 1L),
-                new Member(2L, "User", "사용자", "user@email.com", "password")));
+                Member.of(2L, "USER", "사용자", "user@email.com", "password")));
 
         final CreateReservationServiceRequest duplicated = new CreateReservationServiceRequest(FUTURE_DATE, 1L,
                 1L, 2L);

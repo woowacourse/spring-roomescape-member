@@ -17,7 +17,7 @@ class ReservationTest {
     private static final LocalDate DATE = LocalDate.now().plusDays(1);
     private static final ReservationTime RESERVATION_TIME = new ReservationTime(1L, LocalTime.of(10, 0));
     private static final Theme THEME = new Theme(1L, "우테코", "미션 2는 방탈출 사용자 예약", "url");
-    private static final Member MEMBER = new Member(1L, "User", "라젤", "razel@woowa.com", "password");
+    private static final Member MEMBER = Member.of(1L, "USER", "라젤", "razel@woowa.com", "password");
 
     @DisplayName("예약 생성시, 멤버가 빈 값이면 예외를 던진다")
     @Test

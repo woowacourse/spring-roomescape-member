@@ -11,13 +11,13 @@ public class Member {
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
     private final long id;
-    private final String role;
+    private final Role role;
     private final String name;
     private final String email;
     private final String password;
 
     public Member(final long id,
-                  final String role,
+                  final Role role,
                   final String name,
                   final String email,
                   final String password) {
@@ -30,22 +30,26 @@ public class Member {
         this.password = password;
     }
 
+    public static Member of(long id, String role, String name, String email, String password) {
+        return new Member(id, Role.valueOf(role), name, email, password);
+    }
+
     public void validateRightPassword(final String inputPassword) {
         if (!password.equals(inputPassword)) {
             throw new AuthorizationException("비밀 번호가 옳지 않습니다");
         }
     }
 
-    private void validateInvalidInput(final String role, final String name,
+    private void validateInvalidInput(final Role role, final String name,
                                       final String email, final String password) {
         validateNotNull(role, name, email, password);
-        validateValidLength(role, name, email, password);
+        validateValidLength(name, email, password);
         validateEmail(email);
     }
 
-    private void validateNotNull(final String role, final String name,
+    private void validateNotNull(final Role role, final String name,
                                  final String email, final String password) {
-        if (role == null || role.isBlank()) {
+        if (role == null) {
             throw new InvalidInputException("멤버 역할은 빈 값이 입력될 수 없습니다");
         }
         if (name == null || name.isBlank()) {
@@ -59,11 +63,7 @@ public class Member {
         }
     }
 
-    private void validateValidLength(final String role, final String name,
-                                     final String email, final String password) {
-        if (role.length() > MAX_LENGTH) {
-            throw new InvalidInputException("멤버 역할은 255자를 초과할 수 없습니다");
-        }
+    private void validateValidLength(final String name, final String email, final String password) {
         if (name.length() > MAX_LENGTH) {
             throw new InvalidInputException("멤버 명은 255자를 초과할 수 없습니다");
         }
@@ -85,7 +85,7 @@ public class Member {
         return id;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 

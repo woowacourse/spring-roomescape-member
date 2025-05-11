@@ -32,7 +32,7 @@ public class JdbcReservationDaoTest {
         final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         final Theme theme = new Theme(1L, "예시 1", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        final Member member = new Member(2L, "User", "사용자", "user@email.com", "password");
+        final Member member = Member.of(2L, "USER", "사용자", "user@email.com", "password");
         final Reservation reservation = new Reservation(LocalDate.now().plusDays(1), reservationTime, theme, member);
 
         // when
