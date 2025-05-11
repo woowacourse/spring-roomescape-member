@@ -22,7 +22,7 @@ public class ThemeService {
         Theme newTheme = request.toEntity();
         themeRepository.findByName(newTheme.getName())
                 .ifPresent(theme -> {
-                    throw new ConflictException("중복되는 테마가 존재합니다.");
+                    throw new ConflictException("이미 존재하는 테마 이름입니다.");
                 });
         Theme saved = themeRepository.save(newTheme);
         return ThemeCreateResponse.from(saved);
@@ -47,7 +47,7 @@ public class ThemeService {
     public void deleteTheme(Long id) {
         boolean deleted = themeRepository.deleteById(id);
         if (!deleted) {
-            throw new NotFoundException("존재하지 않는 id 입니다.");
+            throw new NotFoundException("존재하지 않는 테마입니다.");
         }
     }
 }
