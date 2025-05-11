@@ -27,7 +27,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         var optionalToken = ControllerSupports.findCookieValueByKey(request, "token");
         return optionalToken
             .filter(tokenProvider::isValidToken)
-            .map(tokenProvider::getPayload)
+            .map(tokenProvider::extractAuthenticationInfo)
             .map(AuthenticationInfo::isAdmin)
             .orElse(false);
     }

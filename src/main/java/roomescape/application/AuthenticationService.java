@@ -31,7 +31,7 @@ public class AuthenticationService {
         if (!isValidToken) {
             throw new AuthorizationException("토큰이 만료되었거나 유효하지 않습니다.");
         }
-        var id = tokenProvider.getIdentifier(token);
+        var id = tokenProvider.extractId(token);
         return userRepository.findById(id).orElseThrow(() -> new AuthorizationException("사용자 정보가 없습니다. 다시 로그인 해주세요."));
     }
 }

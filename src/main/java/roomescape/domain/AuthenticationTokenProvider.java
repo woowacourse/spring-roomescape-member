@@ -4,9 +4,9 @@ public interface AuthenticationTokenProvider {
 
     String createToken(AuthenticationInfo authenticationInfo);
 
-    long getIdentifier(String token);
+    long extractId(String token);
 
-    AuthenticationInfo getPayload(String token);
+    AuthenticationInfo extractAuthenticationInfo(String token);
 
     boolean isValidToken(String token);
 }

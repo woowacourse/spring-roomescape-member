@@ -14,13 +14,13 @@ public class DummyTokenProvider implements AuthenticationTokenProvider {
     }
 
     @Override
-    public long getIdentifier(final String token) {
-        var authenticationInfo = getPayload(token);
+    public long extractId(final String token) {
+        var authenticationInfo = extractAuthenticationInfo(token);
         return authenticationInfo.id();
     }
 
     @Override
-    public AuthenticationInfo getPayload(final String token) {
+    public AuthenticationInfo extractAuthenticationInfo(final String token) {
         var split = token.split(SEPARATOR);
         var id = Long.parseLong(split[0]);
         var role = UserRole.valueOf(split[1]);

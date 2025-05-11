@@ -15,7 +15,7 @@ import roomescape.domain.UserRole;
 public class JwtTokenProvider implements AuthenticationTokenProvider {
 
     private static final SecretKey SECRET_KEY = SIG.HS256.key().build();
-    private static final long EXPIRATION_DURATION = 900000;
+    private static final long EXPIRATION_DURATION_IN_MILLISECONDS = 900_000L;
 
     public String createToken(final AuthenticationInfo authenticationInfo) {
         var userId = String.valueOf(authenticationInfo.id());
@@ -25,23 +25,22 @@ public class JwtTokenProvider implements AuthenticationTokenProvider {
             .add("role", userRole)
             .build();
         Date now = new Date();
-        Date validity = new Date(now.getTime() + EXPIRATION_DURATION);
+        Date validity = new Date(now.getTime() + EXPIRATION_DURATION_IN_MILLISECONDS);
 
         return Jwts.builder()
                 .claims(claims)
-                .issuedAt(now)
                 .expiration(validity)
                 .signWith(SECRET_KEY)
                 .compact();
     }
 
     @Override
-    public long getIdentifier(final String token) {
-        var authenticationInfo = getPayload(token);
+    public long extractId(final String token) {
+        var authenticationInfo = extractAuthenticationInfo(token);
         return authenticationInfo.id();
     }
 
-    public AuthenticationInfo getPayload(final String token) {
+    public AuthenticationInfo extractAuthenticationInfo(final String token) {
         var payload = Jwts.parser()
             .verifyWith(SECRET_KEY)
             .build()
