@@ -14,10 +14,6 @@ import roomescape.member.service.MemberService;
 import roomescape.member.service.dto.LoginMemberInfo;
 import roomescape.member.service.dto.MemberLoginCommand;
 
-/**
- * TODO
- * 로그인 관련과 Member 리소스 관련 Controller 분리?
- */
 @RestController
 public class MemberController {
 
@@ -29,10 +25,6 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    /**
-     * TODO
-     * 이미 쿠키에 토큰이 존재한다면?
-     */
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody MemberLoginCommand request) {
         String token = authService.tokenLogin(request);

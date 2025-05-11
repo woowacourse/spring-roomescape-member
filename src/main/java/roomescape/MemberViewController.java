@@ -11,10 +11,6 @@ public class MemberViewController {
         return "reservation";
     }
 
-    /**
-     * TODO
-     * Controller 분리 고민하기
-     */
     @GetMapping("/login")
     public String login() {
         return "login";

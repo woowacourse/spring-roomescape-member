@@ -75,12 +75,6 @@ public class JdbcThemeDao implements ThemeDao {
         jdbcTemplate.update(sql, parameters);
     }
 
-    /**
-     * TODO
-     * Dao가 인기 테마라는 것을 알아야할까?
-     * Dao가 예약이 없는 테마는 인기 테마가 될 수 없다는 규칙을 알아야할까?
-     * Dao는 그냥 주어진 데이터로 db와 통신하는 책임이 아닌가?
-     */
     @Override
     public List<Theme> findPopularThemes(final LocalDate from, final LocalDate to, final int count) {
         final String sql = """

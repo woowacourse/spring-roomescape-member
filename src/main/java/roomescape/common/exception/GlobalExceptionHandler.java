@@ -5,6 +5,8 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
@@ -96,8 +98,42 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(FORBIDDEN).body(errorResponse);
     }
 
+    @ExceptionHandler(ExpiredJwtException.class)
+    private ResponseEntity<ErrorResponse> handleExpiredJwtException(
+            final ExpiredJwtException e,
+            final HttpServletRequest request
+    ) {
+        System.out.println(e);
+        final String path = extractPath(request);
+        final ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                UNAUTHORIZED.value(),
+                UNAUTHORIZED.getReasonPhrase(),
+                "인증 토큰이 만료되었습니다. 다시 로그인 해주세요.",
+                path
+        );
+        return ResponseEntity.status(UNAUTHORIZED).body(errorResponse);
+    }
+
+    @ExceptionHandler(JwtException.class)
+    private ResponseEntity<ErrorResponse> handleJwtException(
+            final JwtException e,
+            final HttpServletRequest request
+    ) {
+        System.out.println(e);
+        final String path = extractPath(request);
+        final ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                BAD_REQUEST.value(),
+                BAD_REQUEST.getReasonPhrase(),
+                "인증 토큰이 유효하지 않습니다.",
+                path
+        );
+        return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
+    }
+
     @ExceptionHandler(Exception.class)
-    private ResponseEntity<ErrorResponse> handleIllegalArgumentException(
+    private ResponseEntity<ErrorResponse> handleException(
             final Exception e,
             final HttpServletRequest request
     ) {
