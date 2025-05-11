@@ -1,5 +1,6 @@
 package roomescape.member.repository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -79,5 +80,14 @@ public class MemberDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public List<Member> findAll() {
+        String sql = """
+                SELECT id, name, email, password
+                FROM member
+                """;
+
+        return jdbcTemplate.query(sql, memberRowMapper);
     }
 }
