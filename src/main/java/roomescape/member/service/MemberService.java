@@ -40,7 +40,7 @@ public class MemberService {
                 .getBody().getSubject());
         Member findMember = memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        return MemberSearchResponse.from(findMember.getName());
+        return MemberSearchResponse.from(findMember);
     }
 
     public Member searchLoginMember(String token) {
@@ -56,7 +56,7 @@ public class MemberService {
     public SignupResponse add(SignupRequest request) {
         Member member = request.toMemberWithoutId();
         Long id = memberRepository.saveAndReturnId(member);
-        return SignupResponse.from(member.createMemberWithId(id).getName());
+        return SignupResponse.from(member.createMemberWithId(id));
     }
 
 }

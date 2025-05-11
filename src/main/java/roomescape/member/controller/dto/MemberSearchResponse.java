@@ -1,9 +1,11 @@
 package roomescape.member.controller.dto;
 
-public record MemberSearchResponse(String name) {
+import roomescape.member.domain.Member;
 
-    public static MemberSearchResponse from(String name) {
-        return new MemberSearchResponse(name);
+public record MemberSearchResponse(Long id, String name) {
+
+    public static MemberSearchResponse from(Member member) {
+        return new MemberSearchResponse(member.getId(), member.getName());
     }
 
 }

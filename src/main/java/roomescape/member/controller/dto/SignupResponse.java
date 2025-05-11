@@ -1,9 +1,11 @@
 package roomescape.member.controller.dto;
 
-public record SignupResponse(String name) {
+import roomescape.member.domain.Member;
 
-    public static SignupResponse from(String name) {
-        return new SignupResponse(name);
+public record SignupResponse(Long id, String name) {
+
+    public static SignupResponse from(Member member) {
+        return new SignupResponse(member.getId(), member.getName());
     }
 
 }
