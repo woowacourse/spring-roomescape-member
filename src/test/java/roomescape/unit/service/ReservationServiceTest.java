@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,7 +61,7 @@ class ReservationServiceTest {
         reservationRepository.create(reservation1);
         // when
         List<ReservationResponse> all = reservationService.findReservations(
-                new ReservationCondition(null, null, null, null));
+                new ReservationCondition(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
 
         // then
         assertThat(all.size()).isEqualTo(1);
@@ -83,7 +84,7 @@ class ReservationServiceTest {
 
         // then
         List<ReservationResponse> all = reservationService.findReservations(
-                new ReservationCondition(null, null, null, null));
+                new ReservationCondition(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
         assertThat(all.size()).isEqualTo(1);
         assertThat(all.getLast().memberName()).isEqualTo("name1");
     }
@@ -105,7 +106,7 @@ class ReservationServiceTest {
 
         // then
         List<ReservationResponse> all = reservationService.findReservations(
-                new ReservationCondition(null, null, null, null));
+                new ReservationCondition(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
         assertThat(all.size()).isEqualTo(0);
     }
 

@@ -1,6 +1,12 @@
 package roomescape.dto.request;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
-public record ReservationCondition(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+public record ReservationCondition(
+        Optional<Long> themeId,
+        Optional<Long> memberId,
+        Optional<LocalDate> dateFrom,
+        Optional<LocalDate> dateTo
+) {
 }

@@ -195,15 +195,14 @@ class JdbcReservationRepositoryTest {
         Reservation savedReservation = reservationRepository.create(
                 Reservation.createWithoutId(savedMember, LocalDate.of(2025, 1, 1), savedTime, saveTheme)
         );
-        // when
-        List<Reservation> foundReservation = reservationRepository.findByCondition(
-                new ReservationCondition(
-                        saveTheme.getId(),
-                        savedMember.getId(),
-                        LocalDate.of(2025, 1, 1),
-                        LocalDate.of(2025, 1, 1)
-                )
+        ReservationCondition condition = new ReservationCondition(
+                Optional.ofNullable(saveTheme.getId()),
+                Optional.ofNullable(savedMember.getId()),
+                Optional.of(LocalDate.of(2025, 1, 1)),
+                Optional.of(LocalDate.of(2025, 1, 1))
         );
+        // when
+        List<Reservation> foundReservation = reservationRepository.findByCondition(condition);
         // then
         assertThat(foundReservation).hasSize(1);
     }

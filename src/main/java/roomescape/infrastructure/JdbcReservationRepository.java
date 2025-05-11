@@ -248,18 +248,18 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """;
         StringBuilder sqlBuilder = new StringBuilder(sql);
         Map<String, Object> parameter = new HashMap<>();
-        if (cond.memberId() != null) {
+        if (cond.memberId().isPresent()) {
             sqlBuilder.append("AND member_id = :memberId\n");
-            parameter.put("memberId", cond.memberId());
+            parameter.put("memberId", cond.memberId().get());
         }
-        if (cond.themeId() != null) {
+        if (cond.themeId().isPresent()) {
             sqlBuilder.append("AND theme_id = :themeId\n");
-            parameter.put("themeId", cond.themeId());
+            parameter.put("themeId", cond.themeId().get());
         }
-        if (cond.dateFrom() != null && cond.dateTo() != null) {
+        if (cond.dateFrom().isPresent() && cond.dateTo().isPresent()) {
             sqlBuilder.append("AND date BETWEEN :dateFrom AND :dateTo\n");
-            parameter.put("dateFrom", cond.dateFrom());
-            parameter.put("dateTo", cond.dateTo());
+            parameter.put("dateFrom", cond.dateFrom().get());
+            parameter.put("dateTo", cond.dateTo().get());
         }
         return jdbcTemplate.query(sqlBuilder.toString(), parameter, RESERVATION_ROW_MAPPER);
     }

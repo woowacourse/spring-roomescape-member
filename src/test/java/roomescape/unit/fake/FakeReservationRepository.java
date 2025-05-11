@@ -65,20 +65,20 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findByCondition(ReservationCondition cond) {
         List<Reservation> filteredReservations = new ArrayList<>(fakeReservations);
-        if (cond.memberId() != null) {
-            filteredReservations = fakeReservations.stream()
-                    .filter(reservation -> cond.memberId().equals(reservation.getMember().getId()))
+        if (cond.memberId().isPresent()) {
+            filteredReservations = filteredReservations.stream()
+                    .filter(reservation -> cond.memberId().get().equals(reservation.getMember().getId()))
                     .toList();
         }
-        if (cond.themeId() != null) {
-            filteredReservations = fakeReservations.stream()
-                    .filter(reservation -> cond.themeId().equals(reservation.getTheme().getId()))
+        if (cond.themeId().isPresent()) {
+            filteredReservations = filteredReservations.stream()
+                    .filter(reservation -> cond.themeId().get().equals(reservation.getTheme().getId()))
                     .toList();
         }
-        if (cond.dateFrom() != null && cond.dateTo() != null) {
-            filteredReservations = fakeReservations.stream()
-                    .filter(reservation -> reservation.getDate().isAfter(cond.dateFrom().minusDays(1)))
-                    .filter(reservation -> reservation.getDate().isBefore(cond.dateTo().plusDays(1)))
+        if (cond.dateFrom().isPresent() && cond.dateTo().isPresent()) {
+            filteredReservations = filteredReservations.stream()
+                    .filter(reservation -> reservation.getDate().isAfter(cond.dateFrom().get().minusDays(1)))
+                    .filter(reservation -> reservation.getDate().isBefore(cond.dateTo().get().plusDays(1)))
                     .toList();
         }
         return filteredReservations;
