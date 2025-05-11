@@ -37,7 +37,7 @@ public class LoginService {
         Member member = memberService.findByEmail(request.email());
         validateMemberSamePassword(request, member);
 
-        return jwtTokenManager.crateToken(member.getId(), "ADMIN");
+        return jwtTokenManager.crateToken(member.getId(), "MEMBER");
     }
 
     private static void validateAdminSamePassword(final LoginRequest request, final Admin admin) {
