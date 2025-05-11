@@ -1,11 +1,10 @@
-package roomescape.configuration;
+package roomescape.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.JwtProvider;
 import roomescape.dto.request.LoginCheckRequest;
 import roomescape.entity.Role;
 import roomescape.service.MemberService;
