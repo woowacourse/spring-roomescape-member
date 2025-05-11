@@ -71,7 +71,7 @@ class JwtProviderTest {
         //then
         assertAll(
                 () -> assertThat(actual.email()).isEqualTo(jwtRequest.email()),
-                () -> assertThat(actual.role()).isEqualTo(actual.role()),
+                () -> assertThat(actual.role()).isEqualTo(jwtRequest.role()),
                 () -> assertThat(roundOfMill(actual.issuedAt())).isEqualTo(roundOfMill(jwtRequest.issuedAt()))
         );
     }
