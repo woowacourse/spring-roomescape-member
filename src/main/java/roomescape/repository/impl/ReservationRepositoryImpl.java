@@ -43,4 +43,9 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         return reservationDao.findById(id).
             orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 ID 입니다."));
     }
+
+    @Override
+    public List<Reservation> findOf(String startDate, String endDate, Long memberId, Long themeId) {
+        return reservationDao.findOf(startDate, endDate, memberId, themeId);
+    }
 }

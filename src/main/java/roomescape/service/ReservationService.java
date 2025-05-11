@@ -93,4 +93,17 @@ public class ReservationService {
             throw new InvalidReservationException("중복된 날짜와 시간을 예약할 수 없습니다.");
         }
     }
+
+    public List<ReservationResponseDto> getAllReservationsOf(
+        String dateFrom,
+        String dateTo,
+        Long memberId,
+        Long themeId
+    ) {
+        List<Reservation> reservations = reservationRepository.findOf(
+            dateFrom, dateTo, memberId, themeId);
+        return reservations.stream()
+            .map(ReservationResponseDto::from)
+            .toList();
+    }
 }

@@ -170,4 +170,41 @@ public class JdbcReservationDaoImpl implements ReservationDao {
         String query = "select exists (select 1 from reservation where date = ? AND time_id = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, date.getDate(), timeId);
     }
+
+    @Override
+    public List<Reservation> findOf(String dateFrom, String dateTo, Long memberId, Long themeId) {
+        String query = """
+            select
+                        m.name as member_name,
+                        m.id as member_id,
+                        m.role as member_role,
+                        m.email as member_email,
+                        m.password as member_password,
+                        r.id as reservation_id,
+                        r.date as reservation_date,
+                        rt.id as time_id,
+                        rt.start_at,
+                        t.id as theme_id,
+                        t.name as theme_name,
+                        t.description as theme_description,
+                        t.thumbnail as theme_thumbnail
+            from reservation r
+            inner join member m on r.member_id = m.id
+            inner join reservation_time rt on r.time_id = rt.id
+            inner join theme t on r.theme_id = t.id          
+            where member_id = ?
+            AND theme_id = ? 
+            AND r.date between ? AND ?
+            """;
+        return jdbcTemplate.query(query,
+            (resultSet, rowNum) -> {
+                return new Reservation(
+                    resultSet.getLong("id"),
+                    createMember(resultSet),
+                    createReservationDate(resultSet),
+                    createReservationTime(resultSet),
+                    createTheme(resultSet)
+                );
+            }, memberId, themeId, dateFrom, dateTo);
+    }
 }

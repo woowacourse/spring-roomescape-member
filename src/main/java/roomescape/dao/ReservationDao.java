@@ -20,4 +20,6 @@ public interface ReservationDao {
     boolean existReservationOf(ReservationDate date, Long timeId);
 
     Optional<Reservation> findById(Long id);
+
+    List<Reservation> findOf(String dateFrom, String dateTo, Long memberId, Long themeId);
 }

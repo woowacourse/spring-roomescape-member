@@ -16,4 +16,5 @@ public interface ReservationRepository {
 
     Reservation findById(Long id);
 
+    List<Reservation> findOf(String dateFrom, String dateTo, Long memberId, Long themeId);
 }

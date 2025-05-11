@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Member;
@@ -28,6 +29,15 @@ public class ReservationController {
     @GetMapping("/reservations")
     public List<ReservationResponseDto> readAllReservations() {
         return reservationService.getAllReservations();
+    }
+
+    @GetMapping("/members/{memberId}/themes/{themeId}/reservations")
+    public List<ReservationResponseDto> readAllReservationsOf(
+        @RequestParam String dateFrom,
+        @RequestParam String dateTo,
+        @PathVariable Long memberId,
+        @PathVariable Long themeId) {
+        return reservationService.getAllReservationsOf(dateFrom, dateTo, memberId, themeId);
     }
 
     @PostMapping("/reservations")
