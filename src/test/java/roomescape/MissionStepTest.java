@@ -22,7 +22,7 @@ import roomescape.common.Role;
 import roomescape.common.util.JwtProvider;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.dto.reservation.ReservationResponseDto;
+import roomescape.controller.reservation.dto.ReservationResponseDto;
 import roomescape.model.Member;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
