@@ -31,7 +31,7 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    private void createCookie(final HttpServletResponse response, final String accessToken) {
+    private void createCookie(HttpServletResponse response, String accessToken) {
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
