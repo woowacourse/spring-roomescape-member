@@ -4,11 +4,11 @@ import java.util.Objects;
 
 public class Member {
 
-    private Long id;
-    private MemberName name;
-    private Email email;
-    private Password password;
-    private Role role;
+    private final Long id;
+    private final MemberName name;
+    private final Email email;
+    private final Password password;
+    private final Role role;
 
     public Member(final Long id, final MemberName name, final Email email, final Password password, final Role role) {
         this.id = id;
