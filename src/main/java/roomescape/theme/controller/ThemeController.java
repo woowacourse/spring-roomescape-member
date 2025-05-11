@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.RoleRequired;
+import roomescape.member.entity.Role;
 import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
@@ -26,6 +28,7 @@ public class ThemeController {
     }
 
     @PostMapping("/themes")
+    @RoleRequired(Role.ADMIN)
     public ResponseEntity<ThemeResponse> postTheme(@RequestBody ThemeRequest request) {
         ThemeResponse themeResponse = service.createTheme(request);
         URI location = URI.create("/themes/" + themeResponse.id());
@@ -38,6 +41,7 @@ public class ThemeController {
     }
 
     @DeleteMapping("/themes/{id}")
+    @RoleRequired(Role.ADMIN)
     public ResponseEntity<Void> deleteTheme(@PathVariable long id) {
         service.deleteThemeById(id);
         return ResponseEntity.noContent().build();

@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.RoleRequired;
+import roomescape.member.entity.Role;
 import roomescape.time.dto.ReservationTimeRequest;
 import roomescape.time.dto.ReservationTimeResponse;
 import roomescape.time.service.ReservationTimeService;
@@ -24,6 +26,7 @@ public class ReservationTimeController {
     }
 
     @PostMapping("/times")
+    @RoleRequired(Role.ADMIN)
     public ResponseEntity<ReservationTimeResponse> postReservationTime(@RequestBody ReservationTimeRequest request) {
         ReservationTimeResponse reservationTimeResponse = service.createReservationTime(request);
         URI location = URI.create("/times/" + reservationTimeResponse.id());
@@ -36,6 +39,7 @@ public class ReservationTimeController {
     }
 
     @DeleteMapping("/times/{id}")
+    @RoleRequired(Role.ADMIN)
     public ResponseEntity<Void> deleteReservationTime(@PathVariable long id) {
         service.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
