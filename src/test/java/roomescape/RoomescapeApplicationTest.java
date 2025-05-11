@@ -140,8 +140,7 @@ class RoomescapeApplicationTest {
     }
 
     private int getThemesCount() {
-        int themesCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
-        return themesCount;
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
     }
 
     @DisplayName("토큰으로 로그인 성공")
