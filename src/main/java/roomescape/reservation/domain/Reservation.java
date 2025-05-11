@@ -11,6 +11,7 @@ public record Reservation(Long id, Member member, LocalDate date, Time time, The
 
     public static Reservation createBeforeSaved(Member member, LocalDate date, Time time, Theme theme) {
         return new Reservation(NOT_SAVED_ID, member, date, time, theme);
+]]
     }
 
     public Reservation {
