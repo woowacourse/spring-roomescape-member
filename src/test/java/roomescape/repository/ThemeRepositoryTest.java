@@ -11,17 +11,18 @@ import roomescape.dao.FakeMemberDaoImpl;
 import roomescape.dao.FakeReservationDaoImpl;
 import roomescape.dao.FakeReservationTimeDaoImpl;
 import roomescape.dao.FakeThemeDaoImpl;
-import roomescape.dao.MemberDao;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.ThemeDao;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.exception.InvalidReservationException;
-import roomescape.repository.impl.ThemeRepositoryImpl;
+import roomescape.domain.member.dao.MemberDao;
+import roomescape.domain.reservation.dao.ReservationDao;
+import roomescape.domain.reservationtime.dao.ReservationTimeDao;
+import roomescape.domain.theme.dao.ThemeDao;
+import roomescape.domain.member.model.Member;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationDate;
+import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.theme.model.Theme;
+import roomescape.domain.theme.repository.ThemeRepository;
+import roomescape.global.exception.InvalidReservationException;
+import roomescape.domain.theme.repository.ThemeRepositoryImpl;
 
 public class ThemeRepositoryTest {
 

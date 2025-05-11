@@ -5,7 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.domain.Member;
+import roomescape.domain.member.model.Member;
+import roomescape.domain.member.dao.MemberDao;
 
 public class FakeMemberDaoImpl implements MemberDao {
 

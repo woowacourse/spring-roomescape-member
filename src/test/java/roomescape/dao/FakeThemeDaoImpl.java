@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Theme;
+import roomescape.domain.theme.model.Theme;
+import roomescape.domain.theme.dao.ThemeDao;
 
 @Repository
 public class FakeThemeDaoImpl implements ThemeDao {

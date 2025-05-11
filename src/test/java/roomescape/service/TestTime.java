@@ -1,7 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDateTime;
-import roomescape.service.nowdate.CurrentDateTime;
+import roomescape.domain.currentdate.CurrentDateTime;
 
 public class TestTime implements CurrentDateTime {
 

@@ -5,10 +5,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import roomescape.dao.FakeReservationDaoImpl;
 import roomescape.dao.FakeReservationTimeDaoImpl;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
+import roomescape.domain.reservation.dao.ReservationDao;
+import roomescape.domain.reservationtime.dao.ReservationTimeDao;
 import roomescape.service.TestTime;
-import roomescape.service.nowdate.CurrentDateTime;
+import roomescape.domain.currentdate.CurrentDateTime;
 
 @TestConfiguration
 public class TestConfig {

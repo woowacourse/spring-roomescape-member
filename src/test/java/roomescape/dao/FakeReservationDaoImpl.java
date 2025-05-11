@@ -5,8 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationDate;
+import roomescape.domain.reservation.dao.ReservationDao;
 
 public class FakeReservationDaoImpl implements ReservationDao {
 

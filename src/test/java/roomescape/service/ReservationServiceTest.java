@@ -1,12 +1,13 @@
 package roomescape.service;
 
 
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.ThemeDao;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
+import roomescape.domain.reservation.dao.ReservationDao;
+import roomescape.domain.reservation.service.ReservationService;
+import roomescape.domain.reservationtime.dao.ReservationTimeDao;
+import roomescape.domain.theme.dao.ThemeDao;
+import roomescape.domain.reservation.repository.ReservationRepository;
+import roomescape.domain.reservationtime.repository.ReservationTimeRepository;
+import roomescape.domain.theme.repository.ThemeRepository;
 
 public class ReservationServiceTest {
 

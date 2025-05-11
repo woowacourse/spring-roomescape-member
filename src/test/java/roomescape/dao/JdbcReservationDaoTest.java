@@ -13,11 +13,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.member.model.Member;
+import roomescape.domain.member.dao.MemberDao;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationDate;
+import roomescape.domain.reservation.dao.ReservationDao;
+import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.reservationtime.dao.ReservationTimeDao;
+import roomescape.domain.theme.model.Theme;
+import roomescape.domain.theme.dao.ThemeDao;
 
 @Sql(scripts = {"/test-schema.sql"})
 @SpringBootTest
