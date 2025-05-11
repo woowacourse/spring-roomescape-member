@@ -8,28 +8,36 @@ public final class Member {
     private final MemberName memberName;
     private final MemberEmail email;
     private final String password;
+    private final Role role;
 
-    public Member(final Long id, final MemberName memberName, final MemberEmail email, final String password) {
-        validateNotNull(memberName, email, password);
+    private Member(final Long id, final MemberName memberName,
+                   final MemberEmail email, final String password, final Role role) {
+        validateNotNull(memberName, email, password, role);
         this.id = id;
         this.memberName = memberName;
         this.email = email;
         this.password = password;
+        this.role = role;
+    }
+
+    public Member(final Long id, final MemberName memberName, final MemberEmail email, final String password) {
+        this(id, memberName, email, password, Role.USER);
     }
 
     public Member(final long id, final String name, final String email, final String password) {
-        this(id, new MemberName(name), new MemberEmail(email), password);
+        this(id, new MemberName(name), new MemberEmail(email), password, Role.USER);
     }
 
     public static Member register(final MemberName memberName, final MemberEmail email, final String password) {
-        return new Member(null, memberName, email, password);
+        return new Member(null, memberName, email, password, Role.USER);
     }
 
     public Member withId(final long id) {
-        return new Member(id, memberName, email, password);
+        return new Member(id, memberName, email, password, Role.USER);
     }
 
-    private void validateNotNull(final MemberName memberName, final MemberEmail email, final String password) {
+    private void validateNotNull(final MemberName memberName, final MemberEmail email,
+                                 final String password, final Role role) {
         if (memberName == null) {
             throw new IllegalArgumentException("이름을 입력해야 합니다.");
         }
@@ -38,6 +46,9 @@ public final class Member {
         }
         if (password == null) {
             throw new IllegalArgumentException("비밀번호를 입력해야 합니다.");
+        }
+        if (role == null) {
+            throw new IllegalArgumentException("권한을 입력해야 합니다.");
         }
     }
 
@@ -63,6 +74,10 @@ public final class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     @Override

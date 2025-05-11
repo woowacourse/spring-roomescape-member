@@ -32,6 +32,8 @@ INSERT INTO member(name, email, password)
 VALUES ('사용자2', 'bbb@gmail.com', '1234');
 INSERT INTO member(name, email, password)
 VALUES ('사용자3', 'ccc@gmail.com', '1234');
+INSERT INTO member(name, email, password, role)
+VALUES ('어드민', 'admin@gmail.com', '1234', 'ADMIN');
 
 INSERT INTO reservation(date, member_id, time_id, theme_id)
 VALUES ('2025-04-30', 1, 1, 11);
