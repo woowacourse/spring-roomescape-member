@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,6 +16,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
+import roomescape.error.NotFoundException;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -157,7 +157,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         final String sql = "delete from reservation where id = ?";
         final int rows = template.update(sql, id);
         if (rows == 0) {
-            throw new NoSuchElementException("삭제하려고 하는 예약이 존재하지 않습니다. " + id);
+            throw new NotFoundException("삭제하려고 하는 예약이 존재하지 않습니다. " + id);
         }
     }
 

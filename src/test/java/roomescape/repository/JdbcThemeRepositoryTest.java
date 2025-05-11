@@ -6,137 +6,135 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
-import roomescape.dto.response.PopularThemeResponse;
 import roomescape.error.NotFoundException;
 
+@JdbcTest
+@Import({
+        JdbcThemeRepository.class,
+        JdbcReservationRepository.class,
+        JdbcMemberRepository.class,
+        JdbcReservationTimeRepository.class
+})
 class JdbcThemeRepositoryTest {
 
-    private EmbeddedDatabase db;
+    @Autowired
     private JdbcThemeRepository sut;
-    private JdbcReservationRepository jdbcReservationRepository;
+
+    @Autowired
+    private JdbcReservationRepository reservationRepository;
+
+    @Autowired
+    private JdbcMemberRepository memberRepository;
+
+    @Autowired
+    private JdbcReservationTimeRepository timeRepository;
+
+    private Member savedMember;
+    private ReservationTime savedTime;
 
     @BeforeEach
     void setUp() {
-        db = new EmbeddedDatabaseBuilder()
-                .setType(EmbeddedDatabaseType.H2)
-                .addScript("classpath:schema.sql")
-                .addScript("classpath:data.sql")
-                .build();
-        sut = new JdbcThemeRepository(db);
-        jdbcReservationRepository = new JdbcReservationRepository(db);
+        savedMember = memberRepository.save(new Member(null, "홍길동", "hong@example.com", "pw123", Role.USER));
+        savedTime = timeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
     }
 
-    @AfterEach
-    void tearDown() {
-        db.shutdown();
-    }
-
+    @DisplayName("테마를 올바르게 저장한다")
     @Test
-    void 테마를_올바르게_저장한다() {
+    void save() {
         // given
-        Theme theme = new Theme("테마이름", "테마설명", "테마썸네일");
+        var theme = new Theme("테마이름", "테마설명", "테마썸네일");
 
         // when
-        Theme savedTheme = sut.save(theme);
+        var saved = sut.save(theme);
 
         // then
         assertSoftly(soft -> {
-            soft.assertThat(savedTheme.getId()).isNotNull();
-            soft.assertThat(savedTheme.getName()).isEqualTo("테마이름");
-            soft.assertThat(savedTheme.getDescription()).isEqualTo("테마설명");
-            soft.assertThat(savedTheme.getThumbnail()).isEqualTo("테마썸네일");
+            soft.assertThat(saved.getId()).isNotNull();
+            soft.assertThat(saved.getName()).isEqualTo("테마이름");
+            soft.assertThat(saved.getDescription()).isEqualTo("테마설명");
+            soft.assertThat(saved.getThumbnail()).isEqualTo("테마썸네일");
         });
     }
 
+    @DisplayName("모든 테마를 조회한다")
     @Test
-    void 모든_테마를_조회한다() {
+    void findAll() {
+        // given
+        sut.save(new Theme("테마1", "설명1", "썸네일1"));
+        sut.save(new Theme("테마2", "설명2", "썸네일2"));
+
         // when
-        List<Theme> themes = sut.findAll();
+        var founds = sut.findAll();
 
         // then
-        assertThat(themes).hasSize(2);
+        assertThat(founds).hasSize(2);
     }
 
+    @DisplayName("인기 있는 테마 10개를 조회한다")
     @Test
-    void 인기있는_테마_10개를_조회한다() {
+    void findAllPopular() {
         // given
-        jdbcReservationRepository.save(
-                new Reservation("예약1", LocalDate.now().minusDays(3), new ReservationTime(1L, LocalTime.of(10, 0)),
-                        new Theme(1L, "이름1", "썸네일1", "설명1")));
-        jdbcReservationRepository.save(
-                new Reservation("예약2", LocalDate.now().minusDays(3), new ReservationTime(2L, LocalTime.of(11, 0)),
-                        new Theme(1L, "이름1", "썸네일1", "설명1")));
-        jdbcReservationRepository.save(
-                new Reservation("예약3", LocalDate.now().minusDays(3), new ReservationTime(1L, LocalTime.of(10, 0)),
-                        new Theme(2L, "이름2", "썸네일2", "설명2")));
+        var theme1 = sut.save(new Theme("이름1", "설명1", "썸네일1"));
+        var theme2 = sut.save(new Theme("이름2", "설명2", "썸네일2"));
+
+        reservationRepository.save(new Reservation(savedMember, LocalDate.now().minusDays(3), savedTime, theme1));
+        reservationRepository.save(new Reservation(savedMember, LocalDate.now().minusDays(4), savedTime, theme1));
+        reservationRepository.save(new Reservation(savedMember, LocalDate.now().minusDays(3), savedTime, theme2));
 
         // when
-        List<PopularThemeResponse> allPopular = sut.findAllPopular();
+        var popularThemes = sut.findAllPopular();
 
         // then
         assertSoftly(soft -> {
-                    soft.assertThat(allPopular).hasSize(2);
-                    soft.assertThat(allPopular.get(0).name()).isEqualTo("이름1");
-                    soft.assertThat(allPopular.get(1).name()).isEqualTo("이름2");
-                }
-        );
+            soft.assertThat(popularThemes.get(0).name()).isEqualTo("이름1");
+            soft.assertThat(popularThemes.get(1).name()).isEqualTo("이름2");
+        });
     }
 
+    @DisplayName("id에 알맞은 테마를 삭제한다")
     @Test
-    void id에_알맞은_테마을_삭제한다() {
+    void deleteById() {
         // given
-        Long id = 1L;
+        var theme = sut.save(new Theme("테마1", "설명1", "썸네일1"));
 
         // when
-        sut.deleteById(id);
-        List<Theme> themes = sut.findAll();
+        sut.deleteById(theme.getId());
+        var founds = sut.findById(theme.getId());
 
         // then
-        assertThat(themes).hasSize(1)
-                .extracting(Theme::getId)
-                .doesNotContain(1L);
+        assertThat(founds).isEmpty();
     }
 
+    @DisplayName("존재하지 않는 테마를 삭제할 때 예외 처리")
     @Test
-    void 존재하지_않는_테마를_삭제할_때_예외_처리() {
-        // then
+    void deleteById_not_found() {
+        // when & then
         assertThatThrownBy(() -> sut.deleteById(999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("삭제할 테마가 없습니다. id=999");
     }
 
+    @DisplayName("id에 알맞은 테마를 가져온다")
     @Test
-    void id에_알맞은_테마을_가져온다() {
+    void findById() {
         // given
-        Long id = 1L;
+        var theme = sut.save(new Theme("숨겨진 방", "설명", "썸네일"));
 
         // when
-        Theme theme = sut.findById(id).get();
+        var found = sut.findById(theme.getId()).get();
 
         // then
-        assertThat(theme.getId()).isEqualTo(id);
-    }
-
-    @Test
-    void 존재하지_않는_id면_빈_Optional을_반환한다() {
-        // given
-        Long invalidId = 999L;
-
-        // when
-        Optional<Theme> optionalTheme = sut.findById(invalidId);
-
-        // then
-        assertThat(optionalTheme).isEmpty();
+        assertThat(found).isEqualTo(theme);
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.response.AvailableReservationTimeResponse;
+import roomescape.error.NotFoundException;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -76,7 +77,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         final int rowsAffected = template.update(sql, id);
 
         if (rowsAffected != 1) {
-            throw new IllegalArgumentException("삭제할 예약 시간이 없습니다. id=" + id);
+            throw new NotFoundException("삭제할 예약 시간이 없습니다. id=" + id);
         }
     }
 

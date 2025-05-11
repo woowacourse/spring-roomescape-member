@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.response.AvailableReservationTimeResponse;
 import roomescape.repository.ReservationTimeRepository;
@@ -11,16 +12,22 @@ import roomescape.repository.ReservationTimeRepository;
 public class StubReservationTimeRepository implements ReservationTimeRepository {
 
     private final List<ReservationTime> data = new ArrayList<>();
+    private final AtomicLong idSequence = new AtomicLong();
 
-    public StubReservationTimeRepository(ReservationTime... times) {
-        data.addAll(List.of(times));
+    public StubReservationTimeRepository(ReservationTime... initialReservationTimes) {
+        data.addAll(List.of(initialReservationTimes));
+        long maxId = data.stream()
+                .mapToLong(ReservationTime::getId)
+                .max()
+                .orElse(0L);
+        idSequence.set(maxId);
     }
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
-        ReservationTime newTime = new ReservationTime(3L, reservationTime.getStartAt());
-        data.add(newTime);
-        return newTime;
+        ReservationTime saved = new ReservationTime(idSequence.incrementAndGet(), reservationTime.getStartAt());
+        data.add(saved);
+        return saved;
     }
 
     @Override

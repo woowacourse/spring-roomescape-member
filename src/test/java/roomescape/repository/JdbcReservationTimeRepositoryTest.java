@@ -1,126 +1,137 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
-import roomescape.dto.response.AvailableReservationTimeResponse;
+import roomescape.error.NotFoundException;
 
+@JdbcTest
+@Import({
+        JdbcReservationTimeRepository.class,
+        JdbcMemberRepository.class,
+        JdbcThemeRepository.class,
+        JdbcReservationRepository.class
+})
 class JdbcReservationTimeRepositoryTest {
 
-    private EmbeddedDatabase db;
+    @Autowired
     private JdbcReservationTimeRepository sut;
-    private JdbcReservationRepository jdbcReservationRepository;
+
+    @Autowired
+    private JdbcReservationRepository reservationRepository;
+
+    @Autowired
+    private JdbcMemberRepository memberRepository;
+
+    @Autowired
+    private JdbcThemeRepository themeRepository;
+
+    private Member savedMember;
+    private Theme savedTheme;
 
     @BeforeEach
     void setUp() {
-        db = new EmbeddedDatabaseBuilder()
-                .setType(EmbeddedDatabaseType.H2)
-                .addScript("classpath:schema.sql")
-                .addScript("classpath:data.sql")
-                .build();
-        sut = new JdbcReservationTimeRepository(db);
-        jdbcReservationRepository = new JdbcReservationRepository(db);
+        savedMember = memberRepository.save(new Member(null, "홍길동", "hong@example.com", "pw123", Role.USER));
+        savedTheme = themeRepository.save(new Theme(null, "이름1", "설명1", "썸네일1"));
     }
 
-    @AfterEach
-    void tearDown() {
-        db.shutdown();
-    }
-
+    @DisplayName("예약 시간을 올바르게 저장한다")
     @Test
-    void 예약_시간을_올바르게_저장한다() {
+    void save() {
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(11, 0));
+        var reservationTime = new ReservationTime(LocalTime.of(11, 0));
 
         // when
-        ReservationTime savedReservationTime = sut.save(reservationTime);
+        var saved = sut.save(reservationTime);
 
         // then
         assertSoftly(soft -> {
-            soft.assertThat(savedReservationTime.getId()).isNotNull();
-            soft.assertThat(savedReservationTime.getStartAt()).isEqualTo(reservationTime.getStartAt());
+            soft.assertThat(saved.getId()).isNotNull();
+            soft.assertThat(saved.getStartAt()).isEqualTo(reservationTime.getStartAt());
         });
     }
 
+    @DisplayName("모든 예약 시간을 조회한다")
     @Test
-    void 모든_예약_시간을_조회한다() {
+    void findAll() {
         // given
+        sut.save(new ReservationTime(LocalTime.of(9, 0)));
+        sut.save(new ReservationTime(LocalTime.of(10, 0)));
+
         // when
-        List<ReservationTime> reservationTimes = sut.findAll();
+        var founds = sut.findAll();
 
         // then
-        assertThat(reservationTimes).hasSize(2);
+        assertThat(founds).hasSize(2);
     }
 
+    @DisplayName("예약 가능한 모든 시간을 조회한다")
     @Test
-    void 예약가능한_모든_시간을_조회한다() {
+    void findAllAvailable() {
         // given
-        jdbcReservationRepository.save(
-                new Reservation("예약1", LocalDate.of(2999, 5, 1), new ReservationTime(1L, LocalTime.of(10, 0)),
-                        new Theme(1L, "이름1", "썸네일1", "설명1")));
-        jdbcReservationRepository.save(
-                new Reservation("예약1", LocalDate.of(2999, 5, 1), new ReservationTime(2L, LocalTime.of(11, 0)),
-                        new Theme(1L, "이름1", "썸네일1", "설명1")));
+        var time1 = sut.save(new ReservationTime(LocalTime.of(10, 0)));
+        var time2 = sut.save(new ReservationTime(LocalTime.of(11, 0)));
+
+        reservationRepository.save(new Reservation(null, savedMember, LocalDate.of(2999, 5, 1), time1, savedTheme));
+        reservationRepository.save(new Reservation(null, savedMember, LocalDate.of(2999, 5, 1), time2, savedTheme));
 
         // when
-        List<AvailableReservationTimeResponse> allAvailable = sut.findAllAvailable(
-                LocalDate.of(2999, 5, 1), 1L);
+        var availableTimes = sut.findAllAvailable(LocalDate.of(2999, 5, 1), savedTheme.getId());
 
         // then
         assertSoftly(soft -> {
-                    soft.assertThat(allAvailable).hasSize(2);
-                    soft.assertThat(allAvailable.get(0).alreadyBooked()).isTrue();
-                    soft.assertThat(allAvailable.get(1).alreadyBooked()).isTrue();
-                }
-        );
+            soft.assertThat(availableTimes.get(0).alreadyBooked()).isTrue();
+            soft.assertThat(availableTimes.get(1).alreadyBooked()).isTrue();
+        });
     }
 
+    @DisplayName("ID에 알맞은 예약 시간을 삭제한다")
     @Test
-    void id에_알맞은_예약_시간을_삭제한다() {
+    void deleteById() {
         // given
-        Long id = 1L;
+        var time = sut.save(new ReservationTime(LocalTime.of(10, 0)));
 
         // when
-        sut.deleteById(id);
-        List<ReservationTime> reservationTimes = sut.findAll();
+        sut.deleteById(time.getId());
+        var remaining = sut.findAll();
 
         // then
-        assertThat(reservationTimes).hasSize(1)
-                .extracting(ReservationTime::getId)
-                .doesNotContain(1L);
+        assertThat(remaining).isEmpty();
     }
 
+    @DisplayName("ID에 알맞은 예약 시간을 삭제할 때 존재하지 않는 ID를 전달하면 예외가 발생한다")
     @Test
-    void id에_알맞은_예약_시간을_가져온다() {
-        // given
-        Long id = 1L;
-
-        // when
-        ReservationTime reservationTime = sut.findById(id).get();
-
-        // then
-        assertThat(reservationTime.getId()).isEqualTo(id);
+    void deleteById_not_found() {
+        // when & then
+        assertThatThrownBy(() -> sut.deleteById(999L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("삭제할 예약 시간이 없습니다. id=999");
     }
 
+    @DisplayName("ID에 알맞은 예약 시간을 가져온다")
     @Test
-    void 존재하지_않는_id면_빈_Optional을_반환한다() {
+    void findById() {
         // given
-        Long invalidId = 999L;
+        var time = sut.save(new ReservationTime(LocalTime.of(10, 0)));
 
         // when
+        var found = sut.findById(time.getId()).get();
+
         // then
-        assertThat(sut.findById(invalidId)).isEmpty();
+        assertThat(found).isEqualTo(time);
     }
 }

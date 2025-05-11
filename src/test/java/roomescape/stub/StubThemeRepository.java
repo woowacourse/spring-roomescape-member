@@ -11,20 +11,20 @@ import roomescape.repository.ThemeRepository;
 public class StubThemeRepository implements ThemeRepository {
 
     private final List<Theme> data = new ArrayList<>();
-    private final AtomicLong atomicLong = new AtomicLong();
+    private final AtomicLong idSequence = new AtomicLong();
 
-    public StubThemeRepository(Theme... themes) {
-        data.addAll(List.of(themes));
+    public StubThemeRepository(Theme... initialThemes) {
+        data.addAll(List.of(initialThemes));
         long maxId = data.stream()
                 .mapToLong(Theme::getId)
                 .max()
                 .orElse(0L);
-        atomicLong.set(maxId);
+        idSequence.set(maxId);
     }
 
     @Override
     public Theme save(Theme theme) {
-        Theme savedTheme = new Theme(atomicLong.incrementAndGet(), theme.getName(),
+        Theme savedTheme = new Theme(idSequence.incrementAndGet(), theme.getName(),
                 theme.getDescription(), theme.getThumbnail());
         data.add(savedTheme);
         return savedTheme;

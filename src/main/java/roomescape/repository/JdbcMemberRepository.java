@@ -6,11 +6,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
 
-@Service
+@Repository
 public class JdbcMemberRepository implements MemberRepository {
 
     private static final RowMapper<Member> memeberRowMapper = (resultSet, rowNum) ->

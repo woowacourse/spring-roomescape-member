@@ -1,117 +1,162 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
+import roomescape.error.NotFoundException;
 
+@JdbcTest
+@Import({
+        JdbcReservationRepository.class,
+        JdbcMemberRepository.class,
+        JdbcThemeRepository.class,
+        JdbcReservationTimeRepository.class
+})
 class JdbcReservationRepositoryTest {
 
-    private EmbeddedDatabase db;
+    @Autowired
     private JdbcReservationRepository sut;
+
+    @Autowired
+    private JdbcMemberRepository memberRepository;
+
+    @Autowired
+    private JdbcThemeRepository themeRepository;
+
+    @Autowired
+    private JdbcReservationTimeRepository timeRepository;
+
+    private Member savedMember;
+    private ReservationTime savedTime;
+    private Theme savedTheme;
 
     @BeforeEach
     void setUp() {
-        db = new EmbeddedDatabaseBuilder()
-                .setType(EmbeddedDatabaseType.H2)
-                .addScript("classpath:schema.sql")
-                .addScript("classpath:data.sql")
-                .build();
-        sut = new JdbcReservationRepository(db);
+        savedMember = memberRepository.save(new Member(null, "홍길동", "hong@example.com", "pw123", Role.USER));
+        savedTime = timeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
+        savedTheme = themeRepository.save(new Theme(null, "미스터리 방", "공포 테마", "thumb.jpg"));
     }
 
-    @AfterEach
-    void tearDown() {
-        db.shutdown();
-    }
-
+    @DisplayName("예약이 올바르게 생성된다")
     @Test
-    void 예약이_올바르게_생성된다() {
+    void save() {
         // given
-        String name = "레포지토리테스트";
-        LocalDate date = LocalDate.of(2025, 7, 1);
-        LocalTime time = LocalTime.of(10, 0);
-        Theme theme1 = new Theme(1L, "테마1", "설명1", "썸네일1");
-        Reservation reservation = new Reservation(null, name, date, new ReservationTime(1L, time), theme1);
+        var reservation = new Reservation(null, savedMember, LocalDate.of(2025, 7, 1), savedTime, savedTheme);
 
         // when
-        Reservation saved = sut.save(reservation);
+        var saved = sut.save(reservation);
 
         // then
         assertSoftly(soft -> {
             soft.assertThat(saved.getId()).isNotNull();
-            soft.assertThat(saved.getName()).isEqualTo(name);
+            soft.assertThat(saved.getMember()).isEqualTo(savedMember);
+            soft.assertThat(saved.getDate()).isEqualTo(LocalDate.of(2025, 7, 1));
+            soft.assertThat(saved.getTime()).isEqualTo(savedTime);
+            soft.assertThat(saved.getTheme()).isEqualTo(savedTheme);
         });
     }
 
+    @DisplayName("동일한 날짜, 시간, 테마의 예약이 존재하는지 확인할 수 있다")
     @Test
-    void 기존에_날짜와_시간이_같은_예약이_있는지_확인() {
+    void existsByDateAndTimeAndTheme() {
         // given
-        String existedName = "레포지토리테스트";
-        LocalDate existedDate = LocalDate.of(2025, 7, 1);
-        LocalTime existedTime = LocalTime.of(10, 0);
-        LocalDate date = LocalDate.of(2026, 1, 1);
-        LocalTime time = LocalTime.of(14, 1);
-        Theme theme1 = new Theme(1L, "테마1", "설명1", "썸네일1");
-        Reservation reservation = new Reservation(null, existedName, existedDate,
-                new ReservationTime(1L, existedTime), theme1);
+        sut.save(new Reservation(null, savedMember, LocalDate.of(2025, 7, 1), savedTime, savedTheme));
 
-        sut.save(reservation);
-
-        // when
-        // then
+        // when & then
         assertSoftly(soft -> {
-            soft.assertThat(sut.existsByDateAndTimeAndTheme(existedDate, existedTime, 1L)).isTrue();
-            soft.assertThat(sut.existsByDateAndTimeAndTheme(date, time, 1L)).isFalse();
+            soft.assertThat(sut.existsByDateAndTimeAndTheme(
+                    LocalDate.of(2025, 7, 1), savedTime.getStartAt(), savedTheme.getId())).isTrue();
+            soft.assertThat(sut.existsByDateAndTimeAndTheme(
+                    LocalDate.of(2026, 1, 1), LocalTime.of(14, 0), savedTheme.getId())).isFalse();
         });
     }
 
+    @DisplayName("모든 예약을 조회할 수 있다")
     @Test
-    void 모든_예약_조회() {
+    void findAll() {
         // given
-        String name1 = "레포지토리테스트1";
-        String name2 = "레포지토리테스트2";
-        LocalDate date = LocalDate.of(2025, 7, 1);
-        LocalTime time1 = LocalTime.of(10, 0);
-        LocalTime time2 = LocalTime.of(11, 0);
-        Theme theme1 = new Theme(1L, "테마1", "설명1", "썸네일1");
-        Theme theme2 = new Theme(2L, "테마2", "설명2", "썸네일2");
-        Reservation reservation1 = new Reservation(null, name1, date, new ReservationTime(1L, time1), theme1);
-        Reservation reservation2 = new Reservation(null, name2, date, new ReservationTime(2L, time2), theme2);
-        sut.save(reservation1);
-        sut.save(reservation2);
+        sut.save(new Reservation(null, savedMember, LocalDate.of(2025, 7, 1), savedTime, savedTheme));
+        sut.save(new Reservation(null, savedMember, LocalDate.of(2025, 7, 2), savedTime, savedTheme));
 
         // when
-        List<Reservation> reservations = sut.findAll();
+        var found = sut.findAll();
 
         // then
-        assertThat(reservations).hasSize(2);
+        assertThat(found).hasSize(2);
     }
 
+    @DisplayName("예약 시간 ID로 예약 존재 여부를 확인할 수 있다")
     @Test
-    void 예약에_예약_시간이_존재하는지_확인() {
+    void existsByReservationTimeId() {
         // given
-        LocalTime localTime = LocalTime.of(10, 0);
-        ReservationTime reservationTime = new ReservationTime(1L, localTime);
-        Theme theme1 = new Theme(1L, "테마1", "설명1", "썸네일1");
-        Reservation reservation = new Reservation("테스트", LocalDate.of(2999, 7, 1), reservationTime, theme1);
-        sut.save(reservation);
+        sut.save(new Reservation(null, savedMember, LocalDate.of(2025, 8, 15), savedTime, savedTheme));
 
         // when
-        boolean exists = sut.existsByReservationTimeId(reservationTime.getId());
+        var exists = sut.existsByReservationTimeId(savedTime.getId());
 
         // then
         assertThat(exists).isTrue();
+    }
+
+    @DisplayName("예약 테마 ID로 예약 존재 여부를 확인할 수 있다")
+    @Test
+    void existsByThemeId() {
+        // given
+        sut.save(new Reservation(null, savedMember, LocalDate.of(2025, 8, 15), savedTime, savedTheme));
+
+        // when
+        var exists = sut.existsByThemeId(savedTheme.getId());
+
+        // then
+        assertThat(exists).isTrue();
+    }
+
+    @DisplayName("예약 ID로 예약을 가져온다")
+    @Test
+    void findById() {
+        // given
+        var savedReservation = sut.save(new Reservation(null, savedMember, LocalDate.of(2025, 8, 15), savedTime, savedTheme));
+
+        // when
+        var foundReservation = sut.findById(savedReservation.getId()).get();
+
+        // then
+        assertThat(foundReservation).isEqualTo(savedReservation);
+    }
+
+    @DisplayName("예약 ID로 예약을 제거한다")
+    @Test
+    void deleteById() {
+        // given
+        var savedReservation = sut.save(new Reservation(null, savedMember, LocalDate.of(2025, 8, 15), savedTime, savedTheme));
+
+        // when
+        sut.deleteById(savedReservation.getId());
+
+        // then
+        assertThat(sut.findById(savedReservation.getId())).isEmpty();
+    }
+
+    @DisplayName("예약 ID로 예약을 제거할 때 예약이 존재하지 않으면 예외를 던진다")
+    @Test
+    void deleteById_not_found() {
+        // when & then
+        assertThatThrownBy(() -> sut.deleteById(999L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("삭제하려고 하는 예약이 존재하지 않습니다. 999");
     }
 }
