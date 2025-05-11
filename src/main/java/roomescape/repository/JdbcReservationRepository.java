@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -159,4 +160,49 @@ public class JdbcReservationRepository implements ReservationRepository {
             throw new NoSuchElementException("삭제하려고 하는 예약이 존재하지 않습니다. " + id);
         }
     }
+
+    @Override
+    public List<Reservation> search(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
+        final StringBuilder sql = new StringBuilder("""
+                    select r.id,
+                           r.date,
+                           m.id as member_id,
+                           m.name as member_name,
+                           m.email as member_email,
+                           m.password as member_password,
+                           m.role as member_role,
+                           t.id as time_id,
+                           t.start_at as time_value,
+                           th.id as theme_id,
+                           th.name as theme_name,
+                           th.description as theme_description,
+                           th.thumbnail as theme_thumbnail
+                    from reservation r
+                    inner join member m on r.member_id = m.id
+                    inner join reservation_time t on r.time_id = t.id
+                    inner join theme th on r.theme_id = th.id
+                    where 1=1
+                """);
+
+        final List<Object> args = new ArrayList<>();
+        if (themeId != null) {
+            sql.append(" and r.theme_id = ?");
+            args.add(themeId);
+        }
+        if (memberId != null) {
+            sql.append(" and m.id = ?");
+            args.add(memberId);
+        }
+        if (dateFrom != null) {
+            sql.append(" and r.date >= ?");
+            args.add(dateFrom);
+        }
+        if (dateTo != null) {
+            sql.append(" and r.date <= ?");
+            args.add(dateTo);
+        }
+
+        return template.query(sql.toString(), reservationRowMapper, args.toArray());
+    }
+
 }

@@ -79,4 +79,12 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
         reservationRepository.deleteById(reservation.getId());
     }
+
+    public List<ReservationResponse> searchReservations(final Long themeId, final Long memberId, final LocalDate dateFrom,
+                                                        final LocalDate dateTo) {
+        final List<Reservation> results = reservationRepository.search(themeId, memberId, dateFrom, dateTo);
+        return results.stream()
+                .map(ReservationResponse::new)
+                .toList();
+    }
 }

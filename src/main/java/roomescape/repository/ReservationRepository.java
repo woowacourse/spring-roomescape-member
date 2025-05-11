@@ -21,4 +21,6 @@ public interface ReservationRepository {
     Optional<Reservation> findById(final Long id);
 
     void deleteById(final Long id);
+
+    List<Reservation> search(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo);
 }
