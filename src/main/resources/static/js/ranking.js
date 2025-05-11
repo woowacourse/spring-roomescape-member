@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
       */
     requestRead(`/themes/popular?limit=${POPULAR_LIMIT}`) // 인기 테마 목록 조회 API endpoint
         .then(render)
-        .catch((error) => console.error("Error fetching times:", error));
+        .catch((error) => console.error("Error fetching popular themes:", error));
 });
 
 function render(data) {
