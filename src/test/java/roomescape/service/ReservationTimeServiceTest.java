@@ -45,7 +45,7 @@ public class ReservationTimeServiceTest {
     @BeforeEach
     void setUP() {
         //사용자 생성
-        Member member = authRepository.save(Member.beforeSave(
+        Member member = authRepository.save(Member.beforeMemberSave(
                 "레몬",
                 "ywcsuwon@naver.com",
                 "123")

@@ -40,7 +40,7 @@ public class ReservationServiceTest {
     @BeforeEach
     void setUP() {
         //사용자 생성
-        Member member = authRepository.save(Member.beforeSave(
+        Member member = authRepository.save(Member.beforeMemberSave(
                 "레몬",
                 "ywcsuwon@naver.com",
                 "123")
@@ -77,7 +77,7 @@ public class ReservationServiceTest {
         // given
         // when
         // then
-        Assertions.assertThatThrownBy(() -> reservationService.createMemberReservation(Member.beforeSave("모코", "ywcsuwon@naver.com", "123"), LocalDate.now(), 1, 1))
+        Assertions.assertThatThrownBy(() -> reservationService.createMemberReservation(Member.beforeMemberSave("모코", "ywcsuwon@naver.com", "123"), LocalDate.now(), 1, 1))
                 .isInstanceOf(AlreadyReservedException.class);
 
     }
