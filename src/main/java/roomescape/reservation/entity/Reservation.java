@@ -18,6 +18,7 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
+        validate(member.getName(), date, time, theme);
         this.id = id;
         this.member = member;
         this.date = date;

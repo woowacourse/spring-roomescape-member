@@ -1,17 +1,20 @@
 package roomescape.reservation.entity;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.time.entity.ReservationTime;
+import roomescape.member.entity.Member;
+import roomescape.member.entity.Role;
 import roomescape.theme.entity.Theme;
+import roomescape.time.entity.ReservationTime;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 public class ReservationTest {
 
@@ -24,9 +27,10 @@ public class ReservationTest {
         var theme = new Theme(1L, "테스트", "테스트", "테스트");
         var date = LocalDate.now();
         var time = new ReservationTime(1L, LocalTime.of(15, 0));
+        Member member = new Member(1L, "test1@email.com", "1234", name, Role.USER);
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(1L, name, date, time, theme))
+        assertThatThrownBy(() -> new Reservation(1L, member, date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 유효하지 않은 예약자명입니다.");
     }
@@ -36,12 +40,13 @@ public class ReservationTest {
     void test_validationNameLength() {
         // given
         var theme = new Theme(1L, "테스트", "테스트", "테스트");
-        var name = "abcdefgfhi";
         var date = LocalDate.now();
         var time = new ReservationTime(1L, LocalTime.of(15, 0));
+        Member member = new Member(1L, "test1@email.com", "1234", "abcdefgfhi", Role.USER);
+
 
         // when & then
-        Assertions.assertDoesNotThrow(() -> new Reservation(1L, name, date, time, theme));
+        Assertions.assertDoesNotThrow(() -> new Reservation(1L, member, date, time, theme));
     }
 
     @Test
@@ -49,12 +54,12 @@ public class ReservationTest {
     void error_validationNameLength() {
         // given
         var theme = new Theme(1L, "테스트", "테스트", "테스트");
-        var name = "abcdefgfhij";
         var date = LocalDate.now();
         var time = new ReservationTime(1L, LocalTime.of(15, 0));
+        Member member = new Member(1L, "test1@email.com", "1234", "abcdefgfhij", Role.USER);
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(1L, name, date, time, theme))
+        assertThatThrownBy(() -> new Reservation(1L, member, date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 예약자명의 길이가 10자를 초과할 수 없습니다.");
     }
@@ -65,10 +70,11 @@ public class ReservationTest {
         //given
         var theme = new Theme(1L, "테스트", "테스트", "테스트");
         LocalDate date = null;
-        var name = "브라운";
         var time = new ReservationTime(1L, LocalTime.of(15, 0));
+        Member member = new Member(1L, "test1@email.com", "1234", "브라운", Role.USER);
+
         //when & then
-        assertThatThrownBy(() -> new Reservation(1L, name, date, time, theme))
+        assertThatThrownBy(() -> new Reservation(1L, member, date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 유효하지 않은 예약 날짜입니다.");
     }
@@ -79,10 +85,11 @@ public class ReservationTest {
         //given
         var theme = new Theme(1L, "테스트", "테스트", "테스트");
         ReservationTime time = null;
-        var name = "브라운";
         var date = LocalDate.now();
+        Member member = new Member(1L, "test1@email.com", "1234", "브라운", Role.USER);
+
         //when & then
-        assertThatThrownBy(() -> new Reservation(1L, name, date, time, theme))
+        assertThatThrownBy(() -> new Reservation(1L, member, date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 유효하지 않은 예약 시간입니다.");
     }
