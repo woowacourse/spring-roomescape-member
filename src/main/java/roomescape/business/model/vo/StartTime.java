@@ -4,6 +4,8 @@ import roomescape.exception.business.InvalidCreateArgumentException;
 
 import java.time.LocalTime;
 
+import static roomescape.exception.ErrorCode.START_TIME_INVALID;
+
 public record StartTime(
         LocalTime value
 ) {
@@ -16,7 +18,7 @@ public record StartTime(
 
     private static void validateAvailableTime(final LocalTime time) {
         if (time.isBefore(START_TIME) || time.isAfter(END_TIME)) {
-            throw new InvalidCreateArgumentException("시작 시간은 10~23시만 가능합니다.");
+            throw new InvalidCreateArgumentException(START_TIME_INVALID, START_TIME, END_TIME);
         }
     }
 

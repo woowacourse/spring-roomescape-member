@@ -4,6 +4,8 @@ import roomescape.exception.business.InvalidCreateArgumentException;
 
 import java.util.regex.Pattern;
 
+import static roomescape.exception.ErrorCode.EMAIL_FORMAT_INVALID;
+
 public record Email(
         String value
 ) {
@@ -11,7 +13,7 @@ public record Email(
 
     public Email {
         if (!EMAIL_PATTERN.matcher(value).matches()) {
-            throw new InvalidCreateArgumentException("이메일 형식이어야 합니다.");
+            throw new InvalidCreateArgumentException(EMAIL_FORMAT_INVALID);
         }
     }
 }

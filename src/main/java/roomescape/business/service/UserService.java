@@ -9,6 +9,9 @@ import roomescape.exception.business.NotFoundException;
 
 import java.util.List;
 
+import static roomescape.exception.ErrorCode.EMAIL_DUPLICATED;
+import static roomescape.exception.ErrorCode.USER_NOT_EXIST;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -17,7 +20,7 @@ public class UserService {
 
     public User register(final String name, final String email, final String password) {
         if (userRepository.existByEmail(email)) {
-            throw new InvalidCreateArgumentException("중복된 이메일입니다.");
+            throw new InvalidCreateArgumentException(EMAIL_DUPLICATED);
         }
         User user = User.create(name, email, password);
         userRepository.save(user);
@@ -26,12 +29,12 @@ public class UserService {
 
     public User getById(final String id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("해당하는 유저가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException(USER_NOT_EXIST));
     }
 
     public User getByEmail(final String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("해당하는 유저가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException(USER_NOT_EXIST));
     }
 
     public List<User> getAll() {

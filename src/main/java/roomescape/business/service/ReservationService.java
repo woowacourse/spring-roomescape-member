@@ -17,6 +17,11 @@ import roomescape.exception.business.NotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
+import static roomescape.exception.ErrorCode.RESERVATION_DUPLICATED;
+import static roomescape.exception.ErrorCode.RESERVATION_NOT_EXIST;
+import static roomescape.exception.ErrorCode.THEME_NOT_EXIST;
+import static roomescape.exception.ErrorCode.USER_NOT_EXIST;
+
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
@@ -28,14 +33,14 @@ public class ReservationService {
 
     public Reservation addAndGet(final LocalDate date, final String timeId, final String themeId, final String userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 유저입니다."));
+                .orElseThrow(() -> new NotFoundException(USER_NOT_EXIST));
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+                .orElseThrow(() -> new NotFoundException(RESERVATION_NOT_EXIST));
         Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new NotFoundException(THEME_NOT_EXIST));
 
         if (reservationRepository.isDuplicateDateAndTimeAndTheme(date, reservationTime.startAt(), theme)) {
-            throw new DuplicatedException("해당 테마는 해당 시간에 이미 예약이 존재합니다.");
+            throw new DuplicatedException(RESERVATION_DUPLICATED);
         }
 
         Reservation reservation = Reservation.create(user, date, reservationTime, theme);
@@ -49,7 +54,7 @@ public class ReservationService {
 
     public void delete(final String reservationId, final String userId) {
         final Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+                .orElseThrow(() -> new NotFoundException(RESERVATION_NOT_EXIST));
         if (!reservation.isSameReserver(userId)) {
             throw new ForbiddenException();
         }

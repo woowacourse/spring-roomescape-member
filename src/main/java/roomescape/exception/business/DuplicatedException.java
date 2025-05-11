@@ -1,10 +1,11 @@
 package roomescape.exception.business;
 
+import roomescape.exception.ErrorCode;
 import roomescape.exception.RootBusinessException;
 
 public class DuplicatedException extends RootBusinessException {
-    
-    public DuplicatedException(String message) {
-        super(message);
+
+    public DuplicatedException(final ErrorCode code) {
+        super(code);
     }
 }

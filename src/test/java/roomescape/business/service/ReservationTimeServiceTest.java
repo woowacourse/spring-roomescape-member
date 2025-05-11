@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.business.model.entity.ReservationTime;
 import roomescape.business.model.repository.ReservationRepository;
 import roomescape.business.model.repository.ReservationTimeRepository;
+import roomescape.exception.business.DuplicatedException;
 import roomescape.exception.business.InvalidCreateArgumentException;
 import roomescape.exception.business.NotFoundException;
 import roomescape.exception.business.RelatedEntityExistException;
@@ -61,7 +62,7 @@ class ReservationTimeServiceTest {
 
         // when, then
         assertThatThrownBy(() -> sut.addAndGet(time))
-                .isInstanceOf(InvalidCreateArgumentException.class);
+                .isInstanceOf(DuplicatedException.class);
 
         verify(reservationTimeRepository).existByTime(time);
         verify(reservationTimeRepository, never()).existBetween(any(LocalTime.class), any(LocalTime.class));

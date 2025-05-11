@@ -1,5 +1,6 @@
 package roomescape.business.model.vo;
 
+import roomescape.exception.ErrorCode;
 import roomescape.exception.business.InvalidCreateArgumentException;
 
 public record ThemeName(
@@ -13,7 +14,7 @@ public record ThemeName(
 
     private static void validateMaxLength(final String name) {
         if (name.length() > MAX_LENGTH) {
-            throw new InvalidCreateArgumentException("테마 이름은 %d자를 넘길 수 없습니다.".formatted(MAX_LENGTH));
+            throw new InvalidCreateArgumentException(ErrorCode.THEME_NAME_TOO_LONG, MAX_LENGTH);
         }
     }
 }

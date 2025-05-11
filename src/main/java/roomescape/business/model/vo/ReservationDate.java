@@ -5,6 +5,9 @@ import roomescape.exception.business.InvalidCreateArgumentException;
 import java.time.LocalDate;
 import java.time.Period;
 
+import static roomescape.exception.ErrorCode.RESERVATION_DATE_PAST;
+import static roomescape.exception.ErrorCode.RESERVATION_DATE_TOO_FAR_IN_FUTURE;
+
 public record ReservationDate(
         LocalDate value
 ) {
@@ -17,14 +20,14 @@ public record ReservationDate(
 
     private static void validateNotPast(final LocalDate date) {
         if (date.isBefore(LocalDate.now())) {
-            throw new InvalidCreateArgumentException("과거 날짜로 예약할 수 없습니다.");
+            throw new InvalidCreateArgumentException(RESERVATION_DATE_PAST);
         }
     }
 
     private static void validateInterval(final LocalDate date) {
         long minusDays = Period.between(LocalDate.now(), date).getDays();
         if (minusDays > INTERVAL_FROM_NOW) {
-            throw new InvalidCreateArgumentException("일주일 전부터 예약할 수 있습니다.");
+            throw new InvalidCreateArgumentException(RESERVATION_DATE_TOO_FAR_IN_FUTURE, INTERVAL_FROM_NOW);
         }
     }
 }

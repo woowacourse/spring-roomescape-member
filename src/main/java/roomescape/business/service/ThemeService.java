@@ -11,6 +11,9 @@ import roomescape.exception.business.RelatedEntityExistException;
 import java.time.LocalDate;
 import java.util.List;
 
+import static roomescape.exception.ErrorCode.RESERVED_THEME;
+import static roomescape.exception.ErrorCode.THEME_NOT_EXIST;
+
 @Service
 @RequiredArgsConstructor
 public class ThemeService {
@@ -20,7 +23,7 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
-    
+
     public Theme addAndGet(final String name, final String description, final String thumbnail) {
         Theme theme = Theme.create(name, description, thumbnail);
         themeRepository.save(theme);
@@ -42,10 +45,10 @@ public class ThemeService {
 
     public void delete(final String id) {
         if (reservationRepository.existByThemeId(id)) {
-            throw new RelatedEntityExistException("해당 테마의 예약이 존재합니다.");
+            throw new RelatedEntityExistException(RESERVED_THEME);
         }
         if (!themeRepository.existById(id)) {
-            throw new NotFoundException("존재하지 않는 테마입니다.");
+            throw new NotFoundException(THEME_NOT_EXIST);
         }
         themeRepository.deleteById(id);
     }
