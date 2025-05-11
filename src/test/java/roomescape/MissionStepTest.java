@@ -2,6 +2,7 @@ package roomescape;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
+import static roomescape.ApiTestFixture.loginAndGetToken;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -11,6 +12,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +24,12 @@ import roomescape.model.Reservation;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
+    private String token;
+
+    @BeforeEach
+    void setup() {
+        token = loginAndGetToken();
+    }
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -55,6 +63,7 @@ public class MissionStepTest {
     @Test
     void 일단계() {
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -63,11 +72,13 @@ public class MissionStepTest {
     @Test
     void 이단계() {
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -86,6 +97,7 @@ public class MissionStepTest {
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(params)
 
@@ -95,17 +107,20 @@ public class MissionStepTest {
                 .body("id", is(1));
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().delete("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -132,6 +147,7 @@ public class MissionStepTest {
                 "2025-08-05", 1, 1, 1);
 
         List<Reservation> reservations = RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -154,6 +170,7 @@ public class MissionStepTest {
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/admin/reservations")
@@ -164,6 +181,7 @@ public class MissionStepTest {
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().delete("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(204);
@@ -200,6 +218,7 @@ public class MissionStepTest {
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/admin/reservations")
@@ -207,6 +226,7 @@ public class MissionStepTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)

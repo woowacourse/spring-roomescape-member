@@ -45,7 +45,7 @@ public class MemberControllerTest {
         params.put("email", "abc");
         params.put("password", "def");
 
-        Response loginResp = RestAssured.given().log().all()
+        Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/auth/login")
@@ -53,7 +53,7 @@ public class MemberControllerTest {
                 .statusCode(200)
                 .extract().response();
 
-        String token = loginResp.getCookie("token");
+        String token = response.getCookie("token");
         Assertions.assertThat(token).isNotNull();
 
         RestAssured.given().log().all()

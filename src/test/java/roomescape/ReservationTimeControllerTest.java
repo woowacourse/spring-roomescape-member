@@ -14,17 +14,6 @@ import org.springframework.test.annotation.DirtiesContext;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationTimeControllerTest {
-    void Test_ReservationTime_Post() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-    }
 
     @Test
     @DisplayName("시작 시간 형식 검증")
@@ -59,8 +48,8 @@ public class ReservationTimeControllerTest {
     @DisplayName("예약된 시간을 삭제할 수 없음")
     void test3() {
         // given
-        Test_ReservationTime_Post();
-
+        ApiTestFixture.createReservationTime();
+        String token = ApiTestFixture.loginAndGetToken();
         Map<String, String> themeParams = new HashMap<>();
         themeParams.put("name", "Ddyong");
         themeParams.put("description", "살인마가 쫓아오는 느낌");
@@ -80,6 +69,7 @@ public class ReservationTimeControllerTest {
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("admin/reservations")
