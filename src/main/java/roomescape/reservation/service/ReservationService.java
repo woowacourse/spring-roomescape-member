@@ -90,4 +90,17 @@ public class ReservationService {
 
         return availableReservationTimes;
     }
+
+    public List<Reservation> findByInFromTo(final Long themeId, final Long memberId, final LocalDate dateFrom,
+                                            final LocalDate dateTo) {
+
+        final List<Reservation> searchedReservations = reservationRepository.findByInFromTo(
+                themeId,
+                memberId,
+                dateFrom,
+                dateTo
+        );
+
+        return searchedReservations;
+    }
 }
