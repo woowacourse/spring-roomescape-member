@@ -27,6 +27,8 @@ public interface ReservationRepository {
 
     List<ReservationTimeId> findTimeIdByParams(ReservationDate date, ThemeId themeId);
 
+    List<Reservation> findAllByMemberId(MemberId memberId);
+
     List<Reservation> findAll();
 
     Reservation save(Reservation reservation);

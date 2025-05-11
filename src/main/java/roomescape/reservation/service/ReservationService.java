@@ -2,11 +2,10 @@ package roomescape.reservation.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.member.controller.dto.MemberInfo;
+import roomescape.member.auth.dto.MemberInfo;
 import roomescape.member.domain.MemberId;
 import roomescape.reservation.controller.dto.CreateReservationByAdminWebRequest;
 import roomescape.reservation.controller.dto.ReservationSearchWebRequest;
-import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.service.converter.ReservationConverter;
 import roomescape.reservation.service.dto.AvailableReservationTimeServiceRequest;
@@ -32,6 +31,11 @@ public class ReservationService {
     public List<ReservationWebResponse> getAll() {
         return ReservationConverter.toDto(
                 reservationQueryUseCase.getAll());
+    }
+
+    public List<ReservationWebResponse> getAll(Long memberId) {
+        return ReservationConverter.toDto(
+                reservationQueryUseCase.getAllByMemberId(MemberId.from(memberId)));
     }
 
     public List<AvailableReservationTimeWebResponse> getAvailable(final LocalDate date, final Long id) {

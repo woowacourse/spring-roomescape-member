@@ -33,6 +33,10 @@ public class ReservationQueryUseCase {
         return reservationRepository.findAll();
     }
 
+    public List<Reservation> getAllByMemberId(final MemberId memberId) {
+        return reservationRepository.findAllByMemberId(memberId);
+    }
+
     public List<AvailableReservationTimeServiceResponse> getTimesWithAvailability(
             final AvailableReservationTimeServiceRequest availableReservationTimeServiceRequest) {
         final List<ReservationTime> allTimes = reservationTimeQueryUseCase.getAll();
