@@ -23,6 +23,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberArgumentResolver());
+        resolvers.add(new LoginMemberArgumentResolver(memberService));
     }
 }
