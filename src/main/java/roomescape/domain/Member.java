@@ -3,8 +3,11 @@ package roomescape.domain;
 import roomescape.common.exception.MemberValidationException;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class Member {
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+
     private final Long id;
     private final String name;
     private final String email;
@@ -34,6 +37,9 @@ public class Member {
         }
         if (email == null || email.isBlank()) {
             throw new MemberValidationException("이메일은 비어있을 수 없습니다.");
+        }
+        if (!EMAIL_PATTERN.matcher(email).matches()) {
+            throw new MemberValidationException("유효하지 않은 이메일 형식입니다.");
         }
         if (role == null) {
             throw new MemberValidationException("유저 역할은 비어있을 수 없습니다.");
