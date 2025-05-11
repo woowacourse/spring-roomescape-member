@@ -30,8 +30,8 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
-            String userEmail = memberService.extractUserEmailFromCookies(cookies);
-            return memberService.getUserNameByUserEmail(userEmail);
+            String userEmail = memberService.extractEmailFromCookies(cookies);
+            return memberService.getNameByEmail(userEmail);
         }
         throw new BadRequestException("인증 실패");
     }

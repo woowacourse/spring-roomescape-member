@@ -43,9 +43,8 @@ public class LoginController {
     public ResponseEntity<NameResponse> checkLogin(HttpServletRequest request) throws BadRequestException {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
-            String userEmail = memberService.extractUserEmailFromCookies(cookies);
-            // userEmail로 user 이름 반환
-            Name name = memberService.getUserNameByUserEmail(userEmail);
+            String email = memberService.extractEmailFromCookies(cookies);
+            Name name = memberService.getNameByEmail(email);
             return ResponseEntity.ok(new NameResponse(name.getValue()));
         }
         throw new BadRequestException("인증 실패");

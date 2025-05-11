@@ -3,13 +3,16 @@ package roomescape.repository;
 import java.util.List;
 import roomescape.model.user.Member;
 import roomescape.model.user.Name;
+import roomescape.model.user.Role;
 
 public interface MemberRepository {
     Member login(String username, String password);
 
-    Name findUserNameByUserEmail(String userEmail);
+    Name findNameByEmail(String email);
 
     List<Member> findAllUsers();
 
-    Name findUserNameByUserId(Long userId);
+    Name findNameById(Long userId);
+
+    Role findRoleByEmail(String email);
 }

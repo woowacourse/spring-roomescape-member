@@ -40,17 +40,23 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Name findUserNameByUserId(Long userId) {
+    public Name findNameById(Long id) {
         String sql = "select name from member where id = ?";
         try {
-            return new Name(jdbcTemplate.queryForObject(sql, String.class, userId));
+            return new Name(jdbcTemplate.queryForObject(sql, String.class, id));
         } catch (EmptyResultDataAccessException ex) {
-            throw new IllegalArgumentException("사용자를 찾을 수 없습니다: userId :" + userId, ex);
+            throw new IllegalArgumentException("사용자를 찾을 수 없습니다: userId :" + id, ex);
         }
     }
 
     @Override
-    public Name findUserNameByUserEmail(String userEmail) {
+    public Role findRoleByEmail(String email) {
+        String sql = "select role from member where email = ?";
+        return Role.of(jdbcTemplate.queryForObject(sql, String.class, email));
+    }
+
+    @Override
+    public Name findNameByEmail(String userEmail) {
         String sql = "select name from member where email = ?";
         try {
             return new Name(jdbcTemplate.queryForObject(sql, String.class, userEmail));

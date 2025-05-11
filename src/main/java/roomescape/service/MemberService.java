@@ -7,6 +7,7 @@ import roomescape.dto.TokenResponse;
 import roomescape.infra.JwtTokenProcessor;
 import roomescape.model.user.Member;
 import roomescape.model.user.Name;
+import roomescape.model.user.Role;
 import roomescape.repository.MemberRepository;
 
 @Service
@@ -37,19 +38,24 @@ public class MemberService {
         return cookie;
     }
 
-    public String extractUserEmailFromCookies(Cookie[] cookies) {
+    public String extractEmailFromCookies(Cookie[] cookies) {
         return jwtTokenProcessor.extractUserEmailFromCookie(cookies);
     }
 
-    public Name getUserNameByUserEmail(String userEmail) {
-        return memberRepository.findUserNameByUserEmail(userEmail);
+    public Name getNameByEmail(String email) {
+        return memberRepository.findNameByEmail(email);
     }
 
     public Name getUserNameByUserId(Long userId) {
-        return memberRepository.findUserNameByUserId(userId);
+        return memberRepository.findNameById(userId);
     }
 
     public List<Member> getAllUsers() {
         return memberRepository.findAllUsers();
+    }
+
+    public Role getRoleByEmail(String email) {
+        Role role = memberRepository.findRoleByEmail(email);
+        return role;
     }
 }
