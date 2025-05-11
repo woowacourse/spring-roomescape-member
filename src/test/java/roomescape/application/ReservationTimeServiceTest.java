@@ -99,9 +99,9 @@ class ReservationTimeServiceTest extends BaseTest {
         ReservationTime time = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
         Member member = memberDbFixture.한스_사용자();
-        Reservation reservation = reservationDbFixture.예약_한스_25_4_22_10시_공포(member, time, theme);
+        reservationDbFixture.예약_한스_25_4_22_10시_공포(member, time, theme);
 
-        assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(reservation.getId()))
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(time.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
