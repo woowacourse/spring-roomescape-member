@@ -41,7 +41,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 resultSet.getString("member_name"),
                 resultSet.getString("email"),
                 resultSet.getString("password"),
-                Role.valueOf(resultSet.getString("role"))
+                Role.of(resultSet.getString("role"))
         );
         return Reservation.of(
                 resultSet.getLong("id"),
