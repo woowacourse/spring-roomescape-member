@@ -4,7 +4,7 @@ import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.dao.UserDao;
 import roomescape.dto.LoginRequest;
-import roomescape.dto.UserResponse;
+import roomescape.dto.LoginCheckResponse;
 import roomescape.infra.JwtTokenProvider;
 import roomescape.model.User;
 
@@ -33,11 +33,11 @@ public class LoginService {
         return user;
     }
 
-    public UserResponse findUserFromToken(Cookie[] cookies) {
+    public LoginCheckResponse findUserFromToken(Cookie[] cookies) {
         String token = jwtTokenProvider.extractTokenFromCookies(cookies);
         Long id = jwtTokenProvider.getUserId(token);
         User user = findById(id);
-        return UserResponse.from(user);
+        return LoginCheckResponse.from(user);
     }
 
     public String extractTokenFromCookies(Cookie[] cookies) {

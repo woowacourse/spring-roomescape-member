@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.DataAccessException;
@@ -61,5 +62,21 @@ public class UserDao {
         } catch (DataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public List<User> findAll() {
+        String sql = """
+                SELECT id, name, email, password
+                FROM users
+                """;
+        return namedParameterJdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> new User(
+                        rs.getLong("id"),
+                        new UserName(rs.getString("name")),
+                        rs.getString("email"),
+                        rs.getString("password")
+                )
+        );
     }
 }
