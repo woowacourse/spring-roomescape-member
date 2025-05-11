@@ -1,18 +1,24 @@
 package roomescape.auth.service;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import roomescape.common.exception.LoginFailException;
 
 @Component
-public class JwtTokenProvider {
+public class JwtTokenHandler {
+
+    private static final String TOKEN_NAME = "token";
+    private static final String EMPTY = "";
 
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
@@ -32,7 +38,17 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getPayload(final String token) {
+    public String extractTokenValue(final HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        return Arrays.stream(cookies)
+                .filter(cookie -> TOKEN_NAME.equals(cookie.getName()))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElse(EMPTY);
+    }
+
+    public String getMemberIdFromTokenWithValidate(final String token) {
+        validateToken(token);
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
@@ -40,13 +56,11 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
-    public boolean validateToken(final String token) {
+    public void validateToken(final String token) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-
-            return !claims.getBody().getExpiration().before(new Date());
+            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
         } catch (JwtException | IllegalArgumentException e) {
-            return false;
+            throw new LoginFailException(e.getMessage());
         }
     }
 }

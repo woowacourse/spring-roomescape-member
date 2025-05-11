@@ -64,4 +64,20 @@ public class MemberDao {
             return Optional.empty();
         }
     }
+
+    public Optional<Member> findById(final Long id) {
+        String sql = """
+                SELECT id, name, email, password
+                FROM member
+                WHERE id = :id
+                """;
+        Map<String, Long> params = Map.of("id", id);
+
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, params, memberRowMapper);
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }
