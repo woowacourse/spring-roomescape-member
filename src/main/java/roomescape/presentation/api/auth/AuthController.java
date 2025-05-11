@@ -1,5 +1,6 @@
 package roomescape.presentation.api.auth;
 
+import jakarta.validation.Valid;
 import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -28,7 +29,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest loginRequest) {
         LoginResult loginResult = authService.login(loginRequest.toServiceParam());
         ResponseCookie jwtCookie = createCookie(TOKEN_COOKIE_KEY, loginResult.token(), tokenCookieDuration);
         return ResponseEntity.ok()

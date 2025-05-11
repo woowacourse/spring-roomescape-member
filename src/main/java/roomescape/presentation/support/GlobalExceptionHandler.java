@@ -1,8 +1,14 @@
 package roomescape.presentation.support;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.stream.Collectors;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.application.support.exception.CoreException;
@@ -21,11 +27,27 @@ public class GlobalExceptionHandler {
         return ResponseEntity.internalServerError().body(new ApiFailResponse("예상치 못한 에러가 발생했습니다."));
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiFailResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        return ResponseEntity.badRequest().body(new ApiFailResponse("요청 형식이 올바르지 않습니다."));
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiFailResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        String errorMessage = e.getBindingResult()
+                .getAllErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining(", "));
+        return ResponseEntity.badRequest().body(new ApiFailResponse(errorMessage));
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiFailResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        if (e.getCause() instanceof InvalidFormatException formatEx && formatEx.getTargetType() == LocalDate.class) {
+            return ResponseEntity.badRequest().body(new ApiFailResponse("날짜는 yyyy-MM-dd 형식이어야 합니다."));
+        }
+        if (e.getCause() instanceof InvalidFormatException formatEx && formatEx.getTargetType() == LocalTime.class) {
+            return ResponseEntity.badRequest().body(new ApiFailResponse("시간은 HH:mm 형식이어야 합니다."));
+        }
+        return ResponseEntity.badRequest().body(new ApiFailResponse("잘못된 요청입니다."));
+    }
+    
     @ExceptionHandler(CoreException.class)
     public ResponseEntity<ApiFailResponse> handleCoreException(CoreException e) {
         return ResponseEntity.badRequest().body(new ApiFailResponse(e.getMessage()));

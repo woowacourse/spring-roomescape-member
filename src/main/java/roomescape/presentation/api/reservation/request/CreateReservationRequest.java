@@ -1,40 +1,17 @@
 package roomescape.presentation.api.reservation.request;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import roomescape.application.reservation.dto.CreateReservationParam;
 
 public record CreateReservationRequest(
+        @NotNull(message = "date는 필수입니다.")
         LocalDate date,
+        @NotNull(message = "timeId는 필수입니다.")
         Long timeId,
+        @NotNull(message = "themeId는 필수입니다.")
         Long themeId
 ) {
-
-    private static final String ERROR_MESSAGE_FORMAT = "예약 필수 정보가 누락되었습니다. %s: %s";
-
-    public CreateReservationRequest {
-        validateDate(date);
-        validateTimeId(timeId);
-        validateThemeId(themeId);
-    }
-
-    private void validateDate(LocalDate date) {
-        if (date == null) {
-            throw new IllegalArgumentException(String.format(ERROR_MESSAGE_FORMAT, "date", date));
-        }
-    }
-
-    private void validateTimeId(Long timeId) {
-        if (timeId == null) {
-            throw new IllegalArgumentException(String.format(ERROR_MESSAGE_FORMAT, "timeId", timeId));
-        }
-    }
-
-    private void validateThemeId(Long themeId) {
-        if (themeId == null) {
-            throw new IllegalArgumentException(String.format(ERROR_MESSAGE_FORMAT, "themeId", themeId));
-        }
-    }
-
     public CreateReservationParam toServiceParam(Long memberId) {
         return new CreateReservationParam(date, timeId, themeId, memberId);
     }

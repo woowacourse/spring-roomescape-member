@@ -1,16 +1,13 @@
 package roomescape.presentation.api.reservation.request;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
 import roomescape.application.reservation.dto.CreateReservationTimeParam;
 
 public record CreateReservationTimeRequest(
+        @NotNull(message = "startAt는 필수입니다.")
         LocalTime startAt
 ) {
-    public CreateReservationTimeRequest {
-        if (startAt == null) {
-            throw new IllegalArgumentException("예약 시간 정보가 누락되었습니다.");
-        }
-    }
 
     public CreateReservationTimeParam toServiceParam() {
         return new CreateReservationTimeParam(startAt);

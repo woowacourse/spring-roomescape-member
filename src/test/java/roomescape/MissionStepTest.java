@@ -123,12 +123,11 @@ public class MissionStepTest {
                 "email", "email@gmail.com",
                 "password", "password"
         );
-        String cookie = RestAssured
+        return RestAssured
                 .given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
                 .then().log().all().extract().header("Set-Cookie").split(";")[0];
-        return cookie;
     }
 }
