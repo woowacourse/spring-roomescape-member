@@ -5,9 +5,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.application.MemberService;
+import roomescape.application.auth.dto.MemberAuthRequest;
 import roomescape.application.dto.MemberDto;
-import roomescape.auth.dto.MemberAuthRequest;
 import roomescape.domain.Role;
+import roomescape.infrastructure.jwt.MemberAuthRequestExtractor;
 
 public class CheckAdminRoleInterceptor implements HandlerInterceptor {
 

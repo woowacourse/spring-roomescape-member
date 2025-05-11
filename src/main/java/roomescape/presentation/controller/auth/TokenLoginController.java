@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.presentation.controller.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -7,11 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.application.auth.AuthService;
+import roomescape.application.auth.dto.MemberAuthRequest;
+import roomescape.application.auth.dto.MemberAuthResponse;
+import roomescape.application.auth.dto.TokenRequest;
+import roomescape.application.auth.dto.TokenResponse;
 import roomescape.application.dto.MemberDto;
-import roomescape.auth.dto.MemberAuthRequest;
-import roomescape.auth.dto.MemberAuthResponse;
-import roomescape.auth.dto.TokenRequest;
-import roomescape.auth.dto.TokenResponse;
 import roomescape.infrastructure.AuthenticationPrincipal;
 
 @RestController

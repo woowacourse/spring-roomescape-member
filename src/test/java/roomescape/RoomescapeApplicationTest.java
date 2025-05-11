@@ -27,8 +27,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.auth.dto.MemberAuthResponse;
-import roomescape.auth.dto.TokenRequest;
+import roomescape.application.auth.dto.MemberAuthResponse;
+import roomescape.application.auth.dto.TokenRequest;
 import roomescape.domain.repository.dto.TimeDataWithBookingInfo;
 import roomescape.testFixture.JdbcHelper;
 

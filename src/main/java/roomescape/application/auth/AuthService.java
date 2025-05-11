@@ -1,14 +1,14 @@
-package roomescape.auth;
+package roomescape.application.auth;
 
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.application.MemberService;
+import roomescape.application.auth.dto.TokenRequest;
+import roomescape.application.auth.dto.TokenResponse;
 import roomescape.application.dto.MemberDto;
-import roomescape.auth.dto.TokenRequest;
-import roomescape.auth.dto.TokenResponse;
 import roomescape.exception.AuthorizationException;
 import roomescape.exception.NotFoundException;
-import roomescape.infrastructure.JwtTokenProvider;
+import roomescape.infrastructure.jwt.JwtTokenProvider;
 
 @Service
 public class AuthService {

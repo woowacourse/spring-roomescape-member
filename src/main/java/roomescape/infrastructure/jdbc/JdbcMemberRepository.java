@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.infrastructure.jdbc;
 
 import java.util.List;
 import java.util.Map;

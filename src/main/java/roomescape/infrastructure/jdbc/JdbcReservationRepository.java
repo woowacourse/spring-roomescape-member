@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.infrastructure.jdbc;
 
 import java.sql.Date;
 import java.time.LocalDate;

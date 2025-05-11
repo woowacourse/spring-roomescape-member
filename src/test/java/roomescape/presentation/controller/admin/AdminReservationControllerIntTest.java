@@ -23,7 +23,7 @@ import roomescape.application.dto.MemberDto;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ReservationRepository;
-import roomescape.infrastructure.JwtTokenProvider;
+import roomescape.infrastructure.jwt.JwtTokenProvider;
 import roomescape.testFixture.JdbcHelper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

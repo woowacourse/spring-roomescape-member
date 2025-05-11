@@ -1,8 +1,8 @@
-package roomescape.infrastructure;
+package roomescape.infrastructure.jwt;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
-import roomescape.auth.dto.MemberAuthRequest;
+import roomescape.application.auth.dto.MemberAuthRequest;
 
 @Component
 public class MemberAuthRequestExtractor {

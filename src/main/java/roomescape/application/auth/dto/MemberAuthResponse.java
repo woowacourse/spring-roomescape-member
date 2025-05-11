@@ -1,4 +1,4 @@
-package roomescape.auth.dto;
+package roomescape.application.auth.dto;
 
 import roomescape.application.dto.MemberDto;
 

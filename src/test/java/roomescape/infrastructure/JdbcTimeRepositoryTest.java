@@ -19,6 +19,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.ReservationTime;
+import roomescape.infrastructure.jdbc.JdbcTimeRepository;
 
 @JdbcTest
 @Import(JdbcTimeRepository.class)

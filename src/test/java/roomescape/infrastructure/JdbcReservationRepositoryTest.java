@@ -21,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.infrastructure.jdbc.JdbcReservationRepository;
 
 @JdbcTest
 @Import(JdbcReservationRepository.class)

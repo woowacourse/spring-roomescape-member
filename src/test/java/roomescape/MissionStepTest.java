@@ -29,7 +29,7 @@ import roomescape.application.dto.MemberDto;
 import roomescape.application.dto.ReservationDto;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.TimeRepository;
-import roomescape.infrastructure.JwtTokenProvider;
+import roomescape.infrastructure.jwt.JwtTokenProvider;
 import roomescape.presentation.controller.ReservationController;
 import roomescape.testFixture.JdbcHelper;
 
