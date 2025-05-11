@@ -103,13 +103,13 @@ public class ReservationService {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime reservationDateTime = reservation.getDateTime();
         if (reservationDateTime.isBefore(now)) {
-            throw new BadRequestException("과거 날짜/시간의 예약은 생성할 수 없습니다.");
+            throw new BadRequestException("과거 날짜는 예약할 수 없습니다.");
         }
     }
 
     private void validateDuplicated(Reservation reservation) {
         if (reservationRepository.existsByDateAndTimeId(reservation.getDate(), reservation.getTime().getId())) {
-            throw new ConflictException("해당 날짜에는 이미 예약이 존재합니다.");
+            throw new ConflictException("해당 날짜와 시간에 이미 예약이 존재합니다.");
         }
     }
 }
