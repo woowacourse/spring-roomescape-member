@@ -1,6 +1,9 @@
 package roomescape.business.service;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
@@ -8,15 +11,21 @@ import roomescape.business.domain.Member;
 import roomescape.exception.UnauthorizedException;
 import roomescape.persistence.dao.MemberDao;
 import roomescape.presentation.dto.LoginCheckResponse;
+import roomescape.presentation.dto.LoginMember;
 
 @Service
 public class AuthService {
 
-    final static String secretKey = "ThisSecretKeyIsOnlyUseLearningTestSoIsNotImportant1234567890Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-    final MemberDao memberDao;
+    private final static String secretKey = "ThisSecretKeyIsOnlyUseLearningTestSoIsNotImportant1234567890Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+
+    private final JwtParser jwtParser;
+    private final MemberDao memberDao;
 
     public AuthService(final MemberDao memberDao) {
         this.memberDao = memberDao;
+        jwtParser = Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .build();
     }
 
     public String login(final String email, final String password) {
@@ -37,12 +46,26 @@ public class AuthService {
     }
 
     public LoginCheckResponse getMemberNameByAccessToken(final String accessToken) {
+        final String name = parseClaims(accessToken).getPayload()
+                .get("name", String.class);
+        return new LoginCheckResponse(name);
+    }
+
+    public LoginMember getLoginMemberByAccessToken(final String accessToken) {
+        final Jws<Claims> claimsJws = parseClaims(accessToken);
+        final Long id = claimsJws.getPayload()
+                .get("id", Long.class);
+        final String name = claimsJws.getPayload()
+                .get("name", String.class);
+        final String email = claimsJws.getPayload()
+                .get("email", String.class);
+        // TODO: null 체크 해야 하나? get에서 null이면 터지나?
+        return new LoginMember(id, name, email);
+    }
+
+    public Jws<Claims> parseClaims(final String accessToken) {
         try {
-            final String name= Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                    .build()
-                    .parseSignedClaims(accessToken).getPayload().get("name",String.class);
-            return new LoginCheckResponse(name);
+            return jwtParser.parseSignedClaims(accessToken);
         } catch (JwtException e) {
             throw new UnauthorizedException("유효하지 않은 AccessToken 입니다.");
         }

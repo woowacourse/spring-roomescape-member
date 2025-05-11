@@ -1,9 +1,7 @@
 package roomescape.presentation.controller;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.business.service.AuthService;
-import roomescape.exception.UnauthorizedException;
 import roomescape.presentation.dto.LoginCheckResponse;
+import roomescape.presentation.dto.LoginMember;
 import roomescape.presentation.dto.LoginRequest;
 
 @Controller
@@ -31,7 +29,8 @@ public class LoginController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> login(@RequestBody final LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<Void> login(@RequestBody final LoginRequest loginRequest,
+                                      final HttpServletResponse response) {
         final String accessToken = authService.login(loginRequest.email(), loginRequest.password());
 
         Cookie cookie = new Cookie("token", accessToken);
@@ -44,18 +43,8 @@ public class LoginController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<LoginCheckResponse> checkLogin(final HttpServletRequest request) {
-        final String accessToken = getAccessToken(request);
-        final LoginCheckResponse loginCheckResponse = authService.getMemberNameByAccessToken(accessToken);
+    public ResponseEntity<LoginCheckResponse> checkLogin(final LoginMember loginMember) {
+        final LoginCheckResponse loginCheckResponse = new LoginCheckResponse(loginMember.name());
         return ResponseEntity.ok(loginCheckResponse);
-    }
-
-    private String getAccessToken(final HttpServletRequest request) {
-        return Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName()
-                        .equals("token"))
-                .findFirst()
-                .orElseThrow(() -> new UnauthorizedException("로그인 정보가 없습니다."))
-                .getValue();
     }
 }
