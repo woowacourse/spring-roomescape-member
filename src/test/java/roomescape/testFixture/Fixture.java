@@ -5,8 +5,8 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.application.dto.AdminReservationCreateDto;
 import roomescape.application.dto.ReservationCreateDto;
+import roomescape.application.dto.UserReservationCreateDto;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -25,14 +25,14 @@ public class Fixture {
     public static final Reservation RESERVATION_1 =
             Reservation.of(1L, MEMBER1_ADMIN, THEME_1, LocalDate.now().plusDays(1), RESERVATION_TIME_1);
 
-    public static final ReservationCreateDto RESERVATION_BODY = createReservationBody();
+    public static final UserReservationCreateDto RESERVATION_BODY = createUserReservationBody();
 
-    public static ReservationCreateDto createReservationBody() {
-        return new ReservationCreateDto(1L, LocalDate.now().plusDays(1), 1L);
+    public static UserReservationCreateDto createUserReservationBody() {
+        return new UserReservationCreateDto(1L, LocalDate.now().plusDays(1), 1L);
     }
 
-    public static AdminReservationCreateDto createAdminReservationCreateDto(Long memberId) {
-        return new AdminReservationCreateDto(LocalDate.now().plusDays(1), 1L, 1L, memberId);
+    public static ReservationCreateDto createReservationBody(Long memberId) {
+        return new ReservationCreateDto(LocalDate.now().plusDays(1), 1L, 1L, memberId);
     }
 
     public static void resetH2TableIds(JdbcTemplate jdbcTemplate) {

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.ReservationService;
-import roomescape.application.dto.AdminReservationCreateDto;
+import roomescape.application.dto.ReservationCreateDto;
 import roomescape.application.dto.ReservationDto;
 import roomescape.domain.repository.dto.ReservationSearchFilter;
 
@@ -25,8 +25,8 @@ public class AdminReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationDto> addReservation(@Valid @RequestBody AdminReservationCreateDto request) {
-        ReservationDto reservationDto = service.registerReservationByAdmin(request);
+    public ResponseEntity<ReservationDto> createReservation(@Valid @RequestBody ReservationCreateDto request) {
+        ReservationDto reservationDto = service.registerReservation(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationDto);
     }
 

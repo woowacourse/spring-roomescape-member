@@ -57,7 +57,7 @@ public class AdminReservationControllerIntTest {
 
     @DisplayName("/admin/reservations 요청 시 201 CREATED")
     @Test
-    public void request_addReservation() {
+    public void request_createReservation() {
         resetH2TableIds(jdbcTemplate);
         JdbcHelper.insertMember(jdbcTemplate, MEMBER1_ADMIN);
         JdbcHelper.insertMember(jdbcTemplate, MEMBER2_USER);
@@ -70,7 +70,7 @@ public class AdminReservationControllerIntTest {
         RestAssured.given().log().all()
                 .cookie("token", tokenForAdmin)
                 .contentType(ContentType.JSON)
-                .body(createAdminReservationCreateDto(2L))
+                .body(createReservationBody(2L))
                 .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201)
@@ -82,14 +82,14 @@ public class AdminReservationControllerIntTest {
 
     @DisplayName("관리자가 아닌 일반 유저가 POST /admin/reservations 요청 시 401 Unauthorized")
     @Test
-    public void request_addReservation_unauthorized() {
+    public void request_createReservation_unauthorized() {
         resetH2TableIds(jdbcTemplate);
         JdbcHelper.insertMember(jdbcTemplate, MEMBER2_USER);
 
         RestAssured.given().log().all()
                 .cookie("token", tokenForUser)
                 .contentType(ContentType.JSON)
-                .body(createAdminReservationCreateDto(2L))
+                .body(createReservationBody(2L))
                 .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(401);

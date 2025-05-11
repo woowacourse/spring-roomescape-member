@@ -16,9 +16,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.application.dto.MemberDto;
-import roomescape.application.dto.ReservationCreateDto;
 import roomescape.application.dto.ReservationDto;
 import roomescape.application.dto.TimeDto;
+import roomescape.application.dto.UserReservationCreateDto;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.NotFoundException;
@@ -58,10 +58,10 @@ class ReservationServiceTest {
         LocalDate date = LocalDate.now().plusDays(1);
         Long timeId = 1L;
 
-        ReservationCreateDto reservationCreateDto = new ReservationCreateDto(1L, date, timeId);
+        UserReservationCreateDto userReservationCreateDto = new UserReservationCreateDto(1L, date, timeId);
 
         // when
-        ReservationDto reservationDto = reservationService.registerReservation(reservationCreateDto, 1L);
+        ReservationDto reservationDto = reservationService.registerReservationByUser(userReservationCreateDto, 1L);
 
         // then
         assertAll(
@@ -79,10 +79,11 @@ class ReservationServiceTest {
         LocalDate date = LocalDate.now().plusDays(1);
         Long timeId = 999L;
 
-        ReservationCreateDto reservationCreateDto = new ReservationCreateDto(1L, date, timeId);
+        UserReservationCreateDto userReservationCreateDto = new UserReservationCreateDto(1L, date, timeId);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.registerReservation(reservationCreateDto, MEMBER1.getId()))
+        assertThatThrownBy(
+                () -> reservationService.registerReservationByUser(userReservationCreateDto, MEMBER1_ADMIN.getId()))
                 .isInstanceOf(NotFoundException.class);
     }
 
@@ -101,10 +102,11 @@ class ReservationServiceTest {
         reservationRepository.save(reservation);
 
         // when
-        ReservationCreateDto reservationCreateDto = new ReservationCreateDto(1L, date, timeId);
+        UserReservationCreateDto userReservationCreateDto = new UserReservationCreateDto(1L, date, timeId);
 
         // then
-        assertThatThrownBy(() -> reservationService.registerReservation(reservationCreateDto, MEMBER2.getId()))
+        assertThatThrownBy(
+                () -> reservationService.registerReservationByUser(userReservationCreateDto, MEMBER2_USER.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -156,10 +158,10 @@ class ReservationServiceTest {
         Long timeId = timeRepository.save(ReservationTime.withoutId(LocalTime.of(10, 0)));
 
         // when
-        ReservationCreateDto request = new ReservationCreateDto(1L, date, timeId);
+        UserReservationCreateDto request = new UserReservationCreateDto(1L, date, timeId);
 
         // then
-        assertThatThrownBy(() -> reservationService.registerReservation(request, MEMBER1.getId()))
+        assertThatThrownBy(() -> reservationService.registerReservationByUser(request, MEMBER1_ADMIN.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -174,10 +176,10 @@ class ReservationServiceTest {
         reservationRepository.save(reservation);
 
         // when
-        ReservationCreateDto request = new ReservationCreateDto(1L, date, timeId);
+        UserReservationCreateDto request = new UserReservationCreateDto(1L, date, timeId);
 
         // then
-        assertThatThrownBy(() -> reservationService.registerReservation(request, MEMBER1.getId()))
+        assertThatThrownBy(() -> reservationService.registerReservationByUser(request, MEMBER1_ADMIN.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

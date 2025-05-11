@@ -3,9 +3,9 @@ package roomescape.application;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.application.dto.AdminReservationCreateDto;
 import roomescape.application.dto.ReservationCreateDto;
 import roomescape.application.dto.ReservationDto;
+import roomescape.application.dto.UserReservationCreateDto;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -35,22 +35,21 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationDto registerReservation(ReservationCreateDto request, Long memberId) {
+    public ReservationDto registerReservationByUser(UserReservationCreateDto request, Long memberId) {
+        return registerReservation(ReservationCreateDto.of(request, memberId));
+    }
+
+    @Transactional
+    public ReservationDto registerReservation(ReservationCreateDto request) {
         Theme theme = themeService.getThemeById(request.themeId()).toEntity();
         ReservationTime reservationTime = timeService.getTimeById(request.timeId()).toEntity();
-        Member member = memberService.getMemberById(memberId).toEntity();
+        Member member = memberService.getMemberById(request.memberId()).toEntity();
         Reservation reservation = Reservation.withoutId(member, theme, request.date(), reservationTime);
         validateNotPast(reservation);
         validateNotDuplicate(reservation);
         Long id = reservationRepository.save(reservation);
 
         return ReservationDto.from(Reservation.assignId(id, reservation));
-    }
-
-    @Transactional
-    public ReservationDto registerReservationByAdmin(AdminReservationCreateDto request) {
-        return registerReservation(new ReservationCreateDto(request.themeId(), request.date(),
-                request.timeId()), request.memberId());
     }
 
     private void validateNotDuplicate(Reservation reservation) {

@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.ReservationService;
-import roomescape.application.dto.ReservationCreateDto;
 import roomescape.application.dto.ReservationDto;
+import roomescape.application.dto.UserReservationCreateDto;
 import roomescape.auth.dto.MemberAuthRequest;
 import roomescape.infrastructure.AuthenticationPrincipal;
 
@@ -33,10 +33,11 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationDto> addReservation(@Valid @RequestBody ReservationCreateDto request,
-                                                         @AuthenticationPrincipal
-                                                         MemberAuthRequest authRequest) {
-        ReservationDto reservationDto = service.registerReservation(request, authRequest.id());
+    public ResponseEntity<ReservationDto> createReservation(
+            @Valid @RequestBody UserReservationCreateDto request,
+            @AuthenticationPrincipal MemberAuthRequest authRequest
+    ) {
+        ReservationDto reservationDto = service.registerReservationByUser(request, authRequest.id());
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationDto);
     }
 

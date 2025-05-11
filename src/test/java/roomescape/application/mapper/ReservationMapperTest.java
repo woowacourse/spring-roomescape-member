@@ -14,8 +14,8 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.application.dto.MemberDto;
-import roomescape.application.dto.ReservationCreateDto;
 import roomescape.application.dto.ReservationDto;
+import roomescape.application.dto.UserReservationCreateDto;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
@@ -27,7 +27,7 @@ class ReservationMapperTest {
         // given
         LocalDate reservationDate = LocalDate.of(2024, 4, 1);
         ReservationTime reservationTime = ReservationTime.of(1L, LocalTime.of(10, 0));
-        ReservationCreateDto request = new ReservationCreateDto(1L, reservationDate, 1L);
+        UserReservationCreateDto request = new UserReservationCreateDto(1L, reservationDate, 1L);
 
         // when
         Reservation reservation = Reservation.withoutId(MEMBER1_ADMIN, THEME_1, request.date(), reservationTime);
