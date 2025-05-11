@@ -39,6 +39,7 @@ public class JdbcMemberRepository implements MemberRepository {
         String query = "SELECT * FROM member WHERE id = :memberId";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("memberId", memberId);
+
         try {
             Member member = jdbcTemplate.queryForObject(query, params, rowMapper);
             return Optional.of(member);

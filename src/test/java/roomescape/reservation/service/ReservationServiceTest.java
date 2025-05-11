@@ -3,7 +3,7 @@ package roomescape.reservation.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.auth.entity.LoginMember;
+import roomescape.auth.service.dto.response.LoginMemberResponse;
 import roomescape.auth.entity.Member;
 import roomescape.auth.entity.Role;
 import roomescape.auth.repository.FakeMemberRepository;
@@ -32,7 +32,6 @@ class ReservationServiceTest {
     private final ReservationTimeRepository timeRepository = new FakeTimeRepository();
     private final ThemeRepository themeRepository = new FakeThemeRepository(reservationRepository);
     private final MemberRepository memberRepository = new FakeMemberRepository();
-    // TODO: memberRepository 연결
     private final ReservationService service = new ReservationService(
             reservationRepository,
             timeRepository,
@@ -41,16 +40,16 @@ class ReservationServiceTest {
     );
 
     private final long themeId = 1L;
-    private final LoginMember loginMember = new LoginMember(1L, "test", "test@example.com", Role.USER.name());
+    private final LoginMemberResponse loginMemberResponse = new LoginMemberResponse(1L, "test", "test@example.com", Role.USER);
 
     @BeforeEach
     void setupTheme() {
         themeRepository.save(new Theme(themeId, "theme", "hello", "hi"));
         memberRepository.save(new Member(
-                loginMember.getId(),
-                loginMember.getName(),
-                loginMember.getRole().name(),
-                loginMember.getEmail(),
+                loginMemberResponse.id(),
+                loginMemberResponse.name(),
+                loginMemberResponse.role().name(),
+                loginMemberResponse.email(),
                 "password"
         ));
     }
@@ -62,7 +61,7 @@ class ReservationServiceTest {
         LocalDate now = LocalDate.now();
         CreateReservationRequest request = new CreateReservationRequest(
                 now.plusDays(1),
-                loginMember.getId(),
+                loginMemberResponse.id(),
                 1L,
                 themeId
         );
@@ -84,7 +83,7 @@ class ReservationServiceTest {
         LocalDate now = LocalDate.now();
         CreateReservationRequest request = new CreateReservationRequest(
                 now.minusDays(1),
-                loginMember.getId(),
+                loginMemberResponse.id(),
                 timeId,
                 themeId
         );
@@ -104,13 +103,13 @@ class ReservationServiceTest {
 
         final long timeId = 1L;
         ReservationTime timeEntity = new ReservationTime(timeId, LocalTime.of(12, 0));
-        Reservation reservation = new Reservation(1L, loginMember.getId(), date, timeEntity, themeId);
+        Reservation reservation = new Reservation(1L, loginMemberResponse.id(), date, timeEntity, themeId);
         timeRepository.save(timeEntity);
         reservationRepository.save(reservation);
 
         CreateReservationRequest request = new CreateReservationRequest(
                 now.plusDays(1),
-                loginMember.getId(),
+                loginMemberResponse.id(),
                 timeId,
                 themeId
         );
@@ -132,7 +131,7 @@ class ReservationServiceTest {
         LocalDate now = LocalDate.now();
         LocalDate date = now.minusDays(1);
 
-        CreateReservationRequest request = new CreateReservationRequest(date, loginMember.getId(), timeId, themeId);
+        CreateReservationRequest request = new CreateReservationRequest(date, loginMemberResponse.id(), timeId, themeId);
 
         // when & then
         assertThatThrownBy(() -> {

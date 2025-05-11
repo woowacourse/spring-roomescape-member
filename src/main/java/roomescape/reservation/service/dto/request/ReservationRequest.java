@@ -1,7 +1,7 @@
 package roomescape.reservation.service.dto.request;
 
 import jakarta.validation.constraints.NotNull;
-import roomescape.auth.entity.LoginMember;
+import roomescape.auth.service.dto.response.LoginMemberResponse;
 import roomescape.reservation.entity.Reservation;
 import roomescape.time.entity.ReservationTime;
 
@@ -15,7 +15,7 @@ public record ReservationRequest(
         @NotNull(message = "테마가 선택되지 않았습니다.")
         Long themeId
 ) {
-    public Reservation toEntity(LoginMember loginMember, ReservationTime timeEntity) {
-        return new Reservation(0L, loginMember.getId(), date, timeEntity, themeId);
+    public Reservation toEntity(LoginMemberResponse loginMemberResponse, ReservationTime timeEntity) {
+        return new Reservation(0L, loginMemberResponse.id(), date, timeEntity, themeId);
     }
 }

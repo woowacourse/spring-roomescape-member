@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.entity.LoginMember;
+import roomescape.auth.service.dto.response.LoginMemberResponse;
 import roomescape.auth.entity.Role;
 import roomescape.auth.service.MemberAuthService;
 import roomescape.global.exception.forbidden.ForbiddenException;
@@ -23,8 +23,8 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = tokenCookieProvider.extractToken(request);
-        LoginMember loginMember = authService.getLoginMemberByToken(token);
-        if (loginMember.hasRole(Role.ADMIN)) {
+        LoginMemberResponse loginMemberResponse = authService.getLoginMemberByToken(token);
+        if (loginMemberResponse.hasRole(Role.ADMIN)) {
             return true;
         }
         throw new ForbiddenException("접근 권한이 없습니다.");
