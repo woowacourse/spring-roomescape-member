@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.global.auth.annotation.MemberPrincipal;
-import roomescape.global.auth.domain.LoginMember;
+import roomescape.global.auth.dto.UserInfo;
 import roomescape.reservation.dto.request.AdminReservationCreateRequest;
 import roomescape.reservation.dto.request.ReservationCreateRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
@@ -33,17 +33,17 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> createReservation(
-            @MemberPrincipal LoginMember loginMember,
+            @MemberPrincipal UserInfo userInfo,
             @RequestBody ReservationCreateRequest request
     ) {
         ReservationResponse dto = reservationService.create(request.date(), request.timeId(), request.themeId(),
-                loginMember.id(), LocalDateTime.now());
+                userInfo.id(), LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> deleteReservations(
-            @MemberPrincipal LoginMember loginMember,
+            @MemberPrincipal UserInfo userInfo,
             @PathVariable("id") Long id
     ) {
         reservationService.delete(id);
@@ -53,7 +53,7 @@ public class ReservationController {
 
     @PostMapping("/admin/reservations")
     public ResponseEntity<ReservationResponse> createReservation(
-            @MemberPrincipal LoginMember loginMember,
+            @MemberPrincipal UserInfo userInfo,
             @RequestBody AdminReservationCreateRequest request
     ) {
         ReservationResponse dto = reservationService.create(request.date(), request.timeId(), request.themeId(),

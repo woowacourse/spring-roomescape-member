@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import roomescape.global.auth.annotation.MemberPrincipal;
-import roomescape.global.auth.domain.LoginMember;
+import roomescape.global.auth.dto.UserInfo;
 import roomescape.global.auth.dto.CheckLoginResponse;
 import roomescape.global.auth.dto.LoginRequest;
 import roomescape.global.auth.dto.LoginResponse;
@@ -44,13 +44,13 @@ public class AuthController {
 
     @GetMapping("/login/check")
     @ResponseBody
-    public ResponseEntity<CheckLoginResponse> checkLogin(final @MemberPrincipal LoginMember loginMember) {
-        return ResponseEntity.ok(CheckLoginResponse.from(loginMember));
+    public ResponseEntity<CheckLoginResponse> checkLogin(final @MemberPrincipal UserInfo userInfo) {
+        return ResponseEntity.ok(CheckLoginResponse.from(userInfo));
     }
 
     @PostMapping("/logout")
     @ResponseBody
-    public ResponseEntity<Void> logout(final @MemberPrincipal LoginMember loginMember,
+    public ResponseEntity<Void> logout(final @MemberPrincipal UserInfo userInfo,
                                        final HttpServletResponse httpServletResponse) {
         cookieManager.deleteCookie(httpServletResponse, TOKEN);
         return ResponseEntity.noContent().build();
