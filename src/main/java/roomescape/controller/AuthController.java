@@ -10,18 +10,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import roomescape.application.dto.LoginRequest;
 import roomescape.application.dto.MemberResponse;
-import roomescape.application.service.LoginService;
+import roomescape.application.service.AuthService;
 import roomescape.domain.Member;
 import roomescape.global.config.AuthenticationPrincipal;
 
 @Controller
 @RequestMapping("/login")
-public class LoginController {
+public class AuthController {
 
-    private final LoginService loginService;
+    private final AuthService authService;
 
-    public LoginController(LoginService loginService) {
-        this.loginService = loginService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @GetMapping
@@ -31,20 +31,23 @@ public class LoginController {
 
     @GetMapping("check")
     @ResponseBody
-    public MemberResponse readMemberName(@AuthenticationPrincipal Member member) {
+    public MemberResponse checkAuthentication(@AuthenticationPrincipal Member member) {
         return new MemberResponse(member);
     }
 
     @PostMapping
     @ResponseBody
-    public void authenticate(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public void login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        String token = authService.createTokenForAuthenticatedMember(loginRequest);
 
-        String token = loginService.createTokenForAuthenticatedMember(loginRequest);
+        Cookie cookie = createTokenCookie(token);
+        response.addCookie(cookie);
+    }
 
+    private Cookie createTokenCookie(String token) {
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-
-        response.addCookie(cookie);
+        return cookie;
     }
 }

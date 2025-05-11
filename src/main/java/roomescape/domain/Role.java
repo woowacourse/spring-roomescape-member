@@ -2,5 +2,9 @@ package roomescape.domain;
 
 public enum Role {
     ADMIN,
-    USER
+    USER;
+
+    public boolean isNotAdmin() {
+        return this != ADMIN;
+    }
 }

@@ -14,7 +14,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class LoginControllerTest {
+class AuthControllerTest {
 
     @Test
     @DisplayName("로그인 요청 성공 시 토큰 쿠키를 반환한다")

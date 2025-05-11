@@ -25,4 +25,9 @@ public class MemberService {
         return memberDao.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 회원 정보가 없습니다."));
     }
+
+    public Member findByEmail(String email) {
+        return memberDao.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 회원 정보가 없습니다."));
+    }
 }
