@@ -3,6 +3,7 @@ package roomescape.presentation.dto.response;
 import roomescape.business.model.entity.Reservation;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 public record ReservationResponse(
@@ -15,6 +16,7 @@ public record ReservationResponse(
     public static List<ReservationResponse> from(List<Reservation> reservations) {
         return reservations.stream()
                 .map(ReservationResponse::from)
+                .sorted(Comparator.comparing(ReservationResponse::date))
                 .toList();
     }
 

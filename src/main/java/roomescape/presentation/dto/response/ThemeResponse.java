@@ -2,6 +2,7 @@ package roomescape.presentation.dto.response;
 
 import roomescape.business.model.entity.Theme;
 
+import java.util.Comparator;
 import java.util.List;
 
 public record ThemeResponse(
@@ -13,6 +14,7 @@ public record ThemeResponse(
     public static List<ThemeResponse> from(List<Theme> theme) {
         return theme.stream()
                 .map(ThemeResponse::from)
+                .sorted(Comparator.comparing(ThemeResponse::name))
                 .toList();
     }
 

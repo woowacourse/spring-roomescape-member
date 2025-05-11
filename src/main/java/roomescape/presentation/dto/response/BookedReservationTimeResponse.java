@@ -3,6 +3,7 @@ package roomescape.presentation.dto.response;
 import roomescape.business.model.entity.ReservationTime;
 
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ public record BookedReservationTimeResponse(
                                 !entry.getKey()
                         ))
                 )
+                .sorted(Comparator.comparing(BookedReservationTimeResponse::startAt))
                 .toList();
 
     }
