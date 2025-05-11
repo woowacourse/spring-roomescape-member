@@ -42,6 +42,16 @@ public class MemberService {
         return MemberSearchResponse.from(findMember.getName());
     }
 
+    public Member searchLoginMember(String token) {
+        Long id = Long.valueOf(Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody().getSubject());
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+    }
+
     public SignupResponse add(SignupRequest request) {
         Member member = request.toMemberWithoutId();
         Long id = memberRepository.saveAndReturnId(member);

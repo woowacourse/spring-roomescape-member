@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.member.controller.dto.LoginMember;
+import roomescape.reservation.controller.dto.MemberReservationRequest;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
@@ -32,6 +34,7 @@ public class ReservationController {
         return reservationService.getAll();
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/available-times")
     public List<AvailableTimeResponse> getAvailableTimes(@RequestParam LocalDate date, @RequestParam Long themeId) {
         return reservationService.getAvailableTimes(date, themeId);
@@ -39,8 +42,11 @@ public class ReservationController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ReservationResponse addReservation(@RequestBody ReservationRequest request) {
-        return reservationService.add(request);
+    public ReservationResponse addMemberReservation(@RequestBody MemberReservationRequest memberRequest,
+                                                    LoginMember loginMember) {
+        ReservationRequest reservationRequest = new ReservationRequest(memberRequest.date(), memberRequest.timeId(),
+                memberRequest.themeId(), loginMember.id());
+        return reservationService.add(reservationRequest);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
