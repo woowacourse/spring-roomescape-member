@@ -9,9 +9,9 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.member.model.Member;
-import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationDate;
-import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.reservation.model.Reservation;
+import roomescape.domain.reservation.model.ReservationDate;
+import roomescape.domain.reservationtime.model.ReservationTime;
 import roomescape.domain.theme.model.Theme;
 
 class ReservationTest {

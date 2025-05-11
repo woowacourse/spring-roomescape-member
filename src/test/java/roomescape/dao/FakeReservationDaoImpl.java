@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.dao.ReservationDao;
+import roomescape.domain.reservation.model.Reservation;
+import roomescape.domain.reservation.model.ReservationDate;
 
 public class FakeReservationDaoImpl implements ReservationDao {
 
@@ -56,5 +56,10 @@ public class FakeReservationDaoImpl implements ReservationDao {
         return reservations.stream()
             .anyMatch(reservation -> reservation.getReservationDate().equals(date)
                 && reservation.getTimeId() == timeId);
+    }
+
+    @Override
+    public List<Reservation> findOf(String dateFrom, String dateTo, Long memberId, Long themeId) {
+        return List.of();
     }
 }

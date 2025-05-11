@@ -3,7 +3,7 @@ package roomescape.domain.reservationtime.dto.request;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.reservationtime.model.ReservationTime;
 
 public record ReservationTimeRequestDto(String startAt) {
 

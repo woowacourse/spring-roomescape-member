@@ -1,7 +1,7 @@
 package roomescape.domain.reservationtime.dto.response;
 
 import java.time.format.DateTimeFormatter;
-import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.reservationtime.model.ReservationTime;
 
 public record ReservationTimeResponseDto(long id, String startAt) {
 

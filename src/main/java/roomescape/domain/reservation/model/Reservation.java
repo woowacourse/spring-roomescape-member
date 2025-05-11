@@ -1,10 +1,10 @@
-package roomescape.domain.reservation;
+package roomescape.domain.reservation.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import roomescape.domain.member.model.Member;
-import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.reservationtime.model.ReservationTime;
 import roomescape.domain.theme.model.Theme;
 
 public class Reservation {

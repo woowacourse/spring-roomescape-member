@@ -2,8 +2,8 @@ package roomescape.domain.reservationtime.dao;
 
 import java.util.List;
 import java.util.Optional;
-import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.dto.response.BookedReservationTimeResponseDto;
+import roomescape.domain.reservationtime.model.ReservationTime;
 
 public interface ReservationTimeDao {
 

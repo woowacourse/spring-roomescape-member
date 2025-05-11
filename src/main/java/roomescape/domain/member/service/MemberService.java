@@ -2,40 +2,42 @@ package roomescape.domain.member.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.member.dao.MemberDao;
 import roomescape.domain.member.dto.request.MemberRequestDto;
 import roomescape.domain.member.dto.response.MemberResponseDto;
 import roomescape.domain.member.dto.response.MemberResponseDtoOfNames;
 import roomescape.domain.member.model.Member;
-import roomescape.domain.member.repository.MemberRepository;
 
 @Service
 public class MemberService {
 
-    private final MemberRepository memberRepository;
+    private final MemberDao memberDao;
 
-    public MemberService(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
+    public MemberService(MemberDao memberDao) {
+        this.memberDao = memberDao;
     }
 
     public MemberResponseDto saveMember(MemberRequestDto memberRequestDto) {
         Member member = Member.createUser(memberRequestDto.name(), memberRequestDto.email(),
             memberRequestDto.password());
-        memberRepository.save(member);
+        long savedId = memberDao.save(member);
+        member.setId(savedId);
         return MemberResponseDto.from(member);
     }
 
     public Member getMemberOf(String email, String password) {
-        return memberRepository.findByEmailAndPassword(email, password);
+        return memberDao.findByEmailAndPassword(email, password)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
 
     public Member getMemberFrom(String email) {
-        return memberRepository.findByEmail(email);
+        return memberDao.findByEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
 
     public List<MemberResponseDtoOfNames> getAllMembers() {
-        return memberRepository.findAll().stream()
+        return memberDao.findAll().stream()
             .map(MemberResponseDtoOfNames::from)
             .toList();
     }
-
 }

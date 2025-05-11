@@ -2,23 +2,29 @@ package roomescape.domain.reservationtime.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.reservation.dao.ReservationDao;
+import roomescape.domain.reservationtime.dao.ReservationTimeDao;
 import roomescape.domain.reservationtime.dto.request.ReservationTimeRequestDto;
 import roomescape.domain.reservationtime.dto.response.BookedReservationTimeResponseDto;
 import roomescape.domain.reservationtime.dto.response.ReservationTimeResponseDto;
-import roomescape.domain.reservationtime.repository.ReservationTimeRepository;
+import roomescape.domain.reservationtime.model.ReservationTime;
+import roomescape.global.exception.InvalidReservationException;
 
 @Service
 public class ReservationTimeService {
 
-    private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationTimeDao reservationTimeDao;
+    private final ReservationDao reservationDao;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
-        this.reservationTimeRepository = reservationTimeRepository;
+    public ReservationTimeService(
+        ReservationTimeDao reservationTimeDao,
+        ReservationDao reservationDao) {
+        this.reservationTimeDao = reservationTimeDao;
+        this.reservationDao = reservationDao;
     }
 
     public List<ReservationTimeResponseDto> getAllReservationTimes() {
-        return reservationTimeRepository.findAll().stream()
+        return reservationTimeDao.findAll().stream()
             .map(ReservationTimeResponseDto::from)
             .toList();
     }
@@ -26,16 +32,26 @@ public class ReservationTimeService {
     public ReservationTimeResponseDto saveReservationTime(
         ReservationTimeRequestDto reservationTimeRequestDto) {
         ReservationTime reservationTime = reservationTimeRequestDto.toReservationTime();
-        reservationTimeRepository.save(reservationTime);
+        long savedId = reservationTimeDao.save(reservationTime);
+        reservationTime.setId(savedId);
         return ReservationTimeResponseDto.from(reservationTime);
     }
 
     public void deleteReservationTime(Long id) {
-        reservationTimeRepository.delete(id);
+        findById(id);
+        if (reservationDao.existReservationByTime(id)) {
+            throw new InvalidReservationException("이미 예약된 예약 시간을 삭제할 수 없습니다.");
+        }
+        reservationTimeDao.delete(id);
+    }
+
+    public void findById(Long id) {
+        reservationTimeDao.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 예약시간을 찾을 수 없습니다"));
     }
 
     public List<BookedReservationTimeResponseDto> getTimesContainsReservationInfoBy(String date,
         Long themeId) {
-        return reservationTimeRepository.findBooked(date, themeId);
+        return reservationTimeDao.findBooked(date, themeId);
     }
 }

@@ -9,8 +9,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.dto.response.BookedReservationTimeResponseDto;
+import roomescape.domain.reservationtime.model.ReservationTime;
 
 @Repository
 public class JdbcReservationTimeDaoImpl implements ReservationTimeDao {

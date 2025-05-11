@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -13,25 +13,24 @@ import roomescape.dao.FakeReservationDaoImpl;
 import roomescape.dao.FakeReservationTimeDaoImpl;
 import roomescape.dao.FakeThemeDaoImpl;
 import roomescape.domain.member.dao.MemberDao;
-import roomescape.domain.reservation.dao.ReservationDao;
-import roomescape.domain.reservationtime.dao.ReservationTimeDao;
-import roomescape.domain.reservationtime.repository.ReservationTimeRepository;
-import roomescape.domain.theme.dao.ThemeDao;
 import roomescape.domain.member.model.Member;
-import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationDate;
-import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.reservation.dao.ReservationDao;
+import roomescape.domain.reservation.model.Reservation;
+import roomescape.domain.reservation.model.ReservationDate;
+import roomescape.domain.reservationtime.dao.ReservationTimeDao;
+import roomescape.domain.reservationtime.model.ReservationTime;
+import roomescape.domain.reservationtime.service.ReservationTimeService;
+import roomescape.domain.theme.dao.ThemeDao;
 import roomescape.domain.theme.model.Theme;
 import roomescape.global.exception.InvalidReservationException;
-import roomescape.domain.reservationtime.repository.ReservationTimeRepositoryImpl;
 
-public class ReservationTimeRepositoryTest {
+public class ReservationTimeServiceTest {
 
     private MemberDao memberDao;
     private ReservationTimeDao reservationTimeDao;
     private ReservationDao reservationDao;
     private ThemeDao themeDao;
-    private ReservationTimeRepository reservationTimeRepository;
+    private ReservationTimeService reservationTimeService;
 
     @BeforeEach
     void init() {
@@ -39,14 +38,14 @@ public class ReservationTimeRepositoryTest {
         reservationTimeDao = new FakeReservationTimeDaoImpl();
         reservationDao = new FakeReservationDaoImpl();
         themeDao = new FakeThemeDaoImpl();
-        reservationTimeRepository = new ReservationTimeRepositoryImpl(
+        reservationTimeService = new ReservationTimeService(
             reservationTimeDao, reservationDao);
     }
 
     @DisplayName("존재하지 않는 예약 시간을 삭제하려고 할 경우, 예외가 발생해야 한다.")
     @Test
     void delete_not_exist_reservation_id_then_throw_exception() {
-        assertThatThrownBy(() -> reservationTimeRepository.delete(10000L))
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(10000L))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -57,7 +56,7 @@ public class ReservationTimeRepositoryTest {
         long savedReservationTimeId = reservationTimeDao.save(reservationTime);
         reservationTime.setId(savedReservationTimeId);
         assertThatCode(
-            () -> reservationTimeRepository.delete(savedReservationTimeId))
+            () -> reservationTimeService.deleteReservationTime(savedReservationTimeId))
             .doesNotThrowAnyException();
     }
 
@@ -90,7 +89,7 @@ public class ReservationTimeRepositoryTest {
 
         //when
         assertThatThrownBy(
-            () -> reservationTimeRepository.delete(savedReservationTimeId))
+            () -> reservationTimeService.deleteReservationTime(savedReservationTimeId))
             .isInstanceOf(InvalidReservationException.class)
             .hasMessage("이미 예약된 예약 시간을 삭제할 수 없습니다.");
     }
@@ -98,7 +97,7 @@ public class ReservationTimeRepositoryTest {
     @Test
     @DisplayName("존재하지 않는 예약 시간 id를 조회하려고 할 경우, 예외가 발생해야 한다.")
     void not_exist_reservation_id_then_throw_exception() {
-        assertThatThrownBy(() -> reservationTimeRepository.findById(999999L))
+        assertThatThrownBy(() -> reservationTimeService.findById(999999L))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -110,7 +109,7 @@ public class ReservationTimeRepositoryTest {
         reservationTime.setId(savedReservationTimeId);
 
         assertThatCode(
-            () -> reservationTimeRepository.findById(savedReservationTimeId))
+            () -> reservationTimeService.findById(savedReservationTimeId))
             .doesNotThrowAnyException();
     }
 }

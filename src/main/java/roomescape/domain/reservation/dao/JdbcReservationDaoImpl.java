@@ -13,10 +13,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.member.model.Member;
-import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationDate;
-import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.member.model.Role;
+import roomescape.domain.reservation.model.Reservation;
+import roomescape.domain.reservation.model.ReservationDate;
+import roomescape.domain.reservationtime.model.ReservationTime;
 import roomescape.domain.theme.model.Theme;
 
 @Repository
