@@ -51,6 +51,11 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
+    public List<Reservation> findByDateBetween(final String startDate, final String endDate) {
+        return List.of();
+    }
+
+    @Override
     public boolean deleteById(final Long id) {
         int beforeSize = reservations.size();
         reservations.removeIf(reservation -> reservation.getId().equals(id));

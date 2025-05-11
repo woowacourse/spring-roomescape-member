@@ -4,23 +4,46 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import roomescape.business.domain.Theme;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.NotFoundException;
-import roomescape.fake.FakeThemeDao;
+import roomescape.persistence.dao.JdbcReservationDao;
+import roomescape.persistence.dao.JdbcThemeDao;
+import roomescape.persistence.dao.ReservationDao;
+import roomescape.persistence.dao.ThemeDao;
 import roomescape.presentation.dto.ThemeRequest;
 import roomescape.presentation.dto.ThemeResponse;
+import roomescape.util.CurrentUtil;
 
+@JdbcTest
+@Sql("classpath:data-themeService.sql")
 class ThemeServiceTest {
 
     private ThemeService themeService;
+    private final JdbcTemplate jdbcTemplate;
+    private final ThemeDao themeDao;
+
+    @Autowired
+    public ThemeServiceTest(final JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.themeDao = new JdbcThemeDao(jdbcTemplate);
+    }
 
     @BeforeEach
     void setUp() {
-        themeService = new ThemeService(new FakeThemeDao());
+        final ReservationDao reservationDao = new JdbcReservationDao(jdbcTemplate);
+        final CurrentUtil currentUtil = () -> LocalDate.of(2025, 5, 10);
+        themeService = new ThemeService(themeDao, reservationDao, currentUtil);
     }
 
     @Test
@@ -56,16 +79,13 @@ class ThemeServiceTest {
     @DisplayName("모든 테마를 조회한다")
     void findAll() {
         // given
-        final ThemeRequest themeRequest1 = new ThemeRequest("테마", "소개", "썸네일");
-        final ThemeRequest themeRequest2 = new ThemeRequest("테마2", "소개2", "썸네일2");
-        themeService.insert(themeRequest1);
-        themeService.insert(themeRequest2);
+        // data-themeService.sql
 
         // when
         final List<ThemeResponse> themeResponses = themeService.findAll();
 
         // then
-        assertThat(themeResponses).hasSize(2);
+        assertThat(themeResponses).hasSize(4);
     }
 
     @Test
@@ -105,13 +125,14 @@ class ThemeServiceTest {
         // given
         final ThemeRequest themeRequest = new ThemeRequest("테마", "소개", "썸네일");
         final ThemeResponse themeResponse = themeService.insert(themeRequest);
+        final Long id = themeResponse.id();
 
         // when
-        themeService.deleteById(themeResponse.id());
+        themeService.deleteById(id);
 
         // then
-        final List<ThemeResponse> themeResponses = themeService.findAll();
-        assertThat(themeResponses).isEmpty();
+        Optional<Theme> findTheme = themeDao.findById(id);
+        assertThat(findTheme).isEmpty();
     }
 
     @Test
@@ -123,5 +144,28 @@ class ThemeServiceTest {
         // when & then
         assertThatThrownBy(() -> themeService.deleteById(notExistsId))
                 .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("인기 테마를 조회한다")
+    void findPopularThemes() {
+        // given
+        // data-themeService.sql
+        // 총 4개의 테마가 있고, `강추`, `추천`, `평범`, `미예약` 이름 순으로 인기가 많다.
+
+        // when
+        final List<ThemeResponse> themeResponses = themeService.findPopularThemes();
+
+        // then
+        assertAll(
+                () -> assertThat(themeResponses.get(0)
+                        .name()).isEqualTo("강추"),
+                () -> assertThat(themeResponses.get(1)
+                        .name()).isEqualTo("추천"),
+                () -> assertThat(themeResponses.get(2)
+                        .name()).isEqualTo("평범"),
+                () -> assertThat(themeResponses.get(3)
+                        .name()).isEqualTo("미예약")
+        );
     }
 }

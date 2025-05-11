@@ -57,9 +57,4 @@ public class FakeThemeDao implements ThemeDao {
         return themes.stream()
                 .anyMatch(theme -> theme.getName().equals(name));
     }
-
-    @Override
-    public List<Theme> findPopularThemesBetween(final String startDate, final String endDate) {
-        return null;
-    }
 }

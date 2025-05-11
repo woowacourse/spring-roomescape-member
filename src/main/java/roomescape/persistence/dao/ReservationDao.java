@@ -13,6 +13,8 @@ public interface ReservationDao {
 
     Optional<Reservation> findById(Long id);
 
+    List<Reservation> findByDateBetween(String startDate, String endDate);
+
     List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
 
     boolean deleteById(Long id);

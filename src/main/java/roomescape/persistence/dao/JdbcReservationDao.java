@@ -119,6 +119,31 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
+    public List<Reservation> findByDateBetween(final String startDate, final String endDate) {
+        final String sql = """
+                SELECT
+                    r.id AS id,
+                    r.name AS name,
+                    r.date AS `date`,
+                
+                    rt.id AS time_id,
+                    rt.start_at AS time_start_at,
+                
+                    t.id AS theme_id,
+                    t.name AS theme_name,
+                    t.description AS theme_description,
+                    t.thumbnail AS theme_thumbnail
+                FROM reservation AS r
+                    INNER JOIN reservation_time AS rt
+                        ON r.time_id = rt.id 
+                    INNER JOIN theme AS t 
+                        ON r.theme_id = t.id
+                WHERE r.date BETWEEN ? and ?
+                """;
+        return jdbcTemplate.query(sql, reservationFullRowMapper, startDate, endDate);
+    }
+
+    @Override
     public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
         final String sql = """
                 SELECT 
