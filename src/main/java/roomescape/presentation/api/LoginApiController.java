@@ -4,7 +4,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.io.IOException;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,10 +33,7 @@ public class LoginApiController {
         var tokenCookie = createTokenCookie(issuedToken);
         response.addCookie(tokenCookie);
 
-        return ResponseEntity.ok()
-            .contentType(MediaType.APPLICATION_JSON)
-            .header("keep-alive", "timeout=60")
-            .build();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
