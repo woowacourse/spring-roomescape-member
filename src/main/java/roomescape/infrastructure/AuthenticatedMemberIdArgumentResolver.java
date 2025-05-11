@@ -8,17 +8,17 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.application.auth.dto.MemberIdDto;
 
-public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
+public class AuthenticatedMemberIdArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final AuthenticationPrincipalExtractor authenticationPrincipalExtractor;
+    private final AuthenticatedMemberIdExtractor authenticatedMemberIdExtractor;
 
-    public AuthenticationPrincipalArgumentResolver(AuthenticationPrincipalExtractor authenticationPrincipalExtractor) {
-        this.authenticationPrincipalExtractor = authenticationPrincipalExtractor;
+    public AuthenticatedMemberIdArgumentResolver(AuthenticatedMemberIdExtractor authenticatedMemberIdExtractor) {
+        this.authenticatedMemberIdExtractor = authenticatedMemberIdExtractor;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AuthenticationPrincipal.class);
+        return parameter.hasParameterAnnotation(AuthenticatedMemberId.class);
     }
 
     @Override
@@ -26,6 +26,6 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
                                        NativeWebRequest webRequest, WebDataBinderFactory binderFactory
     ) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        return authenticationPrincipalExtractor.extract(request);
+        return authenticatedMemberIdExtractor.extract(request);
     }
 }

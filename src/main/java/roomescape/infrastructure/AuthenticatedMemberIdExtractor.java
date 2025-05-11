@@ -7,11 +7,11 @@ import roomescape.infrastructure.jwt.JwtTokenExtractor;
 import roomescape.infrastructure.jwt.JwtTokenProvider;
 
 @Component
-public class AuthenticationPrincipalExtractor {
+public class AuthenticatedMemberIdExtractor {
     private final JwtTokenExtractor jwtTokenExtractor;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthenticationPrincipalExtractor(JwtTokenExtractor jwtTokenExtractor, JwtTokenProvider jwtTokenProvider) {
+    public AuthenticatedMemberIdExtractor(JwtTokenExtractor jwtTokenExtractor, JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenExtractor = jwtTokenExtractor;
         this.jwtTokenProvider = jwtTokenProvider;
     }

@@ -6,35 +6,35 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.application.auth.AuthService;
-import roomescape.infrastructure.AuthenticationPrincipalArgumentResolver;
-import roomescape.infrastructure.AuthenticationPrincipalExtractor;
+import roomescape.infrastructure.AuthenticatedMemberIdArgumentResolver;
+import roomescape.infrastructure.AuthenticatedMemberIdExtractor;
 import roomescape.infrastructure.CheckAdminRoleInterceptor;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final AuthService authService;
-    private final AuthenticationPrincipalExtractor authenticationPrincipalExtractor;
+    private final AuthenticatedMemberIdExtractor authenticatedMemberIdExtractor;
 
     public WebMvcConfiguration(
             AuthService authService,
-            AuthenticationPrincipalExtractor authenticationPrincipalExtractor
+            AuthenticatedMemberIdExtractor authenticatedMemberIdExtractor
     ) {
         this.authService = authService;
-        this.authenticationPrincipalExtractor = authenticationPrincipalExtractor;
+        this.authenticatedMemberIdExtractor = authenticatedMemberIdExtractor;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(
-                new AuthenticationPrincipalArgumentResolver(authenticationPrincipalExtractor)
+                new AuthenticatedMemberIdArgumentResolver(authenticatedMemberIdExtractor)
         );
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(
-                        new CheckAdminRoleInterceptor(authenticationPrincipalExtractor, authService))
+                        new CheckAdminRoleInterceptor(authenticatedMemberIdExtractor, authService))
                 .addPathPatterns("/admin/**");
     }
 }

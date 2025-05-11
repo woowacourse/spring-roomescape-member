@@ -15,7 +15,7 @@ import roomescape.application.ReservationService;
 import roomescape.application.auth.dto.MemberIdDto;
 import roomescape.application.dto.ReservationDto;
 import roomescape.application.dto.UserReservationCreateDto;
-import roomescape.infrastructure.AuthenticationPrincipal;
+import roomescape.infrastructure.AuthenticatedMemberId;
 
 @RestController
 @RequestMapping("/reservations")
@@ -35,9 +35,9 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationDto> createReservation(
             @Valid @RequestBody UserReservationCreateDto request,
-            @AuthenticationPrincipal MemberIdDto authRequest
+            @AuthenticatedMemberId MemberIdDto memberIdDto
     ) {
-        ReservationDto reservationDto = service.registerReservationByUser(request, authRequest.id());
+        ReservationDto reservationDto = service.registerReservationByUser(request, memberIdDto.id());
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationDto);
     }
 

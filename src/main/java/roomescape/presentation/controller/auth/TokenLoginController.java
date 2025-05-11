@@ -14,7 +14,7 @@ import roomescape.application.auth.dto.LoginRequest;
 import roomescape.application.auth.dto.MemberAuthResponse;
 import roomescape.application.auth.dto.MemberIdDto;
 import roomescape.application.dto.MemberDto;
-import roomescape.infrastructure.AuthenticationPrincipal;
+import roomescape.infrastructure.AuthenticatedMemberId;
 
 @RestController
 @RequestMapping("/login")
@@ -37,7 +37,7 @@ public class TokenLoginController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<MemberAuthResponse> checkLogin(@AuthenticationPrincipal MemberIdDto memberIdDto) {
+    public ResponseEntity<MemberAuthResponse> checkLogin(@AuthenticatedMemberId MemberIdDto memberIdDto) {
         MemberDto memberDto = authService.getMemberById(memberIdDto.id());
         MemberAuthResponse memberAuthResponse = MemberAuthResponse.from(memberDto);
         return ResponseEntity.ok(memberAuthResponse);

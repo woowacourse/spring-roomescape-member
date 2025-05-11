@@ -9,14 +9,14 @@ import roomescape.application.auth.dto.MemberIdDto;
 
 public class CheckAdminRoleInterceptor implements HandlerInterceptor {
 
-    private final AuthenticationPrincipalExtractor authenticationPrincipalExtractor;
+    private final AuthenticatedMemberIdExtractor authenticatedMemberIdExtractor;
     private final AuthService authService;
 
     public CheckAdminRoleInterceptor(
-            AuthenticationPrincipalExtractor authenticationPrincipalExtractor,
+            AuthenticatedMemberIdExtractor authenticatedMemberIdExtractor,
             AuthService authService
     ) {
-        this.authenticationPrincipalExtractor = authenticationPrincipalExtractor;
+        this.authenticatedMemberIdExtractor = authenticatedMemberIdExtractor;
         this.authService = authService;
     }
 
@@ -24,7 +24,7 @@ public class CheckAdminRoleInterceptor implements HandlerInterceptor {
     @Transactional(readOnly = true)
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         try {
-            MemberIdDto memberIdDto = authenticationPrincipalExtractor.extract(request);
+            MemberIdDto memberIdDto = authenticatedMemberIdExtractor.extract(request);
 
             if (!authService.isAdminAuthorized(memberIdDto)) {
                 response.setStatus(401);
