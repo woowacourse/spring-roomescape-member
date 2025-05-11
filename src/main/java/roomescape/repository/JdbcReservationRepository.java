@@ -1,6 +1,5 @@
 package roomescape.repository;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -18,27 +17,28 @@ import java.util.List;
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
 
-    private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> Reservation.afterSave(
-            resultSet.getLong("reservation_id"),
-            resultSet.getDate("date").toLocalDate(),
-            Member.afterSave(
-                    resultSet.getLong("member_id"),
-                    resultSet.getString("member_name"),
-                    resultSet.getString("member_email"),
-                    resultSet.getString("member_password"),
-                    Role.valueOf(resultSet.getString("member_role"))
-            ),
-            ReservationTime.afterSave(
-                    resultSet.getLong("time_id"),
-                    resultSet.getTime("time_value").toLocalTime()
-            ),
-            Theme.afterSave(
-                    resultSet.getLong("theme_id"),
-                    resultSet.getString("theme_name"),
-                    resultSet.getString("theme_description"),
-                    resultSet.getString("theme_thumbnail")
-            )
-    );
+    private static final RowMapper<Reservation> ROW_MAPPER =
+            (resultSet, rowNum) -> Reservation.afterSave(
+                    resultSet.getLong("reservation_id"),
+                    resultSet.getDate("date").toLocalDate(),
+                    Member.afterSave(
+                            resultSet.getLong("member_id"),
+                            resultSet.getString("member_name"),
+                            resultSet.getString("member_email"),
+                            resultSet.getString("member_password"),
+                            Role.valueOf(resultSet.getString("member_role"))
+                    ),
+                    ReservationTime.afterSave(
+                            resultSet.getLong("time_id"),
+                            resultSet.getTime("time_value").toLocalTime()
+                    ),
+                    Theme.afterSave(
+                            resultSet.getLong("theme_id"),
+                            resultSet.getString("theme_name"),
+                            resultSet.getString("theme_description"),
+                            resultSet.getString("theme_thumbnail")
+                    )
+            );
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -72,36 +72,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation findById(final long id) {
-        try {
-            final String sql = """
-                    SELECT
-                     r.id as reservation_id,
-                     r.date,
-                     m.id as member_id,
-                     m.name as member_name,
-                     m.email as member_email,
-                     m.role as member_role,
-                     rt.id as time_id,
-                     rt.start_at as time_value,
-                     t.id as theme_id,
-                     t.name as theme_name,
-                     t.description as theme_description,
-                     t.thumbnail as theme_thumbnail
-                    FROM reservation as r
-                    INNER JOIN member as m ON r.member_id = m.id
-                    INNER JOIN reservation_time as rt ON r.time_id = rt.id
-                    INNER JOIN theme as t ON r.theme_id = t.id
-                    WHERE r.id = ?
-                    """;
-
-            return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
-    }
-
-    @Override
     public List<Reservation> findAll() {
         final String sql = """
                 SELECT
@@ -127,7 +97,14 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByTimeId(final long id) {
+    public boolean isExistByReservationId(final long id) {
+        final String sql = "SELECT COUNT(*) FROM reservation WHERE id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
+    }
+
+    @Override
+    public boolean isExistByTimeId(final long id) {
         final String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
