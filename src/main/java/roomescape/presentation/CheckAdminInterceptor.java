@@ -3,19 +3,19 @@ package roomescape.presentation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.application.AuthenticationService;
-import roomescape.domain.User;
+import roomescape.domain.AuthenticationInfo;
+import roomescape.domain.AuthenticationTokenProvider;
 
 public class CheckAdminInterceptor implements HandlerInterceptor {
 
-    private final AuthenticationService authenticationService;
+    private final AuthenticationTokenProvider tokenProvider;
 
-    public CheckAdminInterceptor(final AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
+    public CheckAdminInterceptor(final AuthenticationTokenProvider tokenProvider) {
+        this.tokenProvider = tokenProvider;
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) {
         if (isCurrentRequestorAdmin(request)) {
             return true;
         }
@@ -23,13 +23,12 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         return false;
     }
 
-    private Boolean isCurrentRequestorAdmin(final HttpServletRequest request) {
+    private boolean isCurrentRequestorAdmin(final HttpServletRequest request) {
         var optionalToken = ControllerSupports.findCookieValueByKey(request, "token");
         return optionalToken
-            .filter(authenticationService::isAvailableToken)
-            .map(authenticationService::getUserByToken)
-            .map(User::isAdmin)
+            .filter(tokenProvider::isValidToken)
+            .map(tokenProvider::getPayload)
+            .map(AuthenticationInfo::isAdmin)
             .orElse(false);
     }
-
 }

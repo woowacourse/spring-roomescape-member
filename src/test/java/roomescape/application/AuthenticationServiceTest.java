@@ -3,6 +3,7 @@ package roomescape.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 import org.junit.jupiter.api.DisplayName;
@@ -64,49 +65,6 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    @DisplayName("유효한 토큰에 대한 유효성 여부를 검사할 수 있다.")
-    void isAvailableToken() {
-        // given
-        var email = "popo@email.com";
-        var password = "password";
-        var user = new User(1L, "포포", UserRole.USER, email, password);
-        userRepository.save(user);
-
-        var issuedToken = service.issueToken(user.email(), user.password());
-        // when
-
-        boolean isAvailableToken = service.isAvailableToken(issuedToken);
-
-        // then
-        assertThat(isAvailableToken).isTrue();
-    }
-
-    @Test
-    @DisplayName("유효하지 않은 토큰에 대한 유효성 여부를 검사할 수 있다.")
-    void isAvailableToken2() {
-        // given
-        var email = "popo@email.com";
-        var password = "password";
-        var user = new User(1L, "포포", UserRole.USER, email, password);
-        userRepository.save(user);
-
-        var issuedToken = service.issueToken(user.email(), user.password());
-        var service = authServiceWithStubbedTokenProvider();
-        // when
-
-        boolean isAvailableToken = service.isAvailableToken(issuedToken);
-
-        // then
-        assertThat(isAvailableToken).isFalse();
-    }
-
-    private AuthenticationService authServiceWithStubbedTokenProvider() {
-        var stubTokenProvider = Mockito.mock(AuthenticationTokenProvider.class);
-        Mockito.when(stubTokenProvider.isValidToken(anyString())).thenReturn(false);
-        return new AuthenticationService(stubTokenProvider, userRepository);
-    }
-
-    @Test
     @DisplayName("토큰으로 유저를 찾을 수 있다.")
     void getUserByToken() {
         // given
@@ -129,7 +87,7 @@ class AuthenticationServiceTest {
         userRepository.save(user);
 
         var mockTokenProvider = Mockito.mock(AuthenticationTokenProvider.class);
-        Mockito.when(mockTokenProvider.createToken(anyString())).thenReturn("token");
+        Mockito.when(mockTokenProvider.createToken(any())).thenReturn("token");
         Mockito.when(mockTokenProvider.isValidToken(anyString())).thenReturn(false);
         var service = new AuthenticationService(mockTokenProvider, userRepository);
 

@@ -2,9 +2,11 @@ package roomescape.domain;
 
 public interface AuthenticationTokenProvider {
 
-    String createToken(String payload);
+    String createToken(AuthenticationInfo authenticationInfo);
 
-    String getPayload(String token);
+    long getIdentifier(String token);
+
+    AuthenticationInfo getPayload(String token);
 
     boolean isValidToken(String token);
 }

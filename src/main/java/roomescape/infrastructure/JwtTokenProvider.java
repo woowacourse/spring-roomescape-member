@@ -7,7 +7,9 @@ import io.jsonwebtoken.Jwts.SIG;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.stereotype.Component;
+import roomescape.domain.AuthenticationInfo;
 import roomescape.domain.AuthenticationTokenProvider;
+import roomescape.domain.UserRole;
 
 @Component
 public class JwtTokenProvider implements AuthenticationTokenProvider {
@@ -15,8 +17,13 @@ public class JwtTokenProvider implements AuthenticationTokenProvider {
     private static final SecretKey SECRET_KEY = SIG.HS256.key().build();
     private static final long EXPIRATION_DURATION = 900000;
 
-    public String createToken(final String payload) {
-        Claims claims = Jwts.claims().subject(payload).build();
+    public String createToken(final AuthenticationInfo authenticationInfo) {
+        var userId = String.valueOf(authenticationInfo.id());
+        var userRole = authenticationInfo.role().name();
+        Claims claims = Jwts.claims()
+            .subject(userId)
+            .add("role", userRole)
+            .build();
         Date now = new Date();
         Date validity = new Date(now.getTime() + EXPIRATION_DURATION);
 
@@ -28,13 +35,22 @@ public class JwtTokenProvider implements AuthenticationTokenProvider {
                 .compact();
     }
 
-    public String getPayload(final String token) {
-        return Jwts.parser()
+    @Override
+    public long getIdentifier(final String token) {
+        var authenticationInfo = getPayload(token);
+        return authenticationInfo.id();
+    }
+
+    public AuthenticationInfo getPayload(final String token) {
+        var payload = Jwts.parser()
             .verifyWith(SECRET_KEY)
             .build()
             .parseSignedClaims(token)
-            .getPayload()
-            .getSubject();
+            .getPayload();
+
+        var id = Long.parseLong(payload.getSubject());
+        var role = UserRole.valueOf(payload.get("role", String.class));
+        return new AuthenticationInfo(id, role);
     }
 
     public boolean isValidToken(final String token) {
