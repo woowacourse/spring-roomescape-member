@@ -2,9 +2,9 @@ package roomescape.presentation.controller.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
-import static roomescape.testFixture.Fixture.MEMBER1;
-import static roomescape.testFixture.Fixture.MEMBER2;
-import static roomescape.testFixture.Fixture.createAdminReservationCreateDto;
+import static roomescape.testFixture.Fixture.MEMBER1_ADMIN;
+import static roomescape.testFixture.Fixture.MEMBER2_USER;
+import static roomescape.testFixture.Fixture.createReservationBody;
 import static roomescape.testFixture.Fixture.resetH2TableIds;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,16 +51,16 @@ public class AdminReservationControllerIntTest {
     void cleanDatabase() {
         RestAssured.port = port;
 
-        tokenForAdmin = jwtTokenProvider.createToken(MemberDto.from(MEMBER1));
-        tokenForUser = jwtTokenProvider.createToken(MemberDto.from(MEMBER2));
+        tokenForAdmin = jwtTokenProvider.createToken(MemberDto.from(MEMBER1_ADMIN));
+        tokenForUser = jwtTokenProvider.createToken(MemberDto.from(MEMBER2_USER));
     }
 
     @DisplayName("/admin/reservations 요청 시 201 CREATED")
     @Test
     public void request_addReservation() {
         resetH2TableIds(jdbcTemplate);
-        JdbcHelper.insertMember(jdbcTemplate, MEMBER1);
-        JdbcHelper.insertMember(jdbcTemplate, MEMBER2);
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER1_ADMIN);
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER2_USER);
         JdbcHelper.insertTheme(jdbcTemplate, Theme.withoutId("테마1", "테마 1입니다.", "썸네일입니다."));
         JdbcHelper.insertReservationTime(jdbcTemplate, ReservationTime.of(1L, LocalTime.of(10, 0)));
 
@@ -84,7 +84,7 @@ public class AdminReservationControllerIntTest {
     @Test
     public void request_addReservation_unauthorized() {
         resetH2TableIds(jdbcTemplate);
-        JdbcHelper.insertMember(jdbcTemplate, MEMBER2);
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER2_USER);
 
         RestAssured.given().log().all()
                 .cookie("token", tokenForUser)

@@ -1,6 +1,6 @@
 package roomescape.auth;
 
-import static roomescape.testFixture.Fixture.MEMBER1;
+import static roomescape.testFixture.Fixture.MEMBER1_ADMIN;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -27,7 +27,7 @@ class TokenLogoutControllerIntTest {
 
     @Test
     public void request_logout() {
-        String tokenForAdmin = jwtTokenProvider.createToken(MemberDto.from(MEMBER1));
+        String tokenForAdmin = jwtTokenProvider.createToken(MemberDto.from(MEMBER1_ADMIN));
 
         RestAssured.given()
                 .redirects()

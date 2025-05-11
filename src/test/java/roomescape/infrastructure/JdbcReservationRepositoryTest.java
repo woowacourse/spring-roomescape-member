@@ -2,7 +2,7 @@ package roomescape.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.testFixture.Fixture.MEMBER1;
+import static roomescape.testFixture.Fixture.MEMBER1_ADMIN;
 import static roomescape.testFixture.Fixture.resetH2TableIds;
 
 import java.sql.Date;
@@ -49,7 +49,7 @@ class JdbcReservationRepositoryTest {
                 "INSERT INTO member (id, name, email, password) VALUES (1, '어드민', 'admin@email.com', 'password')");
 
         Reservation reservation = Reservation.withoutId(
-                MEMBER1,
+                MEMBER1_ADMIN,
                 Theme.of(1L, "테마1", "테마 1입니다.", "썸네일"),
                 LocalDate.of(2025, 4, 30),
                 ReservationTime.of(1L, LocalTime.of(10, 0))

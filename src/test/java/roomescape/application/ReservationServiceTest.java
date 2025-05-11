@@ -3,10 +3,10 @@ package roomescape.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.testFixture.Fixture.MEMBER1;
-import static roomescape.testFixture.Fixture.MEMBER2;
-import static roomescape.testFixture.Fixture.MEMBER3;
-import static roomescape.testFixture.Fixture.MEMBER4;
+import static roomescape.testFixture.Fixture.MEMBER1_ADMIN;
+import static roomescape.testFixture.Fixture.MEMBER2_USER;
+import static roomescape.testFixture.Fixture.MEMBER3_USER;
+import static roomescape.testFixture.Fixture.MEMBER4_USER;
 import static roomescape.testFixture.Fixture.THEME_1;
 
 import java.time.LocalDate;
@@ -54,7 +54,7 @@ class ReservationServiceTest {
         LocalTime time = LocalTime.of(10, 0);
         timeRepository.save(ReservationTime.withoutId(time));
         themeRepository.save(THEME_1);
-        memberRepository.save(MEMBER1);
+        memberRepository.save(MEMBER1_ADMIN);
         LocalDate date = LocalDate.now().plusDays(1);
         Long timeId = 1L;
 
@@ -66,7 +66,7 @@ class ReservationServiceTest {
         // then
         assertAll(
                 () -> assertThat(reservationDto.id()).isEqualTo(1),
-                () -> assertThat(reservationDto.member()).isEqualTo(MemberDto.from(MEMBER1)),
+                () -> assertThat(reservationDto.member()).isEqualTo(MemberDto.from(MEMBER1_ADMIN)),
                 () -> assertThat(reservationDto.date()).isEqualTo(date),
                 () -> assertThat(reservationDto.time()).isEqualTo(new TimeDto(1L, time))
         );
@@ -97,7 +97,7 @@ class ReservationServiceTest {
         Long timeId = 1L;
 
         ReservationTime reservationTime = ReservationTime.of(1L, time);
-        Reservation reservation = Reservation.of(1L, MEMBER1, THEME_1, date, reservationTime);
+        Reservation reservation = Reservation.of(1L, MEMBER1_ADMIN, THEME_1, date, reservationTime);
         reservationRepository.save(reservation);
 
         // when
@@ -115,9 +115,9 @@ class ReservationServiceTest {
         ReservationTime time1 = ReservationTime.of(1L, LocalTime.of(10, 0));
         ReservationTime time2 = ReservationTime.of(2L, LocalTime.of(11, 0));
 
-        reservationRepository.save(Reservation.of(1L, MEMBER2, THEME_1, LocalDate.of(2024, 4, 1), time1));
-        reservationRepository.save(Reservation.of(2L, MEMBER3, THEME_1, LocalDate.of(2024, 4, 1), time2));
-        reservationRepository.save(Reservation.of(3L, MEMBER4, THEME_1, LocalDate.of(2024, 4, 2), time1));
+        reservationRepository.save(Reservation.of(1L, MEMBER2_USER, THEME_1, LocalDate.of(2024, 4, 1), time1));
+        reservationRepository.save(Reservation.of(2L, MEMBER3_USER, THEME_1, LocalDate.of(2024, 4, 1), time2));
+        reservationRepository.save(Reservation.of(3L, MEMBER4_USER, THEME_1, LocalDate.of(2024, 4, 2), time1));
 
         // when
         List<ReservationDto> allReservations = reservationService.getAllReservations();
@@ -127,7 +127,8 @@ class ReservationServiceTest {
                 () -> assertThat(allReservations).hasSize(3),
                 () -> assertThat(allReservations)
                         .extracting(ReservationDto::member)
-                        .containsExactly(MemberDto.from(MEMBER2), MemberDto.from(MEMBER3), MemberDto.from(MEMBER4))
+                        .containsExactly(MemberDto.from(MEMBER2_USER), MemberDto.from(MEMBER3_USER), MemberDto.from(
+                                MEMBER4_USER))
         );
     }
 
@@ -137,7 +138,7 @@ class ReservationServiceTest {
         // given
         ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
         timeRepository.save(time);
-        reservationRepository.save(Reservation.of(1L, MEMBER1, THEME_1, LocalDate.of(2024, 4, 1), time));
+        reservationRepository.save(Reservation.of(1L, MEMBER1_ADMIN, THEME_1, LocalDate.of(2024, 4, 1), time));
         assertThat(reservationRepository.findAll()).hasSize(1);
 
         // when
@@ -169,7 +170,7 @@ class ReservationServiceTest {
         LocalDate date = LocalDate.now().plusDays(1);
         Long timeId = timeRepository.save(ReservationTime.withoutId(LocalTime.of(10, 0)));
         ReservationTime reservationTime = ReservationTime.of(timeId, LocalTime.of(10, 0));
-        Reservation reservation = Reservation.of(1L, MEMBER1, THEME_1, date, reservationTime);
+        Reservation reservation = Reservation.of(1L, MEMBER1_ADMIN, THEME_1, date, reservationTime);
         reservationRepository.save(reservation);
 
         // when

@@ -3,7 +3,7 @@ package roomescape;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.testFixture.Fixture.MEMBER1;
+import static roomescape.testFixture.Fixture.MEMBER1_ADMIN;
 import static roomescape.testFixture.Fixture.RESERVATION_1;
 import static roomescape.testFixture.Fixture.RESERVATION_TIME_1;
 import static roomescape.testFixture.Fixture.RESERVATION_TIME_2;
@@ -117,7 +117,7 @@ class RoomescapeApplicationTest {
     void getTimesWithBookingInfo() {
         JdbcHelper.insertTheme(jdbcTemplate, THEME_1);
         JdbcHelper.insertReservationTimes(jdbcTemplate, RESERVATION_TIME_1, RESERVATION_TIME_2, RESERVATION_TIME_3);
-        JdbcHelper.insertMember(jdbcTemplate, MEMBER1);
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER1_ADMIN);
         JdbcHelper.insertReservation(jdbcTemplate, RESERVATION_1);
 
         String date = RESERVATION_1.getReservationDate().toString();
