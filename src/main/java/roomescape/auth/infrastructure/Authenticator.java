@@ -17,6 +17,8 @@ import roomescape.auth.domain.Token;
 @Component
 public class Authenticator {
 
+    public static final String ROLE_CLAIM_EXPRESSION = "role";
+
     private final SecretKey signingKey;
     private final long validityInMilliseconds;
 
@@ -30,13 +32,15 @@ public class Authenticator {
     public Token authenticate(Payload payload) {
         Date now = new Date();
         Date expiredAt = new Date(now.getTime() + validityInMilliseconds);
+
         String token = Jwts.builder()
                 .setSubject(payload.getMemberIdExpression())
-                .claim("role", payload.getRoleExpression())
+                .claim(ROLE_CLAIM_EXPRESSION, payload.getRoleExpression())
                 .setIssuedAt(now)
                 .setExpiration(expiredAt)
                 .signWith(signingKey)
                 .compact();
+
         return new Token(token);
     }
 
@@ -46,8 +50,10 @@ public class Authenticator {
                     .setSigningKey(signingKey)
                     .build()
                     .parseClaimsJws(token.value());
+
             return claims.getBody().getExpiration().before(new Date());
-        } catch (JwtException | IllegalArgumentException e) {
+        }
+        catch (JwtException | IllegalArgumentException e) {
             return true;
         }
     }
@@ -55,10 +61,11 @@ public class Authenticator {
     public Payload getPayload(Token token) {
         try {
             Claims claims = getClaims(token);
-            String role = claims.get("role", String.class);
+            String role = claims.get(ROLE_CLAIM_EXPRESSION, String.class);
 
             return Payload.from(claims.getSubject(), role);
-        } catch (JwtException | IllegalArgumentException exception) {
+        }
+        catch (JwtException | IllegalArgumentException exception) {
             throw new AuthorizationException();
         }
     }
