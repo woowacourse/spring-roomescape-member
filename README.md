@@ -2,35 +2,94 @@
 
 # 화면
 
-- 어드민 메인 페이지: localhost:8080/admin
+- 로그인 페이지: localhost:8080/login
+- 회원가입 페이지: localhost:8080/signup
+- 인기 테마 페이지: localhost:8080
+- 사용자 예약 페이지: localhost:8080/reservation
+- 관리자 메인 페이지: localhost:8080/admin
 - 예약 관리 페이지: localhost:8080/admin/reservation
 - 시간 관리 페이지: localhost:8080/admin/time
-- 사용자 예약 페이지: localhost:8080/reservation
-- 인기 테마 페이지: localhost:8080
-- 로그인 페이지: localhost:8080/login
 
 # API 명세
+
+### 회원가입
+
+```
+Request
+POST /api/members HTTP/1.1
+content-type: application/json
+
+{
+    "name": string,
+    "email": string,
+    "password": string
+}
+
+Response
+HTTP/1.1 200
+Content-Type: application/json
+
+{
+    "id": number,
+    "name": string,
+    "email": string
+}
+```
+
+### 로그인
+
+```
+Request
+POST /api/auth/login HTTP/1.1
+content-type: application/json
+
+{
+    "email": string,
+    "password": string
+}
+
+Response
+HTTP/1.1 200
+Content-Type: application/json
+Set-Cookie: token={accessToken}
+```
+
+### 로그아웃
+
+```
+Request
+POST /api/auth/logout HTTP/1.1
+
+Response
+HTTP/1.1 200
+Set-Cookie: token=
+```
 
 ### 관리자 예약 목록 조회
 
 ```
 Request
-GET admin/reservations HTTP/1.1
-Query Parameters: memberId, themeId, dateFrom, dateTo
+GET /api/admin/reservations HTTP/1.1
+Query Parameters: 
+    - memberId
+    - themeId
+    - dateFrom 
+    - dateTo
+cookie: token={accessToken}
 
 Response
 HTTP/1.1 200 
 Content-Type: application/json
 [
     {
-        "id": "Long",
-        "name": String,
-        "date": LocalDate (YYYY-MM-DD),
+        "id": number,
+        "name": string,
+        "date": string (YYYY-MM-DD),
         "reservationTime": {
-            "id": Long,
-            "startAt" : LocalTime (HH:mm)
+            "id": number,
+            "startAt" : string (HH:mm)
         },
-        "themeName": String
+        "themeName": string
     }
 ]
 ```
@@ -40,25 +99,25 @@ Content-Type: application/json
 ```
 Request
 Content-Type: application/json
-POST /reservations
+POST /api/reservations
 {
-    "date": LocalDate (YYYY-MM-DD),
-    "timeId": Long,
-    "themeId": Long
+    "date": string (YYYY-MM-DD),
+    "timeId": number,
+    "themeId": number
 }
 
 Response
 Content-Type: application/json
 HTTP/1.1 200 
 {
-    "id": Long,
-    "name": String,
-    "date": LocalDate (YYYY-MM-DD),
+    "id": number,
+    "name": string,
+    "date": string (YYYY-MM-DD),
     "reservationTime": {
-        "id": Long,
-        "startAt" : LocalTime (HH:mm)
+        "id": number,
+        "startAt" : string (HH:mm)
     },
-    "themeName" : String
+    "themeName" : string
 }
 
 ```
@@ -68,26 +127,26 @@ HTTP/1.1 200
 ```
 Request
 Content-Type: application/json
-POST admin/reservations
+POST /api/admin/reservations
 {
-    "memberId": Long,
-    "date": LocalDate (YYYY-MM-DD),
-    "timeId": Long,
-    "themeId": Long
+    "memberId": number,
+    "date": string (YYYY-MM-DD),
+    "timeId": number,
+    "themeId": number
 }
 
 Response
 Content-Type: application/json
 HTTP/1.1 200 
 {
-    "id": Long,
-    "name": String,
-    "date": LocalDate (YYYY-MM-DD),
+    "id": number,
+    "name": string,
+    "date": string (YYYY-MM-DD),
     "reservationTime": {
-        "id": Long,
-        "startAt" : LocalTime (HH:mm)
+        "id": number,
+        "startAt" : string (HH:mm)
     },
-    "themeName" : String
+    "themeName" : string
 }
 
 ```
@@ -96,7 +155,7 @@ HTTP/1.1 200
 
 ```
 Request
-DELETE /reservations/{id} HTTP/1.1
+DELETE /api/reservations/{id} HTTP/1.1
 
 Response
 HTTP/1.1 200
@@ -106,11 +165,11 @@ HTTP/1.1 200
 
 ```
 Request
-POST /times HTTP/1.1
+POST /api/times HTTP/1.1
 content-type: application/json
 
 {
-    "startAt": LocalTime (HH:mm)
+    "startAt": string (HH:mm)
 }
 
 Response
@@ -118,8 +177,8 @@ HTTP/1.1 200
 Content-Type: application/json
 
 {
-    "id": Long,
-    "startAt": LocalTime (HH:mm)
+    "id": number,
+    "startAt": string (HH:mm)
 }
 ```
 
@@ -127,7 +186,7 @@ Content-Type: application/json
 
 ```
 Request
-GET /times HTTP/1.1
+GET /api/times HTTP/1.1
 
 Response
 HTTP/1.1 200 
@@ -135,8 +194,8 @@ Content-Type: application/json
 
 [
    {
-        "id": Long,
-        "startAt": LocalTime (HH:mm)
+        "id": number,
+        "startAt": string (HH:mm)
     }
 ]
 ```
@@ -145,7 +204,7 @@ Content-Type: application/json
 
 ```
 Request
-DELETE /times/1 HTTP/1.1
+DELETE /api/times/1 HTTP/1.1
 
 Response
 HTTP/1.1 200
@@ -155,7 +214,7 @@ HTTP/1.1 200
 
 ```
 Request
-GET /themes HTTP/1.1
+GET /api/themes HTTP/1.1
 
 Response
 HTTP/1.1 200 
@@ -163,10 +222,10 @@ Content-Type: application/json
 
 [
    {
-        "id": 1,
-        "name": "레벨2 탈출",
-        "description": "우테코 레벨2를 탈출하는 내용입니다.",
-        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        "id": number,
+        "name": string,
+        "description": string,
+        "thumbnail": string
     }
 ]
 ```
@@ -175,13 +234,13 @@ Content-Type: application/json
 
 ```
 Request
-POST /themes HTTP/1.1
+POST /api/themes HTTP/1.1
 content-type: application/json
 
 {
-    "name": "레벨2 탈출",
-    "description": "우테코 레벨2를 탈출하는 내용입니다.",
-    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    "name": string,
+    "description": string,
+    "thumbnail": string
 }
 
 Response
@@ -190,10 +249,10 @@ HTTP/1.1 201
 Content-Type: application/json
 
 {
-    "id": 1,
-    "name": "레벨2 탈출",
-    "description": "우테코 레벨2를 탈출하는 내용입니다.",
-    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    "id": number,
+    "name": string
+    "description": string,
+    "thumbnail": string
 }
 ```
 
@@ -201,7 +260,7 @@ Content-Type: application/json
 
 ```
 Request
-DELETE /themes/1 HTTP/1.1
+DELETE /api/themes/1 HTTP/1.1
 
 Response
 HTTP/1.1 204
@@ -211,7 +270,7 @@ HTTP/1.1 204
 
 ```
 Request
-GET /times/theme/{themeId}?date={} HTTP/1.1
+GET /api/times/theme/{themeId}?date={date} HTTP/1.1
 
 Response
 HTTP/1.1 200 
@@ -219,8 +278,8 @@ Content-Type: application/json
 
 [
    {
-        "id": Long,
-        "startAt": LocalTime (HH:mm)
+        "id": number,
+        "startAt": string (HH:mm)
         "alreadyBooked": boolean
     }
 ]
@@ -230,7 +289,7 @@ Content-Type: application/json
 
 ```
 Request
-GET /theme/top10
+GET /api/theme/rank
 
 Response
 HTTP/1.1 200 
@@ -238,10 +297,10 @@ Content-Type: application/json
 
 [
    {
-        "id": Number
-        "name": String
-        "description": String
-        "thumbnail": String
+        "id": number
+        "name": string
+        "description": string
+        "thumbnail": string
     }
 ]
 ```
