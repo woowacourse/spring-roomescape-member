@@ -34,7 +34,7 @@ public class ReservationController {
             @AuthenticatedUser final LoginUser loginUser,
             @RequestBody final ReservationRequest reservationRequest
     ) {
-        final ReservationResponse reservationResponse = reservationService.create(loginUser, reservationRequest);
+        final ReservationResponse reservationResponse = reservationService.create(loginUser.id(), reservationRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
     }

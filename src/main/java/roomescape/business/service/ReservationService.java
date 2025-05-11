@@ -41,11 +41,11 @@ public class ReservationService {
     }
 
     public ReservationResponse create(
-            final LoginUser loginUser,
+            final Long userId,
             final ReservationRequest reservationRequest
     ) {
-        validateIsUser(loginUser);
-        final User user = userService.find(loginUser.id());
+        final User user = userService.find(userId);
+        validateIsUser(user);
         final PlayTime playTime = playTimeService.find(reservationRequest.timeId());
         final Theme theme = themeService.find(reservationRequest.themeId());
         validateIsDuplicate(reservationRequest.date(), playTime, theme);
@@ -58,8 +58,8 @@ public class ReservationService {
         return ReservationResponse.withId(reservation, id);
     }
 
-    private void validateIsUser(final LoginUser loginUser) {
-        if (Role.UNKNOWN == loginUser.role()) {
+    private void validateIsUser(final User user) {
+        if (Role.UNKNOWN == user.getRole()) {
             throw new InvalidCredentialsException();
         }
     }
