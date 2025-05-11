@@ -1,11 +1,14 @@
 package roomescape.member.domain;
 
+import java.util.regex.Pattern;
 import roomescape.exception.custom.AuthorizationException;
 import roomescape.exception.custom.InvalidInputException;
 
 public class Member {
 
     private static final int MAX_LENGTH = 255;
+    private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+    private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
     private final long id;
     private final String role;
@@ -37,6 +40,7 @@ public class Member {
                                       final String email, final String password) {
         validateNotNull(role, name, email, password);
         validateValidLength(role, name, email, password);
+        validateEmail(email);
     }
 
     private void validateNotNull(final String role, final String name,
@@ -68,6 +72,12 @@ public class Member {
         }
         if (password.length() > MAX_LENGTH) {
             throw new InvalidInputException("비밀 번호는 255자를 초과할 수 없습니다");
+        }
+    }
+
+    private void validateEmail(final String email) {
+        if (!EMAIL_PATTERN.matcher(email).matches()) {
+            throw new InvalidInputException("올바르지 않은 이메일 형식입니다: " + email);
         }
     }
 
