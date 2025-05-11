@@ -15,10 +15,6 @@ public class Reservation {
     private Long themeId;
     private Long memberId;
 
-    public boolean isDuplicatedWith(Reservation other) {
-        return date.isEqual(other.date) && time.isDuplicatedWith(other.time);
-    }
-
     public LocalDateTime getDateTime() {
         return LocalDateTime.of(date, time.getStartAt());
     }
