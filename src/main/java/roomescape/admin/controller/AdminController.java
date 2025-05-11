@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.admin.domain.dto.AdminReservationRequestDto;
-import roomescape.admin.domain.dto.AdminReservationResponseDto;
 import roomescape.admin.service.AdminService;
+import roomescape.reservation.domain.dto.ReservationResponseDto;
 import roomescape.user.domain.User;
 
 @RestController
@@ -22,11 +22,11 @@ public class AdminController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<AdminReservationResponseDto> createReservation(
+    public ResponseEntity<ReservationResponseDto> createReservation(
             @RequestBody AdminReservationRequestDto adminReservationRequestDto,
-            User user) {
-        AdminReservationResponseDto adminReservationResponseDto = adminService.createReservation(
-                adminReservationRequestDto, user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(adminReservationResponseDto);
+            User admin) {
+        ReservationResponseDto reservationResponseDto = adminService.createReservation(
+                adminReservationRequestDto, admin);
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponseDto);
     }
 }

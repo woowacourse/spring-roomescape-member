@@ -76,8 +76,6 @@ class AdminControllerTest {
                     AuthFixture.createTokenRequestDto(memberStatic.getEmail(), memberStatic.getPassword()));
             adminTokenResponseDto = authService.login(
                     AuthFixture.createTokenRequestDto(adminStatic.getEmail(), adminStatic.getPassword()));
-
-
         }
 
         @DisplayName("memberId의 role이 ROLE_MEMBER 일 때 201 CREATED 와 함께 member의 예약이 추가된다.")
