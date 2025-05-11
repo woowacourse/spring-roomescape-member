@@ -6,31 +6,44 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalTime;
 import java.util.List;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.BootstrapWith;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import roomescape.reservationTime.ReservationTimeTestDataConfig;
 import roomescape.reservationTime.domain.dto.ReservationTimeRequestDto;
 import roomescape.reservationTime.domain.dto.ReservationTimeResponseDto;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = {
         ReservationTimeTestDataConfig.class})
-@BootstrapWith(SpringBootTestContextBootstrapper.class)
-@ExtendWith({SpringExtension.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ReservationTimeControllerTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private ReservationTimeTestDataConfig reservationTimeTestDataConfig;
+
+    @LocalServerPort
+    int port;
+
+    @BeforeEach
+    void restAssuredSetUp() {
+        RestAssured.port = port;
+    }
+
+    @AfterAll
+    static void afterAll() {
+
+    }
 
     @Nested
     @DisplayName("GET /times 요청")
@@ -76,7 +89,7 @@ public class ReservationTimeControllerTest {
         @Test
         void add_success_whenValidInput() {
             // given
-            LocalTime dummyTime = LocalTime.of(11, 22);
+            LocalTime dummyTime = LocalTime.of(18, 22);
 
             // when
             ReservationTimeRequestDto dto = new ReservationTimeRequestDto(dummyTime);
@@ -118,11 +131,12 @@ public class ReservationTimeControllerTest {
         @Test
         void delete_success_withExistId() {
             RestAssured.given().log().all()
-                    .when().delete("/times/1")
+                    .when().delete("/times/" + reservationTimeTestDataConfig.getSavedId())
                     .then().log().all()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
-            Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time WHERE id = 1",
+            Integer countAfterDelete = jdbcTemplate.queryForObject(
+                    "SELECT count(1) from reservation_time WHERE id = " + reservationTimeTestDataConfig.getSavedId(),
                     Integer.class);
             assertThat(countAfterDelete).isEqualTo(0);
         }

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,12 @@ import roomescape.theme.domain.dto.ThemeRequestDto;
 class ThemeControllerTest {
 
     @LocalServerPort
-    private int port;
+    int port;
+
+    @BeforeEach
+    void restAssuredSetUp() {
+        RestAssured.port = port;
+    }
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

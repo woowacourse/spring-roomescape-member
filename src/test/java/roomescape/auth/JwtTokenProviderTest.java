@@ -1,6 +1,7 @@
 package roomescape.auth;
 
 import io.jsonwebtoken.Claims;
+import io.restassured.RestAssured;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -8,14 +9,24 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.auth.domain.dto.TokenInfoDto;
 import roomescape.user.domain.Role;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class JwtTokenProviderTest {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    @LocalServerPort
+    int port;
+
+    @BeforeEach
+    void restAssuredSetUp() {
+        RestAssured.port = port;
+    }
 
     @Nested
     @DisplayName("토큰 생성 기능")
@@ -52,5 +63,4 @@ class JwtTokenProviderTest {
             );
         }
     }
-
 }
