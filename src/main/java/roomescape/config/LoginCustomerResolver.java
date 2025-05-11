@@ -37,6 +37,9 @@ public class LoginCustomerResolver implements HandlerMethodArgumentResolver {
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
+        if (cookies == null){
+            return "";
+        }
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();
