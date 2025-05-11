@@ -1,6 +1,6 @@
 package roomescape.user.exception;
 
-import roomescape.globalException.InvalidInputException;
+import roomescape.global.exception.InvalidInputException;
 
 public class InvalidRoleException extends InvalidInputException {
 

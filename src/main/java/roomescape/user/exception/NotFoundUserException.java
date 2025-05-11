@@ -1,6 +1,6 @@
 package roomescape.user.exception;
 
-import roomescape.globalException.NotFoundException;
+import roomescape.global.exception.NotFoundException;
 
 public class NotFoundUserException extends NotFoundException {
 

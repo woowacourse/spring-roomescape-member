@@ -1,6 +1,6 @@
 package roomescape.theme.exception;
 
-import roomescape.globalException.NotFoundException;
+import roomescape.global.exception.NotFoundException;
 
 public class NotFoundThemeException extends NotFoundException {
 

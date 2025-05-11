@@ -1,6 +1,6 @@
 package roomescape.reservationTime.exception;
 
-import roomescape.globalException.InvalidInputException;
+import roomescape.global.exception.InvalidInputException;
 
 public class AlreadyReservedTimeException extends InvalidInputException {
 

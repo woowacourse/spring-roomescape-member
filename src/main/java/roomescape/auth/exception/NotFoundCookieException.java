@@ -1,6 +1,6 @@
 package roomescape.auth.exception;
 
-import roomescape.globalException.AuthorizationException;
+import roomescape.global.exception.AuthorizationException;
 
 public class NotFoundCookieException extends AuthorizationException {
 

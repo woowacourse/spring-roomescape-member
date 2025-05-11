@@ -1,6 +1,6 @@
 package roomescape.member.exception;
 
-import roomescape.globalException.AuthorizationException;
+import roomescape.global.exception.AuthorizationException;
 
 public class UnauthorizedUserRoleException extends AuthorizationException {
 

@@ -1,6 +1,6 @@
 package roomescape.reservationTime.exception;
 
-import roomescape.globalException.ConflictException;
+import roomescape.global.exception.ConflictException;
 
 public class DuplicateReservationException extends ConflictException {
 

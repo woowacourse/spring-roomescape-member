@@ -1,6 +1,6 @@
 package roomescape.reservation.exception;
 
-import roomescape.globalException.NotFoundException;
+import roomescape.global.exception.NotFoundException;
 
 public class NotFoundReservationException extends NotFoundException {
 

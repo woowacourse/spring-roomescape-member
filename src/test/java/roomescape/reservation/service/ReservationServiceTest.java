@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.globalException.ConflictException;
+import roomescape.global.exception.ConflictException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.dto.ReservationRequestDto;
 import roomescape.reservation.fixture.ReservationFixture;
