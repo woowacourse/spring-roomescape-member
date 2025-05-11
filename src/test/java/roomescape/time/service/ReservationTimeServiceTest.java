@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
@@ -55,7 +56,8 @@ class ReservationTimeServiceTest {
             themeRepository.saveAndReturnId(theme);
         }
 
-        Reservation reservation = new Reservation(null, "루키", LocalDate.of(2025, 4, 29),
+        Member member = new Member(1L, "a", "a", "하루", "member");
+        Reservation reservation = new Reservation(null, member, LocalDate.of(2025, 4, 29),
                 reservationTimeRepository.findById(1L).get(), themeRepository.findById(1L).get());
 
         reservationRepository.saveAndReturnId(reservation);

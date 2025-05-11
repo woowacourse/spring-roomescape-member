@@ -11,6 +11,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.domain.Member;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
@@ -59,12 +60,13 @@ class ReservationServiceTest {
             reservationTimeRepository.saveAndReturnId(time);
         }
 
+        Member member = new Member(1L, "a", "a", "하루", "member");
         List<Reservation> reservations = List.of(
-                new Reservation(null, "루키", LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L).get(),
+                new Reservation(null, member, LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L).get(),
                         themeRepository.findById(1L).get()),
-                new Reservation(null, "슬링키", LocalDate.of(2025, 4, 5), reservationTimeRepository.findById(2L).get(),
+                new Reservation(null, member, LocalDate.of(2025, 4, 5), reservationTimeRepository.findById(2L).get(),
                         themeRepository.findById(2L).get()),
-                new Reservation(null, "범블비", LocalDate.of(2025, 5, 15), reservationTimeRepository.findById(3L).get(),
+                new Reservation(null, member, LocalDate.of(2025, 5, 15), reservationTimeRepository.findById(3L).get(),
                         themeRepository.findById(3L).get())
         );
 
@@ -72,7 +74,8 @@ class ReservationServiceTest {
             reservationRepository.saveAndReturnId(reservation);
         }
 
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
+                null);
     }
 
     @DisplayName("전체 예약 정보를 조회한다")
@@ -89,7 +92,7 @@ class ReservationServiceTest {
     @Test
     void add_test() {
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.now(), 4L, 3L);
+        ReservationRequest request = new ReservationRequest(LocalDate.now(), 4L, 3L, 1L);
 
         // when
         ReservationResponse response = reservationService.add(request);
@@ -119,7 +122,7 @@ class ReservationServiceTest {
     @Test
     void past_day_exception_test() {
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.now().minusDays(1), 4L, 3L);
+        ReservationRequest request = new ReservationRequest(LocalDate.now().minusDays(1), 4L, 3L, 1L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.add(request))
@@ -131,7 +134,7 @@ class ReservationServiceTest {
     @Test
     void past_time_exception_test() {
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.now(), 1L, 3L);
+        ReservationRequest request = new ReservationRequest(LocalDate.now(), 1L, 3L, 1L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.add(request))
@@ -143,7 +146,7 @@ class ReservationServiceTest {
     @Test
     void future_test() {
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.now().plusDays(3), 1L, 1L);
+        ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(3), 1L, 1L, 1L);
 
         // when & then
         assertThatCode(() -> reservationService.add(request))
@@ -154,7 +157,7 @@ class ReservationServiceTest {
     @Test
     void reservation_duplicate_exception() {
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.of(2025, 5, 15), 3L, 3L);
+        ReservationRequest request = new ReservationRequest(LocalDate.of(2025, 5, 15), 3L, 3L, 1L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.add(request))
