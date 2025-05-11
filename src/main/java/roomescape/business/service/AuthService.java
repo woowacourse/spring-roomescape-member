@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 import roomescape.business.domain.LoginUser;
 import roomescape.business.domain.Role;
 import roomescape.business.domain.User;
-import roomescape.exception.InvalidCredentialsException;
+import roomescape.exception.auth.InvalidCredentialsException;
+import roomescape.exception.auth.InvalidTokenException;
 import roomescape.persistence.dao.UserDao;
 import roomescape.presentation.dto.LoginRequest;
 
@@ -65,7 +66,7 @@ public class AuthService {
                     Role.valueOf(claims.get("role", String.class))
             );
         } catch (JwtException | IllegalArgumentException e) {
-            throw new InvalidCredentialsException();
+            throw new InvalidTokenException();
         }
     }
 }

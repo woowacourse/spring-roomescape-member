@@ -4,16 +4,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.business.domain.LoginUser;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
 import roomescape.business.domain.Role;
 import roomescape.business.domain.Theme;
 import roomescape.business.domain.User;
 import roomescape.exception.DuplicateReservationException;
-import roomescape.exception.InvalidCredentialsException;
 import roomescape.exception.InvalidReservationDateException;
 import roomescape.exception.ReservationNotFoundException;
+import roomescape.exception.auth.UnauthorizedAccessException;
 import roomescape.persistence.dao.ReservationDao;
 import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 import roomescape.presentation.dto.ReservationRequest;
@@ -45,7 +44,7 @@ public class ReservationService {
             final ReservationRequest reservationRequest
     ) {
         final User user = userService.find(userId);
-        validateIsUser(user);
+        validateUserPermission(user);
         final PlayTime playTime = playTimeService.find(reservationRequest.timeId());
         final Theme theme = themeService.find(reservationRequest.themeId());
         validateIsDuplicate(reservationRequest.date(), playTime, theme);
@@ -58,9 +57,9 @@ public class ReservationService {
         return ReservationResponse.withId(reservation, id);
     }
 
-    private void validateIsUser(final User user) {
-        if (Role.UNKNOWN == user.getRole()) {
-            throw new InvalidCredentialsException();
+    private void validateUserPermission(final User user) {
+        if (user.getRole().hasPermission(Role.USER)) {
+            throw new UnauthorizedAccessException();
         }
     }
 
