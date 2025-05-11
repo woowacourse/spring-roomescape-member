@@ -28,9 +28,9 @@ public class ReservationApiController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> addByUser(@RequestBody UserReservationRequest userReservationRequest,
-                                                         @AuthenticationPrincipal Member user) {
+                                                         @AuthenticationPrincipal Member member) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(reservationService.addByUser(userReservationRequest, user));
+                .body(reservationService.addByUser(userReservationRequest, member));
     }
 
     @GetMapping
