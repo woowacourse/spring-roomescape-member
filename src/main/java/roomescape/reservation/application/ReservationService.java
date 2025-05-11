@@ -65,6 +65,15 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponse> findBySearchFilter(Long themeId,
+                                                        Long memberId,
+                                                        LocalDate dateFrom,
+                                                        LocalDate dateTo) {
+        return reservationRepository.findBySearchFilter(themeId, memberId, dateFrom, dateTo).stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
     public void deleteById(Long id) {
         ensureReservationExists(id);
         reservationRepository.deleteById(id);

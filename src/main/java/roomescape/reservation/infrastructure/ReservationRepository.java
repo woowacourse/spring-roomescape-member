@@ -59,7 +59,8 @@ public class ReservationRepository {
                 + "m.id AS member_id, "
                 + "m.name AS member_name, "
                 + "m.email AS member_email, "
-                + "m.password AS member_password "
+                + "m.password AS member_password, "
+                + "m.role AS member_role "
                 + "FROM reservation AS r "
                 + "INNER JOIN reservation_time AS t ON r.time_id = t.id "
                 + "INNER JOIN theme AS e ON r.theme_id = e.id "
@@ -88,13 +89,44 @@ public class ReservationRepository {
                 + "m.id AS member_id, "
                 + "m.name AS member_name, "
                 + "m.email AS member_email, "
-                + "m.password AS member_password "
+                + "m.password AS member_password, "
+                + "m.role AS member_role "
                 + "FROM reservation AS r "
                 + "INNER JOIN reservation_time AS t ON r.time_id = t.id "
                 + "INNER JOIN theme AS e ON r.theme_id = e.id "
                 + "INNER JOIN member AS m ON r.member_id = m.id";
 
         return namedParameterJdbcTemplate.query(sql, (resultSet, rowNum) -> createReservation(resultSet));
+    }
+
+    public List<Reservation> findBySearchFilter(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = "SELECT r.id AS reservation_id, r.date, "
+                + "t.id AS time_id, "
+                + "t.start_at AS time_value, "
+                + "e.id AS theme_id, "
+                + "e.name AS theme_name, "
+                + "e.description AS theme_description, "
+                + "e.thumbnail AS theme_thumbnail, "
+                + "m.id AS member_id, "
+                + "m.name AS member_name, "
+                + "m.email AS member_email, "
+                + "m.password AS member_password, "
+                + "m.role AS member_role "
+                + "FROM reservation AS r "
+                + "INNER JOIN reservation_time AS t ON r.time_id = t.id "
+                + "INNER JOIN theme AS e ON r.theme_id = e.id "
+                + "INNER JOIN member AS m ON r.member_id = m.id "
+                + "WHERE e.id = :themeId AND m.id = :memberId "
+                + "AND r.date >= :dateFrom AND r.date <= :dateTo";
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("themeId", themeId);
+        parameters.put("memberId", memberId);
+        parameters.put("dateFrom", dateFrom);
+        parameters.put("dateTo", dateTo);
+
+        return namedParameterJdbcTemplate.query(sql, parameters,
+                (resultSet, rowNum) -> createReservation(resultSet));
     }
 
     public boolean existsByThemeId(Long themeId) {
@@ -144,7 +176,7 @@ public class ReservationRepository {
                         resultSet.getString("member_name"),
                         resultSet.getString("member_email"),
                         resultSet.getString("member_password"),
-                        resultSet.getString("role")
+                        resultSet.getString("member_role")
                 ),
                 resultSet.getDate("date").toLocalDate(),
                 new Time(

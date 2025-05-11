@@ -27,7 +27,9 @@ INSERT INTO theme(name, description, thumbnail) VALUES ('theme12', 'description1
 INSERT INTO theme(name, description, thumbnail) VALUES ('theme13', 'description13', 'thumbnail13');
 INSERT INTO theme(name, description, thumbnail) VALUES ('theme14', 'description14', 'thumbnail14');
 
-INSERT INTO member(name, email, password) VALUES ('어드민', 'admin@email.com', 'password');
+INSERT INTO member(name, email, password, role) VALUES ('미미', 'mimi@email.com', 'password', 'member');
+INSERT INTO member(name, email, password, role) VALUES ('노랑', 'norang@email.com', 'password', 'member');
+INSERT INTO member(name, email, password, role) VALUES ('어드민', 'admin@email.com', 'password', 'admin');
 
 INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-20', 1, 1);
 INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-20', 2, 1);
@@ -53,15 +55,15 @@ INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-
 INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-26', 9, 11);
 INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-26', 10, 11);
 
-INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-26', 1, 10);
-INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-26', 2, 10);
-INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-26', 3, 10);
-INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-26', 4, 10);
+INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-24', 1, 10);
+INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-24', 2, 10);
+INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-25', 3, 10);
+INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-25', 4, 10);
 INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-26', 5, 10);
 INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-26', 6, 10);
-INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-26', 7, 10);
-INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-26', 8, 10);
-INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-26', 9, 10);
+INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-27', 7, 10);
+INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-27', 8, 10);
+INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (2, '2025-04-28', 9, 10);
 
 INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-26', 1, 9);
 INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1, '2025-04-26', 2, 9);
