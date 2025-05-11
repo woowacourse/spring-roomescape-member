@@ -7,7 +7,7 @@ public record Member(Long id, String name, String email, String password, Role r
     }
 
     public Member {
-        if(id == null) {
+        if (id == null) {
             throw new IllegalArgumentException("[ERROR] id가 null이 되어서는 안 됩니다.");
         }
         if (name == null) {

@@ -34,7 +34,7 @@ public class AuthService {
     }
 
     private void validateToken(String token) {
-        if(tokenProvider.isInvalidToken(token)) {
+        if (tokenProvider.isInvalidToken(token)) {
             throw new AuthorizationException();
         }
     }

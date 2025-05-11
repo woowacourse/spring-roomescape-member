@@ -18,6 +18,7 @@ import roomescape.time.dto.AvailableTimeResponse;
 
 @Repository
 public class TimeRepository {
+
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -64,7 +65,7 @@ public class TimeRepository {
                         resultSet.getLong("id"),
                         resultSet.getTime("start_at").toLocalTime(),
                         resultSet.getBoolean("already_booked")
-        ));
+                ));
     }
 
     public List<Time> findAll() {

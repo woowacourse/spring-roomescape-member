@@ -28,7 +28,7 @@ public class AdminRoleInterceptor implements HandlerInterceptor {
         }
 
         String roleExpression = authService.getRoleExpression(token);
-        if(Role.getByExpression(roleExpression) != Role.ADMIN) {
+        if (Role.getByExpression(roleExpression) != Role.ADMIN) {
             throw new InvalidRoleException();
         }
         return true;

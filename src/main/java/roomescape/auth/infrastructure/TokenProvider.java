@@ -40,8 +40,7 @@ public class TokenProvider {
                     .build()
                     .parseClaimsJws(token);
             return claims.getBody().getExpiration().before(new Date());
-        }
-        catch (JwtException | IllegalArgumentException e) {
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
@@ -58,8 +57,7 @@ public class TokenProvider {
                     .build()
                     .parseClaimsJws(token)
                     .getBody().getSubject();
-        }
-        catch (JwtException | IllegalArgumentException exception) {
+        } catch (JwtException | IllegalArgumentException exception) {
             throw new AuthorizationException();
         }
     }
@@ -71,8 +69,7 @@ public class TokenProvider {
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-        }
-        catch (JwtException | IllegalArgumentException exception) {
+        } catch (JwtException | IllegalArgumentException exception) {
             throw new AuthorizationException();
         }
     }

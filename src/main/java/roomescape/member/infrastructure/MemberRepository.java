@@ -23,7 +23,7 @@ public class MemberRepository {
         String sql = "SELECT * FROM member WHERE email = :email AND password = :password";
 
         Map<String, Object> parameter = Map.of("email", email,
-                                            "password", password);
+                "password", password);
 
         try {
             return Optional.of(namedParameterJdbcTemplate.queryForObject(
