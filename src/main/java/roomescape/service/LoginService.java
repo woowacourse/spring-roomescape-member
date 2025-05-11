@@ -3,6 +3,7 @@ package roomescape.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
@@ -13,11 +14,11 @@ import roomescape.exception.AuthenticationException;
 public class LoginService {
 
     private final MemberDao memberDao;
+    private final String secretKey;
 
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-
-    public LoginService(MemberDao memberDao) {
+    public LoginService(MemberDao memberDao, @Value("${jwt.secret.key}") String secretKey) {
         this.memberDao = memberDao;
+        this.secretKey = secretKey;
     }
 
     public String login(LoginRequest request) {
@@ -30,13 +31,13 @@ public class LoginService {
             .claim(Claims.SUBJECT, user.getId().toString())
             .claim("name", user.getName())
             .claim("email", user.getEmail())
-            .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+            .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
             .compact();
     }
 
     public Member getLoginMemberByToken(String token) {
         Long memberId = Long.valueOf(Jwts.parser()
-            .verifyWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+            .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
             .build()
             .parseSignedClaims(token)
             .getPayload().getSubject());

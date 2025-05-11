@@ -27,15 +27,16 @@ class LoginServiceTest {
     @Mock
     private MemberDao memberDao;
 
-    @InjectMocks
     private LoginService loginService;
 
     private Member testMember;
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+
+    private final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E";
 
     @BeforeEach
     void setUp() {
         testMember = new Member(1L, "두리", "duri@a.com", "1234", Role.USER);
+        loginService = new LoginService(memberDao, SECRET_KEY);
     }
 
     @Test

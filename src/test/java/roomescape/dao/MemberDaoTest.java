@@ -80,7 +80,7 @@ class MemberDaoTest {
         assertThat(foundMember.isPresent()).isTrue();
         Assertions.assertAll(
             () -> assertThat(foundMember.get().getId()).isEqualTo(memberId),
-            () -> assertThat(foundMember.get().getEmail()).isEqualTo("test@example.com")
+            () -> assertThat(foundMember.get().getEmail()).isEqualTo("duri@aa.com")
         );
     }
 

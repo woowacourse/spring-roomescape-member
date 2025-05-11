@@ -21,7 +21,7 @@ class MemberTest {
     void password_not_same() {
         Member member = new Member("두리", "duri@duri.com", "1234", Role.USER);
 
-        assertThat(member.isPasswordEqual("123")).isTrue();
+        assertThat(member.isPasswordEqual("1234")).isTrue();
     }
 
     @Test

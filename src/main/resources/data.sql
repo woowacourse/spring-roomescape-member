@@ -10,4 +10,3 @@ INSERT INTO theme(name, description, thumbnail) values('탈출2', '레벨2 탈�
 INSERT INTO theme(name, description, thumbnail) values('탈출3', '레벨2 탈출', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 INSERT INTO member(name, email, password, role) values ('두리', 'a', '1234', 'USER');
 INSERT INTO member(name, email, password, role) values ('어드민', 'admin', '1234', 'ADMIN');
-

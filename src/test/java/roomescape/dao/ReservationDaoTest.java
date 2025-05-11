@@ -24,6 +24,7 @@ class ReservationDaoTest {
     ReservationDao reservationDao;
     ReservationTimeDao reservationTimeDao;
     ThemeDao themeDao;
+    MemberDao memberDao;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -35,6 +36,7 @@ class ReservationDaoTest {
         reservationDao = new ReservationDao(jdbcTemplate);
         reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
         themeDao = new ThemeDao(jdbcTemplate);
+        memberDao = new MemberDao(jdbcTemplate);
         ReservationTime reservationTime = reservationTimeDao.save(
             new ReservationTime(
                 LocalTime.of(10, 5)
@@ -51,7 +53,7 @@ class ReservationDaoTest {
             LocalDate.of(2025, 10, 5),
             reservationTime,
             savedTheme,
-            new Member("두리", "a@a.com", "1234", Role.USER)
+            new Member(1L, "두리", "a@a.com", "1234", Role.USER)
         );
         savedReservation = reservationDao.save(reservation);
     }
