@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,7 @@ public class MemberJdbcRepository implements MemberRepository {
     private static final RowMapper<Member> memberRapper = (resultSet, rowNum) -> new Member(
             resultSet.getLong("id"),
             resultSet.getString("name"),
+            Role.valueOf(resultSet.getString("role")),
             resultSet.getString("email"),
             resultSet.getString("password")
     );
@@ -48,17 +50,19 @@ public class MemberJdbcRepository implements MemberRepository {
     @Override
     public Member save(Member member) {
         String name = member.getName();
+        Role role = member.getRole();
         String email = member.getEmail();
         String password = member.getPassword();
 
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", name)
+                .addValue("role", role)
                 .addValue("email", email)
                 .addValue("password", password);
 
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new Member(id, name, email, password);
+        return new Member(id, name, role, email, password);
     }
 
     @Override

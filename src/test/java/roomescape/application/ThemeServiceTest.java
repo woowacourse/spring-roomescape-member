@@ -84,7 +84,7 @@ class ThemeServiceTest extends BaseTest {
     void 이미_해당_테마의_예약이_존재한다면_삭제할_수_없다() {
         Theme theme = themeDbFixture.공포();
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
-        Member member = memberDbFixture.한스();
+        Member member = memberDbFixture.한스_사용자();
         reservationDbFixture.예약_한스_25_4_22_10시_공포(member, reservationTime, theme);
 
         assertThatThrownBy(() -> themeService.deleteThemeById(theme.getId()))
@@ -118,7 +118,7 @@ class ThemeServiceTest extends BaseTest {
     }
 
     private void addReservation(int count, ReservationDate date, ReservationTime time, Theme theme) {
-        Member member = memberDbFixture.한스();
+        Member member = memberDbFixture.한스_사용자();
         for (int i = 0; i < count; i++) {
             reservationDbFixture.예약_생성_한스(member, date, time, theme);
         }

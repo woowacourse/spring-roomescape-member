@@ -24,7 +24,7 @@ class MemberServiceTest extends BaseTest {
 
     @Test
     void 이메일로_회원을_조회한다() {
-        Member member = memberDbFixture.한스();
+        Member member = memberDbFixture.한스_사용자();
         Member findMember = memberService.findMemberByEmail(member.getEmail());
 
         assertThat(member).isEqualTo(findMember);

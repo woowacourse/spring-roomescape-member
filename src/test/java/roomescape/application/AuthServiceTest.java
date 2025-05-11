@@ -31,7 +31,7 @@ class AuthServiceTest extends BaseTest {
 
     @Test
     void 로그인에_성공하면_토큰을_반환한다() {
-        Member member = memberDbFixture.한스();
+        Member member = memberDbFixture.한스_사용자();
         LoginRequest request = new LoginRequest(member.getEmail(), member.getPassword());
 
         String token = authService.login(request);
@@ -45,7 +45,7 @@ class AuthServiceTest extends BaseTest {
 
     @Test
     void 올바르지_않은_로그인_정보를_입력하면_예외가_발생한다() {
-        Member member = memberDbFixture.한스();
+        Member member = memberDbFixture.한스_사용자();
 
         LoginRequest requestOfInvalidEmail = new LoginRequest("invalidEmail", member.getPassword());
         LoginRequest requestOfInvalidPassword = new LoginRequest(member.getEmail(), "invalidPassword");
@@ -60,7 +60,7 @@ class AuthServiceTest extends BaseTest {
 
     @Test
     void 토큰으로_사용자를_찾는다() {
-        Member member = memberDbFixture.한스();
+        Member member = memberDbFixture.한스_사용자();
         String token = jwtTokenProvider.createToken(member.getEmail());
         LoginMember response = authService.findMemberByToken(token);
 

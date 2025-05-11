@@ -50,7 +50,7 @@ class ReservationServiceTest extends BaseTest {
     void 사용자가_예약을_생성한다() {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
-        Member member = memberDbFixture.한스();
+        Member member = memberDbFixture.한스_사용자();
 
         ReservationCreateRequest request = new ReservationCreateRequest(
                 ReservationDateFixture.예약날짜_25_4_22.getDate(),
@@ -74,7 +74,7 @@ class ReservationServiceTest extends BaseTest {
     void 관리자가_예약을_생성한다() {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
-        Member member = memberDbFixture.한스();
+        Member member = memberDbFixture.한스_사용자();
 
         AdminReservationCreateRequest request = new AdminReservationCreateRequest(
                 ReservationDateFixture.예약날짜_25_4_22.getDate(),
@@ -98,7 +98,7 @@ class ReservationServiceTest extends BaseTest {
     void 같은일시_같은테마_예약이_존재하면_예약을_생성할_수_없다() {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
-        Member member = memberDbFixture.한스();
+        Member member = memberDbFixture.한스_사용자();
         reservationDbFixture.예약_한스_25_4_22_10시_공포(member, reservationTime, theme);
 
         ReservationCreateRequest request = new ReservationCreateRequest(
@@ -117,7 +117,7 @@ class ReservationServiceTest extends BaseTest {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme horror = themeDbFixture.공포();
         Theme mystery = themeDbFixture.커스텀_테마("미스테리");
-        Member member = memberDbFixture.한스();
+        Member member = memberDbFixture.한스_사용자();
         reservationDbFixture.예약_한스_25_4_22_10시_공포(member, reservationTime, horror);
 
         ReservationCreateRequest request = new ReservationCreateRequest(
@@ -135,7 +135,7 @@ class ReservationServiceTest extends BaseTest {
     void 예약을_모두_조회한다() {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
-        Member member = memberDbFixture.한스();
+        Member member = memberDbFixture.한스_사용자();
         reservationDbFixture.예약_한스_25_4_22_10시_공포(member, reservationTime, theme);
 
         List<ReservationResponse> responses = reservationService.getReservations();
@@ -155,7 +155,7 @@ class ReservationServiceTest extends BaseTest {
     void 예약을_삭제한다() {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
-        Member member = memberDbFixture.한스();
+        Member member = memberDbFixture.한스_사용자();
         Reservation reservation = reservationDbFixture.예약_한스_25_4_22_10시_공포(member, reservationTime, theme);
 
         reservationService.deleteReservationById(reservation.getId());

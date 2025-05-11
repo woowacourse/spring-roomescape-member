@@ -2,6 +2,7 @@ package roomescape.application;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 import roomescape.infrastructure.repository.MemberRepository;
 import roomescape.presentation.dto.request.MemberCreateRequest;
 import roomescape.presentation.dto.response.MemberResponse;
@@ -29,7 +30,7 @@ public class MemberService {
     }
 
     public void createMember(MemberCreateRequest request) {
-        Member member = Member.create(request.name(), request.email(), request.password());
+        Member member = Member.create(request.name(), Role.USER, request.email(), request.password());
         memberRepository.save(member);
     }
 

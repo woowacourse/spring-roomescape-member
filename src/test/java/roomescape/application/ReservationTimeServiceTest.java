@@ -85,7 +85,7 @@ class ReservationTimeServiceTest extends BaseTest {
     void 이미_해당_시간의_예약이_존재한다면_삭제할_수_없다() {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
-        Member member = memberDbFixture.한스();
+        Member member = memberDbFixture.한스_사용자();
         Reservation reservation = reservationDbFixture.예약_한스_25_4_22_10시_공포(member, reservationTime, theme);
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(reservation.getId()))

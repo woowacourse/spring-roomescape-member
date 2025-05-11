@@ -306,8 +306,8 @@ class ReservationTest extends BaseTest {
                     "10:00");
             jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                     "테마1", "설명1", "썸네일1");
-            jdbcTemplate.update("INSERT INTO member (name, email, password) VALUES (?, ?, ?)",
-                    "브라운", "test@eamil.com", "pass1");
+            jdbcTemplate.update("INSERT INTO member (name, role, email, password) VALUES (?, ?, ?, ?)",
+                    "브라운", "USER", "test@eamil.com", "pass1");
             jdbcTemplate.update("INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
                     "2025-08-05", 1, 1, 1);
 
@@ -328,8 +328,8 @@ class ReservationTest extends BaseTest {
                     "10:00");
             jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                     "테마1", "설명1", "썸네일1");
-            jdbcTemplate.update("INSERT INTO member (name, email, password) VALUES (?, ?, ?)",
-                    "브라운", "test@email.com", "pass1");
+            jdbcTemplate.update("INSERT INTO member (name, role, email, password) VALUES (?, ?, ?, ?)",
+                    "브라운", "USER", "test@email.com", "pass1");
             String token = givenLoginToken();
 
             RestAssured.given().log().all()
