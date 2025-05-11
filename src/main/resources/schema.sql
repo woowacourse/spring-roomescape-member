@@ -17,11 +17,12 @@ CREATE TABLE theme
 CREATE TABLE reservation
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
-    name     VARCHAR(255) NOT NULL,
+    member_id     BIGINT,
     date     VARCHAR(255) NOT NULL,
     time_id  BIGINT,
     theme_id BIGINT,                             -- 컬럼 추가
     PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id) -- 외래키 추가
 );
@@ -57,21 +58,21 @@ values ('테마2', '설명2', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f
 insert into theme (name, description, thumbnail)
 values ('테마3', '설명3', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
+insert into reservation (member_id, date, time_id, theme_id)
+values (2, '2025-05-30', 1, 1);
 insert into reservation (name, date, time_id, theme_id)
-values ('벡터', '2025-05-30', 1, 1);
+values (2, '2025-05-29', 1, 1);
 insert into reservation (name, date, time_id, theme_id)
-values ('벡터', '2025-05-29', 1, 1);
-insert into reservation (name, date, time_id, theme_id)
-values ('벡터', '2025-05-28', 1, 1);
+values (2, '2025-05-28', 1, 1);
 
 insert into reservation (name, date, time_id, theme_id)
-values ('띠용', '2025-05-30', 2, 2);
+values (1, '2025-05-30', 2, 2);
 insert into reservation (name, date, time_id, theme_id)
-values ('띠용', '2025-05-29', 2, 2);
+values (1, '2025-05-29', 2, 2);
 insert into reservation (name, date, time_id, theme_id)
-values ('띠용', '2025-05-22', 2, 2);
+values (1, '2025-05-22', 2, 2);
 insert into reservation (name, date, time_id, theme_id)
-values ('띠용', '2025-05-21', 2, 2);
+values (1, '2025-05-21', 2, 2);
 
 insert into reservation (name, date, time_id, theme_id)
-values ('띠터', '2025-05-30', 3, 3);
+values (3, '2025-05-30', 3, 3);
