@@ -2,7 +2,7 @@ package roomescape.auth.jwt;
 
 public interface AuthTokenExtractor {
 
-    String extractPayload(String token);
+    String extractMemberIdFromToken(String token);
 
-    String extractRole(String token);
+    String extractMemberRoleFromToken(String token);
 }

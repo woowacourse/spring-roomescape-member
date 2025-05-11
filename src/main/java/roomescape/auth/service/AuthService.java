@@ -31,7 +31,7 @@ public class AuthService {
         final Member member = findMemberByEmail(request.email());
         member.validateRightPassword(request.password());
 
-        return authTokenProvider.createToken(member);
+        return authTokenProvider.createTokenFromMember(member);
     }
 
     private Member findMemberByEmail(final String email) {
@@ -67,7 +67,7 @@ public class AuthService {
 
     public Member findMemberByToken(final String token) {
         validateTokenExisted(token);
-        final long memberId = Long.parseLong(authTokenExtractor.extractPayload(token));
+        final long memberId = Long.parseLong(authTokenExtractor.extractMemberIdFromToken(token));
 
         return memberDao.findById(memberId)
                 .orElseThrow(() -> new NotExistedValueException("존재하지 않는 멤버 입니다"));
@@ -80,6 +80,6 @@ public class AuthService {
     }
 
     public boolean isAdmin(final String token) {
-        return authTokenExtractor.extractRole(token).equals("Admin");
+        return authTokenExtractor.extractMemberRoleFromToken(token).equals("Admin");
     }
 }

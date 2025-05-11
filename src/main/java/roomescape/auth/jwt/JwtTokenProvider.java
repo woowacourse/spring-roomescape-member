@@ -29,7 +29,7 @@ public class JwtTokenProvider implements AuthTokenProvider {
     }
 
     @Override
-    public String createToken(Member member) {
+    public String createTokenFromMember(Member member) {
         Claims claims = Jwts.claims().setSubject(String.valueOf(member.getId()));
 
         final Date now = new Date();

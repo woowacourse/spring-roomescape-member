@@ -31,7 +31,7 @@ public class JwtTokenExtractor implements AuthTokenExtractor {
     }
 
     @Override
-    public String extractPayload(String token) {
+    public String extractMemberIdFromToken(String token) {
         validateValidToken(token);
 
         return Jwts.parserBuilder()
@@ -43,7 +43,7 @@ public class JwtTokenExtractor implements AuthTokenExtractor {
     }
 
     @Override
-    public String extractRole(String token) {
+    public String extractMemberRoleFromToken(String token) {
         validateValidToken(token);
 
         return Jwts.parserBuilder()
