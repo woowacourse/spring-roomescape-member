@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.global.auth.AuthenticationPrincipal;
 import roomescape.global.auth.CookieUtil;
@@ -18,6 +19,7 @@ import roomescape.member.service.AuthService;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AuthService authService;
@@ -31,11 +33,19 @@ public class AuthController {
         String token = authService.login(request);
         Cookie cookie = cookieUtil.createCookie("token", token);
         response.addCookie(cookie);
-
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/login/check")
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            HttpServletResponse response
+    ) {
+        Cookie cookie = cookieUtil.expireCookie("token", "");
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/check")
     public ResponseEntity<LoginResponse> checkLogin(
             @AuthenticationPrincipal LoginMember loginMember
     ) {
