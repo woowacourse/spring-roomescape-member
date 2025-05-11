@@ -12,7 +12,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.auth.domain.JwtTokenProvider;
 import roomescape.auth.dto.LoginRequest;
 
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT) // TODO Dirty Context? 관련 설정 더 알아보기
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @Sql({"/test-schema.sql", "/test-member-data.sql"})
 public class AuthApiTest {
 

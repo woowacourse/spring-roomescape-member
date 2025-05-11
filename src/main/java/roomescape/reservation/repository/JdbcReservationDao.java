@@ -2,6 +2,7 @@ package roomescape.reservation.repository;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -90,6 +91,42 @@ public class JdbcReservationDao implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAll(
+            final Long memberId,
+            final Long themeId,
+            final LocalDate dateFrom,
+            final LocalDate dateTo
+    ) {
+        StringBuilder stringBuilder = new StringBuilder("""
+                SELECT2
+                    r.id AS reservation_id,
+                    r.date,
+                    m.id AS member_id,
+                    m.name AS member_name, 
+                    m.email AS member_email,
+                    m.password AS member_password,
+                    m.role AS member_role,
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                INNER JOIN member AS m ON r.member_id = m.id
+                WHERE 1 = 1
+                """);
+        final List<Object> parameters = mapOptionalParameters(memberId, themeId, dateFrom, dateTo, stringBuilder);
+        final String sql = stringBuilder.toString();
+        if (parameters.isEmpty()) {
+            return jdbcTemplate.query(sql, reservationRowMapper);
+        }
+        return jdbcTemplate.query(sql, reservationRowMapper, parameters.toArray());
+    }
+
+    @Override
     public void deleteById(final long id) {
         final String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
@@ -119,5 +156,32 @@ public class JdbcReservationDao implements ReservationRepository {
         final List<Integer> result = jdbcTemplate.query(sql, (resultSet, rowNumber) -> resultSet.getInt(1),
                 date, timeId, themeId);
         return !result.isEmpty();
+    }
+
+    private List<Object> mapOptionalParameters(
+            final Long memberId,
+            final Long themeId,
+            final LocalDate dateFrom,
+            final LocalDate dateTo,
+            final StringBuilder stringBuilder
+    ) {
+        final List<Object> parameters = new ArrayList<>();
+        if (memberId != null) {
+            stringBuilder.append(" AND m.id = ?");
+            parameters.add(memberId);
+        }
+        if (themeId != null) {
+            stringBuilder.append(" AND th.id = ?");
+            parameters.add(themeId);
+        }
+        if (dateFrom != null) {
+            stringBuilder.append(" AND r.date >= ?");
+            parameters.add(dateFrom);
+        }
+        if (dateTo != null) {
+            stringBuilder.append(" AND r.date <= ?");
+            parameters.add(dateTo);
+        }
+        return parameters;
     }
 }

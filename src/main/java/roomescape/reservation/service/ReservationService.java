@@ -26,10 +26,12 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
 
-    public ReservationService(final ReservationRepository reservationRepository,
-                              final ReservationTimeRepository reservationTimeRepository,
-                              final ThemeRepository themeRepository,
-                              final MemberRepository memberRepository) {
+    public ReservationService(
+            final ReservationRepository reservationRepository,
+            final ReservationTimeRepository reservationTimeRepository,
+            final ThemeRepository themeRepository,
+            final MemberRepository memberRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
@@ -57,24 +59,51 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponse> getReservations(
+            final Long memberId,
+            final Long themeId,
+            final LocalDate dateFrom,
+            final LocalDate dateTo
+    ) {
+        final List<Reservation> reservations = reservationRepository.findAll(memberId, themeId, dateFrom, dateTo);
+        return reservations.stream()
+                .map(ReservationResponse::new)
+                .toList();
+    }
+
     public void cancelReservationById(final long id) {
         reservationRepository.deleteById(id);
     }
 
-    private Reservation convertToReservation(final CreateReservationWithMemberRequest reservationRequest,
-                                             final Member member) {
-        return convertToReservation(member, reservationRequest.themeId(), reservationRequest.timeId(),
+    private Reservation convertToReservation(
+            final CreateReservationWithMemberRequest reservationRequest,
+            final Member member
+    ) {
+        return convertToReservation(
+                member,
+                reservationRequest.themeId(),
+                reservationRequest.timeId(),
                 reservationRequest.date());
     }
 
-    private Reservation convertToReservation(final CreateReservationRequest createReservationRequest,
-                                             final Member member) {
-        return convertToReservation(member, createReservationRequest.themeId(), createReservationRequest.timeId(),
-                createReservationRequest.date());
+    private Reservation convertToReservation(
+            final CreateReservationRequest createReservationRequest,
+            final Member member
+    ) {
+        return convertToReservation(
+                member,
+                createReservationRequest.themeId(),
+                createReservationRequest.timeId(),
+                createReservationRequest.date())
+                ;
     }
 
-    private Reservation convertToReservation(final Member member, final long themeId, final long timeId,
-                                             final LocalDate date) {
+    private Reservation convertToReservation(
+            final Member member,
+            final long themeId,
+            final long timeId,
+            final LocalDate date
+    ) {
         final Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new BadRequestException("테마가 존재하지 않습니다."));
         final ReservationTime time = reservationTimeRepository.findById(timeId)

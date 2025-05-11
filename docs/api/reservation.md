@@ -50,7 +50,7 @@ Content-Type: application/json
 ### Request
 
 ```
-GET /reservations HTTP/1.1
+GET /reservations?themeId=1&memberId=1&dateFrom='2023-08-05'&dateTo='2023-08-05' HTTP/1.1
 ```
 
 ### Response

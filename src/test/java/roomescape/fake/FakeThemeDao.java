@@ -49,7 +49,7 @@ public class FakeThemeDao implements ThemeRepository {
 
     @Override
     public void deleteById(long id) {
-        Theme theme = findById(id).orElseThrow(); // TODO 이거 맞나?
+        Theme theme = findById(id).orElseThrow();
         themes.remove(theme);
     }
 }
