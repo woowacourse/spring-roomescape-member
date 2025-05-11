@@ -197,8 +197,8 @@ function applyFilter(event) {
   const dateTo = document.getElementById('date-to').value;
 
   const params = new URLSearchParams();
-  params.append('member-id', memberId);
-  params.append('theme-id', themeId);
+  params.append('memberId', memberId);
+  params.append('themeId', themeId);
   params.append('from', dateFrom);
   params.append('to', dateTo);
 

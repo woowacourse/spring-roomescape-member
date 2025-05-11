@@ -15,6 +15,7 @@ import roomescape.exception.custom.reason.reservation.ReservationPastDateExcepti
 import roomescape.exception.custom.reason.reservation.ReservationPastTimeException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
+import roomescape.reservation.dto.AdminFilterReservationRequest;
 import roomescape.reservation.dto.AdminReservationRequest;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -72,13 +73,11 @@ public class ReservationService {
         return reservationRepository.findAll().stream().map(ReservationResponse::from).toList();
     }
 
-    public List<ReservationResponse> readAllByMemberAndThemeAndDateRange(
-            final Long memberId,
-            final Long themeId,
-            final LocalDate from,
-            final LocalDate to
-    ) {
-        return reservationRepository.findAllByMemberIdAndThemeIdAndDateRange(memberId, themeId, from, to).stream()
+    public List<ReservationResponse> readAllByMemberAndThemeAndDateRange(final AdminFilterReservationRequest request) {
+        return reservationRepository.findAllByMemberIdAndThemeIdAndDateRange(
+                        request.memberId(), request.themeId(),
+                        request.from(), request.to()
+                ).stream()
                 .map(ReservationResponse::from)
                 .toList();
     }

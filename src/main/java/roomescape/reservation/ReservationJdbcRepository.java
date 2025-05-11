@@ -118,9 +118,14 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     INNER JOIN theme AS th ON r.theme_id=th.id
                     INNER JOIN member AS m ON r.member_id=m.id 
                 WHERE
-                    r.member_id=? AND r.theme_id=? AND (r.date BETWEEN  ? AND ?);
+                    (r.member_id=? OR ? IS NULL) 
+                AND (r.theme_id=? OR ? IS NULL)
+                AND ((? IS NULL OR ? IS NULL) OR (r.date BETWEEN ? AND ?));
                 """;
-        return jdbcTemplate.query(sql, getRowMapper(), memberId, themeId, from, to);
+        return jdbcTemplate.query(sql, getRowMapper(),
+                memberId, memberId,
+                themeId, themeId,
+                from, to, from, to);
     }
 
     @Override
