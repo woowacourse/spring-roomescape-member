@@ -1,4 +1,4 @@
-package roomescape.theme.service;
+package roomescape.theme.application;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -6,12 +6,12 @@ import java.time.ZoneId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.infrastructure.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
-import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.infrastructure.ThemeRepository;
 
 import java.util.List;
 import java.util.Optional;

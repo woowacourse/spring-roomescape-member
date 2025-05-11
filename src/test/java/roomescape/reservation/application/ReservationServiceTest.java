@@ -1,4 +1,4 @@
-package roomescape.reservation.service;
+package roomescape.reservation.application;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,11 +11,11 @@ import java.util.Optional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.UserReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.infrastructure.ReservationRepository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.infrastructure.ThemeRepository;
 import roomescape.time.domain.Time;
-import roomescape.time.repository.TimeRepository;
+import roomescape.time.infrastructure.TimeRepository;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;

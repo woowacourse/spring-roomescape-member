@@ -1,4 +1,4 @@
-package roomescape.reservation.controller;
+package roomescape.reservation.ui;
 
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.dto.UserReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservation.service.ReservationService;
+import roomescape.reservation.application.ReservationService;
 import roomescape.member.domain.Member;
 import roomescape.auth.ui.AuthenticationPrincipal;
 

@@ -1,4 +1,4 @@
-package roomescape.time.controller;
+package roomescape.time.ui;
 
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,7 @@ import roomescape.time.dto.AvailableTimeRequest;
 import roomescape.time.dto.AvailableTimeResponse;
 import roomescape.time.dto.TimeRequest;
 import roomescape.time.dto.TimeResponse;
-import roomescape.time.service.TimeService;
+import roomescape.time.application.TimeService;
 
 @RestController
 @RequestMapping("/times")

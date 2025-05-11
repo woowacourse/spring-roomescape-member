@@ -1,4 +1,4 @@
-package roomescape.reservation.service;
+package roomescape.reservation.application;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -8,11 +8,11 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.AdminReservationRequest;
 import roomescape.reservation.dto.UserReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.infrastructure.ReservationRepository;
 import roomescape.time.domain.Time;
-import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.infrastructure.ThemeRepository;
 import roomescape.theme.domain.Theme;
-import roomescape.time.repository.TimeRepository;
+import roomescape.time.infrastructure.TimeRepository;
 import roomescape.member.application.MemberNotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.infrastructure.MemberRepository;

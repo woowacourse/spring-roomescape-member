@@ -1,11 +1,11 @@
-package roomescape.theme.service;
+package roomescape.theme.application;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.theme.repository.ThemeRepository;
+import roomescape.reservation.infrastructure.ReservationRepository;
+import roomescape.theme.infrastructure.ThemeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.dto.ThemeRequest;

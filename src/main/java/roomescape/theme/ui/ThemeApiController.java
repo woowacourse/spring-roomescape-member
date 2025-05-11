@@ -1,4 +1,4 @@
-package roomescape.theme.controller;
+package roomescape.theme.ui;
 
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
-import roomescape.theme.service.ThemeService;
+import roomescape.theme.application.ThemeService;
 
 @RestController
 @RequestMapping("/themes")

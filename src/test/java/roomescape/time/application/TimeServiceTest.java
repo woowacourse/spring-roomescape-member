@@ -1,4 +1,4 @@
-package roomescape.time.service;
+package roomescape.time.application;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,15 +10,15 @@ import static org.mockito.Mockito.*;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.infrastructure.ReservationRepository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.infrastructure.ThemeRepository;
 import roomescape.time.domain.Time;
 import roomescape.time.dto.AvailableTimeRequest;
 import roomescape.time.dto.AvailableTimeResponse;
 import roomescape.time.dto.TimeRequest;
 import roomescape.time.dto.TimeResponse;
-import roomescape.time.repository.TimeRepository;
+import roomescape.time.infrastructure.TimeRepository;
 
 import static org.assertj.core.api.Assertions.*;
 

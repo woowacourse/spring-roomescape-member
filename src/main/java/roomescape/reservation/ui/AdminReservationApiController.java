@@ -1,4 +1,4 @@
-package roomescape.reservation.controller;
+package roomescape.reservation.ui;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.dto.AdminReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservation.service.ReservationService;
+import roomescape.reservation.application.ReservationService;
 
 @RestController
 public class AdminReservationApiController {

@@ -1,4 +1,4 @@
-package roomescape.time.service;
+package roomescape.time.application;
 
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
