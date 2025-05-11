@@ -13,6 +13,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.common.exception.DataExistException;
 import roomescape.common.exception.DataNotFoundException;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
+import roomescape.member.repository.JdbcMemberRepository;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.AvailableReservationTime;
@@ -26,7 +30,6 @@ import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.ThemeService;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 @JdbcTest
 class ReservationServiceTest {
@@ -51,19 +54,19 @@ class ReservationServiceTest {
         final String thumbnail = "귀신사진";
         final Long themeId = themeRepository.save(new Theme(themeName, description, thumbnail));
 
-        final String name = "헤일러";
+        final Member member = new Member(1L, "이스트", "east@email.com", "1234", Role.ADMIN);
         final LocalDate date = LocalDate.parse("2025-08-01");
-        final LocalTime time = LocalTime.parse("10:00");
+        final LocalTime time = LocalTime.parse("20:00");
         final Long timeId1 = reservationTimeRepository.save(new ReservationTime(time));
 
-        final String name2 = "머피";
+        final Member member2 = new Member(2L, "머피", "muffy@email.com", "1234", Role.USER);
         final LocalDate date2 = LocalDate.parse("2025-08-01");
-        final LocalTime time2 = LocalTime.parse("18:00");
+        final LocalTime time2 = LocalTime.parse("21:00");
         final Long timeId2 = reservationTimeRepository.save(new ReservationTime(time2));
 
         reservationRepository.save(
                 new Reservation(
-                        name,
+                        member,
                         date,
                         new ReservationTime(timeId1, time),
                         new Theme(themeId, themeName, description, thumbnail)
@@ -72,7 +75,7 @@ class ReservationServiceTest {
 
         reservationRepository.save(
                 new Reservation(
-                        name2,
+                        member2,
                         date2,
                         new ReservationTime(timeId2, time2),
                         new Theme(themeId, themeName, description, thumbnail)
@@ -89,8 +92,8 @@ class ReservationServiceTest {
     @Test
     void 예약_정보를_저장한다() {
         // given
-        final String name = "헤일러";
-        final LocalTime time = LocalTime.parse("10:00");
+        final Member member = new Member(1L, "이스트", "east@email.com", "1234", Role.ADMIN);
+        final LocalTime time = LocalTime.parse("20:00");
         final LocalDate date = LocalDate.parse("2025-11-28");
         final Long timeId = reservationTimeRepository.save(new ReservationTime(time));
 
@@ -100,15 +103,15 @@ class ReservationServiceTest {
         final Long themeId = themeRepository.save(new Theme(themeName, description, thumbnail));
 
         // when & then
-        Assertions.assertThatCode(() -> reservationService.save(name, date, timeId, themeId))
+        Assertions.assertThatCode(() -> reservationService.save(member, date, timeId, themeId))
                 .doesNotThrowAnyException();
     }
 
     @Test
     void 예약_정보를_id로_조회한다() {
         // given
-        final String name = "헤일러";
-        final LocalTime time = LocalTime.parse("10:00");
+        final Member member = new Member(1L, "이스트", "east@email.com", "1234", Role.ADMIN);
+        final LocalTime time = LocalTime.parse("20:00");
         final LocalDate date = LocalDate.parse("2025-11-28");
         final Long timeId = reservationTimeRepository.save(new ReservationTime(time));
 
@@ -117,7 +120,7 @@ class ReservationServiceTest {
         final String thumbnail = "귀신사진";
         final Long themeId = themeRepository.save(new Theme(themeName, description, thumbnail));
 
-        final Long savedId = reservationService.save(name, date, timeId, themeId);
+        final Long savedId = reservationService.save(member, date, timeId, themeId);
 
         // when
         final Reservation found = reservationService.getById(savedId);
@@ -125,7 +128,7 @@ class ReservationServiceTest {
         // then
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(savedId).isEqualTo(found.getId());
-            softly.assertThat(name).isEqualTo(found.getName());
+            softly.assertThat(member.getName()).isEqualTo(found.getMember().getName());
             softly.assertThat(date).isEqualTo(found.getDate());
             softly.assertThat(timeId).isEqualTo(found.getTime().getId());
             softly.assertThat(time).isEqualTo(found.getTime().getStartAt());
@@ -135,8 +138,8 @@ class ReservationServiceTest {
     @Test
     void 예약_정보를_삭제한다() {
         // given
-        final String name = "헤일러";
-        final LocalTime time = LocalTime.parse("10:00");
+        final Member member = new Member(1L, "이스트", "east@email.com", "1234", Role.ADMIN);
+        final LocalTime time = LocalTime.parse("20:00");
         final LocalDate date = LocalDate.parse("2025-11-28");
         final Long timeId = reservationTimeRepository.save(new ReservationTime(time));
 
@@ -146,7 +149,7 @@ class ReservationServiceTest {
         final Long themeId = themeRepository.save(new Theme(themeName, description, thumbnail));
 
         Long savedId = reservationRepository.save(new Reservation(
-                name,
+                member,
                 date,
                 new ReservationTime(timeId, time),
                 new Theme(themeId, themeName, description, thumbnail)
@@ -159,8 +162,8 @@ class ReservationServiceTest {
     @Test
     void 이용가능한_예약_시간을_조회한다() {
         // given
-        final String name = "헤일러";
-        final LocalTime time = LocalTime.parse("10:00");
+        final Member member = new Member(1L, "이스트", "east@email.com", "1234", Role.ADMIN);
+        final LocalTime time = LocalTime.parse("20:00");
         final LocalDate date = LocalDate.parse("2025-11-28");
         final Long timeId = reservationTimeRepository.save(new ReservationTime(time));
 
@@ -170,13 +173,13 @@ class ReservationServiceTest {
         final Long themeId = themeRepository.save(new Theme(themeName, description, thumbnail));
 
         reservationRepository.save(new Reservation(
-                name,
+                member,
                 date,
                 new ReservationTime(timeId, time),
                 new Theme(themeId, themeName, description, thumbnail)
         ));
 
-        final LocalTime time2 = LocalTime.parse("12:00");
+        final LocalTime time2 = LocalTime.parse("21:00");
         reservationTimeRepository.save(new ReservationTime(time2));
 
         // when
@@ -193,8 +196,8 @@ class ReservationServiceTest {
     @Test
     void 예약_정보를_저장할_때_이미_예약된_시간이면_예외가_발생한다() {
         // given
-        final String name = "헤일러";
-        final LocalTime time = LocalTime.parse("10:00");
+        final Member member = new Member(1L, "이스트", "east@email.com", "1234", Role.ADMIN);
+        final LocalTime time = LocalTime.parse("20:00");
         final LocalDate date = LocalDate.parse("2025-11-28");
         final Long timeId = reservationTimeRepository.save(new ReservationTime(time));
 
@@ -205,7 +208,7 @@ class ReservationServiceTest {
 
         reservationRepository.save(
                 new Reservation(
-                        name,
+                        member,
                         date,
                         new ReservationTime(timeId, time),
                         new Theme(themeId, themeName, description, thumbnail)
@@ -213,14 +216,14 @@ class ReservationServiceTest {
         );
 
         // when & then
-        Assertions.assertThatThrownBy(() -> reservationService.save(name, date, timeId, themeId))
+        Assertions.assertThatThrownBy(() -> reservationService.save(member, date, timeId, themeId))
                 .isInstanceOf(DataExistException.class);
     }
 
     @Test
     void 예약_정보를_저장할_때_예약시간이_존재하지않으면_예외가_발생한다() {
         // given
-        final String name = "헤일러";
+        final Member member = new Member(1L, "이스트", "east@email.com", "1234", Role.ADMIN);
         final LocalDate date = LocalDate.parse("2025-11-28");
         final Long timeId = Long.MAX_VALUE;
 
@@ -230,15 +233,15 @@ class ReservationServiceTest {
         final Long themeId = themeRepository.save(new Theme(themeName, description, thumbnail));
 
         // when & then
-        Assertions.assertThatThrownBy(() -> reservationService.save(name, date, timeId, themeId))
+        Assertions.assertThatThrownBy(() -> reservationService.save(member, date, timeId, themeId))
                 .isInstanceOf(DataNotFoundException.class);
     }
 
     @Test
     void 한_테마의_날짜와_시간이_중복_될_수_없다() {
         // given
-        final String name = "헤일러";
-        final LocalTime time = LocalTime.parse("10:00");
+        final Member member = new Member(1L, "이스트", "east@email.com", "1234", Role.ADMIN);
+        final LocalTime time = LocalTime.parse("20:00");
         final LocalDate date = LocalDate.parse("2025-11-28");
         final Long timeId = reservationTimeRepository.save(new ReservationTime(time));
 
@@ -249,7 +252,7 @@ class ReservationServiceTest {
 
         reservationRepository.save(
                 new Reservation(
-                        name,
+                        member,
                         date,
                         new ReservationTime(timeId, time),
                         new Theme(themeId, themeName, description, thumbnail)
@@ -257,10 +260,18 @@ class ReservationServiceTest {
         );
 
         // when & then
-        Assertions.assertThatThrownBy(() -> reservationService.save("우가", date, timeId, themeId))
+        Assertions.assertThatThrownBy(() -> reservationService.save(
+                        new Member(
+                                2L,
+                                "WooGa",
+                                "bowook316@gmail.com",
+                                "1234",
+                                Role.USER
+                        ), date, timeId, themeId))
                 .isInstanceOf(DataExistException.class);
     }
 
+    //
     @TestConfiguration
     static class TestConfig {
 
@@ -293,6 +304,13 @@ class ReservationServiceTest {
         }
 
         @Bean
+        public MemberRepository memberRepository(
+                final JdbcTemplate jdbcTemplate
+        ) {
+            return new JdbcMemberRepository(jdbcTemplate);
+        }
+
+        @Bean
         public ThemeService themeService(
                 final ThemeRepository themeRepository
         ) {
@@ -303,9 +321,11 @@ class ReservationServiceTest {
         public ReservationService reservationService(
                 final ReservationRepository reservationRepository,
                 final ReservationTimeRepository reservationTimeRepository,
-                final ThemeRepository themeRepository
+                final ThemeRepository themeRepository,
+                final MemberRepository memberRepository
         ) {
-            return new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+            return new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
+                    memberRepository);
         }
     }
 }
