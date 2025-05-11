@@ -12,7 +12,9 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
+import roomescape.model.Role;
 import roomescape.model.Theme;
+import roomescape.model.User;
 
 class ReservationDaoTest {
     private static ReservationDao reservationDao;
@@ -44,7 +46,15 @@ class ReservationDaoTest {
                         rs.getString("description"),
                         rs.getString("thumbnail")
                 ));
-        Reservation reservation = new Reservation(null, "이름", LocalDate.of(2025, 12, 16), reservationTime, theme);
+        User user = jdbcTemplate.queryForObject("SELECT id, name, email, password, roles FROM users WHERE id = 1"
+                , (rs, rowNum) -> new User(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        Role.toList(rs.getString("roles"))
+                ));
+        Reservation reservation = new Reservation(null, user, LocalDate.of(2025, 12, 16), reservationTime, theme);
 
         // when
         Reservation saved = reservationDao.save(reservation);

@@ -27,3 +27,8 @@ spring:
     url: jdbc:h2:mem:database_test
 server:
   port: 8081
+
+jwt:
+  secret: "testtesttesttesttesttest"
+  expiration:
+    access-token: 3600000
