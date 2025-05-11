@@ -21,7 +21,7 @@ public class AuthPreHandlerInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        if (isMatch(request)) {
+        if (!isMatch(request)) {
             return true;
         }
         String token = JwtCookieResolver.getTokenFromCookie(request);
@@ -34,7 +34,7 @@ public class AuthPreHandlerInterceptor implements HandlerInterceptor {
     }
 
     private boolean isMatch(HttpServletRequest request) {
-        return !requestMatcher.stream()
+        return requestMatcher.stream()
                 .allMatch(matcher -> matcher.isMatch(request));
     }
 }

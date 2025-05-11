@@ -29,7 +29,7 @@ public class AuthenticationService {
         }
         Member member = memberRepository.findByEmail(email);
 
-        if (passwordEncoder.matches(member.getPassword(), password)) {
+        if (!passwordEncoder.matches(member.getPassword(), password)) {
             throw new IllegalArgumentException("[ERROR] 비밀번호가 잘못되었습니다.");
         }
         return jwtTokenProvider.createToken(member);
