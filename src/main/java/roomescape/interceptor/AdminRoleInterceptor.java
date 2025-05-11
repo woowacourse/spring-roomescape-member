@@ -43,7 +43,7 @@ public class AdminRoleInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    private String extractTokenFromCookies(Cookie[] cookies) {
+    private String extractTokenFromCookies(final Cookie[] cookies) {
         if (cookies == null) {
             return null;
         }
