@@ -31,7 +31,7 @@ function updateUIBasedOnLogin() {
         return response.json(); // 응답 본문을 JSON으로 파싱
       })
       .then(data => {
-          if (data.name.contains("비로그인")) {
+          if (data.name.includes("비로그인")) {
               document.getElementById('profile-name').textContent = 'Profile'; // 기본 텍스트로 재설정
               document.querySelector('.nav-item.dropdown').style.display = 'none'; // 드롭다운 메뉴 숨김
               document.querySelector('.nav-item a[href="/login"]').parentElement.style.display = 'block'; // 로그인 버튼 표시
