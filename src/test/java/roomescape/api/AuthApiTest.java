@@ -97,4 +97,21 @@ class AuthApiTest {
                 .body("name", equalTo("name1"));
     }
 
+    @Test
+    void 잘못된_토큰으로_인증_정보_조회_시_401에러가_발생한다() {
+        //given
+        memberRepository.save(new Member(null, "name1", "email1@domain.com", "password1", Role.MEMBER));
+        Map<String, Object> body = Map.of(
+                "email", "email1@domain.com",
+                "password", "password1"
+        );
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .cookie("token", "thisIsInvalidToken")
+                .when().get("api/auth/check")
+                .then()
+                .statusCode(401);
+    }
+
 }
