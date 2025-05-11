@@ -9,9 +9,9 @@ public class Member {
     private final String name;
     private final String email;
     private final String password;
-    private final String role;
+    private final MemberRole role;
 
-    private Member(final Long id, final String name, final String email, final String password, final String role) {
+    private Member(final Long id, final String name, final String email, final String password, final MemberRole role) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -20,11 +20,19 @@ public class Member {
     }
 
     public static Member fromWithoutId(final String name, final String email, final String password) {
-        return new Member(null, name, email, password.trim(), "basic");
+        if (isAdmin(name)) {
+            return new Member(null, name, email, password, MemberRole.ADMIN);
+        }
+        return new Member(null, name, email, password, MemberRole.USER);
     }
 
-    public static Member from(final Long id, final String name, final String email, final String password) {
-        return new Member(id, name, email, password.trim(), "basic");
+    private static boolean isAdmin(final String name) {
+        return name.equals("어드민") || name.equals("admin");
+    }
+
+    public static Member from(final Long id, final String name, final String email, final String password,
+                              final MemberRole role) {
+        return new Member(id, name, email, password, role);
     }
 
     public void validatePassword(final String password) {
@@ -53,7 +61,7 @@ public class Member {
         return password;
     }
 
-    public String getRole() {
+    public MemberRole getRole() {
         return role;
     }
 

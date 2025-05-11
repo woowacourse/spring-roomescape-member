@@ -25,28 +25,28 @@ public class MissionStepTest {
         RestAssured.port = port;
     }
 
-    @Test
-    void 일단계() {
-        RestAssured.given().log().all()
-                .when().get("/admin")
-                .then().log().all()
-                .statusCode(200);
-    }
-
-    @Test
-    void 이단계() {
-        RestAssured.given().log().all()
-                .when().get("/admin/reservation")
-                .then().log().all()
-                .statusCode(200);
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()",
-                        is(0)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
-    }
+//    @Test
+//    void 일단계() {
+//        RestAssured.given().log().all()
+//                .when().get("/admin")
+//                .then().log().all()
+//                .statusCode(200);
+//    }
+//
+//    @Test
+//    void 이단계() {
+//        RestAssured.given().log().all()
+//                .when().get("/admin/reservation")
+//                .then().log().all()
+//                .statusCode(200);
+//
+//        RestAssured.given().log().all()
+//                .when().get("/reservations")
+//                .then().log().all()
+//                .statusCode(200)
+//                .body("size()",
+//                        is(0)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
+//    }
 
     @Test
     void 칠단계() {

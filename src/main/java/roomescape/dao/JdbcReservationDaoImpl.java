@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
@@ -73,7 +74,8 @@ public class JdbcReservationDaoImpl implements ReservationDao {
                 id,
                 resultSet.getString("member_name"),
                 resultSet.getString("member_email"),
-                resultSet.getString("member_password")
+                resultSet.getString("member_password"),
+                MemberRole.from(resultSet.getString("member_role"))
         );
     }
 

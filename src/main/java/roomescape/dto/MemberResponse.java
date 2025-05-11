@@ -1,13 +1,14 @@
 package roomescape.dto;
 
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 
 public record MemberResponse(
 
         Long id,
         String name,
         String email,
-        String role
+        MemberRole role
 ) {
 
     public static MemberResponse from(Member member) {

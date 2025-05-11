@@ -18,6 +18,7 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.AdminReservationRequest;
@@ -50,9 +51,9 @@ public class ReservationServiceTest {
     @Test
     void given_reservation_request_dto_then_save() {
         //given
-        LoginMember loginMember = new LoginMember(1L, "testName", "testEmail", "basic");
+        LoginMember loginMember = new LoginMember(1L, "testName", "testEmail", MemberRole.USER);
 
-        memberDao.save(Member.from(1L, "testName", "testEmail", "1234"));
+        memberDao.save(Member.from(1L, "testName", "testEmail", "1234", MemberRole.USER));
         reservationTimeDao.saveReservationTime(new ReservationTime(1L, LocalTime.of(10, 30)));
         themeDao.saveTheme(new Theme(1L, "name", "description", "thumbnail"));
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto(
@@ -69,9 +70,9 @@ public class ReservationServiceTest {
     @Test
     void given_multiple_reservation_request_dto_then_all_save() {
 
-        memberDao.save(Member.from(1L, "testName1", "testEmail1", "12"));
-        memberDao.save(Member.from(2L, "testName2", "testEmail2", "123"));
-        memberDao.save(Member.from(3L, "testName3", "testEmail3", "1234"));
+        memberDao.save(Member.from(1L, "testName1", "testEmail1", "12", MemberRole.USER));
+        memberDao.save(Member.from(2L, "testName2", "testEmail2", "123", MemberRole.USER));
+        memberDao.save(Member.from(3L, "testName3", "testEmail3", "1234", MemberRole.USER));
 
         reservationTimeDao.saveReservationTime(new ReservationTime(1L, LocalTime.of(10, 30)));
         reservationTimeDao.saveReservationTime(new ReservationTime(2L, LocalTime.of(11, 30)));
@@ -81,9 +82,9 @@ public class ReservationServiceTest {
         themeDao.saveTheme(new Theme(2L, "name2", "description2", "thumbnail2"));
         themeDao.saveTheme(new Theme(3L, "name3", "description3", "thumbnail3"));
 
-        LoginMember loginMember1 = new LoginMember(1L, "testName1", "testEmail1", "basic");
-        LoginMember loginMember2 = new LoginMember(2L, "testName2", "testEmail2", "basic");
-        LoginMember loginMember3 = new LoginMember(3L, "testName3", "testEmail3", "basic");
+        LoginMember loginMember1 = new LoginMember(1L, "testName1", "testEmail1", MemberRole.USER);
+        LoginMember loginMember2 = new LoginMember(2L, "testName2", "testEmail2", MemberRole.USER);
+        LoginMember loginMember3 = new LoginMember(3L, "testName3", "testEmail3", MemberRole.USER);
 
         //given
         ReservationRequestDto reservationRequestDto1 = new ReservationRequestDto(
@@ -106,8 +107,8 @@ public class ReservationServiceTest {
     @Test
     void given_reservation_id_then_remove_db() {
         //given
-        LoginMember loginMember = new LoginMember(1L, "testName", "testEmail", "basic");
-        memberDao.save(Member.from(1L, "testName", "testEmail", "1234"));
+        LoginMember loginMember = new LoginMember(1L, "testName", "testEmail", MemberRole.USER);
+        memberDao.save(Member.from(1L, "testName", "testEmail", "1234", MemberRole.USER));
         reservationTimeDao.saveReservationTime(new ReservationTime(1L, LocalTime.of(10, 30)));
         themeDao.saveTheme(new Theme(1L, "name", "description", "thumbnail"));
 
@@ -130,7 +131,7 @@ public class ReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         reservationTimeDao.saveReservationTime(reservationTime);
 
-        Member member = Member.from(1L, "testName", "testEmail", "1234");
+        Member member = Member.from(1L, "testName", "testEmail", "1234", MemberRole.USER);
         memberDao.save(member);
 
         AdminReservationRequest request = new AdminReservationRequest(NOW_DATE, 1L, 1L, 1L);

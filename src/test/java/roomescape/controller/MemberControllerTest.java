@@ -9,14 +9,12 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
-import roomescape.dao.FakeMemberDaoImpl;
 import roomescape.dao.TestDaoConfiguration;
 import roomescape.dto.MemberRegisterRequest;
 
@@ -25,9 +23,6 @@ import roomescape.dto.MemberRegisterRequest;
 @TestPropertySource(properties = "spring.sql.init.mode=never")
 @Import(TestDaoConfiguration.class)
 class MemberControllerTest {
-
-    @Autowired
-    private FakeMemberDaoImpl memberDao;
 
     @LocalServerPort
     int port;

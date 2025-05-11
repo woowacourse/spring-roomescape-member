@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 
 class JwtTokenProviderTest {
 
@@ -14,7 +15,7 @@ class JwtTokenProviderTest {
     @Test
     void createToken() {
         //given
-        Member member = Member.from(1L, "testName", "testEmail", "1234");
+        Member member = Member.from(1L, "testName", "testEmail", "1234", MemberRole.ADMIN);
 
         //when
         String actual = jwtTokenProvider.createToken(member);
@@ -27,7 +28,7 @@ class JwtTokenProviderTest {
     @Test
     void getSubjectFromPayloadBy() {
         //given
-        Member member = Member.from(1L, "testName", "testEmail", "1234");
+        Member member = Member.from(1L, "testName", "testEmail", "1234", MemberRole.ADMIN);
 
         String token = jwtTokenProvider.createToken(member);
 

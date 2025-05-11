@@ -6,9 +6,11 @@ import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 
 @Repository
 public class JdbcMemberDaoImpl implements MemberDao {
@@ -45,13 +47,7 @@ public class JdbcMemberDaoImpl implements MemberDao {
     public Optional<Member> findByEmail(final String email) {
         String query = "select * from member where email = ?";
         try {
-            Member member = jdbcTemplate.queryForObject(query,
-                    (rs, rowNum) -> Member.from(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getString("email"),
-                            rs.getString("password"))
-                    , email);
+            Member member = jdbcTemplate.queryForObject(query, getMemberRowMapper(), email);
             return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -62,13 +58,7 @@ public class JdbcMemberDaoImpl implements MemberDao {
     public Optional<Member> findById(final Long id) {
         String query = "select * from member where id = ?";
         try {
-            Member member = jdbcTemplate.queryForObject(query,
-                    (rs, rowNum) -> Member.from(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getString("email"),
-                            rs.getString("password"))
-                    , id);
+            Member member = jdbcTemplate.queryForObject(query, getMemberRowMapper(), id);
             return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -78,11 +68,17 @@ public class JdbcMemberDaoImpl implements MemberDao {
     @Override
     public List<Member> findAll() {
         String query = "select * from member";
-        return jdbcTemplate.query(query,
-                (rs, rowNum) -> Member.from(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("password")));
+        return jdbcTemplate.query(query, getMemberRowMapper());
     }
+
+    private RowMapper<Member> getMemberRowMapper() {
+        return (rs, rowNum) -> Member.from(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("email"),
+                rs.getString("password"),
+                MemberRole.from(rs.getString("role"))
+        );
+    }
+
 }

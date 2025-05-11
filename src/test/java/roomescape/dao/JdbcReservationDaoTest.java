@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
@@ -40,7 +41,7 @@ public class JdbcReservationDaoTest {
         jdbcTemplate = new JdbcTemplate(datasource);
         reservationDao = new JdbcReservationDaoImpl(jdbcTemplate);
 
-        member = Member.from(1L, "testName", "testEmail", "1234");
+        member = Member.from(1L, "testName", "testEmail", "1234", MemberRole.USER);
         reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         theme = new Theme(1L, "안녕 자두야", "hi", "https://aa");
 
@@ -48,7 +49,7 @@ public class JdbcReservationDaoTest {
         String timeInsertQuery = "insert into reservation_time (id, start_at) values (?, ?)";
         String themeInsertQuery = "insert into theme (id, name, description, thumbnail) values (?, ?, ?, ?)";
 
-        jdbcTemplate.update(memberInsertQuery, 1L, "testName", "testEmail", "1234", "basic");
+        jdbcTemplate.update(memberInsertQuery, 1L, "testName", "testEmail", "1234", "USER");
         jdbcTemplate.update(timeInsertQuery, 1L, "10:00");
         jdbcTemplate.update(themeInsertQuery, 1L, "안녕 자두야", "hi", "https://aa");
     }

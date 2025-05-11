@@ -20,6 +20,7 @@ import roomescape.auth.JwtTokenProvider;
 import roomescape.dao.FakeMemberDaoImpl;
 import roomescape.dao.TestDaoConfiguration;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.MemberNameResponse;
 
@@ -102,7 +103,7 @@ class AuthControllerTest {
     @Test
     void logout() {
         //given
-        Member member = Member.from(1L, "testName", "testEmail", "1234");
+        Member member = Member.from(1L, "testName", "testEmail", "1234", MemberRole.USER);
         String token = jwtTokenProvider.createToken(member);
 
         //when

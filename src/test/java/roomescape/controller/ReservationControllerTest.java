@@ -27,6 +27,7 @@ import roomescape.dao.FakeReservationTimeDaoImpl;
 import roomescape.dao.FakeThemeDaoImpl;
 import roomescape.dao.TestDaoConfiguration;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
@@ -77,7 +78,7 @@ class ReservationControllerTest {
     @Test
     void createReservation() {
         //given
-        Member member = Member.from(1L, "testName", "testEmail", "1234");
+        Member member = Member.from(1L, "testName", "testEmail", "1234", MemberRole.USER);
         memberDao.save(member);
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
         reservationTimeDao.saveReservationTime(reservationTime);
@@ -124,8 +125,8 @@ class ReservationControllerTest {
     @Test
     void readAllReservations() {
         //given
-        Member member1 = Member.from(1L, "testName1", "testEmail1", "1234");
-        Member member2 = Member.from(2L, "testName2", "testEmail2", "1234");
+        Member member1 = Member.from(1L, "testName1", "testEmail1", "1234", MemberRole.USER);
+        Member member2 = Member.from(2L, "testName2", "testEmail2", "1234", MemberRole.USER);
 
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "테마", "설명", "썸네일");
@@ -186,7 +187,7 @@ class ReservationControllerTest {
         Theme theme = new Theme(1L, "테마", "설명", "썸네일");
 
         reservationDao.saveReservation(new Reservation(
-                Member.from(1L, "testName", "testEmail", "1234"),
+                Member.from(1L, "testName", "testEmail", "1234", MemberRole.USER),
                 new ReservationDate(NOW_DATE),
                 reservationTime,
                 theme));
@@ -221,7 +222,7 @@ class ReservationControllerTest {
         themeDao.saveTheme(theme);
 
         reservationDao.saveReservation(new Reservation(
-                Member.from(1L, "testName", "testEmail", "1234"),
+                Member.from(1L, "testName", "testEmail", "1234", MemberRole.USER),
                 new ReservationDate(NOW_DATE),
                 reservationTime,
                 theme));

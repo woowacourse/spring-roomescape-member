@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 
 class JdbcMemberDaoImplTest {
 
@@ -55,7 +56,7 @@ class JdbcMemberDaoImplTest {
 
         //then
         assertThat(actual).isNotNull();
-        assertThat(actual).isEqualTo(Member.from(1L, "testName", "testEmail", "1234"));
+        assertThat(actual).isEqualTo(Member.from(1L, "testName", "testEmail", "1234", MemberRole.USER));
     }
 
     @DisplayName("id를 통해서 회원을 찾을 수 있다.")
@@ -71,6 +72,6 @@ class JdbcMemberDaoImplTest {
 
         //then
         assertThat(actual).isNotNull();
-        assertThat(actual).isEqualTo(Member.from(1L, "testName", "testEmail", "1234"));
+        assertThat(actual).isEqualTo(Member.from(1L, "testName", "testEmail", "1234", MemberRole.USER));
     }
 }
