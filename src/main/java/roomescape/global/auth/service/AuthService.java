@@ -1,10 +1,9 @@
 package roomescape.global.auth.service;
 
-import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Component;
-import roomescape.global.auth.dto.UserInfo;
 import roomescape.global.auth.dto.LoginRequest;
 import roomescape.global.auth.dto.LoginResponse;
+import roomescape.global.auth.dto.UserInfo;
 import roomescape.global.auth.exception.AuthException;
 import roomescape.global.auth.exception.UnAuthorizedException;
 import roomescape.global.auth.infrastructure.JwtProvider;
@@ -29,13 +28,11 @@ public class AuthService {
         return new LoginResponse(accessToken);
     }
 
-    public UserInfo makeLoginMember(final String token, final MemberRole memberRole) {
+    public UserInfo makeUserInfo(final String token, final MemberRole memberRole) {
         validateToken(token);
-        Claims claims = jwtProvider.getAllClaimsFromToken(token);
-        Long memberId = Long.valueOf(claims.getSubject());
+        Long memberId = jwtProvider.getMemberId(token);
         validateMember(memberId, memberRole);
-        return new UserInfo(memberId, (String) claims.get("name"),
-                MemberRole.from((String) claims.get("role")));
+        return new UserInfo(memberId, jwtProvider.getName(token), jwtProvider.getRole(token));
     }
 
     private void validateToken(final String token) {

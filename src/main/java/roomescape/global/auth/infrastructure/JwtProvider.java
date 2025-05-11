@@ -7,9 +7,13 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
 
 @Component
 public class JwtProvider {
+
+    private static final String NAME = "name";
+    private static final String ROLE = "role";
 
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
@@ -22,8 +26,8 @@ public class JwtProvider {
 
         return Jwts.builder()
                 .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("role", member.getMemberRole().name())
+                .claim(NAME, member.getName())
+                .claim(ROLE, member.getMemberRole().name())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -35,6 +39,30 @@ public class JwtProvider {
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public Long getMemberId(final String token) {
+        return Long.parseLong(Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject());
+    }
+
+    public String getName(final String token) {
+        return (String) Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .get(NAME);
+    }
+
+    public MemberRole getRole(final String token) {
+        return MemberRole.from((String) Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .get(ROLE));
     }
 
     public boolean isInvalidToken(final String token) {
