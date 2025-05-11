@@ -14,7 +14,7 @@ public class Name {
     }
 
     private static void validateNameLength(String name) {
-        if (name.length() <= 0 || name.length() > 5) {
+        if (name.isEmpty() || name.length() > 5) {
             throw new IllegalArgumentException("이름은 1-5글자 사이여야 합니다.");
         }
     }
