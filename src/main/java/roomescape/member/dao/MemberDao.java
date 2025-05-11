@@ -5,4 +5,6 @@ import roomescape.member.Member;
 
 public interface MemberDao {
     Optional<Member> findMember(String payload);
+
+    Optional<Member> findById(Long id);
 }

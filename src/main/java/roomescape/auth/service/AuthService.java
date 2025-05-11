@@ -6,7 +6,6 @@ import roomescape.auth.dto.response.TokenResponse;
 import roomescape.exception.ArgumentNullException;
 import roomescape.member.Member;
 import roomescape.member.dao.JdbcMemberDao;
-import roomescape.member.dto.response.MemberResponse;
 import roomescape.member.infra.JwtProvider;
 
 @Service
@@ -25,10 +24,10 @@ public class AuthService {
         return new TokenResponse(token);
     }
 
-    public MemberResponse findMemberByToken(String token) {
+    public Member findMemberByToken(String token) {
         String payload = jwtProvider.getPayload(token);
-        Member member = jdbcMemberDao.findMember(payload)
+        return jdbcMemberDao.findMember(payload)
                 .orElseThrow(ArgumentNullException::new);
-        return new MemberResponse(member.getName());
+//        return new MemberResponse(member.getName());
     }
 }

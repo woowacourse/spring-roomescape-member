@@ -9,7 +9,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.service.AuthService;
-import roomescape.member.dto.response.MemberResponse;
+import roomescape.member.Member;
 
 @Component
 public class LoginMemberArgumentReslover implements HandlerMethodArgumentResolver {
@@ -22,7 +22,7 @@ public class LoginMemberArgumentReslover implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(LoginMember.class) && parameter.getParameterType().equals(MemberResponse.class);
+        return parameter.hasParameterAnnotation(LoginMember.class) && parameter.getParameterType().equals(Member.class);
     }
 
     @Override
@@ -35,7 +35,8 @@ public class LoginMemberArgumentReslover implements HandlerMethodArgumentResolve
         }
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
-                return cookie.getValue();
+                String token = cookie.getValue();
+                return authService.findMemberByToken(token);
             }
         }
         throw new IllegalStateException("토큰 쿠키가 존재하지 않습니다.");

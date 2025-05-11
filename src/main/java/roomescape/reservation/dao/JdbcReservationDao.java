@@ -4,12 +4,15 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.member.Member;
+import roomescape.member.dao.MemberDao;
 import roomescape.reservation.Reservation;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.theme.Theme;
@@ -18,9 +21,11 @@ import roomescape.theme.Theme;
 public class JdbcReservationDao implements ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final MemberDao memberDao;
 
-    public JdbcReservationDao(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationDao(JdbcTemplate jdbcTemplate, MemberDao memberDao) {
         this.jdbcTemplate = jdbcTemplate;
+        this.memberDao = memberDao;
     }
 
     @Override
@@ -28,19 +33,21 @@ public class JdbcReservationDao implements ReservationDao {
         String sql = """
                     SELECT 
                         r.id as reservation_id, 
-                        r.name, 
                         r.date, 
                         rt.id as time_id, 
                         rt.start_at as time_value, 
                         t.id as theme_id,
                         t.name as theme_name,
                         t.description as theme_des,
-                        t.thumbnail as theme_thumb
+                        t.thumbnail as theme_thumb,
+                        m.id as member_id,
+                        m.name as member_name,
+                        m.email as member_email,
+                        m.password as member_password
                     FROM reservation as r 
-                    inner join reservation_time as rt 
-                    on r.time_id = rt.id
-                    inner join theme as t
-                    on t.id = r.theme_id
+                    inner join reservation_time as rt on r.time_id = rt.id
+                    inner join theme as t on t.id = r.theme_id
+                    INNER JOIN member as m ON m.id = r.member_id
                 """;
 
         return this.jdbcTemplate.query(sql,
@@ -57,9 +64,15 @@ public class JdbcReservationDao implements ReservationDao {
                             resultSet.getString("theme_thumb")
                     );
 
+                    Member member = new Member(
+                            resultSet.getLong("member_id"),
+                            resultSet.getString("member_name"),
+                            resultSet.getString("member_email"),
+                            resultSet.getString("member_password")
+                    );
                     return Reservation.of(
                             resultSet.getLong("reservation_id"),
-                            resultSet.getString("name"),
+                            member,
                             resultSet.getObject("date", LocalDate.class),
                             reservationTime,
                             theme
@@ -69,7 +82,7 @@ public class JdbcReservationDao implements ReservationDao {
 
     @Override
     public Long create(Reservation reservation) {
-        String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
+        String sql = "insert into reservation (date, member_id, time_id, theme_id) values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         this.jdbcTemplate.update(con -> {
@@ -77,8 +90,8 @@ public class JdbcReservationDao implements ReservationDao {
                     sql,
                     new String[]{"id"}
             );
-            ps.setString(1, reservation.getName());
-            ps.setString(2, reservation.getDate().toString());
+            ps.setString(1, reservation.getDate().toString());
+            ps.setLong(2, reservation.getMember().getId());
             ps.setLong(3, reservation.getReservationTime().getId());
             ps.setLong(4, reservation.getTheme().getId());
             return ps;
@@ -97,7 +110,7 @@ public class JdbcReservationDao implements ReservationDao {
     public Optional<Reservation> findByTimeId(Long id) {
         String sql = """
                 SELECT r.id as reservation_id,
-                       r.name as reservation_name,
+                       r.member_id as member_id,
                        r.date as reservation_date,
                        rt.start_at as time_start_at,
                        rt.id as time_id,
@@ -121,9 +134,13 @@ public class JdbcReservationDao implements ReservationDao {
                                 rs.getString("theme_thumb")
                         );
 
+                        Long memberId = rs.getLong("member_id");
+                        Member member = memberDao.findById(memberId)
+                                .orElseThrow(() -> new NoSuchElementException());
+
                         return Reservation.of(
                                 rs.getLong("reservation_id"),
-                                rs.getString("reservation_name"),
+                                member,
                                 rs.getDate("reservation_date").toLocalDate(),
                                 new ReservationTime(rs.getLong("time_id"), rs.getTime("time_start_at").toLocalTime()),
                                 theme
@@ -141,7 +158,7 @@ public class JdbcReservationDao implements ReservationDao {
     public Optional<Reservation> findById(Long id) {
         String sql = """
                 SELECT r.id as reservation_id,
-                       r.name,
+                       r.member_id as member_id,
                        r.date,                                       
                        rt.start_at,
                        rt.id as time_id,
@@ -165,9 +182,13 @@ public class JdbcReservationDao implements ReservationDao {
                                 rs.getString("theme_thumb")
                         );
 
+                        Long memberId = rs.getLong("member_id");
+                        Member member = memberDao.findById(memberId)
+                                .orElseThrow(() -> new NoSuchElementException("회원 정보 없음"));
+
                         return Reservation.of(
                                 rs.getLong("reservation_id"),
-                                rs.getString("name"),
+                                member,
                                 rs.getDate("date").toLocalDate(),
                                 new ReservationTime(
                                         rs.getLong("time_id"),
@@ -186,7 +207,7 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public Optional<Reservation> findByDateTime(LocalDate date, LocalTime time) {
         String sql = """
-                SELECT r.id as reservation_id, r.name, r.date,
+                SELECT r.id as reservation_id, r.member_id, r.date,
                       rt.id as time_id, rt.start_at,
                       t.id as theme_id, t.name as theme_name, t.description as theme_des, t.thumbnail as theme_thumb
                 FROM reservation as r 
@@ -204,9 +225,13 @@ public class JdbcReservationDao implements ReservationDao {
                                 rs.getString("theme_thumb")
                         );
 
+                        Long memberId = rs.getLong("member_id");
+                        Member member = memberDao.findById(memberId)
+                                .orElseThrow(() -> new NoSuchElementException("회원 정보 없음"));
+
                         return Reservation.of(
                                 rs.getLong("reservation_id"),
-                                rs.getString("name"),
+                                member,
                                 rs.getDate("date").toLocalDate(),
                                 new ReservationTime(rs.getLong("time_id"), rs.getTime("start_at").toLocalTime()),
                                 theme

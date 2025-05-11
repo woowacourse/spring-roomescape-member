@@ -4,28 +4,29 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import roomescape.exception.ArgumentNullException;
 import roomescape.exception.PastDateTimeReservationException;
+import roomescape.member.Member;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.theme.Theme;
 
 public class Reservation {
 
     private Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
-    private Reservation(final Long id, final String name, final LocalDate date, final ReservationTime reservationTime,
+    private Reservation(final Long id, final Member member, final LocalDate date, final ReservationTime reservationTime,
                         final Theme theme) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
     }
 
-    private static void validateNull(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
-        if (name == null || name.isBlank()) {
+    private static void validateNull(Member member, LocalDate date, ReservationTime reservationTime, Theme theme) {
+        if (member.getName() == null || member.getName().isBlank()) {
             throw new ArgumentNullException();
         }
         if (date == null) {
@@ -39,17 +40,17 @@ public class Reservation {
         }
     }
 
-    public static Reservation of(final Long id, final String name, final LocalDate date,
+    public static Reservation of(final Long id, final Member member, final LocalDate date,
                                  final ReservationTime reservationTime, final Theme theme) {
-        validateNull(name, date, reservationTime, theme);
-        return new Reservation(id, name, date, reservationTime, theme);
+        validateNull(member, date, reservationTime, theme);
+        return new Reservation(id, member, date, reservationTime, theme);
     }
 
-    public static Reservation createWithoutId(final String name, final LocalDate date,
+    public static Reservation createWithoutId(final Member member, final LocalDate date,
                                               final ReservationTime reservationTime, final Theme theme) {
-        validateNull(name, date, reservationTime, theme);
+        validateNull(member, date, reservationTime, theme);
         validateDateTime(date, reservationTime);
-        return Reservation.of(null, name, date, reservationTime, theme);
+        return Reservation.of(null, member, date, reservationTime, theme);
     }
 
     private static void validateDateTime(LocalDate date, ReservationTime reservationTime) {
@@ -63,8 +64,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
