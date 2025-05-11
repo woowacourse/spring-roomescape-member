@@ -175,4 +175,38 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """;
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
     }
+
+    @Override
+    public List<Reservation> findByInFromTo(final Long themeId, final Long memberId, final LocalDate dateFrom,
+                                            final LocalDate dateTo) {
+        final String sql = """
+                SELECT 
+                    r.id AS id,
+                    r.date AS date,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS email,
+                    m.password AS password,
+                    m.role AS role,
+                    rt.id AS time_id,
+                    rt.start_at AS start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS description,
+                    th.thumbnail AS thumbnail
+                FROM reservations AS r
+                INNER JOIN reservation_times AS rt
+                ON r.time_id = rt.id
+                INNER JOIN themes AS th
+                ON r.theme_id = th.id
+                INNER JOIN members AS m
+                ON r.member_id = m.id
+                WHERE ((? IS NULL OR ? IS NULL) OR (r.date BETWEEN ? AND ?))
+                AND (th.id = ? OR ? IS NULL)
+                AND (m.id = ? OR ? IS NULL)
+                """;
+
+        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, dateFrom, dateTo, dateFrom, dateTo, themeId, themeId,
+                memberId, memberId);
+    }
 }
