@@ -8,20 +8,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 class AdminViewControllerTest {
-
-    @LocalServerPort
-    private int port;
 
     private RequestSpecification requestSpec;
 
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
-
         String cookie = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body("{\"email\":\"wooteco@gmail.com\",\"password\":\"1234A\"}")

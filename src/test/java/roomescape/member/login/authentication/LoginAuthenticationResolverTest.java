@@ -17,7 +17,7 @@ class LoginAuthenticationResolverTest {
 
     @DisplayName("Argument Resolver를 사용해 토큰을 통한 회원 조회 기능을 구현한다")
     @Test
-    void resolveArgument() throws Exception {
+    void resolveArgument() {
         String token = "valid-token";
         MemberResponse expectedMember = new MemberResponse(1L, "name", "email", "password");
 

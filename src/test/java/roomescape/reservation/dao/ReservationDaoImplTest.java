@@ -153,39 +153,17 @@ class ReservationDaoImplTest {
     @DisplayName("회원 아이디로 예약 내역을 조회하는 기능을 구현한다")
     @Test
     void findAllByMemberId() {
-        Member member = new Member(1L, "홍길동", "hong@email.com", "password123");
-        ReservationTime time = new ReservationTime(2L, LocalTime.parse("11:00"));
-        Theme theme = new Theme(1L, "방 탈출1", "공포 테마", "horror.jpg");
-        Reservation reservation = new Reservation(
-                member,
-                LocalDate.parse("2025-05-02"),
-                time,
-                theme
-        );
-        reservationDaoImpl.add(reservation);
-
         List<Reservation> reservations = reservationDaoImpl.findAllByMemberId(1L);
 
         SoftAssertions softly = new SoftAssertions();
-        softly.assertThat(reservations).hasSize(2);
-        softly.assertThat(reservations).allMatch(r -> r.getMember().getId().equals(1L));
+        softly.assertThat(reservations).hasSize(1);
+        softly.assertThat(reservations).allMatch(reservation -> reservation.getMember().getId().equals(1L));
         softly.assertAll();
     }
 
     @DisplayName("회원 아이디, 테마 아이디, 날짜 범위로 예약 내역을 조회하는 기능을 구현한다")
     @Test
     void findAllByMemberAndThemeAndDate() {
-        Member member = new Member(1L, "홍길동", "hong@email.com", "password123");
-        ReservationTime time = new ReservationTime(2L, LocalTime.parse("11:00"));
-        Theme theme = new Theme(1L, "방 탈출1", "공포 테마", "horror.jpg");
-        Reservation reservation = new Reservation(
-                member,
-                LocalDate.parse("2025-05-02"),
-                time,
-                theme
-        );
-        reservationDaoImpl.add(reservation);
-
         List<Reservation> reservations = reservationDaoImpl.findAllByMemberAndThemeAndDate(
                 1L,
                 1L,
@@ -194,12 +172,12 @@ class ReservationDaoImplTest {
         );
 
         SoftAssertions softly = new SoftAssertions();
-        softly.assertThat(reservations).hasSize(2);
-        softly.assertThat(reservations).allMatch(r ->
-                r.getMember().getId().equals(1L) &&
-                        r.getTheme().getId().equals(1L) &&
-                        !r.getDate().isBefore(LocalDate.parse("2025-05-01")) &&
-                        !r.getDate().isAfter(LocalDate.parse("2025-05-03"))
+        softly.assertThat(reservations).hasSize(1);
+        softly.assertThat(reservations).allMatch(reserve ->
+                reserve.getMember().getId().equals(1L) &&
+                        reserve.getTheme().getId().equals(1L) &&
+                        !reserve.getDate().isBefore(LocalDate.parse("2025-05-01")) &&
+                        !reserve.getDate().isAfter(LocalDate.parse("2025-05-03"))
         );
         softly.assertAll();
     }
@@ -231,7 +209,7 @@ class ReservationDaoImplTest {
         Theme theme = new Theme(1L, "방 탈출1", "공포 테마", "horror.jpg");
         Reservation reservation = new Reservation(
                 member,
-                LocalDate.parse("2025-05-01"),
+                LocalDate.now().plusDays(1),
                 time,
                 theme
         );
