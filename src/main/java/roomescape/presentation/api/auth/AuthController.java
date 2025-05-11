@@ -21,7 +21,7 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @Value("${security.jwt.token.expire-length}")
+    @Value("${security.jwt.token.expire-duration}")
     private Duration tokenCookieDuration;
 
     public AuthController(AuthService authService) {
