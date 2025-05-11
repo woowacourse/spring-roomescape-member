@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -57,9 +58,10 @@ class JdbcReservationDaoTest {
     @Test
     @DisplayName("예약을 추가할 수 있다.")
     void addReservation() {
+        Member member = new Member(1L, "사나", "이메일", "비밀번호");
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "이름", "설명", "썸네일");
-        Reservation reservation = new Reservation("사나", LocalDate.of(2024, 4, 22), time, theme);
+        Reservation reservation = new Reservation(member, LocalDate.of(2024, 4, 22), time, theme);
 
         Reservation newReservation = jdbcReservationDao.addReservation(reservation);
 
@@ -69,9 +71,10 @@ class JdbcReservationDaoTest {
     @Test
     @DisplayName("ID로 예약을 삭제할 수 있다.")
     void removeReservation() {
+        Member member = new Member(1L, "사나", "이메일", "비밀번호");
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "이름", "설명", "썸네일");
-        Reservation reservation = new Reservation("사나", LocalDate.of(2024, 4, 22), time, theme);
+        Reservation reservation = new Reservation(member, LocalDate.of(2024, 4, 22), time, theme);
 
         Reservation newReservation = jdbcReservationDao.addReservation(reservation);
 
@@ -82,9 +85,10 @@ class JdbcReservationDaoTest {
     @Test
     @DisplayName("해당 ID가 없다면 예약을 삭제할 수 없다.")
     void notRemoveReservation() {
+        Member member = new Member(1L, "사나", "이메일", "비밀번호");
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "이름", "설명", "썸네일");
-        Reservation reservation = new Reservation("사나", LocalDate.of(2024, 4, 22), time, theme);
+        Reservation reservation = new Reservation(member, LocalDate.of(2024, 4, 22), time, theme);
 
         Reservation newReservation = jdbcReservationDao.addReservation(reservation);
         jdbcReservationDao.removeReservationById(newReservation.getId());

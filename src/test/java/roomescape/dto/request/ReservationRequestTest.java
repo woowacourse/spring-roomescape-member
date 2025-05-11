@@ -12,15 +12,7 @@ class ReservationRequestTest {
     @Test
     @DisplayName("날짜는 빈 값이 들어올 수 없다.")
     void validateNullOfDate() {
-        assertThatThrownBy(() -> new ReservationRequest(null, "프리", 1L, 1L))
-            .isInstanceOf(InvalidInputException.class)
-            .hasMessageContaining("선택되지 않은 값 존재");
-    }
-
-    @Test
-    @DisplayName("이름은 빈 값이 들어올 수 없다.")
-    void validateNullOfName() {
-        assertThatThrownBy(() -> new ReservationRequest(LocalDate.of(2025, 4, 29), null, 1L, 1L))
+        assertThatThrownBy(() -> new ReservationRequest(null, 1L, 1L, 1L))
             .isInstanceOf(InvalidInputException.class)
             .hasMessageContaining("선택되지 않은 값 존재");
     }
@@ -28,7 +20,7 @@ class ReservationRequestTest {
     @Test
     @DisplayName("시간은 빈 값이 들어올 수 없다.")
     void validateNullOfTime() {
-        assertThatThrownBy(() -> new ReservationRequest(LocalDate.of(2025, 4, 29), "프리", null, 1L))
+        assertThatThrownBy(() -> new ReservationRequest(LocalDate.of(2025, 4, 29), null, 1L, 1L))
             .isInstanceOf(InvalidInputException.class)
             .hasMessageContaining("선택되지 않은 값 존재");
     }
@@ -36,16 +28,8 @@ class ReservationRequestTest {
     @Test
     @DisplayName("테마는 빈 값이 들어올 수 없다.")
     void validateNullOfTheme() {
-        assertThatThrownBy(() -> new ReservationRequest(LocalDate.of(2025, 4, 29), "사나", 1L, null))
+        assertThatThrownBy(() -> new ReservationRequest(LocalDate.of(2025, 4, 29), 1L, null, 1L))
             .isInstanceOf(InvalidInputException.class)
             .hasMessageContaining("선택되지 않은 값 존재");
-    }
-
-    @Test
-    @DisplayName("이름은 한 글자 이상이어야 한다")
-    void validateLengthOfName() {
-        assertThatThrownBy(() -> new ReservationRequest(LocalDate.of(2025, 4, 29), "", 1L, 1L))
-            .isInstanceOf(InvalidInputException.class)
-            .hasMessageContaining("입력되지 않은 값 존재");
     }
 }
