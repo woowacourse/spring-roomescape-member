@@ -23,8 +23,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.controller.reservation.ReservationController;
-import roomescape.controller.reservation.dto.ReservationResponse;
+import roomescape.controller.api.reservation.ReservationApiController;
+import roomescape.controller.api.reservation.dto.ReservationResponse;
 
 @Sql(scripts = {"/schema.sql"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -34,7 +34,7 @@ public class MissionStepTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
-    private ReservationController reservationController;
+    private ReservationApiController reservationApiController;
 
     @Test
     void 일단계() {
@@ -208,7 +208,7 @@ public class MissionStepTest {
         // given & when
         boolean isJdbcTemplateInjected = false;
 
-        for (Field field : reservationController.getClass().getDeclaredFields()) {
+        for (Field field : reservationApiController.getClass().getDeclaredFields()) {
             if (field.getType().equals(JdbcTemplate.class)) {
                 isJdbcTemplateInjected = true;
                 break;
