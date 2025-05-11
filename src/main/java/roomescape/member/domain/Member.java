@@ -25,7 +25,7 @@ public class Member {
     }
 
     public boolean isSamePassword(final String password) {
-        return this.password.equals(password);
+        return this.password.getPassword().equals(password);
     }
 
     public Long getId() {

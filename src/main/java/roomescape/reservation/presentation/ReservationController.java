@@ -41,7 +41,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody final ReservationRequest request,
-            @LoginMember LoginMemberInfo memberInfo)
+            @LoginMember final LoginMemberInfo memberInfo)
     {
         ReservationResponse response = reservationService.createReservation(request, memberInfo.id());
         return ResponseEntity.created(URI.create(GET_ADMIN_RESERVATION)).body(response);
