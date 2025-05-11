@@ -21,7 +21,6 @@ import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 @Repository
-@Primary
 public class JdbcReservationRepository implements ReservationRepository {
 
     private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> Reservation.createWithId(
