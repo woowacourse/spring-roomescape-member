@@ -37,11 +37,11 @@ class ReservationServiceTest {
     private final ReservationService sut = new ReservationService(
             reservationRepository, memberRepository, reservationTimeRepository, themeRepository);
 
-    @DisplayName("모든_예약을_조회한다")
+    @DisplayName("모든 예약을 조회한다")
     @Test
     void findAllReservation() {
         // given
-        reservationRepository.save(new Reservation(1L, savedMember, LocalDate.of(2025, 5, 11), savedTime, savedTheme));
+        reservationRepository.save(new Reservation(null, savedMember, LocalDate.of(2025, 5, 11), savedTime, savedTheme));
 
         // when
         var reservations = sut.findAllReservation();
@@ -50,7 +50,7 @@ class ReservationServiceTest {
         assertThat(reservations).hasSize(1);
     }
 
-    @DisplayName("새로운_예약은_정상_생성된다")
+    @DisplayName("새로운 예약은 정상 생성된다")
     @Test
     void saveReservation() {
         // given
@@ -69,12 +69,12 @@ class ReservationServiceTest {
         });
     }
 
-    @DisplayName("중복된_날짜와_시간이면_예외가_발생한다")
+    @DisplayName("중복된 날짜와 시간이면 예외가 발생한다")
     @Test
     void saveReservation_duplicatedDateTime() {
         // given
         var existingReservation = reservationRepository.save(
-                new Reservation(1L, savedMember, LocalDate.of(2025, 5, 11), savedTime, savedTheme));
+                new Reservation(null, savedMember, LocalDate.of(2025, 5, 11), savedTime, savedTheme));
         var request = new UserReservationRequest(existingReservation.getDate(), savedTime.getId(), savedTheme.getId());
 
         // when // then
@@ -83,7 +83,7 @@ class ReservationServiceTest {
                 .hasMessage("해당 시간은 이미 예약되어 있습니다.");
     }
 
-    @DisplayName("지나간_날짜와_시간이면_예외가_발생한다")
+    @DisplayName("지나간 날짜와 시간이면 예외가 발생한다")
     @Test
     void saveReservation_dateIsPast() {
         // given
@@ -95,24 +95,40 @@ class ReservationServiceTest {
                 .hasMessage("예약은 현재 시간 이후로 가능합니다.");
     }
 
-    @DisplayName("예약을_삭제한다")
+    @DisplayName("예약을 삭제한다")
     @Test
     void deleteReservation() {
         // when
         var existingReservation = reservationRepository.save(
-                new Reservation(1L, savedMember, LocalDate.of(2025, 5, 11), savedTime, savedTheme));
+                new Reservation(null, savedMember, LocalDate.of(2025, 5, 11), savedTime, savedTheme));
         sut.deleteReservation(existingReservation.getId());
 
         // then
         assertThat(reservationRepository.findAll()).isEmpty();
     }
 
-    @DisplayName("존재하지_않는_예약을_삭제하면_예외가_발생한다")
+    @DisplayName("존재하지 않는 예약을 삭제하면 예외가 발생한다")
     @Test
     void deleteReservation_reservationNotFound() {
         // when // then
         assertThatThrownBy(() -> sut.deleteReservation(999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 예약입니다.");
+    }
+
+    @DisplayName("조건에 따라 예약을 조회할 수 있다")
+    @Test
+    void searchReservations() {
+        // given
+        reservationRepository.save(new Reservation(null, savedMember, LocalDate.of(2025, 5, 11), savedTime, savedTheme));
+
+        // when
+        var resultByThemeAndMemberAndDate = sut.searchReservations(savedTheme.getId(), savedMember.getId(),
+                LocalDate.of(2025, 5, 11), LocalDate.of(2025, 5, 11));
+
+        // then
+        assertSoftly(soft -> {
+            soft.assertThat(resultByThemeAndMemberAndDate).hasSize(1);
+        });
     }
 }

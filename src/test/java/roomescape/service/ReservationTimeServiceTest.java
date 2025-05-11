@@ -65,7 +65,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("예약이_존재하는_시간을_삭제하지_못_한다")
-    void delete_throws_if_reservation_exists() {
+    void delete_reservation_exists() {
         // given
         stubReservationRepository.setExistsByReservationTimeId(true);
 

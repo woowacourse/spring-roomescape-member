@@ -38,7 +38,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.NO_CONTENT)  // TODO. 본인의 예약만 삭제 가능하도록 수정
     public void deleteReservation(@PathVariable final Long id) {
         reservationService.deleteReservation(id);
     }
