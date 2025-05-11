@@ -76,7 +76,7 @@ public class ReservationControllerTest {
 
     @BeforeEach
     void init() {
-        Mockito.reset();
+        Mockito.reset(reservationService, authService);
     }
 
     @DisplayName("모든 예약 정보를 가져온다.")

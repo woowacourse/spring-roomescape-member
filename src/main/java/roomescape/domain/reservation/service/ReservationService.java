@@ -55,8 +55,8 @@ public class ReservationService {
         return getAllReservationResponses(reservationRepository.findReservations(themeId, userId, dateFrom, dateTo));
     }
 
-    private boolean hasNoIdArguments(final Long themeId, final Long memberId) {
-        return themeId == null && memberId == null;
+    private boolean hasNoIdArguments(final Long themeId, final Long userId) {
+        return themeId == null && userId == null;
     }
 
     private boolean hasNoDateArguments(final LocalDate dateFrom, final LocalDate dateTo) {
