@@ -23,8 +23,8 @@ public class AdminReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping("/reservations")
     @Auth(Role.ADMIN)
+    @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> createReservation(
             final @RequestBody @Valid AdminReservationRequest adminReservationRequest
     ) {

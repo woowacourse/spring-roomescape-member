@@ -27,8 +27,8 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @PostMapping
     @Auth(Role.ADMIN)
+    @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(
             final @RequestBody ThemeRequest request
     ) {
@@ -37,6 +37,7 @@ public class ThemeController {
         return ResponseEntity.created(createUri(theme.getId())).body(theme);
     }
 
+    @Auth(Role.USER)
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getThemes(
     ) {
@@ -45,8 +46,8 @@ public class ThemeController {
         );
     }
 
-    @DeleteMapping("/{id}")
     @Auth(Role.ADMIN)
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(
             final @PathVariable Long id
     ) {
@@ -55,6 +56,7 @@ public class ThemeController {
         return ResponseEntity.noContent().build();
     }
 
+    @Auth(Role.GUEST)
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> getPopularThemes(
     ) {

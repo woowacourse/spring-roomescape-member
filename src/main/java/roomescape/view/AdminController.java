@@ -10,29 +10,29 @@ import roomescape.member.domain.Role;
 @RequestMapping("/admin")
 public class AdminController {
 
-    @GetMapping
     @Auth(Role.ADMIN)
+    @GetMapping
     public String admin(
     ) {
         return "/admin/index";
     }
 
-    @GetMapping("/reservation")
     @Auth(Role.ADMIN)
+    @GetMapping("/reservation")
     public String reservation(
     ) {
         return "/admin/reservation-new";
     }
 
-    @GetMapping("/time")
     @Auth(Role.ADMIN)
+    @GetMapping("/time")
     public String time(
     ) {
         return "/admin/time";
     }
 
-    @GetMapping("/theme")
     @Auth(Role.ADMIN)
+    @GetMapping("/theme")
     public String theme(
     ) {
         return "/admin/theme";

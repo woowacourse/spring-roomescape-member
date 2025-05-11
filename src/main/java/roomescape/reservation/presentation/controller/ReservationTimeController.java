@@ -30,8 +30,8 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @PostMapping
     @Auth(Role.ADMIN)
+    @PostMapping
     public ResponseEntity<ReservationTimeResponse> createTime(
             final @RequestBody ReservationTimeRequest reservationTimeRequest
     ) {
@@ -41,6 +41,7 @@ public class ReservationTimeController {
                 .body(reservationTime);
     }
 
+    @Auth(Role.USER)
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes(
     ) {
@@ -49,6 +50,7 @@ public class ReservationTimeController {
         );
     }
 
+    @Auth(Role.USER)
     @GetMapping("/available")
     public ResponseEntity<List<AvailableReservationTimeResponse>> getReservationTimes(
             @RequestParam LocalDate date,
@@ -59,8 +61,8 @@ public class ReservationTimeController {
         );
     }
 
-    @DeleteMapping("/{id}")
     @Auth(Role.ADMIN)
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservationTime(
             final @PathVariable Long id
     ) {

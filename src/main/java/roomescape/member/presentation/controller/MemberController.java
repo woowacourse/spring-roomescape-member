@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.global.auth.Auth;
 import roomescape.member.application.service.MemberService;
+import roomescape.member.domain.Role;
 import roomescape.member.presentation.dto.MemberResponse;
 import roomescape.member.presentation.dto.SignUpRequest;
 import roomescape.member.presentation.dto.SignUpResponse;
@@ -20,6 +22,7 @@ public class MemberController {
         this.memberService = memberService;
     }
 
+    @Auth(Role.GUEST)
     @PostMapping("/signUp")
     public ResponseEntity<SignUpResponse> signUp(
             @RequestBody @Valid SignUpRequest signUpRequest
@@ -29,6 +32,7 @@ public class MemberController {
         );
     }
 
+    @Auth(Role.GUEST)
     @GetMapping("/members")
     public ResponseEntity<List<MemberResponse>> getMembers(
     ) {

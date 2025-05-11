@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.global.auth.Auth;
 import roomescape.global.jwt.AuthorizationExtractor;
 import roomescape.member.application.service.MemberService;
+import roomescape.member.domain.Role;
 import roomescape.member.presentation.dto.MemberResponse;
 import roomescape.member.presentation.dto.TokenRequest;
 
@@ -25,6 +27,7 @@ public class LoginController {
         this.authorizationExtractor = authorizationExtractor;
     }
 
+    @Auth(Role.GUEST)
     @PostMapping
     public ResponseEntity<Void> login(
             @RequestBody @Valid TokenRequest tokenRequest
@@ -34,6 +37,7 @@ public class LoginController {
                 .build();
     }
 
+    @Auth(Role.GUEST)
     @GetMapping("/check")
     public ResponseEntity<MemberResponse> loginCheck(
             HttpServletRequest request
