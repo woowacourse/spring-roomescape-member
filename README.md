@@ -255,11 +255,11 @@ HTTP/1.1 204
 ### 요청
 
 - 메서드 : GET
-- 요청 URL : /times/available
+- 요청 URL : /times/available?date={date}&themeId={themeId}
 - 설명 : 가능한 시간을 조회한다.
 
 ```json
-GET /times/available?date=2020-05-01&themeId=1 HTTP/1.1
+GET /times/available?date={date}&themeId={themeId} HTTP/1.1
 ```
 
 ### 응답
@@ -278,6 +278,65 @@ Content-Type: application/json
 "timeId": 2,
 "startAt": "11:00",
 "alreadyBooked": "false"
+}
+]
+```
+
+## 예약 조건별 필터링
+
+### 요청
+
+- 메서드 : GET
+- 요청 URL : /reservations?themeId={themeId}&memberId={memberId}&dateFrom={dateFrom}&dateTo={dateTo}
+- 설명 : 예약들을 조견별로 필터링한다.
+  - 각 파라미터는 선택이다.
+
+```json
+GET /reservations?themeId={themeId}&memberId={memberId}&dateFrom={dateFrom}&dateTo={dateTo} HTTP/1.1
+```
+
+### 응답
+
+```json
+HTTP/1.1 200
+Content-Type: application/json
+
+[
+{
+"id": 1,
+"member": {
+"id": 2,
+"name": "Alice"
+},
+"date": "2025-05-11",
+"time": {
+"id": 1,
+"startAt": "08:00:00"
+},
+"theme": {
+"id": 12,
+"name": "논리",
+"description": "퍼즐 마스터",
+"thumbnail": "image/thumbnail.png"
+}
+},
+{
+"id": 2,
+"member": {
+"id": 3,
+"name": "Bob"
+},
+"date": "2025-05-11",
+"time": {
+"id": 2,
+"startAt": "12:00:00"
+},
+"theme": {
+"id": 12,
+"name": "논리",
+"description": "퍼즐 마스터",
+"thumbnail": "image/thumbnail.png"
+}
 }
 ]
 ```
