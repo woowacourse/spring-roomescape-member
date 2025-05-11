@@ -1,5 +1,6 @@
 package roomescape.global.auth;
 
+import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.model.Member;
 import roomescape.domain.member.service.MemberService;
@@ -19,22 +20,12 @@ public class AuthService {
 
     public String requestLogin(TokenRequest tokenRequest) {
         Member member = memberService.getMemberOf(tokenRequest.email(), tokenRequest.password());
-        return jwtProvider.createToken(member.getEmail());
+        return jwtProvider.createToken(JwtRequest.from(member));
     }
 
     public CheckResponseDto authenticateByToken(String value) {
-        if (jwtProvider.validateToken(value)) {
-            String email = jwtProvider.getTokenSubject(value);
-            Member member = memberService.getMemberFrom(email);
-            return CheckResponseDto.from(member);
-        }
-        throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
-    }
-
-    public String getSubject(String value) {
-        if (jwtProvider.validateToken(value)) {
-            return jwtProvider.getTokenSubject(value);
-        }
-        throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+        Claims claims = jwtProvider.validateToken(value);
+        String name = (String) claims.get("name");
+        return new CheckResponseDto(name);
     }
 }

@@ -1,43 +1,62 @@
 package roomescape.global.auth;
 
+
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.Jwts.SIG;
+import io.jsonwebtoken.security.Keys;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import javax.crypto.SecretKey;
 import org.springframework.stereotype.Component;
+import roomescape.domain.member.model.Role;
 
 @Component
 public class JwtProvider {
 
-    private static final String SECRET_KEY = "abcde111";
+    /**
+     * 배포 시 properties로 이동 및 다른 Secret으로 변경할 예정
+     */
+    private static final String SECRET_KEY = "abcde111abcde111abcde111abcde111";
     private static final long validityInMilliseconds = 900_000;
 
-    public String createToken(String payload) {
-        Claims claims = Jwts.claims().setSubject(payload);
+    private final SecretKey secretKey = Keys.hmacShaKeyFor(
+        SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+
+    public String createToken(JwtRequest jwtRequest) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
-
         return Jwts.builder()
-            .setClaims(claims)
-            .setIssuedAt(now)
-            .setExpiration(validity)
-            .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+            .subject(String.valueOf(jwtRequest.id()))
+            .claim("name", jwtRequest.name())
+            .claim("role", jwtRequest.role())
+            .issuedAt(now)
+            .expiration(validity)
+            .signWith(secretKey, SIG.HS256)
             .compact();
     }
 
-    public boolean validateToken(String token) {
+    public Claims validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
-            return !claims.getBody().getExpiration().before(new Date());
+            return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
         } catch (JwtException | IllegalArgumentException e) {
-            return false;
+            throw new JwtException("유효하지 않은 토큰입니다.");
         }
     }
 
     public String getTokenSubject(String token) {
-        Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
-        return claims.getBody().getSubject();
+        Claims claims = validateToken(token);
+        return claims.getSubject();
+    }
+
+    public Role getMemberRole(String token) {
+        Claims claims = validateToken(token);
+        String role = (String) claims.get("role");
+        return Role.valueOf(role);
     }
 }

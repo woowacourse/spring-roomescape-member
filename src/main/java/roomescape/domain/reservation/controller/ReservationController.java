@@ -47,7 +47,7 @@ public class ReservationController {
         return reservationService.saveReservationOfMember(reservationRequestDto, member.getId());
     }
 
-    @PostMapping("admin/reservations")
+    @PostMapping("/admin/reservations")
     @ResponseStatus(HttpStatus.CREATED)
     public AdminReservationResponse createReservationOfAdmin(
         @RequestBody AdminReservationRequestDto adminReservationRequestDto, Member member) {

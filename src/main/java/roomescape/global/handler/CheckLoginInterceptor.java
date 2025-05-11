@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.domain.member.model.Member;
 import roomescape.domain.member.model.Role;
 import roomescape.domain.member.service.MemberService;
 import roomescape.global.auth.Cookies;
@@ -23,11 +22,10 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-        Object handler) throws Exception {
+        Object handler) {
         String token = Cookies.get(request.getCookies());
-        String email = jwtProvider.getTokenSubject(token);
-        Member member = memberService.getMemberFrom(email);
-        if (member.getRole() != Role.ADMIN) {
+        Role memberRole = jwtProvider.getMemberRole(token);
+        if (memberRole != Role.ADMIN) {
             throw new IllegalStateException("권한이 없습니다.");
         }
         return true;
