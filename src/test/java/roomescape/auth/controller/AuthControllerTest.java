@@ -110,10 +110,9 @@ class AuthControllerTest {
             // given
             TokenRequestDto requestDto = AuthFixture.createTokenRequestDto(member.getEmail(), member.getPassword());
             TokenResponseDto responseDto = authService.login(requestDto);
-
-            // when
             String token = responseDto.accessToken();
 
+            // when
             // then
             RestAssured
                     .given().log().all()
