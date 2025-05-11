@@ -3,7 +3,10 @@ package roomescape.dao;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,7 +26,6 @@ public class ReservationDao {
     private static final String SELECT_RESERVATION = """
             SELECT 
                 r.id, 
-                r.member_id, 
                 r.date,
                 rt.id AS time_id, 
                 rt.start_at AS time_start_at,
@@ -31,7 +33,7 @@ public class ReservationDao {
                 t.name AS theme_name, 
                 t.description AS theme_description, 
                 t.thumbnail AS theme_thumbnail,
-                m.id,
+                m.id AS member_id,
                 m.email,
                 m.name,
                 m.password,
@@ -117,7 +119,35 @@ public class ReservationDao {
     }
 
     public List<Reservation> findByConditions(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
-        String sql = SELECT_RESERVATION + " WHERE t.id = ? AND m.id = ? AND r.date > ? AND r.date < ?";
-        return jdbcTemplate.query(sql, actorRowMapper, themeId, memberId, dateFrom, dateTo);
+        StringBuilder sql = new StringBuilder(SELECT_RESERVATION);
+        List<Object> params = new ArrayList<>();
+
+        Map<String, Object> conditions = new LinkedHashMap<>();
+        if (themeId != null) {
+            conditions.put("t.id = ?", themeId);
+        }
+        if (memberId != null) {
+            conditions.put("m.id = ?", memberId);
+        }
+        if (dateFrom != null) {
+            conditions.put("r.date >= ?", dateFrom);
+        }
+        if (dateTo != null) {
+            conditions.put("r.date <= ?", dateTo);
+        }
+
+        boolean first = true;
+        for (Map.Entry<String, Object> entry : conditions.entrySet()) {
+            if (first) {
+                sql.append(" WHERE ");
+                first = false;
+            } else {
+                sql.append(" AND ");
+            }
+            sql.append(entry.getKey());
+            params.add(entry.getValue());
+        }
+
+        return jdbcTemplate.query(sql.toString(), actorRowMapper, params.toArray());
     }
 }
