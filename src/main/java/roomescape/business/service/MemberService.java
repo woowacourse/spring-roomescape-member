@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.business.Member;
 import roomescape.persistence.MemberRepository;
-import roomescape.presentation.dto.MemberResponseDto;
+import roomescape.presentation.dto.response.MemberResponseDto;
 
 @Service
 public class MemberService {

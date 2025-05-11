@@ -1,4 +1,4 @@
-package roomescape.presentation.dto;
+package roomescape.presentation.dto.response;
 
 public record MemberResponseDto(
         Long id,

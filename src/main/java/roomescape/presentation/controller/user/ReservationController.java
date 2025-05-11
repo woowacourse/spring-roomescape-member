@@ -1,4 +1,4 @@
-package roomescape.presentation;
+package roomescape.presentation.controller.user;
 
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.business.LoginInformation;
-import roomescape.presentation.dto.ReservationRequestDto;
-import roomescape.presentation.dto.ReservationResponseDto;
+import roomescape.presentation.dto.request.ReservationRequestDto;
+import roomescape.presentation.dto.response.ReservationResponseDto;
 import roomescape.business.service.ReservationService;
 
 @RestController

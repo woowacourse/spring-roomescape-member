@@ -6,7 +6,7 @@ import roomescape.business.Member;
 import roomescape.exception.MemberException;
 import roomescape.infrastructure.JwtProvider;
 import roomescape.persistence.MemberRepository;
-import roomescape.presentation.dto.LoginRequestDto;
+import roomescape.presentation.dto.request.LoginRequestDto;
 
 @Service
 public class AuthenticationService {

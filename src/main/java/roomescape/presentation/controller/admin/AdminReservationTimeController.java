@@ -1,4 +1,4 @@
-package roomescape.presentation;
+package roomescape.presentation.controller.admin;
 
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -14,19 +14,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.presentation.dto.AvailableTimesResponseDto;
-import roomescape.presentation.dto.ReservationTimeRequestDto;
-import roomescape.presentation.dto.ReservationTimeResponseDto;
+import roomescape.presentation.dto.response.AvailableTimesResponseDto;
+import roomescape.presentation.dto.request.ReservationTimeRequestDto;
+import roomescape.presentation.dto.response.ReservationTimeResponseDto;
 import roomescape.business.service.ReservationTimeService;
 
 @RestController
 @RequestMapping("/times")
-public final class ReservationTimeController {
+public final class AdminReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
 
     @Autowired
-    public ReservationTimeController(ReservationTimeService reservationTimeService) {
+    public AdminReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
@@ -39,7 +39,8 @@ public final class ReservationTimeController {
     @GetMapping("/reservation")
     public ResponseEntity<List<AvailableTimesResponseDto>> readReservationAvailableTimes(
             @RequestParam("date") LocalDate date, @RequestParam("themeId") Long themeId) {
-        List<AvailableTimesResponseDto> availableReservationTimes = reservationTimeService.readAvailableTimes(date, themeId);
+        List<AvailableTimesResponseDto> availableReservationTimes = reservationTimeService.readAvailableTimes(date,
+                themeId);
         return ResponseEntity.ok(availableReservationTimes);
     }
 

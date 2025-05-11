@@ -221,7 +221,7 @@ function requestCreate(reservation) {
 
   return fetch('/admin/reservations', requestOptions)
       .then(response => {
-        if (response.status === 201) return response.json();
+        if (response.status === 200) return response.json();
         throw new Error('Create failed');
       });
 }

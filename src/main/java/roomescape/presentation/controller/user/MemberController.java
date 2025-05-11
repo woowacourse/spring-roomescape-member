@@ -1,4 +1,4 @@
-package roomescape.presentation;
+package roomescape.presentation.controller.user;
 
 import jakarta.validation.Valid;
 import java.util.List;
@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.business.LoginInformation;
 import roomescape.business.service.AuthenticationService;
 import roomescape.business.service.MemberService;
-import roomescape.presentation.dto.LoginRequestDto;
-import roomescape.presentation.dto.MemberCheckResponseDto;
-import roomescape.presentation.dto.MemberResponseDto;
+import roomescape.presentation.dto.request.LoginRequestDto;
+import roomescape.presentation.dto.response.MemberCheckResponseDto;
+import roomescape.presentation.dto.response.MemberResponseDto;
 
 @RestController
 public class MemberController {

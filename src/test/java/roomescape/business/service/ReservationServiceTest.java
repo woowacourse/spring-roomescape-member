@@ -22,7 +22,7 @@ import roomescape.persistence.MemberRepository;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
 import roomescape.persistence.ReservationTimeRepository;
-import roomescape.presentation.dto.ReservationRequestDto;
+import roomescape.presentation.dto.request.ReservationRequestDto;
 
 class ReservationServiceTest {
 

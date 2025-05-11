@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.business.ReservationTime;
 import roomescape.persistence.ReservationTimeRepository;
-import roomescape.presentation.dto.AvailableTimesResponseDto;
+import roomescape.presentation.dto.response.AvailableTimesResponseDto;
 
 public final class FakeReservationTimeRepository implements ReservationTimeRepository {
 

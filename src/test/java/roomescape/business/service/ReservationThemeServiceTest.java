@@ -18,8 +18,7 @@ import roomescape.exception.ReservationThemeException;
 import roomescape.persistence.MemberRepository;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
-import roomescape.presentation.dto.MemberResponseDto;
-import roomescape.presentation.dto.ReservationThemeRequestDto;
+import roomescape.presentation.dto.request.ReservationThemeRequestDto;
 
 class ReservationThemeServiceTest {
 
