@@ -14,6 +14,7 @@ import roomescape.auth.dto.LoginMember;
 import roomescape.member.entity.Role;
 import roomescape.reservation.dto.AdminReservationRequest;
 import roomescape.reservation.dto.ReservationAvailableTimeResponse;
+import roomescape.reservation.dto.ReservationCommand;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationsByFilterRequest;
@@ -34,7 +35,8 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> postReservation(@RequestBody ReservationRequest request, LoginMember loginMember) {
-        ReservationResponse reservationResponse = reservationService.createReservation(request, loginMember);
+        ReservationCommand command = request.toCommand(loginMember.id());
+        ReservationResponse reservationResponse = reservationService.createReservation(command);
         URI location = URI.create("/reservations/" + reservationResponse.id());
         return ResponseEntity.created(location).body(reservationResponse);
     }
@@ -42,7 +44,7 @@ public class ReservationController {
     @PostMapping("/admin/reservations")
     @RoleRequired(Role.ADMIN)
     public ResponseEntity<ReservationResponse> postReservation(@RequestBody AdminReservationRequest request) {
-        ReservationResponse reservationResponse = reservationService.createReservation(request);
+        ReservationResponse reservationResponse = reservationService.createReservation(request.toCommand());
         URI location = URI.create("/admin/reservations/" + reservationResponse.id());
         return ResponseEntity.created(location).body(reservationResponse);
     }

@@ -7,5 +7,7 @@ public record ReservationRequest(
         Long themeId,
         Long timeId
 ) {
-
+    public ReservationCommand toCommand(Long memberId) {
+        return new ReservationCommand(memberId, date, themeId, timeId);
+    }
 }
