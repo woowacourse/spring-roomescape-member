@@ -106,4 +106,9 @@ public class ReservationFakeRepository implements ReservationRepository {
                 .map(ReservationTime::getId)
                 .filter(id -> id.equals(themeId)).toList();
     }
+
+    @Override
+    public List<Reservation> findAllByFilter(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        return List.of();
+    }
 }

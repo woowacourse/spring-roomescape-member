@@ -14,4 +14,6 @@ public interface ReservationRepository {
     void deleteById(long id);
 
     List<Long> findBookedTimeIdsByDateAndThemeId(LocalDate date, Long themeId);
+
+    List<Reservation> findAllByFilter(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo);
 }

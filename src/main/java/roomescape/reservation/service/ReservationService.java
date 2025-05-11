@@ -9,6 +9,7 @@ import roomescape.reservation.dto.AdminReservationRequest;
 import roomescape.reservation.dto.ReservationAvailableTimeResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ReservationsByFilterRequest;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.exception.ReservationDuplicateException;
 import roomescape.reservation.repository.ReservationRepository;
@@ -76,6 +77,13 @@ public class ReservationService {
 
         return reservationTimes.stream()
                 .map(time -> ReservationAvailableTimeResponse.of(time, bookedTimeIds.contains(time.getId())))
+                .toList();
+    }
+
+    public List<ReservationResponse> readAllByFilter(ReservationsByFilterRequest request) {
+        List<Reservation> allByFilter = reservationRepository.findAllByFilter(request.themeId(), request.memberId(), request.dateFrom(), request.dateTo());
+        return allByFilter.stream()
+                .map(ReservationResponse::from)
                 .toList();
     }
 

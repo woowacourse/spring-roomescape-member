@@ -3,6 +3,7 @@ package roomescape.reservation.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import roomescape.reservation.dto.AdminReservationRequest;
 import roomescape.reservation.dto.ReservationAvailableTimeResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ReservationsByFilterRequest;
 import roomescape.reservation.service.ReservationService;
 
 import java.net.URI;
@@ -61,5 +63,14 @@ public class ReservationController {
             @RequestParam LocalDate date, @RequestParam long themeId
     ) {
         return reservationService.readAvailableReservationTimes(date, themeId);
+    }
+
+    @GetMapping("/reservations/filter")
+    @RoleRequired(Role.ADMIN)
+    public ResponseEntity<List<ReservationResponse>> getReservationsByFilter(
+            @ModelAttribute ReservationsByFilterRequest request
+    ) {
+        List<ReservationResponse> reservationResponses = reservationService.readAllByFilter(request);
+        return ResponseEntity.ok(reservationResponses);
     }
 }

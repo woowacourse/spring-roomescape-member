@@ -97,6 +97,40 @@ public class ReservationJDBCDao implements ReservationRepository {
         return namedJdbcTemplate.query(sql, params, (rs, rowNum) -> rs.getLong("time_id"));
     }
 
+    @Override
+    public List<Reservation> findAllByFilter(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = """
+                select 
+                r.id as reservation_id, 
+                r.date as date, 
+                t.id as time_id,
+                t.start_at,
+                th.id as theme_id,
+                th.name as theme_name, 
+                th.description as theme_description, 
+                th.thumbnail as theme_thumbnail,
+                m.id as member_id,
+                m.email as member_email,
+                m.name as member_name,
+                m.role as member_role
+                from reservation as r
+                inner join reservation_time as t 
+                on r.time_id = t.id
+                inner join theme as th 
+                on r.theme_id = th.id
+                inner join member as m
+                on r.member_id = m.id
+                where th.id = :theme_id and m.id = :member_id 
+                and r.date between :date_from and :date_to
+                """;
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("theme_id", themeId)
+                .addValue("member_id", memberId)
+                .addValue("date_from", dateFrom)
+                .addValue("date_to", dateTo);
+        return namedJdbcTemplate.query(sql, params, getReservationRowMapper());
+    }
+
     private RowMapper<Reservation> getReservationRowMapper() {
         return (resultSet, rowNum) -> new Reservation(
                 resultSet.getLong("reservation_id"),
