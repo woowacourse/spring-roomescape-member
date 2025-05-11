@@ -26,7 +26,7 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("email, password 통해 인증에 성공하면 AccessToken을 반환한다")
+    @DisplayName("email, password 통해 인증에 성공하면 AccessToken 반환한다")
     void login() {
         // given
         // data-authService.sql
@@ -50,5 +50,23 @@ class AuthServiceTest {
         // when & then
         assertThatThrownBy(() -> authService.login(email, password))
                 .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("AccessToken 통해 Member 의 name 반환한다")
+    void getMemberNameByAccessToken(){
+        // given
+        // data-authService.sql
+        final String exceptedName = "kim";
+        final String email = "email@test.com";
+        final String password = "pass";
+        final String accessToken = authService.login(email, password);
+
+        // when
+        final String name = authService.getMemberNameByAccessToken(accessToken)
+                .name();
+
+        // then
+        assertThat(name).isEqualTo(exceptedName);
     }
 }
