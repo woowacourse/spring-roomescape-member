@@ -3,8 +3,6 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
@@ -16,6 +14,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.dto.AdminReservationRequest;
 import roomescape.dto.AvailableReservationTimeRequestDto;
 import roomescape.dto.AvailableReservationTimeResponseDto;
 import roomescape.dto.ReservationRequestDto;
@@ -28,13 +27,14 @@ import roomescape.exception.MemberException;
 @Service
 public class ReservationService {
 
-    private static final Logger log = LoggerFactory.getLogger(ReservationService.class);
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
     private final MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao,
+    public ReservationService(final ReservationDao reservationDao,
+                              final ReservationTimeDao reservationTimeDao,
+                              final ThemeDao themeDao,
                               final MemberDao memberDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
@@ -49,48 +49,64 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponseDto saveReservation(ReservationRequestDto request, final LoginMember member) {
+    public ReservationResponseDto saveReservation(final ReservationRequestDto request, final LoginMember loginMember) {
         LocalDateTime currentDateTime = LocalDateTime.now();
-        ReservationDate date = getReservationDate(request, currentDateTime);
-        ReservationTime reservationTime = getReservationTime(request);
-        Theme theme = getTheme(request);
+        ReservationDate reservationDate = getReservationDate((LocalDate.parse(request.date())), currentDateTime);
+        ReservationTime reservationTime = getReservationTime(request.timeId());
+        Theme theme = getTheme(request.themeId());
+        Member member = findMember(loginMember.getId());
 
-        Reservation reservation = createReservation(member, date, reservationTime, theme);
-        reservation.validateDateTime(date, reservationTime, currentDateTime);
-        validateAlreadyReservation(request, date);
+        Reservation reservation = createReservation(member, reservationDate, reservationTime, theme);
+        reservation.validateDateTime(reservationDate, reservationTime, currentDateTime);
+        validateAlreadyReservation(reservationDate, request.timeId(), request.themeId());
 
         reservationDao.saveReservation(reservation);
         return ReservationResponseDto.from(reservation);
     }
 
-    private ReservationDate getReservationDate(final ReservationRequestDto request,
-                                               final LocalDateTime currentDateTime) {
-        ReservationDate date = new ReservationDate(LocalDate.parse(request.date()));
-        date.validateDate(currentDateTime.toLocalDate());
-        return date;
+    public ReservationResponseDto saveReservation(final AdminReservationRequest request) {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        ReservationDate reservationDate = getReservationDate(request.date(), currentDateTime);
+        ReservationTime reservationTime = getReservationTime(request.timeId());
+        Theme theme = getTheme(request.themeId());
+        Member member = findMember(request.memberId());
+
+        Reservation reservation = createReservation(member, reservationDate, reservationTime, theme);
+        reservation.validateDateTime(reservationDate, reservationTime, currentDateTime);
+        validateAlreadyReservation(reservationDate, request.timeId(), request.themeId());
+
+        reservationDao.saveReservation(reservation);
+        return ReservationResponseDto.from(reservation);
     }
 
-    private ReservationTime getReservationTime(final ReservationRequestDto request) {
-        return reservationTimeDao.findById(request.timeId())
+    private ReservationDate getReservationDate(final LocalDate date, final LocalDateTime currentDateTime) {
+        ReservationDate reservationDate = new ReservationDate(date);
+        reservationDate.validateDate(currentDateTime.toLocalDate());
+        return reservationDate;
+    }
+
+    private ReservationTime getReservationTime(final Long id) {
+        return reservationTimeDao.findById(id)
                 .orElseThrow(() -> new InvalidReservationTimeException("해당 ID의 예약 시간을 찾을 수 없습니다."));
     }
 
-    private Theme getTheme(final ReservationRequestDto request) {
-        return themeDao.findById(request.themeId())
+    private Theme getTheme(final Long id) {
+        return themeDao.findById(id)
                 .orElseThrow(() -> new InvalidThemeException("해당 ID의 테마를 찾을 수 없습니다"));
     }
 
-    private Reservation createReservation(final LoginMember loginMember, final ReservationDate date,
+    private Reservation createReservation(final Member member, final ReservationDate date,
                                           final ReservationTime reservationTime, final Theme theme) {
-
-        Member member = memberDao.findById(loginMember.getId())
-                .orElseThrow(() -> new MemberException("로그인하지 않은 회원입니다. 로그인 후에 예약을 할 수 있습니다."));
-
         return new Reservation(member, date, reservationTime, theme);
     }
 
-    private void validateAlreadyReservation(ReservationRequestDto request, ReservationDate date) {
-        if (reservationDao.existsReservationBy(date.getDate(), request.timeId(), request.themeId())) {
+    private Member findMember(final Long id) {
+        return memberDao.findById(id)
+                .orElseThrow(() -> new MemberException("로그인하지 않은 회원입니다. 로그인 후에 예약을 할 수 있습니다."));
+    }
+
+    private void validateAlreadyReservation(ReservationDate date, Long timeId, Long themeId) {
+        if (reservationDao.existsReservationBy(date.getDate(), timeId, themeId)) {
             throw new InvalidReservationException("해당 날짜와 시간에 이미 같은 테마가 예약되어 있습니다.");
         }
     }

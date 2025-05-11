@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -10,6 +11,11 @@ public class FakeMemberDaoImpl implements MemberDao {
 
     private final List<Member> members = new ArrayList<>();
     private final AtomicLong id = new AtomicLong(1);
+
+    @Override
+    public List<Member> findAll() {
+        return Collections.unmodifiableList(members);
+    }
 
     @Override
     public Long save(final Member member) {

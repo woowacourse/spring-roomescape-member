@@ -2,12 +2,14 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.dao.FakeMemberDaoImpl;
 import roomescape.dto.MemberRegisterRequest;
 import roomescape.dto.MemberRegisterResponse;
+import roomescape.dto.MemberResponse;
 
 class MemberServiceTest {
 
@@ -31,6 +33,23 @@ class MemberServiceTest {
         assertThat(actual)
                 .extracting("id", "name", "email")
                 .containsExactly(1L, "testName", "testEmail");
+    }
+
+    @DisplayName("저장된 모든 member를 조회한다.")
+    @Test
+    void findAll() {
+        //given
+        MemberRegisterRequest request1 = new MemberRegisterRequest("testName1", "testEmail1", "1234");
+        memberService.register(request1);
+
+        MemberRegisterRequest request2 = new MemberRegisterRequest("testName1", "testEmail2", "1234");
+        memberService.register(request2);
+
+        //when
+        List<MemberResponse> actual = memberService.findAll();
+
+        //then
+        assertThat(actual).hasSize(2);
     }
 
 }

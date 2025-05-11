@@ -11,7 +11,7 @@ import roomescape.dao.FakeMemberDaoImpl;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
 import roomescape.dto.LoginRequest;
-import roomescape.dto.MemberResponse;
+import roomescape.dto.MemberNameResponse;
 import roomescape.exception.InvalidAuthException;
 
 class AuthServiceTest {
@@ -62,7 +62,7 @@ class AuthServiceTest {
         String token = authService.createToken(request);
 
         //when
-        MemberResponse actual = authService.checkLogin(token);
+        MemberNameResponse actual = authService.checkLogin(token);
 
         //then
         assertThat(actual.name()).isEqualTo("testName");

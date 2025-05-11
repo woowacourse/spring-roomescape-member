@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.CookieProvider;
 import roomescape.auth.JwtExtractor;
 import roomescape.dto.LoginRequest;
-import roomescape.dto.MemberResponse;
+import roomescape.dto.MemberNameResponse;
 import roomescape.service.AuthService;
 
 @RestController
@@ -40,10 +40,10 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
+    public ResponseEntity<MemberNameResponse> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String token = jwtExtractor.extractTokenFromCookie(COOKIE_NAME, cookies);
-        MemberResponse response = authService.checkLogin(token);
+        MemberNameResponse response = authService.checkLogin(token);
         return ResponseEntity.ok(response);
     }
 

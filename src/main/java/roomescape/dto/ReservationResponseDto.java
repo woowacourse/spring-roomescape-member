@@ -1,17 +1,24 @@
 package roomescape.dto;
 
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 
-public record ReservationResponseDto(long id, String name, String date,
-                                     ReservationTimeResponseDto time, ThemeResponseDto theme) {
+public record ReservationResponseDto(
+        Long id,
+        MemberResponse member,
+        String date,
+        ReservationTimeResponseDto time,
+        ThemeResponseDto theme) {
 
     public static ReservationResponseDto from(Reservation reservation) {
+        Member member = reservation.getMember();
         return new ReservationResponseDto(
                 reservation.getId(),
-                reservation.getMember().getName(),
+                MemberResponse.from(member),
                 reservation.getDate().toString(),
                 ReservationTimeResponseDto.from(reservation.getReservationTime()),
                 ThemeResponseDto.from(reservation.getTheme())
         );
     }
+
 }

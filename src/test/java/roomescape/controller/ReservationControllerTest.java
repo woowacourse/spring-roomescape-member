@@ -33,6 +33,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.AvailableReservationTimeRequestDto;
 import roomescape.dto.AvailableReservationTimeResponseDto;
+import roomescape.dto.MemberResponse;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.dto.ReservationTimeResponseDto;
@@ -103,10 +104,10 @@ class ReservationControllerTest {
 
         //then
         assertThat(actual)
-                .extracting("id", "name", "date", "time", "theme")
+                .extracting("id", "member", "date", "time", "theme")
                 .containsExactly(
                         1L,
-                        "testName",
+                        MemberResponse.from(member),
                         NOW_DATE.toString(),
                         new ReservationTimeResponseDto(
                                 1L,
@@ -159,14 +160,14 @@ class ReservationControllerTest {
         List<ReservationResponseDto> compareList = List.of(
                 new ReservationResponseDto(
                         1L,
-                        "testName1",
+                        MemberResponse.from(member1),
                         NOW_DATE.toString(),
                         new ReservationTimeResponseDto(1L, "10:00"),
                         new ThemeResponseDto(1L, "테마", "설명", "썸네일")
                 ),
                 new ReservationResponseDto(
                         2L,
-                        "testName2",
+                        MemberResponse.from(member2),
                         NOW_DATE.plusDays(1).toString(),
                         new ReservationTimeResponseDto(1L, "10:00"),
                         new ThemeResponseDto(1L, "테마", "설명", "썸네일")

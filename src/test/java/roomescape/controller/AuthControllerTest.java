@@ -21,7 +21,7 @@ import roomescape.dao.FakeMemberDaoImpl;
 import roomescape.dao.TestDaoConfiguration;
 import roomescape.domain.Member;
 import roomescape.dto.LoginRequest;
-import roomescape.dto.MemberResponse;
+import roomescape.dto.MemberNameResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -81,7 +81,7 @@ class AuthControllerTest {
         String token = jwtTokenProvider.createToken(member);
 
         //when
-        MemberResponse actual = RestAssured
+        MemberNameResponse actual = RestAssured
                 .given()
                 .log().all()
                 .contentType(ContentType.JSON)
@@ -92,7 +92,7 @@ class AuthControllerTest {
                 .log().all()
                 .statusCode(200)
                 .extract()
-                .as(MemberResponse.class);
+                .as(MemberNameResponse.class);
 
         //then
         assertThat(actual.name()).isEqualTo("testName");

@@ -6,7 +6,7 @@ import roomescape.dao.MemberDao;
 import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
 import roomescape.dto.LoginRequest;
-import roomescape.dto.MemberResponse;
+import roomescape.dto.MemberNameResponse;
 import roomescape.exception.InvalidAuthException;
 import roomescape.exception.MemberException;
 
@@ -33,9 +33,9 @@ public class AuthService {
                 .orElseThrow(() -> new MemberException("해당 이메일의 회원이 존재하지 않습니다."));
     }
 
-    public MemberResponse checkLogin(final String token) {
+    public MemberNameResponse checkLogin(final String token) {
         Member member = findMemberByToken(token);
-        return new MemberResponse(member.getName());
+        return MemberNameResponse.from(member);
     }
 
     public LoginMember findLoginMemberByToken(final String token) {

@@ -20,7 +20,12 @@ import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.dto.AdminReservationRequest;
+import roomescape.dto.MemberResponse;
 import roomescape.dto.ReservationRequestDto;
+import roomescape.dto.ReservationResponseDto;
+import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.dto.ThemeResponseDto;
 
 public class ReservationServiceTest {
 
@@ -113,6 +118,36 @@ public class ReservationServiceTest {
 
         //then
         assertThat(reservationService.getAllReservations().size()).isEqualTo(0);
+    }
+
+    @DisplayName("관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성할 수 있다.")
+    @Test
+    void reservationAsAdmin() {
+        //given
+        Theme theme = new Theme(1L, "tesTheme", "testDescription", "testThumbnail");
+        themeDao.saveTheme(theme);
+
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        reservationTimeDao.saveReservationTime(reservationTime);
+
+        Member member = Member.from(1L, "testName", "testEmail", "1234");
+        memberDao.save(member);
+
+        AdminReservationRequest request = new AdminReservationRequest(NOW_DATE, 1L, 1L, 1L);
+
+        //when
+        ReservationResponseDto response = reservationService.saveReservation(request);
+
+        //then
+        assertThat(response).isEqualTo(
+                new ReservationResponseDto(
+                        1L,
+                        MemberResponse.from(member),
+                        NOW_DATE.toString(),
+                        ReservationTimeResponseDto.from(reservationTime),
+                        ThemeResponseDto.from(theme)
+                )
+        );
     }
 
 }
