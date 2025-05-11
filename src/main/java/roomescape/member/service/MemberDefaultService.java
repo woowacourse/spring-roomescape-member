@@ -1,5 +1,6 @@
 package roomescape.member.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberRequest;
@@ -25,5 +26,10 @@ public class MemberDefaultService implements MemberService {
     public Member findById(Long id) {
         return memberRepository.findById(id)
                 .orElseThrow(MemberNotFoundException::new);
+    }
+
+    @Override
+    public List<MemberResponse> getAll() {
+        return MemberResponse.from(memberRepository.findAll());
     }
 }

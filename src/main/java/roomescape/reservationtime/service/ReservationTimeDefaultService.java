@@ -3,6 +3,7 @@ package roomescape.reservationtime.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.dto.AvailableTimeResponse;
 import roomescape.reservationtime.dto.ReservationTimeRequest;
@@ -10,7 +11,6 @@ import roomescape.reservationtime.dto.ReservationTimeResponse;
 import roomescape.reservationtime.exception.ReservationTimeAlreadyExistsException;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.reservationtime.exception.UsingReservationTimeException;
-import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 
 @Service
@@ -24,6 +24,7 @@ public class ReservationTimeDefaultService implements ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
+    @Override
     public ReservationTimeResponse create(ReservationTimeRequest request) {
         if (timeRepository.existsByStartAt(request.startAt())) {
             throw new ReservationTimeAlreadyExistsException();
@@ -33,10 +34,12 @@ public class ReservationTimeDefaultService implements ReservationTimeService {
         return ReservationTimeResponse.from(timeRepository.add(newReservationTime));
     }
 
+    @Override
     public List<ReservationTimeResponse> getAll() {
         return ReservationTimeResponse.from(timeRepository.findAll());
     }
 
+    @Override
     public void deleteById(Long id) {
         if (isReservationExists(id)) {
             throw new UsingReservationTimeException();
@@ -52,6 +55,7 @@ public class ReservationTimeDefaultService implements ReservationTimeService {
         return reservationRepository.existsByTimeId(id);
     }
 
+    @Override
     public List<AvailableTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
         List<Long> bookedTimeIds = reservationRepository.findTimeIdsByDateAndTheme(date, themeId);
         List<ReservationTime> reservationTimeEntities = timeRepository.findAll();

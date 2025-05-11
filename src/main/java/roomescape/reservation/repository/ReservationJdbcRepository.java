@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -27,13 +28,13 @@ public class ReservationJdbcRepository implements ReservationRepository {
     @Override
     public Reservation add(Reservation reservation) {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", reservation.getName());
+        params.put("member_id", reservation.getMember().getId());
         params.put("date", reservation.getDate().getDate());
         params.put("time_id", reservation.getTime().getId());
         params.put("theme_id", reservation.getTheme().getId());
 
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return Reservation.createWithId(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+        return Reservation.createWithId(id, reservation.getMember(), reservation.getDate(), reservation.getTime(),
                 reservation.getTheme());
     }
 
@@ -48,8 +49,11 @@ public class ReservationJdbcRepository implements ReservationRepository {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name AS reservation_name,
                     r.date AS reservation_date,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.password AS member_password,
                     rt.id AS time_id,
                     rt.start_at AS time_value,
                     t.id AS theme_id,
@@ -58,6 +62,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     t.thumbnail AS theme_thumbnail
                 FROM
                     reservation r
+                INNER JOIN member m ON r.member_id = m.id
                 INNER JOIN reservation_time rt ON r.time_id = rt.id
                 INNER JOIN theme t ON r.theme_id = t.id;
                 
@@ -65,6 +70,13 @@ public class ReservationJdbcRepository implements ReservationRepository {
         return jdbcTemplate.query(
                 sql,
                 (resultSet, rowNum) -> {
+                    Member member = Member.createWithId(
+                            resultSet.getLong("member_id"),
+                            resultSet.getString("member_name"),
+                            resultSet.getString("member_email"),
+                            resultSet.getString("member_password")
+                    );
+
                     ReservationDate date = new ReservationDate(resultSet.getDate("reservation_date").toLocalDate());
 
                     ReservationTime time = ReservationTime.createWithId(
@@ -80,7 +92,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
                     return Reservation.createWithId(
                             resultSet.getLong("reservation_id"),
-                            resultSet.getString("reservation_name"),
+                            member,
                             date,
                             time,
                             theme

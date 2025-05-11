@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservation.dto.ReservationRequest;
+import roomescape.global.annotation.LoginMemberId;
+import roomescape.reservation.dto.AdminReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.UserReservationRequest;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
-@RequestMapping("reservations")
+@RequestMapping
 public class ReservationController {
     private final ReservationService reservationService;
 
@@ -24,18 +26,27 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
+    @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponse>> getReservations() {
         return ResponseEntity.ok().body(reservationService.getAll());
     }
 
-    @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request) {
-        ReservationResponse response = reservationService.create(request);
+    @PostMapping("/reservations")
+    public ResponseEntity<ReservationResponse> createReservationForUser(
+            @Valid @RequestBody UserReservationRequest request,
+            @LoginMemberId Long memberId) {
+        ReservationResponse response = reservationService.createForUser(request, memberId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/admin/reservations")
+    public ResponseEntity<ReservationResponse> createReservationForAdmin(
+            @Valid @RequestBody AdminReservationRequest request) {
+        ReservationResponse response = reservationService.createForAdmin(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();

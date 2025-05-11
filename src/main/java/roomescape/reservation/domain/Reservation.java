@@ -1,43 +1,44 @@
 package roomescape.reservation.domain;
 
+import roomescape.member.domain.Member;
+import roomescape.reservation.exception.ReservationFieldRequiredException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
-import roomescape.reservation.exception.ReservationFieldRequiredException;
 
 public class Reservation {
     private final Long id;
-    private final String name;
+    private final Member member;
     private final ReservationDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    private Reservation(Long id, String name, ReservationDate date, ReservationTime time, Theme theme) {
-        validate(name, date, time, theme);
+    private Reservation(Long id, Member member, ReservationDate date, ReservationTime time, Theme theme) {
+        validate(member, date, time, theme);
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public static Reservation createWithoutId(String name, ReservationDate date, ReservationTime time, Theme theme) {
-        return new Reservation(null, name, date, time, theme);
+    public static Reservation createWithoutId(Member member, ReservationDate date, ReservationTime time, Theme theme) {
+        return new Reservation(null, member, date, time, theme);
     }
 
-    public static Reservation createWithId(Long id, String name, ReservationDate date, ReservationTime time,
+    public static Reservation createWithId(Long id, Member member, ReservationDate date, ReservationTime time,
                                            Theme theme) {
-        return new Reservation(id, name, date, time, theme);
+        return new Reservation(id, member, date, time, theme);
     }
 
-    private void validate(String name, ReservationDate date, ReservationTime time, Theme theme) {
-        validateName(name);
+    private void validate(Member member, ReservationDate date, ReservationTime time, Theme theme) {
+        validateMember(member);
         validateDate(date);
         validateTime(time);
         validateTheme(theme);
     }
 
-    private void validateName(String name) {
-        if (name.isBlank()) {
+    private void validateMember(Member member) {
+        if (member == null) {
             throw new ReservationFieldRequiredException();
         }
     }
@@ -64,8 +65,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public ReservationDate getDate() {
