@@ -32,7 +32,7 @@ public class MemberController {
         );
     }
 
-    @Auth(Role.GUEST)
+    @Auth(Role.ADMIN)
     @GetMapping("/members")
     public ResponseEntity<List<MemberResponse>> getMembers(
     ) {
