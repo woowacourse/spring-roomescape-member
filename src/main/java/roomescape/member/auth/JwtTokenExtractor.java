@@ -5,7 +5,8 @@ import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.common.exception.AuthenticationException;
+import roomescape.common.exception.AuthorizationException;
+import roomescape.common.exception.ErrorCode;
 import roomescape.member.domain.MemberId;
 import roomescape.member.domain.MemberName;
 
@@ -29,7 +30,7 @@ public class JwtTokenExtractor {
 
     private String extractTokenFromCookie(Cookie[] cookies) {
         if (cookies == null) {
-            throw new AuthenticationException("Cookie가 존재하지 않습니다.");
+            throw new AuthorizationException("로그인이 필요합니다.", ErrorCode.MUST_BE_MEMBER);
         }
 
         for (Cookie cookie : cookies) {
@@ -38,7 +39,7 @@ public class JwtTokenExtractor {
             }
         }
 
-        throw new IllegalStateException("Cookie에 Token 값이 존재하지 않습니다.");
+        throw new AuthorizationException("로그인이 필요합니다.", ErrorCode.MUST_BE_MEMBER);
     }
 
     private Claims extractClaimsFromToken(String token) {

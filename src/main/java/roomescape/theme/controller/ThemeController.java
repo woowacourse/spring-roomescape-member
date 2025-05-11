@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.utils.UriFactory;
+import roomescape.member.auth.PermitAll;
 import roomescape.theme.controller.dto.CreateThemeWebRequest;
 import roomescape.theme.controller.dto.ThemeWebResponse;
 import roomescape.theme.service.ThemeService;
@@ -31,6 +32,7 @@ public class ThemeController {
         return themeService.getAll();
     }
 
+    @PermitAll
     @GetMapping("/ranking")
     public ResponseEntity<List<ThemeWebResponse>> getRanking() {
         return ResponseEntity.ok(themeService.getRanking());

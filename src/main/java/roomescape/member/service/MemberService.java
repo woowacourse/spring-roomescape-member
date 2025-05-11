@@ -30,7 +30,7 @@ public class MemberService {
             throw new ConflictException("이미 존재하는 이메일입니다.");
         }
 
-        return MemberConverter.toResponse(memberRepository.save(
+        return MemberConverter.toDto(memberRepository.save(
                 Account.of(
                         Member.withoutId(
                                 MemberName.from(signupRequest.name()),
@@ -49,13 +49,13 @@ public class MemberService {
 
     public Member get(MemberId id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new AuthenticationException("등록된 회원이 아닙니다.", ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new AuthenticationException("등록된 회원이 아닙니다.", ErrorCode.MEMBER_NOT_FOUND));
     }
 
     public List<MemberInfo> getAll() {
         return memberRepository.findAll()
                 .stream()
-                .map(MemberConverter::toResponse)
+                .map(MemberConverter::toDto)
                 .toList();
     }
 }
