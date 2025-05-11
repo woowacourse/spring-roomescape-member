@@ -30,7 +30,6 @@ public class JwtProvider {
         return Jwts.builder()
                 .subject(Long.toString(jwtRequest.id()))
                 .claim("name", jwtRequest.name())
-                .claim("email", jwtRequest.email())
                 .claim("role", jwtRequest.role())
                 .issuer(ISSUER)
                 .issuedAt(jwtRequest.issuedAt())
@@ -53,7 +52,6 @@ public class JwtProvider {
                     .parseSignedClaims(jwtToken);
             return new JwtRequest(Long.parseLong(claimsJws.getPayload().getSubject()),
                     claimsJws.getPayload().get("name", String.class),
-                    claimsJws.getPayload().get("email", String.class),
                     MemberRoleType.from(claimsJws.getPayload().get("role", String.class)),
                     claimsJws.getPayload().getIssuedAt());
         } catch (IllegalArgumentException e) {

@@ -34,13 +34,13 @@ class JwtProviderTest {
     void generateToken() {
         //given
         Date issueDate = new Date(0);
-        JwtRequest jwtRequest = new JwtRequest(1, "test", "test@email.com", MemberRoleType.ADMIN, issueDate);
+        JwtRequest jwtRequest = new JwtRequest(1, "test", MemberRoleType.ADMIN, issueDate);
 
         //when
         String actual = jwtProvider.generateToken(jwtRequest);
 
         //then
-        String expected = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6InRlc3QiLCJlbWFpbCI6InRlc3RAZW1haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaXNzIjoicm9vbWVzY2FwZSIsImlhdCI6MCwiZXhwIjo4NjQwMH0.CViALsK09IqgeSZc8RZ5nPaXAEixwB6cTbh84Wb9KDU";
+        String expected = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6InRlc3QiLCJyb2xlIjoiQURNSU4iLCJpc3MiOiJyb29tZXNjYXBlIiwiaWF0IjowLCJleHAiOjg2NDAwfQ.EAPhQGV6GusOfRhBcszd4hjUNc7oWHLGhDAsxNko2i4";
         assertAll(
                 () -> assertThat(actual).isNotNull(),
                 () -> assertThat(actual).isEqualTo(expected)
@@ -52,12 +52,11 @@ class JwtProviderTest {
     void verifyToken() {
         //given
         Date issueDate = new Date();
-        JwtRequest jwtRequest = new JwtRequest(1, "test", "test@email.com", MemberRoleType.ADMIN, issueDate);
+        JwtRequest jwtRequest = new JwtRequest(1, "test", MemberRoleType.ADMIN, issueDate);
         SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
         String token = Jwts.builder()
                 .subject(Long.toString(jwtRequest.id()))
                 .claim("name", jwtRequest.name())
-                .claim("email", jwtRequest.email())
                 .claim("role", jwtRequest.role())
                 .issuer(ISSUER)
                 .issuedAt(jwtRequest.issuedAt())
@@ -70,7 +69,7 @@ class JwtProviderTest {
 
         //then
         assertAll(
-                () -> assertThat(actual.email()).isEqualTo(jwtRequest.email()),
+                () -> assertThat(actual.name()).isEqualTo(jwtRequest.name()),
                 () -> assertThat(actual.role()).isEqualTo(jwtRequest.role()),
                 () -> assertThat(roundOfMill(actual.issuedAt())).isEqualTo(roundOfMill(jwtRequest.issuedAt()))
         );
@@ -85,12 +84,12 @@ class JwtProviderTest {
     void throwExceptionWhenExpiredToken() {
         //given
         Date issueDate = new Date();
-        JwtRequest jwtRequest = new JwtRequest(1, "test", "test@email.com", MemberRoleType.ADMIN, issueDate);
+        JwtRequest jwtRequest = new JwtRequest(1, "test", MemberRoleType.ADMIN, issueDate);
         SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
         String token = Jwts.builder()
                 .subject(Long.toString(jwtRequest.id()))
                 .claim("name", jwtRequest.name())
-                .claim("email", jwtRequest.email())
+
                 .claim("role", jwtRequest.role())
                 .issuer(ISSUER)
                 .issuedAt(jwtRequest.issuedAt())
@@ -108,12 +107,12 @@ class JwtProviderTest {
     void throwExceptionWhenWrongSecretKey() {
         //given
         Date issueDate = new Date();
-        JwtRequest jwtRequest = new JwtRequest(1, "test", "test@email.com", MemberRoleType.ADMIN, issueDate);
+        JwtRequest jwtRequest = new JwtRequest(1, "test", MemberRoleType.ADMIN, issueDate);
         SecretKey wrongSecretKey = Keys.hmacShaKeyFor((SECRET_KEY + "A").getBytes(StandardCharsets.UTF_8));
         String token = Jwts.builder()
                 .subject(Long.toString(jwtRequest.id()))
                 .claim("name", jwtRequest.name())
-                .claim("email", jwtRequest.email())
+
                 .claim("role", jwtRequest.role())
                 .issuer(ISSUER)
                 .issuedAt(jwtRequest.issuedAt())

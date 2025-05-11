@@ -9,6 +9,6 @@ public record MemberLoginCheckResponse(String name) {
     }
 
     public static MemberLoginCheckResponse from(final LoginMember member) {
-        return new MemberLoginCheckResponse(member.getName());
+        return new MemberLoginCheckResponse(member.name());
     }
 }

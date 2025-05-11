@@ -15,7 +15,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.dto.request.CreateReservationRequest;
 import roomescape.domain.LoginMember;
-import roomescape.domain.MemberRoleType;
 import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotFoundValueException;
@@ -61,7 +60,7 @@ class ReservationServiceTest {
         //given
         LocalDate date = LocalDate.of(2100, 1, 1);
         ReservationCreation creation = ReservationCreation.of(
-                new LoginMember(1, "test", "test@email.com", MemberRoleType.MEMBER),
+                new LoginMember(1, "test"),
                 new CreateReservationRequest(date, 1, 1));
         reservationService.addReservation(creation);
 
@@ -79,7 +78,7 @@ class ReservationServiceTest {
 
         //when & then
         ReservationCreation past = ReservationCreation.of(
-                new LoginMember(1, "test", "test@email.com", MemberRoleType.MEMBER),
+                new LoginMember(1, "test"),
                 new CreateReservationRequest(date, 1, 1));
 
         assertThatThrownBy(() -> reservationService.addReservation(past))
@@ -92,7 +91,7 @@ class ReservationServiceTest {
     void throwExceptionWhenNotExistTimeId() {
         //given
         ReservationCreation notValidTimeId = ReservationCreation.of(
-                new LoginMember(1, "test", "test@email.com", MemberRoleType.MEMBER),
+                new LoginMember(1, "test"),
                 new CreateReservationRequest(LocalDate.of(3000, 1, 1), 1000, 1));
 
         // when & then
@@ -106,7 +105,7 @@ class ReservationServiceTest {
     void throwExceptionWhenNotExistThemeId() {
         //given
         ReservationCreation notValidThemeId = ReservationCreation.of(
-                new LoginMember(1, "test", "test@email.com", MemberRoleType.MEMBER),
+                new LoginMember(1, "test"),
                 new CreateReservationRequest(LocalDate.of(3000, 1, 1), 1, 1000));
 
         //when & then
