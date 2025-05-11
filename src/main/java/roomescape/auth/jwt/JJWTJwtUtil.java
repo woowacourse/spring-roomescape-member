@@ -10,12 +10,14 @@ import roomescape.auth.AuthToken;
 import roomescape.auth.LoginInfo;
 import roomescape.business.model.entity.User;
 import roomescape.business.model.vo.UserRole;
-import roomescape.exception.auth.LoginExpiredException;
-import roomescape.exception.auth.NotAuthenticatedException;
+import roomescape.exception.auth.AuthenticationException;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+
+import static roomescape.exception.SecurityErrorCode.TOKEN_EXPIRED;
+import static roomescape.exception.SecurityErrorCode.TOKEN_INVALID;
 
 @Component
 public class JJWTJwtUtil implements JwtUtil {
@@ -56,9 +58,9 @@ public class JJWTJwtUtil implements JwtUtil {
 
             return new LoginInfo(id, role);
         } catch (ExpiredJwtException e) {
-            throw new LoginExpiredException();
+            throw new AuthenticationException(TOKEN_EXPIRED);
         } catch (Exception e) {
-            throw new NotAuthenticatedException();
+            throw new AuthenticationException(TOKEN_INVALID);
         }
     }
 }

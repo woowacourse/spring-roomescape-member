@@ -8,7 +8,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.AuthRequired;
 import roomescape.auth.LoginInfo;
 import roomescape.auth.jwt.JwtUtil;
-import roomescape.exception.auth.NotAuthenticatedException;
+import roomescape.exception.auth.AuthenticationException;
+
+import static roomescape.exception.SecurityErrorCode.TOKEN_INVALID;
 
 public class AuthenticationInterceptor implements HandlerInterceptor {
 
@@ -46,6 +48,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             }
         }
 
-        throw new NotAuthenticatedException();
+        throw new AuthenticationException(TOKEN_INVALID);
     }
 }

@@ -6,7 +6,10 @@ import roomescape.auth.AuthToken;
 import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.entity.User;
 import roomescape.business.model.repository.UserRepository;
-import roomescape.exception.auth.LoginFailException;
+import roomescape.exception.auth.AuthenticationException;
+
+import static roomescape.exception.SecurityErrorCode.INVALID_EMAIL;
+import static roomescape.exception.SecurityErrorCode.INVALID_PASSWORD;
 
 @Service
 @RequiredArgsConstructor
@@ -17,10 +20,10 @@ public class AuthService {
 
     public AuthToken authenticate(final String email, final String password) {
         final User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new LoginFailException("이메일이 잘못되었습니다."));
+                .orElseThrow(() -> new AuthenticationException(INVALID_EMAIL));
 
         if (!user.isPasswordCorrect(password)) {
-            throw new LoginFailException("비밀번호가 잘못되었습니다.");
+            throw new AuthenticationException(INVALID_PASSWORD);
         }
 
         return jwtUtil.createToken(user);

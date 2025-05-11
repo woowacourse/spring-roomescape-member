@@ -11,16 +11,7 @@ public record ErrorResponse(
         String exceptionType,
         String message
 ) {
-    public static ErrorResponse withDetailMessage(HttpStatus httpStatus, Exception e, String message) {
-        return new ErrorResponse(
-                LocalDateTime.now(),
-                httpStatus,
-                e.getClass().getSimpleName(),
-                message
-        );
-    }
-
-    public static ErrorResponse withDetailMessage(HttpStatus httpStatus, ErrorCode errorCode) {
+    public static ErrorResponse plainResponse(HttpStatus httpStatus, ErrorCode errorCode) {
         return new ErrorResponse(
                 LocalDateTime.now(),
                 httpStatus,
@@ -29,7 +20,16 @@ public record ErrorResponse(
         );
     }
 
-    public static ErrorResponse withoutDetailMessage() {
+    public static ErrorResponse securedResponse(HttpStatus httpStatus, SecurityErrorCode errorCode) {
+        return new ErrorResponse(
+                LocalDateTime.now(),
+                httpStatus,
+                "",
+                errorCode.clientMessage()
+        );
+    }
+
+    public static ErrorResponse securedResponse() {
         return new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR,

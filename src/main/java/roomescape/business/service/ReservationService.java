@@ -10,7 +10,7 @@ import roomescape.business.model.repository.ReservationRepository;
 import roomescape.business.model.repository.ReservationTimeRepository;
 import roomescape.business.model.repository.ThemeRepository;
 import roomescape.business.model.repository.UserRepository;
-import roomescape.exception.auth.ForbiddenException;
+import roomescape.exception.auth.AuthorizationException;
 import roomescape.exception.business.DuplicatedException;
 import roomescape.exception.business.NotFoundException;
 
@@ -21,6 +21,7 @@ import static roomescape.exception.ErrorCode.RESERVATION_DUPLICATED;
 import static roomescape.exception.ErrorCode.RESERVATION_NOT_EXIST;
 import static roomescape.exception.ErrorCode.THEME_NOT_EXIST;
 import static roomescape.exception.ErrorCode.USER_NOT_EXIST;
+import static roomescape.exception.SecurityErrorCode.AUTHORITY_LACK;
 
 @Service
 @RequiredArgsConstructor
@@ -56,7 +57,7 @@ public class ReservationService {
         final Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new NotFoundException(RESERVATION_NOT_EXIST));
         if (!reservation.isSameReserver(userId)) {
-            throw new ForbiddenException();
+            throw new AuthorizationException(AUTHORITY_LACK);
         }
         reservationRepository.deleteById(reservationId);
     }

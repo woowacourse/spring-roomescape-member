@@ -7,7 +7,9 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.LoginInfo;
-import roomescape.exception.auth.NotAuthenticatedException;
+import roomescape.exception.auth.AuthorizationException;
+
+import static roomescape.exception.SecurityErrorCode.AUTHORITY_NOT_EXIST;
 
 public class AuthorizationArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -26,7 +28,7 @@ public class AuthorizationArgumentResolver implements HandlerMethodArgumentResol
         final Object authorization = webRequest.getAttribute("authorization", RequestAttributes.SCOPE_REQUEST);
 
         if (authorization == null) {
-            throw new NotAuthenticatedException();
+            throw new AuthorizationException(AUTHORITY_NOT_EXIST);
         }
 
         return authorization;

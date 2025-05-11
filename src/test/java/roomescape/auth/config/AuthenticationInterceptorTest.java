@@ -12,7 +12,7 @@ import org.springframework.web.method.HandlerMethod;
 import roomescape.auth.AuthRequired;
 import roomescape.auth.LoginInfo;
 import roomescape.auth.jwt.JwtUtil;
-import roomescape.exception.auth.NotAuthenticatedException;
+import roomescape.exception.auth.AuthenticationException;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -86,7 +86,7 @@ class AuthenticationInterceptorTest {
 
         // when, then
         assertThatThrownBy(() -> sut.preHandle(request, response, handlerMethod))
-                .isInstanceOf(NotAuthenticatedException.class);
+                .isInstanceOf(AuthenticationException.class);
     }
 
     @Test
@@ -98,10 +98,10 @@ class AuthenticationInterceptorTest {
 
         given(handlerMethod.getMethodAnnotation(AuthRequired.class)).willReturn(mock(AuthRequired.class));
         given(request.getCookies()).willReturn(new Cookie[]{cookie});
-        given(jwtUtil.validateAndResolveToken(token)).willThrow(NotAuthenticatedException.class);
+        given(jwtUtil.validateAndResolveToken(token)).willThrow(AuthenticationException.class);
 
         // when, then
         assertThatThrownBy(() -> sut.preHandle(request, response, handlerMethod))
-                .isInstanceOf(NotAuthenticatedException.class);
+                .isInstanceOf(AuthenticationException.class);
     }
 }

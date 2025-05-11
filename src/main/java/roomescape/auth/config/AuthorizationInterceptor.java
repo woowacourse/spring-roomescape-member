@@ -9,11 +9,13 @@ import roomescape.auth.LoginInfo;
 import roomescape.auth.Role;
 import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.vo.UserRole;
-import roomescape.exception.auth.ForbiddenException;
-import roomescape.exception.auth.NotAuthenticatedException;
+import roomescape.exception.auth.AuthenticationException;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static roomescape.exception.SecurityErrorCode.AUTHORITY_LACK;
+import static roomescape.exception.SecurityErrorCode.TOKEN_INVALID;
 
 public class AuthorizationInterceptor implements HandlerInterceptor {
 
@@ -50,7 +52,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             }
         }
 
-        throw new NotAuthenticatedException();
+        throw new AuthenticationException(TOKEN_INVALID);
     }
 
     private static void validateUserRole(final LoginInfo loginInfo, final Role role) {
@@ -58,7 +60,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         final List<UserRole> allowedRoles = Arrays.asList(role.value());
 
         if (!allowedRoles.contains(userRole)) {
-            throw new ForbiddenException();
+            throw new AuthenticationException(AUTHORITY_LACK);
         }
     }
 }

@@ -13,8 +13,7 @@ import roomescape.auth.LoginInfo;
 import roomescape.auth.Role;
 import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.vo.UserRole;
-import roomescape.exception.auth.ForbiddenException;
-import roomescape.exception.auth.NotAuthenticatedException;
+import roomescape.exception.auth.AuthenticationException;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -95,7 +94,7 @@ class AuthorizationInterceptorTest {
 
         // when, then
         assertThatThrownBy(() -> sut.preHandle(request, response, handlerMethod))
-                .isInstanceOf(ForbiddenException.class);
+                .isInstanceOf(AuthenticationException.class);
     }
 
     @Test
@@ -107,7 +106,7 @@ class AuthorizationInterceptorTest {
 
         // when, then
         assertThatThrownBy(() -> sut.preHandle(request, response, handlerMethod))
-                .isInstanceOf(NotAuthenticatedException.class);
+                .isInstanceOf(AuthenticationException.class);
     }
 
     @Test
@@ -121,7 +120,7 @@ class AuthorizationInterceptorTest {
 
         // when, then
         assertThatThrownBy(() -> sut.preHandle(request, response, handlerMethod))
-                .isInstanceOf(NotAuthenticatedException.class);
+                .isInstanceOf(AuthenticationException.class);
     }
 
     private Role createRoleAnnotation(UserRole... roles) {

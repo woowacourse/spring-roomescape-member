@@ -8,7 +8,7 @@ import roomescape.auth.AuthToken;
 import roomescape.auth.LoginInfo;
 import roomescape.business.model.entity.User;
 import roomescape.business.model.vo.UserRole;
-import roomescape.exception.auth.NotAuthenticatedException;
+import roomescape.exception.auth.AuthenticationException;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -72,7 +72,7 @@ class JJWTJwtUtilTest {
 
         // when
         assertThatThrownBy(() -> sut.validateAndResolveToken(invalidToken))
-                .isInstanceOf(NotAuthenticatedException.class);
+                .isInstanceOf(AuthenticationException.class);
     }
 
     @Test
@@ -82,7 +82,7 @@ class JJWTJwtUtilTest {
 
         // when
         assertThatThrownBy(() -> sut.validateAndResolveToken(invalidToken))
-                .isInstanceOf(NotAuthenticatedException.class);
+                .isInstanceOf(AuthenticationException.class);
     }
 
     @Test

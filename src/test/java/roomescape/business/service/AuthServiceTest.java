@@ -10,7 +10,7 @@ import roomescape.auth.AuthToken;
 import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.entity.User;
 import roomescape.business.model.repository.UserRepository;
-import roomescape.exception.auth.LoginFailException;
+import roomescape.exception.auth.AuthenticationException;
 
 import java.util.Optional;
 
@@ -60,7 +60,7 @@ class AuthServiceTest {
 
         // when, then
         assertThatThrownBy(() -> sut.authenticate(email, password))
-                .isInstanceOf(LoginFailException.class);
+                .isInstanceOf(AuthenticationException.class);
 
         verify(userRepository).findByEmail(email);
         verifyNoInteractions(jwtUtil);
@@ -77,7 +77,7 @@ class AuthServiceTest {
 
         // when, then
         assertThatThrownBy(() -> sut.authenticate(email, password))
-                .isInstanceOf(LoginFailException.class);
+                .isInstanceOf(AuthenticationException.class);
 
         verify(userRepository).findByEmail(email);
         verifyNoInteractions(jwtUtil);

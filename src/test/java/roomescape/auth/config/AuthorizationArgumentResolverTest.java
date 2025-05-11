@@ -9,7 +9,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
 import roomescape.auth.LoginInfo;
-import roomescape.exception.auth.NotAuthenticatedException;
+import roomescape.exception.auth.AuthorizationException;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -65,13 +65,13 @@ class AuthorizationArgumentResolverTest {
     }
 
     @Test
-    void authorization_속성이_없으면_NotAuthenticatedException을_던진다() {
+    void authorization_속성이_없으면_예외를_던진다() {
         // given
         given(webRequest.getAttribute("authorization", RequestAttributes.SCOPE_REQUEST))
                 .willReturn(null);
 
         // when, then
         assertThatThrownBy(() -> sut.resolveArgument(parameter, null, webRequest, null))
-                .isInstanceOf(NotAuthenticatedException.class);
+                .isInstanceOf(AuthorizationException.class);
     }
 }

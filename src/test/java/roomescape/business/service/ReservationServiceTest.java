@@ -13,7 +13,7 @@ import roomescape.business.model.repository.ReservationRepository;
 import roomescape.business.model.repository.ReservationTimeRepository;
 import roomescape.business.model.repository.ThemeRepository;
 import roomescape.business.model.repository.UserRepository;
-import roomescape.exception.auth.ForbiddenException;
+import roomescape.exception.auth.AuthorizationException;
 import roomescape.exception.business.DuplicatedException;
 import roomescape.exception.business.NotFoundException;
 
@@ -255,7 +255,7 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> sut.delete(reservation.id(), user2.id()))
-                .isInstanceOf(ForbiddenException.class);
+                .isInstanceOf(AuthorizationException.class);
 
         verify(reservationRepository).findById(reservation.id());
         verify(reservationRepository, never()).deleteById(anyString());
