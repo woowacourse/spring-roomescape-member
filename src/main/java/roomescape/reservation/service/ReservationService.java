@@ -3,6 +3,7 @@ package roomescape.reservation.service;
 import org.springframework.stereotype.Service;
 import roomescape.auth.entity.Member;
 import roomescape.auth.repository.MemberRepository;
+import roomescape.global.exception.badRequest.BadRequestException;
 import roomescape.global.exception.conflict.ReservationConflictException;
 import roomescape.global.exception.notFound.MemberNotFoundException;
 import roomescape.global.exception.notFound.ReservationNotFoundException;
@@ -10,14 +11,15 @@ import roomescape.global.exception.notFound.ReservationTimeNotFoundException;
 import roomescape.global.exception.notFound.ThemeNotFoundException;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.service.dto.request.CreateReservationRequest;
 import roomescape.reservation.repository.dto.ReservationWithFilterRequest;
+import roomescape.reservation.service.dto.request.CreateReservationRequest;
 import roomescape.reservation.service.dto.response.ReservationResponse;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.entity.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 // TODO: findByXXX - DataAccessException 핸들링
@@ -66,6 +68,7 @@ public class ReservationService {
                 .orElseThrow(() -> new MemberNotFoundException(request.memberId()));
 
         Reservation newReservation = request.toEntity(timeEntity);
+        validateReservationDate(newReservation);
         validateDuplicated(newReservation);
 
         Reservation saved = reservationRepository.save(newReservation);
@@ -80,6 +83,13 @@ public class ReservationService {
 
     private boolean isExistDuplicatedWith(Reservation target) {
         return reservationRepository.findDuplicatedWith(target).isPresent();
+    }
+
+    private void validateReservationDate(Reservation newReservation) {
+        LocalDateTime now = LocalDateTime.now();
+        if (newReservation.isBefore(now)) {
+            throw new BadRequestException("과거 날짜/시간의 예약은 생성할 수 없습니다.");
+        }
     }
 
     public void deleteReservation(final Long id) {

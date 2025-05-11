@@ -40,11 +40,12 @@ class ReservationServiceTest {
             memberRepository
     );
 
+    private final long themeId = 1L;
     private final LoginMember loginMember = new LoginMember(1L, "test", "test@example.com", Role.USER.name());
 
     @BeforeEach
     void setupTheme() {
-        themeRepository.save(new Theme(1L, "theme", "hello", "hi"));
+        themeRepository.save(new Theme(themeId, "theme", "hello", "hi"));
         memberRepository.save(new Member(
                 loginMember.getId(),
                 loginMember.getName(),
@@ -63,7 +64,7 @@ class ReservationServiceTest {
                 now.plusDays(1),
                 loginMember.getId(),
                 1L,
-                1L
+                themeId
         );
 
         // when & then
@@ -76,15 +77,16 @@ class ReservationServiceTest {
     @Test
     void pastReservation() {
         // given
-        ReservationTime timeEntity = ReservationTime.of(1L, LocalTime.of(12, 0));
+        final long timeId = 1L;
+        ReservationTime timeEntity = ReservationTime.of(timeId, LocalTime.of(12, 0));
         timeRepository.save(timeEntity);
 
         LocalDate now = LocalDate.now();
         CreateReservationRequest request = new CreateReservationRequest(
                 now.minusDays(1),
                 loginMember.getId(),
-                1L,
-                1L
+                timeId,
+                themeId
         );
 
         // when & then
@@ -100,21 +102,41 @@ class ReservationServiceTest {
         LocalDate now = LocalDate.now();
         LocalDate date = now.plusDays(1);
 
-        ReservationTime timeEntity = ReservationTime.of(1L, LocalTime.of(12, 0));
-        Reservation reservation = Reservation.of(1L, loginMember.getId(), date, timeEntity, 1L);
+        final long timeId = 1L;
+        ReservationTime timeEntity = ReservationTime.of(timeId, LocalTime.of(12, 0));
+        Reservation reservation = new Reservation(1L, loginMember.getId(), date, timeEntity, themeId);
         timeRepository.save(timeEntity);
         reservationRepository.save(reservation);
 
         CreateReservationRequest request = new CreateReservationRequest(
                 now.plusDays(1),
                 loginMember.getId(),
-                1L,
-                1L
+                timeId,
+                themeId
         );
 
         // when & then
         assertThatThrownBy(() -> {
             service.createReservation(request);
         }).isInstanceOf(ReservationConflictException.class);
+    }
+
+    @DisplayName("과거 날짜의 예약은 생성할 수 없다.")
+    @Test
+    void doesNotAllowedCreatingPastReservation() {
+        // given
+        final long timeId = 1L;
+        ReservationTime time = ReservationTime.of(timeId, LocalTime.of(12, 0));
+        timeRepository.save(time);
+
+        LocalDate now = LocalDate.now();
+        LocalDate date = now.minusDays(1);
+
+        CreateReservationRequest request = new CreateReservationRequest(date, loginMember.getId(), timeId, themeId);
+
+        // when & then
+        assertThatThrownBy(() -> {
+            service.createReservation(request);
+        }).isInstanceOf(BadRequestException.class);
     }
 }

@@ -52,7 +52,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(query, params, keyHolder);
         final long id = keyHolder.getKey().longValue();
-        return Reservation.of(
+        return new Reservation(
                 id,
                 newReservation.getMemberId(),
                 newReservation.getDate(),

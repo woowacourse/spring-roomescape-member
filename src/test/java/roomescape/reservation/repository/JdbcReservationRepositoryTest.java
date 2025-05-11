@@ -36,7 +36,7 @@ class JdbcReservationRepositoryTest {
         jdbcTemplate.update("INSERT INTO theme(id, name, description, thumbnail) VALUES (?, ?, ?, ?)", 1, "hello", "hi", "thumbnail");
 
         ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
-        Reservation reservation = Reservation.of(1L, 1L, LocalDate.of(2025, 1, 2), time, 1L);
+        Reservation reservation = new Reservation(1L, 1L, LocalDate.of(2025, 1, 2), time, 1L);
 
         // when
         reservationRepository.save(reservation);
