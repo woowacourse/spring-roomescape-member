@@ -2,8 +2,8 @@ package roomescape.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,28 +26,19 @@ public class AuthController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.OK)
-    public Cookie userLogin(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    public Map<String, String> userLogin(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         String token = authService.loginAndGenerateToken(loginRequestDto);
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/");
         response.addCookie(cookie);
-        return cookie;
+        return Map.of("message", "로그인에 성공하였습니다.");
     }
 
     @GetMapping("/check")
     @ResponseStatus(HttpStatus.OK)
     public MemberResponseDto loginCheck(MemberResponseDto memberResponseDto) {
         return memberResponseDto;
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
     }
 }
