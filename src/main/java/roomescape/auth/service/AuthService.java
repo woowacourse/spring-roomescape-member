@@ -29,16 +29,6 @@ public class AuthService {
         return new LoginResponse(accessToken);
     }
 
-    public String extractTokenFromCookie(final String cookieHeader) {
-        String[] cookies = cookieHeader.split(";");
-        for (String cookie : cookies) {
-            if (cookie.startsWith("token=")) {
-                return cookie.substring(6);
-            }
-        }
-        return null;
-    }
-
     public LoginMember makeLoginMember(final String token, final MemberRole memberRole) {
         validateToken(token);
         Claims claims = jwtProvider.getAllClaimsFromToken(token);
