@@ -132,7 +132,7 @@ public class JdbcMemberRepository implements MemberRepository {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
 
-        final int updated = jdbcTemplate.update(query, params);
+        int updated = jdbcTemplate.update(query, params);
 
         return updated > 0;
     }

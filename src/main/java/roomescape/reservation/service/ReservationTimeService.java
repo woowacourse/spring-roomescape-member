@@ -37,16 +37,16 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public List<AvailableReservationTimeResponse> getAvailableTimes(LocalDate date, final Long themeId) {
+    public List<AvailableReservationTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
         return reservationTimeRepository.findAvailableTimes(date, themeId);
     }
 
-    public void deleteTime(final Long id) {
+    public void deleteTime(Long id) {
         List<Reservation> reservations = reservationRepository.findAllByTimeId(id);
         if (!reservations.isEmpty()) {
             throw new BadRequestException("해당 시간에 예약된 내역이 존재하므로 삭제할 수 없습니다.");
         }
-        final boolean deleted = reservationTimeRepository.deleteById(id);
+        boolean deleted = reservationTimeRepository.deleteById(id);
         if (!deleted) {
             throw new NotFoundException("존재하지 않는 id 입니다.");
         }

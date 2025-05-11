@@ -17,7 +17,7 @@ public class ReservationTime {
 
     public boolean isDuplicatedWith(ReservationTime other) {
         LocalTime otherStartAt = other.startAt;
-        final int interval = Math.abs(otherStartAt.toSecondOfDay() - startAt.toSecondOfDay());
+        int interval = Math.abs(otherStartAt.toSecondOfDay() - startAt.toSecondOfDay());
         return interval < RUNNING_TIME.toSecondOfDay();
     }
 

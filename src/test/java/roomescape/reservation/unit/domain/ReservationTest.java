@@ -26,7 +26,7 @@ class ReservationTest {
         Reservation otherReservation = new Reservation(null, "test2", date, reservationTime, null);
 
         // when
-        final boolean isSame = reservation.isDuplicatedWith(otherReservation);
+        boolean isSame = reservation.isDuplicatedWith(otherReservation);
 
         // then
         assertThat(isSame).isTrue();
@@ -45,7 +45,7 @@ class ReservationTest {
         Reservation otherReservation = new Reservation(null, "test2", date, otherReservationTime, null);
 
         // when
-        final boolean isDuplicated = reservation.isDuplicatedWith(otherReservation);
+        boolean isDuplicated = reservation.isDuplicatedWith(otherReservation);
 
         // then
         assertThat(isDuplicated).isSameAs(expected);

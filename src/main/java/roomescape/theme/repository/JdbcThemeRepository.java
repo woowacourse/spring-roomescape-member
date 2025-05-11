@@ -58,7 +58,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     public List<Theme> findPopularDescendingUpTo(
             LocalDate startDate,
             LocalDate endDate,
-            final int limit
+            int limit
     ) {
         String sql = """
                 SELECT
