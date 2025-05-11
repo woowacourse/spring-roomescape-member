@@ -53,8 +53,8 @@ public class ReservationTimeService {
     }
 
     public List<AvailableReservationTimeResult> findAllAvailableTime(final LocalDate date, final long themeId) {
-        Set<ReservationTime> totalReservationTime = new HashSet<>(reservationTimeRepository.findAll());
-        List<ReservationTime> bookedTime = reservationTimeRepository.findAllBookedTime(date, themeId);
+        List<ReservationTime> totalReservationTime = reservationTimeRepository.findAll();
+        Set<ReservationTime> bookedTime = new HashSet<>(reservationTimeRepository.findAllBookedTime(date, themeId));
         List<AvailableReservationTimeResult> responses = new ArrayList<>();
 
         for (ReservationTime reservationTime : totalReservationTime) {
