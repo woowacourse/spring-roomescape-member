@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Member;
 import roomescape.dto.request.LoginRequest;
@@ -16,17 +15,18 @@ import roomescape.util.CookieUtil;
 import roomescape.util.TokenUtil;
 
 @RestController
-@RequestMapping("/login")
-public class LoginController {
+public class AuthController {
     private final MemberService memberService;
     private final TokenUtil tokenUtil;
+    private final CookieUtil cookieUtil;
 
-    public LoginController(final MemberService memberService, final TokenUtil tokenUtil) {
+    public AuthController(final MemberService memberService, final TokenUtil tokenUtil, final CookieUtil cookieUtil) {
         this.memberService = memberService;
         this.tokenUtil = tokenUtil;
+        this.cookieUtil = cookieUtil;
     }
 
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         Member member = memberService.findMemberWithEmailAndPassword(request);
         String token = tokenUtil.makeToken(member);
@@ -35,7 +35,14 @@ public class LoginController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/check")
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        cookieUtil.addExpiredCookie(request, response);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("login/check")
     public ResponseEntity<LoginCheckResponse> checkMember(HttpServletRequest request) {
         LoginCheckResponse loginCheckResponse = memberService.checkMember(request);
         return ResponseEntity.ok().body(loginCheckResponse);
