@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public record ReservationMemberRequest(
         @NotNull LocalDate date,
-        long timeId,
-        long themeId
+        @NotNull Long timeId,
+        @NotNull Long themeId
 ) {
 }

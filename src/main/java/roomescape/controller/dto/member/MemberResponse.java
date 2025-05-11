@@ -4,7 +4,7 @@ import roomescape.entity.Member;
 
 public class MemberResponse {
 
-    private final Long id;
+    private final long id;
     private final String name;
     private final String email;
     private final String role;
