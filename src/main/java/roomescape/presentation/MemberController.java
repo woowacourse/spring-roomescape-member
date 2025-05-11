@@ -1,6 +1,7 @@
 package roomescape.presentation;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -9,19 +10,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.business.service.AuthenticationService;
 import roomescape.business.LoginInformation;
+import roomescape.business.service.AuthenticationService;
+import roomescape.business.service.MemberService;
 import roomescape.presentation.dto.LoginRequestDto;
 import roomescape.presentation.dto.MemberCheckResponseDto;
+import roomescape.presentation.dto.MemberResponseDto;
 
 @RestController
 public class MemberController {
 
     private final AuthenticationService authenticationService;
+    private final MemberService memberService;
 
     @Autowired
-    public MemberController(AuthenticationService authenticationService) {
+    public MemberController(AuthenticationService authenticationService, MemberService memberService) {
         this.authenticationService = authenticationService;
+        this.memberService = memberService;
     }
 
     @PostMapping("/login")
@@ -40,5 +45,12 @@ public class MemberController {
     public ResponseEntity<MemberCheckResponseDto> loginCheck(LoginInformation loginInformation) {
         return ResponseEntity.ok()
                 .body(new MemberCheckResponseDto(loginInformation.name()));
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity<List<MemberResponseDto>> readMembers() {
+        List<MemberResponseDto> members = memberService.readMemberAll();
+        return ResponseEntity.ok()
+                .body(members);
     }
 }

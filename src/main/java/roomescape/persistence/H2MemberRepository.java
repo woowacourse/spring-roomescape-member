@@ -1,9 +1,9 @@
 package roomescape.persistence;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.beans.factory.SmartFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -35,15 +35,12 @@ public class H2MemberRepository implements MemberRepository {
     );
 
     @Override
-    public Optional<Member> findByEmail(String email) {
+    public List<Member> findAll() {
         String query = """
                 SELECT id, name, email, password
                 FROM member
-                WHERE email = ?
                 """;
-        return jdbcTemplate.query(query, memberRowMapper, email)
-                .stream()
-                .findFirst();
+        return jdbcTemplate.query(query, memberRowMapper);
     }
 
     @Override
@@ -54,6 +51,18 @@ public class H2MemberRepository implements MemberRepository {
                 WHERE id = ?
                 """;
         return jdbcTemplate.query(query, memberRowMapper, id)
+                .stream()
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Member> findByEmail(String email) {
+        String query = """
+                SELECT id, name, email, password
+                FROM member
+                WHERE email = ?
+                """;
+        return jdbcTemplate.query(query, memberRowMapper, email)
                 .stream()
                 .findFirst();
     }

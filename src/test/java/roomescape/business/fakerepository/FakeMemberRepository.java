@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.business.Member;
-import roomescape.business.Reservation;
 import roomescape.persistence.MemberRepository;
 
 public class FakeMemberRepository implements MemberRepository {
@@ -14,16 +13,21 @@ public class FakeMemberRepository implements MemberRepository {
     private final AtomicLong idGenerator = new AtomicLong(1);
 
     @Override
-    public Optional<Member> findByEmail(String email) {
-        return members.stream()
-                .filter(member -> member.getEmail().equals(email))
-                .findFirst();
+    public List<Member> findAll() {
+        return new ArrayList<>(members);
     }
 
     @Override
     public Optional<Member> findById(Long id) {
         return members.stream()
                 .filter(member -> member.getId().equals(id))
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Member> findByEmail(String email) {
+        return members.stream()
+                .filter(member -> member.getEmail().equals(email))
                 .findFirst();
     }
 
