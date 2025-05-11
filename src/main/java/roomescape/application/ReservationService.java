@@ -101,7 +101,7 @@ public class ReservationService {
             LocalDate dateFrom,
             LocalDate dateTo
     ) {
-        List<Reservation> reservations = reservationRepository.findAllByMemberIdAndThemeIdAndDateBetween(themeId, memberId, dateFrom, dateTo);
+        List<Reservation> reservations = reservationRepository.findAllByThemeIdAndMemberIdAndDateBetween(themeId, memberId, dateFrom, dateTo);
 
         return ReservationResponse.from(reservations);
     }

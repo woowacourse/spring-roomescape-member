@@ -149,7 +149,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAllByMemberIdAndThemeIdAndDateBetween(
+    public List<Reservation> findAllByThemeIdAndMemberIdAndDateBetween(
             Long themeId,
             Long memberId,
             LocalDate dateFrom,
