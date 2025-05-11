@@ -43,11 +43,32 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         resolvers.add(resolver);
     }
 
+
+    private final static List<String> STATIC_API_LIST = List.of(
+            "/css/**",
+            "/js/**",
+            "/image/**",
+            "/favicon.ico",
+            "/docs/**"
+    );
+
+    private final static List<String> PUBLIC_API_LIST = List.of(
+            "/",
+            "/themes/ranking"
+    );
+
+    private final static List<String> PUBLIC_AUTH_API_LIST = List.of(
+            "/login"
+    );
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+
         registry.addInterceptor(basicAuthInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/", "/login", "/css/**", "/js/**", "/image/**","/themes/ranking", "/favicon.ico");
+                .excludePathPatterns(STATIC_API_LIST)
+                .excludePathPatterns(PUBLIC_API_LIST)
+                .excludePathPatterns(PUBLIC_AUTH_API_LIST);
         registry.addInterceptor(adminAuthInterceptor)
                 .addPathPatterns("/admin/**");
     }
