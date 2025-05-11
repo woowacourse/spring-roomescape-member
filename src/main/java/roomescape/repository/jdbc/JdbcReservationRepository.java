@@ -172,7 +172,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public boolean existsByThemeId(long themeId) {
         String sql = "select count(id) from reservation where theme_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
-        return count > 0;
+        return count != null && count > 0;
     }
 
     @Override
@@ -184,7 +184,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 reservation.getDate(),
                 reservation.getReservationTime().getId(),
                 reservation.getTheme().getId());
-        return count > 0;
+        return count != null && count > 0;
     }
 
     @Override
