@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -109,20 +110,28 @@ class ReservationTimeServiceTest {
         // given
         LocalDate date = LocalDate.now();
         String themeId = "theme-id";
-        List<ReservationTime> expectedTimes = Arrays.asList(
+        List<ReservationTime> availableTimes = Arrays.asList(
                 ReservationTime.restore("time-id-3", LocalTime.of(11, 0)),
                 ReservationTime.restore("time-id-4", LocalTime.of(15, 0))
         );
+        List<ReservationTime> notAvailableTimes = Arrays.asList(
+                ReservationTime.restore("time-id-5", LocalTime.of(12, 0)),
+                ReservationTime.restore("time-id-6", LocalTime.of(16, 0))
+        );
 
-        when(reservationTimeRepository.findAvailableReservationTimesByDateAndThemeId(date, themeId))
-                .thenReturn(expectedTimes);
+        when(reservationTimeRepository.findAvailableByDateAndThemeId(date, themeId))
+                .thenReturn(availableTimes);
+        when(reservationTimeRepository.findNotAvailableByDateAndThemeId(date, themeId))
+                .thenReturn(notAvailableTimes);
 
         // when
-        List<ReservationTime> result = sut.getAvailableReservationTimesByDateAndThemeId(date, themeId);
+        final Map<Boolean, List<ReservationTime>> result = sut.getAllByDateAndThemeId(date, themeId);
 
         // then
-        assertThat(result).isEqualTo(expectedTimes);
-        verify(reservationTimeRepository).findAvailableReservationTimesByDateAndThemeId(date, themeId);
+        assertThat(result.get(true)).isEqualTo(availableTimes);
+        assertThat(result.get(false)).isEqualTo(notAvailableTimes);
+        verify(reservationTimeRepository).findAvailableByDateAndThemeId(date, themeId);
+        verify(reservationTimeRepository).findNotAvailableByDateAndThemeId(date, themeId);
     }
 
     @Test

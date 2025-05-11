@@ -13,7 +13,9 @@ public interface ReservationTimeRepository {
 
     List<ReservationTime> findAll();
 
-    List<ReservationTime> findAvailableReservationTimesByDateAndThemeId(LocalDate date, String themeId);
+    List<ReservationTime> findAvailableByDateAndThemeId(LocalDate date, String themeId);
+
+    List<ReservationTime> findNotAvailableByDateAndThemeId(LocalDate date, String themeId);
 
     Optional<ReservationTime> findById(String timeId);
 

@@ -13,6 +13,7 @@ import roomescape.exception.business.RelatedEntityExistException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 import static roomescape.exception.ErrorCode.RESERVATION_NOT_EXIST;
 import static roomescape.exception.ErrorCode.RESERVATION_TIME_ALREADY_EXIST;
@@ -53,8 +54,14 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAll();
     }
 
-    public List<ReservationTime> getAvailableReservationTimesByDateAndThemeId(final LocalDate date, final String themeId) {
-        return reservationTimeRepository.findAvailableReservationTimesByDateAndThemeId(date, themeId);
+    public Map<Boolean, List<ReservationTime>> getAllByDateAndThemeId(final LocalDate date, final String themeId) {
+        final List<ReservationTime> available = reservationTimeRepository.findAvailableByDateAndThemeId(date, themeId);
+        final List<ReservationTime> notAvailable = reservationTimeRepository.findNotAvailableByDateAndThemeId(date, themeId);
+
+        return Map.of(
+                true, available,
+                false, notAvailable
+        );
     }
 
     public void delete(final String id) {

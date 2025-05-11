@@ -46,11 +46,28 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findAvailableReservationTimesByDateAndThemeId(LocalDate date, String themeId) {
+    public List<ReservationTime> findAvailableByDateAndThemeId(LocalDate date, String themeId) {
         final String sql = """
                 SELECT *
                 FROM reservation_time
                 WHERE id NOT IN (
+                    SELECT rt.id
+                    FROM reservation_time AS rt
+                    INNER JOIN reservation AS r
+                    ON r.time_id = rt.id
+                    WHERE r.date = ?
+                    AND r.theme_id = ?
+                )
+                """;
+        return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
+    }
+
+    @Override
+    public List<ReservationTime> findNotAvailableByDateAndThemeId(final LocalDate date, final String themeId) {
+        final String sql = """
+                SELECT *
+                FROM reservation_time
+                WHERE id IN (
                     SELECT rt.id
                     FROM reservation_time AS rt
                     INNER JOIN reservation AS r

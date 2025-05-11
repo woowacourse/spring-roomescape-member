@@ -16,11 +16,13 @@ import roomescape.business.model.entity.ReservationTime;
 import roomescape.business.model.vo.UserRole;
 import roomescape.business.service.ReservationTimeService;
 import roomescape.presentation.dto.request.ReservationTimeRequest;
+import roomescape.presentation.dto.response.BookedReservationTimeResponse;
 import roomescape.presentation.dto.response.ReservationTimeResponse;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,12 +49,12 @@ public class ReservationTimeApiController {
 
     @GetMapping("/times/possible")
     @AuthRequired
-    public ResponseEntity<List<ReservationTimeResponse>> getAvailableReservationTimes(
+    public ResponseEntity<List<BookedReservationTimeResponse>> getAvailableReservationTimes(
             @RequestParam("date") LocalDate date,
             @RequestParam("themeId") String themeId
     ) {
-        List<ReservationTime> reservationTimes = reservationTimeService.getAvailableReservationTimesByDateAndThemeId(date, themeId);
-        List<ReservationTimeResponse> responses = ReservationTimeResponse.from(reservationTimes);
+        Map<Boolean, List<ReservationTime>> reservationTimeGroups = reservationTimeService.getAllByDateAndThemeId(date, themeId);
+        List<BookedReservationTimeResponse> responses = BookedReservationTimeResponse.from(reservationTimeGroups);
         return ResponseEntity.ok(responses);
     }
 

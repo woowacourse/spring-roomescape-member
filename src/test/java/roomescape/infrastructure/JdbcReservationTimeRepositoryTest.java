@@ -82,12 +82,37 @@ class JdbcReservationTimeRepositoryTest {
         testUtil.insertReservation(reservationId, LocalDate.now().plusDays(10), timeId1, themeId, userId);
 
         // when
-        final List<ReservationTime> result = sut.findAvailableReservationTimesByDateAndThemeId(LocalDate.now().plusDays(10), themeId);
+        final List<ReservationTime> result = sut.findAvailableByDateAndThemeId(LocalDate.now().plusDays(10), themeId);
 
         // then
         assertThat(result.size()).isEqualTo(2);
         assertThat(result.get(0).id()).isEqualTo(timeId2);
         assertThat(result.get(1).id()).isEqualTo(timeId3);
+    }
+
+    @Test
+    void 해당_날짜와_테마에_예약된_모든_예약_시간을_찾을_수_있다() {
+        // given
+        String timeId1 = generateId();
+        String timeId2 = generateId();
+        String timeId3 = generateId();
+        String themeId = generateId();
+        String userId = generateId();
+        String reservationId = generateId();
+
+        testUtil.insertReservationTime(timeId1, LocalTime.of(10, 0));
+        testUtil.insertReservationTime(timeId2, LocalTime.of(12, 0));
+        testUtil.insertReservationTime(timeId3, LocalTime.of(14, 0));
+        testUtil.insertTheme(themeId, "주홍색 연구");
+        testUtil.insertUser(userId, "돔푸");
+        testUtil.insertReservation(reservationId, LocalDate.now().plusDays(10), timeId1, themeId, userId);
+
+        // when
+        final List<ReservationTime> result = sut.findNotAvailableByDateAndThemeId(LocalDate.now().plusDays(10), themeId);
+
+        // then
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.getFirst().id()).isEqualTo(timeId1);
     }
 
     @Test
