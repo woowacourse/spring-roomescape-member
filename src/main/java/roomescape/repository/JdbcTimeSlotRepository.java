@@ -1,8 +1,5 @@
 package roomescape.repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -12,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.TimeSlot;
+import roomescape.repository.support.DomainMapper;
 
 @Repository
 public class JdbcTimeSlotRepository implements TimeSlotRepository {
@@ -30,7 +28,7 @@ public class JdbcTimeSlotRepository implements TimeSlotRepository {
     public List<TimeSlot> findAll() {
         final String sql = "SELECT * FROM RESERVATION_TIME ORDER BY START_AT";
 
-        return jdbcTemplate.query(sql, this::mapToTimeSlot);
+        return jdbcTemplate.query(sql, DomainMapper.TIMESLOT);
     }
 
     @Override
@@ -45,24 +43,16 @@ public class JdbcTimeSlotRepository implements TimeSlotRepository {
     @Override
     public Optional<TimeSlot> findById(final Long id) {
         final String sql = "SELECT * FROM RESERVATION_TIME WHERE ID = ?";
+        final List<TimeSlot> timeSlots = jdbcTemplate.query(sql, DomainMapper.TIMESLOT, id);
 
-        return jdbcTemplate.query(sql, this::mapToTimeSlot, id)
-                .stream()
-                .findAny();
+        return timeSlots.stream().findAny();
     }
 
     @Override
     public Boolean removeById(final Long id) {
         final String sql = "DELETE FROM RESERVATION_TIME WHERE ID = ?";
+        final int removedRowsCount = jdbcTemplate.update(sql, id);
 
-        int removedRowsCount = jdbcTemplate.update(sql, id);
         return removedRowsCount > 0;
-    }
-
-    private TimeSlot mapToTimeSlot(final ResultSet rs, final int rowNum) throws SQLException {
-        return new TimeSlot(
-                rs.getLong("ID"),
-                LocalTime.parse(rs.getString("START_AT"))
-        );
     }
 }

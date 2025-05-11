@@ -31,8 +31,8 @@ public class JwtTokenProvider {
     }
 
     public String createToken(final Member member) {
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
+        final Date now = new Date();
+        final Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
                 .setSubject(member.id().toString())
@@ -47,7 +47,7 @@ public class JwtTokenProvider {
 
     public String getPayload(final String token) {
         try {
-            Claims claims = Jwts.parserBuilder()
+            final Claims claims = Jwts.parserBuilder()
                     .setSigningKey(signingKey)
                     .build()
                     .parseClaimsJws(token)
@@ -61,7 +61,7 @@ public class JwtTokenProvider {
 
     public boolean validateToken(final String token) {
         try {
-            Claims claims = Jwts.parserBuilder()
+            final Claims claims = Jwts.parserBuilder()
                     .setSigningKey(signingKey)
                     .build()
                     .parseClaimsJws(token)

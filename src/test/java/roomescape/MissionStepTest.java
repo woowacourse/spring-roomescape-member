@@ -77,7 +77,7 @@ public class MissionStepTest {
     void 삼단계() {
         // given
         insertDummyDataExceptReservation();
-        Map<String, Object> params = createDummyReservationParams();
+        final Map<String, Object> params = createDummyReservationParams();
         final String token = extractTokenOfLoginMember();
 
         // when & then
@@ -128,15 +128,15 @@ public class MissionStepTest {
         insertDummyDataExceptReservation();
 
         // when & then
-        jdbcTemplate.update("SqlFixture.INSERT INTO RESERVATION (MEMBER_ID, DATE, TIME_ID, THEME_ID) VALUES (?, ?, ?, ?)", 1, DateUtil.tomorrow().toString(), 1, 1);
+        jdbcTemplate.update("INSERT INTO RESERVATION (MEMBER_ID, DATE, TIME_ID, THEME_ID) VALUES (?, ?, ?, ?)", 1, DateUtil.tomorrow().toString(), 1, 1);
 
-        List<ReservationResponse> reservations = RestAssured.given().log().all()
+        final List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value()).extract()
                 .jsonPath().getList(".", ReservationResponse.class);
 
-        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM RESERVATION", Integer.class);
+        final Integer count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM RESERVATION", Integer.class);
 
         assertThat(reservations.size()).isEqualTo(count);
     }
@@ -145,7 +145,7 @@ public class MissionStepTest {
     void 육단계() {
         // given
         insertDummyDataExceptReservation();
-        Map<String, Object> params = createDummyReservationParams();
+        final Map<String, Object> params = createDummyReservationParams();
         final String token = extractTokenOfLoginMember();
 
         // when & then
@@ -157,7 +157,7 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
 
-        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM RESERVATION", Integer.class);
+        final Integer count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM RESERVATION", Integer.class);
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
@@ -165,14 +165,14 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
 
-        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM RESERVATION", Integer.class);
+        final Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM RESERVATION", Integer.class);
         assertThat(countAfterDelete).isEqualTo(0);
     }
 
     @Test
     void 칠단계() {
         // given
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:30");
 
         // when & then
@@ -199,7 +199,7 @@ public class MissionStepTest {
     void 팔단계() {
         // given
         insertDummyDataExceptReservation();
-        Map<String, Object> params = createDummyReservationParams();
+        final Map<String, Object> params = createDummyReservationParams();
         final String token = extractTokenOfLoginMember();
 
         // when & then
@@ -249,7 +249,7 @@ public class MissionStepTest {
     }
 
     private Map<String, Object> createDummyReservationParams() {
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("memberId", "1");
         params.put("date", DateUtil.tomorrow().toString());
         params.put("timeId", "1");

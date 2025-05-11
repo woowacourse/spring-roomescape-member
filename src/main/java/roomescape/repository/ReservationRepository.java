@@ -2,7 +2,6 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import roomescape.controller.api.reservation.dto.ReservationSearchFilter;
 import roomescape.model.Reservation;
 import roomescape.model.Theme;

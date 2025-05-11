@@ -29,24 +29,25 @@ public class LoginApiController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody @Valid final MemberLoginRequest request, final HttpServletResponse response) {
-        String token = memberService.login(request);
-        Cookie cookie = cookieExtractor.createCookie(token, 3600);
+    public ResponseEntity<TokenResponse> login(@RequestBody @Valid final MemberLoginRequest request,
+                                               final HttpServletResponse response) {
+        final String token = memberService.login(request);
+        final Cookie cookie = cookieExtractor.createCookie(token, 3600);
         response.addCookie(cookie);
         return ResponseEntity.ok().body(new TokenResponse(token));
     }
 
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> checkLogin(final HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = cookieExtractor.extractToken(cookies);
-        LoginCheckResponse response = memberService.checkLogin(token);
+        final Cookie[] cookies = request.getCookies();
+        final String token = cookieExtractor.extractToken(cookies);
+        final LoginCheckResponse response = memberService.checkLogin(token);
         return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(final HttpServletResponse response) {
-        Cookie cookie = cookieExtractor.createCookie(null, 0);
+        final Cookie cookie = cookieExtractor.createCookie(null, 0);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }

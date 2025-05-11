@@ -28,19 +28,19 @@ public class ThemeApiController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> findAllThemes() {
-        var themes = service.findAll();
-        return ResponseEntity.ok(themes);
+        final List<ThemeResponse> response = service.findAll();
+        return ResponseEntity.ok().body(response);
     }
 
     @PostMapping
     public ResponseEntity<ThemeResponse> addTheme(@RequestBody @Valid final AddThemeRequest request) {
-        var theme = service.add(request);
-        return ResponseEntity.created(URI.create("/themes/" + theme.id())).body(theme);
+        final ThemeResponse response = service.add(request);
+        return ResponseEntity.created(URI.create("/themes/" + response.id())).body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable("id") final Long id) {
-        boolean isRemoved = service.removeById(id);
+        final boolean isRemoved = service.removeById(id);
         if (isRemoved) {
             return ResponseEntity.noContent().build();
         }
@@ -49,7 +49,8 @@ public class ThemeApiController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> findPopularThemes(@Valid final PopularThemeRequest request) {
-        var themes = service.findPopularThemes(request.startDate(), request.endDate(), request.limit());
-        return ResponseEntity.ok(themes);
+        final List<ThemeResponse> response = service.findPopularThemes(request.startDate(), request.endDate(),
+                request.limit());
+        return ResponseEntity.ok().body(response);
     }
 }

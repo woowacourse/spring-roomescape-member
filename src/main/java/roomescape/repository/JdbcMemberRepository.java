@@ -1,7 +1,5 @@
 package roomescape.repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -11,7 +9,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.Member;
-import roomescape.model.Role;
+import roomescape.repository.support.DomainMapper;
 
 @Repository
 public class JdbcMemberRepository implements MemberRepository {
@@ -30,7 +28,7 @@ public class JdbcMemberRepository implements MemberRepository {
     public List<Member> findAll() {
         final String sql = "SELECT * FROM MEMBER";
 
-        return jdbcTemplate.query(sql, this::mapToMember);
+        return jdbcTemplate.query(sql, DomainMapper.MEMBER);
     }
 
     @Override
@@ -48,36 +46,24 @@ public class JdbcMemberRepository implements MemberRepository {
     @Override
     public Optional<Member> findById(final Long id) {
         final String sql = "SELECT * FROM MEMBER WHERE ID = ?";
+        final List<Member> members = jdbcTemplate.query(sql, DomainMapper.MEMBER, id);
 
-        return jdbcTemplate.query(sql, this::mapToMember, id)
-                .stream()
-                .findAny();
+        return members.stream().findAny();
     }
 
     @Override
     public Optional<Member> findByEmail(final String email) {
         final String sql = "SELECT * FROM MEMBER WHERE EMAIL = ?";
+        final List<Member> members = jdbcTemplate.query(sql, DomainMapper.MEMBER, email);
 
-        return jdbcTemplate.query(sql, this::mapToMember, email)
-                .stream()
-                .findAny();
+        return members.stream().findAny();
     }
 
     @Override
     public Boolean removeById(final Long id) {
         final String sql = "DELETE FROM MEMBER WHERE ID = ?";
+        final int removedRowsCount = jdbcTemplate.update(sql, id);
 
-        int removedRowsCount = jdbcTemplate.update(sql, id);
         return removedRowsCount > 0;
-    }
-
-    private Member mapToMember(ResultSet rs, int rowNum) throws SQLException {
-        return new Member(
-                rs.getLong("ID"),
-                rs.getString("NAME"),
-                rs.getString("EMAIL"),
-                rs.getString("PASSWORD"),
-                Role.findByName(rs.getString("ROLE"))
-        );
     }
 }

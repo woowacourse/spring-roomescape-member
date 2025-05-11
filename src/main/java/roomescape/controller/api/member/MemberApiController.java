@@ -30,8 +30,8 @@ public class MemberApiController {
 
     @PostMapping
     public ResponseEntity<MemberResponse> addMember(@RequestBody @Valid final MemberSignupRequest request) {
-        var member = service.add(request);
-        return ResponseEntity.created(URI.create("/reservations/" + member.id())).body(member);
+        final MemberResponse response = service.add(request);
+        return ResponseEntity.created(URI.create("/reservations/" + response.id())).body(response);
     }
 
     @GetMapping
@@ -39,7 +39,7 @@ public class MemberApiController {
         if (!requestedMember.isAdmin()) {
             throw new AuthorizationException("접근 권한이 없습니다. 관리자 권한이 필요한 요청입니다.");
         }
-        var response = memberService.findAll();
+        final List<MemberResponse> response = memberService.findAll();
         return ResponseEntity.ok().body(response);
     }
 }

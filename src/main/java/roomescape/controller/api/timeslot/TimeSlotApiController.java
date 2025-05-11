@@ -31,19 +31,19 @@ public class TimeSlotApiController {
 
     @GetMapping
     public ResponseEntity<List<TimeSlotResponse>> findAllTimeSlots() {
-        var timeSlots = service.findAll();
-        return ResponseEntity.ok(timeSlots);
+        final List<TimeSlotResponse> response = service.findAll();
+        return ResponseEntity.ok().body(response);
     }
 
     @PostMapping
     public ResponseEntity<TimeSlotResponse> addTimeSlot(@RequestBody @Valid final AddTimeSlotRequest request) {
-        var timeSlot = service.add(request);
-        return ResponseEntity.created(URI.create("/times/" + timeSlot.id())).body(timeSlot);
+        final TimeSlotResponse response = service.add(request);
+        return ResponseEntity.created(URI.create("/times/" + response.id())).body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTimeSlot(@PathVariable("id") final Long id) {
-        boolean isRemoved = service.removeById(id);
+        final boolean isRemoved = service.removeById(id);
         if (isRemoved) {
             return ResponseEntity.noContent().build();
         }
@@ -53,7 +53,8 @@ public class TimeSlotApiController {
     @GetMapping("/availability")
     public ResponseEntity<List<AvailabilityTimeSlotResponse>> findAvailabilityTimeSlots(
             @Valid final AvailabilityTimeSlotRequest request) {
-        var availableTimeSlots = service.findAvailableTimeSlots(request.date(), request.themeId());
-        return ResponseEntity.ok(availableTimeSlots);
+        final List<AvailabilityTimeSlotResponse> response = service.findAvailableTimeSlots(request.date(),
+                request.themeId());
+        return ResponseEntity.ok().body(response);
     }
 }

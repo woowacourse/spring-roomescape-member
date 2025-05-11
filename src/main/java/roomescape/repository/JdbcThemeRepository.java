@@ -1,7 +1,5 @@
 package roomescape.repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -11,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.Theme;
+import roomescape.repository.support.DomainMapper;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -29,7 +28,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     public List<Theme> findAll() {
         final String sql = "SELECT * FROM THEME";
 
-        return jdbcTemplate.query(sql, this::mapToTheme);
+        return jdbcTemplate.query(sql, DomainMapper.THEME);
     }
 
     @Override
@@ -46,26 +45,16 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public Optional<Theme> findById(final Long id) {
         final String sql = "SELECT * FROM THEME WHERE ID = ?";
+        final List<Theme> themes = jdbcTemplate.query(sql, DomainMapper.THEME, id);
 
-        return jdbcTemplate.query(sql, this::mapToTheme, id)
-                .stream()
-                .findAny();
+        return themes.stream().findAny();
     }
 
     @Override
     public Boolean removeById(final Long id) {
         final String sql = "DELETE FROM THEME WHERE ID = ?";
+        final int removedRowsCount = jdbcTemplate.update(sql, id);
 
-        int removedRowsCount = jdbcTemplate.update(sql, id);
         return removedRowsCount > 0;
-    }
-
-    private Theme mapToTheme(ResultSet rs, int rowNum) throws SQLException {
-        return new Theme(
-                rs.getLong("ID"),
-                rs.getString("NAME"),
-                rs.getString("DESCRIPTION"),
-                rs.getString("THUMBNAIL")
-        );
     }
 }
