@@ -22,7 +22,7 @@ public class AdminController {
     }
 
     @PostMapping("/admin/reservations")
-    public ResponseEntity<Name> reservation(@RequestBody AdminReservationRequest request) {
+    public ResponseEntity<Name> addReservation(@RequestBody AdminReservationRequest request) {
         Name name = memberService.getUserNameByUserId(request.userId());
         reservationService.addReservation(name,
                 UserReservationRequest.of(request.date(), request.timeId(), request.themeId()));
