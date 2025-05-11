@@ -1,6 +1,7 @@
 package roomescape.member.domain;
 
 
+import java.util.regex.Pattern;
 import lombok.Getter;
 import roomescape.auth.domain.AuthRole;
 
@@ -40,7 +41,10 @@ public class Member {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("이메일은 null 이거나 빈 문자열일 수 없습니다.");
         }
-        if (!email.contains("@")) {
+        if (!Pattern.matches(
+                "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}$",
+                email)
+        ) {
             throw new IllegalArgumentException("이메일 형식이 올바르지 않습니다.");
         }
     }
