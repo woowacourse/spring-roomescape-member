@@ -56,6 +56,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ErrorMessageResponse> handleException(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorMessageResponse(ERROR_PREFIX + e.getMessage()));
+                .body(new ErrorMessageResponse(ERROR_PREFIX + "서버 내부 오류가 발생했습니다"));
     }
 }
