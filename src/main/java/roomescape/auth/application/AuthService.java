@@ -1,40 +1,35 @@
 package roomescape.auth.application;
 
-import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
 import roomescape.auth.domain.Payload;
-import roomescape.auth.infrastructure.TokenProvider;
+import roomescape.auth.domain.Token;
+import roomescape.auth.infrastructure.Authenticator;
 import roomescape.member.application.MemberService;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.LoginRequest;
 
 @Service
 public class AuthService {
-    private final TokenProvider tokenProvider;
+    private final Authenticator authenticator;
     private final MemberService memberService;
 
-    public AuthService(TokenProvider tokenProvider, MemberService memberService) {
-        this.tokenProvider = tokenProvider;
+    public AuthService(Authenticator authenticator, MemberService memberService) {
+        this.authenticator = authenticator;
         this.memberService = memberService;
     }
 
-    public String createToken(LoginRequest loginRequest) {
+    public Token login(LoginRequest loginRequest) {
         Member member = memberService.findByEmailAndPassword(loginRequest);
-        return tokenProvider.createToken(Payload.from(member));
+        return authenticator.authenticate(Payload.from(member));
     }
 
-    public String getSubject(String token) {
+    public Payload getPayload(Token token) {
         validateToken(token);
-        return tokenProvider.getSubject(token);
+        return authenticator.getPayload(token);
     }
 
-    public String getRoleExpression(String token) {
-        Claims claims = tokenProvider.getClaims(token);
-        return claims.get("role", String.class);
-    }
-
-    private void validateToken(String token) {
-        if (tokenProvider.isInvalidToken(token)) {
+    private void validateToken(Token token) {
+        if (authenticator.isInvalidAuthentication(token)) {
             throw new AuthorizationException();
         }
     }

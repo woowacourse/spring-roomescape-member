@@ -8,6 +8,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.application.AuthService;
+import roomescape.auth.domain.Payload;
+import roomescape.auth.domain.Token;
 import roomescape.member.application.MemberService;
 
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
@@ -28,15 +30,15 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         Cookie[] cookies = ((HttpServletRequest) webRequest.getNativeRequest()).getCookies();
-        String token = null;
+        Token token = null;
 
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
-                token = cookie.getValue();
+                token = new Token(cookie.getValue());
             }
         }
 
-        String memberId = authService.getSubject(token);
-        return memberService.findById(Long.parseLong(memberId));
+        Payload payload = authService.getPayload(token);
+        return memberService.findById(Long.parseLong(payload.memberId()));
     }
 }
