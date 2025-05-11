@@ -29,13 +29,14 @@ function render(data) {
 
         /*
         TODO: [5단계] 예약 생성 기능 변경 - 관리자
-              예약 목록 조회 API 응답에 맞게 적용
+              예약 목록 조회 API 응답에 맞게
+              -> 적용
         */
         row.insertCell(0).textContent = item.id;              // 예약 id
-        row.insertCell(1).textContent = item.member.name;     // 사용자 name
+        row.insertCell(1).textContent = item.userName.value;     // 사용자 name
         row.insertCell(2).textContent = item.theme.name;      // 테마 name
-        row.insertCell(3).textContent = item.date;            // date
-        row.insertCell(4).textContent = item.time.startAt;    // 예약 시간 startAt
+        row.insertCell(3).textContent = item.reservationDateTime.date;            // date
+        row.insertCell(4).textContent = item.reservationDateTime.time.startAt;    // 예약 시간 startAt
 
         const actionCell = row.insertCell(row.cells.length);
         actionCell.appendChild(createActionButton('삭제', 'btn-danger', deleteRow));
@@ -147,6 +148,7 @@ function createInput(type) {
 
 function createActionButton(label, className, eventListener) {
     const button = document.createElement('button');
+    button.type = 'button';
     button.textContent = label;
     button.classList.add('btn', className, 'mr-2');
     button.addEventListener('click', eventListener);
