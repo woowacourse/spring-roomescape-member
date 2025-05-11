@@ -7,21 +7,23 @@ public class Member {
     private final String name;
     private final String email;
     private final String password;
+    private final Role role;
 
-    private Member(Long id, String name, String email, String password) {
+    private Member(Long id, String name, String email, String password, Role role) {
         validate(name, email, password);
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public static Member createWithoutId(String name, String email, String password) {
-        return new Member(null, name, email, password);
+        return new Member(null, name, email, password, Role.USER);
     }
 
     public static Member createWithId(Long id, String name, String email, String password) {
-        return new Member(id, name, email, password);
+        return new Member(id, name, email, password, Role.USER);
     }
 
     private void validate(String name, String email, String password) {
@@ -62,5 +64,9 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public Role getRole() {
+        return role;
     }
 }

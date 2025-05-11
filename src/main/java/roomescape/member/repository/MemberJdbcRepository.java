@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 @Repository
 public class MemberJdbcRepository implements MemberRepository {
@@ -27,6 +28,7 @@ public class MemberJdbcRepository implements MemberRepository {
         params.put("name", member.getName());
         params.put("email", member.getEmail());
         params.put("password", member.getPassword());
+        params.put("role", Role.USER.getName());
 
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return Member.createWithId(id, member.getName(), member.getEmail(), member.getPassword());
@@ -77,5 +79,18 @@ public class MemberJdbcRepository implements MemberRepository {
                                 resultSet.getString("password"))
         );
         return members;
+    }
+
+    @Override
+    public Optional<Role> findRoleById(Long id) {
+        String sql = "select role from member where id = ?";
+        List<Role> role = jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) ->
+                        Role.findBy(resultSet.getString("role")),
+                id
+        );
+
+        return role.stream().findFirst();
     }
 }

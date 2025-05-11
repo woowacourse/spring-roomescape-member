@@ -3,6 +3,7 @@ package roomescape.member.repository;
 import java.util.List;
 import java.util.Optional;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 public interface MemberRepository {
     Member add(Member member);
@@ -12,4 +13,6 @@ public interface MemberRepository {
     Optional<Member> findById(Long id);
 
     List<Member> findAll();
+
+    Optional<Role> findRoleById(Long id);
 }

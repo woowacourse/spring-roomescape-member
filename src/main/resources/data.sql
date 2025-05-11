@@ -35,34 +35,34 @@ INSERT INTO theme (name, description, thumbnail)
 VALUES ('시간 여행자', '과거와 미래를 넘나드는 이야기', 'https://ibb.co/example04');
 
 -- 회원
-INSERT INTO member (name, email, password)
-VALUES ('에드', 'ed@example.com', 'password1');
-INSERT INTO member (name, email, password)
-VALUES ('슬링키', 'slinky@example.com', 'password2');
-INSERT INTO member (name, email, password)
-VALUES ('라라', 'lara@example.com', 'password3');
-INSERT INTO member (name, email, password)
-VALUES ('아서', 'arthur@example.com', 'password4');
-INSERT INTO member (name, email, password)
-VALUES ('엠제이', 'mj@example.com', 'password5');
-INSERT INTO member (name, email, password)
-VALUES ('율무', 'yulmu@example.com', 'password6');
-INSERT INTO member (name, email, password)
-VALUES ('강산', 'gangsan@example.com', 'password7');
-INSERT INTO member (name, email, password)
-VALUES ('띠용', 'ttyong@example.com', 'password8');
-INSERT INTO member (name, email, password)
-VALUES ('저스틴', 'justin@example.com', 'password9');
-INSERT INTO member (name, email, password)
-VALUES ('모다', 'moda@example.com', 'password10');
-INSERT INTO member (name, email, password)
-VALUES ('벨로', 'bello@example.com', 'password11');
-INSERT INTO member (name, email, password)
-VALUES ('머랭', 'meringue@example.com', 'password12');
-INSERT INTO member (name, email, password)
-VALUES ('하루', 'haru@example.com', 'password13');
-INSERT INTO member (name, email, password)
-VALUES ('가콩', 'gakong@example.com', 'password14');
+INSERT INTO member (name, email, password, role)
+VALUES ('에드', 'ed@example.com', 'password1', 'admin');
+INSERT INTO member (name, email, password, role)
+VALUES ('슬링키', 'slinky@example.com', 'password2', 'user');
+INSERT INTO member (name, email, password, role)
+VALUES ('라라', 'lara@example.com', 'password3', 'user');
+INSERT INTO member (name, email, password, role)
+VALUES ('아서', 'arthur@example.com', 'password4', 'user');
+INSERT INTO member (name, email, password, role)
+VALUES ('엠제이', 'mj@example.com', 'password5', 'user');
+INSERT INTO member (name, email, password, role)
+VALUES ('율무', 'yulmu@example.com', 'password6', 'user');
+INSERT INTO member (name, email, password, role)
+VALUES ('강산', 'gangsan@example.com', 'password7', 'user');
+INSERT INTO member (name, email, password, role)
+VALUES ('띠용', 'ttyong@example.com', 'password8', 'user');
+INSERT INTO member (name, email, password, role)
+VALUES ('저스틴', 'justin@example.com', 'password9', 'user');
+INSERT INTO member (name, email, password, role)
+VALUES ('모다', 'moda@example.com', 'password10', 'user');
+INSERT INTO member (name, email, password, role)
+VALUES ('벨로', 'bello@example.com', 'password11', 'user');
+INSERT INTO member (name, email, password, role)
+VALUES ('머랭', 'meringue@example.com', 'password12', 'user');
+INSERT INTO member (name, email, password, role)
+VALUES ('하루', 'haru@example.com', 'password13', 'user');
+INSERT INTO member (name, email, password, role)
+VALUES ('가콩', 'gakong@example.com', 'password14', 'user');
 
 -- 예약
 INSERT INTO reservation (member_id, date, time_id, theme_id)
