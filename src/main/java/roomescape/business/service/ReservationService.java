@@ -44,7 +44,7 @@ public class ReservationService {
             final ReservationRequest reservationRequest
     ) {
         final User user = userService.find(userId);
-        validateUserPermission(user);
+        validateUserPermission(user.getRole());
         final PlayTime playTime = playTimeService.find(reservationRequest.timeId());
         final Theme theme = themeService.find(reservationRequest.themeId());
         validateIsDuplicate(reservationRequest.date(), playTime, theme);
@@ -57,9 +57,9 @@ public class ReservationService {
         return ReservationResponse.withId(reservation, id);
     }
 
-    private void validateUserPermission(final User user) {
-        if (user.getRole().hasPermission(Role.USER)) {
-            throw new UnauthorizedAccessException();
+    private void validateUserPermission(final Role role) {
+        if (!role.hasPermission(Role.USER)) {
+            throw new UnauthorizedAccessException(role, Role.USER);
         }
     }
 
