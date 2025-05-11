@@ -58,6 +58,16 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
+    public String extractRole(String token) {
+        validateValidToken(token);
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role", String.class);
+    }
+
     private void validateValidToken(final String token) {
         validateTokenExists(token);
         validateTokenIntegrityAndExpiration(token);

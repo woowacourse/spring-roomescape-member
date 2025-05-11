@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.service.AuthService;
-import roomescape.member.domain.Member;
 
 public class CheckLoginInterceptor implements HandlerInterceptor {
 
@@ -23,9 +22,8 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
         final Cookie[] cookies = request.getCookies();
 
         final String token = authService.extractTokenFromCookie(cookies);
-        final Member member = authService.findMemberByToken(token);
 
-        if (member == null || !member.getRole().equals("Admin")) {
+        if (!authService.isAdmin(token)) {
             response.setStatus(401);
             return false;
         }

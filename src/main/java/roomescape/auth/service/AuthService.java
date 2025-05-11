@@ -73,4 +73,8 @@ public class AuthService {
             throw new AuthorizationException("로그인 토큰이 존재하지 않습니다");
         }
     }
+
+    public boolean isAdmin(final String token) {
+        return jwtTokenProvider.extractRole(token).equals("Admin");
+    }
 }
