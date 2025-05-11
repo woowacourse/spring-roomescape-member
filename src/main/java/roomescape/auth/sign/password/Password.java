@@ -1,4 +1,4 @@
-package roomescape.user.domain;
+package roomescape.auth.sign.password;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
-import roomescape.auth.sign.password.PasswordEncoder;
 import roomescape.common.domain.DomainTerm;
 import roomescape.common.validate.Validator;
 
@@ -29,12 +28,12 @@ public class Password {
         return new Password(encodedPassword);
     }
 
-    public boolean matches(final String rawPassword, final PasswordEncoder encoder) {
-        return encoder.execute(rawPassword).equals(this);
-    }
-
     private static void validate(final String value) {
         Validator.of(Password.class)
                 .validateNotBlank(Fields.encodedValue, value, DomainTerm.USER_PASSWORD.label());
+    }
+
+    public boolean matches(final String rawPassword, final PasswordEncoder encoder) {
+        return encoder.execute(rawPassword).equals(this);
     }
 }

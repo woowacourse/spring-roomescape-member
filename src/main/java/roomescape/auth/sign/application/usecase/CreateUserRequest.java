@@ -1,8 +1,8 @@
 package roomescape.auth.sign.application.usecase;
 
+import roomescape.auth.sign.password.Password;
 import roomescape.common.domain.Email;
 import roomescape.user.application.dto.SignUpRequest;
-import roomescape.user.domain.Password;
 import roomescape.user.domain.User;
 import roomescape.user.domain.UserName;
 import roomescape.user.domain.UserRole;

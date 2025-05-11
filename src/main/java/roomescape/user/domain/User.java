@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
+import roomescape.auth.sign.password.Password;
 import roomescape.common.domain.DomainTerm;
 import roomescape.common.domain.Email;
 import roomescape.common.validate.Validator;

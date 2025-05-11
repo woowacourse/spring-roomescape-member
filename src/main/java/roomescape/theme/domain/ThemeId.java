@@ -2,8 +2,6 @@ package roomescape.theme.domain;
 
 import roomescape.common.domain.DomainId;
 
-import java.util.UUID;
-
 public class ThemeId extends DomainId {
 
     private ThemeId(final Long value, final boolean assigned) {

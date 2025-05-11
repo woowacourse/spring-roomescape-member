@@ -11,9 +11,9 @@ import roomescape.auth.annotation.AuthenticatedUser;
 import roomescape.auth.resolver.UserSession;
 import roomescape.auth.sign.application.SignFacade;
 import roomescape.auth.sign.ui.dto.SignInWebRequest;
+import roomescape.auth.sign.ui.dto.SignUpWebRequest;
 import roomescape.auth.sign.ui.dto.UserSessionResponse;
 import roomescape.common.uri.UriFactory;
-import roomescape.auth.sign.ui.dto.SignUpWebRequest;
 import roomescape.user.application.dto.UserPublicInfoResponse;
 
 import java.net.URI;

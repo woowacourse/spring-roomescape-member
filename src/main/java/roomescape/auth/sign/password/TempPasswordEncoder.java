@@ -1,7 +1,6 @@
 package roomescape.auth.sign.password;
 
 import org.springframework.stereotype.Component;
-import roomescape.user.domain.Password;
 
 @Component
 public class TempPasswordEncoder implements PasswordEncoder {

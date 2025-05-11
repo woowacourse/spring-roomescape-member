@@ -6,4 +6,5 @@ import roomescape.user.domain.UserName;
 public record SignUpRequest(UserName name,
                             Email email,
                             String rawPassword) {
+
 }

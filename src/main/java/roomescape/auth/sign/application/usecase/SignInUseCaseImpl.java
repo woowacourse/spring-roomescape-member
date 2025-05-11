@@ -12,9 +12,9 @@ import roomescape.auth.jwt.domain.TokenType;
 import roomescape.auth.jwt.manager.JwtManager;
 import roomescape.auth.sign.application.dto.SignInRequest;
 import roomescape.auth.sign.exception.InvalidSignInException;
+import roomescape.auth.sign.password.Password;
 import roomescape.auth.sign.password.PasswordEncoder;
 import roomescape.user.application.service.UserQueryService;
-import roomescape.user.domain.Password;
 import roomescape.user.domain.User;
 
 @Service

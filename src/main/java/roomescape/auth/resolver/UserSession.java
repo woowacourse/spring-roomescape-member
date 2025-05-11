@@ -7,4 +7,5 @@ import roomescape.user.domain.UserRole;
 public record UserSession(UserId id,
                           UserName name,
                           UserRole role) {
+
 }
