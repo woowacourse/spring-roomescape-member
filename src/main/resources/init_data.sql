@@ -167,4 +167,4 @@ INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES
 
 
 INSERT INTO member(email, password, name, role)
-VALUES ('asd@naver.com', '1234', 'name', 'ADMIN');
+VALUES ('asd@naver.com', '1234', '어드민', 'ADMIN');

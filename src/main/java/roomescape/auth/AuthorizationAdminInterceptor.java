@@ -7,20 +7,20 @@ import java.util.Arrays;
 import java.util.Objects;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.dto.LoginMember;
 import roomescape.exception.custom.reason.auth.AuthNotExistsCookieException;
+import roomescape.exception.custom.reason.auth.AuthNotValidTokenException;
 import roomescape.member.MemberRole;
 
 public class AuthorizationAdminInterceptor implements HandlerInterceptor {
 
     private static final String TOKEN_NAME = "token";
 
-    private final AuthService authService;
+    private final JwtProvider jwtProvider;
 
     public AuthorizationAdminInterceptor(
-            final AuthService authService
+            final JwtProvider jwtProvider
     ) {
-        this.authService = authService;
+        this.jwtProvider = jwtProvider;
     }
 
     @Override
@@ -30,9 +30,10 @@ public class AuthorizationAdminInterceptor implements HandlerInterceptor {
             final Object handler
     ) {
         final String token = extractToken(request);
+        validateToken(token);
 
-        final LoginMember loginMember = authService.findLoginMemberByToken(token);
-        if (loginMember == null || !Objects.equals(loginMember.role(), MemberRole.ADMIN)) {
+        final TokenBody tokenBody = jwtProvider.extractBody(token);
+        if (tokenBody == null || !Objects.equals(tokenBody.role(), MemberRole.ADMIN)) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return false;
         }
@@ -49,6 +50,12 @@ public class AuthorizationAdminInterceptor implements HandlerInterceptor {
                 .map(Cookie::getValue)
                 .findAny()
                 .orElseThrow(() -> new AuthNotExistsCookieException());
+    }
+
+    private void validateToken(final String token) {
+        if(!jwtProvider.isValidToken(token)){
+            throw new AuthNotValidTokenException();
+        }
     }
 
     private void validateExistsCookies(final Cookie[] cookies) {

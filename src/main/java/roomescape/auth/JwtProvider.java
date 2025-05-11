@@ -1,6 +1,5 @@
 package roomescape.auth;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -9,6 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Date;
 import org.springframework.stereotype.Component;
+import roomescape.member.MemberRole;
 
 @Component
 public class JwtProvider {
@@ -17,26 +17,28 @@ public class JwtProvider {
     private final Key key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
     private final Long validityInMilliseconds = 3600_000L;
 
-    public String provideToken(final String payload) {
-        final Claims claims = Jwts.claims().setSubject(payload);
+    public String provideToken(final String email, final MemberRole role, final String name) {
         final Date now = new Date();
         final Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .setClaims(claims)
+                .claim("role", role.name())
+                .claim("name", name)
+
+                .setSubject(email)
                 .setIssuedAt(now)
                 .setExpiration(validity)
+
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
     }
 
-    public String extractPayload(final String token) {
-        return Jwts.parserBuilder()
+    public TokenBody extractBody(final String token) {
+        return new TokenBody(Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody());
     }
 
     public boolean isValidToken(final String token) {

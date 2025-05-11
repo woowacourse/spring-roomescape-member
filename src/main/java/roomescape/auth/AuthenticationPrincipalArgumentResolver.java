@@ -11,17 +11,18 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.dto.LoginMember;
 import roomescape.exception.custom.reason.auth.AuthNotExistsCookieException;
+import roomescape.exception.custom.reason.auth.AuthNotValidTokenException;
 
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
 
     private static final String TOKEN_NAME = "token";
 
-    private final AuthService authService;
+    private final JwtProvider jwtProvider;
 
     public AuthenticationPrincipalArgumentResolver(
-            final AuthService authService
+            final JwtProvider jwtProvider
     ) {
-        this.authService = authService;
+        this.jwtProvider = jwtProvider;
     }
 
     @Override
@@ -37,12 +38,18 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
             final WebDataBinderFactory binderFactory
     ) {
         final String token = extractToken(webRequest);
-        final LoginMember loginMember = authService.findLoginMemberByToken(token);
-        return loginMember;
+        validateToken(token);
+
+        final TokenBody tokenBody = jwtProvider.extractBody(token);
+        return new LoginMember(
+                tokenBody.name(),
+                tokenBody.email(),
+                tokenBody.role()
+        );
     }
 
     private String extractToken(final NativeWebRequest request) {
-        final HttpServletRequest nativeRequest = (HttpServletRequest) request.getNativeRequest();
+        final HttpServletRequest nativeRequest = request.getNativeRequest(HttpServletRequest.class);
         final Cookie[] cookies = nativeRequest.getCookies();
         validateExistsCookies(cookies);
 
@@ -51,6 +58,12 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
                 .map(Cookie::getValue)
                 .findAny()
                 .orElseThrow(AuthNotExistsCookieException::new);
+    }
+
+    private void validateToken(final String token) {
+        if(!jwtProvider.isValidToken(token)){
+            throw new AuthNotValidTokenException();
+        }
     }
 
     private void validateExistsCookies(final Cookie[] cookies) {
