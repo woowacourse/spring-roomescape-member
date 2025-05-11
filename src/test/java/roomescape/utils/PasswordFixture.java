@@ -6,6 +6,9 @@ import roomescape.infrastructure.security.Sha256PasswordEncryptor;
 
 public final class PasswordFixture {
 
+    private PasswordFixture() {
+    }
+
     private static final PasswordEncryptor passwordEncryptor = new Sha256PasswordEncryptor();
 
     public static Password generate() {

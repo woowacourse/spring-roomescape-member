@@ -7,7 +7,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +31,7 @@ import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.repository.ThemeRepository;
+import roomescape.utils.DateFormatter;
 import roomescape.utils.JdbcTemplateUtils;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -63,11 +63,6 @@ class ReservationApiTest {
     @LocalServerPort
     private int port;
 
-    public static String formatDateTime(final LocalDate dateTime) {
-        final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        return dateTimeFormatter.format(dateTime);
-    }
 
     @BeforeEach
     void init() {
@@ -125,7 +120,7 @@ class ReservationApiTest {
         final String token = jwtManager.createToken(user);
 
         final Map<String, Object> reservation = new HashMap<>();
-        reservation.put("date", formatDateTime(now.plusDays(1)));
+        reservation.put("date", DateFormatter.format(now.plusDays(1)));
         reservation.put("timeId", savedReservationTime.getId());
         reservation.put("themeId", savedTheme.getId());
 
@@ -155,7 +150,7 @@ class ReservationApiTest {
         final LocalDate now = LocalDate.now();
 
         final Map<String, Object> reservation = new HashMap<>();
-        reservation.put("date", formatDateTime(now.plusDays(1)));
+        reservation.put("date", DateFormatter.format(now.plusDays(1)));
         reservation.put("timeId", 1);
         reservation.put("themeId", savedTheme.getId());
 
@@ -187,7 +182,7 @@ class ReservationApiTest {
         final LocalDate now = LocalDate.now();
 
         final Map<String, Object> reservation = new HashMap<>();
-        reservation.put("date", formatDateTime(now.plusDays(1)));
+        reservation.put("date", DateFormatter.format(now.plusDays(1)));
         reservation.put("timeId", savedReservationTime.getId());
         reservation.put("themeId", 1L);
 
@@ -272,7 +267,7 @@ class ReservationApiTest {
         reservationRepository.save(Reservation.withoutId(savedUser, date, time1, theme));
 
         final String path = UriComponentsBuilder.fromUriString("/reservations/available")
-                .queryParam("date", formatDateTime(date))
+                .queryParam("date", DateFormatter.format(date))
                 .queryParam("themeId", theme.getId())
                 .build()
                 .toUriString();
@@ -327,8 +322,8 @@ class ReservationApiTest {
 
         // 날짜 범위로 필터
         RestAssured.given()
-                .queryParam("dateFrom", formatDateTime(today))
-                .queryParam("dateTo", formatDateTime(today.plusDays(1)))
+                .queryParam("dateFrom", DateFormatter.format(today))
+                .queryParam("dateTo", DateFormatter.format(today.plusDays(1)))
                 .when()
                 .get("/reservations")
                 .then()
@@ -339,8 +334,8 @@ class ReservationApiTest {
         RestAssured.given()
                 .queryParam("themeId", theme1.getId())
                 .queryParam("memberId", user2.getId())
-                .queryParam("dateFrom", formatDateTime(today))
-                .queryParam("dateTo", formatDateTime(today.plusDays(2)))
+                .queryParam("dateFrom", DateFormatter.format(today))
+                .queryParam("dateTo", DateFormatter.format(today.plusDays(2)))
                 .when()
                 .get("/reservations")
                 .then()

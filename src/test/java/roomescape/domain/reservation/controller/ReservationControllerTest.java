@@ -2,7 +2,6 @@ package roomescape.domain.reservation.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -39,10 +38,10 @@ import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.service.AuthService;
 import roomescape.domain.auth.service.JwtManager;
-import roomescape.domain.reservation.dto.ReservationCreateRequest;
-import roomescape.domain.reservation.dto.ReservationResponse;
-import roomescape.domain.reservation.dto.ReservationTimeResponse;
-import roomescape.domain.reservation.dto.ThemeResponse;
+import roomescape.domain.reservation.dto.reservation.ReservationResponse;
+import roomescape.domain.reservation.dto.reservation.ReservationUserCreateRequest;
+import roomescape.domain.reservation.dto.reservationtime.ReservationTimeResponse;
+import roomescape.domain.reservation.dto.theme.ThemeResponse;
 import roomescape.domain.reservation.service.ReservationService;
 import roomescape.utils.PasswordFixture;
 
@@ -108,6 +107,7 @@ public class ReservationControllerTest {
     @DisplayName("예약 정보를 추가한다.")
     @Test
     void test2() throws Exception {
+        final long userId = 1L;
         final Long reservationId = 1L;
         final Long timeId = 1L;
         final Long themeId = 1L;
@@ -116,7 +116,7 @@ public class ReservationControllerTest {
         final LocalTime time = LocalTime.of(8, 0);
         final String name = "꾹이";
 
-        final ReservationCreateRequest request = new ReservationCreateRequest(date, timeId, themeId);
+        final ReservationUserCreateRequest request = new ReservationUserCreateRequest(date, timeId, themeId);
         final ReservationTimeResponse timeResponse = new ReservationTimeResponse(timeId, time);
         final ThemeResponse themeResponse = new ThemeResponse(themeId, "공포", "묘사", "url");
         final ReservationResponse response = new ReservationResponse(reservationId, name, date, timeResponse,
@@ -124,13 +124,13 @@ public class ReservationControllerTest {
 
         final String requestContent = objectMapper.writeValueAsString(request);
 
-        final User user = new User(1L, new Name(name), "2321@naver.com", PasswordFixture.generate(), Roles.USER);
+        final User user = new User(userId, new Name(name), "2321@naver.com", PasswordFixture.generate(), Roles.USER);
         final String token = jwtManager.createToken(user);
         final Cookie cookie = new Cookie("token", token);
         final LoginUserDto loginUserDto = mock(LoginUserDto.class);
 
         when(authService.getLoginUser((Cookie[]) any())).thenReturn(loginUserDto);
-        when(reservationService.create(eq(request), any())).thenReturn(response);
+        when(reservationService.create(any())).thenReturn(response);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
                         .cookie(cookie)
@@ -148,22 +148,23 @@ public class ReservationControllerTest {
     @Test
     void test4() throws Exception {
         // given
+        final Long userId = 1L;
         final Long timeId = 1L;
         final Long themeId = 1L;
         final LocalDate date = LocalDate.now();
 
-        final ReservationCreateRequest request = new ReservationCreateRequest(date, timeId, themeId);
+        final ReservationUserCreateRequest request = new ReservationUserCreateRequest(date, timeId, themeId);
 
         final String requestContent = objectMapper.writeValueAsString(request);
         final String name = "꾹이";
-        final User user = new User(1L, new Name(name), "2321@naver.com", PasswordFixture.generate(), Roles.USER);
+        final User user = new User(userId, new Name(name), "2321@naver.com", PasswordFixture.generate(), Roles.USER);
         final String token = jwtManager.createToken(user);
         final Cookie cookie = new Cookie("token", token);
         final LoginUserDto loginUserDto = mock(LoginUserDto.class);
 
         // when
         when(authService.getLoginUser((Cookie[]) any())).thenReturn(loginUserDto);
-        when(reservationService.create(any(), any())).thenThrow(EntityNotFoundException.class);
+        when(reservationService.create(any())).thenThrow(EntityNotFoundException.class);
 
         // then
         mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
@@ -181,7 +182,7 @@ public class ReservationControllerTest {
         final Long themeId = 1L;
         final LocalDate date = LocalDate.now();
 
-        final ReservationCreateRequest request = new ReservationCreateRequest(date, timeId, themeId);
+        final ReservationUserCreateRequest request = new ReservationUserCreateRequest(date, timeId, themeId);
 
         final String requestContent = objectMapper.writeValueAsString(request);
 
