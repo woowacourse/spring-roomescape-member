@@ -27,7 +27,7 @@ public class ThemeApiTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/themes")
+                .when().post("/api/themes")
                 .then().log().all()
                 .statusCode(201)
                 .body("id", equalTo(6))
@@ -38,7 +38,7 @@ public class ThemeApiTest {
     void 테마_전체조회_테스트() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().get("/themes")
+                .when().get("/api/themes")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(5));
@@ -48,13 +48,13 @@ public class ThemeApiTest {
     void 테마_삭제_테스트() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().delete("/themes/5")
+                .when().delete("/api/themes/5")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
-                .when().get("/themes")
+                .when().get("/api/themes")
                 .then().body("size()", is(4));
     }
 
@@ -62,7 +62,7 @@ public class ThemeApiTest {
     void 인기테마_상위10개_조회_테스트() {
         RestAssured.given()
                 .contentType(ContentType.JSON)
-                .when().get("/themes/rank")
+                .when().get("/api/themes/rank")
                 .then().statusCode(200)
                 .body("size()", is(5));
     }

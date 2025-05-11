@@ -43,7 +43,7 @@ public class ReservationApiTest {
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .cookie("token", token)
-                .when().post("/reservations")
+                .when().post("/api/reservations")
                 .then().log().all()
                 .statusCode(201)
                 .body("date", equalTo("2026-08-05"))
@@ -54,7 +54,7 @@ public class ReservationApiTest {
     @Test
     void 에약_삭제_테스트() {
         RestAssured.given().log().all()
-                .when().delete("/reservations/3")
+                .when().delete("/api/reservations/3")
                 .then().log().all()
                 .statusCode(204);
     }

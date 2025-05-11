@@ -28,7 +28,7 @@ public class MemberApiTest {
         // when & then
         RestAssured.given()
                 .contentType(ContentType.JSON)
-                .when().get("/members")
+                .when().get("api/members")
                 .then()
                 .statusCode(200)
                 .body("size()", is(1));

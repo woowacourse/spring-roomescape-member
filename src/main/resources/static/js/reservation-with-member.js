@@ -1,8 +1,8 @@
 let isEditing = false;
-const RESERVATION_API_ENDPOINT = '/reservations';
-const TIME_API_ENDPOINT = '/times';
-const THEME_API_ENDPOINT = '/themes';
-const MEMBER_API_ENDPOINT = '/members';
+const RESERVATION_API_ENDPOINT = 'api/reservations';
+const TIME_API_ENDPOINT = 'api/times';
+const THEME_API_ENDPOINT = 'api/themes';
+const MEMBER_API_ENDPOINT = 'api/members';
 const timesOptions = [];
 const themesOptions = [];
 const membersOptions = [];
@@ -215,7 +215,7 @@ function applyFilter(event) {
         params.append('dateTo', dateTo);
     }
 
-    fetch(`/admin/reservations?${params.toString()}`, { // 예약 검색 API 호출
+    fetch(`api/admin/reservations?${params.toString()}`, { // 예약 검색 API 호출
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -234,7 +234,7 @@ function requestCreate(reservation) {
         body: JSON.stringify(reservation)
     };
 
-    return fetch('/admin/reservations', requestOptions)
+    return fetch('api/admin/reservations', requestOptions)
         .then(response => {
             if (response.status === 201) return response.json();
             throw new Error('Create failed');

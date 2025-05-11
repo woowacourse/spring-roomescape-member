@@ -33,7 +33,7 @@ class AuthApiTest {
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(body)
-                .when().post("/login")
+                .when().post("api/auth/login")
                 .then()
                 .statusCode(200)
                 .cookie("token", notNullValue());
@@ -50,7 +50,7 @@ class AuthApiTest {
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(body)
-                .when().post("/login")
+                .when().post("/api/auth/login")
                 .then()
                 .statusCode(400)
                 .body("message", equalTo("이메일 또는 비밀번호를 확인해주세요."));
@@ -66,7 +66,7 @@ class AuthApiTest {
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(body)
-                .when().post("/login")
+                .when().post("/api/auth/login")
                 .then()
                 .statusCode(400)
                 .body("message", equalTo("이메일 또는 비밀번호를 확인해주세요."));
@@ -83,7 +83,7 @@ class AuthApiTest {
         String token = RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(body)
-                .when().post("/login")
+                .when().post("/api/auth/login")
                 .then()
                 .statusCode(200)
                 .extract().cookie("token");
@@ -91,7 +91,7 @@ class AuthApiTest {
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .cookie("token", token)
-                .when().get("/login/check")
+                .when().get("api/auth/check")
                 .then()
                 .statusCode(200)
                 .body("name", equalTo("name1"));

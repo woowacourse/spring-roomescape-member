@@ -49,7 +49,7 @@ public class ReservationTimeApiTest {
         ReservationTimeResponse response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("api/times")
                 .then().log().all()
                 .statusCode(201)
                 .extract().as(ReservationTimeResponse.class);
@@ -68,7 +68,7 @@ public class ReservationTimeApiTest {
         reservationTimeRepository.create(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
         // when
         List<ReservationTimeResponse> response = RestAssured.given().log().all()
-                .when().get("/times")
+                .when().get("/api/times")
                 .then().log().all()
                 .statusCode(200)
                 .extract().jsonPath().getList(".", ReservationTimeResponse.class);
@@ -86,7 +86,7 @@ public class ReservationTimeApiTest {
         reservationTimeRepository.create(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
         // when
         RestAssured.given().log().all()
-                .when().delete("/times/{timeId}", 1L)
+                .when().delete("/api/times/{timeId}", 1L)
                 .then().log().all()
                 .statusCode(204);
 
@@ -111,7 +111,7 @@ public class ReservationTimeApiTest {
                 Reservation.createWithoutId(member, LocalDate.of(2025, 1, 1), reservationTime1, theme));
         // when
         List<AvailableTimeResponse> response = RestAssured.given().log().all()
-                .when().get("/times/theme/1?date=2025-01-01")
+                .when().get("/api/times/theme/1?date=2025-01-01")
                 .then().log().all()
                 .statusCode(200)
                 .extract().jsonPath().getList(".", AvailableTimeResponse.class);

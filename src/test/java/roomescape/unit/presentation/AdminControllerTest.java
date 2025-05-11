@@ -62,7 +62,7 @@ class AdminControllerTest {
         given(authorizationExtractor.extract(any(HttpServletRequest.class))).willReturn(Optional.of("token"));
         given(jwtTokenProvider.extractRole("token")).willReturn(Role.ADMIN);
         // when & then
-        mockMvc.perform(post("/admin/reservations")
+        mockMvc.perform(post("/api/admin/reservations")
                         .cookie(new Cookie("token", "token"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))

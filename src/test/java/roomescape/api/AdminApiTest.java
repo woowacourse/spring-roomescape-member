@@ -33,7 +33,7 @@ public class AdminApiTest {
 
         RestAssured.given().log().all()
                 .cookie("token", token)
-                .when().get("admin/reservations")
+                .when().get("api/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(4));
