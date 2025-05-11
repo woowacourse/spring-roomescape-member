@@ -26,8 +26,8 @@ public class Authenticator {
         Date now = new Date();
         Date expiredAt = new Date(now.getTime() + validityInMilliseconds);
         String token = Jwts.builder()
-                .setSubject(payload.memberId())
-                .claim("role", payload.role())
+                .setSubject(payload.getMemberIdExpression())
+                .claim("role", payload.getRoleExpression())
                 .setIssuedAt(now)
                 .setExpiration(expiredAt)
                 .signWith(getSigningKey())
@@ -53,7 +53,7 @@ public class Authenticator {
             Claims claims = getClaims(token);
             String role = claims.get("role", String.class);
 
-            return Payload.of(claims.getSubject(), role);
+            return Payload.from(claims.getSubject(), role);
         }
         catch (JwtException | IllegalArgumentException exception) {
             throw new AuthorizationException();

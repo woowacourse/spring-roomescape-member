@@ -39,6 +39,6 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
         }
 
         Payload payload = authService.getPayload(token);
-        return memberService.findById(Long.parseLong(payload.memberId()));
+        return memberService.findById(payload.memberId());
     }
 }
