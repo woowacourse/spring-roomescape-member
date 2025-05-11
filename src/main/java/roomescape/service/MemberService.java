@@ -50,8 +50,6 @@ public class MemberService {
     }
 
     public List<Member> getAllUsers() {
-        List<Member> members = memberRepository.findAllUsers();
-        System.out.println(members.getFirst().getName());
-        return members;
+        return memberRepository.findAllUsers();
     }
 }
