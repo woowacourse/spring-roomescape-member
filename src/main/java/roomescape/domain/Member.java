@@ -1,9 +1,11 @@
 package roomescape.domain;
 
-import io.jsonwebtoken.Claims;
 import java.util.Objects;
 
 public class Member {
+
+    private static final int MAX_LENGTH = 255;
+
     private Long id;
     private String name;
     private String email;
@@ -11,20 +13,12 @@ public class Member {
     private String role;
 
     public Member(final Long id, final String name, final String email, final String password, final String role) {
+        validateField(name, email, password, role);
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
-    }
-
-    public static Member createMemberWithoutPassword(Claims claims) {
-        return new Member(
-                Long.valueOf(claims.getSubject()),
-                claims.get("name", String.class),
-                claims.get("email", String.class),
-                "0000",
-                claims.get("role", String.class));
     }
 
     public String getName() {
@@ -63,5 +57,36 @@ public class Member {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    private void validateField(String name, String email, String password, String role) {
+        validateName(name);
+        validatePassword(password);
+        validateRole(role);
+        validateEmail(email);
+    }
+
+    private void validateName(String name) {
+        if (name.length() > MAX_LENGTH) {
+            throw new IllegalArgumentException("[ERROR] 허용되지 않는 이름 길이입니다.");
+        }
+    }
+
+    private void validatePassword(String password) {
+        if (password.length() > MAX_LENGTH) {
+            throw new IllegalArgumentException("[ERROR] 허용되지 않는 비밀번호 길이입니다.");
+        }
+    }
+
+    private void validateRole(String role) {
+        if (role.length() > MAX_LENGTH) {
+            throw new IllegalArgumentException("[ERROR] 허용되지 않는 역할 길이입니다.");
+        }
+    }
+
+    private void validateEmail(String email) {
+        if (email.length() > MAX_LENGTH) {
+            throw new IllegalArgumentException("[ERROR] 허용되지 않는 이메일 길이입니다.");
+        }
     }
 }
