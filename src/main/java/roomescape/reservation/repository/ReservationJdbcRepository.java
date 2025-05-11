@@ -1,6 +1,8 @@
 package roomescape.reservation.repository;
 
+import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,30 +47,54 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
-        String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    r.date AS reservation_date,
-                    m.id AS member_id,
-                    m.name AS member_name,
-                    m.email AS member_email,
-                    m.password AS member_password,
-                    rt.id AS time_id,
-                    rt.start_at AS time_value,
-                    t.id AS theme_id,
-                    t.name AS theme_name,
-                    t.description AS theme_description,
-                    t.thumbnail AS theme_thumbnail
-                FROM
-                    reservation r
-                INNER JOIN member m ON r.member_id = m.id
-                INNER JOIN reservation_time rt ON r.time_id = rt.id
-                INNER JOIN theme t ON r.theme_id = t.id;
-                
-                """;
+    public List<Reservation> findFiltered(Long memberId, Long themeId, LocalDate from, LocalDate to) {
+        StringBuilder sql = new StringBuilder("""
+                    SELECT
+                        r.id AS reservation_id,
+                        r.date AS reservation_date,
+                        m.id AS member_id,
+                        m.name AS member_name,
+                        m.email AS member_email,
+                        m.password AS member_password,
+                        rt.id AS time_id,
+                        rt.start_at AS time_value,
+                        t.id AS theme_id,
+                        t.name AS theme_name,
+                        t.description AS theme_description,
+                        t.thumbnail AS theme_thumbnail
+                    FROM
+                        reservation r
+                    INNER JOIN member m ON r.member_id = m.id
+                    INNER JOIN reservation_time rt ON r.time_id = rt.id
+                    INNER JOIN theme t ON r.theme_id = t.id
+                    WHERE 1=1
+                """);
+
+        List<Object> args = new ArrayList<>();
+
+        if (memberId != null) {
+            sql.append(" AND m.id = ?");
+            args.add(memberId);
+        }
+
+        if (themeId != null) {
+            sql.append(" AND t.id = ?");
+            args.add(themeId);
+        }
+
+        if (from != null) {
+            sql.append(" AND r.date >= ?");
+            args.add(Date.valueOf(from));
+        }
+
+        if (to != null) {
+            sql.append(" AND r.date <= ?");
+            args.add(Date.valueOf(to));
+        }
+
         return jdbcTemplate.query(
-                sql,
+                sql.toString(),
+                args.toArray(),
                 (resultSet, rowNum) -> {
                     Member member = Member.createWithId(
                             resultSet.getLong("member_id"),
@@ -88,7 +114,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
                             resultSet.getLong("theme_id"),
                             resultSet.getString("theme_name"),
                             resultSet.getString("theme_description"),
-                            resultSet.getString("theme_thumbnail"));
+                            resultSet.getString("theme_thumbnail")
+                    );
 
                     return Reservation.createWithId(
                             resultSet.getLong("reservation_id"),
@@ -100,6 +127,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 }
         );
     }
+
 
     @Override
     public boolean existsByDateAndTime(LocalDate date, Long id) {

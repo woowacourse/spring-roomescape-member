@@ -9,7 +9,7 @@ public interface ReservationRepository {
 
     int deleteById(Long id);
 
-    List<Reservation> findAll();
+    List<Reservation> findFiltered(Long memberId, Long themeId, LocalDate from, LocalDate to);
 
     boolean existsByDateAndTime(LocalDate date, Long timeId);
 

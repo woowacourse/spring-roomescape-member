@@ -71,8 +71,8 @@ public class ReservationDefaultService implements ReservationService {
     }
 
     @Override
-    public List<ReservationResponse> getAll() {
-        return ReservationResponse.from(reservationRepository.findAll());
+    public List<ReservationResponse> getFiltered(Long memberId, Long themeId, LocalDate from, LocalDate to) {
+        return ReservationResponse.from(reservationRepository.findFiltered(memberId, themeId, from, to));
     }
 
     @Override
