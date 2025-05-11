@@ -20,12 +20,12 @@ public class AuthController {
     private static final String TOKEN_COOKIE_KEY = "token";
 
     private final AuthService authService;
+    private final Duration tokenCookieDuration;
 
-    @Value("${security.jwt.token.expire-duration}")
-    private Duration tokenCookieDuration;
-
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService,
+                          @Value("${security.jwt.token.expire-duration}") Duration tokenCookieDuration) {
         this.authService = authService;
+        this.tokenCookieDuration = tokenCookieDuration;
     }
 
     @PostMapping("/login")
