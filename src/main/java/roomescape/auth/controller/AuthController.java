@@ -26,10 +26,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> createAccessToken(@RequestBody @Valid final LoginRequest request) {
+    public ResponseEntity<Void> createToken(@RequestBody @Valid final LoginRequest request) {
         LoginResponse loginResponse = authService.login(request);
         String tokenValue = loginResponse.tokenValue();
-
         ResponseCookie cookie = ResponseCookie.from("token", tokenValue)
                 .path("/")
                 .httpOnly(true)

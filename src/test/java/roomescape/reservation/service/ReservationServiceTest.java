@@ -102,7 +102,7 @@ class ReservationServiceTest {
         // then
         SoftAssertions softAssertions = new SoftAssertions();
 
-        softAssertions.assertThat(result.name()).isEqualTo("포스티");
+        softAssertions.assertThat(result.member().name()).isEqualTo("포스티");
         softAssertions.assertThat(result.date()).isEqualTo(date);
         softAssertions.assertThat(result.time()).isEqualTo(new ReservationTimeResponse(timeId, time));
         softAssertions.assertThat(result.theme())
@@ -116,8 +116,6 @@ class ReservationServiceTest {
     @Test
     void test4() {
         // given
-        String name = "꾹";
-
         Theme savedTheme = themeDao.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         Long themeId = savedTheme.getId();
 
