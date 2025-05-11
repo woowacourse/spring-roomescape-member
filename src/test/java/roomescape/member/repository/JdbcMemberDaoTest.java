@@ -67,11 +67,11 @@ class JdbcMemberDaoTest {
     @Test
     void testFindById() {
         // when
-        Member actual = jdbcMemberDao.findById(3L).orElseThrow();
+        Member actual = jdbcMemberDao.findById(1L).orElseThrow();
         // then
         assertAll(
-                () -> assertThat(actual.getId()).isEqualTo(3L),
-                () -> assertThat(actual.getMemberName()).isEqualTo(new MemberName("사용자3"))
+                () -> assertThat(actual.getId()).isEqualTo(1L),
+                () -> assertThat(actual.getMemberName()).isEqualTo(new MemberName("사용자1"))
         );
     }
 

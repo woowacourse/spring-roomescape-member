@@ -3,6 +3,7 @@ package roomescape.global.config;
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.domain.JwtTokenProvider;
 import roomescape.member.repository.MemberRepository;
@@ -21,5 +22,11 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new MemberArgumentResolver(memberRepository, jwtTokenProvider));
+    }
+
+    @Override
+    public void addInterceptors(final InterceptorRegistry registry) {
+        registry.addInterceptor(new AdminCheckInterceptor(memberRepository, jwtTokenProvider))
+                .addPathPatterns("/admin/**");
     }
 }

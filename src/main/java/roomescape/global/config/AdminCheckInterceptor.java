@@ -2,41 +2,41 @@ package roomescape.global.config;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
-import org.springframework.core.MethodParameter;
-import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.ModelAndViewContainer;
+import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.domain.JwtTokenProvider;
+import roomescape.global.exception.custom.ForbiddenException;
 import roomescape.global.exception.custom.UnauthorizedException;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.repository.MemberRepository;
 
-public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
+public class AdminCheckInterceptor implements HandlerInterceptor {
 
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberArgumentResolver(final MemberRepository memberRepository, final JwtTokenProvider jwtTokenProvider) {
+    public AdminCheckInterceptor(final MemberRepository memberRepository,
+                                 final JwtTokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
-    public boolean supportsParameter(final MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AuthMember.class);
-    }
-
-    @Override
-    public Object resolveArgument(final MethodParameter parameter, final ModelAndViewContainer mavContainer,
-                                  final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory)
-            throws Exception {
-        final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+    public boolean preHandle(
+            final HttpServletRequest request,
+            final HttpServletResponse response, final Object handler
+    ) throws Exception {
         final Cookie[] cookies = request.getCookies();
         final String token = getToken(cookies);
-        long id = jwtTokenProvider.getId(token);
-        return memberRepository.findById(id)
+        final long id = jwtTokenProvider.getId(token);
+        final Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new UnauthorizedException("확인할 수 없는 사용자입니다."));
+        if (member.getRole() != Role.ADMIN) {
+            throw new ForbiddenException("접근 권한이 없습니다.");
+        }
+        return HandlerInterceptor.super.preHandle(request, response, handler);
     }
 
     private static String getToken(final Cookie[] cookies) {

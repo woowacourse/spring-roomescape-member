@@ -2,12 +2,12 @@ package roomescape.member.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.global.exception.custom.BadRequestException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberEmail;
 import roomescape.member.domain.MemberName;
-import roomescape.member.dto.SignupRequest;
 import roomescape.member.dto.MemberResponse;
-import roomescape.global.exception.BadRequestException;
+import roomescape.member.dto.SignupRequest;
 import roomescape.member.repository.MemberRepository;
 
 @Service

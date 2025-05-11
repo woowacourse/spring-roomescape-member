@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.fake.FakeMemberDao;
-import roomescape.global.exception.BadRequestException;
+import roomescape.global.exception.custom.BadRequestException;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.dto.SignupRequest;
 

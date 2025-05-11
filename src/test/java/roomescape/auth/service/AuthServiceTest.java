@@ -12,10 +12,11 @@ import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.dto.TokenResponse;
 import roomescape.fake.FakeMemberDao;
-import roomescape.global.exception.UnauthorizedException;
+import roomescape.global.exception.custom.UnauthorizedException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberEmail;
 import roomescape.member.domain.MemberName;
+import roomescape.member.domain.Role;
 
 class AuthServiceTest {
 
@@ -30,7 +31,7 @@ class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
-        fakeMemberDao.save(new Member(SAVED_ID, SAVED_NAME, SAVED_EMAIL, SAVED_PASSWORD));
+        fakeMemberDao.save(new Member(SAVED_ID, SAVED_NAME, SAVED_EMAIL, SAVED_PASSWORD, Role.USER));
     }
 
 
@@ -44,8 +45,8 @@ class AuthServiceTest {
             // when
             TokenResponse token = authService.createToken(new LoginRequest(SAVED_EMAIL.getEmail(), SAVED_PASSWORD));
             // then
-            String payload = jwtTokenProvider.getPayload(token.accessToken());
-            assertThat(Long.valueOf(payload)).isEqualTo(SAVED_ID);
+            long id = jwtTokenProvider.getId(token.accessToken());
+            assertThat(Long.valueOf(id)).isEqualTo(SAVED_ID);
         }
 
         @DisplayName("이메일이 일치하지 않을 경우 예외가 발생한다.")

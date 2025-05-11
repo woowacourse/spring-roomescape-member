@@ -8,10 +8,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import roomescape.global.exception.custom.BadRequestException;
+import roomescape.global.exception.custom.ForbiddenException;
+import roomescape.global.exception.custom.UnauthorizedException;
+import roomescape.global.exception.dto.ErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * 400 Bad Request
+     */
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadRequestException(final BadRequestException e) {
@@ -42,12 +49,26 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(e.getBindingResult().getFieldError().getDefaultMessage());
     }
 
+    /**
+     * 401 Unauthorized
+     */
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleUnauthorizedException(final UnauthorizedException e) {
         return new ErrorResponse(e.getMessage());
     }
 
+    /**
+     * 403 Forbidden
+     */
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public void handleForbiddenException(final ForbiddenException e) {
+    }
+
+    /**
+     * 500 Internal Server Error
+     */
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleIllegalArgumentException(final IllegalArgumentException e) {

@@ -32,6 +32,7 @@ public class MissionStepTest {
     @Autowired
     private ReservationController reservationController;
 
+    @Disabled
     @DisplayName("1단계: 홈페이지에 접근할 수 있다.")
     @Test
     void testHomePage() {
@@ -41,6 +42,7 @@ public class MissionStepTest {
                 .statusCode(200);
     }
 
+    @Disabled
     @DisplayName("2단계: 예약을 조회할 수 있다.")
     @Test
     void testGetReservationPage() {

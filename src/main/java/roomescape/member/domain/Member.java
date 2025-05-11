@@ -10,8 +10,8 @@ public final class Member {
     private final String password;
     private final Role role;
 
-    private Member(final Long id, final MemberName memberName,
-                   final MemberEmail email, final String password, final Role role) {
+    public Member(final Long id, final MemberName memberName,
+                  final MemberEmail email, final String password, final Role role) {
         validateNotNull(memberName, email, password, role);
         this.id = id;
         this.memberName = memberName;
@@ -20,12 +20,8 @@ public final class Member {
         this.role = role;
     }
 
-    public Member(final Long id, final MemberName memberName, final MemberEmail email, final String password) {
-        this(id, memberName, email, password, Role.USER);
-    }
-
-    public Member(final long id, final String name, final String email, final String password) {
-        this(id, new MemberName(name), new MemberEmail(email), password, Role.USER);
+    public Member(final long id, final String name, final String email, final String password, final String role) {
+        this(id, new MemberName(name), new MemberEmail(email), password, Role.of(role));
     }
 
     public static Member register(final MemberName memberName, final MemberEmail email, final String password) {

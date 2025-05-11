@@ -22,7 +22,8 @@ public class JdbcMemberDao implements MemberRepository {
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("email"),
-                    resultSet.getString("password")
+                    resultSet.getString("password"),
+                    resultSet.getString("role")
             );
 
     public JdbcMemberDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
@@ -37,7 +38,8 @@ public class JdbcMemberDao implements MemberRepository {
         final Map<String, Object> parameters = Map.of(
                 "name", member.getName(),
                 "email", member.getEmail(),
-                "password", member.getPassword()
+                "password", member.getPassword(),
+                "role", member.getRole().name()
         );
         final long id = memberInserter.executeAndReturnKey(parameters).longValue();
         return member.withId(id);
@@ -45,33 +47,37 @@ public class JdbcMemberDao implements MemberRepository {
 
     @Override
     public List<Member> findAll() {
-        final String sql = "SELECT id, name, email, password FROM member";
+        final String sql = "SELECT id, name, email, password, role FROM member";
         return jdbcTemplate.query(sql, memberRowMapper);
     }
 
     @Override
     public Optional<Member> findById(final long id) {
-        final String sql = "SELECT id, name, email, password FROM member WHERE id = ?";
+        final String sql = "SELECT id, name, email, password, role FROM member WHERE id = ?";
         return jdbcTemplate.query(sql, memberRowMapper, id).stream().findFirst();
     }
 
     @Override
     public Optional<Member> findByEmailAndPassword(final MemberEmail email, final String password) {
-        final String sql = "SELECT id, name, email, password FROM member WHERE email = ? AND password = ?";
+        final String sql = "SELECT id, name, email, password, role FROM member WHERE email = ? AND password = ?";
         return jdbcTemplate.query(sql, memberRowMapper, email.getEmail(), password).stream().findFirst();
     }
 
     @Override
     public boolean existsByEmail(final MemberEmail email) {
         final String sql = "SELECT 1 FROM member WHERE email = ? LIMIT 1";
-        List<Integer> result = jdbcTemplate.query(sql, (resultSet, rowNumber) -> resultSet.getInt(1), email.getEmail());
+        final List<Integer> result = jdbcTemplate.query(sql,
+                (resultSet, rowNumber) -> resultSet.getInt(1),
+                email.getEmail());
         return !result.isEmpty();
     }
 
     @Override
     public boolean existsByName(final MemberName name) {
         final String sql = "SELECT 1 FROM member WHERE name = ? LIMIT 1";
-        List<Integer> result = jdbcTemplate.query(sql, (resultSet, rowNumber) -> resultSet.getInt(1), name.getName());
+        final List<Integer> result = jdbcTemplate.query(sql,
+                (resultSet, rowNumber) -> resultSet.getInt(1),
+                name.getName());
         return !result.isEmpty();
     }
 }

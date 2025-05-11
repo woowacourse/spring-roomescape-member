@@ -2,12 +2,12 @@ package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.domain.JwtTokenProvider;
-import roomescape.member.domain.Member;
-import roomescape.member.domain.MemberEmail;
 import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.dto.TokenResponse;
-import roomescape.global.exception.UnauthorizedException;
+import roomescape.global.exception.custom.UnauthorizedException;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberEmail;
 import roomescape.member.repository.MemberRepository;
 
 @Service
@@ -32,8 +32,8 @@ public class AuthService {
     }
 
     public LoginCheckResponse checkMember(final String token) {
-        final String payload = jwtTokenProvider.getPayload(token);
-        final Member member = memberRepository.findById(Long.parseLong(payload))
+        final long id = jwtTokenProvider.getId(token);
+        final Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new UnauthorizedException("확인할 수 없는 사용자입니다."));
         return new LoginCheckResponse(member.getName());
     }

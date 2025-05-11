@@ -7,7 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.springframework.stereotype.Component;
-import roomescape.global.exception.UnauthorizedException;
+import roomescape.global.exception.custom.UnauthorizedException;
 
 @Component
 public class JwtTokenProvider {
@@ -27,7 +27,16 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getPayload(final String token) {
+    public long getId(final String token) {
+        final String payload = getPayload(token);
+        try {
+            return Long.parseLong(payload);
+        } catch (ArithmeticException e) {
+            throw new UnauthorizedException("올바르지 않은 토큰 정보입니다.");
+        }
+    }
+
+    private String getPayload(final String token) {
         validateToken(token);
         return Jwts.parser().setSigningKey(secretKey)
                 .parseClaimsJws(token)
@@ -35,7 +44,7 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
-    public boolean validateToken(String token) {
+    private boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());

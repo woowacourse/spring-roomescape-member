@@ -19,13 +19,13 @@ class MemberTest {
         // when
         // then
         assertAll(
-                () -> assertThatThrownBy(() -> new Member(id, null, memberEmail, password))
+                () -> assertThatThrownBy(() -> new Member(id, null, memberEmail, password, Role.USER))
                         .isInstanceOf(IllegalArgumentException.class)
                         .hasMessage("이름을 입력해야 합니다."),
-                () -> assertThatThrownBy(() -> new Member(id, memberName, null, password))
+                () -> assertThatThrownBy(() -> new Member(id, memberName, null, password, Role.USER))
                         .isInstanceOf(IllegalArgumentException.class)
                         .hasMessage("이메일을 입력해야 합니다."),
-                () -> assertThatThrownBy(() -> new Member(id, memberName, memberEmail, null))
+                () -> assertThatThrownBy(() -> new Member(id, memberName, memberEmail, null, Role.USER))
                         .isInstanceOf(IllegalArgumentException.class)
                         .hasMessage("비밀번호를 입력해야 합니다.")
         );

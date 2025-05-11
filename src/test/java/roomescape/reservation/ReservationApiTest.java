@@ -119,7 +119,7 @@ public class ReservationApiTest {
         void setUp() {
             TOKEN = RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .body(new LoginRequest("aaa@gmail.com", "1234"))
+                    .body(new LoginRequest("admin@gmail.com", "1234"))
                     .when().post("/login")
                     .then().log().all()
                     .extract().cookie("token");
@@ -171,7 +171,7 @@ public class ReservationApiTest {
 
         @DisplayName("중복 예약을 생성할 경우 400을 반환한다.")
         @Test
-        void test3() {
+        void testDuplicatedReservation() {
             // given
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)

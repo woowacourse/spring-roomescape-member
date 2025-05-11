@@ -17,7 +17,7 @@ import roomescape.fake.FakeMemberDao;
 import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeReservationTimeDao;
 import roomescape.fake.FakeThemeDao;
-import roomescape.global.exception.BadRequestException;
+import roomescape.global.exception.custom.BadRequestException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.CreateReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
