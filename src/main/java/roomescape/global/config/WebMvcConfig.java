@@ -36,9 +36,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(authorizationInterceptor)
                 .order(2)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/h2-console", "/js/**", "/image/**", "/css/**", // h2, view api
-                        "/login/**", "/login/check", "/signUp/**", "/signup", "/error", // 로그인, 회원가입 api
-                        "/", "/themes/popular", "/thumbnail"); // index api
+                .excludePathPatterns("/h2-console", "/js/**", "/image/**", "/css/**");
     }
 
 }

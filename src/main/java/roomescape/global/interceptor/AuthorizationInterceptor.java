@@ -26,30 +26,34 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        HandlerMethod handlerMethod = (HandlerMethod) handler;
+        Method method = handlerMethod.getMethod();
+
+        if (!method.isAnnotationPresent(Auth.class)) {
+            throw new IllegalArgumentException("인증 불가능한 상태입니다.");
+        }
+
+        Auth auth = method.getAnnotation(Auth.class);
+        Role requiredRole = auth.value();
+
+        if (requiredRole == Role.GUEST) {
+            return true;
+        }
 
         final String token = authorizationExtractor.extract(request);
         final TokenInfo tokenInfo = tokenProvider.getInfo(token);
 
-        HandlerMethod handlerMethod = (HandlerMethod) handler;
-        if (!checkAuthorization(handlerMethod.getMethod(), tokenInfo.getRole())) {
+        Role currentUserRole = tokenInfo.getRole();
+        if (currentUserRole == Role.ADMIN) {
+            return true;
+        }
+
+        if (currentUserRole != requiredRole) {
             log();
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }
 
-        return true;
-    }
-
-    private boolean checkAuthorization(Method method, Role currentUserRole) {
-        if (method.isAnnotationPresent(Auth.class)) {
-            if (currentUserRole == Role.ADMIN) {
-                return true;
-            }
-
-            Auth auth = method.getAnnotation(Auth.class);
-            Role requiredRole = auth.value();
-            return currentUserRole == requiredRole;
-        }
         return true;
     }
 

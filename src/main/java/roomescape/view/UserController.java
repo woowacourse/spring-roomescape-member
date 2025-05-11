@@ -8,30 +8,31 @@ import roomescape.member.domain.Role;
 @Controller
 public class UserController {
 
-    @GetMapping("/reservation")
     @Auth(Role.USER)
+    @GetMapping("/reservation")
     public String reservation(
     ) {
         return "/reservation";
     }
 
+    @Auth(Role.GUEST)
     @GetMapping("/login")
     public String login(
     ) {
         return "/login";
     }
 
+    @Auth(Role.GUEST)
     @GetMapping("/signup")
     public String signUp(
     ) {
         return "/signup";
     }
 
+    @Auth(Role.GUEST)
     @GetMapping("/")
     public String index(
     ) {
         return "/index";
     }
-
-
 }
