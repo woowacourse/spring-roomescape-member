@@ -29,7 +29,7 @@ public class AuthController {
     @PostMapping("/login")
     public void login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         String authenticationToken = authService.createAuthenticationToken(loginRequest.email(), loginRequest.password());
-        response.addCookie(CookieUtils.createBasic("token", authenticationToken));
+        response.addCookie(CookieUtils.createBasic(AUTH_COOKIE_KEY, authenticationToken));
     }
 
     @ResponseStatus(HttpStatus.OK)
