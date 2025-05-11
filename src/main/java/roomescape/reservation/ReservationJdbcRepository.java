@@ -174,9 +174,13 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public Boolean existsByReservationTimeIdAndDate(final Long reservationTimeId, final LocalDate date) {
-        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id=? AND date=?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, reservationTimeId, date);
+    public Boolean existsByReservationTimeIdAndDateAndThemeId(
+            final Long reservationTimeId,
+            final LocalDate date,
+            final Long themeId
+    ) {
+        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id=? AND date=? AND theme_id=?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, reservationTimeId, date, themeId);
     }
 
     private RowMapper<Reservation> getRowMapper() {

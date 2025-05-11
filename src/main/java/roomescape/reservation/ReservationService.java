@@ -43,7 +43,7 @@ public class ReservationService {
         validateExistsReservationTime(request.timeId());
         validateExistsTheme(request.themeId());
         validateExistsMember(member.id());
-        validateDuplicateDateTime(request.date(), request.timeId());
+        validateDuplicateDateTimeAndTheme(request.date(), request.timeId(), request.themeId());
         validatePastDateTime(request.date(), request.timeId());
 
         final Reservation reservation = new Reservation(request.date());
@@ -56,7 +56,7 @@ public class ReservationService {
         validateExistsReservationTime(request.timeId());
         validateExistsTheme(request.themeId());
         validateExistsMember(request.memberId());
-        validateDuplicateDateTime(request.date(), request.timeId());
+        validateDuplicateDateTimeAndTheme(request.date(), request.timeId(), request.themeId());
         validatePastDateTime(request.date(), request.timeId());
 
         final Reservation reservation = new Reservation(request.date());
@@ -106,9 +106,8 @@ public class ReservationService {
         }
     }
 
-    // TODO: 같은 날짜, 시간이더라도 테마가 다르면 예약이 가능해야한다.
-    private void validateDuplicateDateTime(final LocalDate date, final Long reservationTimeId) {
-        if (reservationRepository.existsByReservationTimeIdAndDate(reservationTimeId, date)) {
+    private void validateDuplicateDateTimeAndTheme(final LocalDate date, final Long reservationTimeId, final Long themeId) {
+        if (reservationRepository.existsByReservationTimeIdAndDateAndThemeId(reservationTimeId, date, themeId)) {
             throw new ReservationConflictException();
         }
     }
