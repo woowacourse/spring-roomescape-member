@@ -28,4 +28,8 @@ public class Member {
     public Member(final String name, final String email, final String password, final Role role) {
         this(null, name, email, password, role);
     }
+
+    public boolean isAdmin() {
+        return role.equals(Role.ADMIN);
+    }
 }
