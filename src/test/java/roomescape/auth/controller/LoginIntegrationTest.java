@@ -105,4 +105,23 @@ class LoginIntegrationTest {
                 .body(equalTo("인증에 실패했습니다."));
     }
 
+    @DisplayName("로그아웃 요청 시 토큰 쿠키가 삭제된다")
+    @Test
+    void logout_test(){
+        // when
+        String header = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie(LoginController.TOKEN_COOKIE_NAME, token)
+                .when().post("/logout")
+                .then().log().all()
+                .statusCode(204)
+                .extract()
+                .header("Set-Cookie");
+
+        //then
+        assertThat(header)
+                .contains("token=")
+                .contains("Max-Age=0");
+    }
+
 }
