@@ -10,30 +10,30 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.admin.controller.dto.AdminReservationRequest;
-import roomescape.admin.controller.dto.AdminReservationResponse;
-import roomescape.admin.controller.dto.ReservationSearchRequest;
+import roomescape.admin.dto.AdminReservationRequest;
+import roomescape.admin.dto.AdminReservationResponse;
+import roomescape.admin.dto.ReservationSearchRequest;
+import roomescape.admin.service.AdminService;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.service.ReservationService;
 
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 @RestController
 public class AdminRestController {
 
-    private final ReservationService reservationService;
+    private final AdminService adminService;
 
     @PostMapping("/reservations")
     public ResponseEntity<AdminReservationResponse> createReservation(
             @RequestBody final AdminReservationRequest adminReservationRequest
     ) {
-        final Long id = reservationService.saveByAdmin(
+        final Long id = adminService.saveByAdmin(
                 adminReservationRequest.date(),
                 adminReservationRequest.themeId(),
                 adminReservationRequest.timeId(),
                 adminReservationRequest.memberId()
         );
-        final Reservation found = reservationService.getById(id);
+        final Reservation found = adminService.getById(id);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(AdminReservationResponse.from(found));
     }
@@ -42,7 +42,7 @@ public class AdminRestController {
     public ResponseEntity<List<AdminReservationResponse>> getReservationsBySearch(
             @ModelAttribute ReservationSearchRequest searchRequest
     ) {
-        final List<Reservation> searchedReservations = reservationService.findByInFromTo(
+        final List<Reservation> searchedReservations = adminService.findByInFromTo(
                 searchRequest.themeId(),
                 searchRequest.memberId(),
                 searchRequest.dateFrom(),

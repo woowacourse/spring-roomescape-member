@@ -2,7 +2,7 @@ package roomescape.theme.domain;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.ThemeException;
+import roomescape.common.exception.ThemeException;
 
 class ThemeTest {
 

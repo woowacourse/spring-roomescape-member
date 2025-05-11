@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.ReservationException;
+import roomescape.common.exception.ReservationException;
 import roomescape.theme.domain.Theme;
 
 class ReservationTest {

@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import roomescape.exception.ReservationException;
-import roomescape.login.domain.Member;
+import roomescape.common.exception.ReservationException;
+import roomescape.member.domain.Member;
 import roomescape.theme.domain.Theme;
 
 @Getter

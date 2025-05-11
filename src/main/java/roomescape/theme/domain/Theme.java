@@ -2,7 +2,7 @@ package roomescape.theme.domain;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import roomescape.exception.ThemeException;
+import roomescape.common.exception.ThemeException;
 
 @Getter
 @EqualsAndHashCode(of = {"id"})

@@ -11,8 +11,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.exception.DataExistException;
-import roomescape.exception.SaveException;
+import roomescape.common.exception.DataExistException;
+import roomescape.common.exception.SaveException;
 import roomescape.theme.domain.Theme;
 
 @RequiredArgsConstructor
