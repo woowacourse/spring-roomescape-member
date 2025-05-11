@@ -4,22 +4,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.application.MemberService;
-import roomescape.application.auth.dto.MemberAuthRequest;
-import roomescape.application.dto.MemberDto;
-import roomescape.domain.Role;
-import roomescape.infrastructure.jwt.MemberAuthRequestExtractor;
+import roomescape.application.auth.AuthService;
 import roomescape.application.auth.dto.MemberIdDto;
 
 public class CheckAdminRoleInterceptor implements HandlerInterceptor {
 
-    private final MemberAuthRequestExtractor memberAuthRequestExtractor;
-    private final MemberService memberService;
+    private final AuthenticationPrincipalExtractor authenticationPrincipalExtractor;
+    private final AuthService authService;
 
-    public CheckAdminRoleInterceptor(MemberAuthRequestExtractor memberAuthRequestExtractor,
-                                     MemberService memberService) {
-        this.memberAuthRequestExtractor = memberAuthRequestExtractor;
-        this.memberService = memberService;
+    public CheckAdminRoleInterceptor(
+            AuthenticationPrincipalExtractor authenticationPrincipalExtractor,
+            AuthService authService
+    ) {
+        this.authenticationPrincipalExtractor = authenticationPrincipalExtractor;
+        this.authService = authService;
     }
 
     @Override
@@ -28,7 +26,7 @@ public class CheckAdminRoleInterceptor implements HandlerInterceptor {
         try {
             MemberIdDto memberIdDto = authenticationPrincipalExtractor.extract(request);
 
-            if (member.role() != Role.ADMIN) {
+            if (!authService.isAdminAuthorized(memberIdDto)) {
                 response.setStatus(401);
                 return false;
             }

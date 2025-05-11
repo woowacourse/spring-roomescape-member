@@ -6,14 +6,14 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.infrastructure.jwt.MemberAuthRequestExtractor;
+import roomescape.application.auth.dto.MemberIdDto;
 
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberAuthRequestExtractor memberAuthRequestExtractor;
+    private final AuthenticationPrincipalExtractor authenticationPrincipalExtractor;
 
-    public AuthenticationPrincipalArgumentResolver(MemberAuthRequestExtractor memberAuthRequestExtractor) {
-        this.memberAuthRequestExtractor = memberAuthRequestExtractor;
+    public AuthenticationPrincipalArgumentResolver(AuthenticationPrincipalExtractor authenticationPrincipalExtractor) {
+        this.authenticationPrincipalExtractor = authenticationPrincipalExtractor;
     }
 
     @Override
@@ -22,10 +22,10 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory
+    public MemberIdDto resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+                                       NativeWebRequest webRequest, WebDataBinderFactory binderFactory
     ) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        return memberAuthRequestExtractor.extract(request);
+        return authenticationPrincipalExtractor.extract(request);
     }
 }
