@@ -1,8 +1,8 @@
 package roomescape.entity;
 
 public enum MemberRole {
-    ADMIN(),
-    USER(),
+    ADMIN,
+    USER,
     ;
 
     public static MemberRole from(String role) {

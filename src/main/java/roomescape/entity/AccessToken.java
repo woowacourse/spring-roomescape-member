@@ -46,8 +46,7 @@ public class AccessToken {
     }
 
     public long findSubject() {
-        return Long.parseLong(
-                getTokenBody().getSubject());
+        return Long.parseLong(getTokenBody().getSubject());
     }
 
     public String findMemberName() {
