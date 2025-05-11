@@ -3,7 +3,6 @@ package roomescape.presentation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.domain.AuthenticationInfo;
 import roomescape.domain.AuthenticationTokenProvider;
 
 public class CheckAdminInterceptor implements HandlerInterceptor {
@@ -24,11 +23,19 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     }
 
     private boolean isCurrentRequestorAdmin(final HttpServletRequest request) {
-        var optionalToken = ControllerSupports.findCookieValueByKey(request, "token");
-        return optionalToken
-            .filter(tokenProvider::isValidToken)
-            .map(tokenProvider::extractAuthenticationInfo)
-            .map(AuthenticationInfo::isAdmin)
-            .orElse(false);
+        var tokenCookie = AuthenticationTokenCookie.fromRequest(request);
+        if (tokenCookie.hasToken()) {
+            var token = tokenCookie.token();
+            return isAdmin(token);
+        }
+        return false;
+    }
+
+    private boolean isAdmin(final String token) {
+        if (!tokenProvider.isValidToken(token)) {
+            return false;
+        }
+        var authenticationInfo = tokenProvider.extractAuthenticationInfo(token);
+        return authenticationInfo.isAdmin();
     }
 }

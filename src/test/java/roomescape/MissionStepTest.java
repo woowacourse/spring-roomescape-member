@@ -20,6 +20,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.AuthenticationService;
+import roomescape.presentation.AuthenticationTokenCookie;
 import roomescape.presentation.response.ReservationResponse;
 import roomescape.presentation.rest.ReservationController;
 
@@ -41,7 +42,7 @@ class MissionStepTest {
         var token = authenticationService.issueToken("email@email.com", "password");
 
         RestAssured.given().log().all()
-            .cookie("token", token)
+            .cookie(AuthenticationTokenCookie.COOKIE_KEY, token)
             .when().get("/admin")
             .then().log().all()
             .statusCode(HttpStatus.OK.value());
@@ -53,7 +54,7 @@ class MissionStepTest {
         var token = authenticationService.issueToken("email@email.com", "password");
 
         RestAssured.given().log().all()
-            .cookie("token", token)
+            .cookie(AuthenticationTokenCookie.COOKIE_KEY, token)
             .when().get("/admin/reservation")
             .then().log().all()
             .statusCode(HttpStatus.OK.value());
@@ -82,7 +83,7 @@ class MissionStepTest {
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
             .body(params)
-            .cookie("token", token)
+            .cookie(AuthenticationTokenCookie.COOKIE_KEY, token)
             .when().post("/reservations")
             .then().log().all()
             .statusCode(HttpStatus.CREATED.value())
@@ -154,7 +155,7 @@ class MissionStepTest {
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
-            .cookie("token", token)
+            .cookie(AuthenticationTokenCookie.COOKIE_KEY, token)
             .body(params)
             .when().post("/reservations")
             .then().log().all()
@@ -212,7 +213,7 @@ class MissionStepTest {
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
-            .cookie("token", token)
+            .cookie(AuthenticationTokenCookie.COOKIE_KEY, token)
             .body(params)
             .when().post("/reservations")
             .then().log().all()

@@ -1,6 +1,5 @@
 package roomescape.presentation.rest;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.io.IOException;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.application.AuthenticationService;
 import roomescape.domain.User;
 import roomescape.presentation.Authenticated;
+import roomescape.presentation.AuthenticationTokenCookie;
 import roomescape.presentation.request.LoginRequest;
 import roomescape.presentation.response.UserResponse;
 
@@ -30,7 +30,7 @@ public class LoginController {
         final HttpServletResponse response
     ) {
         var issuedToken = authenticationService.issueToken(request.email(), request.password());
-        var tokenCookie = createTokenCookie(issuedToken);
+        var tokenCookie = AuthenticationTokenCookie.forResponse(issuedToken);
         response.addCookie(tokenCookie);
 
         return ResponseEntity.ok().build();
@@ -44,16 +44,8 @@ public class LoginController {
 
     @PostMapping("/logout")
     public void performLogout(final HttpServletResponse response) throws IOException {
-        var tokenCookieToExpire = new Cookie("token", "");
-        tokenCookieToExpire.setMaxAge(0);
-        response.addCookie(tokenCookieToExpire);
+        var tokenCookieForExpire = AuthenticationTokenCookie.forExpire();
+        response.addCookie(tokenCookieForExpire);
         response.sendRedirect("/");
-    }
-
-    private Cookie createTokenCookie(final String issuedToken) {
-        var tokenCookie = new Cookie("token", issuedToken);
-        tokenCookie.setPath("/");
-        tokenCookie.setHttpOnly(true);
-        return tokenCookie;
     }
 }

@@ -30,8 +30,10 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         final WebDataBinderFactory binderFactory
     ) {
         var request = (HttpServletRequest) webRequest.getNativeRequest();
-        var token = ControllerSupports.findCookieValueByKey(request, "token")
-            .orElseThrow(() -> new AuthorizationException("사용자 인증이 필요합니다."));
-        return authenticationService.getUserByToken(token);
+        var tokenCookie = AuthenticationTokenCookie.fromRequest(request);
+        if (tokenCookie.hasToken()) {
+            authenticationService.getUserByToken(tokenCookie.token());
+        }
+        throw new AuthorizationException("사용자 인증이 필요합니다.");
     }
 }
