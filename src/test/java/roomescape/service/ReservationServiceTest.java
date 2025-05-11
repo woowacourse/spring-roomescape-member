@@ -23,7 +23,7 @@ import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.controller.auth.dto.MemberInfoDto;
+import roomescape.controller.member.dto.MemberInfoDto;
 import roomescape.controller.reservation.dto.MemberReservationRequestDto;
 import roomescape.controller.reservation.dto.ReservationResponseDto;
 import roomescape.model.Member;

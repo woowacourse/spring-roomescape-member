@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.common.Role;
-import roomescape.controller.auth.dto.MemberInfoDto;
+import roomescape.controller.member.dto.MemberInfoDto;
 import roomescape.service.AuthService;
 
 public class AdminInterceptor implements HandlerInterceptor {

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.common.exception.NotFoundException;
 import roomescape.common.exception.UnauthorizedException;
 import roomescape.dao.MemberDao;
-import roomescape.controller.auth.dto.MemberInfoDto;
+import roomescape.controller.member.dto.MemberInfoDto;
 import roomescape.controller.auth.dto.LoginRequestDto;
 import roomescape.common.util.JwtProvider;
 
