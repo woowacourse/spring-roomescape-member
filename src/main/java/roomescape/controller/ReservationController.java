@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.config.LoginRequired;
 import roomescape.dto.LoginInfo;
 import roomescape.dto.request.UserReservationRequest;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.resolver.LoginRequired;
 import roomescape.service.ReservationService;
 
 @RestController
