@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
 
-public class FakeThemeRepository implements ThemeRepository {
+public class FakeH2ThemeRepository implements ThemeRepository {
     private final Map<Long, Theme> themes = new ConcurrentHashMap<>();
     private final AtomicLong index = new AtomicLong(1);
 

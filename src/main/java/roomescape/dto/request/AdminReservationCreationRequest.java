@@ -10,6 +10,6 @@ public record AdminReservationCreationRequest(
         Long timeId,
         @NotNull(message = "[ERROR] 테마는 빈 값을 허용하지 않습니다.")
         Long themeId,
-        @NotNull(message = "[ERROR] 회원은 빈 값을 허용하지 않습니다.")
+        @NotNull(message = "[ERROR] 멤버는 빈 값을 허용하지 않습니다.")
         Long memberId) {
 }

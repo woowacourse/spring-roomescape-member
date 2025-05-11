@@ -10,12 +10,13 @@ import roomescape.dto.request.LoginRequest;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.MemberRepository;
 import roomescape.test.fake.FakeH2MemberRepository;
+import roomescape.util.CookieUtil;
 
 public class LoginMemberArgumentServiceTest {
 
     private final MemberRepository memberRepository = new FakeH2MemberRepository();
-
-    private final MemberService memberService = new MemberService(memberRepository);
+    private final CookieUtil cookieUtil = new CookieUtil();
+    private final MemberService memberService = new MemberService(memberRepository, cookieUtil);
 
 
     @DisplayName("아이디와 이메일로 사용자를 가져오는지 확인합니다.")

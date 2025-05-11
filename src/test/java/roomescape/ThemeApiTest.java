@@ -31,10 +31,12 @@ public class ThemeApiTest {
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("DELETE FROM member");
 
         jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE member ALTER COLUMN id RESTART WITH 1");
     }
 
     @DisplayName("테마를 추가할 수 있다.")
@@ -119,18 +121,21 @@ public class ThemeApiTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
 
-        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)", "랜디",
-                PAST_DATE_TEXT, 1, 1);
-        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)", "랜디",
-                PAST_DATE_TEXT, 2, 1);
-        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)", "랜디",
-                PAST_DATE_TEXT, 3, 1);
-        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)", "랜디",
-                PAST_DATE_TEXT, 1, 2);
-        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)", "랜디",
-                PAST_DATE_TEXT, 2, 2);
-        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)", "랜디",
-                PAST_DATE_TEXT, 1, 3);
+        jdbcTemplate.update("insert into member (name, email, password, role) values (?, ?, ?, ?)", "아마", "이메일",
+                "비밀번호", "ADMIN");
+
+        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
+                PAST_DATE_TEXT, 1, 1, 1);
+        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
+                PAST_DATE_TEXT, 2, 1, 1);
+        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
+                PAST_DATE_TEXT, 3, 1, 1);
+        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
+                PAST_DATE_TEXT, 1, 2, 1);
+        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
+                PAST_DATE_TEXT, 2, 2, 1);
+        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
+                PAST_DATE_TEXT, 1, 3, 1);
 
         RestAssured.given().log().all()
                 .when().get("/themes/top")
@@ -172,8 +177,10 @@ public class ThemeApiTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)", "이름1", "설명1",
                 "썸네일1");
-        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)", "랜디",
-                FUTURE_DATE_TEXT, "1", "1");
+        jdbcTemplate.update("insert into member (name, email, password, role) values (?, ?, ?, ?)", "아마", "이메일",
+                "비밀번호", "ADMIN");
+        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
+                FUTURE_DATE_TEXT, 1, 1, 1);
 
         RestAssured.given().log().all()
                 .when().delete("/themes/1")

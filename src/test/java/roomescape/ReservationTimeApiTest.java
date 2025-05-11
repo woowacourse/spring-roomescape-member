@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,10 +30,12 @@ public class ReservationTimeApiTest {
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("DELETE FROM member");
 
         jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE member ALTER COLUMN id RESTART WITH 1");
     }
 
     @DisplayName("예약 가능한 시간을 추가할 수 있다.")
@@ -95,12 +98,14 @@ public class ReservationTimeApiTest {
 
     @DisplayName("예약 여부와 함께 예약 가능 시간을 조회할 수 있다")
     @Test
-    void canResponseAvaliableReservationTime() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)", "이름1", "설명1",
-                "썸네일1");
-        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)", "랜디",
-                FUTURE_DATE_TEXT, "1", "1");
+    void canResponseAvailableReservationTime() {
+        jdbcTemplate.update("insert into reservation_time (start_at) values (?)", LocalTime.of(10, 0));
+        jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)", "이름", "설명",
+                "썸네일");
+        jdbcTemplate.update("insert into member (name, email, password, role) values (?, ?, ?, ?)", "아마", "이메일",
+                "비밀번호", "ADMIN");
+        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
+                FUTURE_DATE_TEXT, 1, 1, 1);
 
         RestAssured.given().log().all()
                 .when().get("/" + FUTURE_DATE_TEXT + "/1" + "/times")
@@ -142,11 +147,13 @@ public class ReservationTimeApiTest {
     @DisplayName("이미 해당 시간에 대해 예약 데이터가 존재한다면 삭제가 불가능하다")
     @Test
     void cannotDeleteReservationTimeWhenExistReservation() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)", "이름1", "설명1",
-                "썸네일1");
-        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)", "랜디",
-                FUTURE_DATE_TEXT, "1", "1");
+        jdbcTemplate.update("insert into reservation_time (start_at) values (?)", LocalTime.of(10, 0));
+        jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)", "이름", "설명",
+                "썸네일");
+        jdbcTemplate.update("insert into member (name, email, password, role) values (?, ?, ?, ?)", "아마", "이메일",
+                "비밀번호", "ADMIN");
+        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
+                FUTURE_DATE_TEXT, 1, 1, 1);
 
         RestAssured.given().log().all()
                 .when().delete("/times/1")
