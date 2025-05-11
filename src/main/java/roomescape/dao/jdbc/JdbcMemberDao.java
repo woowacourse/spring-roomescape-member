@@ -1,6 +1,7 @@
 package roomescape.dao.jdbc;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,6 +23,12 @@ public class JdbcMemberDao implements MemberDao {
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
             .withTableName("member")
             .usingGeneratedKeyColumns("id");
+    }
+
+    @Override
+    public List<Member> findAllMembers() {
+        String sql = "SELECT id, name, email, password FROM member";
+        return jdbcTemplate.query(sql, createMemberMapper());
     }
 
     public Member findMemberByEmail(String email) {

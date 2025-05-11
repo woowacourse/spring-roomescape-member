@@ -1,3 +1,4 @@
+INSERT INTO member (name, email, password) VALUES ('admin', 'admin', '1234');
 INSERT INTO member (name, email, password) VALUES ('sana123', 'sa123', 'na123');
 INSERT INTO member (name, email, password) VALUES ('sana234', 'sa234', 'na234');
 INSERT INTO member (name, email, password) VALUES ('sana345', 'sa345', 'na345');

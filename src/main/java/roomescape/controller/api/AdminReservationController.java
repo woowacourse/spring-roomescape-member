@@ -1,10 +1,6 @@
 package roomescape.controller.api;
 
-import java.util.List;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,23 +10,21 @@ import roomescape.config.annotation.AuthMember;
 import roomescape.domain.Member;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.exception.custom.AuthenticatedException;
 import roomescape.service.ReservationService;
 
 @RestController
-@RequestMapping("/reservations")
-public class ReservationController {
+@RequestMapping("/admin/reservations")
+public class AdminReservationController {
+
+    private static final String ADMIN_NAME = "admin";
+    private static final String ADMIN_EMAIL = "admin";
+    private static final String ADMIN_PASSWORD = "1234";
 
     private final ReservationService reservationService;
 
-    private ReservationController(ReservationService reservationService) {
+    private AdminReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
-    }
-
-    @GetMapping
-    public List<ReservationResponse> readReservations() {
-        return reservationService.findAllReservations().stream()
-            .map(ReservationResponse::from)
-            .toList();
     }
 
     @PostMapping
@@ -38,12 +32,16 @@ public class ReservationController {
     public ReservationResponse createReservation(
         @AuthMember Member member,
         @RequestBody ReservationRequest request) {
-        return ReservationResponse.from(reservationService.addReservationAfterNow(member, request));
+        validateAdmin(member);
+
+        return ReservationResponse.from(reservationService.addReservation(request));
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteReservation(@PathVariable Long id) {
-        reservationService.removeReservation(id);
+    private void validateAdmin(Member member) {
+        if (!member.getName().equals(ADMIN_NAME)
+            || !member.getEmail().equals(ADMIN_EMAIL)
+            || !member.getPassword().equals(ADMIN_PASSWORD)) {
+            throw new AuthenticatedException("not admin");
+        }
     }
 }

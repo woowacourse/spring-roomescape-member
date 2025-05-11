@@ -61,7 +61,7 @@ class ReservationServiceTest {
 
         assertAll(() -> {
             assertThat(actual.getId()).isEqualTo(1L);
-            assertThat(actual.getName()).isEqualTo("사나");
+            assertThat(actual.getMember()).isEqualTo("사나");
             assertThat(actual.getDate()).isEqualTo(LocalDate.of(2024, 4, 26));
             assertThat(actual.getTime().getId()).isEqualTo(1L);
             assertThat(actual.getTheme().getId()).isEqualTo(1L);
