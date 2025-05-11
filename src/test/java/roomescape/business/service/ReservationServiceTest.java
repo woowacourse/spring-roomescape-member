@@ -19,11 +19,11 @@ import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeThemeDao;
 import roomescape.persistence.entity.PlayTimeEntity;
 import roomescape.persistence.entity.ThemeEntity;
-import roomescape.presentation.dto.PlayTimeResponse;
-import roomescape.presentation.dto.ReservationAvailableTimeResponse;
-import roomescape.presentation.dto.ReservationRequest;
-import roomescape.presentation.dto.ReservationResponse;
-import roomescape.presentation.dto.ThemeResponse;
+import roomescape.presentation.dto.playtime.PlayTimeResponse;
+import roomescape.presentation.dto.reservation.ReservationAvailableTimeResponse;
+import roomescape.presentation.dto.reservation.ReservationRequest;
+import roomescape.presentation.dto.reservation.ReservationResponse;
+import roomescape.presentation.dto.theme.ThemeResponse;
 
 public class ReservationServiceTest {
 

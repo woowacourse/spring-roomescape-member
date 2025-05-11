@@ -1,4 +1,4 @@
-package roomescape.presentation.controller.rest.admin;
+package roomescape.presentation.controller.rest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,8 +11,8 @@ import roomescape.business.domain.Role;
 import roomescape.business.service.ReservationService;
 import roomescape.exception.auth.UnauthorizedAccessException;
 import roomescape.presentation.AuthenticatedUser;
-import roomescape.presentation.dto.ReservationResponse;
-import roomescape.presentation.dto.admin.AdminReservationRequest;
+import roomescape.presentation.dto.reservation.ReservationResponse;
+import roomescape.presentation.dto.reservation.AdminReservationRequest;
 
 @RestController
 @RequestMapping("/admin/reservations")

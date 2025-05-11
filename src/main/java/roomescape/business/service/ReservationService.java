@@ -14,9 +14,9 @@ import roomescape.exception.InvalidReservationDateException;
 import roomescape.exception.ReservationNotFoundException;
 import roomescape.exception.auth.UnauthorizedAccessException;
 import roomescape.persistence.dao.ReservationDao;
-import roomescape.presentation.dto.ReservationAvailableTimeResponse;
-import roomescape.presentation.dto.ReservationRequest;
-import roomescape.presentation.dto.ReservationResponse;
+import roomescape.presentation.dto.reservation.ReservationAvailableTimeResponse;
+import roomescape.presentation.dto.reservation.ReservationRequest;
+import roomescape.presentation.dto.reservation.ReservationResponse;
 
 @Service
 public class ReservationService {

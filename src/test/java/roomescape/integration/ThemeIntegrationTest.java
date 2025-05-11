@@ -16,8 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.persistence.entity.ReservationEntity;
-import roomescape.presentation.dto.ThemeRequest;
-import roomescape.presentation.dto.ThemeResponse;
+import roomescape.presentation.dto.theme.ThemeRequest;
+import roomescape.presentation.dto.theme.ThemeResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ThemeIntegrationTest {

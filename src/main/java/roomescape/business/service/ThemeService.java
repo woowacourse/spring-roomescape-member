@@ -7,8 +7,8 @@ import roomescape.business.domain.Theme;
 import roomescape.exception.ThemeNotFoundException;
 import roomescape.persistence.dao.ThemeDao;
 import roomescape.persistence.entity.ReservationEntity;
-import roomescape.presentation.dto.ThemeRequest;
-import roomescape.presentation.dto.ThemeResponse;
+import roomescape.presentation.dto.theme.ThemeRequest;
+import roomescape.presentation.dto.theme.ThemeResponse;
 
 @Service
 public class ThemeService {

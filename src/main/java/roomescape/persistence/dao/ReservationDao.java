@@ -5,7 +5,7 @@ import java.util.List;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
 import roomescape.business.domain.Theme;
-import roomescape.presentation.dto.ReservationAvailableTimeResponse;
+import roomescape.presentation.dto.reservation.ReservationAvailableTimeResponse;
 
 public interface ReservationDao {
 

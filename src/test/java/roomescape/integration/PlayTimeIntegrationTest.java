@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.presentation.dto.PlayTimeRequest;
-import roomescape.presentation.dto.PlayTimeResponse;
+import roomescape.presentation.dto.playtime.PlayTimeRequest;
+import roomescape.presentation.dto.playtime.PlayTimeResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class PlayTimeIntegrationTest {

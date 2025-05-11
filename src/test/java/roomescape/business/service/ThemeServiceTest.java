@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 import roomescape.business.domain.Theme;
 import roomescape.exception.ThemeNotFoundException;
 import roomescape.fake.FakeThemeDao;
-import roomescape.presentation.dto.ThemeRequest;
-import roomescape.presentation.dto.ThemeResponse;
+import roomescape.presentation.dto.theme.ThemeRequest;
+import roomescape.presentation.dto.theme.ThemeResponse;
 
 class ThemeServiceTest {
 

@@ -18,7 +18,7 @@ import roomescape.business.domain.Theme;
 import roomescape.persistence.entity.PlayTimeEntity;
 import roomescape.persistence.entity.ReservationEntity;
 import roomescape.persistence.entity.ThemeEntity;
-import roomescape.presentation.dto.ReservationAvailableTimeResponse;
+import roomescape.presentation.dto.reservation.ReservationAvailableTimeResponse;
 
 @JdbcTest
 class JdbcReservationDaoTest {
