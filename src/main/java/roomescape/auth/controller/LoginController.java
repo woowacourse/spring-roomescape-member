@@ -38,7 +38,7 @@ public class LoginController {
     public MemberNameResponse checkLogin(HttpServletRequest request) {
         final Cookie[] cookies = request.getCookies();
         final String token = authService.extractTokenFromCookie(cookies);
-        final Member member = authService.findMember(token);
+        final Member member = authService.findMemberByToken(token);
 
         return MemberNameResponse.from(member);
     }

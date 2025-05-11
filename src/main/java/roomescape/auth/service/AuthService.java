@@ -60,7 +60,7 @@ public class AuthService {
         }
     }
 
-    public Member findMember(final String token) {
+    public Member findMemberByToken(final String token) {
         validateTokenExisted(token);
         final long memberId = Long.parseLong(jwtTokenProvider.extractPayload(token));
 
