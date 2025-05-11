@@ -6,12 +6,12 @@ import org.springframework.stereotype.Component;
 import roomescape.exception.AuthorizationException;
 
 @Component
-public class TokenExtractor {
+public class JwtTokenExtractor {
 
     public String extract(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            throw new AuthorizationException("로그인 정보가 입력되지 않았습니다.");
+            throw new AuthorizationException("인증 정보가 없습니다.");
         }
         return extractTokenFromCookie(cookies);
     }
