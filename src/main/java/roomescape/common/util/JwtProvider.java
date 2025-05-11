@@ -39,7 +39,6 @@ public class JwtProvider {
                     .parseClaimsJws(token)
                     .getBody()
                     .getSubject());
-
         } catch (ExpiredJwtException e) {
             throw new UnauthorizedException("토큰이 만료되었습니다");
         } catch (JwtException e) {
