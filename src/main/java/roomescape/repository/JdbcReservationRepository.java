@@ -27,7 +27,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             new Member(resultSet.getLong("member_id"),
                     resultSet.getString("name"),
                     resultSet.getString("email"),
-                    resultSet.getString("password"),
+                    null,
                     MemberRoleType.from(resultSet.getString("role"))),
             resultSet.getDate("date").toLocalDate(),
             new ReservationTime(resultSet.getLong("time_id"),
@@ -70,7 +70,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         final String query = """
                 SELECT
                     reservation_id,
-                    m.member_id, name, email, password, role,
+                    m.member_id, name, email, role,
                     date,
                     rt.time_id, start_at AS time_value,
                     t.theme_id, theme_name, description, thumbnail
@@ -90,7 +90,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 SELECT
                     reservation_id,
-                    m.member_id, name, email, password, role,
+                    m.member_id, name, email, role,
                     date,
                     rt.time_id, start_at AS time_value,
                     t.theme_id, theme_name, description, thumbnail
@@ -129,7 +129,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         final String query = """
                 SELECT
                     reservation_id,
-                    m.member_id, name, email, password, role,
+                    m.member_id, name, email, role,
                     date,
                     rt.time_id, start_at AS time_value,
                     t.theme_id, theme_name, description, thumbnail
