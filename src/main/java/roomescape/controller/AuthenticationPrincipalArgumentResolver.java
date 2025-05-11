@@ -9,14 +9,14 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.service.LoginService;
+import roomescape.service.MemberService;
 
 @Component
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
-    private final LoginService loginService;
+    private final MemberService memberService;
 
-    public AuthenticationPrincipalArgumentResolver(LoginService loginService) {
-        this.loginService = loginService;
+    public AuthenticationPrincipalArgumentResolver(MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @Override
@@ -30,8 +30,8 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
-            String userEmail = loginService.extractUserEmailFromCookies(cookies);
-            return loginService.getUserNameByUserEmail(userEmail);
+            String userEmail = memberService.extractUserEmailFromCookies(cookies);
+            return memberService.getUserNameByUserEmail(userEmail);
         }
         throw new BadRequestException("인증 실패");
     }
