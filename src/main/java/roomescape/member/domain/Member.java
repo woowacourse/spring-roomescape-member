@@ -10,7 +10,7 @@ public class Member {
     private final Role role;
 
     private Member(Long id, String name, String email, String password, Role role) {
-        validate(name, email, password);
+        validate(name, email, password, role);
         this.id = id;
         this.name = name;
         this.email = email;
@@ -26,10 +26,17 @@ public class Member {
         return new Member(id, name, email, password, Role.USER);
     }
 
-    private void validate(String name, String email, String password) {
+    private void validate(String name, String email, String password, Role role) {
         validateName(name);
         validateEmail(email);
         validatePassword(password);
+        validateRole(role);
+    }
+
+    private void validateRole(Role role) {
+        if (role == null) {
+            throw new MemberFieldRequiredException();
+        }
     }
 
     private void validateName(String name) {
