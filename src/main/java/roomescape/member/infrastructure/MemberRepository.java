@@ -9,7 +9,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
-import roomescape.member.dto.MemberResponse;
 
 @Repository
 public class MemberRepository {
@@ -20,8 +19,8 @@ public class MemberRepository {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
-    public Optional<Long> findIdByEmailAndPassword(String email, String password) {
-        String sql = "SELECT id FROM member WHERE email = :email AND password = :password";
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
+        String sql = "SELECT * FROM member WHERE email = :email AND password = :password";
 
         Map<String, Object> parameter = Map.of("email", email,
                                             "password", password);
@@ -30,7 +29,7 @@ public class MemberRepository {
             return Optional.of(namedParameterJdbcTemplate.queryForObject(
                     sql,
                     parameter,
-                    (resultSet, rowNum) -> resultSet.getLong("id")));
+                    (resultSet, rowNum) -> createMember(resultSet)));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -45,11 +44,7 @@ public class MemberRepository {
             return Optional.of(namedParameterJdbcTemplate.queryForObject(
                     sql,
                     parameter,
-                    (resultSet, rowNum) -> new Member(
-                            resultSet.getLong("id"),
-                            resultSet.getString("name"),
-                            resultSet.getString("email"),
-                            resultSet.getString("password"))));
+                    (resultSet, rowNum) -> createMember(resultSet)));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -62,9 +57,10 @@ public class MemberRepository {
     }
 
     private Member createMember(ResultSet resultSet) throws SQLException {
-        return new Member(resultSet.getLong("id"),
+        return Member.of(resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("email"),
-                resultSet.getString("password"));
+                resultSet.getString("password"),
+                resultSet.getString("role"));
     }
 }

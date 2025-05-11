@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.ui.AuthenticationPrincipal;
 import roomescape.member.application.MemberService;
 import roomescape.member.domain.Member;
+import roomescape.auth.application.AuthService;
 import roomescape.member.dto.LoginRequest;
-import roomescape.member.application.AuthService;
 import roomescape.member.dto.LoginResponse;
 import roomescape.member.dto.MemberResponse;
 
@@ -34,15 +35,14 @@ public class MemberApiController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginResponse> findLoginUser(@AuthenticationPrincipal Member user) {
+    public ResponseEntity<LoginResponse> findLoginUser(@AuthenticationPrincipal Member member) {
         return ResponseEntity.ok()
-                .body(new LoginResponse(user.name()));
+                .body(new LoginResponse(member.name()));
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> createToken(@RequestBody LoginRequest loginRequest) {
-        Long userId = memberService.findIdByEmailAndPassword(loginRequest);
-        String accessToken = authService.createToken(String.valueOf(userId));
+        String accessToken = authService.createToken(loginRequest);
         ResponseCookie cookie = ResponseCookie.from("token", accessToken)
                 .httpOnly(true)
                 .path("/")

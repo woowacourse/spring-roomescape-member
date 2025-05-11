@@ -139,11 +139,12 @@ public class ReservationRepository {
     private Reservation createReservation(ResultSet resultSet) throws SQLException {
         return new Reservation(
                 resultSet.getLong("reservation_id"),
-                new Member(
+                Member.of(
                         resultSet.getLong("member_id"),
                         resultSet.getString("member_name"),
                         resultSet.getString("member_email"),
-                        resultSet.getString("member_password")
+                        resultSet.getString("member_password"),
+                        resultSet.getString("role")
                 ),
                 resultSet.getDate("date").toLocalDate(),
                 new Time(

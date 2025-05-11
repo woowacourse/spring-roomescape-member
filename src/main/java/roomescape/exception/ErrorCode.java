@@ -6,6 +6,8 @@ public enum ErrorCode {
     // User
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "[ERROR] 유효하지 않은 토큰입니다."),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "[ERROR] 존재하지 않는 사용자입니다."),
+    ROLE_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR , "[ERROR] 존재하지 않는 role입니다."),
+    INVALID_ROLE(HttpStatus.FORBIDDEN, "[ERROR] 해당 페이지의 권한이 없습니다."),
 
     // Time
     TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "[ERROR] 존재하지 않는 시간대입니다.");

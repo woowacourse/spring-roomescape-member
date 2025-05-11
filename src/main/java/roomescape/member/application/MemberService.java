@@ -2,6 +2,7 @@ package roomescape.member.application;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.auth.application.AuthorizationException;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.LoginRequest;
 import roomescape.member.dto.MemberResponse;
@@ -9,14 +10,15 @@ import roomescape.member.infrastructure.MemberRepository;
 
 @Service
 public class MemberService {
+
     private final MemberRepository memberRepository;
 
     public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
-    public Long findIdByEmailAndPassword(LoginRequest request) {
-        return memberRepository.findIdByEmailAndPassword(request.email(), request.password())
+    public Member findByEmailAndPassword(LoginRequest request) {
+        return memberRepository.findByEmailAndPassword(request.email(), request.password())
                 .orElseThrow(AuthorizationException::new);
     }
 
