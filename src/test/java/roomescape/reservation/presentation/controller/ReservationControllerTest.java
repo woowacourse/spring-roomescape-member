@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.AbstractRestDocsTest;
+import roomescape.DatabaseCleaner;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.member.domain.Role;
 import roomescape.reservation.presentation.dto.response.ReservationDetailResponse;
@@ -32,19 +33,12 @@ class ReservationControllerTest extends AbstractRestDocsTest {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    @BeforeEach
-    void setUp() {
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
 
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation");
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("TRUNCATE TABLE theme");
-        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("TRUNCATE TABLE members");
-        jdbcTemplate.execute("ALTER TABLE members ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+    @BeforeEach
+    void clean() {
+        databaseCleaner.clean();
     }
 
     @DisplayName("예약 추가 api 호출 시, db에 정상적으로 추가된다.")

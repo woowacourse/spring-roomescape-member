@@ -15,12 +15,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.ActiveProfiles;
+import roomescape.DatabaseCleaner;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.testFixture.JdbcHelper;
 
 @JdbcTest
-@Import(JdbcMemberRepository.class)
+@Import({JdbcMemberRepository.class, DatabaseCleaner.class})
 @ActiveProfiles("test")
 class JdbcMemberRepositoryTest {
 
@@ -30,18 +31,12 @@ class JdbcMemberRepositoryTest {
     @Autowired
     private JdbcMemberRepository jdbcMemberRepository;
 
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
     @BeforeEach
-    void cleanDatabase() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation");
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("TRUNCATE TABLE theme");
-        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("TRUNCATE TABLE members");
-        jdbcTemplate.execute("ALTER TABLE members ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+    void clean() {
+        databaseCleaner.clean();
     }
 
     private final static RowMapper<Member> MEMBER_ROW_MAPPER =

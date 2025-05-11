@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.DatabaseCleaner;
 import roomescape.auth.exception.AuthErrorCode;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.member.domain.Role;
@@ -28,14 +29,13 @@ public class AdminPageAccessTest {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    @BeforeEach
-    void cleanDatabase() {
-        RestAssured.port = this.port;
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
 
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("TRUNCATE TABLE members");
-        jdbcTemplate.execute("ALTER TABLE members ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+    @BeforeEach
+    void clean() {
+        RestAssured.port = port;
+        databaseCleaner.clean();
     }
 
     @Test

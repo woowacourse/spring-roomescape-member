@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.AbstractRestDocsTest;
+import roomescape.DatabaseCleaner;
 import roomescape.auth.presentation.dto.request.TokenRequest;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.member.domain.Role;
@@ -24,12 +25,12 @@ class TokenLoginControllerTest extends AbstractRestDocsTest {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
     @BeforeEach
-    void cleanDatabase() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("TRUNCATE TABLE members");
-        jdbcTemplate.execute("ALTER TABLE members ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+    void clean() {
+        databaseCleaner.clean();
     }
 
     @Test

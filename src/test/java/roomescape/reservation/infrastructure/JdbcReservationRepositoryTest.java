@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import roomescape.DatabaseCleaner;
 import roomescape.reservation.domain.Reservation;
 import roomescape.testFixture.Fixture;
 import roomescape.testFixture.JdbcHelper;
@@ -23,7 +24,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 @JdbcTest
-@Import(JdbcReservationRepository.class)
+@Import({JdbcReservationRepository.class, DatabaseCleaner.class})
 @ActiveProfiles("test")
 class JdbcReservationRepositoryTest {
 
@@ -33,18 +34,12 @@ class JdbcReservationRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
     @BeforeEach
-    void cleanDatabase() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation");
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("TRUNCATE TABLE theme");
-        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("TRUNCATE TABLE members");
-        jdbcTemplate.execute("ALTER TABLE members ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+    void clean() {
+        databaseCleaner.clean();
     }
 
     @DisplayName("save 후 생성된 id를 반환한다.")

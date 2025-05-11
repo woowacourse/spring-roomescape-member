@@ -15,11 +15,12 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import roomescape.DatabaseCleaner;
 import roomescape.testFixture.JdbcHelper;
 import roomescape.theme.domain.Theme;
 
 @JdbcTest
-@Import(JdbcThemeRepository.class)
+@Import({JdbcThemeRepository.class, DatabaseCleaner.class})
 @ActiveProfiles("test")
 class JdbcThemeRepositoryTest {
 
@@ -29,16 +30,12 @@ class JdbcThemeRepositoryTest {
     @Autowired
     private JdbcThemeRepository jdbcThemeRepository;
 
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
     @BeforeEach
-    void cleanDatabase() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation");
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("TRUNCATE TABLE theme");
-        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+    void clean() {
+        databaseCleaner.clean();
     }
 
     @DisplayName("모든 테마를 조회할 수 있다.")
