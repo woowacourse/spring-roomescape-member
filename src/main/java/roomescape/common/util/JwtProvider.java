@@ -1,9 +1,14 @@
 package roomescape.common.util;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import roomescape.common.exception.CustomException;
+import roomescape.common.exception.UnauthorizedException;
 import roomescape.model.Member;
 
 @Component
@@ -27,12 +32,21 @@ public class JwtProvider {
     }
 
     public Long getSubjectFromToken(String token) {
-        return Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject());
+        try {
+            return Long.valueOf(Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject());
+
+        } catch (ExpiredJwtException e) {
+            throw new UnauthorizedException("토큰이 만료되었습니다");
+        } catch (JwtException e) {
+            throw new UnauthorizedException("유효하지 않은 토큰입니다");
+        } catch (NumberFormatException e) {
+            throw new UnauthorizedException("토큰에서 사용자 ID를 해석할 수 없습니다");
+        }
     }
 }
 
