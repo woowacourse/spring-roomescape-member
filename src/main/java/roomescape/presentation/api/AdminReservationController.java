@@ -38,7 +38,7 @@ public class AdminReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations(
+    public ResponseEntity<List<ReservationResponse>> getReservationsByFilter(
             @RequestParam Long themeId,
             @RequestParam Long memberId,
             @RequestParam LocalDate dateFrom,
