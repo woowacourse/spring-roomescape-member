@@ -31,6 +31,7 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse create(ReservationTimeRequest requestDto) {
         ReservationTime entity = requestDto.toEntity();
+        validateOperatingTime(entity);
         validateDuplicated(entity);
         ReservationTime saved = timeRepository.save(entity);
         return ReservationTimeResponse.of(saved);
@@ -44,6 +45,12 @@ public class ReservationTimeService {
 
     private boolean isExistDuplicatedWith(ReservationTime entity) {
         return timeRepository.findByStartAt(entity.getStartAt()).isPresent();
+    }
+
+    private void validateOperatingTime(ReservationTime newTime) {
+        if (!newTime.isOnOperatingTime()) {
+            throw new BadRequestException("운영 시간 이외의 시간이 입력되었습니다.");
+        }
     }
 
     public List<ReservationTimeResponse> getAllTimes() {

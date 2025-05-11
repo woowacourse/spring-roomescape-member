@@ -106,7 +106,7 @@ class ThemeServiceTest {
     void popularThemes() {
         // given
         LocalDate now = LocalDate.now();
-        ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
 
         themeRepository.save(new Theme(1L, "theme1", "t", "t"));
         themeRepository.save(new Theme(2L, "theme2", "t", "t"));

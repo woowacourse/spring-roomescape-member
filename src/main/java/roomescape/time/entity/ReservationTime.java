@@ -11,7 +11,7 @@ public class ReservationTime {
     private final Long id;
     private LocalTime startAt;
 
-    private ReservationTime(Long id, LocalTime startAt) {
+    public ReservationTime(Long id, LocalTime startAt) {
         if (id == null || startAt == null) {
             throw new BadRequestException("필요한 시간 정보가 모두 입력되지 않았습니다.");
         }
@@ -19,16 +19,8 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
-    public static ReservationTime of(final Long id, LocalTime startAt) {
-        return new ReservationTime(id, startAt);
-    }
-
-    public static ReservationTime create(LocalTime startAt) {
-        ReservationTime reservationTime = new ReservationTime(0L, startAt);
-        if (startAt.isAfter(OPERATING_END) || startAt.isBefore(OPERATING_START)) {
-            throw new BadRequestException("운영 시간 이외의 시간이 입력되었습니다.");
-        }
-        return reservationTime;
+    public boolean isOnOperatingTime() {
+        return !(startAt.isAfter(OPERATING_END) || startAt.isBefore(OPERATING_START));
     }
 
     public String getFormattedTime() {

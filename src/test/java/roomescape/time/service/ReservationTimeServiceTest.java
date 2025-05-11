@@ -33,7 +33,7 @@ class ReservationTimeServiceTest {
     void createDuplicateTime() {
         // given
         LocalTime duplicatedTime = LocalTime.of(10, 0);
-        timeRepository.save(ReservationTime.create(duplicatedTime));
+        timeRepository.save(new ReservationTime(1L, duplicatedTime));
 
         ReservationTimeRequest request = new ReservationTimeRequest(duplicatedTime);
 
@@ -87,7 +87,7 @@ class ReservationTimeServiceTest {
     void deleteExistReservationTime() {
         // given
         LocalTime time = LocalTime.of(12, 0);
-        ReservationTime timeEntity = ReservationTime.of(1L, time);
+        ReservationTime timeEntity = new ReservationTime(1L, time);
         timeRepository.save(timeEntity);
         LocalDate date = LocalDate.of(2025, 1, 2);
         reservationRepository.save(new Reservation(1L, 1L, date, timeEntity, 1L));

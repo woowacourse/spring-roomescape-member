@@ -78,7 +78,7 @@ class ReservationServiceTest {
     void pastReservation() {
         // given
         final long timeId = 1L;
-        ReservationTime timeEntity = ReservationTime.of(timeId, LocalTime.of(12, 0));
+        ReservationTime timeEntity = new ReservationTime(timeId, LocalTime.of(12, 0));
         timeRepository.save(timeEntity);
 
         LocalDate now = LocalDate.now();
@@ -103,7 +103,7 @@ class ReservationServiceTest {
         LocalDate date = now.plusDays(1);
 
         final long timeId = 1L;
-        ReservationTime timeEntity = ReservationTime.of(timeId, LocalTime.of(12, 0));
+        ReservationTime timeEntity = new ReservationTime(timeId, LocalTime.of(12, 0));
         Reservation reservation = new Reservation(1L, loginMember.getId(), date, timeEntity, themeId);
         timeRepository.save(timeEntity);
         reservationRepository.save(reservation);
@@ -126,7 +126,7 @@ class ReservationServiceTest {
     void doesNotAllowedCreatingPastReservation() {
         // given
         final long timeId = 1L;
-        ReservationTime time = ReservationTime.of(timeId, LocalTime.of(12, 0));
+        ReservationTime time = new ReservationTime(timeId, LocalTime.of(12, 0));
         timeRepository.save(time);
 
         LocalDate now = LocalDate.now();

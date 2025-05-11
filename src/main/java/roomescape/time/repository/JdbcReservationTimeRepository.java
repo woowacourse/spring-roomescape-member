@@ -20,7 +20,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     private final RowMapper<ReservationTime> ROW_MAPPER = (resultSet, rowNum) -> {
         Long id = resultSet.getLong("id");
         LocalTime time = resultSet.getObject("start_at", LocalTime.class);
-        return ReservationTime.of(id, time);
+        return new ReservationTime(id, time);
     };
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -36,7 +36,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
         final long id = keyHolder.getKey().longValue();
-        return ReservationTime.of(id, entity.getStartAt());
+        return new ReservationTime(id, entity.getStartAt());
     }
 
     @Override
