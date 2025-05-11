@@ -2,9 +2,11 @@ package roomescape.member.auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.common.exception.AuthenticationException;
 import roomescape.common.exception.AuthorizationException;
 import roomescape.common.exception.ErrorCode;
 import roomescape.member.domain.MemberId;
@@ -42,9 +44,13 @@ public class JwtTokenExtractor {
     }
 
     private Claims extractClaimsFromToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts.parser()
+                    .setSigningKey(SECRET_KEY)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (MalformedJwtException e) {
+            throw new AuthenticationException("잘못된 토큰입니다.");
+        }
     }
 }

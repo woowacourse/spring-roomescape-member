@@ -32,7 +32,7 @@ public class AuthService {
     }
 
     public String login(LoginRequest loginRequest) {
-        Account account = memberService.findAccount(loginRequest);
+        final Account account = memberService.findAccount(loginRequest);
         if (!account.isSamePassword(passwordEncoder, loginRequest.password())) {
             throw new AuthenticationException("비밀번호가 일치하지 않습니다.");
         }
@@ -40,7 +40,7 @@ public class AuthService {
     }
 
     public LoginCheckResponse checkLogin(final String token) {
-        MemberName name = jwtTokenExtractor.extractMemberNameFromToken(token);
+        final MemberName name = jwtTokenExtractor.extractMemberNameFromToken(token);
         return new LoginCheckResponse(name.getValue());
     }
 
