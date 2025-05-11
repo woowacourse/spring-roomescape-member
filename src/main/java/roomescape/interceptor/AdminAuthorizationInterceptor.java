@@ -29,21 +29,18 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
 
         try {
             final LoginInfo loginInfo = loginSession.getLoginInfo(session);
-            validateAdmin(loginInfo, request, response);
+            if (Role.ADMIN.equals(loginInfo.role())) {
+                return true;
+            }
+
+            processUnauthorized(request, response);
+            return false;
         } catch (AccessDeniedException e) {
             processUnauthorized(request, response);
             return false;
         }
-        return true;
     }
 
-    private void validateAdmin(final LoginInfo loginInfo, final HttpServletRequest request, final HttpServletResponse response)
-            throws IOException {
-        if (Role.ADMIN.equals(loginInfo.role())) {
-            return;
-        }
-        processUnauthorized(request, response);
-    }
 
     private void processUnauthorized(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         final String accept = request.getHeader(HttpHeaders.ACCEPT);
