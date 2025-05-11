@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.controller.dto.LoginCheckResponse;
 import roomescape.member.controller.dto.LoginRequest;
-import roomescape.member.controller.dto.MemberInfo;
+import roomescape.member.auth.dto.MemberInfo;
 import roomescape.member.controller.dto.SignupRequest;
 import roomescape.member.service.AuthService;
 import roomescape.member.service.MemberService;

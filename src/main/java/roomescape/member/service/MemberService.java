@@ -1,12 +1,12 @@
 package roomescape.member.service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.ErrorCode;
 import roomescape.common.exception.NotFoundException;
+import roomescape.member.auth.dto.MemberInfo;
 import roomescape.member.controller.dto.LoginRequest;
 import roomescape.member.controller.dto.SignupRequest;
 import roomescape.member.domain.Account;
@@ -24,7 +24,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public roomescape.member.controller.dto.MemberInfo signup(SignupRequest signupRequest) {
+    public MemberInfo signup(SignupRequest signupRequest) {
         if (memberRepository.existsByEmail(MemberEmail.from(signupRequest.email()))) {
             throw new ConflictException("이미 존재하는 이메일입니다.");
         }
@@ -51,7 +51,7 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException("등록된 회원이 아닙니다.", ErrorCode.USER_NOT_FOUND));
     }
 
-    public List<roomescape.member.controller.dto.MemberInfo> getAll() {
+    public List<MemberInfo> getAll() {
         return memberRepository.findAll()
                 .stream()
                 .map(MemberConverter::toResponse)

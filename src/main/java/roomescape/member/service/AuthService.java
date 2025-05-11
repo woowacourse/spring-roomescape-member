@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.common.exception.AuthenticationException;
 import roomescape.member.controller.dto.LoginCheckResponse;
 import roomescape.member.controller.dto.LoginRequest;
-import roomescape.member.controller.dto.MemberInfo;
+import roomescape.member.auth.dto.MemberInfo;
 import roomescape.member.domain.Account;
 import roomescape.member.domain.Member;
 import roomescape.member.auth.JwtTokenExtractor;

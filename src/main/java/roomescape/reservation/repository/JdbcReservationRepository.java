@@ -198,6 +198,36 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAllByMemberId(final MemberId memberId) {
+        final String sql = """
+                select
+                    r.id,
+                    r.member_id,
+                    r.date,
+                    rt.id as time_id,
+                    rt.start_at as start_at,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description as description,
+                    t.thumbnail as thumbnail,
+                    m.name as member_name,
+                    m.email as email,
+                    m.role as role
+                from reservation r
+                join reservation_time rt
+                    on r.time_id = rt.id
+                join theme t
+                    on r.theme_id = t.id
+                join member m
+                    on r.member_id = m.id
+                where r.member_id = ?
+                """;
+
+        return jdbcTemplate.query(sql, reservationMapper, memberId.getValue()).stream()
+                .toList();
+    }
+
+    @Override
     public List<Reservation> findAll() {
         final String sql = """
                 select
