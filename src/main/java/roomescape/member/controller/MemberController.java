@@ -5,15 +5,15 @@ import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.member.domain.Visitor;
+import roomescape.member.dto.MemberLoginRequest;
+import roomescape.member.dto.MemberNameResponse;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.dto.MemberSignUpResponse;
-import roomescape.member.dto.MemberNameResponse;
-import roomescape.member.dto.MemberLoginRequest;
 import roomescape.member.dto.MemberSignupRequest;
 import roomescape.member.service.MemberService;
 
@@ -45,9 +45,8 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberNameResponse> checkUserLogin(
-            @CookieValue(name = "token", required = false) String token) {
-        MemberNameResponse memberNameResponse = memberService.getUserNameFromToken(token);
+    public ResponseEntity<MemberNameResponse> checkUserLogin(Visitor visitor) {
+        MemberNameResponse memberNameResponse = memberService.checkUserLogin(visitor);
         return ResponseEntity.ok(memberNameResponse);
     }
 

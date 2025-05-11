@@ -6,11 +6,13 @@ import org.springframework.stereotype.Service;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ConflictException;
 import roomescape.exception.ExceptionCause;
+import roomescape.exception.UnauthorizedException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
-import roomescape.member.dto.MemberNameResponse;
+import roomescape.member.domain.Visitor;
 import roomescape.member.dto.MemberLoginRequest;
+import roomescape.member.dto.MemberNameResponse;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.dto.MemberSignupRequest;
 
@@ -31,11 +33,6 @@ public class MemberService {
         return jwtUtil.generateToken(member);
     }
 
-    public MemberNameResponse getUserNameFromToken(String token) {
-        String name = jwtUtil.getMemberNameFromToken(token);
-        return MemberNameResponse.from(name);
-    }
-
     private Member findByEmailAndPassword(String email, String password) {
         Optional<Member> memberOptional = memberDao.findByEmailAndPassword(email, password);
         if (memberOptional.isEmpty()) {
@@ -51,6 +48,11 @@ public class MemberService {
         Member member = Member.createWithoutId(memberSignupRequest.name(), memberSignupRequest.email(),
                 memberSignupRequest.password(), USER_ROLE);
         memberDao.create(member);
+    }
+
+    public Member findByToken(String token) {
+        Long memberId = jwtUtil.getMemberIdFromToken(token);
+        return findById(memberId);
     }
 
     public Member findById(Long id) {
@@ -70,5 +72,12 @@ public class MemberService {
 
     private List<Member> findAllMembers() {
         return memberDao.findAll();
+    }
+
+    public MemberNameResponse checkUserLogin(Visitor visitor) {
+        if(!visitor.isAuthorized()) {
+            throw new UnauthorizedException(ExceptionCause.MEMBER_UNAUTHORIZED);
+        }
+        return new MemberNameResponse(visitor.name());
     }
 }
