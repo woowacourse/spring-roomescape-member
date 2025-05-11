@@ -1,6 +1,34 @@
 # 방탈출 사용자 예약 애플리케이션
 
-사용자가 예약 가능한 시간을 조회하고, 예약할 수 있습니다.
+## 주요 기능
+
+### 공통
+- 인기 테마 조회 
+- 로그인
+
+### 사용자
+- 예약 가능한 시간 조회
+- 예약 등록
+
+### 관리자
+- 예약/시간/테마
+    - 등록
+    - 목록 조회
+    - 삭제
+
+## 테스트 계정
+
+| 역할    | ID              | Password  |
+|-------|-----------------|-----------|
+| ADMIN | admin@email.com | password  |
+| USER  | user@email.com  | password  |
+| USER  | user2@email.com | password  |
+
+## API 명세서
+main 실행 후 -->
+[API 명세 보기](http://localhost:8080/docs/index.html)
+
+- 업데이트는 `.gradlew build`
 
 ## 구현할 기능 목록
 
@@ -32,3 +60,7 @@
 - [X] 인기 테마를 조회할 수 있습니다.
     - [X] 최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 확인합니다.
         - [X] `GET - /` 요청 시 인기 테마 페이지를 응답합니다.
+- [x] 로그인 기능 구현
+  - Cooki, `Argument Resolver` 활용하여 구현
+- [x] admin 페이지 권한 확인 기능 구현
+  - `HandlerInterceptor` 활용하여 구현

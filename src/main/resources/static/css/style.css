@@ -60,3 +60,9 @@
 .cursor-pointer{
     cursor: pointer;
 }
+
+.limited-height {
+    max-height: 300px;
+    height: auto;
+    width: auto;
+}
