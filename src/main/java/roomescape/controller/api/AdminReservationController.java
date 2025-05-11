@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.annotation.AdminOnly;
+import roomescape.annotation.LoginRequired;
 import roomescape.controller.dto.request.CreateReservationForAdminRequest;
 import roomescape.controller.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
@@ -18,6 +19,7 @@ import roomescape.service.dto.request.ReservationCreation;
 import roomescape.service.dto.request.ReservationCriteriaCreation;
 import roomescape.service.dto.response.ReservationResult;
 
+@LoginRequired
 @AdminOnly
 @RestController
 public class AdminReservationController {

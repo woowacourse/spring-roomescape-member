@@ -14,40 +14,36 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.annotation.AdminOnly;
+import roomescape.annotation.LoginRequired;
 import roomescape.controller.dto.request.CreateReservationTimeRequest;
 import roomescape.controller.dto.response.AvailableReservationTimeResponse;
 import roomescape.controller.dto.response.ReservationTimeResponse;
-import roomescape.domain.LoginMember;
-import roomescape.service.MemberService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.request.ReservationTimeCreation;
 import roomescape.service.dto.response.ReservationTimeResult;
 
+@LoginRequired
 @RequestMapping("/times")
 @RestController
 public class ReservationTimeController {
 
-    private final MemberService memberService;
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(final MemberService memberService,
-                                     final ReservationTimeService reservationTimeService) {
-        this.memberService = memberService;
+    public ReservationTimeController(final ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
     @AdminOnly
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationTimeResponse addReservationTime(@RequestBody @Valid CreateReservationTimeRequest request,
-                                                      LoginMember member) {
+    public ReservationTimeResponse addReservationTime(@RequestBody @Valid CreateReservationTimeRequest request) {
         final ReservationTimeCreation creation = ReservationTimeCreation.from(request);
         ReservationTimeResult reservationTimeResult = reservationTimeService.addReservationTime(creation);
         return ReservationTimeResponse.from(reservationTimeResult);
     }
 
     @GetMapping
-    public List<ReservationTimeResponse> findAllReservationTimes(LoginMember member) {
+    public List<ReservationTimeResponse> findAllReservationTimes() {
         return reservationTimeService.findAllReservationTimes()
                 .stream()
                 .map(ReservationTimeResponse::from)
@@ -56,8 +52,7 @@ public class ReservationTimeController {
 
     @GetMapping("/available")
     public List<AvailableReservationTimeResponse> findAvailableTime(@RequestParam(value = "date") LocalDate date,
-                                                                    @RequestParam(value = "themeId") long themeId,
-                                                                    LoginMember member) {
+                                                                    @RequestParam(value = "themeId") long themeId) {
         return reservationTimeService.findAllAvailableTime(date, themeId)
                 .stream()
                 .map(AvailableReservationTimeResponse::from)
@@ -67,7 +62,7 @@ public class ReservationTimeController {
     @AdminOnly
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteReservationTime(@PathVariable long id, LoginMember member) {
+    public void deleteReservationTime(@PathVariable long id) {
         reservationTimeService.deleteById(id);
     }
 }
