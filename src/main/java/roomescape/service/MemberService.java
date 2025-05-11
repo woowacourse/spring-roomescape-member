@@ -2,10 +2,10 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.controller.member.dto.LoginCheckResponse;
-import roomescape.controller.member.dto.MemberLoginRequest;
-import roomescape.controller.member.dto.MemberResponse;
-import roomescape.controller.member.dto.MemberSignupRequest;
+import roomescape.controller.api.member.dto.LoginCheckResponse;
+import roomescape.controller.api.member.dto.MemberLoginRequest;
+import roomescape.controller.api.member.dto.MemberResponse;
+import roomescape.controller.api.member.dto.MemberSignupRequest;
 import roomescape.exception.AuthorizationException;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.model.Member;
@@ -51,5 +51,16 @@ public class MemberService {
     public List<MemberResponse> findAll() {
         final List<Member> members = memberRepository.findAll();
         return MemberResponse.from(members);
+    }
+
+    public MemberResponse findByToken(final String token) {
+        final boolean isValidToken  = jwtTokenProvider.validateToken(token);
+        if (!isValidToken) {
+            throw new AuthorizationException("유효하지 않은 토큰입니다.");
+        }
+        final String email = jwtTokenProvider.getPayload(token);
+        final Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new AuthorizationException("회원 정보가 존재하지 않습니다."));
+        return MemberResponse.from(member);
     }
 }

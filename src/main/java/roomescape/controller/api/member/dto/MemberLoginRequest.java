@@ -1,4 +1,4 @@
-package roomescape.controller.member.dto;
+package roomescape.controller.api.member.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

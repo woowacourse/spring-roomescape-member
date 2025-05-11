@@ -1,4 +1,4 @@
-package roomescape.controller.timeslot;
+package roomescape.controller.api.timeslot;
 
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -12,20 +12,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import roomescape.controller.timeslot.dto.AddTimeSlotRequest;
-import roomescape.controller.timeslot.dto.AvailabilityTimeSlotRequest;
-import roomescape.controller.timeslot.dto.AvailabilityTimeSlotResponse;
-import roomescape.controller.timeslot.dto.TimeSlotResponse;
+import roomescape.controller.api.timeslot.dto.AddTimeSlotRequest;
+import roomescape.controller.api.timeslot.dto.AvailabilityTimeSlotRequest;
+import roomescape.controller.api.timeslot.dto.AvailabilityTimeSlotResponse;
+import roomescape.controller.api.timeslot.dto.TimeSlotResponse;
 import roomescape.service.TimeSlotService;
 
 @Controller
 @RequestMapping("/times")
-public class TimeSlotController {
+public class TimeSlotApiController {
 
     private final TimeSlotService service;
 
     @Autowired
-    public TimeSlotController(final TimeSlotService service) {
+    public TimeSlotApiController(final TimeSlotService service) {
         this.service = service;
     }
 

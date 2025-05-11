@@ -1,4 +1,4 @@
-package roomescape.controller.timeslot.dto;
+package roomescape.controller.api.timeslot.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;

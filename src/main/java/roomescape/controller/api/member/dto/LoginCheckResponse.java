@@ -1,4 +1,4 @@
-package roomescape.controller.member.dto;
+package roomescape.controller.api.member.dto;
 
 public record LoginCheckResponse(
         String name

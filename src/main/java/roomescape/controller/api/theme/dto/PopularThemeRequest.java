@@ -1,4 +1,4 @@
-package roomescape.controller.theme.dto;
+package roomescape.controller.api.theme.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;

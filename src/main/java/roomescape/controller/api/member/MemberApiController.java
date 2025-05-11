@@ -1,4 +1,4 @@
-package roomescape.controller.member;
+package roomescape.controller.api.member;
 
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -6,16 +6,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import roomescape.controller.member.dto.MemberResponse;
-import roomescape.controller.member.dto.MemberSignupRequest;
+import roomescape.controller.api.member.dto.MemberResponse;
+import roomescape.controller.api.member.dto.MemberSignupRequest;
 import roomescape.service.MemberService;
 
 @Controller
-public class MemberController {
+public class MemberApiController {
 
     private final MemberService service;
 
-    public MemberController(final MemberService service) {
+    public MemberApiController(final MemberService service) {
         this.service = service;
     }
 

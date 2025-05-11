@@ -1,4 +1,4 @@
-package roomescape.controller.theme.dto;
+package roomescape.controller.api.theme.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
