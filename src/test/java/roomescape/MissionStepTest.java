@@ -97,6 +97,7 @@ public class MissionStepTest {
         String userToken = jwtProvider.createToken(new Member(2L, "다로", "mail", "pass",Role.USER)); // 테스트용 JWT 생성
         RestAssured.given().log().all()
                 .cookie("token", userToken)
+                .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(403);
     }
@@ -110,7 +111,6 @@ public class MissionStepTest {
         params.put("timeId", "1");
         params.put("themeId", "1");
 
-        JwtProvider jwtProvider = new JwtProvider();
         String adminToken = jwtProvider.createToken(new Member(1L, "다로", "qwe", "1234",Role.ADMIN)); // 테스트용 JWT 생성
 
         RestAssured.given().log().all()
@@ -236,7 +236,6 @@ public class MissionStepTest {
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
-        JwtProvider jwtProvider = new JwtProvider();
         String adminToken = jwtProvider.createToken(new Member(1L, "다로", "qwe", "1234",Role.ADMIN)); // 테스트용 JWT 생성
 
         RestAssured.given().log().all()
