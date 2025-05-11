@@ -101,8 +101,6 @@ class ReservationTimeServiceTest {
     @DisplayName("존재하지 않는 시간은 삭제할 수 없다.")
     @Test
     void deleteNotExistReservationTime() {
-        // given
-
         // when & then
         assertThatThrownBy(() -> {
             service.delete(1L);
