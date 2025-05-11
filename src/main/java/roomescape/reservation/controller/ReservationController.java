@@ -39,6 +39,15 @@ public class ReservationController {
         return reservationService.getAvailableTimes(date, themeId);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/admin/reservations")
+    public List<ReservationResponse> searchReservations(@RequestParam Long themeId,
+                                                        @RequestParam Long memberId,
+                                                        @RequestParam LocalDate dateFrom,
+                                                        @RequestParam LocalDate dateTo) {
+        return reservationService.getFilteredReservations(themeId, memberId, dateFrom, dateTo);
+    }
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/reservations")
     public ReservationResponse addMemberReservation(@RequestBody MemberReservationRequest memberRequest,

@@ -56,6 +56,13 @@ public class ReservationService {
         return convertTimeToResponses(reservations, times);
     }
 
+    public List<ReservationResponse> getFilteredReservations(Long themeId, Long memberId, LocalDate dateFrom,
+                                                             LocalDate dateTo) {
+        return reservationRepository.findAllByThemeIdAndMemberIdAndPeriod(themeId, memberId, dateFrom, dateTo).stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
     private List<AvailableTimeResponse> convertTimeToResponses(List<Reservation> reservations,
                                                                List<ReservationTime> times) {
         return times.stream()

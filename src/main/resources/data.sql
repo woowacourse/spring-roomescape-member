@@ -51,11 +51,11 @@ VALUES (1, '2025-05-02', 4, 4);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
 VALUES (1, '2025-05-03', 1, 5);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2025-05-04', 2, 5);
+VALUES (2, '2025-05-04', 2, 5);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2025-05-04', 3, 5);
+VALUES (2, '2025-05-04', 3, 5);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2025-05-05', 4, 5);
+VALUES (2, '2025-05-05', 4, 5);
 
 INSERT INTO member (email, password, name, role)
 VALUES ('a@gmail.com', 'a', '하루', 'MEMBER');
