@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ThemeRepository {
-    
+
     Long save(Theme theme);
 
     void deleteById(Long id);
 
-    boolean existsByName(String name);
+    Boolean existsByName(String name);
 
     Optional<Theme> findById(Long id);
 
