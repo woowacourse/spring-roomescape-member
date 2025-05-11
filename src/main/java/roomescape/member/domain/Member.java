@@ -6,7 +6,9 @@ import roomescape.exception.custom.InvalidInputException;
 
 public class Member {
 
-    private static final int MAX_LENGTH = 255;
+    private static final int NAME_MAX_LENGTH = 15;
+    private static final int EMAIL_MAX_LENGTH = 30;
+    private static final int PASSWORD_MAX_LENGTH = 20;
     private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
@@ -64,14 +66,14 @@ public class Member {
     }
 
     private void validateValidLength(final String name, final String email, final String password) {
-        if (name.length() > MAX_LENGTH) {
-            throw new InvalidInputException("멤버 명은 255자를 초과할 수 없습니다");
+        if (name.length() > NAME_MAX_LENGTH) {
+            throw new InvalidInputException("멤버 명은 15자를 초과할 수 없습니다");
         }
-        if (email.length() > MAX_LENGTH) {
-            throw new InvalidInputException("이메일은 255자를 초과할 수 없습니다");
+        if (email.length() > EMAIL_MAX_LENGTH) {
+            throw new InvalidInputException("이메일은 30자를 초과할 수 없습니다");
         }
-        if (password.length() > MAX_LENGTH) {
-            throw new InvalidInputException("비밀 번호는 255자를 초과할 수 없습니다");
+        if (password.length() > PASSWORD_MAX_LENGTH) {
+            throw new InvalidInputException("비밀 번호는 20자를 초과할 수 없습니다");
         }
     }
 
