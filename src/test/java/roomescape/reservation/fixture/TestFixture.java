@@ -35,7 +35,7 @@ public class TestFixture {
     }
 
     public static LocalDate makeNowDate() {
-        return LocalDate.of(2025, 5, 11);
+        return LocalDate.of(2025, 5, 12);
     }
 
     public static Member makeMember() {

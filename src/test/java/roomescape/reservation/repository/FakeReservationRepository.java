@@ -17,8 +17,9 @@ public class FakeReservationRepository implements ReservationRepository {
     private final AtomicLong index = new AtomicLong(1);
 
     @Override
-    public List<Reservation> findAll() {
-        return reservations.entrySet().stream()
+    public List<Reservation> findFilteredReservations(final Long themeId, final Long memberId, final LocalDate dateFrom,
+                                                      final LocalDate dateTo) {
+        return makeFilteredReservations(themeId, memberId, dateFrom, dateTo).stream()
                 .map(entry -> {
                     Reservation value = entry.getValue();
                     return Reservation.of(entry.getKey(), value.getDate(), value.getMember(),
@@ -27,9 +28,9 @@ public class FakeReservationRepository implements ReservationRepository {
                 .toList();
     }
 
-    @Override
-    public List<Reservation> findFilteredReservations(final Long themeId, final Long memberId, final LocalDate dateFrom,
-                                     final LocalDate dateTo) {
+    private List<Entry<Long, Reservation>> makeFilteredReservations(final Long themeId, final Long memberId,
+                                                                    final LocalDate dateFrom,
+                                                                    final LocalDate dateTo) {
         List<Entry<Long, Reservation>> filteredReservations = new ArrayList<>();
         for (Entry<Long, Reservation> entry : reservations.entrySet()) {
             Reservation reservation = entry.getValue();
@@ -47,14 +48,7 @@ public class FakeReservationRepository implements ReservationRepository {
             }
             filteredReservations.add(entry);
         }
-
-        return filteredReservations.stream()
-                .map(entry -> {
-                    Reservation value = entry.getValue();
-                    return Reservation.of(entry.getKey(), value.getDate(), value.getMember(),
-                            value.getTime(), value.getTheme());
-                })
-                .toList();
+        return filteredReservations;
     }
 
     @Override

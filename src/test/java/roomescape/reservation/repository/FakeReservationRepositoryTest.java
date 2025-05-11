@@ -38,7 +38,7 @@ class FakeReservationRepositoryTest {
     void save_shouldStoreReservation() {
         reservationRepository.save(reservation);
 
-        assertThat(reservationRepository.findAll())
+        assertThat(reservationRepository.findFilteredReservations(null, null, null, null))
                 .hasSize(1);
     }
 
@@ -50,7 +50,7 @@ class FakeReservationRepositoryTest {
         reservationRepository.save(reservation);
         reservationRepository.save(reservation2);
 
-        List<Reservation> all = reservationRepository.findAll();
+        List<Reservation> all = reservationRepository.findFilteredReservations(null, null, null, null);
         assertThat(all).hasSize(2);
     }
 
@@ -59,6 +59,6 @@ class FakeReservationRepositoryTest {
         reservationRepository.save(reservation);
         reservationRepository.deleteById(1L);
 
-        assertThat(reservationRepository.findAll()).isEmpty();
+        assertThat(reservationRepository.findFilteredReservations(null, null, null, null)).isEmpty();
     }
 }

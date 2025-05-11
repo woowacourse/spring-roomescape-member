@@ -40,7 +40,7 @@ class JdbcReservationRepositoryTest {
 
     @Test
     void findAll() {
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findFilteredReservations(null, null, null, null);
         assertThat(reservations.size()).isEqualTo(27);
     }
 
@@ -50,7 +50,7 @@ class JdbcReservationRepositoryTest {
         Reservation reservation = TestFixture.makeReservation(1L, reservationTime.getId());
         reservationRepository.save(reservation);
 
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findFilteredReservations(null, null, null, null);
         assertThat(reservations.size()).isEqualTo(28);
     }
 
@@ -58,7 +58,7 @@ class JdbcReservationRepositoryTest {
     void delete() {
         reservationRepository.deleteById(1L);
 
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findFilteredReservations(null, null, null, null);
         assertThat(reservations.size()).isEqualTo(26);
     }
 }
