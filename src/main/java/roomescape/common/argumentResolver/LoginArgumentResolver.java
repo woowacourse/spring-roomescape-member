@@ -7,7 +7,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.common.util.TokenCookieManager;
-import roomescape.member.dto.LoginMember;
+import roomescape.member.dto.request.LoginMember;
 import roomescape.member.service.LoginService;
 
 public class LoginArgumentResolver implements HandlerMethodArgumentResolver {

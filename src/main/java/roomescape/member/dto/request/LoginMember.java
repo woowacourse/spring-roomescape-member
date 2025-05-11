@@ -1,4 +1,4 @@
-package roomescape.member.dto;
+package roomescape.member.dto.request;
 
 public record LoginMember(Long id, String name) {
 }

@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
 import roomescape.member.domain.Role;
-import roomescape.member.dto.MemberResponse;
-import roomescape.member.dto.SignupRequest;
-import roomescape.member.dto.SignupResponse;
+import roomescape.member.dto.response.MemberResponse;
+import roomescape.member.dto.request.SignupRequest;
+import roomescape.member.dto.response.SignupResponse;
 
 class MemberServiceTest {
 
