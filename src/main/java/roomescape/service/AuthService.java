@@ -22,20 +22,15 @@ public class AuthService {
     }
 
     public String loginAndGenerateToken(LoginRequestDto loginRequestDto) {
-        Optional<Member> member = memberDao.findByEmailAndPassword(loginRequestDto.email(), loginRequestDto.password());
-        if (member.isEmpty()) {
-            throw new UnauthorizedException("존재하지 않는 email 혹은 틀린 password 입니다.");
-        }
-        return jwtProvider.createToken(member.get());
+        return memberDao.findByEmailAndPassword(loginRequestDto.email(), loginRequestDto.password())
+                .map(jwtProvider::createToken)
+                .orElseThrow(() -> new UnauthorizedException("존재하지 않는 email 혹은 틀린 password 입니다."));
     }
 
     public MemberInfoDto findByToken(String token) {
-        Long customerId = jwtProvider.getSubjectFromToken(token);
-        Optional<Member> customer = memberDao.findById(customerId);
-        if (customer.isEmpty()) {
-            throw new NotFoundException("존재하지 않는 user 정보입니다.");
-        }
-        Member getMember = customer.get();
-        return new MemberInfoDto(getMember.getId(), getMember.getRole());
+        return Optional.ofNullable(jwtProvider.getSubjectFromToken(token))
+                .flatMap(memberDao::findById)
+                .map(member -> new MemberInfoDto(member.getId(), member.getRole()))
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 user 정보입니다."));
     }
 }
