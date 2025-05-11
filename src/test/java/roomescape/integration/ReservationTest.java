@@ -32,11 +32,13 @@ class ReservationTest extends BaseTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private Map<String, Object> reservation;
-    private Map<String, String> reservationTime;
-    private Map<String, String> theme;
-    private Map<String, String> member;
-    private Map<String, Object> auth;
+    private static final Map<String, Object> reservation = new HashMap<>();
+    private static final Map<String, String> reservationTime = new HashMap<>();
+    private static final Map<String, String> theme = new HashMap<>();
+    private static final Map<String, String> member = new HashMap<>();
+    private static final Map<String, Object> authOfMember = new HashMap<>();
+    private static final Map<String, String> admin = new HashMap<>();
+    private static final Map<String, Object> authOfAdmin = new HashMap<>();
 
     @BeforeEach
     void setUp() {
@@ -45,36 +47,41 @@ class ReservationTest extends BaseTest {
         setUpTheme();
         setUpMemberAndLogin();
         setUpReservation();
+        setUpAdminAndLogin();
     }
 
     private void setUpTime() {
-        reservationTime = new HashMap<>();
         reservationTime.put("startAt", "10:00");
     }
 
     private void setUpTheme() {
-        theme = new HashMap<>();
         theme.put("name", "테마1");
         theme.put("description", "설명1");
         theme.put("thumbnail", "썸네일1");
     }
 
     private void setUpMemberAndLogin() {
-        member = new HashMap<>();
         member.put("name", "브라운");
         member.put("email", "test@email.com");
         member.put("password", "pass1");
 
-        auth = new HashMap<>();
-        auth.put("email", "test@email.com");
-        auth.put("password", "pass1");
+        authOfMember.put("email", "test@email.com");
+        authOfMember.put("password", "pass1");
     }
 
     private void setUpReservation() {
-        reservation = new HashMap<>();
         reservation.put("date", "2025-08-05");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
+    }
+
+    private void setUpAdminAndLogin() {
+        admin.put("name", "듀이");
+        admin.put("email", "test2@email.com");
+        admin.put("password", "pass2");
+
+        authOfAdmin.put("email", "test2@email.com");
+        authOfAdmin.put("password", "pass2");
     }
 
     @Nested
@@ -90,7 +97,11 @@ class ReservationTest extends BaseTest {
 
         @Test
         void 관리자_페이지를_응답한다() {
+            givenCreatedAdmin();
+            String token = givenAdminLoginToken();
+
             RestAssured.given().log().all()
+                    .cookie("token", token)
                     .when().get("/admin")
                     .then().log().all()
                     .statusCode(HttpStatus.OK.value());
@@ -98,7 +109,11 @@ class ReservationTest extends BaseTest {
 
         @Test
         void 방탈출_예약관리_페이지를_응답한다() {
+            givenCreatedAdmin();
+            String token = givenAdminLoginToken();
+
             RestAssured.given().log().all()
+                    .cookie("token", token)
                     .when().get("/admin/reservation")
                     .then().log().all()
                     .statusCode(HttpStatus.OK.value());
@@ -106,7 +121,11 @@ class ReservationTest extends BaseTest {
 
         @Test
         void 방탈출_시간관리_페이지를_응답한다() {
+            givenCreatedAdmin();
+            String token = givenAdminLoginToken();
+
             RestAssured.given().log().all()
+                    .cookie("token", token)
                     .when().get("/admin/time")
                     .then().log().all()
                     .statusCode(HttpStatus.OK.value());
@@ -114,7 +133,11 @@ class ReservationTest extends BaseTest {
 
         @Test
         void 방탈출_테마관리_페이지를_응답한다() {
+            givenCreatedAdmin();
+            String token = givenAdminLoginToken();
+
             RestAssured.given().log().all()
+                    .cookie("token", token)
                     .when().get("/admin/theme")
                     .then().log().all()
                     .statusCode(HttpStatus.OK.value());
@@ -145,7 +168,7 @@ class ReservationTest extends BaseTest {
             givenCreatedReservationTime();
             givenCreatedTheme();
             givenCreatedMember();
-            String token = givenLoginToken();
+            String token = givenMemberLoginToken();
 
             // 생성
             RestAssured.given().log().all()
@@ -330,7 +353,7 @@ class ReservationTest extends BaseTest {
                     "테마1", "설명1", "썸네일1");
             jdbcTemplate.update("INSERT INTO member (name, role, email, password) VALUES (?, ?, ?, ?)",
                     "브라운", "USER", "test@email.com", "pass1");
-            String token = givenLoginToken();
+            String token = givenMemberLoginToken();
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -379,17 +402,17 @@ class ReservationTest extends BaseTest {
                 .statusCode(HttpStatus.CREATED.value());
     }
 
-    private String givenLoginToken() {
+    private String givenMemberLoginToken() {
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(auth)
+                .body(authOfMember)
                 .when().post("/login")
                 .then()
                 .extract().response().cookie("token");
     }
 
     private void givenCreatedReservation() {
-        String token = givenLoginToken();
+        String token = givenMemberLoginToken();
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .cookie("token", token)
@@ -397,5 +420,19 @@ class ReservationTest extends BaseTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
+    }
+
+    private void givenCreatedAdmin() {
+        jdbcTemplate.update("INSERT INTO member (name, role, email, password) VALUES (?, ?, ?, ?)",
+                admin.get("name"), "ADMIN", admin.get("email"), admin.get("password"));
+    }
+
+    private String givenAdminLoginToken() {
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(authOfAdmin)
+                .when().post("/login")
+                .then()
+                .extract().response().cookie("token");
     }
 }

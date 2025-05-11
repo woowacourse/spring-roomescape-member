@@ -8,6 +8,7 @@ import roomescape.common.BaseTest;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.fixture.MemberDbFixture;
 import roomescape.fixture.ReservationDateFixture;
@@ -57,7 +58,7 @@ class ReservationServiceTest extends BaseTest {
                 reservationTime.getId(),
                 theme.getId()
         );
-        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getEmail());
+        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), Role.USER, member.getEmail());
 
         ReservationResponse response = reservationService.createReservation(request, loginMember);
 
@@ -106,7 +107,7 @@ class ReservationServiceTest extends BaseTest {
                 reservationTime.getId(),
                 theme.getId()
         );
-        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getEmail());
+        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), Role.USER, member.getEmail());
 
         assertThatThrownBy(() -> reservationService.createReservation(request, loginMember))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -125,7 +126,7 @@ class ReservationServiceTest extends BaseTest {
                 reservationTime.getId(),
                 mystery.getId()
         );
-        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getEmail());
+        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), Role.USER, member.getEmail());
 
         assertThatCode(() -> reservationService.createReservation(request, loginMember))
                 .doesNotThrowAnyException();
