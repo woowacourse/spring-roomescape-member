@@ -72,7 +72,7 @@ public class ReservationService {
 
     private Reservation saveReservation(Member member, String date, long timeId, long themeId) {
         Reservation reservation = createReservation(member, date, timeId, themeId);
-        validateDateTimeAndSaveReservation(reservation, themeId);
+        validateDateTimeAndSaveReservation(reservation, themeId, timeId);
         return reservation;
     }
 
@@ -95,16 +95,17 @@ public class ReservationService {
             .orElseThrow(() -> new IllegalArgumentException("해당 ID의 예약시간을 찾을 수 없습니다"));
     }
 
-    private void validateDateTimeAndSaveReservation(Reservation reservation, long timeId) {
+    private void validateDateTimeAndSaveReservation(Reservation reservation, long themeId,
+        long timeId) {
         reservation.validateDateTime(currentDateTime.get());
-        validateAlreadyExistDateTime(reservation.getReservationDate(), timeId);
+        validateAlreadyExistDateTime(reservation.getReservationDate(), themeId, timeId);
         long savedId = reservationDao.save(reservation);
         reservation.setId(savedId);
     }
 
-    private void validateAlreadyExistDateTime(ReservationDate date, long timeId) {
-        if (reservationDao.existReservationOf(date, timeId)) {
-            throw new InvalidReservationException("중복된 날짜와 시간을 예약할 수 없습니다.");
+    private void validateAlreadyExistDateTime(ReservationDate date, long themeId, long timeId) {
+        if (reservationDao.existReservationOf(date, themeId, timeId)) {
+            throw new InvalidReservationException("중복된 테마 및 날짜와 시간을 예약할 수 없습니다.");
         }
     }
 

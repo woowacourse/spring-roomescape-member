@@ -52,9 +52,10 @@ public class FakeReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public boolean existReservationOf(ReservationDate date, Long timeId) {
+    public boolean existReservationOf(ReservationDate date, Long themeId, Long timeId) {
         return reservations.stream()
             .anyMatch(reservation -> reservation.getReservationDate().equals(date)
+                && reservation.getThemeId().equals(themeId)
                 && reservation.getTimeId() == timeId);
     }
 

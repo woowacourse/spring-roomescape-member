@@ -66,7 +66,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     }
 
     private ReservationDate createReservationDate(ResultSet resultSet) throws SQLException {
-        return new ReservationDate(LocalDate.parse(resultSet.getString("date")));
+        return new ReservationDate(LocalDate.parse(resultSet.getString("reservation_date")));
     }
 
     private Member createMember(ResultSet resultSet) throws SQLException {
@@ -140,7 +140,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
             Reservation reservation = jdbcTemplate.queryForObject(query,
                 (resultSet, rowNum) ->
                     new Reservation(
-                        resultSet.getLong("id"),
+                        resultSet.getLong("reservation_id"),
                         createMember(resultSet),
                         createReservationDate(resultSet),
                         createReservationTime(resultSet),
@@ -167,9 +167,9 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public boolean existReservationOf(ReservationDate date, Long timeId) {
-        String query = "select exists (select 1 from reservation where date = ? AND time_id = ?)";
-        return jdbcTemplate.queryForObject(query, Boolean.class, date.getDate(), timeId);
+    public boolean existReservationOf(ReservationDate date, Long themeId, Long timeId) {
+        String query = "select exists (select 1 from reservation where date = ? AND theme_id = ? AND time_id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, date.getDate(), themeId, timeId);
     }
 
     @Override

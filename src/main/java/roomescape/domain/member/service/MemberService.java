@@ -19,6 +19,7 @@ public class MemberService {
 
     public MemberResponseDto saveMember(MemberRequestDto memberRequestDto) {
         validateAlreadyExist(memberRequestDto);
+        System.out.println("memberRequestDto = " + memberRequestDto);
         Member member = Member.createUser(memberRequestDto.name(), memberRequestDto.email(),
             memberRequestDto.password());
         long savedId = memberDao.save(member);

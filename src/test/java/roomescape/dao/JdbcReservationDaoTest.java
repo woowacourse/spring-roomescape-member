@@ -159,7 +159,7 @@ public class JdbcReservationDaoTest {
     void count_reservation_of_date_and_time() {
         reservationDao.save(reservation);
         boolean result = reservationDao.existReservationOf(reservation.getReservationDate(),
-            reservation.getTimeId());
+            reservation.getThemeId(), reservation.getTimeId());
         assertThat(result).isTrue();
     }
 }
