@@ -1,11 +1,13 @@
-package roomescape.common.security.jwt;
+package roomescape.global.security.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.member.entity.Member;
+import roomescape.member.entity.Role;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -30,7 +32,7 @@ public class JwtTokenProvider {
         Date validity = new Date(now.getTime() + expirationTime);
         return Jwts.builder()
                 .subject(member.getId().toString())
-                .claim("role", member.getRole())
+                .claim("role", member.getRole().name())
                 .issuedAt(now)
                 .expiration(validity)
                 .signWith(secretKey)
@@ -39,6 +41,22 @@ public class JwtTokenProvider {
 
     public Long getMemberId(String token) {
         return Long.valueOf(parseClaim(token).getSubject());
+    }
+
+    public Role getRole(String token) {
+        return Role.valueOf(parseClaim(token).get("role", String.class));
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
+        } catch (JwtException e) {
+            return false;
+        }
     }
 
     private Claims parseClaim(String token) {
