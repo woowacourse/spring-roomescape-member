@@ -12,28 +12,28 @@ import roomescape.user.repository.UserRepository;
 public class MemberTestDataConfig {
 
     private static final Role ROLE_FIELD = Role.ROLE_MEMBER;
-    private static final String NAME_FIELD = "dummyName";
-    private static final String EMAIL_FIELD = "dummyEmail";
-    private static final String PASSWORD_FILED = "dummyPassword";
+    private static final String NAME_FIELD = "member_dummyName";
+    private static final String EMAIL_FIELD = "member_dummyEmail";
+    private static final String PASSWORD_FILED = "member_dummyPassword";
 
     @Autowired
     private UserRepository repository;
 
     private Long savedId;
-    private User savedUser;
+    private User savedMember;
 
     @PostConstruct
     public void setUpTestData() {
         User user = UserFixture.create(ROLE_FIELD, NAME_FIELD, EMAIL_FIELD, PASSWORD_FILED);
-        savedUser = repository.save(user);
-        savedId = savedUser.getId();
+        savedMember = repository.save(user);
+        savedId = savedMember.getId();
     }
 
     public Long getSavedId() {
         return savedId;
     }
 
-    public User getSavedUser() {
-        return savedUser;
+    public User getSavedMember() {
+        return savedMember;
     }
 }
