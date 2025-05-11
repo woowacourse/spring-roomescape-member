@@ -9,6 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.global.auth.infrastructure.AuthorizationExtractor;
 import roomescape.global.auth.infrastructure.JwtProvider;
 import roomescape.global.auth.interceptor.AdminAuthInterceptor;
+import roomescape.global.auth.resolver.AuthenticationPrincipalArgumentResolver;
 import roomescape.global.auth.service.AuthService;
 
 @Configuration

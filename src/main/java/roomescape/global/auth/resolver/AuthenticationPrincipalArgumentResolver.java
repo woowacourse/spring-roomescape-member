@@ -1,4 +1,4 @@
-package roomescape.global.auth.config;
+package roomescape.global.auth.resolver;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
