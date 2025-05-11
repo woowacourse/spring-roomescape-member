@@ -23,7 +23,7 @@ import roomescape.theme.domain.Theme;
 public class JdbcReservationDaoTest {
 
     @Autowired
-    ReservationDao reservationDAO;
+    private ReservationDao reservationDAO;
 
     @DisplayName("데이터 베이스에 예약을 추가하고 id 값을 반환한다")
     @Test
