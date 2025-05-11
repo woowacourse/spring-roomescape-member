@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.business;
 
 public record LoginInformation(
         Long id,

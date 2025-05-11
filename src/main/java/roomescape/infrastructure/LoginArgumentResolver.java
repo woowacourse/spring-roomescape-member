@@ -13,6 +13,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.business.Member;
 import roomescape.business.service.AuthenticationService;
 import roomescape.exception.MemberException;
+import roomescape.business.LoginInformation;
 
 @Component
 public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
