@@ -2,7 +2,6 @@ package roomescape.stub;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -17,7 +16,7 @@ public class StubReservationTimeRepository implements ReservationTimeRepository 
     private final List<ReservationTime> data = new ArrayList<>();
     private final AtomicLong idSequence = new AtomicLong();
     @Setter
-    private Set<Long> bookedTimeIds = new HashSet<>();
+    private Set<Long> bookedTimeIds = Set.of();
 
     public StubReservationTimeRepository(ReservationTime... initialReservationTimes) {
         data.addAll(List.of(initialReservationTimes));

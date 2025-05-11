@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import lombok.Setter;
 import roomescape.domain.Theme;
 import roomescape.dto.response.PopularThemeResponse;
 import roomescape.repository.ThemeRepository;
@@ -12,6 +13,8 @@ public class StubThemeRepository implements ThemeRepository {
 
     private final List<Theme> data = new ArrayList<>();
     private final AtomicLong idSequence = new AtomicLong();
+    @Setter
+    private List<Long> popularThemeIds = List.of();
 
     public StubThemeRepository(Theme... initialThemes) {
         data.addAll(List.of(initialThemes));
@@ -37,7 +40,11 @@ public class StubThemeRepository implements ThemeRepository {
 
     @Override
     public List<PopularThemeResponse> findAllPopular() {
-        return List.of(); // TODO. Stub이기 때문에 Setter로 구현하는 방식을 어떻게 생각하시는지 지노에게 여쭤보기
+        return popularThemeIds.stream()
+                .map(this::findById)
+                .flatMap(Optional::stream)
+                .map(theme -> new PopularThemeResponse(theme.getName(), theme.getDescription(), theme.getThumbnail()))
+                .toList();
     }
 
     @Override

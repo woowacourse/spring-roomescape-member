@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Theme;
@@ -19,7 +20,7 @@ class ThemeServiceTest {
     private final ThemeService sut = new ThemeService(stubThemeRepository, stubReservationRepository);
 
     @Test
-    @DisplayName("테마가_저장된다")
+    @DisplayName("테마가 저장된다")
     void saveTheme() {
         // given
         var request = new ThemeRequest("이름3", "설명3", "썸네일3");
@@ -37,7 +38,7 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("모든_테마를_조회한다")
+    @DisplayName("모든 테마를 조회한다")
     void findAll() {
         // given
         stubThemeRepository.save(new Theme(1L, "이름", "설명", "썸네일"));
@@ -50,7 +51,7 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("테마가_삭제된다")
+    @DisplayName("테마가 삭제된다")
     void delete() {
         // given
         var savedTheme = stubThemeRepository.save(new Theme(1L, "이름", "설명", "썸네일"));
@@ -64,14 +65,33 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("예약이_존재하는_테마를_삭제하지_못_한다")
+    @DisplayName("예약이 존재하는 테마를 삭제하지 못 한다")
     void delete_reservation_exists() {
         // given
         stubReservationRepository.setExistsByThemeId(true);
 
-        // when & then
+        // when // then
         assertThatThrownBy(() -> sut.delete(1L))
                 .isInstanceOf(ReservationException.class)
                 .hasMessage("해당 테마로 예약된 건이 존재합니다.");
+    }
+
+    @Test
+    @DisplayName("인기 테마를 조회한다")
+    void findAllPopular() {
+        // given
+        var theme1 = sut.saveTheme(new ThemeRequest("이름1", "설명1", "썸네일1"));
+        var theme2 = sut.saveTheme(new ThemeRequest("이름2", "설명2", "썸네일2"));
+
+        stubThemeRepository.setPopularThemeIds(List.of(theme2.id(), theme1.id()));
+
+        // when
+        var popularThemes = sut.findAllPopular();
+
+        // then
+        assertSoftly(soft -> {
+            soft.assertThat(popularThemes.get(0).name()).isEqualTo("이름2");
+            soft.assertThat(popularThemes.get(1).name()).isEqualTo("이름1");
+        });
     }
 }
