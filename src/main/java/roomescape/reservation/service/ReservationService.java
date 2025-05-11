@@ -11,9 +11,11 @@ import roomescape.member.entity.Member;
 import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.dto.request.ReservationRequest.ReservationAdminCreateRequest;
 import roomescape.reservation.dto.request.ReservationRequest.ReservationCreateRequest;
+import roomescape.reservation.dto.request.ReservationRequest.ReservationReadFilteredRequest;
+import roomescape.reservation.dto.response.ReservationResponse.ReservationAdminCreateResponse;
 import roomescape.reservation.dto.response.ReservationResponse.ReservationCreateResponse;
+import roomescape.reservation.dto.response.ReservationResponse.ReservationReadFilteredResponse;
 import roomescape.reservation.dto.response.ReservationResponse.ReservationReadResponse;
-import roomescape.reservation.dto.response.ReservationResponse.ReservationReadResponse.ReservationAdminCreateResponse;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.entity.ReservationTime;
 import roomescape.reservation.repository.ReservationRepository;
@@ -70,6 +72,22 @@ public class ReservationService {
                     Member member = memberRepository.findById(reservation.getMemberId())
                             .orElseThrow(() -> new NotFoundException("존재하지 않는 멤버 입니다."));
                     return ReservationReadResponse.from(reservation, member, theme);
+                })
+                .toList();
+    }
+
+    public List<ReservationReadFilteredResponse> getFilteredReservations(ReservationReadFilteredRequest request) {
+        Member member = memberRepository.findById(request.memberId())
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 멤버 입니다."));
+        List<Reservation> reservations = reservationRepository.findAllFiltered(
+                request.themeId(), request.memberId(), request.dateFrom(), request.dateTo()
+        );
+
+        return reservations.stream()
+                .map(reservation -> {
+                    Theme theme = themeRepository.findById(reservation.getThemeId())
+                            .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
+                    return ReservationReadFilteredResponse.from(reservation, member, theme);
                 })
                 .toList();
     }

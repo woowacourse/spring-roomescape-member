@@ -13,8 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.global.auth.AuthenticationPrincipal;
 import roomescape.global.auth.LoginMember;
+import roomescape.global.auth.RoleRequired;
+import roomescape.member.entity.RoleType;
 import roomescape.reservation.dto.request.ReservationRequest.ReservationCreateRequest;
+import roomescape.reservation.dto.request.ReservationRequest.ReservationReadFilteredRequest;
 import roomescape.reservation.dto.response.ReservationResponse.ReservationCreateResponse;
+import roomescape.reservation.dto.response.ReservationResponse.ReservationReadFilteredResponse;
 import roomescape.reservation.dto.response.ReservationResponse.ReservationReadResponse;
 import roomescape.reservation.service.ReservationService;
 
@@ -41,10 +45,20 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
+    @RoleRequired(roleType = RoleType.ADMIN)
     public ResponseEntity<Void> deleteReservation(
             @PathVariable("id") long id
     ) {
         reservationService.deleteReservation(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/filtered")
+    @RoleRequired(roleType = RoleType.ADMIN)
+    public ResponseEntity<List<ReservationReadFilteredResponse>> getFilteredReservations(
+            @RequestBody @Valid ReservationReadFilteredRequest request
+    ) {
+        List<ReservationReadFilteredResponse> responses = reservationService.getFilteredReservations(request);
+        return ResponseEntity.ok(responses);
     }
 }

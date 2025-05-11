@@ -19,4 +19,12 @@ public class ReservationRequest {
             @NotNull Long memberId
     ) {
     }
+
+    public record ReservationReadFilteredRequest(
+            @NotNull Long themeId,
+            @NotNull Long memberId,
+            @NotNull LocalDate dateFrom,
+            @NotNull LocalDate dateTo
+    ) {
+    }
 }
