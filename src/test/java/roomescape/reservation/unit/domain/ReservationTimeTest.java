@@ -3,68 +3,44 @@ package roomescape.reservation.unit.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.CsvSource;
 import roomescape.reservation.entity.ReservationTime;
 
 class ReservationTimeTest {
 
     @Test
-    @DisplayName("게임 러닝 타임(2시간)을 고려하여 예약 중복 여부를 판단할 수 있다.")
-    void duplicateByRunningTime() {
+    @DisplayName("예약 시간이 중복되는지 확인한다.")
+    void isDuplicatedWith() {
         // given
-        LocalTime time = LocalTime.of(10, 0);
-        LocalTime duplicateTime = time.plusHours(1);
-        ReservationTime reservationTime = new ReservationTime(1L, time);
-        ReservationTime otherTime = new ReservationTime(2L, duplicateTime);
+        var time1 = new ReservationTime(1L, LocalTime.of(10, 0));
+        var time2 = new ReservationTime(2L, LocalTime.of(11, 0));
+        var time3 = new ReservationTime(3L, LocalTime.of(12, 0));
 
-        // when
-        boolean isDuplicated = reservationTime.isDuplicatedWith(otherTime);
-
-        // then
-        assertThat(isDuplicated).isTrue();
+        // when & then
+        assertThat(time1.isDuplicatedWith(time2)).isTrue();
+        assertThat(time1.isDuplicatedWith(time3)).isFalse();
     }
 
-    @Test
-    @DisplayName("게임 러닝 타임(2시간) 이후의 예약은 중복이 아니다.")
-    void notDuplicateByRunningTime() {
-        // given
-        LocalTime time = LocalTime.of(10, 0);
-        LocalTime duplicateTime = time.plusHours(2);
-        ReservationTime reservationTime = new ReservationTime(1L, time);
-        ReservationTime otherTime = new ReservationTime(2L, duplicateTime);
-
-        // when
-        boolean isDuplicated = reservationTime.isDuplicatedWith(otherTime);
-
-        // then
-        assertThat(isDuplicated).isFalse();
-    }
-
-    @DisplayName("예약 시간이 운영 시간에 포함되는지 판단할 수 있다.")
     @ParameterizedTest
-    @MethodSource
-    void checkIsAvailable(LocalTime startAt, boolean expected) {
+    @DisplayName("예약 시간이 운영 시간 내에 있는지 확인한다.")
+    @CsvSource({
+            "09:00, false",  // 운영 시작 시간 이전
+            "10:00, true",   // 운영 시작 시간
+            "15:00, true",   // 운영 시간 내
+            "22:00, true",   // 운영 종료 시간
+            "23:00, false"   // 운영 종료 시간 이후
+    })
+    void isAvailable(String time, boolean expected) {
         // given
-        ReservationTime time = new ReservationTime(null, startAt);
+        var reservationTime = new ReservationTime(1L, LocalTime.parse(time));
 
         // when
-        boolean actual = time.isAvailable();
+        var result = reservationTime.isAvailable();
 
         // then
-        assertThat(actual).isEqualTo(expected);
+        assertThat(result).isEqualTo(expected);
     }
-
-    private static Stream<Arguments> checkIsAvailable() {
-        return Stream.of(
-                Arguments.of(LocalTime.of(9, 59), false),
-                Arguments.of(LocalTime.of(10, 0), true),
-                Arguments.of(LocalTime.of(22, 1), false),
-                Arguments.of(LocalTime.of(22, 0), true)
-        );
-    }
-}
+} 
