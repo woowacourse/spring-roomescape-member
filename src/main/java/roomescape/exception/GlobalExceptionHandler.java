@@ -19,44 +19,36 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotAuthenticatedException.class)
     public ResponseEntity<ErrorResponse> handle(NotAuthenticatedException e) {
         logger.warn("Handled NotAuthenticatedException: {}", e.getMessage(), e);
-        return createResponse(HttpStatus.UNAUTHORIZED, e);
+        return ErrorResponse.withDetailMessage(HttpStatus.UNAUTHORIZED, e, "로그인이 필요합니다.").toResponseEntity();
     }
 
     @ExceptionHandler(LoginFailException.class)
     public ResponseEntity<ErrorResponse> handle(LoginFailException e) {
         logger.warn("Handled LoginFailException: {}", e.getMessage(), e);
-        return createResponse(HttpStatus.UNAUTHORIZED, e, "로그인에 실패하였습니다.");
+        return ErrorResponse.withDetailMessage(HttpStatus.UNAUTHORIZED, e, "로그인에 실패했습니다.").toResponseEntity();
     }
 
     @ExceptionHandler(LoginExpiredException.class)
     public ResponseEntity<ErrorResponse> handle(LoginExpiredException e) {
         logger.warn("Handled LoginExpiredException: {}", e.getMessage(), e);
-        return createResponse(HttpStatus.FORBIDDEN, e);
+        return ErrorResponse.withDetailMessage(HttpStatus.FORBIDDEN, e, "다시 로그인해주세요.").toResponseEntity();
     }
 
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<ErrorResponse> handle(ForbiddenException e) {
         logger.warn("Handled ForbiddenException: {}", e.getMessage(), e);
-        return createResponse(HttpStatus.FORBIDDEN, e);
+        return ErrorResponse.withDetailMessage(HttpStatus.FORBIDDEN, e, "권한이 없습니다.").toResponseEntity();
     }
 
     @ExceptionHandler(RootBusinessException.class)
     public ResponseEntity<ErrorResponse> handle(RootBusinessException e) {
         logger.warn("Handled RootException: {}", e.getMessage(), e);
-        return createResponse(HttpStatus.BAD_REQUEST, e);
+        return ErrorResponse.withDetailMessage(HttpStatus.BAD_REQUEST, e.code()).toResponseEntity();
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handle(Exception e) {
         logger.error("Handled Exception: {}", e.getMessage(), e);
-        return ResponseEntity.internalServerError().body(ErrorResponse.withoutDetailMessage());
-    }
-
-    private static ResponseEntity<ErrorResponse> createResponse(HttpStatus status, Exception e) {
-        return ResponseEntity.status(status).body(ErrorResponse.withDetailMessage(status, e));
-    }
-
-    private static ResponseEntity<ErrorResponse> createResponse(HttpStatus status, Exception e, String message) {
-        return ResponseEntity.status(status).body(ErrorResponse.withDetailMessage(status, e, message));
+        return ErrorResponse.withoutDetailMessage().toResponseEntity();
     }
 }

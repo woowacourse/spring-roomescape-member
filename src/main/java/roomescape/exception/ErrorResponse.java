@@ -1,6 +1,7 @@
 package roomescape.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 
@@ -19,8 +20,13 @@ public record ErrorResponse(
         );
     }
 
-    public static ErrorResponse withDetailMessage(HttpStatus httpStatus, Exception e) {
-        return withDetailMessage(httpStatus, e, e.getMessage());
+    public static ErrorResponse withDetailMessage(HttpStatus httpStatus, ErrorCode errorCode) {
+        return new ErrorResponse(
+                LocalDateTime.now(),
+                httpStatus,
+                errorCode.name(),
+                errorCode.message()
+        );
     }
 
     public static ErrorResponse withoutDetailMessage() {
@@ -30,5 +36,9 @@ public record ErrorResponse(
                 "",
                 "서버에서 심각한 오류가 발생하였습니다."
         );
+    }
+
+    public ResponseEntity<ErrorResponse> toResponseEntity() {
+        return ResponseEntity.status(status).body(this);
     }
 }
