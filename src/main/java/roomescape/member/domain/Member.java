@@ -2,10 +2,12 @@ package roomescape.member.domain;
 
 
 import java.util.regex.Pattern;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import roomescape.auth.domain.AuthRole;
 
 @Getter
+@EqualsAndHashCode(of = {"id"})
 public class Member {
 
     private final Long id;
