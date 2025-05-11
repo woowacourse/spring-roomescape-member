@@ -7,8 +7,8 @@ import roomescape.member.domain.Role;
 public class StubTokenProvider implements TokenProvider {
 
     public static final Long STUB_MEMBER_ID = 1L;
-    private static final String USER_STUB_TOKEN = "user_stub_token";
-    private static final String ADMIN_STUB_TOKEN = "admin_stub_token";
+    public static final String USER_STUB_TOKEN = "user_stub_token";
+    public static final String ADMIN_STUB_TOKEN = "admin_stub_token";
 
     @Override
     public String issue(Member member) {

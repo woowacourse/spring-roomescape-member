@@ -6,17 +6,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.auth.service.out.TokenProvider;
 import roomescape.auth.stub.StubTokenProvider;
 import roomescape.auth.web.controller.request.LoginRequest;
 import roomescape.auth.web.controller.response.MemberNameResponse;
+import roomescape.config.AuthServiceTestConfig;
 import roomescape.fixture.MemberDbFixture;
 import roomescape.member.domain.Member;
 
+@Import(AuthServiceTestConfig.class)
 @Transactional
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 public class AuthServiceTest {
@@ -26,15 +25,6 @@ public class AuthServiceTest {
     @Autowired
     private MemberDbFixture memberDbFixture;
 
-    @TestConfiguration
-    static class AuthServiceTestConfig {
-        @Primary
-        @Bean
-        public TokenProvider stubTokenProvider() {
-            return new StubTokenProvider();
-        }
-    }
-
     @Test
     void 로그인한다() {
         Member user = memberDbFixture.유저1_생성();
@@ -42,7 +32,7 @@ public class AuthServiceTest {
 
         String accessToken = authService.login(request);
 
-        assertThat(accessToken).isEqualTo("user_stub_token");
+        assertThat(accessToken).isEqualTo(StubTokenProvider.USER_STUB_TOKEN);
     }
 
     @Test

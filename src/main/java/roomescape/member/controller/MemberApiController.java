@@ -6,6 +6,7 @@ import static roomescape.member.controller.response.MemberSuccessCode.SIGN_UP;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,8 +27,9 @@ public class MemberApiController {
     public ResponseEntity<ApiResponse<MemberResponse>> signUp(@RequestBody @Valid SignUpRequest request) {
         MemberResponse response = memberService.signUp(request);
 
-        return ResponseEntity.ok(
-                ApiResponse.success(SIGN_UP, response));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success(SIGN_UP, response));
     }
 
     @GetMapping("/members")
