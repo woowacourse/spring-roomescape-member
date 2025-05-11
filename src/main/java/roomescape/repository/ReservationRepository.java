@@ -10,7 +10,7 @@ import java.util.List;
 public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
-    
+
     List<Reservation> findAll();
 
     boolean isExistByTimeId(long id);
@@ -20,4 +20,6 @@ public interface ReservationRepository {
     int deleteById(long id);
 
     boolean isExistByReservationId(long id);
+
+    List<Reservation> findByMemberAndThemeAndDateRange(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo);
 }

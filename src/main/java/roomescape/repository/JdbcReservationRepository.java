@@ -97,6 +97,35 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findByMemberAndThemeAndDateRange(final Long memberId, final Long themeId, final LocalDate dateFrom, final LocalDate dateTo) {
+        final String sql = """
+                SELECT
+                 r.id as reservation_id,
+                 r.date,
+                 m.id as member_id,
+                 m.name as member_name,
+                 m.email as member_email,
+                 m.password as member_password,
+                 m.role as member_role,
+                 rt.id as time_id,
+                 rt.start_at as time_value,
+                 t.id as theme_id,
+                 t.name as theme_name,
+                 t.description as theme_description,
+                 t.thumbnail as theme_thumbnail
+                FROM reservation as r
+                INNER JOIN member as m ON r.member_id = m.id
+                INNER JOIN reservation_time as rt ON r.time_id = rt.id
+                INNER JOIN theme as t ON r.theme_id = t.id
+                WHERE r.date BETWEEN ? AND ?
+                  AND r.member_id = ?
+                  AND r.theme_id = ?
+                """;
+        return jdbcTemplate.query(sql, ROW_MAPPER, dateFrom, dateTo, memberId, themeId);
+    }
+
+
+    @Override
     public boolean isExistByReservationId(final long id) {
         final String sql = "SELECT COUNT(*) FROM reservation WHERE id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);

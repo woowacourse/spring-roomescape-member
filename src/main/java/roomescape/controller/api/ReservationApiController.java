@@ -11,6 +11,7 @@ import roomescape.entity.Member;
 import roomescape.entity.Reservation;
 import roomescape.service.ReservationService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -27,7 +28,6 @@ public class ReservationApiController {
             @RequestBody @Valid ReservationMemberRequest request,
             Member member
     ) {
-
         Reservation reservation = reservationService.createMemberReservation(
                 member,
                 request.date(),
@@ -53,6 +53,23 @@ public class ReservationApiController {
     @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponse>> getReservations() {
         List<Reservation> reservations = reservationService.getReservations();
+        List<ReservationResponse> responses = ReservationResponse.from(reservations);
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/admin/reservation/search")
+    public ResponseEntity<List<ReservationResponse>> getSearchReservations(
+            @RequestParam(required = false) Long memberId,
+            @RequestParam(required = false) Long themeId,
+            @RequestParam LocalDate dateFrom,
+            @RequestParam LocalDate dateTo
+    ) {
+        List<Reservation> reservations = reservationService.searchReservationsByDateRange(
+                memberId,
+                themeId,
+                dateFrom,
+                dateTo
+        );
         List<ReservationResponse> responses = ReservationResponse.from(reservations);
         return ResponseEntity.ok(responses);
     }

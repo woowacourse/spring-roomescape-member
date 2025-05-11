@@ -73,6 +73,15 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    public List<Reservation> searchReservationsByDateRange(
+            final Long memberId,
+            final Long themeId,
+            final LocalDate dateFrom,
+            final LocalDate dateTo
+    ) {
+        return reservationRepository.findByMemberAndThemeAndDateRange(memberId, themeId, dateFrom, dateTo);
+    }
+
     public void delete(final long id) {
         if (!reservationRepository.isExistByReservationId(id)) {
             throw new ReservationNotFoundException();
