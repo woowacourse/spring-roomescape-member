@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +18,7 @@ import roomescape.domain.MemberRoleType;
 public class JwtProvider {
 
     private static final String ISSUER = "roomescape";
-    private static final long ACCESS_EXPIRATION = 1000 * 60 * 60 * 24; // 1000 ms * 60초 * 60분 * 24시간 = 1일
+    private static final Duration ACCESS_EXPIRATION = Duration.ofDays(1);
 
     private final SecretKey secretKey;
 
@@ -33,7 +34,7 @@ public class JwtProvider {
                 .claim("role", jwtRequest.role())
                 .issuer(ISSUER)
                 .issuedAt(jwtRequest.issuedAt())
-                .expiration(new Date(jwtRequest.issuedAt().getTime() + ACCESS_EXPIRATION))
+                .expiration(new Date(jwtRequest.issuedAt().getTime() + ACCESS_EXPIRATION.toMillis()))
                 .signWith(secretKey, SIG.HS256)
                 .compact();
     }
