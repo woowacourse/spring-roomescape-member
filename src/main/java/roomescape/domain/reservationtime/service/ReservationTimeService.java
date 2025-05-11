@@ -1,6 +1,7 @@
 package roomescape.domain.reservationtime.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.dao.ReservationDao;
 import roomescape.domain.reservationtime.dao.ReservationTimeDao;
@@ -52,8 +53,12 @@ public class ReservationTimeService {
             .orElseThrow(() -> new IllegalArgumentException("해당 ID의 예약시간을 찾을 수 없습니다"));
     }
 
-    public List<BookedReservationTimeResponseDto> getTimesContainsReservationInfoBy(String date,
-        Long themeId) {
-        return reservationTimeDao.findBooked(date, themeId);
+    public List<BookedReservationTimeResponseDto> getTimesContainsReservationInfoBy(
+        String date, Long themeId) {
+        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        List<ReservationTime> bookedTimes = reservationTimeDao.findBookedTimes(date, themeId);
+        return reservationTimes.stream()
+            .map(time -> BookedReservationTimeResponseDto.from(time, bookedTimes.contains(time)))
+            .collect(Collectors.toList());
     }
 }

@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.reservationtime.dao.ReservationTimeDao;
-import roomescape.domain.reservationtime.dto.response.BookedReservationTimeResponseDto;
 import roomescape.domain.reservationtime.model.ReservationTime;
 
 @Sql(scripts = {"/test-schema.sql"})
@@ -90,18 +89,14 @@ public class JdbcReservationTimeDaoTest {
         assertThat(reservationTimeDao.findById(savedId)).isNotNull();
     }
 
-    @DisplayName("예약이 이미 되어있는 시간이라면 true, 아니라면 false를 포함해 반환해야 한다.")
+    @DisplayName("해당 날짜와 테마 아이디에 대해 예약이 이미 되어있는 시간을 가져올 수 있어야 한다.")
     @Test
     void already_reservation_then_true_else_false() {
         initData();
-        List<BookedReservationTimeResponseDto> bookedReservationTime = reservationTimeDao.findBooked(
-            "2025-04-24", 1L);
-        assertThat(bookedReservationTime.get(0).timeId()).isEqualTo(1);
-        assertThat(bookedReservationTime.get(0).alreadyBooked()).isTrue();
-        assertThat(bookedReservationTime.get(1).timeId()).isEqualTo(2);
-        assertThat(bookedReservationTime.get(1).alreadyBooked()).isFalse();
-        assertThat(bookedReservationTime.get(2).timeId()).isEqualTo(3);
-        assertThat(bookedReservationTime.get(2).alreadyBooked()).isFalse();
+        List<ReservationTime> result = reservationTimeDao.findBookedTimes("2025-04-24", 1L);
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getId()).isEqualTo(1);
+        assertThat(result.get(0).getStartAt()).isEqualTo("10:00");
     }
 
     private void initData() {
