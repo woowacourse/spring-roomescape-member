@@ -1,5 +1,6 @@
 package roomescape.persistence.dao;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,6 +27,15 @@ public class JdbcMemberDao implements MemberDao {
 
     public JdbcMemberDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public List<Member> findAll() {
+        final String sql = """
+                SELECT id, name, email, password
+                FROM member
+                """;
+        return jdbcTemplate.query(sql, memberRowMapper);
     }
 
     @Override
