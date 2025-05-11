@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -26,7 +27,8 @@ public class JdbcReservationDao implements ReservationDao {
                             resultSet.getLong("member_id"),
                             resultSet.getString("member_name"),
                             resultSet.getString("member_email"),
-                            resultSet.getString("member_password")
+                            resultSet.getString("member_password"),
+                            MemberRole.valueOf(resultSet.getString("member_role"))
                     ),
                     resultSet.getDate("date").toLocalDate(),
                     new ReservationTime(
@@ -60,7 +62,8 @@ public class JdbcReservationDao implements ReservationDao {
                     m.id AS member_id,
                     m.name AS member_name,
                     m.email AS member_email,
-                    m.password AS member_password
+                    m.password AS member_password,
+                    m.role AS member_role
                 FROM reservation AS r 
                 INNER JOIN member AS m ON r.member_id = m.id
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
@@ -132,7 +135,8 @@ public class JdbcReservationDao implements ReservationDao {
                     m.id AS member_id,
                     m.name AS member_name,
                     m.email AS member_email,
-                    m.password AS member_password
+                    m.password AS member_password,
+                    m.role AS member_role
                 FROM reservation AS r 
                 INNER JOIN member AS m ON r.member_id = m.id
                 INNER JOIN reservation_time AS t ON r.time_id = t.id

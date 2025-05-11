@@ -5,12 +5,14 @@ public class Member {
     private final MemberName name;
     private final String email;
     private final String password;
+    private final MemberRole role;
 
-    public Member(final Long id, final String name, final String email, final String password) {
+    public Member(final Long id, final String name, final String email, final String password, final MemberRole role) {
         this.id = id;
         this.name = new MemberName(name);
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public Long getId() {
@@ -27,5 +29,9 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public MemberRole getRole() {
+        return role;
     }
 }

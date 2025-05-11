@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.fake.FakeMemberDao;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
 import roomescape.member.repository.MemberDao;
 import roomescape.member.service.dto.MemberInfo;
 
@@ -20,8 +21,8 @@ class MemberServiceTest {
     void init() {
         memberDao = new FakeMemberDao();
         memberService = new MemberService(memberDao);
-        memberDao.save(new Member(null, "레오", "레오@gmail.com", "qwer!"));
-        memberDao.save(new Member(null, "몽이", "몽이@gmail.com", "ㅂㅈㄷㄱ!"));
+        memberDao.save(new Member(null, "레오", "레오@gmail.com", "qwer!", MemberRole.ADMIN));
+        memberDao.save(new Member(null, "몽이", "몽이@gmail.com", "ㅂㅈㄷㄱ!", MemberRole.ADMIN));
     }
 
     @DisplayName("모든 멤버 정보를 조회하여 반환할 수 있다")

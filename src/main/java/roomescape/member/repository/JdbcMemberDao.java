@@ -10,18 +10,20 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
 
 @Repository
 public class JdbcMemberDao implements MemberDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final RowMapper<Member> memberMapper = (resulSet, rowNum) ->
-        new Member(
-                resulSet.getLong("id"),
-                resulSet.getString("name"),
-                resulSet.getString("email"),
-                resulSet.getString("password")
-        );
+            new Member(
+                    resulSet.getLong("id"),
+                    resulSet.getString("name"),
+                    resulSet.getString("email"),
+                    resulSet.getString("password"),
+                    MemberRole.valueOf(resulSet.getString("role"))
+            );
 
     public JdbcMemberDao(final NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -39,7 +41,7 @@ public class JdbcMemberDao implements MemberDao {
 
     @Override
     public Optional<Member> findById(long id) {
-        final String sql = "SELECT id, name, email, password FROM member WHERE id = :id";
+        final String sql = "SELECT id, name, email, password, role FROM member WHERE id = :id";
         final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         final Member member = jdbcTemplate.queryForObject(sql, parameters, memberMapper);
         return Optional.ofNullable(member);
@@ -47,14 +49,16 @@ public class JdbcMemberDao implements MemberDao {
 
     @Override
     public Member save(Member member) {
-        final String sql = "INSERT INTO member(name, email, password) VALUES(:name, :email, :password)";
+        final String sql = "INSERT INTO member(name, email, password, role) VALUES(:name, :email, :password, :role)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
-                .addValue("password", member.getPassword());
+                .addValue("password", member.getPassword())
+                .addValue("role", member.getRole().name());
         jdbcTemplate.update(sql, parameters, keyHolder, new String[]{"id"});
-        return new Member(keyHolder.getKeyAs(Long.class), member.getName(), member.getEmail(), member.getPassword());
+        return new Member(keyHolder.getKeyAs(Long.class), member.getName(), member.getEmail(), member.getPassword(),
+                member.getRole());
     }
 
     @Override

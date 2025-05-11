@@ -27,7 +27,7 @@ import roomescape.reservation.controller.ReservationController;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql(
         value = "/schema.sql",
-        statements = "insert into member(name, email, password) values('레오', 'rlawnsdud920@gmail.com', 'qwer!')"
+        statements = "insert into member(name, email, password, role) values('레오', 'rlawnsdud920@gmail.com', 'qwer!', 'ADMIN')"
 )
 public class MissionStepTest {
 

@@ -14,6 +14,7 @@ import roomescape.CurrentDateTime;
 import roomescape.fake.FakeMemberDao;
 import roomescape.fake.TestCurrentDateTime;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
 import roomescape.reservation.service.dto.ReservationCreateCommand;
 import roomescape.reservation.service.dto.ReservationInfo;
 import roomescape.fake.FakeReservationDao;
@@ -41,8 +42,10 @@ class ReservationServiceTest {
         // given
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(LocalTime.of(11, 0)));
         Theme savedTheme = themeDao.save(new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa"));
-        Member savedMember = memberDao.save(new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!"));
-        ReservationCreateCommand request = new ReservationCreateCommand(tomorrow, savedMember.getId(), savedTime.getId(),
+        Member savedMember = memberDao.save(
+                new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!", MemberRole.ADMIN));
+        ReservationCreateCommand request = new ReservationCreateCommand(tomorrow, savedMember.getId(),
+                savedTime.getId(),
                 savedTheme.getId());
         reservationService.createReservation(request);
         // when
@@ -57,13 +60,16 @@ class ReservationServiceTest {
     void shouldNot_ThrowException_WhenThemeIsDifferent() {
         // given
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(LocalTime.of(11, 0)));
-        Member savedMember = memberDao.save(new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!"));
+        Member savedMember = memberDao.save(
+                new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!", MemberRole.ADMIN));
         Theme savedTheme1 = themeDao.save(new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa"));
-        ReservationCreateCommand request1 = new ReservationCreateCommand(tomorrow, savedMember.getId(), savedTime.getId(),
+        ReservationCreateCommand request1 = new ReservationCreateCommand(tomorrow, savedMember.getId(),
+                savedTime.getId(),
                 savedTheme1.getId());
         reservationService.createReservation(request1);
         Theme savedTheme2 = themeDao.save(new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa"));
-        ReservationCreateCommand request2 = new ReservationCreateCommand(tomorrow, savedMember.getId(), savedTime.getId(),
+        ReservationCreateCommand request2 = new ReservationCreateCommand(tomorrow, savedMember.getId(),
+                savedTime.getId(),
                 savedTheme2.getId());
         // when
         // then
@@ -76,8 +82,10 @@ class ReservationServiceTest {
     void validateTime() {
         // given
         Theme savedTheme = themeDao.save(new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa"));
-        Member savedMember = memberDao.save(new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!"));
-        ReservationCreateCommand request = new ReservationCreateCommand(tomorrow, savedMember.getId(), 1L, savedTheme.getId());
+        Member savedMember = memberDao.save(
+                new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!", MemberRole.ADMIN));
+        ReservationCreateCommand request = new ReservationCreateCommand(tomorrow, savedMember.getId(), 1L,
+                savedTheme.getId());
         // when
         // then
         assertThatThrownBy(() -> reservationService.createReservation(request))
@@ -90,8 +98,10 @@ class ReservationServiceTest {
     void validateTheme() {
         // given
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(LocalTime.of(11, 0)));
-        Member savedMember = memberDao.save(new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!"));
-        ReservationCreateCommand request = new ReservationCreateCommand(tomorrow, savedMember.getId(), savedTime.getId(), 1L);
+        Member savedMember = memberDao.save(
+                new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!", MemberRole.ADMIN));
+        ReservationCreateCommand request = new ReservationCreateCommand(tomorrow, savedMember.getId(),
+                savedTime.getId(), 1L);
         // when
         // then
         assertThatThrownBy(() -> reservationService.createReservation(request))
@@ -105,9 +115,11 @@ class ReservationServiceTest {
         // given
         reservationTimeDao.save(new ReservationTime(LocalTime.of(11, 0)));
         Theme savedTheme = themeDao.save(new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa"));
-        Member savedMember = memberDao.save(new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!"));
+        Member savedMember = memberDao.save(
+                new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!", MemberRole.ADMIN));
         LocalDate yesterday = currentDateTime.getDate().minusDays(1);
-        ReservationCreateCommand request = new ReservationCreateCommand(yesterday, savedMember.getId(), 1L, savedTheme.getId());
+        ReservationCreateCommand request = new ReservationCreateCommand(yesterday, savedMember.getId(), 1L,
+                savedTheme.getId());
         // when
         // then
         assertThatThrownBy(() -> reservationService.createReservation(request))
@@ -122,8 +134,10 @@ class ReservationServiceTest {
         LocalTime time = LocalTime.of(11, 0);
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(time));
         Theme savedTheme = themeDao.save(new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa"));
-        Member savedMember = memberDao.save(new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!"));
-        ReservationCreateCommand request = new ReservationCreateCommand(tomorrow, savedMember.getId(), savedTime.getId(),
+        Member savedMember = memberDao.save(
+                new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!", MemberRole.ADMIN));
+        ReservationCreateCommand request = new ReservationCreateCommand(tomorrow, savedMember.getId(),
+                savedTime.getId(),
                 savedTheme.getId());
         // when
         ReservationInfo result = reservationService.createReservation(request);
@@ -156,8 +170,10 @@ class ReservationServiceTest {
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(time));
         Theme theme = new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa");
         Theme savedTheme = themeDao.save(theme);
-        Member savedMember = memberDao.save(new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!"));
-        ReservationCreateCommand request1 = new ReservationCreateCommand(tomorrow, savedMember.getId(), savedTime.getId(),
+        Member savedMember = memberDao.save(
+                new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!", MemberRole.ADMIN));
+        ReservationCreateCommand request1 = new ReservationCreateCommand(tomorrow, savedMember.getId(),
+                savedTime.getId(),
                 savedTheme.getId());
         ReservationCreateCommand request2 = new ReservationCreateCommand(tomorrow.plusDays(1), savedMember.getId(),
                 savedTime.getId(), savedTheme.getId());
@@ -176,8 +192,10 @@ class ReservationServiceTest {
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(time));
         Theme theme = new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa");
         Theme savedTheme = themeDao.save(theme);
-        Member savedMember = memberDao.save(new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!"));
-        ReservationCreateCommand request = new ReservationCreateCommand(tomorrow, savedMember.getId(), savedTime.getId(),
+        Member savedMember = memberDao.save(
+                new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!", MemberRole.ADMIN));
+        ReservationCreateCommand request = new ReservationCreateCommand(tomorrow, savedMember.getId(),
+                savedTime.getId(),
                 savedTheme.getId());
         reservationService.createReservation(request);
         // when

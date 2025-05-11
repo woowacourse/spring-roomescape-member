@@ -28,7 +28,8 @@ public class FakeMemberDao implements MemberDao {
 
     @Override
     public Member save(Member member) {
-        Member newMember = new Member(index++, member.getName(), member.getEmail(), member.getPassword());
+        Member newMember = new Member(index++, member.getName(), member.getEmail(), member.getPassword(),
+                member.getRole());
         members.add(newMember);
         return newMember;
     }
