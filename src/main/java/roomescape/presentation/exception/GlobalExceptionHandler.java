@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAuthException(AuthException e) {
         String message = e.getMessage();
         log.warn(message);
-        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.CONFLICT, message);
+        ErrorResponse errorResponse = ErrorResponse.of(e.getStatus(), message);
         return ResponseEntity
                 .status(e.getStatus())
                 .body(errorResponse);
