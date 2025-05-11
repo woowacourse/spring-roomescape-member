@@ -25,7 +25,6 @@ public class AdminRoleInterceptor implements HandlerInterceptor {
         if (cookies == null) {
             throw new AuthorizationException();
         }
-
         Token token = extractTokenFrom(cookies);
         Payload payload = authService.getPayload(token);
 

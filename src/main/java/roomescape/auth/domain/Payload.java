@@ -19,7 +19,6 @@ public record Payload(Long memberId, Role role) {
         if (memberId == null) {
             throw new IllegalArgumentException("[ERROR] memberId가 빈 값이어서는 안 됩니다.");
         }
-
         if (role == null) {
             throw new IllegalArgumentException("[ERROR] role이 빈 값이어서는 안 됩니다.");
         }
