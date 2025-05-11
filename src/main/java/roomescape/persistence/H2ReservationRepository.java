@@ -93,6 +93,32 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAllByThemeAndMemberAndDate(Long themeId,
+                                                            Long memberId,
+                                                            LocalDate dateFrom,
+                                                            LocalDate dateTo) {
+        String query = """
+                SELECT
+                    r.id AS reservation_id, r.date,
+                    m.id AS member_id, m.name, m.email, m.password, m.role,
+                    t.id AS time_id, t.start_at,
+                    th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail
+                FROM reservation AS r
+                JOIN reservation_time AS t
+                JOIN theme AS th
+                JOIN member as m
+                ON r.time_id = t.id AND r.theme_id = th.id AND m.id = r.member_id
+                WHERE th.id = ? AND m.id = ? AND r.date >= ? AND r.date <= ?
+                """;
+        return jdbcTemplate.query(query, reservationRowMapper,
+                themeId,
+                memberId,
+                dateFrom,
+                dateTo
+        );
+    }
+
+    @Override
     public Long add(Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("member_id", reservation.getMember().getId());

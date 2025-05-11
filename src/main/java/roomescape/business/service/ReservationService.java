@@ -1,5 +1,6 @@
 package roomescape.business.service;
 
+import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -21,6 +22,7 @@ import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
 import roomescape.persistence.ReservationTimeRepository;
 import roomescape.presentation.dto.request.AdminReservationRequestDto;
+import roomescape.presentation.dto.request.AdminReservationSearchRequestDto;
 import roomescape.presentation.dto.response.MemberResponseDto;
 import roomescape.presentation.dto.request.ReservationRequestDto;
 import roomescape.presentation.dto.response.ReservationResponseDto;
@@ -94,6 +96,40 @@ public class ReservationService {
                         reservation.getTheme().getThumbnail()
                 )
         );
+    }
+
+    public List<ReservationResponseDto> searchReservationsForThemeAndMemberAndDate(
+            Long themeId,
+            Long memberId,
+            LocalDate dateFrom,
+            LocalDate dateTo) {
+        List<Reservation> searchedReservations = reservationRepository.findAllByThemeAndMemberAndDate(
+                themeId,
+                memberId,
+                dateFrom,
+                dateTo
+        );
+        return searchedReservations.stream()
+                .map(reservation -> new ReservationResponseDto(
+                                reservation.getId(),
+                                reservation.getDate(),
+                                new MemberResponseDto(
+                                        reservation.getMember().getId(),
+                                        reservation.getMember().getName(),
+                                        reservation.getMember().getEmail()
+                                ),
+                                new ReservationTimeResponseDto(
+                                        reservation.getTime().getId(),
+                                        reservation.getTime().getStartAt()
+                                ),
+                                new ReservationThemeResponseDto(
+                                        reservation.getTheme().getId(),
+                                        reservation.getTheme().getName(),
+                                        reservation.getTheme().getDescription(),
+                                        reservation.getTheme().getThumbnail()
+                                )
+                        )
+                ).toList();
     }
 
     public Long createReservation(ReservationRequestDto reservationDto, Long memberId) {

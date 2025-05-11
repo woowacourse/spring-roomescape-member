@@ -1,5 +1,6 @@
 package roomescape.business.fakerepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +24,18 @@ public final class FakeReservationRepository implements ReservationRepository {
         return reservations.stream()
                 .filter(reservation -> Objects.equals(reservation.getId(), id))
                 .findFirst();
+    }
+
+    @Override
+    public List<Reservation> findAllByThemeAndMemberAndDate(Long themeId,
+                                                            Long memberId,
+                                                            LocalDate dateFrom,
+                                                            LocalDate dateTo) {
+        return reservations.stream()
+                .filter(reservation -> Objects.equals(reservation.getTheme().getId(), themeId)
+                        && Objects.equals(reservation.getMember().getId(), memberId)
+                        && reservation.getDate().isAfter(dateFrom) && reservation.getDate().isBefore(dateTo))
+                .toList();
     }
 
     @Override
