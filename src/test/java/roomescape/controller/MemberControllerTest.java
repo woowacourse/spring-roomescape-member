@@ -64,5 +64,18 @@ public class MemberControllerTest {
                 .body("name", is("vector"));
     }
 
+    @Test
+    @DisplayName("모든 멤버 요청하면 멤버들과 200을 반환한다")
+    void getMembersTest() {
+        // given
+        RestAssured.given().log().all()
+                .when().get("/members")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
+
+
+    }
+
 
 }
