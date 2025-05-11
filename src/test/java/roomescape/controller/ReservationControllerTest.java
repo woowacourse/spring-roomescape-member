@@ -36,7 +36,10 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("/reservations GET 요청에 정상적으로 응답한다")
     void reservations_api() {
+        String token = getToken();
+
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -63,6 +66,7 @@ public class ReservationControllerTest {
                 .body("id", is(1));
 
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -151,6 +155,7 @@ public class ReservationControllerTest {
                 .body("id", notNullValue());
 
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
@@ -159,12 +164,16 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("/reservations/{id} DELETE 요청시 id가 존재하지 않는다면 404를 응답한다")
     void reservation_delete_not_exist_api() {
+        String token = getToken();
+
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().delete("/reservations/-1")
                 .then().log().all()
                 .statusCode(404);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)

@@ -93,6 +93,7 @@ public class AdminControllerTest {
                 .body("id", is(1));
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
