@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.service.AuthService;
+import roomescape.auth.util.CookieHandler;
 
 public class CheckLoginInterceptor implements HandlerInterceptor {
 
@@ -20,8 +21,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
                              @NonNull Object handler) {
 
         final Cookie[] cookies = request.getCookies();
-
-        final String token = authService.extractTokenFromCookie(cookies);
+        final String token = CookieHandler.extractTokenFromCookies(cookies);
 
         if (!authService.isAdmin(token)) {
             response.setStatus(401);

@@ -9,6 +9,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.service.AuthService;
+import roomescape.auth.util.CookieHandler;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -32,7 +33,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         final HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();
         final Cookie[] cookies = nativeRequest.getCookies();
 
-        final String token = authService.extractTokenFromCookie(cookies);
+        final String token = CookieHandler.extractTokenFromCookies(cookies);
         return authService.findMemberByToken(token);
     }
 }

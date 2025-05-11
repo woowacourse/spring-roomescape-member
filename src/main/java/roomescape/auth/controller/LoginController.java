@@ -13,6 +13,7 @@ import roomescape.auth.controller.dto.LoginRequest;
 import roomescape.auth.controller.dto.MemberNameResponse;
 import roomescape.auth.service.AuthService;
 import roomescape.auth.service.dto.CreateTokenServiceRequest;
+import roomescape.auth.util.CookieHandler;
 import roomescape.member.domain.Member;
 
 @RestController
@@ -29,7 +30,7 @@ public class LoginController {
         final CreateTokenServiceRequest request = CreateTokenServiceRequest.from(loginRequest);
 
         final String token = authService.createToken(request);
-        final ResponseCookie cookie = authService.createCookie(token);
+        final ResponseCookie cookie = CookieHandler.createCookieFromToken(token);
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
@@ -37,7 +38,7 @@ public class LoginController {
     @GetMapping("/login/check")
     public MemberNameResponse checkLogin(HttpServletRequest request) {
         final Cookie[] cookies = request.getCookies();
-        final String token = authService.extractTokenFromCookie(cookies);
+        final String token = CookieHandler.extractTokenFromCookies(cookies);
         final Member member = authService.findMemberByToken(token);
 
         return MemberNameResponse.from(member);
