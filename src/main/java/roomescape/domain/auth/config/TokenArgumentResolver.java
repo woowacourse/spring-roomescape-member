@@ -14,11 +14,11 @@ import roomescape.domain.auth.service.AuthService;
 
 @Slf4j
 @Component
-public class JwtArgumentResolver implements HandlerMethodArgumentResolver {
+public class TokenArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthService authService;
 
-    public JwtArgumentResolver(final AuthService authService) {
+    public TokenArgumentResolver(final AuthService authService) {
         this.authService = authService;
     }
 

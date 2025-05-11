@@ -31,6 +31,6 @@ public class AuthConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new JwtArgumentResolver(authService));
+        resolvers.add(new TokenArgumentResolver(authService));
     }
 }
