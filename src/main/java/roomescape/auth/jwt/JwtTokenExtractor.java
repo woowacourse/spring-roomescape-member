@@ -1,13 +1,13 @@
 package roomescape.auth.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Base64;
-import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.exception.custom.AuthorizationException;
@@ -63,10 +63,8 @@ public class JwtTokenExtractor implements AuthTokenExtractor {
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
-
-            if (claims.getBody().getExpiration().before(new Date())) {
-                throw new AuthorizationException("토큰이 만료 되었습니다");
-            }
+        } catch (ExpiredJwtException e) {
+            throw new AuthorizationException("토큰이 만료 되었습니다");
         } catch (JwtException | IllegalArgumentException e) {
             throw new AuthorizationException("서명이 올바르지 않거나 잘못된 토큰입니다");
         }
