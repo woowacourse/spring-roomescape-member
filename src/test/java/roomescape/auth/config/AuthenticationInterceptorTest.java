@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.method.HandlerMethod;
 import roomescape.auth.AuthRequired;
+import roomescape.auth.AuthToken;
 import roomescape.auth.LoginInfo;
 import roomescape.auth.jwt.JwtUtil;
 import roomescape.exception.auth.AuthenticationException;
@@ -67,7 +68,7 @@ class AuthenticationInterceptorTest {
 
         given(handlerMethod.getMethodAnnotation(AuthRequired.class)).willReturn(mock(AuthRequired.class));
         given(request.getCookies()).willReturn(new Cookie[]{cookie});
-        given(jwtUtil.validateAndResolveToken(token)).willReturn(loginInfo);
+        given(jwtUtil.validateAndResolveToken(new AuthToken(token))).willReturn(loginInfo);
 
         // when
         boolean result = sut.preHandle(request, response, handlerMethod);
@@ -98,7 +99,7 @@ class AuthenticationInterceptorTest {
 
         given(handlerMethod.getMethodAnnotation(AuthRequired.class)).willReturn(mock(AuthRequired.class));
         given(request.getCookies()).willReturn(new Cookie[]{cookie});
-        given(jwtUtil.validateAndResolveToken(token)).willThrow(AuthenticationException.class);
+        given(jwtUtil.validateAndResolveToken(new AuthToken(token))).willThrow(AuthenticationException.class);
 
         // when, then
         assertThatThrownBy(() -> sut.preHandle(request, response, handlerMethod))

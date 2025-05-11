@@ -8,5 +8,5 @@ public interface JwtUtil {
 
     AuthToken createToken(User user);
 
-    LoginInfo validateAndResolveToken(String tokenValue);
+    LoginInfo validateAndResolveToken(AuthToken token);
 }

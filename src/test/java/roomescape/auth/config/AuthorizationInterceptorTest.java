@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.method.HandlerMethod;
+import roomescape.auth.AuthToken;
 import roomescape.auth.LoginInfo;
 import roomescape.auth.Role;
 import roomescape.auth.jwt.JwtUtil;
@@ -70,7 +71,7 @@ class AuthorizationInterceptorTest {
 
         given(handlerMethod.getMethodAnnotation(Role.class)).willReturn(role);
         given(request.getCookies()).willReturn(new Cookie[]{cookie});
-        given(jwtUtil.validateAndResolveToken(token)).willReturn(loginInfo);
+        given(jwtUtil.validateAndResolveToken(new AuthToken(token))).willReturn(loginInfo);
 
         // when
         boolean result = sut.preHandle(request, response, handlerMethod);
@@ -90,7 +91,7 @@ class AuthorizationInterceptorTest {
 
         given(handlerMethod.getMethodAnnotation(Role.class)).willReturn(role);
         given(request.getCookies()).willReturn(new Cookie[]{cookie});
-        given(jwtUtil.validateAndResolveToken(token)).willReturn(loginInfo);
+        given(jwtUtil.validateAndResolveToken(new AuthToken(token))).willReturn(loginInfo);
 
         // when, then
         assertThatThrownBy(() -> sut.preHandle(request, response, handlerMethod))

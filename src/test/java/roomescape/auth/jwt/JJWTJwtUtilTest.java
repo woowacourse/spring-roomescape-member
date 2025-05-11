@@ -47,7 +47,7 @@ class JJWTJwtUtilTest {
         String token = createToken(UserRole.USER.name());
 
         // when
-        LoginInfo loginInfo = sut.validateAndResolveToken(token);
+        LoginInfo loginInfo = sut.validateAndResolveToken(new AuthToken(token));
 
         // then
         assertThat(loginInfo).isNotNull();
@@ -61,7 +61,7 @@ class JJWTJwtUtilTest {
         String token = createToken(UserRole.USER.name());
 
         // when, then
-        assertThatCode(() -> sut.validateAndResolveToken(token))
+        assertThatCode(() -> sut.validateAndResolveToken(new AuthToken(token)))
                 .doesNotThrowAnyException();
     }
 
@@ -71,17 +71,16 @@ class JJWTJwtUtilTest {
         String invalidToken = "invalid.value.value";
 
         // when
-        assertThatThrownBy(() -> sut.validateAndResolveToken(invalidToken))
+        assertThatThrownBy(() -> sut.validateAndResolveToken(new AuthToken(invalidToken)))
                 .isInstanceOf(AuthenticationException.class);
     }
 
     @Test
     void null_토큰을_검증하면_예외를_던진다() {
         // given
-        String invalidToken = null;
 
         // when
-        assertThatThrownBy(() -> sut.validateAndResolveToken(invalidToken))
+        assertThatThrownBy(() -> sut.validateAndResolveToken(null))
                 .isInstanceOf(AuthenticationException.class);
     }
 
@@ -92,7 +91,7 @@ class JJWTJwtUtilTest {
 
         // when
         AuthToken authToken = sut.createToken(user);
-        LoginInfo loginInfo = sut.validateAndResolveToken(authToken.value());
+        LoginInfo loginInfo = sut.validateAndResolveToken(authToken);
 
         // then
         assertThat(loginInfo.userRole()).isEqualTo(UserRole.ADMIN);

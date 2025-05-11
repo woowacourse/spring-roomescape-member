@@ -22,6 +22,8 @@ import static roomescape.exception.SecurityErrorCode.TOKEN_INVALID;
 @Component
 public class JJWTJwtUtil implements JwtUtil {
 
+    private static final String USER_ROLE_CLAIM_NAME = "role";
+    
     private final SecretKey key;
     private final long expirationMills;
 
@@ -34,7 +36,7 @@ public class JJWTJwtUtil implements JwtUtil {
     public AuthToken createToken(final User user) {
         String tokenValue = Jwts.builder()
                 .subject(user.id())
-                .claim("role", user.role())
+                .claim(USER_ROLE_CLAIM_NAME, user.role())
                 .expiration(calculateExp())
                 .signWith(key)
                 .compact();
@@ -47,14 +49,14 @@ public class JJWTJwtUtil implements JwtUtil {
     }
 
     @Override
-    public LoginInfo validateAndResolveToken(final String tokenValue) {
+    public LoginInfo validateAndResolveToken(final AuthToken token) {
         try {
             final Claims claims = Jwts.parser().verifyWith(key).build()
-                    .parseSignedClaims(tokenValue)
+                    .parseSignedClaims(token.value())
                     .getPayload();
 
             final String id = claims.getSubject();
-            final UserRole role = UserRole.valueOf(claims.get("role", String.class));
+            final UserRole role = UserRole.valueOf(claims.get(USER_ROLE_CLAIM_NAME, String.class));
 
             return new LoginInfo(id, role);
         } catch (ExpiredJwtException e) {
