@@ -7,6 +7,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import roomescape.auth.exception.MissingAccessTokenException;
 import roomescape.common.exception.BusinessException;
 import roomescape.common.validate.InvalidInputException;
 
@@ -19,6 +20,10 @@ import java.util.stream.Stream;
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(MissingAccessTokenException.class)
+    public void handleMissingAccessTokenException() {
+    }
 
     @ExceptionHandler(BusinessException.class)
     public ProblemDetail handleBusinessException(final BusinessException ex, final WebRequest request) {

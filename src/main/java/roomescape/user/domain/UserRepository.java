@@ -1,12 +1,14 @@
 package roomescape.user.domain;
 
+import roomescape.common.domain.Email;
+
 import java.util.Optional;
 
 public interface UserRepository {
 
-    Optional<User> findByEmail(String email);
+    Optional<User> findById(UserId id);
 
-    Optional<String> findPasswordByEmail(String email);
+    Optional<User> findByEmail(Email email);
 
     User save(User user);
 }

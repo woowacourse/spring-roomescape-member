@@ -113,7 +113,7 @@ function register(event) {
   };
 
   // AJAX 요청 생성 및 전송
-  fetch('/users', {
+  fetch('/sign-up', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

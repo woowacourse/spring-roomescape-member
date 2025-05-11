@@ -3,7 +3,7 @@ package roomescape.user.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.user.application.dto.CreateUserServiceRequest;
+import roomescape.auth.sign.application.usecase.CreateUserRequest;
 import roomescape.user.domain.User;
 import roomescape.user.domain.UserRepository;
 
@@ -13,11 +13,9 @@ import roomescape.user.domain.UserRepository;
 public class UserCommandServiceImpl implements UserCommandService {
 
     private final UserRepository userRepository;
-    private final SignUpUseCase signUpUseCase;
 
     @Override
-    public User create(final CreateUserServiceRequest request) {
-        return userRepository.save(
-                signUpUseCase.execute(request));
+    public User create(final CreateUserRequest request) {
+        return userRepository.save(request.toDomain());
     }
 }

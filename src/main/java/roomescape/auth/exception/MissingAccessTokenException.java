@@ -1,4 +1,4 @@
-package roomescape.auth.resolver;
+package roomescape.auth.exception;
 
 public class MissingAccessTokenException extends RuntimeException {
 
