@@ -29,18 +29,11 @@ public class AdminReservationController {
             @AuthenticatedUser final LoginUser loginUser,
             @RequestBody final AdminReservationRequest request
     ) {
-        validateAdminPermission(loginUser.role());
         final ReservationResponse reservationResponse = reservationService.create(
                 loginUser.id(),
                 request.toReservationRequest()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
-    }
-
-    private void validateAdminPermission(final Role role) {
-        if (!role.hasPermission(Role.ADMIN)) {
-            throw new UnauthorizedAccessException(role, Role.ADMIN);
-        }
     }
 }
