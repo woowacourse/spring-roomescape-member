@@ -4,21 +4,27 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
 
+import roomescape.member.domain.Member;
+
 public class Reservation {
 
     private static final long EMPTY_ID = 0L;
 
     private final Long id;
-    private final Name name;
+    private final Member member;
     private final LocalDate reservationDate;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
-    public Reservation(final Long id, final Name name, final LocalDate reservationDate,
-                       final ReservationTime reservationTime, final Theme theme
+    public Reservation(
+            final Long id,
+            final Member member,
+            final LocalDate reservationDate,
+            final ReservationTime reservationTime,
+            final Theme theme
     ) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.reservationDate = reservationDate;
         this.reservationTime = reservationTime;
         this.theme = theme;
@@ -26,16 +32,16 @@ public class Reservation {
     }
 
     public static Reservation withoutId(
-            final Name name,
+            final Member member,
             final LocalDate reservationDate,
             final ReservationTime reservationTime,
             final Theme theme
     ) {
-        return new Reservation(EMPTY_ID, name, reservationDate, reservationTime, theme);
+        return new Reservation(EMPTY_ID, member, reservationDate, reservationTime, theme);
     }
 
     private void validateNull() {
-        if (name == null || reservationDate == null || reservationTime == null || theme == null) {
+        if (member == null || reservationDate == null || reservationTime == null || theme == null) {
             throw new IllegalArgumentException("Reservation field cannot be null");
         }
     }
@@ -52,8 +58,8 @@ public class Reservation {
         return reservationTime.getId();
     }
 
-    public Name getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getReservationDate() {

@@ -12,18 +12,18 @@ values ('테마2', '테마2 입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6eb
 insert into theme (name, description, thumbnail)
 values ('테마3', '테마3 입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
-insert into reservation (name, date, time_id, theme_id)
-values ('브라운', '2025-04-29', 1, 3);
-insert into reservation (name, date, time_id, theme_id)
-values ('브라운', '2025-04-29', 2, 3);
-insert into reservation (name, date, time_id, theme_id)
-values ('브라운', '2025-04-29', 3, 3);
-insert into reservation (name, date, time_id, theme_id)
-values ('브라운', '2025-04-29', 1, 1);
-insert into reservation (name, date, time_id, theme_id)
-values ('브라운', '2025-04-29', 2, 1);
-insert into reservation (name, date, time_id, theme_id)
-values ('브라운', '2025-04-29', 1, 2);
-
 insert into member (name, email, password)
 values ('포스티', 'posty@woowa.com', '12345678');
+
+insert into reservation (date, time_id, theme_id, member_id)
+values ('2025-04-29', 1, 3, 1);
+insert into reservation (date, time_id, theme_id, member_id)
+values ('2025-04-29', 2, 3, 1);
+insert into reservation (date, time_id, theme_id, member_id)
+values ('2025-04-29', 3, 3, 1);
+insert into reservation (date, time_id, theme_id, member_id)
+values ('2025-04-29', 1, 1, 1);
+insert into reservation (date, time_id, theme_id, member_id)
+values ('2025-04-29', 2, 1, 1);
+insert into reservation (date, time_id, theme_id, member_id)
+values ('2025-04-29', 1, 2, 1);

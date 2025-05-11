@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberDao;
+import roomescape.utils.JdbcTemplateUtils;
 
 @JdbcTest
 @Import({MemberDao.class, MemberService.class})
@@ -31,7 +32,7 @@ class MemberServiceTest {
 
     @AfterEach
     void tearDown() {
-        jdbcTemplate.update("delete from member");
+        JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
     }
 
     @DisplayName("이메일과 패스워드를 알려주면 일치하는 사용자를 찾아온다.")
@@ -39,7 +40,7 @@ class MemberServiceTest {
     void findMemberByEmailAndPassword() {
         String email = "if@posty.com";
         String password = "12345678";
-        memberDao.insert(new Member("이프", email, password));
+        memberDao.save(new Member("이프", email, password));
 
         Member findMember = memberService.findMemberByEmailAndPassword(email, password);
 
@@ -55,7 +56,7 @@ class MemberServiceTest {
     void findMemberByUnmatchedEmailAndPassword(String unmatchedEmail, String unmatchedPassword) {
         String email = "if@posty.com";
         String password = "12345678";
-        memberDao.insert(new Member("이프", email, password));
+        memberDao.save(new Member("이프", email, password));
 
         assertThatThrownBy(() -> memberService.findMemberByEmailAndPassword(unmatchedEmail, unmatchedPassword))
                 .isInstanceOf(EntityNotFoundException.class);

@@ -18,7 +18,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
-import roomescape.reservation.domain.Name;
+import roomescape.member.domain.Member;
+import roomescape.member.repository.MemberDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -30,7 +31,7 @@ import roomescape.reservation.repository.ThemeDao;
 
 @ActiveProfiles("test")
 @JdbcTest
-@Import({ReservationDao.class, ReservationTimeDao.class, ThemeDao.class, ReservationTimeService.class})
+@Import({ReservationDao.class, ReservationTimeDao.class, ThemeDao.class, MemberDao.class, ReservationTimeService.class})
 class ReservationTimeServiceTest {
 
     @Autowired
@@ -40,11 +41,12 @@ class ReservationTimeServiceTest {
     @Autowired
     private ThemeDao themeDao;
     @Autowired
+    private MemberDao memberDao;
+    @Autowired
     private ReservationTimeService reservationTimeService;
 
     @BeforeEach
     void setUp() {
-
         reservationTimeService = new ReservationTimeService(reservationTimeDao, reservationDao);
     }
 
@@ -120,10 +122,10 @@ class ReservationTimeServiceTest {
     void test6() {
         // given
         Theme theme = themeDao.save(Theme.withoutId("테마1", "테마1", "www.m.com"));
-
         ReservationTime reservationTime = reservationTimeDao.save(ReservationTime.withoutId(LocalTime.of(8, 0)));
+        Member member = memberDao.save(new Member("포스티", "test@test.com", "12341234"));
 
-        reservationDao.save(Reservation.withoutId(new Name("꾹"), LocalDate.now(), reservationTime, theme));
+        reservationDao.save(Reservation.withoutId(member, LocalDate.now(), reservationTime, theme));
         Long timeId = reservationTime.getId();
 
         // when & then

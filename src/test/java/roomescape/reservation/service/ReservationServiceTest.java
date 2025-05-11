@@ -19,7 +19,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
-import roomescape.reservation.domain.Name;
+import roomescape.member.domain.Member;
+import roomescape.member.repository.MemberDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -34,7 +35,7 @@ import roomescape.reservation.repository.ThemeDao;
 
 @ActiveProfiles("test")
 @JdbcTest
-@Import({ReservationDao.class, ReservationTimeDao.class, ThemeDao.class, ReservationService.class})
+@Import({ReservationDao.class, ReservationTimeDao.class, ThemeDao.class, MemberDao.class, ReservationService.class})
 class ReservationServiceTest {
 
     private final LocalDateTime now = LocalDateTime.now();
@@ -46,6 +47,8 @@ class ReservationServiceTest {
     @Autowired
     private ThemeDao themeDao;
     @Autowired
+    private MemberDao memberDao;
+    @Autowired
     private ReservationService reservationService;
 
     @DisplayName("모든 예약 정보를 가져온다")
@@ -56,9 +59,11 @@ class ReservationServiceTest {
 
         LocalTime time = LocalTime.of(8, 0);
         ReservationTime savedTime = reservationTimeDao.save(ReservationTime.withoutId(time));
+        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member savedMember = memberDao.save(member);
 
         LocalDate date = LocalDate.of(2024, 4, 29);
-        reservationDao.save(Reservation.withoutId(new Name("꾹"), date, savedTime, savedTheme));
+        reservationDao.save(Reservation.withoutId(savedMember, date, savedTime, savedTheme));
 
         // when
         List<ReservationResponse> response = reservationService.getAll();
@@ -79,26 +84,25 @@ class ReservationServiceTest {
     @Test
     void test3() {
         // given
-        String name = "꾹";
-
         Theme savedTheme = themeDao.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         Long themeId = savedTheme.getId();
 
         LocalTime time = LocalTime.of(8, 0);
         ReservationTime savedTime = reservationTimeDao.save(ReservationTime.withoutId(time));
         Long timeId = savedTime.getId();
+        Member savedMember = memberDao.save(new Member("포스티", "test@test.com", "12341234"));
 
         LocalDate date = nextDay();
 
-        ReservationRequest requestDto = new ReservationRequest(name, date, timeId, themeId);
+        ReservationRequest requestDto = new ReservationRequest(date, timeId, themeId);
 
         // when
-        ReservationResponse result = reservationService.create(requestDto);
+        ReservationResponse result = reservationService.create(requestDto, savedMember);
 
         // then
         SoftAssertions softAssertions = new SoftAssertions();
 
-        softAssertions.assertThat(result.name()).isEqualTo(name);
+        softAssertions.assertThat(result.name()).isEqualTo("포스티");
         softAssertions.assertThat(result.date()).isEqualTo(date);
         softAssertions.assertThat(result.time()).isEqualTo(new ReservationTimeResponse(timeId, time));
         softAssertions.assertThat(result.theme())
@@ -120,13 +124,15 @@ class ReservationServiceTest {
         LocalTime time = LocalTime.of(8, 0);
         ReservationTime savedTime = reservationTimeDao.save(ReservationTime.withoutId(time));
         Long timeId = savedTime.getId();
+        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member savedMember = memberDao.save(member);
         LocalDate date = nextDay();
 
-        ReservationRequest requestDto = new ReservationRequest(name, date, timeId, themeId);
-        reservationService.create(requestDto);
+        ReservationRequest requestDto = new ReservationRequest(date, timeId, themeId);
+        reservationService.create(requestDto, savedMember);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(requestDto))
+        assertThatThrownBy(() -> reservationService.create(requestDto, savedMember))
                 .isInstanceOf(AlreadyInUseException.class);
     }
 
@@ -134,10 +140,10 @@ class ReservationServiceTest {
     @Test
     void test5() {
         // given
-        String name = "꾹";
-
         Theme savedTheme = themeDao.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         Long themeId = savedTheme.getId();
+        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member savedMember = memberDao.save(member);
 
         LocalDate date = now.toLocalDate();
         LocalTime pastTime = now.toLocalTime().minusMinutes(1);
@@ -145,10 +151,10 @@ class ReservationServiceTest {
         ReservationTime savedTime = reservationTimeDao.save(ReservationTime.withoutId(pastTime));
         Long timeId = savedTime.getId();
 
-        ReservationRequest requestDto = new ReservationRequest(name, date, timeId, themeId);
+        ReservationRequest requestDto = new ReservationRequest(date, timeId, themeId);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(requestDto))
+        assertThatThrownBy(() -> reservationService.create(requestDto, savedMember))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -157,13 +163,15 @@ class ReservationServiceTest {
     void test6() {
         Theme savedTheme = themeDao.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         Long themeId = savedTheme.getId();
+        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member savedMember = memberDao.save(member);
 
         LocalDate date = nextDay();
 
         Long notExistId = 1000L;
-        ReservationRequest requestDto = new ReservationRequest("꾹", date, notExistId, themeId);
+        ReservationRequest requestDto = new ReservationRequest(date, notExistId, themeId);
 
-        assertThatThrownBy(() -> reservationService.create(requestDto))
+        assertThatThrownBy(() -> reservationService.create(requestDto, savedMember))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -175,11 +183,13 @@ class ReservationServiceTest {
         LocalTime time = LocalTime.of(8, 0);
         ReservationTime savedTime = reservationTimeDao.save(ReservationTime.withoutId(time));
         Long timeId = savedTime.getId();
+        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member savedMember = memberDao.save(member);
 
         Long notExistId = 1000L;
-        ReservationRequest requestDto = new ReservationRequest("꾹", date, timeId, notExistId);
+        ReservationRequest requestDto = new ReservationRequest(date, timeId, notExistId);
 
-        assertThatThrownBy(() -> reservationService.create(requestDto))
+        assertThatThrownBy(() -> reservationService.create(requestDto, savedMember))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -191,10 +201,12 @@ class ReservationServiceTest {
 
         LocalTime time = LocalTime.of(8, 0);
         ReservationTime savedTime = reservationTimeDao.save(ReservationTime.withoutId(time));
+        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member savedMember = memberDao.save(member);
 
         LocalDate date = nextDay();
         Reservation savedReservation = reservationDao.save(
-                Reservation.withoutId(new Name("꾹"), date, savedTime, savedTheme));
+                Reservation.withoutId(savedMember, date, savedTime, savedTheme));
 
         Long id = savedReservation.getId();
 
@@ -222,7 +234,9 @@ class ReservationServiceTest {
         ReservationTime reservationTime2 = reservationTimeDao.save(ReservationTime.withoutId(time2));
         Theme savedTheme = themeDao.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         Long themeId = savedTheme.getId();
-        reservationDao.save(Reservation.withoutId(new Name("꾹"), date, reservationTime1, savedTheme));
+        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member savedMember = memberDao.save(member);
+        reservationDao.save(Reservation.withoutId(savedMember, date, reservationTime1, savedTheme));
 
         // when
         List<BookedReservationTimeResponse> responses = reservationService.getAvailableTimes(date, themeId);

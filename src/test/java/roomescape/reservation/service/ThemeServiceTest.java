@@ -17,7 +17,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
-import roomescape.reservation.domain.Name;
+import roomescape.member.domain.Member;
+import roomescape.member.repository.MemberDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -29,7 +30,7 @@ import roomescape.reservation.repository.ThemeDao;
 
 @ActiveProfiles("test")
 @JdbcTest
-@Import({ReservationDao.class, ReservationTimeDao.class, ThemeDao.class, ThemeService.class})
+@Import({ReservationDao.class, ReservationTimeDao.class, ThemeDao.class, MemberDao.class, ThemeService.class})
 class ThemeServiceTest {
 
     @Autowired
@@ -38,6 +39,8 @@ class ThemeServiceTest {
     private ReservationTimeDao reservationTimeRepository;
     @Autowired
     private ThemeDao themeDao;
+    @Autowired
+    private MemberDao memberDao;
     @Autowired
     private ThemeService themeService;
 
@@ -114,8 +117,11 @@ class ThemeServiceTest {
         LocalTime time = LocalTime.of(8, 0);
         ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
 
+        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member savedMember = memberDao.save(member);
+
         LocalDate date = LocalDate.of(2024, 4, 29);
-        reservationDao.save(Reservation.withoutId(new Name("꾹"), date, savedTime, savedTheme));
+        reservationDao.save(Reservation.withoutId(savedMember, date, savedTime, savedTheme));
 
         // when & then
         assertThatThrownBy(() -> themeService.delete(themeId))
@@ -129,17 +135,17 @@ class ThemeServiceTest {
         ReservationTime reservationTime = reservationTimeRepository.save(
                 ReservationTime.withoutId(LocalTime.of(10, 0)));
         LocalDate date = LocalDateTime.now().toLocalDate();
-        Name name = new Name("꾹");
+        Member member = memberDao.save(new Member("포스티", "test@test.com", "12341234"));
 
         Theme theme1 = themeDao.save(Theme.withoutId("테마1", "테마1", "www.m.com"));
         Theme theme2 = themeDao.save(Theme.withoutId("테마2", "테마2", "www.m.com"));
         Theme theme3 = themeDao.save(Theme.withoutId("테마3", "테마3", "www.m.com"));
-        reservationDao.save(Reservation.withoutId(name, date.minusDays(1), reservationTime, theme1));
-        reservationDao.save(Reservation.withoutId(name, date.minusDays(2), reservationTime, theme1));
-        reservationDao.save(Reservation.withoutId(name, date.minusDays(3), reservationTime, theme1));
-        reservationDao.save(Reservation.withoutId(name, date.minusDays(4), reservationTime, theme2));
-        reservationDao.save(Reservation.withoutId(name, date.minusDays(5), reservationTime, theme2));
-        reservationDao.save(Reservation.withoutId(name, date.minusDays(6), reservationTime, theme3));
+        reservationDao.save(Reservation.withoutId(member, date.minusDays(1), reservationTime, theme1));
+        reservationDao.save(Reservation.withoutId(member, date.minusDays(2), reservationTime, theme1));
+        reservationDao.save(Reservation.withoutId(member, date.minusDays(3), reservationTime, theme1));
+        reservationDao.save(Reservation.withoutId(member, date.minusDays(4), reservationTime, theme2));
+        reservationDao.save(Reservation.withoutId(member, date.minusDays(5), reservationTime, theme2));
+        reservationDao.save(Reservation.withoutId(member, date.minusDays(6), reservationTime, theme3));
 
         // when
         List<ThemeResponse> responses = themeService.getPopularThemes();

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
-import roomescape.reservation.domain.Name;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -50,12 +50,12 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse create(final ReservationRequest request) {
+    public ReservationResponse create(final ReservationRequest request, final Member member) {
         if (isAlreadyBooked(request)) {
             throw new AlreadyInUseException("reservation is already in use");
         }
 
-        Reservation reservation = getReservation(request);
+        Reservation reservation = getReservation(request, member);
         LocalDateTime now = LocalDateTime.now();
         validateDateTime(now, reservation.getReservationDate(), reservation.getReservationStartTime());
 
@@ -70,11 +70,11 @@ public class ReservationService {
         );
     }
 
-    private Reservation getReservation(final ReservationRequest request) {
+    private Reservation getReservation(final ReservationRequest request, final Member member) {
         ReservationTime reservationTime = gerReservationTime(request);
         Theme theme = getTheme(request);
 
-        return Reservation.withoutId(new Name(request.name()), request.date(), reservationTime, theme);
+        return Reservation.withoutId(member, request.date(), reservationTime, theme);
     }
 
     private Theme getTheme(final ReservationRequest request) {

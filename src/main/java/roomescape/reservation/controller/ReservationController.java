@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import roomescape.member.domain.Member;
 import roomescape.reservation.dto.BookedReservationTimeResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -48,8 +49,11 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> create(@Valid @RequestBody final ReservationRequest request) {
-        ReservationResponse response = reservationService.create(request);
+    public ResponseEntity<ReservationResponse> create(
+            @Valid @RequestBody final ReservationRequest request,
+            final Member member
+    ) {
+        ReservationResponse response = reservationService.create(request, member);
 
         return ResponseEntity.created(URI.create("/reservations/" + response.id()))
                 .body(response);

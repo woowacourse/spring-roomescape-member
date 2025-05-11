@@ -36,7 +36,7 @@ public class MemberDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Member insert(final Member member) {
+    public Member save(final Member member) {
         String name = member.getName();
         String email = member.getEmail();
         String password = member.getPassword();

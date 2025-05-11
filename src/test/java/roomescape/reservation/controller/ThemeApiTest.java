@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.reservation.controller;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
@@ -19,7 +19,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import roomescape.reservation.domain.Name;
+import roomescape.member.domain.Member;
+import roomescape.member.repository.MemberDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -39,6 +40,8 @@ class ThemeApiTest {
     private ReservationTimeDao reservationTimeRepository;
     @Autowired
     private ReservationDao reservationDao;
+    @Autowired
+    private MemberDao memberDao;
     @Autowired
     private ThemeDao themeDao;
 
@@ -126,8 +129,10 @@ class ThemeApiTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         Theme savedTheme = themeDao.save(theme);
         Long savedId = savedTheme.getId();
+        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member savedMember = memberDao.save(member);
 
-        Reservation reservation = Reservation.withoutId(new Name("꾹"), LocalDate.now(), savedTime, savedTheme);
+        Reservation reservation = Reservation.withoutId(savedMember, LocalDate.now(), savedTime, savedTheme);
         reservationDao.save(reservation);
 
         // when & then
@@ -142,8 +147,9 @@ class ThemeApiTest {
     void test6() {
         // given
         ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
-
         ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
+        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member savedMember = memberDao.save(member);
 
         Theme theme1 = Theme.withoutId("공포1", "우테코 공포", "www.m.com");
         Theme theme2 = Theme.withoutId("공포2", "우테코 공포", "www.m.com");
@@ -152,13 +158,12 @@ class ThemeApiTest {
         Theme savedTheme2 = themeDao.save(theme2);
         Theme savedTheme3 = themeDao.save(theme3);
 
-        Name name = new Name("꾹");
-        reservationDao.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 1), savedTime, savedTheme3));
-        reservationDao.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 2), savedTime, savedTheme3));
-        reservationDao.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 3), savedTime, savedTheme3));
-        reservationDao.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 4), savedTime, savedTheme1));
-        reservationDao.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 5), savedTime, savedTheme1));
-        reservationDao.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 6), savedTime, savedTheme2));
+        reservationDao.save(Reservation.withoutId(savedMember, minusDay(LocalDate.now(), 1), savedTime, savedTheme3));
+        reservationDao.save(Reservation.withoutId(savedMember, minusDay(LocalDate.now(), 2), savedTime, savedTheme3));
+        reservationDao.save(Reservation.withoutId(savedMember, minusDay(LocalDate.now(), 3), savedTime, savedTheme3));
+        reservationDao.save(Reservation.withoutId(savedMember, minusDay(LocalDate.now(), 4), savedTime, savedTheme1));
+        reservationDao.save(Reservation.withoutId(savedMember, minusDay(LocalDate.now(), 5), savedTime, savedTheme1));
+        reservationDao.save(Reservation.withoutId(savedMember, minusDay(LocalDate.now(), 6), savedTime, savedTheme2));
 
         // when & then
         RestAssured.given().log().all()

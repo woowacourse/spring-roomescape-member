@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import roomescape.member.domain.Member;
+import roomescape.utils.JdbcTemplateUtils;
 
 @JdbcTest
 @Import(MemberDao.class)
@@ -28,15 +29,15 @@ class MemberDaoTest {
 
     @AfterEach
     void tearDown() {
-        jdbcTemplate.update("delete from member");
+        JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
     }
 
     @DisplayName("사용자를 DB에 저장한다.")
     @Test
-    void insertMember() {
+    void saveMember() {
         Member member = new Member("이프", "if@posty.com", "12345678");
 
-        Member insertedMember = memberDao.insert(member);
+        Member insertedMember = memberDao.save(member);
 
         assertAll(
                 () -> assertThat(insertedMember.getId()).isNotZero(),
@@ -52,7 +53,7 @@ class MemberDaoTest {
         String email = "if@posty.com";
         String password = "12345678";
         Member member = new Member("이프", email, password);
-        memberDao.insert(member);
+        memberDao.save(member);
 
         Member findMember = memberDao.findByEmailAndPassword(email, password).get();
 
@@ -69,7 +70,7 @@ class MemberDaoTest {
         String email = "if@posty.com";
         String password = "12345678";
         Member member = new Member("이프", email, password);
-        memberDao.insert(member);
+        memberDao.save(member);
 
         Optional<Member> findMember = memberDao.findByEmailAndPassword(unmatchedEmail, unmatchedPassword);
 

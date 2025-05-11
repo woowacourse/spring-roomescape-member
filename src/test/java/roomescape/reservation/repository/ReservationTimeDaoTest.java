@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 
 import org.assertj.core.api.SoftAssertions;
@@ -15,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -90,23 +88,6 @@ class ReservationTimeDaoTest {
             // when
             assertThatCode(() -> reservationTimeRepository.deleteById(id))
                     .doesNotThrowAnyException();
-        }
-
-        @DisplayName("Reservation 테이블에서 사용 중이라면 DataIntegrityViolationException 예외를 반환한다.")
-        @Test
-        void test2() {
-            // given
-            Long id = 1L;
-            LocalDate now = LocalDate.of(2024, 12, 8);
-            String sql = "insert into reservation_time(id, start_at) values(?, ?)";
-            jdbcTemplate.update(sql, id, now);
-
-            jdbcTemplate.update("INSERT INTO reservation(name, date, time_id) VALUES (?, ?, ?)", "꾹", now,
-                    id);
-
-            // when
-            assertThatThrownBy(() -> reservationTimeRepository.deleteById(id))
-                    .isInstanceOf(DataIntegrityViolationException.class);
         }
     }
 

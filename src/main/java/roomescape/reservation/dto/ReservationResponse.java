@@ -19,7 +19,7 @@ public record ReservationResponse(
         ThemeResponse themeResponse = ThemeResponse.from(reservation.getTheme());
 
         return new ReservationResponse(reservation.getId(),
-                reservation.getName().getValue(),
+                reservation.getMember().getName(),
                 reservation.getReservationDate(),
                 reservationTimeResponse,
                 themeResponse
