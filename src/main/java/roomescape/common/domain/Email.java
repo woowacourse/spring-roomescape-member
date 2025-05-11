@@ -1,4 +1,4 @@
-package roomescape.user.domain;
+package roomescape.common.domain;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
-import roomescape.common.domain.DomainTerm;
 import roomescape.common.validate.Validator;
 
 @Getter
@@ -14,17 +13,17 @@ import roomescape.common.validate.Validator;
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode
 @ToString
-public class UserName {
+public class Email {
 
     private final String value;
 
-    public static UserName from(final String value) {
+    public static Email from(final String value) {
         validate(value);
-        return new UserName(value);
+        return new Email(value);
     }
 
     private static void validate(final String value) {
-        Validator.of(UserName.class)
-                .validateNotBlank(Fields.value, value, DomainTerm.USER_NAME.label());
+        Validator.of(Email.class)
+                .validateEmailFormat(Fields.value, value, DomainTerm.EMAIL.label());
     }
 }

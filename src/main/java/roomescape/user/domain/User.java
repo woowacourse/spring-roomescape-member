@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.domain.DomainTerm;
+import roomescape.common.domain.Email;
 import roomescape.common.validate.Validator;
 
 @Getter
@@ -17,40 +18,40 @@ import roomescape.common.validate.Validator;
 public class User {
 
     private final UserId id;
-    private final String name;
-    private final String email;
-    private final String password;
+    private final UserName name;
+    private final Email email;
+    private final Password password;
     private final UserRole role;
 
     private static User of(final UserId id,
-                           final String name,
-                           final String email,
-                           final String password,
+                           final UserName name,
+                           final Email email,
+                           final Password password,
                            final UserRole role) {
         validate(id, name, email, password, role);
         return new User(id, name, email, password, role);
     }
 
     public static User withId(final UserId id,
-                              final String name,
-                              final String email,
-                              final String password,
+                              final UserName name,
+                              final Email email,
+                              final Password password,
                               final UserRole role) {
         id.requireAssigned();
         return of(id, name, email, password, role);
     }
 
-    public static User withoutId(final String name,
-                                            final String email,
-                                            final String password,
-                                            final UserRole role) {
+    public static User withoutId(final UserName name,
+                                 final Email email,
+                                 final Password password,
+                                 final UserRole role) {
         return of(UserId.unassigned(), name, email, password, role);
     }
 
     private static void validate(final UserId id,
-                                 final String name,
-                                 final String email,
-                                 final String password,
+                                 final UserName name,
+                                 final Email email,
+                                 final Password password,
                                  final UserRole role) {
         Validator.of(User.class)
                 .validateNotNull(Fields.id, id, DomainTerm.USER_ID.label())

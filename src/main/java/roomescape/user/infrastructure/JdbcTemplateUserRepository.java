@@ -6,9 +6,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.domain.Email;
 import roomescape.common.jdbc.JdbcUtils;
+import roomescape.user.domain.Password;
 import roomescape.user.domain.User;
 import roomescape.user.domain.UserId;
+import roomescape.user.domain.UserName;
 import roomescape.user.domain.UserRepository;
 import roomescape.user.domain.UserRole;
 
@@ -25,35 +28,30 @@ public class JdbcTemplateUserRepository implements UserRepository {
     private final RowMapper<User> userRowMapper = (resultSet, rowNum) ->
             User.withId(
                     UserId.from(resultSet.getLong("id")),
-                    resultSet.getString("name"),
-                    resultSet.getString("email"),
-                    resultSet.getString("password"),
+                    UserName.from(resultSet.getString("name")),
+                    Email.from(resultSet.getString("email")),
+                    Password.fromEncoded(resultSet.getString("password")),
                     UserRole.valueOf(resultSet.getString("role"))
             );
 
     @Override
-    public Optional<User> findByEmail(final String email) {
+    public Optional<User> findById(final UserId id) {
         final String sql = """
                 SELECT id, name, email, password, role
                 FROM users
                 WHERE email = ?
                 """;
-        return JdbcUtils.queryForOptional(jdbcTemplate, sql, userRowMapper, email);
+        return JdbcUtils.queryForOptional(jdbcTemplate, sql, userRowMapper, id.getValue());
     }
 
     @Override
-    public Optional<String> findPasswordByEmail(final String email) {
+    public Optional<User> findByEmail(final Email email) {
         final String sql = """
-                SELECT password
+                SELECT id, name, email, password, role
                 FROM users
                 WHERE email = ?
                 """;
-        final Optional<String> password = JdbcUtils.queryForOptional(
-                jdbcTemplate,
-                sql,
-                (resultSet, rowNum) -> resultSet.getString("password"),
-                email);
-        return password;
+        return JdbcUtils.queryForOptional(jdbcTemplate, sql, userRowMapper, email.getValue());
     }
 
     @Override
@@ -63,9 +61,9 @@ public class JdbcTemplateUserRepository implements UserRepository {
 
         jdbcTemplate.update(connection -> {
             final PreparedStatement preparedStatement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1, user.getName());
-            preparedStatement.setString(2, user.getEmail());
-            preparedStatement.setString(3, user.getPassword());
+            preparedStatement.setString(1, user.getName().getValue());
+            preparedStatement.setString(2, user.getEmail().getValue());
+            preparedStatement.setString(3, user.getPassword().getEncodedValue());
             preparedStatement.setString(4, user.getRole().name());
 
             return preparedStatement;

@@ -1,6 +1,8 @@
 package roomescape.auth.sign.password;
 
+import roomescape.user.domain.Password;
+
 public interface PasswordEncoder {
 
-    String execute(String rawPassword);
+    Password execute(String rawPassword);
 }

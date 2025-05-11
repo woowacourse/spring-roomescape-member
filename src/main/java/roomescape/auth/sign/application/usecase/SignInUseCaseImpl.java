@@ -10,10 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.jwt.domain.Jwt;
 import roomescape.auth.jwt.domain.TokenType;
 import roomescape.auth.jwt.manager.JwtManager;
-import roomescape.auth.sign.application.dto.SignInServiceRequest;
+import roomescape.auth.sign.application.dto.SignInRequest;
 import roomescape.auth.sign.exception.InvalidSignInException;
 import roomescape.auth.sign.password.PasswordEncoder;
 import roomescape.user.application.service.UserQueryService;
+import roomescape.user.domain.Password;
 import roomescape.user.domain.User;
 
 @Service
@@ -26,21 +27,18 @@ public class SignInUseCaseImpl implements SignInUseCase {
     private final JwtManager jwtManager;
 
     @Override
-    public void execute(final SignInServiceRequest request,
+    public void execute(final SignInRequest request,
                         final HttpServletResponse response) {
         final User user = userQueryService.getByEmail(request.email());
-        final String savedEncodedPassword = user.getPassword();
-        final String inputEncodedPassword = passwordEncoder.execute(request.password());
+        final Password saved = user.getPassword();
+        validatePassword(saved, request.rawPassword());
 
         final Claims claims = buildClaims(user);
-
-        validatePassword(savedEncodedPassword, inputEncodedPassword);
         setAccessToken(response, jwtManager.generate(claims, TokenType.ACCESS));
     }
 
-    private static void validatePassword(final String savedEncodedPassword,
-                                         final String inputEncodedPassword) {
-        if (savedEncodedPassword.equals(inputEncodedPassword)) {
+    private void validatePassword(final Password saved, final String rawPassword) {
+        if (saved.matches(rawPassword, passwordEncoder)) {
             return;
         }
         throw new InvalidSignInException("passwords do not match");
@@ -49,7 +47,7 @@ public class SignInUseCaseImpl implements SignInUseCase {
     private Claims buildClaims(final User user) {
         return Jwts.claims()
                 .add(User.Fields.id, user.getId().getValue())
-                .add(User.Fields.name, user.getName())
+                .add(User.Fields.name, user.getName().getValue())
                 .add(User.Fields.role, user.getRole().name())
                 .build();
     }

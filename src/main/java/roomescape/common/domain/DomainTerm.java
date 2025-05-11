@@ -31,6 +31,7 @@ public enum DomainTerm {
 
     // Common
     DOMAIN_ID("도메인 식별자"),
+    EMAIL("이메일")
     ;
 
     private final String label;
