@@ -1,4 +1,4 @@
-package roomescape.auth.controller.dto;
+package roomescape.auth.web.controller.dto;
 
 import jakarta.validation.constraints.NotNull;
 

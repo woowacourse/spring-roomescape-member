@@ -2,12 +2,14 @@ package roomescape.auth.infrastructure;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.Jwts;
+import java.util.Date;
+import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import roomescape.auth.dto.AuthenticatedMember;
+import roomescape.auth.config.JwtProperties;
 import roomescape.domain.member.model.Member;
 import roomescape.domain.member.model.Role;
 import roomescape.global.exception.AuthenticationException.InvalidTokenException;
@@ -21,12 +23,15 @@ public class JwtTokenService implements TokenService {
     private static final String CLAIM_ROLE_KEY = "role";
     private static final String CLAIM_NAME_KEY = "name";
 
-    private final JwtBuilder jwtBuilder;
-    private final JwtParser jwtParser;
+    private final SecretKey jwtKey;
+    private final JwtProperties jwtProperties;
 
     @Override
     public String create(Member member) {
-        return jwtBuilder
+        return Jwts.builder()
+                .expiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration()))
+                .issuer(jwtProperties.getIssuer())
+                .signWith(jwtKey)
                 .subject(member.getId().toString())
                 .claim(CLAIM_EMAIL_KEY, member.getEmail())
                 .claim(CLAIM_ROLE_KEY, member.getRole().name())
@@ -48,7 +53,9 @@ public class JwtTokenService implements TokenService {
 
     private Claims extracClaims(String token) {
         try {
-            return jwtParser
+            return Jwts.parser()
+                    .verifyWith(jwtKey)
+                    .build()
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (ExpiredJwtException e) {
