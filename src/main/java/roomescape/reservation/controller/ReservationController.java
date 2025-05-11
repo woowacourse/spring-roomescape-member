@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.common.exception.MissingLoginException;
 import roomescape.member.service.AuthService;
 import roomescape.member.service.dto.LoginMemberInfo;
 import roomescape.reservation.controller.dto.AdminReservationCreateRequest;
@@ -20,6 +21,10 @@ import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.dto.ReservationCreateCommand;
 import roomescape.reservation.service.dto.ReservationInfo;
 
+/**
+ * TODO
+ * 로그인이 필요한 경우 로그인 페이지로 리다이렉트
+ */
 @RestController
 @RequestMapping
 public class ReservationController {
@@ -34,9 +39,12 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationInfo> create(
-            @CookieValue("token") String token,
+            @CookieValue(value = "token", required = false) String token,
             @RequestBody @Valid final ReservationCreateRequest request
     ) {
+        if (token == null) {
+            throw new MissingLoginException();
+        }
         LoginMemberInfo loginMemberInfo = authService.getLoginMemberInfoByToken(token);
         ReservationCreateCommand reservationCreateCommand = request.convertToCreateCommand(loginMemberInfo.id());
         final ReservationInfo reservationInfo = reservationService.createReservation(reservationCreateCommand);

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.common.exception.MissingLoginException;
 import roomescape.member.controller.dto.LoginMemberCheckResponse;
 import roomescape.member.controller.dto.MemberResponse;
 import roomescape.member.service.AuthService;
@@ -45,7 +46,12 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginMemberCheckResponse> getLoginMember(@CookieValue("token") String token) {
+    public ResponseEntity<LoginMemberCheckResponse> getLoginMember(
+            @CookieValue(value = "token", required = false) String token
+    ) {
+        if (token == null) {
+            throw new MissingLoginException();
+        }
         LoginMemberInfo loginMemberInfo = authService.getLoginMemberInfoByToken(token);
         return ResponseEntity.ok().body(new LoginMemberCheckResponse(loginMemberInfo.name()));
     }

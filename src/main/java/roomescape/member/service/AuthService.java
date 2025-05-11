@@ -6,6 +6,10 @@ import roomescape.member.repository.MemberDao;
 import roomescape.member.service.dto.MemberLoginCommand;
 import roomescape.member.service.dto.LoginMemberInfo;
 
+/**
+ * TODO
+ * 토큰 사인 검증?
+ */
 @Service
 public class AuthService {
 

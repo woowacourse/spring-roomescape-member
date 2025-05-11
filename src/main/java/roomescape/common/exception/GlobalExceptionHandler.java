@@ -1,4 +1,8 @@
-package roomescape.exception;
+package roomescape.common.exception;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -17,11 +21,12 @@ public class GlobalExceptionHandler {
             final HttpMessageNotReadableException e,
             final HttpServletRequest request
     ) {
+        System.out.println(e);
         final String path = extractPath(request);
         final ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                BAD_REQUEST.value(),
+                BAD_REQUEST.getReasonPhrase(),
                 "요청 형식이 올바르지 않습니다.",
                 path
         );
@@ -33,11 +38,12 @@ public class GlobalExceptionHandler {
             final MethodArgumentNotValidException e,
             final HttpServletRequest request
     ) {
+        System.out.println(e);
         final String path = extractPath(request);
         final ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                BAD_REQUEST.value(),
+                BAD_REQUEST.getReasonPhrase(),
                 e.getBindingResult().getFieldError().getDefaultMessage(),
                 path
         );
@@ -49,9 +55,27 @@ public class GlobalExceptionHandler {
             final IllegalArgumentException e,
             final HttpServletRequest request
     ) {
+        System.out.println(e);
         final String path = extractPath(request);
-        final ErrorResponse errorResponse = makeGeneralErrorResponse(e, HttpStatus.BAD_REQUEST, path);
+        final ErrorResponse errorResponse = makeGeneralErrorResponse(e, BAD_REQUEST, path);
         return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler(MissingLoginException.class)
+    private ResponseEntity<ErrorResponse> handleMissingLoginException(
+            final MissingLoginException e,
+            final HttpServletRequest request
+    ) {
+        System.out.println(e);
+        final String path = extractPath(request);
+        final ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                UNAUTHORIZED.value(),
+                UNAUTHORIZED.getReasonPhrase(),
+                "로그인이 필요합니다.",
+                path
+        );
+        return ResponseEntity.status(UNAUTHORIZED).body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)
@@ -59,8 +83,9 @@ public class GlobalExceptionHandler {
             final Exception e,
             final HttpServletRequest request
     ) {
+        System.out.println(e);
         final String path = extractPath(request);
-        final ErrorResponse errorResponse = makeGeneralErrorResponse(e, HttpStatus.INTERNAL_SERVER_ERROR, path);
+        final ErrorResponse errorResponse = makeGeneralErrorResponse(e, INTERNAL_SERVER_ERROR, path);
         return ResponseEntity.badRequest().body(errorResponse);
     }
 

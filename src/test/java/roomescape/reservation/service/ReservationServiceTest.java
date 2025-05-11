@@ -130,7 +130,7 @@ class ReservationServiceTest {
         // then
         Reservation savedReservation = reservationDao.findById(1L);
         assertAll(
-                () -> assertThat(result.name()).isEqualTo(savedMember.getName()),
+                () -> assertThat(result.member().name()).isEqualTo(savedMember.getName()),
                 () -> assertThat(result.date()).isEqualTo(tomorrow),
                 () -> assertThat(result.time().startAt()).isEqualTo(time),
 
