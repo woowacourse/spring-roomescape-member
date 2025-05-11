@@ -7,7 +7,6 @@ import roomescape.exception.MemberException;
 import roomescape.infrastructure.JwtProvider;
 import roomescape.persistence.MemberRepository;
 import roomescape.presentation.dto.LoginRequestDto;
-import roomescape.presentation.dto.MemberCheckResponseDto;
 
 @Service
 public class AuthenticationService {
@@ -32,15 +31,13 @@ public class AuthenticationService {
         return jwtProvider.createToken(member.getId().toString());
     }
 
-    public MemberCheckResponseDto findMemberByToken(String token) {
+    public Member findMemberByToken(String token) {
         if (!jwtProvider.validateToken(token)) {
             // todo: 401 exception
             throw new MemberException("유효하지 않은 토큰입니다.");
         }
         Long payload = Long.valueOf(jwtProvider.getPayload(token));
-        Member member = memberRepository.findById(payload)
+        return memberRepository.findById(payload)
                 .orElseThrow(() -> new MemberException("존재하지 않는 사용자입니다."));
-
-        return new MemberCheckResponseDto(member.getName());
     }
 }
