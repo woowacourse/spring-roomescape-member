@@ -34,7 +34,7 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
     public boolean existsById(final ReservationTimeId id) {
         final String sql = """
                 select exists
-                    (select 1 from reservation_time where id = ?)
+                    (select 1 from reservation_times where id = ?)
                 """;
 
         return Boolean.TRUE.equals(
@@ -45,7 +45,7 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
     public boolean existsByStartAt(final LocalTime startAt) {
         final String sql = """
                 select exists
-                    (select 1 from reservation_time where start_at = ?)
+                    (select 1 from reservation_times where start_at = ?)
                 """;
 
         return Boolean.TRUE.equals(
@@ -54,13 +54,13 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
 
     @Override
     public Optional<ReservationTime> findById(final ReservationTimeId id) {
-        final String sql = "select id, start_at from reservation_time where id = ?";
+        final String sql = "select id, start_at from reservation_times where id = ?";
         return JdbcUtils.queryForOptional(jdbcTemplate, sql, reservationTimeMapper, id.getValue());
     }
 
     @Override
     public List<ReservationTime> findAll() {
-        final String sql = "select id, start_at from reservation_time";
+        final String sql = "select id, start_at from reservation_times";
 
         return jdbcTemplate.query(sql, reservationTimeMapper).stream()
                 .toList();
@@ -68,7 +68,7 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
 
     @Override
     public ReservationTime save(final ReservationTime reservationTime) {
-        final String sql = "insert into reservation_time (start_at) values (?)";
+        final String sql = "insert into reservation_times (start_at) values (?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -85,7 +85,7 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
 
     @Override
     public void deleteById(final ReservationTimeId id) {
-        final String sql = "delete from reservation_time where id = ?";
+        final String sql = "delete from reservation_times where id = ?";
         jdbcTemplate.update(sql, id.getValue());
     }
 }

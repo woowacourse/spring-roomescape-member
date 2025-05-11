@@ -6,12 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.auth.sign.password.Password;
+import roomescape.common.domain.Email;
 import roomescape.reservation.application.dto.AvailableReservationTimeServiceRequest;
 import roomescape.reservation.application.dto.AvailableReservationTimeServiceResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.reservation.domain.ReserverName;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeName;
@@ -19,6 +20,10 @@ import roomescape.theme.domain.ThemeRepository;
 import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeRepository;
+import roomescape.user.domain.User;
+import roomescape.user.domain.UserName;
+import roomescape.user.domain.UserRepository;
+import roomescape.user.domain.UserRole;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -43,6 +48,9 @@ class ReservationQueryServiceImplTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Test
     @DisplayName("예약을 조회할 수 있다")
     void createAndFindReservation() {
@@ -52,18 +60,26 @@ class ReservationQueryServiceImplTest {
                         LocalTime.of(10, 0)));
 
         final Theme theme = themeRepository.save(
-                Theme.withoutId(ThemeName.from("공포"),
+                Theme.withoutId(
+                        ThemeName.from("공포"),
                         ThemeDescription.from("지구별 방탈출 최고"),
                         ThemeThumbnail.from("www.making.com")));
 
+        final User user = userRepository.save(
+                User.withoutId(
+                        UserName.from("강산"),
+                        Email.from("email@email.com"),
+                        Password.fromEncoded("1234"),
+                        UserRole.NORMAL));
+
         final Reservation given1 = Reservation.withoutId(
-                ReserverName.from("강산"),
+                user.getId(),
                 ReservationDate.from(LocalDate.now().plusDays(1)),
                 reservationTime,
                 theme);
 
         final Reservation given2 = Reservation.withoutId(
-                ReserverName.from("강산2"),
+                user.getId(),
                 ReservationDate.from(LocalDate.now().plusDays(1)),
                 reservationTime,
                 theme);
@@ -102,10 +118,17 @@ class ReservationQueryServiceImplTest {
                         ThemeDescription.from("지구별 방탈출 최고"),
                         ThemeThumbnail.from("www.making.com")));
 
+        final User user = userRepository.save(
+                User.withoutId(
+                        UserName.from("강산"),
+                        Email.from("email@email.com"),
+                        Password.fromEncoded("1234"),
+                        UserRole.NORMAL));
+
         final ReservationDate date = ReservationDate.from(LocalDate.now().plusDays(1));
 
         final Reservation reservation = reservationRepository.save(Reservation.withoutId(
-                ReserverName.from("강산"),
+                user.getId(),
                 date,
                 booked,
                 theme));

@@ -2,17 +2,20 @@ package roomescape.common.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.auth.sign.password.Password;
 import roomescape.common.validate.InvalidInputException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
-import roomescape.reservation.domain.ReserverName;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeId;
 import roomescape.theme.domain.ThemeName;
 import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.time.domain.ReservationTime;
+import roomescape.user.domain.User;
+import roomescape.user.domain.UserName;
+import roomescape.user.domain.UserRole;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -70,16 +73,22 @@ class DomainIdTest {
                 ThemeDescription.from("지구별 방탈출 최고"),
                 ThemeThumbnail.from("www.making.com"));
 
+        final User user = User.withoutId(
+                UserName.from("강산"),
+                Email.from("email@email.com"),
+                Password.fromEncoded("1234"),
+                UserRole.NORMAL);
+
         final Reservation sameReservation1 = Reservation.withId(
                 sameId1,
-                ReserverName.from("일번입니다"),
+                user.getId(),
                 ReservationDate.from(LocalDate.now()),
                 ReservationTime.withoutId(LocalTime.now()),
                 theme);
 
         final Reservation sameReservation2 = Reservation.withId(
                 sameId2,
-                ReserverName.from("이번입니다 위와 다릅니다"),
+                user.getId(),
                 ReservationDate.from(LocalDate.now()),
                 ReservationTime.withoutId(LocalTime.now()),
                 theme);

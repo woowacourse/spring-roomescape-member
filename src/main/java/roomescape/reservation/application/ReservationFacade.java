@@ -1,5 +1,6 @@
 package roomescape.reservation.application;
 
+import roomescape.auth.resolver.UserSession;
 import roomescape.reservation.ui.dto.AvailableReservationTimeWebResponse;
 import roomescape.reservation.ui.dto.CreateReservationWebRequest;
 import roomescape.reservation.ui.dto.ReservationResponse;
@@ -13,7 +14,7 @@ public interface ReservationFacade {
 
     List<AvailableReservationTimeWebResponse> getAvailable(LocalDate date, Long themeId);
 
-    ReservationResponse create(CreateReservationWebRequest createReservationWebRequest);
+    ReservationResponse create(CreateReservationWebRequest request, UserSession session);
 
     void delete(Long id);
 }

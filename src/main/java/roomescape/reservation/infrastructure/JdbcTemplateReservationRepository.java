@@ -11,7 +11,6 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.reservation.domain.ReserverName;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeId;
@@ -19,6 +18,7 @@ import roomescape.theme.domain.ThemeName;
 import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeId;
+import roomescape.user.domain.UserId;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -54,7 +54,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
 
         return Reservation.withId(
                 ReservationId.from(resultSet.getLong("id")),
-                ReserverName.from(resultSet.getString("name")),
+                UserId.from(resultSet.getLong("user_id")),
                 ReservationDate.from(resultSet.getDate("date").toLocalDate()),
                 time,
                 theme
@@ -65,7 +65,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     public boolean existsByParams(final ReservationId id) {
         final String sql = """
                 select exists 
-                    (select 1 from reservation where id = ?)
+                    (select 1 from reservations where id = ?)
                 """;
 
         return Boolean.TRUE.equals(
@@ -76,7 +76,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     public boolean existsByParams(final ReservationTimeId timeId) {
         final String sql = """
                 select exists 
-                    (select 1 from reservation where time_id = ?)
+                    (select 1 from reservations where time_id = ?)
                 """;
 
         return Boolean.TRUE.equals(
@@ -89,7 +89,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                                   final ThemeId themeId) {
         final String sql = """
                 select exists 
-                    (select 1 from reservation where date = ? and time_id = ? and theme_id = ?)
+                    (select 1 from reservations where date = ? and time_id = ? and theme_id = ?)
                 """;
 
         return Boolean.TRUE.equals(
@@ -102,7 +102,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
         final String sql = """
                 select
                     r.id,
-                    r.name,
+                    r.user_id,
                     r.date,
                     rt.id as time_id,
                     rt.start_at as start_at,
@@ -110,10 +110,10 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                     t.name as theme_name,
                     t.description as description,
                     t.thumbnail as thumbnail
-                from reservation r
-                join reservation_time rt
+                from reservations r
+                join reservation_times rt
                     on r.time_id = rt.id
-                join theme t
+                join themes t
                     on r.theme_id = t.id
                 where r.id = ?
                 """;
@@ -126,10 +126,10 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
         final String sql = """
                 select
                     r.time_id
-                from reservation r
-                join reservation_time rt
+                from reservations r
+                join reservation_times rt
                     on r.time_id = rt.id
-                join theme t
+                join themes t
                     on r.theme_id = t.id
                 where
                     r.date = ? and t.id = ?
@@ -149,7 +149,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
         final String sql = """
                 select
                     r.id,
-                    r.name,
+                    r.user_id,
                     r.date,
                     rt.id as time_id,
                     rt.start_at as start_at,
@@ -157,10 +157,10 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                     t.name as theme_name,
                     t.description as description,
                     t.thumbnail as thumbnail
-                from reservation r
-                join reservation_time rt
+                from reservations r
+                join reservation_times rt
                     on r.time_id = rt.id
-                join theme t
+                join themes t
                     on r.theme_id = t.id
                 """;
 
@@ -170,12 +170,12 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
 
     @Override
     public Reservation save(final Reservation reservation) {
-        final String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
+        final String sql = "insert into reservations (user_id, date, time_id, theme_id) values (?, ?, ?, ?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             final PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1, reservation.getName().getValue());
+            preparedStatement.setLong(1, reservation.getUserId().getValue());
             preparedStatement.setDate(2, Date.valueOf(reservation.getDate().getValue()));
             preparedStatement.setLong(3, reservation.getTime().getId().getValue());
             preparedStatement.setLong(4, reservation.getTheme().getId().getValue());
@@ -187,7 +187,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
 
         return Reservation.withId(
                 ReservationId.from(generatedId),
-                reservation.getName(),
+                reservation.getUserId(),
                 reservation.getDate(),
                 reservation.getTime(),
                 reservation.getTheme());
@@ -195,7 +195,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
 
     @Override
     public void deleteById(final ReservationId id) {
-        final String sql = "delete from reservation where id = ?";
+        final String sql = "delete from reservations where id = ?";
         jdbcTemplate.update(sql, id.getValue());
     }
 
@@ -210,8 +210,8 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                     t.description,
                     t.thumbnail,
                     count(*) as booked_count
-                from reservation r
-                join theme t
+                from reservations r
+                join themes t
                     on r.theme_id = t.id
                 where
                     r.date between ? and ?

@@ -12,20 +12,20 @@ import java.time.LocalDate;
 import java.util.List;
 
 @FieldNameConstants(level = AccessLevel.PRIVATE)
-public record ReservationResponse(Long id,
-                                  String name,
+public record ReservationResponse(Long reservationId,
+                                  Long userId,
                                   LocalDate date,
                                   ReservationTimeResponse time,
                                   ThemeResponse theme) {
 
     public ReservationResponse {
-        validate(id, name, date, time, theme);
+        validate(reservationId, userId, date, time, theme);
     }
 
     public static ReservationResponse from(final Reservation domain) {
         return new ReservationResponse(
                 domain.getId().getValue(),
-                domain.getName().getValue(),
+                domain.getUserId().getValue(),
                 domain.getDate().getValue(),
                 ReservationTimeResponse.from(domain.getTime()),
                 ThemeResponse.from(domain.getTheme()));
@@ -37,14 +37,14 @@ public record ReservationResponse(Long id,
                 .toList();
     }
 
-    private void validate(final Long id,
-                          final String name,
+    private void validate(final Long reservationId,
+                          final Long userId,
                           final LocalDate date,
                           final ReservationTimeResponse time,
                           final ThemeResponse theme) {
         Validator.of(ReservationResponse.class)
-                .validateNotNull(Fields.id, id, DomainTerm.RESERVATION_ID.label())
-                .validateNotBlank(Fields.name, name, DomainTerm.RESERVER_NAME.label())
+                .validateNotNull(Fields.reservationId, reservationId, DomainTerm.RESERVATION_ID.label())
+                .validateNotNull(Fields.userId, userId, DomainTerm.USER_ID.label())
                 .validateNotNull(Fields.date, date, DomainTerm.RESERVATION_DATE.label())
                 .validateNotNull(Fields.time, time, DomainTerm.RESERVATION_TIME.label())
                 .validateNotNull(Fields.theme, theme, DomainTerm.THEME_ID.label());

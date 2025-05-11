@@ -37,7 +37,7 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
     public boolean existsById(final ThemeId id) {
         final String sql = """
                 select exists
-                    (select 1 from theme where id = ?)
+                    (select 1 from themes where id = ?)
                 """;
 
         return Boolean.TRUE.equals(
@@ -48,7 +48,7 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
     public boolean existsByName(final ThemeName name) {
         final String sql = """
                 select exists
-                    (select 1 from theme where name = ?)
+                    (select 1 from themes where name = ?)
                 """;
 
         return Boolean.TRUE.equals(
@@ -58,7 +58,7 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         final String sql = """
-                select id, name, description, thumbnail from theme
+                select id, name, description, thumbnail from themes
                 """;
 
         return jdbcTemplate.query(sql, themeMapper).stream()
@@ -68,7 +68,7 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
     @Override
     public Optional<Theme> findById(final ThemeId id) {
         final String sql = """
-                select id, name, description, thumbnail from theme where id = ?
+                select id, name, description, thumbnail from themes where id = ?
                 """;
 
         return JdbcUtils.queryForOptional(jdbcTemplate, sql, themeMapper, id.getValue());
@@ -78,7 +78,7 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
     public Theme save(final Theme theme) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         final String sql = """
-                insert into theme (name, description, thumbnail) values (?, ?, ?)
+                insert into themes (name, description, thumbnail) values (?, ?, ?)
                 """;
 
         jdbcTemplate.update(connection -> {
@@ -101,7 +101,7 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
 
     @Override
     public void deleteById(final ThemeId id) {
-        final String sql = "delete from theme where id = ?";
+        final String sql = "delete from themes where id = ?";
 
         jdbcTemplate.update(sql, id.getValue());
     }

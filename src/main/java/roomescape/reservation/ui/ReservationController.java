@@ -10,11 +10,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.annotation.AuthenticatedUser;
+import roomescape.auth.annotation.RequiredRoles;
+import roomescape.auth.resolver.UserSession;
 import roomescape.common.uri.UriFactory;
 import roomescape.reservation.application.ReservationFacade;
 import roomescape.reservation.ui.dto.AvailableReservationTimeWebResponse;
 import roomescape.reservation.ui.dto.CreateReservationWebRequest;
 import roomescape.reservation.ui.dto.ReservationResponse;
+import roomescape.user.domain.UserRole;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -44,10 +48,12 @@ public class ReservationController {
     }
 
     @PostMapping
+    @RequiredRoles(UserRole.NORMAL)
     public ResponseEntity<ReservationResponse> create(
-            @RequestBody final CreateReservationWebRequest createReservationWebRequest) {
-        final ReservationResponse reservationResponse = reservationFacade.create(createReservationWebRequest);
-        final URI location = UriFactory.buildPath(BASE_PATH, String.valueOf(reservationResponse.id()));
+            @RequestBody final CreateReservationWebRequest request,
+            @AuthenticatedUser final UserSession session) {
+        final ReservationResponse reservationResponse = reservationFacade.create(request, session);
+        final URI location = UriFactory.buildPath(BASE_PATH, String.valueOf(reservationResponse.reservationId()));
         return ResponseEntity.created(location)
                 .body(reservationResponse);
     }

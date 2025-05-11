@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.auth.sign.password.Password;
+import roomescape.common.domain.Email;
 import roomescape.common.exception.DuplicateException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.common.time.TimeProvider;
@@ -13,7 +15,6 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.reservation.domain.ReserverName;
 import roomescape.reservation.exception.PastDateReservationException;
 import roomescape.reservation.exception.PastTimeReservationException;
 import roomescape.theme.domain.Theme;
@@ -23,6 +24,10 @@ import roomescape.theme.domain.ThemeRepository;
 import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeRepository;
+import roomescape.user.domain.User;
+import roomescape.user.domain.UserName;
+import roomescape.user.domain.UserRepository;
+import roomescape.user.domain.UserRole;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -50,6 +55,9 @@ class ReservationCommandServiceImplTest {
     private ThemeRepository themeRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private TimeProvider timeProvider;
 
     @Test
@@ -61,12 +69,20 @@ class ReservationCommandServiceImplTest {
                         LocalTime.of(10, 0)));
 
         final Theme theme = themeRepository.save(
-                Theme.withoutId(ThemeName.from("공포"),
+                Theme.withoutId(
+                        ThemeName.from("공포"),
                         ThemeDescription.from("지구별 방탈출 최고"),
                         ThemeThumbnail.from("www.making.com")));
 
+        final User user = userRepository.save(
+                User.withoutId(
+                        UserName.from("강산"),
+                        Email.from("email@email.com"),
+                        Password.fromEncoded("1234"),
+                        UserRole.NORMAL));
+
         final CreateReservationServiceRequest requestDto = new CreateReservationServiceRequest(
-                ReserverName.from("브라운"),
+                user.getId(),
                 ReservationDate.from(LocalDate.of(2025, 8, 5)),
                 reservationTime.getId(),
                 theme.getId());
@@ -80,7 +96,7 @@ class ReservationCommandServiceImplTest {
 
         assertThat(reservation).isEqualTo(found);
         assertThat(reservation.getId()).isEqualTo(found.getId());
-        assertThat(reservation.getName()).isEqualTo(found.getName());
+        assertThat(reservation.getUserId()).isEqualTo(found.getUserId());
         assertThat(reservation.getDate()).isEqualTo(found.getDate());
         assertThat(reservation.getTime()).isEqualTo(found.getTime());
         assertThat(reservation.getTheme()).isEqualTo(found.getTheme());
@@ -95,13 +111,21 @@ class ReservationCommandServiceImplTest {
                         LocalTime.of(10, 0)));
 
         final Theme theme = themeRepository.save(
-                Theme.withoutId(ThemeName.from("공포"),
+                Theme.withoutId(
+                        ThemeName.from("공포"),
                         ThemeDescription.from("지구별 방탈출 최고"),
                         ThemeThumbnail.from("www.making.com")));
 
+        final User user = userRepository.save(
+                User.withoutId(
+                        UserName.from("강산"),
+                        Email.from("email@email.com"),
+                        Password.fromEncoded("1234"),
+                        UserRole.NORMAL));
+
         final Reservation savedReservation = reservationCommandService.create(
                 new CreateReservationServiceRequest(
-                        ReserverName.from("브라운"),
+                        user.getId(),
                         ReservationDate.from(LocalDate.of(2025, 8, 5)),
                         reservationTime.getId(),
                         theme.getId()
@@ -111,7 +135,7 @@ class ReservationCommandServiceImplTest {
         // then
         assertThatThrownBy(() -> reservationCommandService.create(
                 new CreateReservationServiceRequest(
-                        ReserverName.from("강산"),
+                        user.getId(),
                         ReservationDate.from(LocalDate.of(2025, 8, 5)),
                         reservationTime.getId(),
                         theme.getId())))
@@ -122,6 +146,41 @@ class ReservationCommandServiceImplTest {
                         "ReservationTimeId=ReservationTimeId(",
                         "ThemeId=ThemeId("
                 );
+    }
+
+    @Test
+    @DisplayName("예약을 삭제할 수 있다")
+    void deleteReservation() {
+        // given
+        final ReservationTime reservationTime = reservationTimeRepository.save(
+                ReservationTime.withoutId(
+                        LocalTime.of(10, 0)));
+
+        final Theme theme = themeRepository.save(
+                Theme.withoutId(
+                        ThemeName.from("공포"),
+                        ThemeDescription.from("지구별 방탈출 최고"),
+                        ThemeThumbnail.from("www.making.com")));
+
+        final User user = userRepository.save(
+                User.withoutId(
+                        UserName.from("강산"),
+                        Email.from("email@email.com"),
+                        Password.fromEncoded("1234"),
+                        UserRole.NORMAL));
+
+        final Reservation reservation = reservationRepository.save(
+                Reservation.withoutId(
+                        user.getId(),
+                        ReservationDate.from(LocalDate.of(2025, 8, 5)),
+                        reservationTime,
+                        theme));
+
+        // when
+        reservationCommandService.delete(reservation.getId());
+
+        // then
+        assertThat(reservationRepository.findAll()).isEmpty();
     }
 
     @Test
@@ -138,6 +197,13 @@ class ReservationCommandServiceImplTest {
                 ReservationTime.withoutId(
                         now.toLocalTime().minusNanos(1)));
 
+        final User user = userRepository.save(
+                User.withoutId(
+                        UserName.from("강산"),
+                        Email.from("email@email.com"),
+                        Password.fromEncoded("1234"),
+                        UserRole.NORMAL));
+
         final Theme theme = themeRepository.save(
                 Theme.withoutId(ThemeName.from("공포"),
                         ThemeDescription.from("지구별 방탈출 최고"),
@@ -145,7 +211,7 @@ class ReservationCommandServiceImplTest {
 
         final CreateReservationServiceRequest pastDateReservationRequest =
                 new CreateReservationServiceRequest(
-                        ReserverName.from("브라운"),
+                        user.getId(),
                         ReservationDate.from(now.toLocalDate().minusDays(1)),
                         validReservationTime.getId(),
                         theme.getId()
@@ -153,7 +219,7 @@ class ReservationCommandServiceImplTest {
 
         final CreateReservationServiceRequest pastTimeReservationRequest =
                 new CreateReservationServiceRequest(
-                        ReserverName.from("브라운"),
+                        user.getId(),
                         ReservationDate.from(now.toLocalDate()),
                         pastReservationTime.getId(),
                         theme.getId()
@@ -170,33 +236,6 @@ class ReservationCommandServiceImplTest {
                     .isInstanceOf(PastTimeReservationException.class)
                     .hasMessageContaining("Attempted to reserve with past time.");
         });
-    }
-
-    @Test
-    @DisplayName("예약을 삭제할 수 있다")
-    void deleteReservation() {
-        // given
-        final ReservationTime reservationTime = reservationTimeRepository.save(
-                ReservationTime.withoutId(
-                        LocalTime.of(10, 0)));
-
-        final Theme theme = themeRepository.save(
-                Theme.withoutId(ThemeName.from("공포"),
-                        ThemeDescription.from("지구별 방탈출 최고"),
-                        ThemeThumbnail.from("www.making.com")));
-
-        final Reservation reservation = reservationRepository.save(
-                Reservation.withoutId(
-                        ReserverName.from("브라운"),
-                        ReservationDate.from(LocalDate.of(2025, 8, 5)),
-                        reservationTime,
-                        theme));
-
-        // when
-        reservationCommandService.delete(reservation.getId());
-
-        // then
-        assertThat(reservationRepository.findAll()).isEmpty();
     }
 
     @Test

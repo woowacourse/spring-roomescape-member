@@ -6,10 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.auth.sign.password.Password;
+import roomescape.common.domain.Email;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.reservation.domain.ReserverName;
 import roomescape.theme.application.service.ThemeQueryServiceImpl;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
@@ -18,6 +19,10 @@ import roomescape.theme.domain.ThemeRepository;
 import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeRepository;
+import roomescape.user.domain.User;
+import roomescape.user.domain.UserName;
+import roomescape.user.domain.UserRepository;
+import roomescape.user.domain.UserRole;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -40,6 +45,9 @@ class ThemeQueryServiceImplTest {
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     @DisplayName("테마를 모두 조회할 수 있다")
@@ -75,6 +83,13 @@ class ThemeQueryServiceImplTest {
     @DisplayName("주어진 기간동안에 상위 10개의 테마를 조회할 수 있다")
     void getRanking() {
         // given
+        final User user = userRepository.save(
+                User.withoutId(
+                        UserName.from("강산"),
+                        Email.from("email@email.com"),
+                        Password.fromEncoded("1234"),
+                        UserRole.NORMAL));
+
         final Theme theme1 = themeRepository.save(Theme.withoutId(
                 ThemeName.from("시소"),
                 ThemeDescription.from("공포 방탈출 대표 테마"),
@@ -148,7 +163,7 @@ class ThemeQueryServiceImplTest {
             if (i == 3) {
                 for (int j = 0; j < 20; j++) {
                     reservationRepository.save(Reservation.withoutId(
-                            ReserverName.from("member" + i + "_" + j),
+                            user.getId(),
                             ReservationDate.from(date.getValue().plusDays(j)),
                             time,
                             themes[i]));
@@ -156,7 +171,7 @@ class ThemeQueryServiceImplTest {
             } else {
                 for (int j = 0; j < 11 - i; j++) {
                     reservationRepository.save(Reservation.withoutId(
-                            ReserverName.from("member" + i + "_" + j),
+                            user.getId(),
                             ReservationDate.from(date.getValue().plusDays(j)),
                             time,
                             themes[i]
