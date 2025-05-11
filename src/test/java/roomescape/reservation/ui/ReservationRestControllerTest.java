@@ -46,7 +46,7 @@ class ReservationRestControllerTest {
 
     @Test
     void 예약을_추가한다() {
-        final Map<String, String> memberCookies = createMemberResponses.get(0).extract().cookies();
+        final Map<String, String> memberCookies = memberLoginAndGetCookies(signUpParams1());
         final Map<String, String> reservationParams = reservationParams1();
 
         RestAssured.given().log().all()
