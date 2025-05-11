@@ -17,6 +17,14 @@ public class CookieHandler {
                 .build();
     }
 
+    public static ResponseCookie createLogoutCookie() {
+        return ResponseCookie.from("token", "")
+                .path("/")
+                .httpOnly(true)
+                .maxAge(0)
+                .build();
+    }
+
     public static String extractTokenFromCookies(final Cookie[] cookies) {
         validateCookiesExisted(cookies);
 
