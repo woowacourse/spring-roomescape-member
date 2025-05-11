@@ -19,4 +19,9 @@ public class GlobalAdvice {
     public ResponseEntity<String> badRequestExceptionHandler(BadRequestException exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
+
+    @ExceptionHandler(IllegalAccessException.class)
+    public ResponseEntity<String> IllegalAccessExceptionHandler(IllegalAccessException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
+    }
 }
