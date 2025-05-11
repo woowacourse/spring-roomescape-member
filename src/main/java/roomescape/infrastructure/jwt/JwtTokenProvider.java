@@ -24,8 +24,6 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(memberDto.id().toString())
-                .claim("name", memberDto.name())
-                .claim("email", memberDto.email())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
