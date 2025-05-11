@@ -22,6 +22,7 @@ import roomescape.exception.custom.reason.reservation.ReservationPastTimeExcepti
 import roomescape.member.FakeMemberRepository;
 import roomescape.member.Member;
 import roomescape.member.MemberRole;
+import roomescape.reservation.dto.AdminFilterReservationRequest;
 import roomescape.reservation.dto.AdminReservationRequest;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -62,6 +63,7 @@ public class ReservationServiceTest {
     @Nested
     @DisplayName("예약 생성")
     class Create {
+
         @DisplayName("reservation request를 생성하면 response 값을 반환한다.")
         @Test
         void create() {
@@ -351,6 +353,7 @@ public class ReservationServiceTest {
         }
 
     }
+
     @Nested
     @DisplayName("예약 멤버 id, 테마 id, 날짜 범위 기준 조회")
     class ReadAllByMemberAndThemeAndDateRange {
@@ -359,14 +362,15 @@ public class ReservationServiceTest {
         @Test
         void readAllByMemberAndThemeAndDateRange1() {
             // given
-            final Long memberId = 1L;
-            final Long themeId = 1L;
-            final LocalDate startDate = LocalDate.of(2024, 1, 1);
-            final LocalDate endDate = LocalDate.of(2024, 12, 31);
+            final AdminFilterReservationRequest request = new AdminFilterReservationRequest(
+                    1L, 1L,
+                    LocalDate.of(2024, 1, 1),
+                    LocalDate.of(2024, 12, 31)
+            );
 
             // when
             final List<ReservationResponse> responses =
-                    reservationService.readAllByMemberAndThemeAndDateRange(memberId, themeId, startDate, endDate);
+                    reservationService.readAllByMemberAndThemeAndDateRange(request);
 
             // then
             assertThat(responses).isEmpty();
@@ -376,23 +380,24 @@ public class ReservationServiceTest {
         @Test
         void readAllByMemberAndThemeAndDateRange2() {
             // given
-            final Long memberId = 1L;
-            final Long themeId = 1L;
-            final LocalDate startDate = LocalDate.of(2024, 1, 1);
-            final LocalDate endDate = LocalDate.of(2024, 12, 31);
+            final AdminFilterReservationRequest request = new AdminFilterReservationRequest(
+                    1L, 1L,
+                    LocalDate.of(2024, 1, 1),
+                    LocalDate.of(2024, 12, 31)
+            );
 
             fakeReservationRepository.save(
                     new Reservation(LocalDate.of(2024, 6, 15)),
-                    1L, themeId, memberId
+                    1L, request.themeId(), request.memberId()
             );
             fakeReservationRepository.save(
                     new Reservation(LocalDate.of(2024, 7, 20)),
-                    1L, themeId, memberId
+                    1L, request.themeId(), request.memberId()
             );
 
             // when
             final List<ReservationResponse> responses =
-                    reservationService.readAllByMemberAndThemeAndDateRange(memberId, themeId, startDate, endDate);
+                    reservationService.readAllByMemberAndThemeAndDateRange(request);
 
             // then
             assertThat(responses).hasSize(2);
@@ -402,23 +407,24 @@ public class ReservationServiceTest {
         @Test
         void readAllByMemberAndThemeAndDateRange3() {
             // given
-            final Long memberId = 1L;
-            final Long themeId = 1L;
-            final LocalDate startDate = LocalDate.of(2024, 1, 1);
-            final LocalDate endDate = LocalDate.of(2024, 6, 30);
+            final AdminFilterReservationRequest request = new AdminFilterReservationRequest(
+                    1L, 1L,
+                    LocalDate.of(2024, 1, 1),
+                    LocalDate.of(2024, 6, 30)
+            );
 
             fakeReservationRepository.save(
                     new Reservation(LocalDate.of(2024, 6, 15)),
-                    1L, themeId, memberId
+                    1L, request.themeId(), request.memberId()
             );
             fakeReservationRepository.save(
                     new Reservation(LocalDate.of(2024, 7, 20)),
-                    1L, themeId, memberId
+                    1L, request.themeId(), request.memberId()
             );
 
             // when
             final List<ReservationResponse> responses =
-                    reservationService.readAllByMemberAndThemeAndDateRange(memberId, themeId, startDate, endDate);
+                    reservationService.readAllByMemberAndThemeAndDateRange(request);
 
             // then
             assertThat(responses).hasSize(1);
@@ -428,24 +434,25 @@ public class ReservationServiceTest {
         @Test
         void readAllByMemberAndThemeAndDateRange4() {
             // given
-            final Long memberId = 1L;
+            final AdminFilterReservationRequest request = new AdminFilterReservationRequest(
+                    1L, 1L,
+                    LocalDate.of(2024, 1, 1),
+                    LocalDate.of(2024, 12, 31)
+            );
             final Long otherMemberId = 2L;
-            final Long themeId = 1L;
-            final LocalDate startDate = LocalDate.of(2024, 1, 1);
-            final LocalDate endDate = LocalDate.of(2024, 12, 31);
 
             fakeReservationRepository.save(
                     new Reservation(LocalDate.of(2024, 6, 15)),
-                    1L, themeId, memberId
+                    1L, request.themeId(), request.memberId()
             );
             fakeReservationRepository.save(
                     new Reservation(LocalDate.of(2024, 7, 20)),
-                    1L, themeId, otherMemberId
+                    1L, request.themeId(), otherMemberId
             );
 
             // when
             final List<ReservationResponse> responses =
-                    reservationService.readAllByMemberAndThemeAndDateRange(memberId, themeId, startDate, endDate);
+                    reservationService.readAllByMemberAndThemeAndDateRange(request);
 
             // then
             assertThat(responses).hasSize(1);
@@ -455,24 +462,25 @@ public class ReservationServiceTest {
         @Test
         void readAllByMemberAndThemeAndDateRange5() {
             // given
-            final Long memberId = 1L;
-            final Long themeId = 1L;
+            final AdminFilterReservationRequest request = new AdminFilterReservationRequest(
+                    1L, 1L,
+                    LocalDate.of(2024, 1, 1),
+                    LocalDate.of(2024, 12, 31)
+            );
             final Long otherThemeId = 2L;
-            final LocalDate startDate = LocalDate.of(2024, 1, 1);
-            final LocalDate endDate = LocalDate.of(2024, 12, 31);
 
             fakeReservationRepository.save(
                     new Reservation(LocalDate.of(2024, 6, 15)),
-                    1L, themeId, memberId
+                    1L, request.themeId(), request.memberId()
             );
             fakeReservationRepository.save(
                     new Reservation(LocalDate.of(2024, 7, 20)),
-                    1L, otherThemeId, memberId
+                    1L, otherThemeId, request.memberId()
             );
 
             // when
             final List<ReservationResponse> responses =
-                    reservationService.readAllByMemberAndThemeAndDateRange(memberId, themeId, startDate, endDate);
+                    reservationService.readAllByMemberAndThemeAndDateRange(request);
 
             // then
             assertThat(responses).hasSize(1);
