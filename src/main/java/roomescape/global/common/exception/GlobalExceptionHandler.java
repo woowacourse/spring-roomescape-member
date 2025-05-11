@@ -1,4 +1,4 @@
-package roomescape.global.exception;
+package roomescape.global.common.exception;
 
 import java.time.format.DateTimeParseException;
 import org.springframework.http.HttpStatus;

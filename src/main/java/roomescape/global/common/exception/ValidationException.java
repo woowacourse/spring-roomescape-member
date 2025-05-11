@@ -1,4 +1,4 @@
-package roomescape.global.exception;
+package roomescape.global.common.exception;
 
 public class ValidationException extends RuntimeException {
 

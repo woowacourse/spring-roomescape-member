@@ -1,6 +1,6 @@
 package roomescape.member.exception;
 
-import roomescape.global.exception.ValidationException;
+import roomescape.global.common.exception.ValidationException;
 
 public class InvalidMemberException extends ValidationException {
 

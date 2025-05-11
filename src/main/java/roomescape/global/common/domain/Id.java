@@ -1,4 +1,4 @@
-package roomescape.global.domain;
+package roomescape.global.common.domain;
 
 import java.util.Objects;
 import java.util.UUID;
