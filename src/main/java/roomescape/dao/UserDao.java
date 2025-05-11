@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import roomescape.model.Role;
 import roomescape.model.User;
 import roomescape.model.UserName;
 
@@ -20,7 +21,7 @@ public class UserDao {
 
     public Optional<User> findByEmail(String email) {
         String sql = """
-                SELECT id, name, email, password 
+                SELECT id, name, email, password, role
                 FROM users
                 WHERE email = :email
                 """;
@@ -33,8 +34,8 @@ public class UserDao {
                             rs.getLong("id"),
                             new UserName(rs.getString("name")),
                             rs.getString("email"),
-                            rs.getString("password")
-                    )
+                            rs.getString("password"),
+                            Role.valueOf(rs.getString("role")))
             );
             return Optional.ofNullable(user);
         } catch (DataAccessException e) {
@@ -44,7 +45,7 @@ public class UserDao {
 
     public Optional<User> findById(Long id) {
         String sql = """
-                SELECT id, name, email, password
+                SELECT id, name, email, password, role
                 FROM users
                 WHERE id = :id
                 """;
@@ -56,7 +57,8 @@ public class UserDao {
                             rs.getLong("id"),
                             new UserName(rs.getString("name")),
                             rs.getString("email"),
-                            rs.getString("password")
+                            rs.getString("password"),
+                            Role.valueOf(rs.getString("role"))
                     ));
             return Optional.ofNullable(user);
         } catch (DataAccessException e) {
@@ -66,7 +68,7 @@ public class UserDao {
 
     public List<User> findAll() {
         String sql = """
-                SELECT id, name, email, password
+                SELECT id, name, email, password, role
                 FROM users
                 """;
         return namedParameterJdbcTemplate.query(
@@ -75,7 +77,8 @@ public class UserDao {
                         rs.getLong("id"),
                         new UserName(rs.getString("name")),
                         rs.getString("email"),
-                        rs.getString("password")
+                        rs.getString("password"),
+                        Role.valueOf(rs.getString("role"))
                 )
         );
     }

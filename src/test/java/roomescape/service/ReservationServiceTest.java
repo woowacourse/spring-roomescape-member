@@ -21,6 +21,7 @@ import roomescape.dao.ThemeDao;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.model.ReservationTime;
+import roomescape.model.Role;
 import roomescape.model.Theme;
 import roomescape.model.ThemeName;
 import roomescape.model.User;
@@ -54,7 +55,7 @@ class ReservationServiceTest {
         Theme savedTheme = themeDao.save(new Theme(null, new ThemeName("제목"), "de", "th"));
         ReservationRequest request = new ReservationRequest(LocalDate.of(2025, 12, 16), savedTime.getId(),
                 savedTheme.getId());
-        User user = new User(1L, new UserName("이름"), "", "");
+        User user = new User(1L, new UserName("이름"), "", "", Role.USER);
 
         ReservationResponse response = reservationService.addReservation(user, request);
 
@@ -72,7 +73,7 @@ class ReservationServiceTest {
                 nonExistTimeId,
                 1L
         );
-        User user = new User(1L, new UserName("이름"), "", "");
+        User user = new User(1L, new UserName("이름"), "", "", Role.USER);
 
         // when, then
         assertThatThrownBy(() -> reservationService.addReservation(user, request))
@@ -88,7 +89,7 @@ class ReservationServiceTest {
                 1L,
                 nonExistThemeId
         );
-        User user = new User(1L, new UserName("이름"), "", "");
+        User user = new User(1L, new UserName("이름"), "", "", Role.USER);
 
         // when, then
         assertThatThrownBy(() -> reservationService.addReservation(user, request))
@@ -103,7 +104,7 @@ class ReservationServiceTest {
                 1L,
                 1L
         );
-        User user = new User(1L, new UserName("이름"), "", "");
+        User user = new User(1L, new UserName("이름"), "", "", Role.USER);
 
         // when, then
         assertThatThrownBy(() -> reservationService.addReservation(user, request))
@@ -119,7 +120,7 @@ class ReservationServiceTest {
                 1L,
                 1L
         );
-        User user = new User(1L, new UserName("이름"), "", "");
+        User user = new User(1L, new UserName("이름"), "", "", Role.USER);
 
         // when, then
         assertThatThrownBy(() -> reservationService.addReservation(user, request))
@@ -138,7 +139,7 @@ class ReservationServiceTest {
         Theme savedTheme = themeDao.save(new Theme(null, new ThemeName("제목"), "de", "th"));
         ReservationRequest request = new ReservationRequest(LocalDate.of(2025, 12, 16), savedTime.getId(),
                 savedTheme.getId());
-        User user = new User(1L, new UserName("이름"), "", "");
+        User user = new User(1L, new UserName("이름"), "", "", Role.USER);
         ReservationResponse response = reservationService.addReservation(user, request);
 
         reservationService.deleteReservation(response.id());

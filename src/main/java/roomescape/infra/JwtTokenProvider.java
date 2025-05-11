@@ -5,6 +5,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import java.util.Date;
 import org.springframework.stereotype.Component;
+import roomescape.model.Role;
 
 @Component
 public class JwtTokenProvider {
@@ -39,7 +40,18 @@ public class JwtTokenProvider {
                 .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build()
                 .parseClaimsJws(token)
-                .getBody().getSubject()
+                .getBody()
+                .getSubject()
         );
     }
+
+    public Role getRole(String token) {
+        return Role.valueOf((String) Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role"));
+    }
+
 }

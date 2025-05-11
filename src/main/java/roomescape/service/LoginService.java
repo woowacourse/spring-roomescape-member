@@ -6,6 +6,7 @@ import roomescape.dao.UserDao;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.LoginCheckResponse;
 import roomescape.infra.JwtTokenProvider;
+import roomescape.model.Role;
 import roomescape.model.User;
 
 @Service
@@ -20,7 +21,7 @@ public class LoginService {
 
     public String loginAndGetToken(LoginRequest loginRequest) {
         User user = login(loginRequest);
-        return jwtTokenProvider.createToken(user.getId(), user.getNameValue(), "USER");
+        return jwtTokenProvider.createToken(user.getId(), user.getNameValue(), user.getRole().name());
     }
 
     private User login(LoginRequest loginRequest) {

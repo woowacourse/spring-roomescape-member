@@ -1,16 +1,18 @@
 package roomescape.model;
 
 public class User {
-    Long id;
-    UserName name;
-    String email;
-    String password;
+    private final Long id;
+    private final UserName name;
+    private final String email;
+    private final String password;
+    private final Role role;
 
-    public User(Long id, UserName name, String email, String password) {
+    public User(Long id, UserName name, String email, String password, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public Long getId() {
@@ -31,5 +33,9 @@ public class User {
 
     public String getNameValue() {
         return name.getName();
+    }
+
+    public Role getRole() {
+        return role;
     }
 }

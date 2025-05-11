@@ -56,6 +56,8 @@ VALUES -- 테마 1-10 (각 2개씩)
        ('이서진', '2023-03-25', 1, 15)
 ;
 
-INSERT INTO users(name, email, password)
-VALUES ('name1', 'email1', '1234'),
-       ('name2', 'email2', '1234')
+INSERT INTO users(name, email, password, role)
+VALUES ('name1', 'email1', '1234', 'USER'),
+       ('name2', 'email2', '1234', 'USER'),
+       ('name3', 'email3', '1234', 'ADMIN')
+
