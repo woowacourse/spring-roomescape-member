@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.reservation.ReservationTheme;
 import roomescape.persistence.ReservationThemeRepository;
-import roomescape.presentation.admin.dto.ReservationThemeResponseDto;
+import roomescape.presentation.member.dto.ThemeResponseDto;
 
 @Service
 public class ReservationThemeService {
@@ -22,20 +22,20 @@ public class ReservationThemeService {
         this.reservationThemeRepository = reservationThemeRepository;
     }
 
-    public List<ReservationThemeResponseDto> getAllThemes() {
+    public List<ThemeResponseDto> getAllThemes() {
         List<ReservationTheme> reservationThemes = reservationThemeRepository.findAll();
         return reservationThemes.stream()
-                .map(ReservationThemeResponseDto::toResponse)
+                .map(ThemeResponseDto::toResponse)
                 .toList();
     }
 
-    public List<ReservationThemeResponseDto> findBestReservedThemes() {
+    public List<ThemeResponseDto> findBestReservedThemes() {
         LocalDate now = LocalDate.now();
         LocalDate start = calculateStartDate(now);
         LocalDate end = calculateEndDate(now);
         return getBestReservedThemes(start, end)
                 .stream()
-                .map(ReservationThemeResponseDto::toResponse)
+                .map(ThemeResponseDto::toResponse)
                 .toList();
     }
 

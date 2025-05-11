@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.business.service.member.ReservationThemeService;
-import roomescape.presentation.admin.dto.ReservationThemeResponseDto;
+import roomescape.presentation.member.dto.ThemeResponseDto;
 
 @RestController
 @RequestMapping("/themes")
@@ -21,14 +21,14 @@ public final class ReservationThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationThemeResponseDto>> getReservationThemes() {
-        List<ReservationThemeResponseDto> reservationThemes = reservationThemeService.getAllThemes();
+    public ResponseEntity<List<ThemeResponseDto>> getReservationThemes() {
+        List<ThemeResponseDto> reservationThemes = reservationThemeService.getAllThemes();
         return ResponseEntity.ok(reservationThemes);
     }
 
     @GetMapping("/ranks")
-    public ResponseEntity<List<ReservationThemeResponseDto>> getBestReservedReservationThemes() {
-        List<ReservationThemeResponseDto> bestReservedThemes = reservationThemeService.findBestReservedThemes();
+    public ResponseEntity<List<ThemeResponseDto>> getBestReservedReservationThemes() {
+        List<ThemeResponseDto> bestReservedThemes = reservationThemeService.findBestReservedThemes();
         return ResponseEntity.ok(bestReservedThemes);
     }
 }
