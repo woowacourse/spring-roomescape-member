@@ -7,7 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
-import roomescape.exceptions.auth.AuthenticationException;
+import roomescape.exceptions.auth.AuthorizationException;
 import roomescape.infrastructure.member.MemberInfo;
 
 public class JwtTokenProvider {
@@ -50,9 +50,9 @@ public class JwtTokenProvider {
             Role role = Role.valueOf((String) claims.get(ROLE_KEY));
             return new MemberInfo(id, name, email, role);
         } catch (RequiredTypeException | IllegalArgumentException e) {
-            throw new AuthenticationException("토큰 파싱에 실패하였습니다");
+            throw new AuthorizationException("토큰 파싱에 실패하였습니다");
         } catch (Exception e) {
-            throw new AuthenticationException("토큰 처리 중 오류가 발생했습니다: " + e.getMessage());
+            throw new AuthorizationException("토큰 처리 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 }
