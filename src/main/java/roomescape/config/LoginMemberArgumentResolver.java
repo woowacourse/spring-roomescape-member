@@ -1,5 +1,6 @@
 package roomescape.config;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import org.springframework.core.MethodParameter;
@@ -27,15 +28,20 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws UnauthorizedException {
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         final String accessToken = getAccessToken(request);
         final LoginMember loginMember = authService.getLoginMemberByAccessToken(accessToken);
         return loginMember;
     }
 
-    private String getAccessToken(final HttpServletRequest request) {
-        return Arrays.stream(request.getCookies())
+    private String getAccessToken(final HttpServletRequest request) throws UnauthorizedException {
+        final Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            throw new UnauthorizedException("로그인 정보가 없습니다.");
+        }
+
+        return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName()
                         .equals("token"))
                 .findFirst()
