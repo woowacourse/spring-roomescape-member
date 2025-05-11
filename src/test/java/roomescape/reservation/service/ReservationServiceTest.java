@@ -271,7 +271,6 @@ class ReservationServiceTest {
                 .isInstanceOf(DataExistException.class);
     }
 
-    //
     @TestConfiguration
     static class TestConfig {
 
