@@ -93,7 +93,7 @@ class ReservationTimeServiceTest {
         ReservationTimeInfo response = reservationTimeService.createReservationTime(request);
         ReservationTime time = new ReservationTime(response.id(), response.startAt());
         Theme theme = new Theme(1L, "우테코방탈출", "탈출탈출탈출", "abcdefg");
-        Member member = new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!", MemberRole.ADMIN);
+        Member member = new Member(null, "레오", "admin@gmail.com", "qwer!", MemberRole.ADMIN);
         reservationDao.save(new Reservation(null, member, LocalDate.now().plusDays(1), time, theme));
         // when
         // then
@@ -109,7 +109,7 @@ class ReservationTimeServiceTest {
         ReservationTime savedTime1 = reservationTimeDao.save(new ReservationTime(LocalTime.of(10, 0)));
         ReservationTime savedTime2 = reservationTimeDao.save(new ReservationTime(LocalTime.of(15, 0)));
         Theme theme = new Theme(1L, "우테코 탈출", "우테코 방탈출", "wwwwww");
-        Member member = new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!", MemberRole.ADMIN);
+        Member member = new Member(null, "레오", "admin@gmail.com", "qwer!", MemberRole.ADMIN);
         LocalDate date = LocalDate.of(2025, 5, 1);
         reservationDao.save(new Reservation(1L, member, date, savedTime1, theme));
         // when

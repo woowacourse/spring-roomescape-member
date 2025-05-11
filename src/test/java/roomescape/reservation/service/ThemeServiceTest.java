@@ -95,7 +95,7 @@ class ThemeServiceTest {
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(11, 0));
         ReservationTime saveTime = fakeReservationTimeDao.save(reservationTime);
         Theme theme = new Theme(null, "우테코방탈출", "탈출탈출탈출", "포비솔라브라운");
-        Member member = new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!", MemberRole.ADMIN);
+        Member member = new Member(null, "레오", "admin@gmail.com", "qwer!", MemberRole.ADMIN);
         Theme savedTheme = fakeThemeDao.save(theme);
         fakeReservationDao.save(new Reservation(null, member, LocalDate.now().plusDays(1), saveTime, savedTheme));
 

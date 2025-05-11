@@ -48,7 +48,7 @@ class ReservationDaoTest {
         memberDao = new JdbcMemberDao(namedParameterJdbcTemplate);
         reservationTime = reservationTimeDao.save(new ReservationTime(LocalTime.of(10, 0)));
         theme = themeDao.save(new Theme(null, "우테코방탈출", "탈출탈출탈출", "abcdefg"));
-        member = memberDao.save(new Member(null, "레오", "rlawnsdud920@gmail.com", "qwer!", ADMIN));
+        member = memberDao.save(new Member(null, "레오", "admin@gmail.com", "qwer!", ADMIN));
     }
 
     @DisplayName("새로운 예약을 저장할 수 있다")

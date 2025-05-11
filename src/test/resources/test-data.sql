@@ -1,4 +1,4 @@
-INSERT INTO member(name, email, password, role) VALUES('레오', 'rlawnsdud920@gmail.com', 'qwer!', 'ADMIN');
+INSERT INTO member(name, email, password, role) VALUES('레오', 'admin@gmail.com', 'qwer!', 'ADMIN');
 
 INSERT INTO reservation_time(start_at) VALUES('10:00');
 INSERT INTO reservation_time(start_at) VALUES('15:00');
