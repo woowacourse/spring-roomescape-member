@@ -12,13 +12,13 @@ import roomescape.member.presentation.MemberFixture;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class AdminControllerTest {
-    final MemberFixture memberFixture = new MemberFixture();
+    private final MemberFixture memberFixture = new MemberFixture();
 
     @Test
     @DisplayName("어드민 페이지 테스트")
     void adminTest() {
         // given
-        Map<String, String> cookies = memberFixture.loginAdmin();
+        final Map<String, String> cookies = memberFixture.loginAdmin();
 
         // when - then
         RestAssured.given().log().all()
@@ -33,7 +33,7 @@ class AdminControllerTest {
     @DisplayName("예약 페이지 테스트")
     void reservationPageTest() {
         // given
-        Map<String, String> cookies = memberFixture.loginAdmin();
+        final Map<String, String> cookies = memberFixture.loginAdmin();
 
         // when - then
         RestAssured.given().log().all()
@@ -48,7 +48,7 @@ class AdminControllerTest {
     @DisplayName("예약 시간 페이지 테스트")
     void reservationTimePageTest() {
         // given
-        Map<String, String> cookies = memberFixture.loginAdmin();
+        final Map<String, String> cookies = memberFixture.loginAdmin();
 
         // when - then
         RestAssured.given().log().all()
@@ -63,7 +63,7 @@ class AdminControllerTest {
     @DisplayName("테마 페이지 테스트")
     void themePageTest() {
         // given
-        Map<String, String> cookies = memberFixture.loginAdmin();
+        final Map<String, String> cookies = memberFixture.loginAdmin();
 
         // when - then
         RestAssured.given().log().all()

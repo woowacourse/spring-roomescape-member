@@ -12,13 +12,13 @@ import roomescape.member.presentation.MemberFixture;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class UserControllerTest {
-    final MemberFixture memberFixture = new MemberFixture();
+    private final MemberFixture memberFixture = new MemberFixture();
 
     @Test
     @DisplayName("예약 페이지 테스트")
     void reservationTest() {
         // given
-        Map<String, String> cookies = memberFixture.loginUser();
+        final Map<String, String> cookies = memberFixture.loginUser();
 
         // when - then
         RestAssured.given().log().all()

@@ -12,13 +12,13 @@ import roomescape.member.presentation.dto.SignUpRequest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MemberControllerTest {
-    final MemberFixture memberFixture = new MemberFixture();
+    private final MemberFixture memberFixture = new MemberFixture();
 
     @Test
     @DisplayName("회원가입 테스트")
     void loginTest() {
         // given
-        SignUpRequest signUpRequest = new SignUpRequest("test@test.com", "test", "테스트");
+        final SignUpRequest signUpRequest = new SignUpRequest("test@test.com", "test", "테스트");
 
         // when - then
         RestAssured.given().log().all()
@@ -33,7 +33,7 @@ public class MemberControllerTest {
     @DisplayName("전체 회원 조회 테스트")
     void getMembersTest() {
         // given
-        Map<String, String> cookies = memberFixture.loginAdmin();
+        final Map<String, String> cookies = memberFixture.loginAdmin();
 
         // when - then
         RestAssured.given().log().all()
