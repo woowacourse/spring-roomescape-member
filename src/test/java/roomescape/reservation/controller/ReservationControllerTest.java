@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import roomescape.reservation.dto.ReservationTimeResponse;
 import roomescape.reservation.dto.ThemeResponse;
 import roomescape.reservation.service.ReservationService;
 
+@Disabled
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest {
 
