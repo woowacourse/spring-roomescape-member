@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import java.util.Arrays;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
+import roomescape.auth.jwt.AuthTokenExtractor;
 import roomescape.auth.jwt.AuthTokenProvider;
 import roomescape.auth.service.dto.CreateTokenServiceRequest;
 import roomescape.exception.custom.AuthorizationException;
@@ -16,10 +17,14 @@ public class AuthService {
 
     private final MemberDao memberDao;
     private final AuthTokenProvider authTokenProvider;
+    private final AuthTokenExtractor authTokenExtractor;
 
-    public AuthService(final MemberDao memberDao, final AuthTokenProvider authTokenProvider) {
+    public AuthService(final MemberDao memberDao,
+                       final AuthTokenProvider authTokenProvider,
+                       final AuthTokenExtractor authTokenExtractor) {
         this.memberDao = memberDao;
         this.authTokenProvider = authTokenProvider;
+        this.authTokenExtractor = authTokenExtractor;
     }
 
     public String createToken(final CreateTokenServiceRequest request) {
@@ -62,7 +67,7 @@ public class AuthService {
 
     public Member findMemberByToken(final String token) {
         validateTokenExisted(token);
-        final long memberId = Long.parseLong(authTokenProvider.extractPayload(token));
+        final long memberId = Long.parseLong(authTokenExtractor.extractPayload(token));
 
         return memberDao.findById(memberId)
                 .orElseThrow(() -> new NotExistedValueException("존재하지 않는 멤버 입니다"));
@@ -75,6 +80,6 @@ public class AuthService {
     }
 
     public boolean isAdmin(final String token) {
-        return authTokenProvider.extractRole(token).equals("Admin");
+        return authTokenExtractor.extractRole(token).equals("Admin");
     }
 }
