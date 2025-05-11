@@ -150,6 +150,33 @@ public class ReservationDao {
         return rowCountByThemeId > 0;
     }
 
+    public List<Reservation> findByThemeIdAndMemberIdAndBetweenDate(
+            final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo
+    ) {
+        String sql = """
+                select rs.id as reservation_id, rs.date,
+                       m.id as member_id, m.name, m.email, m.password, m.role,
+                       rt.id as reservation_time_id, rt.start_at,
+                       th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
+                from reservation rs
+                inner join reservation_time rt ON rs.time_id = rt.id
+                inner join theme th ON rs.theme_id = th.id
+                inner join member m ON rs.member_id = m.id
+                where rs.theme_id = :theme_id AND rs.member_id = :member_id AND rs.date between :date_from and :date_to
+                """;
+        Map<String, Object> params = Map.of(
+                "theme_id", themeId,
+                "member_id", memberId,
+                "date_from", dateFrom,
+                "date_to", dateTo
+        );
+
+        return jdbcTemplate.query(sql,
+                params,
+                (resultSet, rowNum) -> reservationOf(resultSet)
+        );
+    }
+
     private Optional<Reservation> reservationOf(final String sql, final Map<String, Long> params) {
         try {
             Reservation reservation = jdbcTemplate.queryForObject(sql,

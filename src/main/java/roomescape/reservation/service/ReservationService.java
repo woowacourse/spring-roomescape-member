@@ -18,6 +18,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.BookedReservationTimeResponse;
+import roomescape.reservation.dto.FilteringReservationRequest;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationTimeResponse;
@@ -62,6 +63,20 @@ public class ReservationService {
         Reservation savedReservation = reservationDao.save(reservation);
 
         return ReservationResponse.from(savedReservation);
+    }
+
+    public List<ReservationResponse> findReservationsByThemeIdAndMemberIdBetweenDate(
+            final FilteringReservationRequest request
+    ) {
+        Long themeId = request.themeId();
+        Long memberId = request.memberId();
+        LocalDate dateFrom = request.dateFrom();
+        LocalDate dateTo = request.dateTo();
+
+        return reservationDao.findByThemeIdAndMemberIdAndBetweenDate(themeId, memberId, dateFrom, dateTo)
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 
     private boolean isAlreadyBooked(final ReservationRequest request) {
