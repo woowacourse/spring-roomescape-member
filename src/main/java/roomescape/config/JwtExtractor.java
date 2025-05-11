@@ -6,6 +6,9 @@ import roomescape.exception.UnauthorizedException;
 
 public class JwtExtractor {
 
+    private JwtExtractor() {
+    }
+
     public static String extractFromRequest(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {

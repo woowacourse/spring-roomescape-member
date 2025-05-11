@@ -5,7 +5,10 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class CookieUtil {
 
-    public static final int MAX_AGE = 3600;
+    private static final int MAX_AGE = 3600;
+
+    private CookieUtil() {
+    }
 
     public static void addCookie(String name, String value, HttpServletResponse response) {
         addCookie(name, value, MAX_AGE, response);
