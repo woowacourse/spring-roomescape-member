@@ -18,11 +18,19 @@ public class MemberService {
     }
 
     public MemberResponseDto saveMember(MemberRequestDto memberRequestDto) {
+        validateAlreadyExist(memberRequestDto);
         Member member = Member.createUser(memberRequestDto.name(), memberRequestDto.email(),
             memberRequestDto.password());
         long savedId = memberDao.save(member);
         member.setId(savedId);
         return MemberResponseDto.from(member);
+    }
+
+    private void validateAlreadyExist(MemberRequestDto memberRequestDto) {
+        memberDao.findByEmail(memberRequestDto.email())
+            .ifPresent(member -> {
+                throw new IllegalArgumentException("이미 존재하는 회원입니다.");
+            });
     }
 
     public Member getMemberOf(String email, String password) {
