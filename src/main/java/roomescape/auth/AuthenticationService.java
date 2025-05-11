@@ -1,11 +1,11 @@
-package roomescape.service;
+package roomescape.auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
-import roomescape.dto.TokenClaims;
+import roomescape.dto.TokenInfo;
 import roomescape.model.Member;
 
 @Service
@@ -22,28 +22,15 @@ public class AuthenticationService {
 
     }
 
-//    public MemberResponse validateTokenAndGetName(String accessToken) {
-//        try {
-//            Claims payload = Jwts.parser()
-//                    .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-//                    .build()
-//                    .parseSignedClaims(accessToken)
-//                    .getPayload();
-//            String name = payload.get("name", String.class);
-//            return new MemberResponse(name);
-//        } catch (JwtException e) {
-//            throw new IllegalArgumentException("접근할 수 없습니다.");
-//        }
-//    }
 
-    public TokenClaims validateTokenAndGetClaims(String accessToken) {
+    public TokenInfo validateTokenAndGetInfo(String accessToken) {
         try {
             Claims payload = Jwts.parser()
                     .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                     .build()
                     .parseSignedClaims(accessToken)
                     .getPayload();
-            return new TokenClaims(Long.parseLong(payload.getSubject()), payload.get("role", String.class));
+            return new TokenInfo(Long.parseLong(payload.getSubject()), payload.get("role", String.class));
         } catch (JwtException e) {
             throw new IllegalArgumentException("접근할 수 없습니다.");
         }

@@ -1,18 +1,19 @@
 package roomescape;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import roomescape.dto.AvailableTimeResponseDto;
+import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ReservedChecker;
@@ -118,7 +119,7 @@ class ReservationTimeServiceTest {
         when(reservedChecker.contains(date, 1L, themeId)).thenReturn(true);  // 예약됨
         when(reservedChecker.contains(date, 2L, themeId)).thenReturn(false); // 예약 안됨
 
-        List<AvailableTimeResponseDto> result = reservationTimeService.getAvailableTimes(themeId, date);
+        List<AvailableTimeResponse> result = reservationTimeService.getAvailableTimes(themeId, date);
 
         assertThat(result).hasSize(2);
         assertThat(result.get(0).alreadyBooked()).isTrue();

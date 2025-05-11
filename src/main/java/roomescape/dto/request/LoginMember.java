@@ -1,4 +1,4 @@
-package roomescape.dto;
+package roomescape.dto.request;
 
 import roomescape.model.Member;
 import roomescape.model.MemberName;

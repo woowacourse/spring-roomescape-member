@@ -4,9 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dto.LoginMember;
-import roomescape.dto.ReservationRequestDto;
-import roomescape.dto.UserReservationRequestDto;
+import roomescape.dto.request.LoginMember;
+import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.request.UserReservationRequest;
 import roomescape.model.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
@@ -37,46 +37,41 @@ public class ReservationService {
         return reservationRepository.getAllReservations();
     }
 
-    public Reservation addReservation(ReservationRequestDto reservationRequestDto) {
+    public Reservation addReservation(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeService.getReservationTimeById(
-                reservationRequestDto.timeId());
+                reservationRequest.timeId());
 
         ReservationDateTime reservationDateTime = new ReservationDateTime(
-                reservationRequestDto.date(), reservationTime);
+                reservationRequest.date(), reservationTime);
 
         validateFutureDateTime(reservationDateTime);
 
-        if (isAlreadyExist(reservationDateTime.getDate(), reservationRequestDto.timeId(),
-                reservationRequestDto.themeId())) {
+        if (isAlreadyExist(reservationDateTime.getDate(), reservationRequest.timeId(),
+                reservationRequest.themeId())) {
             throw new IllegalArgumentException("Reservation already exists");
         }
 
-        Theme theme = themeService.getThemeById(reservationRequestDto.themeId());
-        System.out.println("___________________");
-        System.out.println("reservationRequestDto.memberId() = " + reservationRequestDto.memberId());
-        System.out.println("___________________");
-        System.out.println("___________________");
-        System.out.println("___________________");
+        Theme theme = themeService.getThemeById(reservationRequest.themeId());
 
-        Member member = memberFinder.getMemberById(reservationRequestDto.memberId());
+        Member member = memberFinder.getMemberById(reservationRequest.memberId());
 
         return reservationRepository.addReservation(
-                reservationRequestDto.toEntity(null, member, reservationTime, theme));
+                reservationRequest.toEntity(null, member, reservationTime, theme));
     }
 
-    public Reservation addReservation(final UserReservationRequestDto userReservationRequestDto,
+    public Reservation addReservation(final UserReservationRequest userReservationRequest,
                                       final LoginMember loginMember) {
         ReservationTime reservationTime = reservationTimeService.getReservationTimeById(
-                userReservationRequestDto.timeId());
+                userReservationRequest.timeId());
         ReservationDateTime reservationDateTime = new ReservationDateTime(
-                userReservationRequestDto.date(), reservationTime);
+                userReservationRequest.date(), reservationTime);
 
         validateFutureDateTime(reservationDateTime);
-        if (isAlreadyExist(reservationDateTime.getDate(), userReservationRequestDto.timeId(),
-                userReservationRequestDto.themeId())) {
+        if (isAlreadyExist(reservationDateTime.getDate(), userReservationRequest.timeId(),
+                userReservationRequest.themeId())) {
             throw new IllegalArgumentException("Reservation already exists");
         }
-        Theme theme = themeService.getThemeById(userReservationRequestDto.themeId());
+        Theme theme = themeService.getThemeById(userReservationRequest.themeId());
         Member member = loginMember.toEntity();
         return reservationRepository.addReservation(new Reservation(null, member, reservationDateTime, theme));
     }

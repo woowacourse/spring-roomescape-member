@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.view;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +19,7 @@ public class AdminPageController {
     public String adminTime() {
         return "admin/time";
     }
+
     @GetMapping("admin/theme")
     public String adminTheme() {
         return "admin/theme";

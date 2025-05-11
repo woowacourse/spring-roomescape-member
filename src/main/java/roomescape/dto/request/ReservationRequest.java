@@ -1,4 +1,4 @@
-package roomescape.dto;
+package roomescape.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
@@ -8,10 +8,10 @@ import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
-public record ReservationRequestDto(@JsonProperty("memberId") Long memberId,
-                                    @JsonProperty("date") LocalDate date,
-                                    @JsonProperty("timeId") Long timeId,
-                                    @JsonProperty("themeId") Long themeId
+public record ReservationRequest(@JsonProperty("memberId") Long memberId,
+                                 @JsonProperty("date") LocalDate date,
+                                 @JsonProperty("timeId") Long timeId,
+                                 @JsonProperty("themeId") Long themeId
 ) {
 
     public Reservation toEntity(Long id, Member member, ReservationTime reservationTime, Theme theme) {
@@ -23,7 +23,7 @@ public record ReservationRequestDto(@JsonProperty("memberId") Long memberId,
         );
     }
 
-    public ReservationRequestDto(Long memberId, LocalDate date, Long timeId, Long themeId) {
+    public ReservationRequest(Long memberId, LocalDate date, Long timeId, Long themeId) {
         if (memberId == null || date == null || timeId == null || themeId == null) {
             throw new IllegalArgumentException("멤버 id,날짜, 시간id, 테마id는 필수입니다");
         }

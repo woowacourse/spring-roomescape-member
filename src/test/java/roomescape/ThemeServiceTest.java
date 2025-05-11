@@ -1,18 +1,19 @@
 package roomescape;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import roomescape.dto.ThemeRequestDto;
+import roomescape.dto.request.ThemeRequest;
 import roomescape.model.Theme;
 import roomescape.repository.ReservedThemeChecker;
 import roomescape.repository.ThemeRepository;
@@ -34,7 +35,7 @@ class ThemeServiceTest {
     @Test
     @DisplayName("테마를 추가할 수 있다.")
     void addThemeTest() {
-        ThemeRequestDto dto = new ThemeRequestDto("스릴러", "진짜무서움", "aaa");
+        ThemeRequest dto = new ThemeRequest("스릴러", "진짜무서움", "aaa");
         Theme savedTheme = new Theme(1L, "스릴러", "진짜무서움", "aaa");
 
         when(themeRepository.addTheme(any())).thenReturn(savedTheme);

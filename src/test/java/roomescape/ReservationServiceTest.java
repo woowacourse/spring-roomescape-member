@@ -12,7 +12,7 @@
 //import org.junit.jupiter.api.DisplayName;
 //import org.junit.jupiter.api.Test;
 //import org.mockito.ArgumentCaptor;
-//import roomescape.dto.ReservationRequestDto;
+//import roomescape.dto.request.ReservationRequestDto;
 //import roomescape.model.*;
 //import roomescape.repository.ReservationRepository;
 //import roomescape.repository.ReservedChecker;

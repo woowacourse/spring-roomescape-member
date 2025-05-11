@@ -1,13 +1,13 @@
-package roomescape.controller;
+package roomescape.global.interceptor;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.dto.TokenClaims;
+import roomescape.auth.AuthenticationService;
+import roomescape.dto.TokenInfo;
 import roomescape.model.Role;
-import roomescape.service.AuthenticationService;
 
 @Component
 public class CheckAdminInterceptor implements HandlerInterceptor {
@@ -24,9 +24,9 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         if (accessToken == null) {
             throw new IllegalArgumentException("토큰이 존재하지 않습니다.");
         }
-        TokenClaims tokenClaims = authenticationService.validateTokenAndGetClaims(accessToken);
-        if (tokenClaims.role().equals(Role.USER.toString())) {
-            System.out.println(tokenClaims.role());
+        TokenInfo tokenInfo = authenticationService.validateTokenAndGetInfo(accessToken);
+        if (tokenInfo.role().equals(Role.USER.toString())) {
+            System.out.println(tokenInfo.role());
             System.out.println(Role.USER.toString());
             response.setStatus(401);
             return false;
