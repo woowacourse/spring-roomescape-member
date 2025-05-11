@@ -1,17 +1,19 @@
-package roomescape.auth;
+package roomescape.auth.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.auth.AuthorizationExtractor;
+import roomescape.auth.Role;
 import roomescape.infrastructure.JwtTokenProvider;
 
-public class AdminAuthorizationInterceptor implements HandlerInterceptor {
+public class AdminPageAuthorizationInterceptor implements HandlerInterceptor {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthorizationExtractor authorizationExtractor;
 
-    public AdminAuthorizationInterceptor(
+    public AdminPageAuthorizationInterceptor(
             JwtTokenProvider jwtTokenProvider,
             AuthorizationExtractor authorizationExtractor
     ) {
@@ -27,7 +29,12 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
             response.sendRedirect("/");
             return false;
         }
-        if (Role.ADMIN != jwtTokenProvider.extractRole(token.get())) {
+        try {
+            if (Role.ADMIN != jwtTokenProvider.extractRole(token.get())) {
+                response.sendRedirect("/");
+                return false;
+            }
+        } catch (Exception e) {
             response.sendRedirect("/");
             return false;
         }
