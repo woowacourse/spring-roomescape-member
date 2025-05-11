@@ -290,7 +290,7 @@ class ReservationApiTest {
                 .body("alreadyBooked", containsInAnyOrder(true, false));
     }
 
-    @DisplayName("예약 정보를 themeId, memberId, dataFrom, dataTo로 필터링하여 조회한다.")
+    @DisplayName("예약 정보를 themeId, memberId, dateFrom, dateTo로 필터링하여 조회한다.")
     @Test
     void filterReservationsByParams() {
         // given
@@ -327,8 +327,8 @@ class ReservationApiTest {
 
         // 날짜 범위로 필터
         RestAssured.given()
-                .queryParam("dataFrom", formatDateTime(today))
-                .queryParam("dataTo", formatDateTime(today.plusDays(1)))
+                .queryParam("dateFrom", formatDateTime(today))
+                .queryParam("dateTo", formatDateTime(today.plusDays(1)))
                 .when()
                 .get("/reservations")
                 .then()
@@ -339,8 +339,8 @@ class ReservationApiTest {
         RestAssured.given()
                 .queryParam("themeId", theme1.getId())
                 .queryParam("memberId", user2.getId())
-                .queryParam("dataFrom", formatDateTime(today))
-                .queryParam("dataTo", formatDateTime(today.plusDays(2)))
+                .queryParam("dateFrom", formatDateTime(today))
+                .queryParam("dateTo", formatDateTime(today.plusDays(2)))
                 .when()
                 .get("/reservations")
                 .then()

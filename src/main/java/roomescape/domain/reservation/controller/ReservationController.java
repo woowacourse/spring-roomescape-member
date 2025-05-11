@@ -38,9 +38,9 @@ public class ReservationController {
     public ResponseEntity<List<ReservationResponse>> readAllReservations(
             @RequestParam(value = "themeId", required = false) final Long themeId,
             @RequestParam(value = "memberId", required = false) final Long memberId,
-            @RequestParam(value = "dataFrom", required = false) final LocalDate dataFrom,
-            @RequestParam(value = "dataTo", required = false) final LocalDate dataTo) {
-        final List<ReservationResponse> response = reservationService.getAll(themeId, memberId, dataFrom, dataTo);
+            @RequestParam(value = "dateFrom", required = false) final LocalDate dateFrom,
+            @RequestParam(value = "dateTo", required = false) final LocalDate dateTo) {
+        final List<ReservationResponse> response = reservationService.getAll(themeId, memberId, dateFrom, dateTo);
 
         return ResponseEntity.ok(response);
     }
