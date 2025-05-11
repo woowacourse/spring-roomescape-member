@@ -102,13 +102,18 @@ public class ReservationFakeRepository implements ReservationRepository {
     public List<Long> findBookedTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
         return reservations.values().stream()
                 .filter(reservation -> reservation.getDate().equals(date))
+                .filter(reservation -> reservation.getTheme().getId().equals(themeId))
                 .map(Reservation::getTime)
                 .map(ReservationTime::getId)
-                .filter(id -> id.equals(themeId)).toList();
+                .toList();
     }
 
     @Override
     public List<Reservation> findAllByFilter(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
-        return List.of();
+        return reservations.values().stream()
+                .filter(res -> res.getTheme().getId().equals(themeId))
+                .filter(res -> res.getMember().getId().equals(memberId))
+                .filter(res -> !res.getDate().isBefore(dateFrom) && !res.getDate().isAfter(dateTo))
+                .toList();
     }
 }
