@@ -64,12 +64,16 @@ public final class MemberController {
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
+        cookie.setAttribute("SameSite", "Strict");
         response.addCookie(cookie);
     }
 
     private void clearCookie(HttpServletResponse response) {
         Cookie cookie = new Cookie("token", null);
         cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setAttribute("SameSite", "Strict");
         cookie.setPath("/");
         response.addCookie(cookie);
     }
