@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.exception.ConflictException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.reservation.domain.Reservation;
@@ -76,7 +77,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.deleteIfNoReservation(1L))
-                .isInstanceOf(ReservationExistException.class)
+                .isInstanceOf(ConflictException.class)
                 .hasMessage("이 테마에 대한 예약이 존재합니다.");
     }
 
