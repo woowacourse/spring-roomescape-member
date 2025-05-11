@@ -8,6 +8,7 @@ import roomescape.common.exception.InvalidEmailException;
 import roomescape.common.exception.InvalidIdException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.dto.MemberLoginRequest;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.dto.MemberSignupRequest;
@@ -53,15 +54,16 @@ public class MemberService {
     }
 
     public MemberResponse findByToken(final String token) {
-        String email = jwtTokenProvider.getPayload(token);
+        String email = jwtTokenProvider.getPayloadEmail(token);
         return findByEmail(email);
     }
 
     public MemberTokenResponse createToken(final MemberLoginRequest memberLoginRequest) {
         MemberResponse memberResponse = findByEmail(memberLoginRequest.email());
         validatePassword(memberLoginRequest.email(), memberResponse.password());
+        String role = assignRole(memberLoginRequest.email(), memberLoginRequest.password()).getRole();
 
-        String accessToken = jwtTokenProvider.createToken(memberLoginRequest.email());
+        String accessToken = jwtTokenProvider.createToken(memberLoginRequest.email(), role);
         return new MemberTokenResponse(accessToken);
     }
 
@@ -82,6 +84,17 @@ public class MemberService {
                 savedMember.getEmail(),
                 savedMember.getPassword()
         );
+    }
+
+    private Role assignRole(String email, String password) {
+        if (isAdmin(email, password)) {
+            return Role.ADMIN;
+        }
+        return Role.USER;
+    }
+
+    private boolean isAdmin(String email, String password) {
+        return memberDao.isAdmin(email, password);
     }
 
     private void validatePassword(String email, String password) {

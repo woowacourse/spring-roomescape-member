@@ -15,6 +15,8 @@ import roomescape.member.domain.Member;
 
 @Repository
 public class MemberDaoImpl implements MemberDao {
+    private static final String ADMIN_NAME = "admin";
+
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -65,6 +67,19 @@ public class MemberDaoImpl implements MemberDao {
         try {
             String memberPassword = namedParameterJdbcTemplate.queryForObject(sql, parameter, String.class);
             return password.equals(memberPassword);
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean isAdmin(final String email, final String password) {
+        String sql = "SELECT name FROM member WHERE email = :email AND password = :password";
+        Map<String, Object> parameter = Map.of("email", email, "password", password);
+
+        try {
+            String memberName = namedParameterJdbcTemplate.queryForObject(sql, parameter, String.class);
+            return memberName.equals(ADMIN_NAME);
         } catch (EmptyResultDataAccessException e) {
             return false;
         }

@@ -9,5 +9,7 @@ public interface MemberDao extends Dao<Member> {
 
     Boolean isPasswordMatch(String email, String password);
 
+    Boolean isAdmin(String email, String password);
+
     Boolean existsByEmail(String email);
 }
