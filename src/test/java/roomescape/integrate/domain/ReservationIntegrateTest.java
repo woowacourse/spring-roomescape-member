@@ -18,15 +18,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import roomescape.config.JwtTokenProvider;
 import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.dto.request.CreateReservationRequest;
 import roomescape.dto.request.CreateReservationTimeRequest;
 import roomescape.dto.request.CreateThemeRequest;
-import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
@@ -39,11 +40,6 @@ import roomescape.service.ThemeService;
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ReservationIntegrateTest {
-
-    private final String EMAIL = "admin@admin.com";
-    private final String PASSWORD = "admin";
-
-    private String token;
 
     @Autowired
     ReservationService reservationService;
@@ -58,18 +54,17 @@ class ReservationIntegrateTest {
     AuthService authService;
 
     @Autowired
-    private MemberRepository memberRepository;
+    MemberRepository memberRepository;
+
+    @Autowired
+    JwtTokenProvider jwtTokenProvider;
+
+    private String token;
 
     @BeforeEach
     void setUp() {
-        LoginRequest loginRequest = new LoginRequest(EMAIL, PASSWORD);
-
-        token = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(loginRequest)
-                .when().post("/login")
-                .then().log().all()
-                .extract().cookie("token");
+        Member member = memberRepository.add(new Member("어드민", "test_admin@test.com", "test", Role.ADMIN));
+        token = jwtTokenProvider.createTokenByMember(member);
     }
 
     @Test
@@ -138,8 +133,10 @@ class ReservationIntegrateTest {
         CreateThemeRequest themeRequest_3 = new CreateThemeRequest("테마 3", "설명", "썸네일");
         Theme theme_3 = themeService.addTheme(themeRequest_3);
 
-        Member member = memberRepository.findByEmailAndPassword(EMAIL, PASSWORD)
-                .orElse(null);
+//        Member member = memberRepository.findByEmailAndPassword(EMAIL, PASSWORD)
+//                .orElse(null);
+
+        Member member = memberRepository.add(new Member("테스트", "test_user@test.com", "test", Role.USER));
 
         Reservation reservation1 = new Reservation(member, LocalDate.now().minusDays(1),
                 new ReservationTime(reservationTime.getId(), afterTime),
