@@ -33,7 +33,7 @@ public class ThemeService {
         final Theme theme = themeRequest.toDomain();
         final Long id = themeDao.insert(theme)
                 .getId();
-        return ThemeResponse.withId(id, theme);
+        return new ThemeResponse(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     private void validateNameIsNotDuplicate(final String name) {

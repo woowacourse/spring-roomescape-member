@@ -38,6 +38,10 @@ public class Reservation {
         }
     }
 
+    public boolean isSamePlayTime(final PlayTime playTime) {
+        return this.playTime.isSamePlayTime(playTime);
+    }
+
     public Long getId() {
         return id;
     }

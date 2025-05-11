@@ -7,44 +7,56 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.business.domain.PlayTime;
+import roomescape.business.domain.Reservation;
 import roomescape.business.domain.Theme;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.InvalidDateAndTimeException;
 import roomescape.exception.NotFoundException;
-import roomescape.fake.FakePlayTimeDao;
-import roomescape.fake.FakeReservationDao;
-import roomescape.fake.FakeThemeDao;
+import roomescape.persistence.dao.JdbcPlayTimeDao;
+import roomescape.persistence.dao.JdbcReservationDao;
+import roomescape.persistence.dao.JdbcThemeDao;
 import roomescape.persistence.dao.PlayTimeDao;
+import roomescape.persistence.dao.ReservationDao;
 import roomescape.persistence.dao.ThemeDao;
 import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
 
+@JdbcTest
 public class ReservationServiceTest {
 
-    private static final LocalDate FORMATTED_MAX_LOCAL_DATE = LocalDate.of(9999, 12, 31);
-    private static final LocalTime FORMATTED_MAX_LOCAL_TIME = LocalTime.of(23, 59);
+    private static final LocalDate MAX_DATE_FIXTURE = LocalDate.of(9999, 12, 31);
+    private static final LocalTime MAX_TIME_FIXTURE = LocalTime.of(23, 59);
 
     private ReservationService reservationService;
+    private final ReservationDao reservationDao;
+    private final PlayTimeDao playTimeDao;
+    private final ThemeDao themeDao;
+
+    private Long timeId;
+    private Long themeId;
+
+    @Autowired
+    public ReservationServiceTest(final JdbcTemplate jdbcTemplate) {
+        reservationDao = new JdbcReservationDao(jdbcTemplate);
+        playTimeDao = new JdbcPlayTimeDao(jdbcTemplate);
+        themeDao = new JdbcThemeDao(jdbcTemplate);
+    }
 
     @BeforeEach
     void setUp() {
-        final PlayTimeDao fakePlayTimeDao = new FakePlayTimeDao();
-        fakePlayTimeDao.insert(
-                new PlayTime(1L, FORMATTED_MAX_LOCAL_TIME)
-        );
-        final ThemeDao fakeThemeDao = new FakeThemeDao();
-        fakeThemeDao.insert(
-                new Theme(1L, "테마", "소개", "썸네일")
-        );
-        reservationService = new ReservationService(
-                new FakeReservationDao(),
-                fakePlayTimeDao,
-                fakeThemeDao
-        );
+        reservationService = new ReservationService(reservationDao, playTimeDao, themeDao);
+        timeId = playTimeDao.insert(new PlayTime(MAX_TIME_FIXTURE))
+                .getId();
+        themeId = themeDao.insert(new Theme("테마", "소개", "썸네일"))
+                .getId();
     }
 
     @Test
@@ -52,9 +64,7 @@ public class ReservationServiceTest {
     void insert() {
         // given
         final String name = "name";
-        final LocalDate date = FORMATTED_MAX_LOCAL_DATE;
-        final Long timeId = 1L;
-        final Long themeId = 1L;
+        final LocalDate date = MAX_DATE_FIXTURE;
         final ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
 
         // when
@@ -64,7 +74,8 @@ public class ReservationServiceTest {
         assertAll(
                 () -> assertThat(reservationResponse.name()).isEqualTo(name),
                 () -> assertThat(reservationResponse.date()).isEqualTo(date),
-                () -> assertThat(reservationResponse.time().startAt()).isEqualTo(FORMATTED_MAX_LOCAL_TIME)
+                () -> assertThat(reservationResponse.time()
+                        .startAt()).isEqualTo(MAX_TIME_FIXTURE)
         );
     }
 
@@ -73,9 +84,8 @@ public class ReservationServiceTest {
     void insertWhenNotExistReservationTime() {
         // given
         final String name = "name";
-        final LocalDate date = FORMATTED_MAX_LOCAL_DATE;
+        final LocalDate date = MAX_DATE_FIXTURE;
         final Long notExistTimeId = 999L;
-        final Long themeId = 1L;
         final ReservationRequest reservationRequest = new ReservationRequest(name, date, notExistTimeId, themeId);
 
         // when & then
@@ -88,9 +98,8 @@ public class ReservationServiceTest {
     void insertWhenNotExistTheme() {
         // given
         final String name = "name";
-        final LocalDate date = FORMATTED_MAX_LOCAL_DATE;
-        final Long timeId = 999L;
-        final Long notExistThemeId = 1L;
+        final LocalDate date = MAX_DATE_FIXTURE;
+        final Long notExistThemeId = 999L;
         final ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, notExistThemeId);
 
         // when & then
@@ -103,9 +112,7 @@ public class ReservationServiceTest {
     void insertWhenDuplicateDateAndTimeAndTheme() {
         // given
         final String name = "name";
-        final LocalDate date = FORMATTED_MAX_LOCAL_DATE;
-        final Long timeId = 1L;
-        final Long themeId = 1L;
+        final LocalDate date = MAX_DATE_FIXTURE;
         final ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
         reservationService.insert(reservationRequest);
 
@@ -121,8 +128,6 @@ public class ReservationServiceTest {
         // given
         final String name = "name";
         final LocalDate pastDate = LocalDate.MIN;
-        final Long timeId = 1L;
-        final Long themeId = 1L;
         final ReservationRequest reservationRequest = new ReservationRequest(name, pastDate, timeId, themeId);
 
         // when & then
@@ -134,12 +139,10 @@ public class ReservationServiceTest {
     @DisplayName("모든 방탈출 예약을 조회한다")
     void findAll() {
         // given
-        final ReservationRequest reservationRequest1 = new ReservationRequest(
-                "kim", FORMATTED_MAX_LOCAL_DATE, 1L, 1L
-        );
-        final ReservationRequest reservationRequest2 = new ReservationRequest(
-                "lee", FORMATTED_MAX_LOCAL_DATE.minusDays(1), 1L, 1L
-        );
+        final ReservationRequest reservationRequest1 = new ReservationRequest("kim",
+                MAX_DATE_FIXTURE, timeId, themeId);
+        final ReservationRequest reservationRequest2 = new ReservationRequest("lee",
+                MAX_DATE_FIXTURE.minusDays(1), timeId, themeId);
         final ReservationResponse expected1 = reservationService.insert(reservationRequest1);
         final ReservationResponse expected2 = reservationService.insert(reservationRequest2);
 
@@ -157,9 +160,7 @@ public class ReservationServiceTest {
     @DisplayName("id를 통해 방탈출 예약을 삭제한다")
     void deleteById() {
         // given
-        final ReservationRequest reservationRequest = new ReservationRequest(
-                "name", FORMATTED_MAX_LOCAL_DATE, 1L, 1L
-        );
+        final ReservationRequest reservationRequest = new ReservationRequest("name", MAX_DATE_FIXTURE, timeId, themeId);
         final ReservationResponse reservationResponse = reservationService.insert(reservationRequest);
         final Long id = reservationResponse.id();
 
@@ -167,9 +168,8 @@ public class ReservationServiceTest {
         reservationService.deleteById(id);
 
         // then
-        assertAll(
-                () -> assertThat(reservationService.findAll()).isEmpty()
-        );
+        final Optional<Reservation>findReservation = reservationDao.findById(id);
+        assertThat(findReservation).isEmpty();
     }
 
     @Test

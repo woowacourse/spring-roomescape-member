@@ -3,8 +3,8 @@ package roomescape.business.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
@@ -40,10 +40,11 @@ public class ReservationService {
         final PlayTime playTime = playTimeDao.findById(reservationRequest.timeId()).get();
         validateDateAndTimeIsFuture(reservationRequest.date(), playTime.getStartAt());
 
-        final Theme theme = new Theme(reservationRequest.themeId());
+        final Theme theme = themeDao.findById(reservationRequest.themeId()).get();
         final Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), playTime,
                 theme);
-        final Long id = reservationDao.insert(reservation).getId();
+        final Long id = reservationDao.insert(reservation)
+                .getId();
         final Reservation savedReservation = new Reservation(id, reservationRequest.name(), reservationRequest.date(),
                 playTime, theme);
         return ReservationResponse.from(savedReservation);
@@ -77,7 +78,8 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
+        return reservationDao.findAll()
+                .stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
@@ -89,24 +91,18 @@ public class ReservationService {
     }
 
     public List<ReservationAvailableTimeResponse> findAvailableTimes(final LocalDate date, final Long themeId) {
-        // 날짜 + 테마에 해당하는 모든 예약 가져오기
         final List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
-
-        // 모든 예약 시간 가져오기
         final List<PlayTime> playTimes = playTimeDao.findAll();
+        return playTimes.stream()
+                .map(playTime -> {
+                    boolean isAlreadyBooked = containPlayTime(reservations, playTime);
+                    return new ReservationAvailableTimeResponse(playTime, isAlreadyBooked);
+                })
+                .collect(Collectors.toList());
+    }
 
-        // 모든 시간을 순회하면서 예약 시간과 예약이 매칭 = 불가능, 예약 시간과 예약이 미매칭 = 가능
-        final List<ReservationAvailableTimeResponse> availableTimes = new ArrayList<>();
-        for (final PlayTime playTime : playTimes) {
-            boolean isAlreadyBooked = false;
-            for (final Reservation reservation : reservations) {
-                if (reservation.getPlayTime().getId().equals(playTime.getId())) {
-                    isAlreadyBooked = true;
-                    break;
-                }
-            }
-            availableTimes.add(new ReservationAvailableTimeResponse(playTime, isAlreadyBooked));
-        }
-        return availableTimes;
+    private boolean containPlayTime(final List<Reservation> reservations, final PlayTime playTime) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.isSamePlayTime(playTime));
     }
 }
