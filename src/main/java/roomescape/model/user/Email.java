@@ -1,9 +1,9 @@
 package roomescape.model.user;
 
-public class UserEmail {
+public class Email {
     private String email;
 
-    public UserEmail(String email) {
+    public Email(String email) {
         this.email = email;
     }
 

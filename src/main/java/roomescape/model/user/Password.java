@@ -1,9 +1,9 @@
 package roomescape.model.user;
 
-public class UserPassword {
+public class Password {
     private String password;
 
-    public UserPassword(String password) {
+    public Password(String password) {
         this.password = password;
     }
 

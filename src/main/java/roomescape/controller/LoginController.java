@@ -15,25 +15,25 @@ import roomescape.dto.LoginRequest;
 import roomescape.dto.UserNameResponse;
 import roomescape.model.user.User;
 import roomescape.model.user.UserName;
-import roomescape.service.LoginService;
+import roomescape.service.MemberService;
 
 @RestController
 @RequestMapping("/login")
 public class LoginController {
 
-    private final LoginService loginService;
+    private final MemberService memberService;
 
-    public LoginController(LoginService loginService) {
-        this.loginService = loginService;
+    public LoginController(MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @PostMapping
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest loginRequest,
                                       HttpServletResponse response) throws BadRequestException {
-        User user = loginService.login(loginRequest.email(), loginRequest.password());
-        String token = loginService.createToken(user.getUserEmail()).token();
+        User user = memberService.login(loginRequest.email(), loginRequest.password());
+        String token = memberService.createToken(user.getEmail()).token();
 
-        Cookie cookie = loginService.createCookie(token);
+        Cookie cookie = memberService.createCookie(token);
         response.addCookie(cookie);
 
         return ResponseEntity.ok().build();
@@ -43,10 +43,10 @@ public class LoginController {
     public ResponseEntity<UserNameResponse> checkLogin(HttpServletRequest request) throws BadRequestException {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
-            String userEmail = loginService.extractUserEmailFromCookies(cookies);
+            String userEmail = memberService.extractUserEmailFromCookies(cookies);
             // userEmail로 user 이름 반환
-            UserName userName = loginService.getUserNameByUserEmail(userEmail);
-            return ResponseEntity.ok(new UserNameResponse(userName.getName()));
+            UserName userName = memberService.getUserNameByUserEmail(userEmail);
+            return ResponseEntity.ok(new UserNameResponse(userName.getValue()));
         }
         throw new BadRequestException("인증 실패");
     }
