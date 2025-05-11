@@ -85,6 +85,7 @@ function createSelect(options, defaultText, selectId, textProperty) {
 
   // 기본 옵션 추가
   const defaultOption = document.createElement('option');
+   defaultOption.value = '';
   defaultOption.textContent = defaultText;
   select.appendChild(defaultOption);
 
@@ -162,7 +163,11 @@ function saveRow(event) {
   const memberSelect = row.querySelector('#member-select');
   const themeSelect = row.querySelector('#theme-select');
   const timeSelect = row.querySelector('#time-select');
-
+ // 유효성 검사
+  if (!dateInput.value || !memberSelect.value || !themeSelect.value || !timeSelect.value) {
+    alert('모든 값을 선택해야 합니다.');
+    return;
+  }
   const reservation = {
     date: dateInput.value,
     themeId: themeSelect.value,
