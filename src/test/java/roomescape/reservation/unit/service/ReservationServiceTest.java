@@ -111,7 +111,7 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(member.getId(), request))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessage("과거 날짜/시간의 예약은 생성할 수 없습니다.");
+                .hasMessage("과거 날짜는 예약할 수 없습니다.");
     }
 
     @Test
@@ -128,7 +128,7 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(member.getId(), request))
                 .isInstanceOf(ConflictException.class)
-                .hasMessage("해당 날짜에는 이미 예약이 존재합니다.");
+                .hasMessage("해당 날짜와 시간에 이미 예약이 존재합니다.");
     }
 
     @Test
@@ -191,6 +191,7 @@ class ReservationServiceTest {
         var theme = themeRepository.save(new Theme(1L, "테마1", "테마1 설명", "테마1 썸네일"));
         var date = LocalDate.now().plusDays(1);
         var request = new ReservationCreateRequest(date, time.getId(), theme.getId());
+        reservationService.createReservation(member.getId(), request);
 
         // when
         reservationService.deleteReservation(1L);
