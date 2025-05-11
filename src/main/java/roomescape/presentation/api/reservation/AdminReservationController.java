@@ -36,8 +36,10 @@ public class AdminReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<?> findAll(@RequestParam("themeId") Long themeId, @RequestParam("memberId") Long memberId,
-                                     @RequestParam("from") LocalDate from, @RequestParam("to") LocalDate to) {
+    public ResponseEntity<List<ReservationResponse>> findAll(@RequestParam("themeId") Long themeId,
+                                                             @RequestParam("memberId") Long memberId,
+                                                             @RequestParam("from") LocalDate from,
+                                                             @RequestParam("to") LocalDate to) {
         List<ReservationResult> reservationResults = reservationService.findReservationsBy(
                 new ReservationSearchParam(themeId, memberId, from, to));
         List<ReservationResponse> reservationResponses = reservationResults.stream()

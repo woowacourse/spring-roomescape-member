@@ -16,6 +16,7 @@ import roomescape.application.reservation.dto.ReservationResult;
 import roomescape.presentation.api.reservation.request.CreateReservationRequest;
 import roomescape.presentation.api.reservation.response.ReservationResponse;
 import roomescape.presentation.support.methodresolver.AuthInfo;
+import roomescape.presentation.support.methodresolver.AuthPrincipal;
 
 @RestController
 @RequestMapping("/reservations")
@@ -38,7 +39,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
-            AuthInfo authInfo,
+            @AuthPrincipal AuthInfo authInfo,
             @Valid @RequestBody CreateReservationRequest createReservationRequest) {
         Long reservationId = reservationService.create(createReservationRequest.toServiceParam(authInfo.memberId()));
         ReservationResult reservationResult = reservationService.findById(reservationId);

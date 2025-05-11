@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.auth.AuthService;
 import roomescape.application.auth.dto.LoginResult;
 import roomescape.presentation.support.methodresolver.AuthInfo;
+import roomescape.presentation.support.methodresolver.AuthPrincipal;
 
 @RestController
 public class AuthController {
@@ -38,7 +39,7 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> loginCheck(AuthInfo authInfo) {
+    public ResponseEntity<LoginCheckResponse> loginCheck(@AuthPrincipal AuthInfo authInfo) {
         return ResponseEntity.ok().body(new LoginCheckResponse(authInfo.name()));
     }
 
