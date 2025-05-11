@@ -4,7 +4,7 @@ import roomescape.member.service.dto.MemberInfo;
 
 public record MemberResponse(long id, String name) {
 
-    public MemberResponse(MemberInfo memberInfo) {
+    public MemberResponse(final MemberInfo memberInfo) {
         this(memberInfo.id(), memberInfo.name());
     }
 }

@@ -63,7 +63,7 @@ public class JdbcMemberDao implements MemberDao {
 
     @Override
     public List<Member> findAll() {
-        final String sql = "SELECT id, name, email, password FROM member";
+        final String sql = "SELECT id, name, email, password, role FROM member";
         return jdbcTemplate.query(sql, memberMapper);
     }
 }
