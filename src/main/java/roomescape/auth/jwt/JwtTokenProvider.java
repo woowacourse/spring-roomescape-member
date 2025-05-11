@@ -25,7 +25,7 @@ public class JwtTokenProvider implements AuthTokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.validityInMilliseconds = validityInMilliseconds;
     }
-    
+
     @Override
     public String createTokenFromMember(Member member) {
         Claims claims = Jwts.claims().setSubject(String.valueOf(member.getId()));
@@ -37,7 +37,6 @@ public class JwtTokenProvider implements AuthTokenProvider {
                 .setClaims(claims)
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
-                .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
