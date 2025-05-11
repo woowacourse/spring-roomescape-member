@@ -65,3 +65,4 @@
 - 예약 검색 기능 추가
     - 어드민 > 예약 관리 페이지에서 검색 조건을 선택하고 적용을 누르면, reservation-with-member.js의 applyFilter() 함수가 실행된다.
     - [ ] 입력한 themeId, memberId, dateFrom, dateTo 값을 사용해 검색 기능을 완성
+    - [ ] js 명세를 활용해 필터링한 예약 정보를 반환하도록 구현
