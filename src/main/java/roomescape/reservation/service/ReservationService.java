@@ -6,6 +6,7 @@ import roomescape.exception.ConflictException;
 import roomescape.exception.ExceptionCause;
 import roomescape.exception.NotFoundException;
 import roomescape.member.domain.Member;
+import roomescape.member.dto.MemberResponse;
 import roomescape.member.service.JwtUtil;
 import roomescape.member.service.MemberService;
 import roomescape.reservation.dao.ReservationDao;
@@ -54,7 +55,8 @@ public class ReservationService {
                         reservation.getId(),
                         reservation.getDate(),
                         ReservationTimeResponse.from(reservation.getTime()),
-                        ThemeResponse.from(reservation.getTheme())
+                        ThemeResponse.from(reservation.getTheme()),
+                        MemberResponse.from(reservation.getMember())
                 ))
                 .toList();
     }
