@@ -11,7 +11,8 @@ import roomescape.exception.ResourceNotExistException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({NullPointerException.class, ConstraintException.class, IllegalArgumentException.class, AuthenticationException.class})
+    @ExceptionHandler({NullPointerException.class, ConstraintException.class,
+        IllegalArgumentException.class, AuthenticationException.class})
     public ResponseEntity<String> handleBadRequestException(RuntimeException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }

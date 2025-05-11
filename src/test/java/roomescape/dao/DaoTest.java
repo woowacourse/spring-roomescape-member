@@ -1,7 +1,6 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -31,7 +30,8 @@ public class DaoTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "탈출 스페셜", "탈출하는 내용", "abc.jpg");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+            "탈출 스페셜", "탈출하는 내용", "abc.jpg");
     }
 
     @Test
@@ -48,7 +48,8 @@ public class DaoTest {
 
     @Test
     void 오단계() {
-        jdbcTemplate.update("INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+        jdbcTemplate.update(
+            "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
             LocalDate.now().plusDays(1),
             1L,
             1L,

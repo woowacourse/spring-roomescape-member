@@ -37,8 +37,10 @@ public class MissionStepTest {
     @BeforeEach
     void setUp() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO member(name, email, password, role) values (?, ?, ?, ?)", "테스트", "test@test.com", "1234", "USER");
-        jdbcTemplate.update("INSERT INTO member(name, email, password, role) values (?, ?, ?, ?)", "어드민테스트", "admintest@test.com", "1234", "ADMIN");
+        jdbcTemplate.update("INSERT INTO member(name, email, password, role) values (?, ?, ?, ?)",
+            "테스트", "test@test.com", "1234", "USER");
+        jdbcTemplate.update("INSERT INTO member(name, email, password, role) values (?, ?, ?, ?)",
+            "어드민테스트", "admintest@test.com", "1234", "ADMIN");
 
         String token = login();
         authenticatedRequest = RestAssured.given()
@@ -287,7 +289,8 @@ public class MissionStepTest {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "레벨2 탈출");
         params.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
-        params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        params.put("thumbnail",
+            "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)

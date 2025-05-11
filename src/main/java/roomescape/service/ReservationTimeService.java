@@ -67,5 +67,4 @@ public class ReservationTimeService {
             throw new ResourceNotExistException();
         }
     }
-
 }

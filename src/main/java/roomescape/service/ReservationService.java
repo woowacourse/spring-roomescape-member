@@ -14,8 +14,8 @@ import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.request.AdminReservationRequest;
 import roomescape.dto.LoginMember;
+import roomescape.dto.request.AdminReservationRequest;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.ResourceNotExistException;
@@ -57,20 +57,23 @@ public class ReservationService {
 
     public void deleteReservation(Long id) {
         int deleteCount = reservationDao.deleteById(id);
-        if(deleteCount == 0) {
+        if (deleteCount == 0) {
             throw new ResourceNotExistException();
         }
     }
 
     public ReservationResponse save(ReservationRequest request, LoginMember loginMember) {
-        return saveReservation(request.date(), request.timeId(), request.themeId(), loginMember.id());
+        return saveReservation(request.date(), request.timeId(), request.themeId(),
+            loginMember.id());
     }
 
     public ReservationResponse save(AdminReservationRequest request) {
-        return saveReservation(request.date(), request.timeId(), request.themeId(), request.memberId());
+        return saveReservation(request.date(), request.timeId(), request.themeId(),
+            request.memberId());
     }
 
-    private ReservationResponse saveReservation(LocalDate date, Long timeId, Long themeId, Long memberId) {
+    private ReservationResponse saveReservation(LocalDate date, Long timeId, Long themeId,
+        Long memberId) {
         ReservationTime reservationTime = reservationTimeDao.findById(timeId)
             .orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당하는 시간이 없습니다"));
         Theme theme = themeDao.findById(themeId)
@@ -97,7 +100,7 @@ public class ReservationService {
 
     private void validateNotPast(LocalDate date, ReservationTime time) {
         LocalDateTime dateTime = LocalDateTime.of(date, time.getStartAt());
-        if(dateTime.isBefore(LocalDateTime.now())) {
+        if (dateTime.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("[ERROR] 현재보다 과거 시간에는 예약이 불가능합니다.");
         }
     }

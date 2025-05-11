@@ -1,14 +1,13 @@
 package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.TestConstants.*;
+import static roomescape.TestConstants.DEFAULT_MEMBER;
 import static roomescape.TestConstants.DEFAULT_THEME;
 import static roomescape.TestConstants.DEFAULT_TIME;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.TestConstants;
 
 class ReservationTest {
 

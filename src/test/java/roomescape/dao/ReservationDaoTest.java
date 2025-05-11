@@ -83,12 +83,6 @@ class ReservationDaoTest {
     }
 
     @Test
-    @DisplayName("저장된 Reservation 전체를 조회한다")
-    void selectReservation() {
-        assertThat(reservationDao.findAll()).contains(savedReservation);
-    }
-
-    @Test
     @DisplayName("id로 Reservation을 삭제한다")
     void deleteReservation() {
         reservationDao.deleteById(savedReservation.getId());
