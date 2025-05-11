@@ -58,7 +58,7 @@ public class ReservationTimeService {
     }
 
     public boolean delete(final long id) {
-        boolean isReservationExistInTime = reservationRepository.existByTimeId(id);
+        boolean isReservationExistInTime = reservationRepository.isExistByTimeId(id);
         if (isReservationExistInTime) {
             throw new ConnectedReservationExistException();
         }

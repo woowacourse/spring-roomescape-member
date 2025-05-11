@@ -18,10 +18,11 @@ import java.util.List;
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
-    private static final RowMapper<ReservationTime> ROW_MAPPER = (resultSet, rowNum) -> ReservationTime.afterSave(
-            resultSet.getLong("id"),
-            resultSet.getTime("start_at").toLocalTime()
-    );
+    private static final RowMapper<ReservationTime> ROW_MAPPER =
+            (resultSet, rowNum) -> ReservationTime.afterSave(
+                    resultSet.getLong("id"),
+                    resultSet.getTime("start_at").toLocalTime()
+            );
 
     private final JdbcTemplate jdbcTemplate;
 

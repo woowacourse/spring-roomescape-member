@@ -77,7 +77,7 @@ public class ReservationServiceTest {
         // given
         // when
         // then
-        Assertions.assertThatThrownBy(() -> reservationService.createReservation(Member.beforeSave("모코", "ywcsuwon@naver.com", "123"), LocalDate.now(), 1, 1))
+        Assertions.assertThatThrownBy(() -> reservationService.createMemberReservation(Member.beforeSave("모코", "ywcsuwon@naver.com", "123"), LocalDate.now(), 1, 1))
                 .isInstanceOf(AlreadyReservedException.class);
 
     }
