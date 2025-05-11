@@ -33,6 +33,14 @@ public class AuthController {
         return ResponseEntity.ok().headers(headers).build();
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Set-Cookie", "token=; Path=/; HttpOnly; Max-Age=0");
+
+        return ResponseEntity.ok().headers(headers).build();
+    }
+
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> checkLogin(HttpServletRequest request) {
         return ResponseEntity.ok(authService.checkLogin(request.getCookies()));
