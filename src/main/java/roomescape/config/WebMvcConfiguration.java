@@ -4,7 +4,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import roomescape.interceptor.AdminRoleInterceptor;
 import roomescape.login.provider.JwtTokenProvider;
 import roomescape.login.resolver.LoginMemberArgumentResolver;
 import roomescape.login.service.MemberService;
@@ -19,5 +21,11 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new LoginMemberArgumentResolver(memberService, jwtTokenProvider));
+    }
+
+    @Override
+    public void addInterceptors(final InterceptorRegistry registry) {
+        registry.addInterceptor(new AdminRoleInterceptor(memberService, jwtTokenProvider))
+                .addPathPatterns("/admin/**");
     }
 }
