@@ -38,11 +38,13 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long id) {
-        findById(id);
         if (reservationDao.existReservationByTime(id)) {
             throw new InvalidReservationException("이미 예약된 예약 시간을 삭제할 수 없습니다.");
         }
-        reservationTimeDao.delete(id);
+        boolean isDeleted = reservationTimeDao.delete(id);
+        if (!isDeleted) {
+            throw new IllegalArgumentException("해당 ID의 예약시간을 찾을 수 없습니다");
+        }
     }
 
     public void findById(Long id) {

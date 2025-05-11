@@ -11,7 +11,7 @@ public interface ThemeDao {
 
     long save(Theme theme);
 
-    void delete(Long id);
+    boolean delete(Long id);
 
     Optional<Theme> findById(Long id);
 

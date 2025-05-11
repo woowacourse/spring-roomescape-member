@@ -36,11 +36,14 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
-        findById(id);
         if (reservationDao.existReservationByTheme(id)) {
             throw new InvalidReservationException("이미 예약된 테마를 삭제할 수 없습니다.");
         }
-        themeDao.delete(id);
+
+        boolean isDeleted = themeDao.delete(id);
+        if (!isDeleted) {
+            throw new IllegalArgumentException("해당 ID의 테마를 찾을 수 없습니다");
+        }
     }
 
     public Theme findById(Long id) {

@@ -49,8 +49,10 @@ public class ReservationService {
     }
 
     public void deleteReservation(Long id) {
-        findReservationBy(id);
-        reservationDao.delete(id);
+        boolean isDeleted = reservationDao.delete(id);
+        if (!isDeleted) {
+            throw new IllegalArgumentException("존재하지 않는 예약 ID 입니다.");
+        }
     }
 
     public void findReservationBy(Long id) {

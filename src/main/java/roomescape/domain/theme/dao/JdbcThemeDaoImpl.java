@@ -49,9 +49,9 @@ public class JdbcThemeDaoImpl implements ThemeDao {
     }
 
     @Override
-    public void delete(Long id) {
+    public boolean delete(Long id) {
         String query = "delete from theme where id = ?";
-        jdbcTemplate.update(query, id);
+        return jdbcTemplate.update(query, id) > 0;
     }
 
     @Override

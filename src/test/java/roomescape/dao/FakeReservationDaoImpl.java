@@ -26,10 +26,10 @@ public class FakeReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public void delete(Long id) {
+    public boolean delete(Long id) {
         Reservation reservation = findById(id)
             .orElseThrow(() -> new IllegalArgumentException());
-        reservations.remove(reservation);
+        return reservations.remove(reservation);
     }
 
     @Override

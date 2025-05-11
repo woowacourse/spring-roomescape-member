@@ -26,10 +26,10 @@ public class FakeReservationTimeDaoImpl implements ReservationTimeDao {
     }
 
     @Override
-    public void delete(Long id) {
+    public boolean delete(Long id) {
         ReservationTime reservationTime = findById(id)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약시간입니다."));
-        reservationTimes.remove(reservationTime);
+        return reservationTimes.remove(reservationTime);
     }
 
     @Override

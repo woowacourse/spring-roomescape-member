@@ -41,7 +41,7 @@ public class Member {
         return new Member(id, Role.ADMIN, name, email, password);
     }
 
-    public static Member createAdminWithId(String name, String email, String password) {
+    public static Member createAdmin(String name, String email, String password) {
         return new Member(Role.ADMIN, name, email, password);
     }
 
