@@ -8,6 +8,7 @@ import roomescape.common.utils.Validator;
 public record LoginCheckResponse(
         String name
 ) {
+
     public LoginCheckResponse {
         validate(name);
     }

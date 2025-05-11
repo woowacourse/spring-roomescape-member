@@ -1,6 +1,5 @@
 package roomescape.reservation.repository;
 
-import java.util.Collection;
 import roomescape.member.domain.MemberId;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
@@ -14,8 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface ReservationRepository {
-
-    boolean existsByParams(ReservationId id);
 
     boolean existsByParams(ReservationTimeId timeId);
 

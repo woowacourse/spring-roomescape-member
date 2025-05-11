@@ -21,8 +21,7 @@ class DomainIdTest {
         // given
         final DomainId id = DomainId.unassigned();
 
-        // when
-        // then
+        // when & then
         assertThatThrownBy(id::getValue)
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("저장되지 않아 식별할 수 없습니다.");
@@ -35,8 +34,7 @@ class DomainIdTest {
         final DomainId id1 = DomainId.unassigned();
         final DomainId id2 = DomainId.unassigned();
 
-        // when
-        // then
+        // when & then
         assertThatThrownBy(() -> id1.equals(id2))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("저장되지 않아 식별할 수 없습니다.");
@@ -45,9 +43,7 @@ class DomainIdTest {
     @Test
     @DisplayName("DomainId는 null로 설정할 수 없다")
     void cannotAssignNullToDomainId() {
-        // given
-        // when
-        // then
+        // when & then
         assertThatThrownBy(() -> ReservationId.from(null))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("DomainId.value 은(는) null일 수 없습니다.");
@@ -74,8 +70,7 @@ class DomainIdTest {
                 ThemeDescription.from("지구별 방탈출 으악"),
                 ThemeThumbnail.from("www.com"));
 
-        // when
-        // then
+        // when & then
         assertThat(sameTheme1).isEqualTo(sameTheme2);
     }
 }

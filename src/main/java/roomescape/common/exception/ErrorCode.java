@@ -1,7 +1,9 @@
 package roomescape.common.exception;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@Getter
 public enum ErrorCode {
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증에 실패했습니다."),
@@ -26,15 +28,7 @@ public enum ErrorCode {
         this.message = message;
     }
 
-    public HttpStatus getStatus() {
-        return status;
-    }
-
     public int getStatusValue() {
         return status.value();
-    }
-
-    public String getMessage() {
-        return message;
     }
 }

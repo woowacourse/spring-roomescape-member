@@ -8,8 +8,6 @@ import roomescape.time.domain.ReservationTimeId;
 
 public interface ReservationTimeRepository {
 
-    boolean existsById(ReservationTimeId id);
-
     boolean existsByStartAt(LocalTime startAt);
 
     Optional<ReservationTime> findById(ReservationTimeId id);

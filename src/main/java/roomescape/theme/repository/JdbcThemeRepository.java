@@ -17,7 +17,6 @@ import roomescape.theme.domain.ThemeId;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -76,7 +75,8 @@ public class JdbcThemeRepository implements ThemeRepository {
                 ThemeId.from(generatedId),
                 theme.getName(),
                 theme.getDescription(),
-                theme.getThumbnail());
+                theme.getThumbnail()
+        );
     }
 
     @Override

@@ -2,7 +2,6 @@ package roomescape.time.service.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.common.exception.BadRequestException;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.ErrorCode;
 import roomescape.reservation.service.usecase.ReservationQueryUseCase;

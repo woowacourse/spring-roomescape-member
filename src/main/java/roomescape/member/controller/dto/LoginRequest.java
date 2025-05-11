@@ -9,6 +9,7 @@ public record LoginRequest(
         String email,
         String password
 ) {
+
     public LoginRequest {
         validate(email, password);
     }

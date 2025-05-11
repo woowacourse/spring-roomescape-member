@@ -16,7 +16,6 @@ import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -32,25 +31,13 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     );
 
     @Override
-    public boolean existsById(final ReservationTimeId id) {
-        final String sql = """
-                select exists
-                    (select 1 from reservation_time where id = ?)
-                """;
-
-        return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, id.getValue()));
-    }
-
-    @Override
     public boolean existsByStartAt(final LocalTime startAt) {
         final String sql = """
                 select exists
                     (select 1 from reservation_time where start_at = ?)
                 """;
 
-        return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
     }
 
     @Override

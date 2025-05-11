@@ -73,25 +73,13 @@ public class JdbcReservationRepository implements ReservationRepository {
     };
 
     @Override
-    public boolean existsByParams(final ReservationId id) {
-        final String sql = """
-                select exists 
-                    (select 1 from reservation where id = ?)
-                """;
-
-        return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, id.getValue()));
-    }
-
-    @Override
     public boolean existsByParams(final ReservationTimeId timeId) {
         final String sql = """
                 select exists 
                     (select 1 from reservation where time_id = ?)
                 """;
 
-        return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, timeId.getValue()));
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, timeId.getValue()));
     }
 
     @Override
@@ -104,8 +92,14 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """;
 
         return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, date.getValue(), timeId.getValue(),
-                        themeId.getValue()));
+                jdbcTemplate.queryForObject(
+                        sql,
+                        Boolean.class,
+                        date.getValue(),
+                        timeId.getValue(),
+                        themeId.getValue()
+                )
+        );
 
     }
 
@@ -165,12 +159,14 @@ public class JdbcReservationRepository implements ReservationRepository {
                 where r.member_id = ? and r.theme_id = ? and r.date between ? and ?
                 """;
 
-        return jdbcTemplate.query(sql,
+        return jdbcTemplate.query(
+                        sql,
                         reservationMapper,
                         memberId.getValue(),
                         themeId.getValue(),
                         from.getValue(),
-                        to.getValue()).stream()
+                        to.getValue()
+                ).stream()
                 .toList();
     }
 
@@ -192,7 +188,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                         sql,
                         (rs, rowNum) -> rs.getLong("time_id"),
                         date.getValue(),
-                        themeId.getValue()).stream()
+                        themeId.getValue()
+                ).stream()
                 .map(ReservationTimeId::from)
                 .toList();
     }
@@ -279,7 +276,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 reservation.getMember(),
                 reservation.getDate(),
                 reservation.getTime(),
-                reservation.getTheme());
+                reservation.getTheme()
+        );
     }
 
     @Override
@@ -325,12 +323,14 @@ public class JdbcReservationRepository implements ReservationRepository {
         );
 
         return resultList.stream()
-                .collect(Collectors.toMap(
-                        Entry::getKey,
-                        Entry::getValue,
-                        (v1, v2) -> v1,
-                        LinkedHashMap::new
-                ));
+                .collect(
+                        Collectors.toMap(
+                                Entry::getKey,
+                                Entry::getValue,
+                                (v1, v2) -> v1,
+                                LinkedHashMap::new
+                        )
+                );
     }
 
     private RowMapper<Entry<Theme, Integer>> getThemesToBookedCountRowMapper() {

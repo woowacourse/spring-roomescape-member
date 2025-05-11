@@ -10,6 +10,7 @@ public record SignupRequest(
         String password,
         String name
 ) {
+
     public SignupRequest {
         validate(email, password, name);
     }

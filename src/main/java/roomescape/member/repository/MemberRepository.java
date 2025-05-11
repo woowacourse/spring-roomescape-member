@@ -8,6 +8,7 @@ import roomescape.member.domain.MemberEmail;
 import roomescape.member.domain.MemberId;
 
 public interface MemberRepository {
+
     boolean existsByEmail(MemberEmail email);
 
     Member save(Account account);

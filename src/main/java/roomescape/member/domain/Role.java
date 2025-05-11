@@ -1,6 +1,7 @@
 package roomescape.member.domain;
 
 public enum Role {
+
     MEMBER, ADMIN;
 
     public boolean isEqual(Role role) {

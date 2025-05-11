@@ -3,11 +3,8 @@ package roomescape.reservation.service.usecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.member.domain.MemberId;
-import roomescape.reservation.controller.dto.ReservationSearchWebRequest;
-import roomescape.reservation.service.converter.ReservationConverter;
 import roomescape.reservation.service.dto.AvailableReservationTimeServiceRequest;
 import roomescape.reservation.service.dto.AvailableReservationTimeServiceResponse;
-import roomescape.reservation.service.dto.CreateReservationServiceRequest;
 import roomescape.reservation.service.dto.ThemeToBookCountServiceResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
@@ -80,9 +77,9 @@ public class ReservationQueryUseCase {
     }
 
     public List<Reservation> search(final MemberId memberId,
-                                                        final ThemeId themeId,
-                                                        final ReservationDate from,
-                                                        final ReservationDate to) {
+                                    final ThemeId themeId,
+                                    final ReservationDate from,
+                                    final ReservationDate to) {
         return reservationRepository.findByParams(memberId, themeId, from, to);
     }
 }

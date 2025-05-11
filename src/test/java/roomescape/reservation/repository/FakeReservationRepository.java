@@ -25,12 +25,6 @@ public class FakeReservationRepository implements ReservationRepository {
     private final AtomicLong index = new AtomicLong(1L);
 
     @Override
-    public boolean existsByParams(ReservationId id) {
-        return reservations.stream()
-                .anyMatch(reservation -> Objects.equals(reservation.getId(), id));
-    }
-
-    @Override
     public boolean existsByParams(ReservationTimeId timeId) {
         return reservations.stream()
                 .anyMatch(reservation -> Objects.equals(reservation.getTime().getId(), timeId));

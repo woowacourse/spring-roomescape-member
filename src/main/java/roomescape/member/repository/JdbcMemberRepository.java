@@ -50,8 +50,7 @@ public class JdbcMemberRepository implements MemberRepository {
                     (select 1 from member where email = ?)
                 """;
 
-        return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, email.getValue()));
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, email.getValue()));
     }
 
     @Override
@@ -96,8 +95,7 @@ public class JdbcMemberRepository implements MemberRepository {
         final Member member = account.getMember();
 
         jdbcTemplate.update(connection -> {
-            final PreparedStatement preparedStatement = connection.prepareStatement(sql,
-                    Statement.RETURN_GENERATED_KEYS);
+            final PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, member.getName().getValue());
             preparedStatement.setString(2, member.getEmail().getValue());
             preparedStatement.setString(3, account.getPassword().getValue());

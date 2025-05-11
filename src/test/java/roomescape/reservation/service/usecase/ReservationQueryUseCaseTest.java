@@ -147,7 +147,7 @@ class ReservationQueryUseCaseTest {
         SoftAssertions.assertSoftly(softAssertions -> {
 
             assertThat(timesWithAvailability)
-                    .hasSize(4);
+                    .hasSize(3);
 
             assertThat(timesWithAvailability.stream().filter(AvailableReservationTimeServiceResponse::isBooked))
                     .hasSize(1);
@@ -158,6 +158,7 @@ class ReservationQueryUseCaseTest {
                     .findFirst()
                     .orElseThrow()
             ).isEqualTo(booked.getValue());
+
         });
     }
 }

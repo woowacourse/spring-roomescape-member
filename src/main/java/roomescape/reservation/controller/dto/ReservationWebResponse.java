@@ -10,11 +10,13 @@ import roomescape.time.controller.dto.ReservationTimeWebResponse;
 import java.time.LocalDate;
 
 @FieldNameConstants(level = AccessLevel.PRIVATE)
-public record ReservationWebResponse(Long id,
-                                     MemberInfo memberInfo,
-                                     LocalDate date,
-                                     ReservationTimeWebResponse time,
-                                     ThemeWebResponse theme) {
+public record ReservationWebResponse(
+        Long id,
+        MemberInfo memberInfo,
+        LocalDate date,
+        ReservationTimeWebResponse time,
+        ThemeWebResponse theme
+) {
 
     public ReservationWebResponse {
         validate(id, memberInfo, date, time, theme);

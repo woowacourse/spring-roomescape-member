@@ -9,7 +9,6 @@ import roomescape.time.repository.ReservationTimeRepository;
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
