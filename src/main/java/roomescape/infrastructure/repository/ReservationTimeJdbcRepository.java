@@ -29,7 +29,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
 
     public ReservationTimeJdbcRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
     }

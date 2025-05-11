@@ -13,7 +13,9 @@ import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.common.BaseTest;
+import roomescape.domain.Member;
 import roomescape.domain.ReservationDate;
+import roomescape.fixture.MemberDbFixture;
 import roomescape.fixture.ReservationDateFixture;
 import roomescape.fixture.ReservationDbFixture;
 import roomescape.fixture.ReservationTimeDbFixture;
@@ -34,6 +36,9 @@ class ThemeServiceTest extends BaseTest {
 
     @Autowired
     private ThemeDbFixture themeDbFixture;
+
+    @Autowired
+    private MemberDbFixture memberDbFixture;
 
     @Autowired
     private ReservationDbFixture reservationDbFixture;
@@ -79,7 +84,8 @@ class ThemeServiceTest extends BaseTest {
     void 이미_해당_테마의_예약이_존재한다면_삭제할_수_없다() {
         Theme theme = themeDbFixture.공포();
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
-        reservationDbFixture.예약_한스_25_4_22_10시_공포(reservationTime, theme);
+        Member member = memberDbFixture.한스();
+        reservationDbFixture.예약_한스_25_4_22_10시_공포(member, reservationTime, theme);
 
         assertThatThrownBy(() -> themeService.deleteThemeById(theme.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -112,8 +118,9 @@ class ThemeServiceTest extends BaseTest {
     }
 
     private void addReservation(int count, ReservationDate date, ReservationTime time, Theme theme) {
+        Member member = memberDbFixture.한스();
         for (int i = 0; i < count; i++) {
-            reservationDbFixture.예약_생성_한스(date, time, theme);
+            reservationDbFixture.예약_생성_한스(member, date, time, theme);
         }
     }
 }

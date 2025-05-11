@@ -26,7 +26,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
 
     public ThemeJdbcRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
     }

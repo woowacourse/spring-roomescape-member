@@ -16,6 +16,10 @@ public class Member {
         this.password = password;
     }
 
+    public static Member create(final String name, final String email, final String password) {
+        return new Member(null, name, email, password);
+    }
+
     public boolean isIncorrectPassword(String password) {
         return !this.password.equals(password);
     }
