@@ -14,9 +14,11 @@ import roomescape.util.CookieUtil;
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberService memberService;
+    private final CookieUtil cookieUtil;
 
-    public LoginMemberArgumentResolver(final MemberService memberService) {
+    public LoginMemberArgumentResolver(final MemberService memberService, final CookieUtil cookieUtil) {
         this.memberService = memberService;
+        this.cookieUtil = cookieUtil;
     }
 
     @Override
@@ -32,7 +34,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
-        Long id = CookieUtil.getSubjectFromCookie(cookies);
+        Long id = cookieUtil.getSubjectFromCookie(cookies);
 
         return memberService.findMemberById(id);
     }

@@ -1,7 +1,5 @@
 package roomescape.service;
 
-import static roomescape.util.CookieUtil.getClaimsFromCookie;
-
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -13,14 +11,17 @@ import roomescape.dto.response.LoginCheckResponse;
 import roomescape.dto.response.MemberResponse;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.MemberRepository;
+import roomescape.util.CookieUtil;
 
 @Service
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final CookieUtil cookieUtil;
 
-    public MemberService(final MemberRepository memberRepository) {
+    public MemberService(final MemberRepository memberRepository, final CookieUtil cookieUtil) {
         this.memberRepository = memberRepository;
+        this.cookieUtil = cookieUtil;
     }
 
     public List<MemberResponse> getAllMembers() {
@@ -42,6 +43,6 @@ public class MemberService {
 
     public LoginCheckResponse checkMember(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        return new LoginCheckResponse(getClaimsFromCookie(cookies).get("name", String.class));
+        return new LoginCheckResponse(cookieUtil.getClaimsFromCookie(cookies).get("name", String.class));
     }
 }

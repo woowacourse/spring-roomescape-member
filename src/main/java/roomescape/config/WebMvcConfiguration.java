@@ -6,23 +6,26 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.service.MemberService;
+import roomescape.util.CookieUtil;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final MemberService memberService;
+    private final CookieUtil cookieUtil;
 
-    public WebMvcConfiguration(final MemberService memberService) {
+    public WebMvcConfiguration(final MemberService memberService, final CookieUtil cookieUtil) {
         this.memberService = memberService;
+        this.cookieUtil = cookieUtil;
     }
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(new CheckAdminInterceptor(memberService)).addPathPatterns("/admin/**");
+        registry.addInterceptor(new CheckAdminInterceptor(memberService, cookieUtil)).addPathPatterns("/admin/**");
     }
 
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberArgumentResolver(memberService));
+        resolvers.add(new LoginMemberArgumentResolver(memberService, cookieUtil));
     }
 }

@@ -19,15 +19,17 @@ import roomescape.util.TokenUtil;
 @RequestMapping("/login")
 public class LoginController {
     private final MemberService memberService;
+    private final TokenUtil tokenUtil;
 
-    public LoginController(final MemberService memberService) {
+    public LoginController(final MemberService memberService, final TokenUtil tokenUtil) {
         this.memberService = memberService;
+        this.tokenUtil = tokenUtil;
     }
 
     @PostMapping
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         Member member = memberService.findMemberWithEmailAndPassword(request);
-        String token = TokenUtil.makeToken(member);
+        String token = tokenUtil.makeToken(member);
         CookieUtil.add(response, token);
 
         return ResponseEntity.ok().build();

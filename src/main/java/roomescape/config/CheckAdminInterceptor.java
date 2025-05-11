@@ -11,9 +11,11 @@ import roomescape.util.CookieUtil;
 public class CheckAdminInterceptor implements HandlerInterceptor {
 
     private final MemberService memberService;
+    private final CookieUtil cookieUtil;
 
-    public CheckAdminInterceptor(final MemberService memberService) {
+    public CheckAdminInterceptor(final MemberService memberService, final CookieUtil cookieUtil) {
         this.memberService = memberService;
+        this.cookieUtil = cookieUtil;
     }
 
     @Override
@@ -28,7 +30,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
             throw new IllegalAccessException("[ERROR] 유효한 사용자가 아닙니다.");
         }
 
-        Long memberId = CookieUtil.getSubjectFromCookie(cookies);
+        Long memberId = cookieUtil.getSubjectFromCookie(cookies);
         Member member = memberService.findMemberById(memberId);
 
         if (isInvalidMember(member)) {
