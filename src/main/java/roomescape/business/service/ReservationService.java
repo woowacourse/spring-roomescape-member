@@ -15,6 +15,7 @@ import roomescape.exception.ReservationNotFoundException;
 import roomescape.exception.auth.UnauthorizedAccessException;
 import roomescape.persistence.dao.ReservationDao;
 import roomescape.presentation.dto.reservation.ReservationAvailableTimeResponse;
+import roomescape.presentation.dto.reservation.ReservationFilterDto;
 import roomescape.presentation.dto.reservation.ReservationRequest;
 import roomescape.presentation.dto.reservation.ReservationResponse;
 
@@ -100,5 +101,11 @@ public class ReservationService {
         final Theme theme = themeService.find(themeId);
 
         return reservationDao.findAvailableTimesByDateAndTheme(date, theme);
+    }
+
+    public List<ReservationResponse> findByFilter(final ReservationFilterDto filter) {
+        return reservationDao.findByFilter(filter).stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 }
