@@ -28,7 +28,7 @@ public class ThemeDbFixture {
                 .addValue("thumbnail", thumbnail)
         ).longValue();
 
-        return new Theme(id, name, description, thumbnail);
+        return Theme.create(id, name, description, thumbnail);
     }
 
     public Theme 커스텀_테마(String customName) {
@@ -41,6 +41,6 @@ public class ThemeDbFixture {
                 .addValue("thumbnail", thumbnail)
         ).longValue();
 
-        return new Theme(id, customName, description, thumbnail);
+        return Theme.create(id, customName, description, thumbnail);
     }
 }

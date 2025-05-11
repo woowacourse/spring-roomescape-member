@@ -26,9 +26,9 @@ public class ReservationJdbcRepository implements ReservationRepository {
     private final SimpleJdbcInsert jdbcInsert;
 
     private final static RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) ->
-            new Reservation(
+            Reservation.create(
                     resultSet.getLong("reservation_id"),
-                    new Member(
+                    Member.create(
                             resultSet.getLong("member_id"),
                             resultSet.getString("member_name"),
                             Role.valueOf(resultSet.getString("member_role")),
@@ -36,11 +36,11 @@ public class ReservationJdbcRepository implements ReservationRepository {
                             resultSet.getString("member_password")
                     ),
                     LocalDate.parse(resultSet.getString("date")),
-                    new ReservationTime(
+                    ReservationTime.create(
                             resultSet.getLong("time_id"),
                             LocalTime.parse(resultSet.getString("time_value"))
                     ),
-                    new Theme(
+                    Theme.create(
                             resultSet.getLong("theme_id"),
                             resultSet.getString("theme_name"),
                             resultSet.getString("theme_description"),
@@ -87,8 +87,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 .addValue("member_id", member.getId());
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new Reservation(id, member, reservationDateTime.reservationDate().getDate(),
-                new ReservationTime(reservationDateTime.reservationTime().getId(),
+        return Reservation.create(id, member, reservationDateTime.reservationDate().getDate(),
+                ReservationTime.create(reservationDateTime.reservationTime().getId(),
                         reservationDateTime.reservationTime().getStartAt()),
                 theme);
     }

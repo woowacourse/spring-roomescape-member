@@ -26,6 +26,6 @@ public class ReservationTimeDbFixture {
                 .addValue("start_at", startAt)
         ).longValue();
 
-        return new ReservationTime(id, startAt);
+        return ReservationTime.create(id, startAt);
     }
 }

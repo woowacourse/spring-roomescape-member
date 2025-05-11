@@ -18,7 +18,7 @@ public class MemberJdbcRepository implements MemberRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    private static final RowMapper<Member> memberRapper = (resultSet, rowNum) -> new Member(
+    private static final RowMapper<Member> memberRapper = (resultSet, rowNum) -> Member.create(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             Role.valueOf(resultSet.getString("role")),
@@ -62,7 +62,7 @@ public class MemberJdbcRepository implements MemberRepository {
 
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new Member(id, name, role, email, password);
+        return Member.create(id, name, role, email, password);
     }
 
     @Override

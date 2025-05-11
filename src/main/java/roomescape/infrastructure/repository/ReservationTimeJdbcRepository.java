@@ -22,7 +22,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     private final SimpleJdbcInsert jdbcInsert;
 
     private static final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
-            new ReservationTime(
+            ReservationTime.create(
                     resultSet.getLong("id"),
                     LocalTime.parse(resultSet.getString("start_at"))
             );
@@ -44,7 +44,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
                 .addValue("start_at", reservationTime.getStartAt());
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new ReservationTime(id, reservationTime.getStartAt());
+        return ReservationTime.create(id, reservationTime.getStartAt());
     }
 
     public void deleteById(Long id) {

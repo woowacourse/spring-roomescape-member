@@ -9,7 +9,7 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
-    public Theme(Long id, String name, String description, String thumbnail) {
+    private Theme(Long id, String name, String description, String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -18,6 +18,10 @@ public class Theme {
 
     public static Theme create(String name, String description, String thumbnail) {
         return new Theme(null, name, description, thumbnail);
+    }
+
+    public static Theme create(Long id, String name, String description, String thumbnail) {
+        return new Theme(id, name, description, thumbnail);
     }
 
     public Long getId() {

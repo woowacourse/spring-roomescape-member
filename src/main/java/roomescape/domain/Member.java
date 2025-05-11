@@ -10,7 +10,7 @@ public class Member {
     private final String email;
     private final String password;
 
-    public Member(Long id, String name, Role role, String email, String password) {
+    private Member(Long id, String name, Role role, String email, String password) {
         this.id = id;
         this.name = name;
         this.role = role;
@@ -20,6 +20,10 @@ public class Member {
 
     public static Member create(String name, Role role, String email, String password) {
         return new Member(null, name, role, email, password);
+    }
+
+    public static Member create(Long id, String name, Role role, String email, String password) {
+        return new Member(id, name, role, email, password);
     }
 
     public boolean isIncorrectPassword(String password) {

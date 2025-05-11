@@ -17,7 +17,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    private static final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
+    private static final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> Theme.create(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("description"),
@@ -50,7 +50,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
 
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new Theme(id, name, description, thumbnail);
+        return Theme.create(id, name, description, thumbnail);
     }
 
     @Override

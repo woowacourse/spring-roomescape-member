@@ -11,7 +11,7 @@ public class Reservation {
     private final ReservationTime reservationTime;
     private final Theme theme;
 
-    public Reservation(
+    private Reservation(
             Long id,
             Member member,
             LocalDate reservationDate,
@@ -32,6 +32,16 @@ public class Reservation {
             Theme theme
     ) {
         return new Reservation(null, member, reservationDate, reservationTime, theme);
+    }
+
+    public static Reservation create(
+            Long id,
+            Member member,
+            LocalDate reservationDate,
+            ReservationTime reservationTime,
+            Theme theme
+    ) {
+        return new Reservation(id, member, reservationDate, reservationTime, theme);
     }
 
     public Long getId() {

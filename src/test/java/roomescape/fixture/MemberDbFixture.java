@@ -31,6 +31,6 @@ public class MemberDbFixture {
                 .addValue("password", password)
         ).longValue();
 
-        return new Member(id, name, role, email, password);
+        return Member.create(id, name, role, email, password);
     }
 }
