@@ -5,6 +5,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import java.time.Clock;
 import java.time.Duration;
 import java.util.Date;
 import javax.crypto.SecretKey;
@@ -19,17 +20,20 @@ public class JwtProvider {
 
     private final SecretKey secretKey;
     private final Duration validityDuration;
+    private final Clock clock;
 
     public JwtProvider(
             @Value("${security.jwt.token.secret-key}") String secretKey,
-            @Value("${security.jwt.token.expire-length}") Duration validityDuration
+            @Value("${security.jwt.token.expire-length}") Duration validityDuration,
+            Clock clock
     ) {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
         this.validityDuration = validityDuration;
+        this.clock = clock;
     }
-    
+
     public String issue(JwtPayload jwtPayload) {
-        Date currentDate = new Date();
+        Date currentDate = Date.from(clock.instant());
         Date expireDate = new Date(currentDate.getTime() + validityDuration.toMillis());
 
         return Jwts.builder()
