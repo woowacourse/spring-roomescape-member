@@ -14,7 +14,4 @@ public record CreateReservationRequest(
         @NotNull(message = "테마 ID는 필수입니다.") Long themeId
 ) {
 
-    public Reservation toReservation(Member member, ReservationTime reservationTime, Theme theme) {
-        return new Reservation(member, date, reservationTime, theme);
-    }
 }

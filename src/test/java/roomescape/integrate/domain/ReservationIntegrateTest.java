@@ -108,11 +108,6 @@ class ReservationIntegrateTest {
         CreateThemeRequest themeRequest = new CreateThemeRequest("테마", "설명", "썸네일");
         Theme theme = themeService.addTheme(themeRequest);
 
-        Map<String, Object> reservationParam = Map.of(
-                "date", LocalDate.now().plusDays(1).toString(),
-                "timeId", reservationTime.getId(),
-                "themeId", theme.getId()
-        );
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         CreateReservationRequest reservationRequest = new CreateReservationRequest(
                 tomorrow, reservationTime.getId(), theme.getId());

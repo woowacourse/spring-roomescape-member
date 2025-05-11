@@ -25,28 +25,28 @@ import roomescape.repository.ReservationRepository;
 public class JdbcReservationRepository implements ReservationRepository {
 
     private static final String DEFUALT_SELECT_SQL = """
-                select
-                    r.id as reservation_id,
-                    m.id as member_id,
-                    m.name,
-                    m.email,
-                    m.password,
-                    m.role,
-                    r.`date`,
-                    rt.id as time_id,
-                    rt.start_at as time_value,
-                    t.id as theme_id,
-                    t.name as theme_name,
-                    t.description as theme_description,
-                    t.thumbnail as theme_thumbnail
-                from reservation as r
-                inner join reservation_time as rt
-                on r.time_id = rt.id
-                inner join theme as t
-                on r.theme_id = t.id
-                inner join member as m
-                on r.member_id = m.id
-                """;
+            select
+                r.id as reservation_id,
+                m.id as member_id,
+                m.name,
+                m.email,
+                m.password,
+                m.role,
+                r.`date`,
+                rt.id as time_id,
+                rt.start_at as time_value,
+                t.id as theme_id,
+                t.name as theme_name,
+                t.description as theme_description,
+                t.thumbnail as theme_thumbnail
+            from reservation as r
+            inner join reservation_time as rt
+            on r.time_id = rt.id
+            inner join theme as t
+            on r.theme_id = t.id
+            inner join member as m
+            on r.member_id = m.id
+            """;
 
     private static final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNumber) -> {
         long reservationId = resultSet.getLong("reservation_id");
@@ -75,11 +75,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     };
 
     private final JdbcTemplate jdbcTemplate;
-    private final StringHttpMessageConverter stringHttpMessageConverter;
 
-    public JdbcReservationRepository(JdbcTemplate jdbcTemplate, StringHttpMessageConverter stringHttpMessageConverter) {
+    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.stringHttpMessageConverter = stringHttpMessageConverter;
     }
 
     @Override
@@ -158,7 +156,11 @@ public class JdbcReservationRepository implements ReservationRepository {
             sqlBuilder.append(" where ").append(String.join(" and ", conditions));
         }
 
-        return jdbcTemplate.query(sqlBuilder.toString(), reservationRowMapper, args.toArray(new String[0]));
+        return jdbcTemplate.query(
+                sqlBuilder.toString(),
+                reservationRowMapper,
+                args.toArray()
+        );
     }
 
     @Override

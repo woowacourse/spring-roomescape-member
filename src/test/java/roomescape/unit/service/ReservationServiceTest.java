@@ -50,10 +50,10 @@ class ReservationServiceTest {
     @Test
     void 예약을_추가하고_조회할_수_있다() {
         // given
-        ReservationTime reservationTime = new ReservationTime( LocalTime.now().plusHours(1L));
+        ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
 
-        Theme theme = new Theme( "테마", "설명", "image.png");
+        Theme theme = new Theme("테마", "설명", "image.png");
         long themeId = themeRepository.add(theme).getId();
 
         CreateReservationRequest request = new CreateReservationRequest(LocalDate.now().plusDays(1L), reservationTimeId,
@@ -69,10 +69,10 @@ class ReservationServiceTest {
     @Test
     void 이전_날짜에_예약할_수_없다() {
         // given
-        ReservationTime reservationTime = new ReservationTime( LocalTime.now().plusHours(1L));
+        ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
 
-        Theme theme = new Theme( "테마", "설명", "image.png");
+        Theme theme = new Theme("테마", "설명", "image.png");
         long themeId = themeRepository.add(theme).getId();
 
         LocalDate yesterday = LocalDate.now().minusDays(1);
@@ -86,10 +86,10 @@ class ReservationServiceTest {
     @Test
     void 같은날짜일시_이전_시간에_예약할_수_없다() {
         // given
-        ReservationTime pastTime = new ReservationTime( LocalTime.now().minusHours(1L));
+        ReservationTime pastTime = new ReservationTime(LocalTime.now().minusMinutes(1L));
         long pastTimeId = reservationTimeRepository.add(pastTime).getId();
 
-        Theme theme = new Theme( "테마", "설명", "image.png");
+        Theme theme = new Theme("테마", "설명", "image.png");
         long themeId = themeRepository.add(theme).getId();
 
         LocalDate today = LocalDate.now();
@@ -103,10 +103,10 @@ class ReservationServiceTest {
     @Test
     void 이후_날짜에_예약할_수_있다() {
         // given
-        ReservationTime reservationTime = new ReservationTime( LocalTime.now().plusHours(1L));
+        ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
 
-        Theme theme = new Theme( "테마", "설명", "image.png");
+        Theme theme = new Theme("테마", "설명", "image.png");
         long themeId = themeRepository.add(theme).getId();
 
         LocalDate today = LocalDate.now();
@@ -120,10 +120,10 @@ class ReservationServiceTest {
     @Test
     void 같은날짜일시_이후_시간_예약할_수_있다() {
         // given
-        ReservationTime reservationTime = new ReservationTime( LocalTime.now().plusHours(1L));
+        ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
 
-        Theme theme = new Theme( "테마", "설명", "image.png");
+        Theme theme = new Theme("테마", "설명", "image.png");
         long themeId = themeRepository.add(theme).getId();
 
         LocalDate today = LocalDate.now();
@@ -137,10 +137,10 @@ class ReservationServiceTest {
     @Test
     void 예약을_삭제하고_조회할_수_있다() {
         // given
-        ReservationTime reservationTime = new ReservationTime( LocalTime.now().plusHours(1L));
+        ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
 
-        Theme theme = new Theme( "테마", "설명", "image.png");
+        Theme theme = new Theme("테마", "설명", "image.png");
         long themeId = themeRepository.add(theme).getId();
 
         CreateReservationRequest request = new CreateReservationRequest(
@@ -160,10 +160,10 @@ class ReservationServiceTest {
     @Test
     void 중복_예약은_불가능하다() {
         // given
-        ReservationTime reservationTime = new ReservationTime( LocalTime.now().plusHours(1L));
+        ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
 
-        Theme theme = new Theme( "테마", "설명", "image.png");
+        Theme theme = new Theme("테마", "설명", "image.png");
         long themeId = themeRepository.add(theme).getId();
 
         reservationService.addReservation(
@@ -186,9 +186,12 @@ class ReservationServiceTest {
         //given
         Member member = memberRepository.add(new Member("훌라", "email@email.com", "password", Role.USER));
         Theme theme = themeRepository.add(new Theme("테마", "설명", "image.png"));
-        ReservationTime reservationTime = reservationTimeRepository.add(new ReservationTime(LocalTime.now().plusHours(1L)));
-        ReservationTime reservationTime2 = reservationTimeRepository.add(new ReservationTime(LocalTime.now().plusHours(2L)));
-        ReservationTime reservationTime3 = reservationTimeRepository.add(new ReservationTime(LocalTime.now().plusHours(3L)));
+        ReservationTime reservationTime = reservationTimeRepository.add(
+                new ReservationTime(LocalTime.now().plusHours(1L)));
+        ReservationTime reservationTime2 = reservationTimeRepository.add(
+                new ReservationTime(LocalTime.now().plusHours(2L)));
+        ReservationTime reservationTime3 = reservationTimeRepository.add(
+                new ReservationTime(LocalTime.now().plusHours(3L)));
         LocalDate tomorrow = LocalDate.now().plusDays(1L);
         Reservation reservation1 = new Reservation(member, tomorrow, reservationTime, theme);
         Reservation reservation2 = new Reservation(member, tomorrow, reservationTime2, theme);
@@ -198,7 +201,8 @@ class ReservationServiceTest {
         reservationRepository.add(reservation3);
 
         //when
-        List<Reservation> reservations = reservationService.findAllByFilter(member.getId(), theme.getId(), tomorrow.minusDays(1), tomorrow.plusDays(1));
+        List<Reservation> reservations = reservationService.findAllByFilter(member.getId(), theme.getId(),
+                tomorrow.minusDays(1), tomorrow.plusDays(1));
 
         //then
         assertThat(reservations).hasSize(3);
@@ -215,7 +219,7 @@ class ReservationServiceTest {
     }
 
     private void initLoginMember() {
-        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member("Hula", "test@test.com", "test", Role.USER);
         Member member = memberRepository.add(beforeAddMember);
         loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
     }

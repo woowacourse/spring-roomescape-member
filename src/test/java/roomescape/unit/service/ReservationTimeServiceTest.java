@@ -123,11 +123,10 @@ class ReservationTimeServiceTest {
     }
 
 
-
     @Test
     void 선택된_테마와_날짜에_대해서_가능한_시간들을_확인할_수_있다2() {
         // given
-        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member("Hula", "test@test.com", "test", Role.USER);
         Member member = memberRepository.add(beforeAddMember);
         LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
@@ -135,12 +134,12 @@ class ReservationTimeServiceTest {
         LocalTime firstTime = LocalTime.now().plusHours(1L);
         LocalTime secondTime = LocalTime.now().plusHours(2L);
 
-        ReservationTime reservationTime1 = new ReservationTime( firstTime);
+        ReservationTime reservationTime1 = new ReservationTime(firstTime);
         ReservationTime firstReservationTime = reservationTimeRepository.add(reservationTime1);
-        ReservationTime reservationTime2 = new ReservationTime( secondTime);
+        ReservationTime reservationTime2 = new ReservationTime(secondTime);
         ReservationTime secondReservationTime = reservationTimeRepository.add(reservationTime2);
 
-        Theme theme = new Theme( "테마", "설명", "image.png");
+        Theme theme = new Theme("테마", "설명", "image.png");
         long themeId = themeRepository.add(theme).getId();
 
         reservationService.addReservation(
