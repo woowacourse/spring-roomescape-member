@@ -23,6 +23,7 @@ public class JdbcReservationDao implements ReservationDao {
     private static final String RESERVATION_DATE = "date";
     private static final String MEMBER_ID = "member_id";
     private static final String MEMBER_NAME = "member_name";
+    private static final String MEMBER_ROLE = "member_role";
     private static final String MEMBER_EMAIL = "member_email";
     private static final String MEMBER_PASSWORD = "member_password";
     private static final String TIME_ID = "time_id";
@@ -38,6 +39,7 @@ public class JdbcReservationDao implements ReservationDao {
                     new Member(
                             rs.getLong(MEMBER_ID),
                             rs.getString(MEMBER_NAME),
+                            rs.getString(MEMBER_ROLE),
                             rs.getString(MEMBER_EMAIL),
                             rs.getString(MEMBER_PASSWORD)
                     ),
@@ -79,11 +81,12 @@ public class JdbcReservationDao implements ReservationDao {
                 SELECT
                     r.id AS id,
                     r.date AS date,
-
+                
                     m.id AS member_id,
                     m.name AS member_name,
+                    m.role AS member_role,
                     m.email AS member_email,
-                    m.password AS member_password,    
+                    m.password AS member_password,
                 
                     rt.id AS time_id,
                     rt.start_at AS time_start_at,
@@ -94,10 +97,10 @@ public class JdbcReservationDao implements ReservationDao {
                     t.thumbnail AS theme_thumbnail
                 FROM reservation AS r
                     INNER JOIN member AS m
-                        ON r.member_id = m.id    
+                        ON r.member_id = m.id
                     INNER JOIN reservation_time AS rt
-                        ON r.time_id = rt.id 
-                    INNER JOIN theme AS t 
+                        ON r.time_id = rt.id
+                    INNER JOIN theme AS t
                         ON r.theme_id = t.id
                 """;
         return jdbcTemplate.query(sql, reservationFullRowMapper);
@@ -109,11 +112,12 @@ public class JdbcReservationDao implements ReservationDao {
                 SELECT
                     r.id AS id,
                     r.date AS date,
-
+                
                     m.id AS member_id,
                     m.name AS member_name,
+                    m.role AS member_role,
                     m.email AS member_email,
-                    m.password AS member_password,    
+                    m.password AS member_password,
                 
                     rt.id AS time_id,
                     rt.start_at AS time_start_at,
@@ -124,10 +128,10 @@ public class JdbcReservationDao implements ReservationDao {
                     t.thumbnail AS theme_thumbnail
                 FROM reservation AS r
                     INNER JOIN member AS m
-                        ON r.member_id = m.id    
+                        ON r.member_id = m.id
                     INNER JOIN reservation_time AS rt
-                        ON r.time_id = rt.id 
-                    INNER JOIN theme AS t 
+                        ON r.time_id = rt.id
+                    INNER JOIN theme AS t
                         ON r.theme_id = t.id
                 WHERE r.id = ?
                 """;
@@ -145,11 +149,12 @@ public class JdbcReservationDao implements ReservationDao {
                 SELECT
                     r.id AS id,
                     r.date AS date,
-                    
+                
                     m.id AS member_id,
                     m.name AS member_name,
+                    m.role AS member_role,
                     m.email AS member_email,
-                    m.password AS member_password,    
+                    m.password AS member_password,
                 
                     rt.id AS time_id,
                     rt.start_at AS time_start_at,
@@ -160,10 +165,10 @@ public class JdbcReservationDao implements ReservationDao {
                     t.thumbnail AS theme_thumbnail
                 FROM reservation AS r
                     INNER JOIN member AS m
-                        ON r.member_id = m.id    
+                        ON r.member_id = m.id
                     INNER JOIN reservation_time AS rt
-                        ON r.time_id = rt.id 
-                    INNER JOIN theme AS t 
+                        ON r.time_id = rt.id
+                    INNER JOIN theme AS t
                         ON r.theme_id = t.id
                 WHERE r.date BETWEEN ? and ?
                 """;
@@ -176,11 +181,12 @@ public class JdbcReservationDao implements ReservationDao {
                 SELECT
                     r.id AS id,
                     r.date AS date,
-                    
+                
                     m.id AS member_id,
                     m.name AS member_name,
+                    m.role AS member_role,
                     m.email AS member_email,
-                    m.password AS member_password,    
+                    m.password AS member_password,
                 
                     rt.id AS time_id,
                     rt.start_at AS time_start_at,
@@ -191,10 +197,10 @@ public class JdbcReservationDao implements ReservationDao {
                     t.thumbnail AS theme_thumbnail
                 FROM reservation AS r
                     INNER JOIN member AS m
-                        ON r.member_id = m.id    
+                        ON r.member_id = m.id
                     INNER JOIN reservation_time AS rt
-                        ON r.time_id = rt.id 
-                    INNER JOIN theme AS t 
+                        ON r.time_id = rt.id
+                    INNER JOIN theme AS t
                         ON r.theme_id = t.id
                 WHERE r.date = ? AND r.theme_id = ?
                 """;

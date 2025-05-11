@@ -31,15 +31,16 @@ public class AuthService {
         Member member = memberDao.findByEmailAndPassword(email, password)
                 .orElseThrow(() -> new UnauthorizedException("해당하는 사용자를 찾을 수 없습니다. email: %s".formatted(email)));
 
-        final String accessToken = createAccessToken(member.getId(), member.getName(), member.getEmail());
+        final String accessToken = createAccessToken(member.getId(), member.getName(), member.getEmail(), member.getRole());
         return accessToken;
     }
 
-    private String createAccessToken(final Long id, final String name, final String email) {
+    private String createAccessToken(final Long id, final String name, final String email, final String role) {
         return Jwts.builder()
                 .claim("id", id)
                 .claim("name", name)
                 .claim("email", email)
+                .claim("role", role)
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
@@ -52,7 +53,9 @@ public class AuthService {
                 .get("name", String.class);
         final String email = claimsJws.getPayload()
                 .get("email", String.class);
-        return new LoginMember(id, name, email);
+        final String role = claimsJws.getPayload()
+                .get("role", String.class);
+        return new LoginMember(id, name, email, role);
     }
 
     private Jws<Claims> parseClaims(final String accessToken) {

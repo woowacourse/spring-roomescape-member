@@ -10,7 +10,7 @@ INSERT INTO theme (id, name, description, thumbnail) VALUES (103, '강추', '강
 
 
 -- 사용자 계정 삽입
-INSERT INTO member (id, name, email, password) VALUES (100, 'kim', 'email@test.com', 'pass');
+INSERT INTO member (id, name, role, email, password) VALUES (100, 'kim', 'USER', 'email@test.com', 'pass');
 
 
 -- 방탈출 예약 삽입
