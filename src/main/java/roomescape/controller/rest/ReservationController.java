@@ -41,7 +41,8 @@ public class ReservationController {
 
     @PostMapping()
     public ResponseEntity<Reservation> addReservation(@RequestBody ReservationRequest reservationRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.addReservation(reservationRequest));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(reservationService.addReservationByAdmin(reservationRequest));
     }
 
     @DeleteMapping("/{id}")

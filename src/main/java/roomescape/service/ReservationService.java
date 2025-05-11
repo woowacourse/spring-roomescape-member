@@ -37,50 +37,34 @@ public class ReservationService {
         return reservationRepository.getAllReservations();
     }
 
-    public Reservation addReservation(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = reservationTimeService.getReservationTimeById(
-                reservationRequest.timeId());
-
-        ReservationDateTime reservationDateTime = new ReservationDateTime(
-                reservationRequest.date(), reservationTime);
-
-        validateFutureDateTime(reservationDateTime);
-
-        if (isAlreadyExist(reservationDateTime.getDate(), reservationRequest.timeId(),
-                reservationRequest.themeId())) {
-            throw new IllegalArgumentException("Reservation already exists");
-        }
-
+    public Reservation addReservationByAdmin(ReservationRequest reservationRequest) {
+        ReservationDateTime reservationDateTime = validateAndGetDateTime(reservationRequest.date(),
+                reservationRequest.timeId(), reservationRequest.themeId());
         Theme theme = themeService.getThemeById(reservationRequest.themeId());
-
         Member member = memberFinder.getMemberById(reservationRequest.memberId());
-
-        return reservationRepository.addReservation(
-                reservationRequest.toEntity(null, member, reservationTime, theme));
+        return reservationRepository.addReservation(new Reservation(null, member, reservationDateTime, theme));
     }
 
-    public Reservation addReservation(final UserReservationRequest userReservationRequest,
-                                      final LoginMember loginMember) {
-        ReservationTime reservationTime = reservationTimeService.getReservationTimeById(
-                userReservationRequest.timeId());
-        ReservationDateTime reservationDateTime = new ReservationDateTime(
-                userReservationRequest.date(), reservationTime);
+    public Reservation addReservationByUser(final UserReservationRequest userReservationRequest,
+                                            final LoginMember loginMember) {
 
-        validateFutureDateTime(reservationDateTime);
-        if (isAlreadyExist(reservationDateTime.getDate(), userReservationRequest.timeId(),
-                userReservationRequest.themeId())) {
-            throw new IllegalArgumentException("Reservation already exists");
-        }
+        ReservationDateTime reservationDateTime = validateAndGetDateTime(userReservationRequest.date(),
+                userReservationRequest.timeId(), userReservationRequest.themeId());
         Theme theme = themeService.getThemeById(userReservationRequest.themeId());
         Member member = loginMember.toEntity();
         return reservationRepository.addReservation(new Reservation(null, member, reservationDateTime, theme));
     }
 
-    public void deleteReservation(long id) {
-        int result = reservationRepository.deleteReservation(id);
-        if (result == 0) {
-            throw new IllegalArgumentException("삭제할 예약이 존재하지 않습니다. id: " + id);
+    private ReservationDateTime validateAndGetDateTime(LocalDate date,
+                                                       Long timeId,
+                                                       Long themeId) {
+        ReservationTime reservationTime = reservationTimeService.getReservationTimeById(timeId);
+        ReservationDateTime reservationDateTime = new ReservationDateTime(date, reservationTime);
+        validateFutureDateTime(reservationDateTime);
+        if (isAlreadyExist(reservationDateTime.getDate(), timeId, themeId)) {
+            throw new IllegalArgumentException("Reservation already exists");
         }
+        return reservationDateTime;
     }
 
     private void validateFutureDateTime(ReservationDateTime reservationDateTime) {
@@ -89,6 +73,13 @@ public class ReservationService {
         LocalDateTime now = LocalDateTime.now();
         if (dateTime.isBefore(now)) {
             throw new IllegalArgumentException("과거 예약은 불가능합니다.");
+        }
+    }
+
+    public void deleteReservation(long id) {
+        int result = reservationRepository.deleteReservation(id);
+        if (result == 0) {
+            throw new IllegalArgumentException("삭제할 예약이 존재하지 않습니다. id: " + id);
         }
     }
 
