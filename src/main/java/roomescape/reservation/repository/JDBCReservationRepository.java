@@ -2,6 +2,7 @@ package roomescape.reservation.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -39,28 +40,6 @@ public class JDBCReservationRepository implements ReservationRepository {
             + "on r.theme_id = th.id "
             + "inner join member as m "
             + "on r.member_id = m.id";
-
-    private static final String SELECT_FILTERED_RESERVATION_WITH_JOIN = "SELECT "
-            + "r.id as reservation_id, "
-            + "r.date, "
-            + "t.id as time_id, "
-            + "t.start_at as time_value, "
-            + "th.id as theme_id, "
-            + "th.name as theme_name, "
-            + "th.description, "
-            + "th.thumbnail, "
-            + "m.id as member_id, "
-            + "m.name as member_name, "
-            + "m.email as member_email, "
-            + "m.role as member_role "
-            + "FROM reservation as r "
-            + "inner join reservation_time as t on r.time_id = t.id "
-            + "inner join theme as th on r.theme_id = th.id "
-            + "inner join member as m "
-            + "on r.member_id = m.id "
-            + "WHERE r.theme_id = ? "
-            + "AND r.member_id = ? "
-            + "AND r.date between ? and ? ";
 
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> {
         ReservationTimeEntity timeEntity = new ReservationTimeEntity(
@@ -115,12 +94,54 @@ public class JDBCReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findFilteredReservations(final Long themeId, final Long memberId, final LocalDate dateFrom,
-                                                      final LocalDate dateTo) {
+    public List<Reservation> findFilteredReservations(final Long themeId, final Long memberId,
+                                                      final LocalDate startDate,
+                                                      final LocalDate endDate) {
+        StringBuilder sql = new StringBuilder("select ")
+                .append("r.id as reservation_id, ")
+                .append("r.date, ")
+                .append("t.id as time_id, ")
+                .append("t.start_at as time_value, ")
+                .append("th.id as theme_id, ")
+                .append("th.name as theme_name, ")
+                .append("th.description, ")
+                .append("th.thumbnail, ")
+                .append("m.id as member_id, ")
+                .append("m.name as member_name, ")
+                .append("m.email as member_email, ")
+                .append("m.role as member_role ")
+                .append("FROM reservation as r ")
+                .append("inner join reservation_time as t on r.time_id = t.id ")
+                .append("inner join theme as th on r.theme_id = th.id ")
+                .append("inner join member as m ")
+                .append("on r.member_id = m.id ")
+                .append("WHERE 1=1 ");
+        List<Object> params = new ArrayList<>();
+
+        if (themeId != null) {
+            sql.append("AND r.theme_id = ? ");
+            params.add(themeId);
+        }
+
+        if (memberId != null) {
+            sql.append("AND r.member_id = ? ");
+            params.add(memberId);
+        }
+
+        if (startDate != null) {
+            sql.append("AND r.date >= ? ");
+            params.add(startDate);
+        }
+
+        if (endDate != null) {
+            sql.append("AND r.date <= ? ");
+            params.add(endDate);
+        }
+
         return jdbcTemplate.query(
-                SELECT_FILTERED_RESERVATION_WITH_JOIN,
+                sql.toString(),
                 RESERVATION_ROW_MAPPER,
-                themeId, memberId, dateFrom, dateTo
+                params.toArray()
         );
     }
 

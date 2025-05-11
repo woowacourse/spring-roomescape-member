@@ -1,8 +1,10 @@
 package roomescape.reservation.repository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -28,14 +30,25 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findFilteredReservations(final Long themeId, final Long memberId, final LocalDate dateFrom,
                                      final LocalDate dateTo) {
-        return reservations.entrySet().stream()
-                .filter(entry -> {
-                    Reservation reservation = entry.getValue();
-                    return reservation.getTheme().getId().equals(themeId) &&
-                            reservation.getMember().getId().equals(memberId) &&
-                            (reservation.getDate().isBefore(dateFrom) || reservation.getDate().equals(dateFrom)) &&
-                            (reservation.getDate().isAfter(dateTo) || reservation.getDate().equals(dateTo));
-                })
+        List<Entry<Long, Reservation>> filteredReservations = new ArrayList<>();
+        for (Entry<Long, Reservation> entry : reservations.entrySet()) {
+            Reservation reservation = entry.getValue();
+            if (themeId != null && !Objects.equals(reservation.getTheme().getId(), themeId)) {
+                continue;
+            }
+            if (memberId != null && !Objects.equals(reservation.getMember().getId(), memberId)) {
+                continue;
+            }
+            if (dateFrom != null && (reservation.getDate().isAfter(dateFrom))) {
+                continue;
+            }
+            if (dateTo != null && (reservation.getDate().isBefore(dateTo))) {
+                continue;
+            }
+            filteredReservations.add(entry);
+        }
+
+        return filteredReservations.stream()
                 .map(entry -> {
                     Reservation value = entry.getValue();
                     return Reservation.of(entry.getKey(), value.getDate(), value.getMember(),

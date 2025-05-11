@@ -366,7 +366,7 @@ public class MissionStepTest {
             createUserReservation(1L);
             createUserReservation(2L);
 
-            List<ReservationResponse> reservations = RestAssured.given().log().all()
+            List<ReservationResponse> reservationsFilteredByThemeId = RestAssured.given().log().all()
                     .when().queryParams("themeId", 1L, "memberId", 2L, "dateFrom", futureDate,
                             "dateTo", TestFixture.makeFutureDate().plusDays(1).toString())
                     .get("/reservations")
@@ -375,7 +375,18 @@ public class MissionStepTest {
                     .extract()
                     .as(new TypeRef<>() {
                     });
-            assertThat(reservations.size()).isEqualTo(1);
+            assertThat(reservationsFilteredByThemeId.size()).isEqualTo(1);
+
+            List<ReservationResponse> reservationsFilteredByMemberId = RestAssured.given().log().all()
+                    .when().queryParams("memberId", 2L, "themeId", null, "dateFrom", futureDate,
+                            "dateTo", TestFixture.makeFutureDate().plusDays(1).toString())
+                    .get("/reservations")
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .as(new TypeRef<>() {
+                    });
+            assertThat(reservationsFilteredByMemberId.size()).isEqualTo(2);
         }
     }
 
