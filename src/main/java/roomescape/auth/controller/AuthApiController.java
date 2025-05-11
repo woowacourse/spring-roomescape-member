@@ -14,9 +14,9 @@ import roomescape.auth.controller.dto.MemberResponse;
 import roomescape.auth.controller.dto.SignupRequest;
 import roomescape.auth.controller.dto.SignupResponse;
 import roomescape.auth.controller.dto.TokenRequest;
-import roomescape.auth.entity.Member;
 import roomescape.auth.service.AuthService;
-import roomescape.auth.util.TokenUtil;
+import roomescape.common.util.TokenUtil;
+import roomescape.entity.Member;
 
 @RestController
 public class AuthApiController {
@@ -41,8 +41,6 @@ public class AuthApiController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody @Valid TokenRequest tokenRequest, HttpServletResponse response) {
         String jwtToken = authService.login(tokenRequest.email(), tokenRequest.password());
-
-        // Set token as HttpOnly cookie
         Cookie cookie = new Cookie("token", jwtToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");

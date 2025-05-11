@@ -1,6 +1,6 @@
 package roomescape.auth.controller.dto;
 
-import roomescape.auth.entity.Member;
+import roomescape.entity.Member;
 
 public class MemberResponse {
 

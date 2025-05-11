@@ -6,8 +6,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.auth.entity.Member;
-import roomescape.auth.entity.Role;
+import roomescape.entity.Member;
+import roomescape.entity.Role;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
