@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.global.auth.RoleRequired;
 import roomescape.member.dto.request.MemberRequest.MemberCreateRequest;
 import roomescape.member.dto.response.MemberResponse.MemberCreateResponse;
 import roomescape.member.dto.response.MemberResponse.MemberReadResponse;
+import roomescape.member.entity.RoleType;
 import roomescape.member.service.MemberService;
 
 @RestController
@@ -38,6 +40,7 @@ public class MemberController {
     }
 
     @DeleteMapping("/{id}")
+    @RoleRequired(roleType = RoleType.ADMIN)
     public ResponseEntity<Void> deleteMember(
             @PathVariable("id") long id
     ) {

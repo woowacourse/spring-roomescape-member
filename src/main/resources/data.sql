@@ -29,7 +29,9 @@ INSERT INTO reservation_time(id, start_at)
 VALUES (3, '12:00');
 
 INSERT INTO member(id, name, email, password, role)
-VALUES (1, '미소', 'miso@naver.com', 'miso', 'USER');
+VALUES (1, '어드민', 'admin@email.com', '1234', 'ADMIN');
+INSERT INTO member(id, name, email, password, role)
+VALUES (2, '유저', 'user@email.com', '1234', 'USER');
 
 INSERT INTO reservation(id, date, time_id, theme_id, member_id)
 VALUES (1, '2025-04-29', 1, 1, 1);

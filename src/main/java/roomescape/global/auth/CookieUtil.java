@@ -1,6 +1,7 @@
 package roomescape.global.auth;
 
 import jakarta.servlet.http.Cookie;
+import java.util.Arrays;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,12 +14,23 @@ public class CookieUtil {
         return cookie;
     }
 
-    public String extractValueFromCookie(Cookie[] cookies, String parameter) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(parameter)) {
-                return cookie.getValue();
-            }
+    public Cookie expireCookie(String parameter, String value) {
+        Cookie cookie = new Cookie(parameter, value);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        return cookie;
+    }
+
+    public String extractValueFromCookie(Cookie[] cookies, String name) {
+        if (cookies == null) {
+            return "";
         }
-        return "";
+
+        return Arrays.stream(cookies)
+                .filter(cookie -> name.equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElseGet(() -> "");
     }
 }

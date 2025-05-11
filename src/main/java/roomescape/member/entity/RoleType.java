@@ -1,6 +1,7 @@
 package roomescape.member.entity;
 
 public enum RoleType {
-    ADMIN,
+    GUEST,
     USER,
+    ADMIN
 }
