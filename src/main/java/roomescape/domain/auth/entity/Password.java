@@ -25,7 +25,7 @@ public class Password {
         return new Password(encryptedPassword);
     }
 
-    public static void validateRawPassword(final String rawPassword) {
+    private static void validateRawPassword(final String rawPassword) {
         if (rawPassword == null) {
             throw new InvalidArgumentException("패스워드는 null일 수 없습니다.");
         }
@@ -35,7 +35,7 @@ public class Password {
         }
     }
 
-    public void validate() {
+    private void validate() {
         if (encryptedPassword == null || encryptedPassword.isBlank()) {
             throw new IllegalArgumentException("Password cannot be null or blank");
         }
