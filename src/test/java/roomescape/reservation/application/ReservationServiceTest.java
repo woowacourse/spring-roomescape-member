@@ -1,5 +1,6 @@
 package roomescape.reservation.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -21,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.global.exception.NotFoundException;
 import roomescape.member.application.MemberService;
+import roomescape.reservation.application.dto.ReservationDto;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRegistrationPolicy;
 import roomescape.reservation.domain.repository.ReservationRepository;
@@ -63,9 +65,11 @@ class ReservationServiceTest {
         given(reservationRepository.save(any(Reservation.class))).willReturn(1L);
 
         // when
-        reservationService.registerReservationForAdmin(request);
+        ReservationDto reservationDto = reservationService.registerReservationForAdmin(request);
 
         // then
+        assertThat(reservationDto.id()).isEqualTo(1L);
+
         verify(memberService).existsById(MEMBER_1.getId());
         verify(themeService).getThemeById(THEME_1.getId());
         verify(timeService).getTimeById(RESERVATION_TIME_1.getId());
@@ -86,9 +90,11 @@ class ReservationServiceTest {
 
         // when
         Long memberId = 1L;
-        reservationService.registerReservationForUser(request, memberId);
+        ReservationDto reservationDto = reservationService.registerReservationForUser(request, memberId);
 
         // then
+        assertThat(reservationDto.id()).isEqualTo(1L);
+
         verify(themeService).getThemeById(1L);
         verify(timeService).getTimeById(1L);
         verify(reservationRepository).existsDuplicatedReservation(request.date(), request.timeId(), request.themeId());

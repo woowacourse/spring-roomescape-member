@@ -43,9 +43,10 @@ class ThemeServiceTest {
         given(themeRepository.findAll()).willReturn(List.of(THEME_1, THEME_2));
 
         // when
-        themeService.getAllThemes();
+        List<ThemeDto> allThemes = themeService.getAllThemes();
 
         // then
+        assertThat(allThemes).hasSize(2);
         verify(themeRepository).findAll();
     }
 

@@ -34,7 +34,7 @@ class ReservationQueryServiceTest {
         given(reservationQueryDao.findAllReservationDetails()).willReturn(expected);
 
         // when
-        reservationQueryService.getReservationDetails(emptyCondition);
+        List<ReservationDetailData> reservationDetails = reservationQueryService.getReservationDetails(emptyCondition);
 
         // then
         verify(reservationQueryDao).findAllReservationDetails();
@@ -49,7 +49,7 @@ class ReservationQueryServiceTest {
                 .willReturn(List.of(mock(ReservationDetailData.class)));
 
         // when
-        reservationQueryService.getReservationDetails(condition);
+        List<ReservationDetailData> reservationDetails = reservationQueryService.getReservationDetails(condition);
 
         // then
         verify(reservationQueryDao).findByCondition(condition);
@@ -64,7 +64,7 @@ class ReservationQueryServiceTest {
         given(reservationQueryDao.findReservationDetailById(id)).willReturn(Optional.of(mockData));
 
         // when
-         reservationQueryService.getReservationDetailById(id);
+        ReservationDetailData reservationDetailById = reservationQueryService.getReservationDetailById(id);
 
         // then
         verify(reservationQueryDao).findReservationDetailById(id);

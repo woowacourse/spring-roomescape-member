@@ -140,9 +140,10 @@ class TimeServiceTest {
         given(timeRepository.getTimesWithBookingInfo(date, themeId)).willReturn(times);
 
         // when
-        timeService.getTimesWithBookingInfo(date, themeId);
+        List<TimeDataWithBookingInfo> timesWithBookingInfo = timeService.getTimesWithBookingInfo(date, themeId);
 
         // then
+        assertThat(timesWithBookingInfo).hasSize(2);
         verify(timeRepository).getTimesWithBookingInfo(date, themeId);
     }
 }
