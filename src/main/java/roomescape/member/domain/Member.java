@@ -15,6 +15,10 @@ public class Member {
         this.role = role;
     }
 
+    public boolean hasSameId(final long other) {
+        return id == other;
+    }
+
     public Long getId() {
         return id;
     }

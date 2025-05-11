@@ -42,6 +42,18 @@ public final class Reservation {
         return dateTime.isSameTime(reservationTime);
     }
 
+    public boolean isMemberHasSameId(final long other) {
+        return member.hasSameId(other);
+    }
+
+    public boolean isThemeHasSameId(final long other) {
+        return theme.hasSameId(other);
+    }
+
+    public boolean isBetween(final LocalDate from, final LocalDate to) {
+        return dateTime.isBetween(from, to);
+    }
+
     public Member getMember() {
         return member;
     }

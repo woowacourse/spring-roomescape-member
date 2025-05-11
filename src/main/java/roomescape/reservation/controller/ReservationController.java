@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,14 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.service.dto.LoginMemberInfo;
 import roomescape.reservation.controller.dto.AdminReservationCreateRequest;
 import roomescape.reservation.controller.dto.ReservationCreateRequest;
+import roomescape.reservation.controller.dto.ReservationSearchConditionRequest;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.dto.ReservationCreateCommand;
 import roomescape.reservation.service.dto.ReservationInfo;
+import roomescape.reservation.service.dto.ReservationSearchCondition;
 
-/**
- * TODO
- * 로그인이 필요한 경우 로그인 페이지로 리다이렉트
- */
 @RestController
 @RequestMapping
 public class ReservationController {
@@ -49,8 +48,9 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<List<ReservationInfo>> findAll() {
-        final List<ReservationInfo> reservationInfos = reservationService.getReservations();
+    public ResponseEntity<List<ReservationInfo>> findAll(@ModelAttribute ReservationSearchConditionRequest request) {
+        ReservationSearchCondition condition = request.toCondition();
+        final List<ReservationInfo> reservationInfos = reservationService.getReservations(condition);
         return ResponseEntity.ok().body(reservationInfos);
     }
 
