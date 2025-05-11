@@ -1,6 +1,8 @@
 package roomescape.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.TestFixtures.THEME_1;
+import static roomescape.TestFixtures.THEME_2;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,23 +19,22 @@ class JdbcThemeRepositoryTest extends JdbcSupportTest {
     @Test
     void 예약_시간을_저장할_수_있다() {
         //when
-        Long createdId = themeRepository.create(new Theme("test1", "description1", "thumbnail1"));
+        Long createdId = themeRepository.create(THEME_1);
 
         //then
-        assertThat(themeRepository.findById(createdId))
-                .hasValue(new Theme(1L, "test1", "description1", "thumbnail1"));
+        assertThat(themeRepository.findById(createdId)).hasValue(THEME_1);
     }
 
     @Test
     void id로_예약_시간을_조회할_수_있다() {
         //given
-        insertTheme("test1", "description1", "thumbnail1");
+        insertTheme(THEME_1);
 
         //when
         Optional<Theme> theme = themeRepository.findById(1L);
 
         //then
-        assertThat(theme).hasValue(new Theme(1L, "test1", "description1", "thumbnail1"));
+        assertThat(theme).hasValue(THEME_1);
     }
 
     @Test
@@ -48,17 +49,14 @@ class JdbcThemeRepositoryTest extends JdbcSupportTest {
     @Test
     void 전체_예약_시간을_조회할_수_있다() {
         //given
-        insertTheme("test1", "description1", "thumbnail1");
-        insertTheme("test2", "description2", "thumbnail2");
+        insertTheme(THEME_1);
+        insertTheme(THEME_2);
 
         //when
         List<Theme> themes = themeRepository.findAll();
 
         //then
-        assertThat(themes).isEqualTo(List.of(
-                new Theme(1L, "test1", "description1", "thumbnail1"),
-                new Theme(2L, "test2", "description2", "thumbnail2")
-        ));
+        assertThat(themes).isEqualTo(List.of(THEME_1, THEME_2));
     }
 
     @Test

@@ -1,19 +1,17 @@
 package roomescape.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.TestFixtures.NORMAL_MEMBER_1;
+import static roomescape.TestFixtures.NORMAL_MEMBER_2;
+import static roomescape.TestFixtures.RESERVATION_TIME_1;
+import static roomescape.TestFixtures.THEME_1;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import roomescape.domain.member.Email;
-import roomescape.domain.member.Member;
-import roomescape.domain.member.Role;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationTime;
-import roomescape.domain.reservation.Theme;
 import roomescape.infrastructure.persistance.JdbcReservationRepository;
 
 class JdbcReservationRepositoryTest extends JdbcSupportTest {
@@ -25,10 +23,10 @@ class JdbcReservationRepositoryTest extends JdbcSupportTest {
     @Test
     void 전체_예약을_조회할_수_있다() {
         //given
-        insertMember("test1", "email1@gmail.com", "password");
-        insertMember("test2", "email2@gmail.com", "password");
-        insertTheme("name", "description", "thumbnail");
-        insertReservationTime(LocalTime.of(12, 0));
+        insertMember(NORMAL_MEMBER_1);
+        insertMember(NORMAL_MEMBER_2);
+        insertTheme(THEME_1);
+        insertReservationTime(RESERVATION_TIME_1);
         insertReservation(1L, LocalDate.of(2025, 4, 21), 1L, 1L);
         insertReservation(2L, LocalDate.of(2025, 4, 22), 1L, 1L);
 
@@ -37,23 +35,23 @@ class JdbcReservationRepositoryTest extends JdbcSupportTest {
 
         //then
         assertThat(reservations).isEqualTo(List.of(
-                new Reservation(1L, new Member(1L, "test1", new Email("email1@gmail.com"), "password", Role.NORMAL),
+                new Reservation(1L, NORMAL_MEMBER_1,
                         LocalDate.of(2025, 4, 21),
-                        new ReservationTime(1L, LocalTime.of(12, 0)),
-                        new Theme(1L, "name", "description", "thumbnail")),
-                new Reservation(2L, new Member(2L, "test2", new Email("email2@gmail.com"), "password", Role.NORMAL),
+                        RESERVATION_TIME_1,
+                        THEME_1),
+                new Reservation(2L, NORMAL_MEMBER_2,
                         LocalDate.of(2025, 4, 22),
-                        new ReservationTime(1L, LocalTime.of(12, 0)),
-                        new Theme(1L, "name", "description", "thumbnail"))
+                        RESERVATION_TIME_1,
+                        THEME_1)
         ));
     }
 
     @Test
     void id값으로_예약을_찾을_수_있다() {
         //given
-        insertMember("test1", "email1@gmail.com", "password");
-        insertTheme("name", "description", "thumbnail");
-        insertReservationTime(LocalTime.of(12, 0));
+        insertMember(NORMAL_MEMBER_1);
+        insertTheme(THEME_1);
+        insertReservationTime(RESERVATION_TIME_1);
         insertReservation(1L, LocalDate.of(2025, 4, 21), 1L, 1L);
 
         //when
@@ -61,10 +59,12 @@ class JdbcReservationRepositoryTest extends JdbcSupportTest {
 
         //then
         assertThat(reservation).hasValue(
-                new Reservation(1L, new Member(1L, "test1", new Email("email1@gmail.com"), "password", Role.NORMAL),
+                new Reservation(
+                        1L,
+                        NORMAL_MEMBER_1,
                         LocalDate.of(2025, 4, 21),
-                        new ReservationTime(1L, LocalTime.of(12, 0)),
-                        new Theme(1L, "name", "description", "thumbnail")));
+                        RESERVATION_TIME_1,
+                        THEME_1));
     }
 
     @Test
@@ -79,24 +79,25 @@ class JdbcReservationRepositoryTest extends JdbcSupportTest {
     @Test
     void 예약을_생성할_수_있다() {
         //given
-        insertMember("test1", "email1@gmail.com", "password");
-        insertTheme("name", "description", "thumbnail");
-        insertReservationTime(LocalTime.of(12, 0));
+        insertMember(NORMAL_MEMBER_1);
+        insertTheme(THEME_1);
+        insertReservationTime(RESERVATION_TIME_1);
         Reservation reservation = new Reservation(
-                new Member(1L, "test1", new Email("email1@gmail.com"), "password", Role.NORMAL),
+                NORMAL_MEMBER_1,
                 LocalDate.of(2025, 4, 21),
-                new ReservationTime(1L, LocalTime.of(12, 0)), new Theme(1L, "name", "description", "thumbnail"));
+                RESERVATION_TIME_1, THEME_1);
 
         //when
         Long createdId = reservationRepository.create(reservation);
 
         //then
         assertThat(reservationRepository.findById(createdId))
-                .hasValue(new Reservation(1L,
-                        new Member(1L, "test1", new Email("email1@gmail.com"), "password", Role.NORMAL),
+                .hasValue(new Reservation(
+                        1L,
+                        NORMAL_MEMBER_1,
                         LocalDate.of(2025, 4, 21),
-                        new ReservationTime(1L, LocalTime.of(12, 0)),
-                        new Theme(1L, "name", "description", "thumbnail")));
+                        RESERVATION_TIME_1,
+                        THEME_1));
     }
 
     @Test

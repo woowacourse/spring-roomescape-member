@@ -1,8 +1,9 @@
 package roomescape.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.TestFixtures.RESERVATION_TIME_1;
+import static roomescape.TestFixtures.RESERVATION_TIME_2;
 
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -18,23 +19,22 @@ class JdbcReservationTimeRepositoryTest extends JdbcSupportTest {
     @Test
     void 예약_시간을_저장할_수_있다() {
         //when
-        Long createdId = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 1)));
+        Long createdId = reservationTimeRepository.create(RESERVATION_TIME_1);
 
         //then
-        assertThat(reservationTimeRepository.findById(createdId))
-                .hasValue(new ReservationTime(1L, LocalTime.of(12, 1)));
+        assertThat(reservationTimeRepository.findById(createdId)).hasValue(RESERVATION_TIME_1);
     }
 
     @Test
     void id로_예약_시간을_조회할_수_있다() {
         //given
-        insertReservationTime(LocalTime.of(12, 0));
+        insertReservationTime(RESERVATION_TIME_1);
 
         //when
         Optional<ReservationTime> reservationTime = reservationTimeRepository.findById(1L);
 
         //then
-        assertThat(reservationTime).hasValue(new ReservationTime(1L, LocalTime.of(12, 0)));
+        assertThat(reservationTime).hasValue(RESERVATION_TIME_1);
     }
 
     @Test
@@ -49,23 +49,23 @@ class JdbcReservationTimeRepositoryTest extends JdbcSupportTest {
     @Test
     void 전체_예약_시간을_조회할_수_있다() {
         //given
-        insertReservationTime(LocalTime.of(12, 0));
-        insertReservationTime(LocalTime.of(12, 1));
+        insertReservationTime(RESERVATION_TIME_1);
+        insertReservationTime(RESERVATION_TIME_2);
 
         //when
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         //then
         assertThat(reservationTimes).isEqualTo(List.of(
-                new ReservationTime(1L, LocalTime.of(12, 0)),
-                new ReservationTime(2L, LocalTime.of(12, 1))
+                RESERVATION_TIME_1,
+                RESERVATION_TIME_2
         ));
     }
 
     @Test
     void id값으로_예약_시간을_삭제한다() {
         //given
-        insertReservationTime(LocalTime.of(12, 0));
+        insertReservationTime(RESERVATION_TIME_1);
 
         //when
         reservationTimeRepository.deleteById(1L);

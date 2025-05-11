@@ -9,6 +9,9 @@ import org.springframework.boot.autoconfigure.sql.init.SqlDataSourceScriptDataba
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.member.Member;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.reservation.Theme;
 
 public abstract class JdbcSupportTest {
 
@@ -44,14 +47,33 @@ public abstract class JdbcSupportTest {
                 "NORMAL");
     }
 
+    public void insertMember(Member member) {
+        jdbcTemplate.update(
+                "INSERT INTO member(name, email, password, role) VALUES (?, ?, ?, ?)",
+                member.getName(),
+                member.getEmail().email(),
+                member.getPassword(),
+                member.getRole().toString());
+    }
+
 
     public void insertReservationTime(LocalTime startTime) {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", startTime);
     }
 
+    public void insertReservationTime(ReservationTime reservationTime) {
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", reservationTime.startAt());
+    }
+
     public void insertTheme() {
         jdbcTemplate.update(
                 "INSERT INTO theme(name, description, thumbnail) VALUES ('test1', 'description1', 'thumbnail1')");
+    }
+
+    public void insertTheme(Theme theme) {
+        jdbcTemplate.update(
+                "INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?)", theme.getName(),
+                theme.getDescription(), theme.getThumbnail());
     }
 
     public void insertTheme(String name, String description, String thumbnail) {

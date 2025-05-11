@@ -2,6 +2,15 @@ package roomescape.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.TestFixtures.NORMAL_MEMBER_1;
+import static roomescape.TestFixtures.THEME_1;
+import static roomescape.TestFixtures.THEME_1_RESULT;
+import static roomescape.TestFixtures.THEME_2;
+import static roomescape.TestFixtures.THEME_2_RESULT;
+import static roomescape.TestFixtures.THEME_3;
+import static roomescape.TestFixtures.THEME_3_RESULT;
+import static roomescape.TestFixtures.THEME_4;
+import static roomescape.TestFixtures.THEME_4_RESULT;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -11,9 +20,6 @@ import roomescape.application.reservation.dto.CreateThemeParam;
 import roomescape.application.reservation.dto.ThemeResult;
 import roomescape.application.support.exception.NotFoundEntityException;
 import roomescape.domain.BusinessRuleViolationException;
-import roomescape.domain.member.Email;
-import roomescape.domain.member.Member;
-import roomescape.domain.member.Role;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.Theme;
@@ -23,17 +29,14 @@ class ThemeServiceTest extends ServiceIntegrationTest {
     @Test
     void 테마를_전체_조회할_수_있다() {
         //given
-        themeRepository.create(new Theme("test1", "description1", "thumbnail1"));
-        themeRepository.create(new Theme("test2", "description2", "thumbnail2"));
+        themeRepository.create(THEME_1);
+        themeRepository.create(THEME_2);
 
         //when
         List<ThemeResult> themeResults = themeService.findAll();
 
         //then
-        assertThat(themeResults).isEqualTo(List.of(
-                new ThemeResult(1L, "test1", "description1", "thumbnail1"),
-                new ThemeResult(2L, "test2", "description2", "thumbnail2")
-        ));
+        assertThat(themeResults).isEqualTo(List.of(THEME_1_RESULT, THEME_2_RESULT));
     }
 
     @Test
@@ -52,13 +55,13 @@ class ThemeServiceTest extends ServiceIntegrationTest {
     @Test
     void id값으로_테마를_찾을_수_있다() {
         //given
-        themeRepository.create(new Theme("test1", "description1", "thumbnail1"));
+        themeRepository.create(THEME_1);
 
         //when
         ThemeResult themeResult = themeService.findById(1L);
 
         //then
-        assertThat(themeResult).isEqualTo(new ThemeResult(1L, "test1", "description1", "thumbnail1"));
+        assertThat(themeResult).isEqualTo(THEME_1_RESULT);
     }
 
     @Test
@@ -72,7 +75,7 @@ class ThemeServiceTest extends ServiceIntegrationTest {
     @Test
     void id값으로_테마를_삭제할_수_있다() {
         //given
-        themeRepository.create(new Theme("test1", "description1", "thumbnail1"));
+        themeRepository.create(THEME_1);
 
         //when
         themeService.deleteById(1L);
@@ -84,14 +87,14 @@ class ThemeServiceTest extends ServiceIntegrationTest {
     @Test
     void id값으로_테마를_삭제할떄_예약에서_id가_사용중이라면_예외를_발생시킨다() {
         //given
-        insertMember("test1", "email1@gmail.com", "password");
-        themeRepository.create(new Theme("test1", "description1", "thumbnail1"));
+        insertMember(NORMAL_MEMBER_1);
+        themeRepository.create(THEME_1);
         reservationTimeRepository.create(new ReservationTime(1L, LocalTime.of(12, 0)));
         reservationRepository.create(new Reservation(
-                new Member(1L, "test1", new Email("email1@gmail.com"), "password", Role.NORMAL),
+                NORMAL_MEMBER_1,
                 LocalDate.of(2025, 5, 1),
                 new ReservationTime(1L, LocalTime.of(12, 0)),
-                new Theme(1L, "test1", "description1", "thumbnail1")));
+                THEME_1));
 
         //when & then
         assertThatThrownBy(() -> themeService.deleteById(1L))
@@ -103,10 +106,10 @@ class ThemeServiceTest extends ServiceIntegrationTest {
     void 최근_일주일간_예약_건수가_많은_테마를_내림차순으로_찾을_수_있다() {
         //given
         insertMember();
-        themeRepository.create(new Theme("test1", "description1", "thumbnail1"));
-        themeRepository.create(new Theme("test2", "description2", "thumbnail2"));
-        themeRepository.create(new Theme("test3", "description3", "thumbnail3"));
-        themeRepository.create(new Theme("test4", "description4", "thumbnail4"));
+        themeRepository.create(THEME_1);
+        themeRepository.create(THEME_2);
+        themeRepository.create(THEME_3);
+        themeRepository.create(THEME_4);
 
         reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
 
@@ -126,11 +129,10 @@ class ThemeServiceTest extends ServiceIntegrationTest {
 
         //then
         assertThat(rankBetweenDate).isEqualTo(List.of(
-                new ThemeResult(3L, "test3", "description3", "thumbnail3"),
-                new ThemeResult(2L, "test2", "description2", "thumbnail2"),
-                new ThemeResult(4L, "test4", "description4", "thumbnail4"),
-                new ThemeResult(1L, "test1", "description1", "thumbnail1")
+                THEME_3_RESULT,
+                THEME_2_RESULT,
+                THEME_4_RESULT,
+                THEME_1_RESULT
         ));
     }
-
 }
