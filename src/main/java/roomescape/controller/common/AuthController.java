@@ -45,9 +45,9 @@ public class AuthController {
     @GetMapping("/login/check")
     @ResponseStatus(HttpStatus.OK)
     public MemberNameResponse checkAuthorization(
-            LoginMember member
+            LoginMember loginMember
     ) {
-        return authorizationService.findAuthorizedMember(member);
+        return new MemberNameResponse(loginMember.name());
     }
 
     @PostMapping("/logout")

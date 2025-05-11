@@ -8,4 +8,8 @@ public enum MemberRole {
     public static MemberRole from(String role) {
         return MemberRole.valueOf(role);
     }
+
+    public boolean isAdmin() {
+        return this == ADMIN;
+    }
 }

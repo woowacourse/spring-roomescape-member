@@ -23,6 +23,7 @@ public class AccessToken {
 
         String accessToken = Jwts.builder()
                 .setSubject(member.getId().toString())
+                .claim("name", member.getName())
                 .claim("role", member.getRole().name())
                 .setIssuedAt(now)
                 .setExpiration(validity)
@@ -47,6 +48,11 @@ public class AccessToken {
     public long findSubject() {
         return Long.parseLong(
                 getTokenBody().getSubject());
+    }
+
+    public String findMemberName() {
+        return getTokenBody()
+                .get("name", String.class);
     }
 
     public MemberRole findMemberRole() {

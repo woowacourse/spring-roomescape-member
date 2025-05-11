@@ -25,8 +25,8 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationPostResponse createReservation(
             @RequestBody ReservationPostRequestByUser request,
-            LoginMember member
+            LoginMember loginMember
     ) {
-        return reservationCommandService.createReservationOfLoginMember(request, member);
+        return reservationCommandService.createReservationOfLoginMember(request, loginMember);
     }
 }

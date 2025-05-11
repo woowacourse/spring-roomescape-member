@@ -1,13 +1,10 @@
 package roomescape.web;
 
-public class LoginMember {
-    private final Long id;
+import roomescape.entity.MemberRole;
 
-    public LoginMember(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
+public record LoginMember(
+        Long id,
+        String name,
+        MemberRole role
+) {
 }

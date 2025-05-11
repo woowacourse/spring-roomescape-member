@@ -33,7 +33,7 @@ public class ReservationCommandService {
     public ReservationPostResponse createReservationOfLoginMember(
             ReservationPostRequestByUser reservationPostRequestByUser,
             LoginMember loginMember) {
-        Member member = memberDao.findById(loginMember.getId());
+        Member member = memberDao.findById(loginMember.id());
         ReservationTime reservationTime = reservationTimeDao.findById(reservationPostRequestByUser.timeId());
         Theme theme = themeDao.findById(reservationPostRequestByUser.themeId());
         Reservation reservationWithoutId = reservationPostRequestByUser.toReservationWith(member, reservationTime,

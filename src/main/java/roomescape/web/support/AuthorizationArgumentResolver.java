@@ -38,7 +38,10 @@ public class AuthorizationArgumentResolver implements HandlerMethodArgumentResol
         }
 
         AccessToken accessToken = new AccessToken(tokenCookie.getValue());
-        long memberId = accessToken.findSubject();
-        return new LoginMember(memberId);
+        return new LoginMember(
+                accessToken.findSubject(),
+                accessToken.findMemberName(),
+                accessToken.findMemberRole()
+        );
     }
 }

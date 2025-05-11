@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.entity.AccessToken;
-import roomescape.entity.MemberRole;
 
 @Component
 public class CheckAdminInterceptor implements HandlerInterceptor {
@@ -31,11 +30,11 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         }
 
         AccessToken accessToken = new AccessToken(tokenCookie.getValue());
-        if (accessToken.findMemberRole() != MemberRole.ADMIN) {
-            response.setStatus(401);
-            return false;
+        if (accessToken.isVerified() && accessToken.findMemberRole().isAdmin()) {
+            return true;
         }
 
-        return true;
+        response.setStatus(401);
+        return false;
     }
 }
