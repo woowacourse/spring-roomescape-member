@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.global.error.exception.BadRequestException;
 import roomescape.global.error.exception.ConflictException;
@@ -26,7 +27,7 @@ import roomescape.reservation.service.ReservationService;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationIntegrationTest {
 
@@ -52,7 +53,7 @@ class ReservationIntegrationTest {
         var member = memberRepository.save(new Member(0L, "미소", "miso@email.com", "password", RoleType.USER));
         var theme = themeRepository.save(new Theme(1L, "테마", "설명", "썸네일"));
         var time = reservationTimeRepository.save(new ReservationTime(1L, LocalTime.of(10, 0)));
-        var date = LocalDate.of(2024, 3, 20);
+        var date = LocalDate.now().plusDays(1);
         var request = new ReservationCreateRequest(date, time.getId(), theme.getId());
 
         // when
@@ -71,7 +72,7 @@ class ReservationIntegrationTest {
         var member = memberRepository.save(new Member(0L, "미소", "miso@email.com", "password", RoleType.USER));
         var theme = themeRepository.save(new Theme(1L, "테마", "설명", "썸네일"));
         var time = reservationTimeRepository.save(new ReservationTime(1L, LocalTime.of(10, 0)));
-        var date = LocalDate.of(2024, 3, 20);
+        var date = LocalDate.now().plusDays(1);
         var request = new ReservationAdminCreateRequest(date, theme.getId(), time.getId(), member.getId());
 
         // when
@@ -106,7 +107,7 @@ class ReservationIntegrationTest {
         var member = memberRepository.save(new Member(0L, "미소", "miso@email.com", "password", RoleType.USER));
         var theme = themeRepository.save(new Theme(1L, "테마", "설명", "썸네일"));
         var time = reservationTimeRepository.save(new ReservationTime(1L, LocalTime.of(10, 0)));
-        var date = LocalDate.of(2024, 3, 20);
+        var date = LocalDate.now().plusDays(1);
         var request = new ReservationCreateRequest(date, time.getId(), theme.getId());
         reservationService.createReservation(member.getId(), request);
 
@@ -123,7 +124,7 @@ class ReservationIntegrationTest {
         var member = memberRepository.save(new Member(0L, "미소", "miso@email.com", "password", RoleType.USER));
         var theme = themeRepository.save(new Theme(1L, "테마", "설명", "썸네일"));
         var time = reservationTimeRepository.save(new ReservationTime(1L, LocalTime.of(10, 0)));
-        var date = LocalDate.of(2024, 3, 20);
+        var date = LocalDate.now().plusDays(1);
         var request = new ReservationCreateRequest(date, time.getId(), theme.getId());
         reservationService.createReservation(member.getId(), request);
 
@@ -147,7 +148,7 @@ class ReservationIntegrationTest {
         var member = memberRepository.save(new Member(0L, "미소", "miso@email.com", "password", RoleType.USER));
         var theme = themeRepository.save(new Theme(1L, "테마", "설명", "썸네일"));
         var time = reservationTimeRepository.save(new ReservationTime(1L, LocalTime.of(10, 0)));
-        var date = LocalDate.of(2024, 3, 20);
+        var date = LocalDate.now().plusDays(1);
         var request = new ReservationCreateRequest(date, time.getId(), theme.getId());
         reservationService.createReservation(member.getId(), request);
 
@@ -178,8 +179,9 @@ class ReservationIntegrationTest {
         var member = memberRepository.save(new Member(0L, "미소", "miso@email.com", "password", RoleType.USER));
         var theme = themeRepository.save(new Theme(1L, "테마", "설명", "썸네일"));
         var time = reservationTimeRepository.save(new ReservationTime(1L, LocalTime.of(10, 0)));
-        var date = LocalDate.of(2024, 3, 20);
+        var date = LocalDate.now().plusDays(1);
         var request = new ReservationCreateRequest(date, time.getId(), theme.getId());
+        reservationService.createReservation(member.getId(), request);
 
         // when
         reservationService.deleteReservation(1L);
