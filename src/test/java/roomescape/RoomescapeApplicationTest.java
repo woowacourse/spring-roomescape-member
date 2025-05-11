@@ -28,7 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.application.auth.dto.LoginRequest;
-import roomescape.application.auth.dto.MemberAuthResponse;
+import roomescape.application.auth.dto.LoginResponse;
 import roomescape.domain.repository.dto.TimeDataWithBookingInfo;
 import roomescape.testFixture.JdbcHelper;
 
@@ -158,13 +158,13 @@ class RoomescapeApplicationTest {
                 .statusCode(HttpStatus.OK.value())
                 .extract().header("Set-Cookie").split(";")[0].substring("token=".length());
 
-        MemberAuthResponse member = RestAssured
+        LoginResponse member = RestAssured
                 .given().log().all()
                 .cookie("token", cookie)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/login/check")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value()).extract().as(MemberAuthResponse.class);
+                .statusCode(HttpStatus.OK.value()).extract().as(LoginResponse.class);
 
         assertThat(member.name()).isEqualTo("어드민");
     }

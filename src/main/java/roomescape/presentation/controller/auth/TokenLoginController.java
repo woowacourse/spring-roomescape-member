@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.auth.AuthService;
 import roomescape.application.auth.dto.LoginRequest;
-import roomescape.application.auth.dto.MemberAuthResponse;
+import roomescape.application.auth.dto.LoginResponse;
 import roomescape.application.auth.dto.MemberIdDto;
 import roomescape.application.dto.MemberDto;
 import roomescape.infrastructure.AuthenticatedMemberId;
@@ -37,9 +37,9 @@ public class TokenLoginController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<MemberAuthResponse> checkLogin(@AuthenticatedMemberId MemberIdDto memberIdDto) {
+    public ResponseEntity<LoginResponse> checkLogin(@AuthenticatedMemberId MemberIdDto memberIdDto) {
         MemberDto memberDto = authService.getMemberById(memberIdDto.id());
-        MemberAuthResponse memberAuthResponse = MemberAuthResponse.from(memberDto);
-        return ResponseEntity.ok(memberAuthResponse);
+        LoginResponse loginResponse = LoginResponse.from(memberDto);
+        return ResponseEntity.ok(loginResponse);
     }
 }
