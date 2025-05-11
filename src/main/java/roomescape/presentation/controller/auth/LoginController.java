@@ -18,11 +18,11 @@ import roomescape.infrastructure.AuthenticatedMemberId;
 
 @RestController
 @RequestMapping("/login")
-public class TokenLoginController {
+public class LoginController {
 
     private final AuthService authService;
 
-    public TokenLoginController(AuthService authService) {
+    public LoginController(AuthService authService) {
         this.authService = authService;
     }
 

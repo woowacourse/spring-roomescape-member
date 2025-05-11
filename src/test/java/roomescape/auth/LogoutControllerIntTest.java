@@ -13,7 +13,7 @@ import roomescape.application.auth.dto.MemberIdDto;
 import roomescape.infrastructure.jwt.JwtTokenProvider;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class TokenLogoutControllerIntTest {
+class LogoutControllerIntTest {
     @LocalServerPort
     int port;
 

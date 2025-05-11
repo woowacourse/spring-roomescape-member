@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/logout")
-public class TokenLogoutController {
+public class LogoutController {
 
     @PostMapping
     public ResponseEntity<Void> logout() {
