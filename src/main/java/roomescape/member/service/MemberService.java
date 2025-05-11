@@ -29,7 +29,7 @@ public class MemberService {
         }
     }
 
-    public List<Member> findAllLoginMembers() {
+    public List<Member> findAllMembers() {
         return memberDao.findAll();
     }
 }

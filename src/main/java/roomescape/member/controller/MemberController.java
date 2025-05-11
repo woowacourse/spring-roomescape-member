@@ -37,7 +37,7 @@ public class MemberController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<MemberResponse> findAllMembers() {
-        return memberService.findAllLoginMembers()
+        return memberService.findAllMembers()
                 .stream()
                 .map(MemberResponse::from)
                 .toList();
