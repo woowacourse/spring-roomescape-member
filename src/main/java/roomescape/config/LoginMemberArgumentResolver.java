@@ -32,8 +32,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     ) throws UnauthorizedException {
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         final String accessToken = getAccessToken(request);
-        final LoginMember loginMember = authService.getLoginMemberByAccessToken(accessToken);
-        return loginMember;
+        return authService.getLoginMemberByAccessToken(accessToken);
     }
 
     private String getAccessToken(final HttpServletRequest request) throws UnauthorizedException {

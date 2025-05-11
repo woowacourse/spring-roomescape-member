@@ -28,11 +28,9 @@ public class AuthService {
     }
 
     public String login(final String email, final String password) {
-        Member member = memberDao.findByEmailAndPassword(email, password)
+        final Member member = memberDao.findByEmailAndPassword(email, password)
                 .orElseThrow(() -> new UnauthorizedException("해당하는 사용자를 찾을 수 없습니다. email: %s".formatted(email)));
-
-        final String accessToken = createAccessToken(member.getId(), member.getName(), member.getEmail(), member.getRole());
-        return accessToken;
+        return createAccessToken(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
     private String createAccessToken(final Long id, final String name, final String email, final String role) {

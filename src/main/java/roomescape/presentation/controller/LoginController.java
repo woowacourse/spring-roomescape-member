@@ -32,8 +32,7 @@ public class LoginController {
     public ResponseEntity<Void> login(@RequestBody final LoginRequest loginRequest,
                                       final HttpServletResponse response) {
         final String accessToken = authService.login(loginRequest.email(), loginRequest.password());
-
-        Cookie cookie = new Cookie("token", accessToken);
+        final Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);

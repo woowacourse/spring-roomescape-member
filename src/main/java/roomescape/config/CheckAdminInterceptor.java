@@ -18,8 +18,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler
-    ) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         final String accessToken = getAccessToken(request);
         final LoginMember loginMember = authService.getLoginMemberByAccessToken(accessToken);
         if (loginMember == null || !loginMember.role()

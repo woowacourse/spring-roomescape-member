@@ -45,7 +45,7 @@ public class AdminController {
     public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody final ReservationRequest reservationRequest
     ) {
-        ReservationResponse reservationResponse = reservationService.insert(reservationRequest.date(),
+        final ReservationResponse reservationResponse = reservationService.insert(reservationRequest.date(),
                 reservationRequest.memberId(),
                 reservationRequest.timeId(),
                 reservationRequest.themeId());
