@@ -1,6 +1,7 @@
 package roomescape.common.exception;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
@@ -76,6 +77,23 @@ public class GlobalExceptionHandler {
                 path
         );
         return ResponseEntity.status(UNAUTHORIZED).body(errorResponse);
+    }
+
+    @ExceptionHandler(NoPermissionException.class)
+    private ResponseEntity<ErrorResponse> handleNoPermissionException(
+            final NoPermissionException e,
+            final HttpServletRequest request
+    ) {
+        System.out.println(e);
+        final String path = extractPath(request);
+        final ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                FORBIDDEN.value(),
+                FORBIDDEN.getReasonPhrase(),
+                "접근 권한이 없습니다.",
+                path
+        );
+        return ResponseEntity.status(FORBIDDEN).body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)

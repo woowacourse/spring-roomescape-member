@@ -1,13 +1,15 @@
-package roomescape.common.exception;
+package roomescape.common.resolver;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Optional;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.common.exception.MissingLoginException;
 import roomescape.member.service.AuthService;
 import roomescape.member.service.dto.LoginMemberInfo;
 
@@ -21,6 +23,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
+        System.out.println(parameter.getParameterType().equals(LoginMemberInfo.class));
         return parameter.getParameterType().equals(LoginMemberInfo.class);
     }
 
@@ -28,10 +31,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            throw new MissingLoginException();
-        }
+        Cookie[] cookies = Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]);
         String token = Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals("token"))
                 .findAny()
