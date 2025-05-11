@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.reservation;
 
 import jakarta.validation.Valid;
 import java.time.LocalDate;
@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.annotation.LoginCustomer;
-import roomescape.dto.auth.MemberInfoDto;
-import roomescape.dto.reservation.AdminReservationRequestDto;
-import roomescape.dto.reservation.MemberReservationRequestDto;
-import roomescape.dto.reservation.ReservationResponseDto;
+import roomescape.controller.auth.dto.MemberInfoDto;
+import roomescape.controller.reservation.dto.AdminReservationRequestDto;
+import roomescape.controller.reservation.dto.MemberReservationRequestDto;
+import roomescape.controller.reservation.dto.ReservationResponseDto;
 import roomescape.service.ReservationService;
 
 @RestController

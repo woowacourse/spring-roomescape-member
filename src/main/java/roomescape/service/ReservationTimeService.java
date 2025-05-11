@@ -7,9 +7,9 @@ import roomescape.common.exception.DuplicatedException;
 import roomescape.common.exception.ResourceInUseException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.dto.reservationtime.AvailableReservationTimeResponseDto;
-import roomescape.dto.reservationtime.ReservationTimeRequestDto;
-import roomescape.dto.reservationtime.ReservationTimeResponseDto;
+import roomescape.controller.reservationTime.dto.AvailableReservationTimeResponseDto;
+import roomescape.controller.reservationTime.dto.ReservationTimeRequestDto;
+import roomescape.controller.reservationTime.dto.ReservationTimeResponseDto;
 import roomescape.model.AvailableReservationTime;
 import roomescape.model.ReservationTime;
 

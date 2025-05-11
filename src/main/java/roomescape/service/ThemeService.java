@@ -8,8 +8,8 @@ import roomescape.common.exception.DuplicatedException;
 import roomescape.common.exception.ResourceInUseException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
-import roomescape.dto.theme.ThemeRequestDto;
-import roomescape.dto.theme.ThemeResponseDto;
+import roomescape.controller.theme.dto.ThemeRequestDto;
+import roomescape.controller.theme.dto.ThemeResponseDto;
 import roomescape.model.Theme;
 
 @Service

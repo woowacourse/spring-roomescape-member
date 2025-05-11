@@ -1,4 +1,4 @@
-package roomescape.dto.reservation;
+package roomescape.controller.reservation.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;

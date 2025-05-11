@@ -5,9 +5,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import roomescape.common.exception.CustomException;
 import roomescape.common.exception.UnauthorizedException;
 import roomescape.model.Member;
 

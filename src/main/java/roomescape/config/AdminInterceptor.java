@@ -3,9 +3,10 @@ package roomescape.config;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Optional;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.common.Role;
-import roomescape.dto.auth.MemberInfoDto;
+import roomescape.controller.auth.dto.MemberInfoDto;
 import roomescape.service.AuthService;
 
 public class AdminInterceptor implements HandlerInterceptor {
@@ -20,7 +21,7 @@ public class AdminInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
+        String token = extractTokenFromCookie(cookies).orElse("");
         MemberInfoDto memberInfoDto = authService.findByToken(token);
         if (!memberInfoDto.role().equals(Role.ADMIN)) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -29,13 +30,16 @@ public class AdminInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    private String extractTokenFromCookie(Cookie[] cookies) {
+    private Optional<String> extractTokenFromCookie(Cookie[] cookies) {
+        if (cookies == null) {
+            return Optional.empty();
+        }
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
-                return cookie.getValue();
+                return Optional.ofNullable(cookie.getValue());
             }
         }
-        return "";
+        return Optional.empty();
     }
 
 }

@@ -14,8 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.dto.reservationtime.ReservationTimeRequestDto;
-import roomescape.dto.reservationtime.ReservationTimeResponseDto;
+import roomescape.controller.reservationTime.dto.ReservationTimeRequestDto;
+import roomescape.controller.reservationTime.dto.ReservationTimeResponseDto;
 import roomescape.model.ReservationTime;
 
 @ExtendWith(MockitoExtension.class)

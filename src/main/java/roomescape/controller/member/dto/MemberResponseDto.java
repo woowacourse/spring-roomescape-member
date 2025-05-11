@@ -1,4 +1,4 @@
-package roomescape.dto.member;
+package roomescape.controller.member.dto;
 
 import roomescape.model.Member;
 

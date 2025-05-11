@@ -68,19 +68,19 @@ public class ThemeDao {
         LocalDate startDate = baseDate.minusDays(dayRange);
 
         String sql = """
-                SELECT theme.id AS id,
-                       theme.name AS name,
-                       theme.description AS description,
-                       theme.thumbnail AS thumbnail,
-                       COUNT(reservation.id) AS reservation_count
-                FROM theme
-                INNER JOIN reservation ON theme.id = reservation.theme_id
-                WHERE reservation.date < ?
-                  AND reservation.date >= ?
-                GROUP BY theme.id
-                ORDER BY reservation_count DESC
-                LIMIT ?
-            """;
+                    SELECT theme.id AS id,
+                           theme.name AS name,
+                           theme.description AS description,
+                           theme.thumbnail AS thumbnail,
+                           COUNT(reservation.id) AS reservation_count
+                    FROM theme
+                    INNER JOIN reservation ON theme.id = reservation.theme_id
+                    WHERE reservation.date < ?
+                      AND reservation.date >= ?
+                    GROUP BY theme.id
+                    ORDER BY reservation_count DESC
+                    LIMIT ?
+                """;
 
         return jdbcTemplate.query(sql, themeRowMapper,
                 baseDate.toString(),
