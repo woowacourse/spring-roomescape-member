@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
@@ -40,18 +41,6 @@ public class JdbcReservationDaoTest {
                 .build();
         jdbcTemplate = new JdbcTemplate(datasource);
         reservationDao = new JdbcReservationDaoImpl(jdbcTemplate);
-
-        member = Member.from(1L, "testName", "testEmail", "1234", MemberRole.USER);
-        reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
-        theme = new Theme(1L, "안녕 자두야", "hi", "https://aa");
-
-        String memberInsertQuery = "insert into member (id, name, email, password, role) values (?, ?, ?, ?, ?)";
-        String timeInsertQuery = "insert into reservation_time (id, start_at) values (?, ?)";
-        String themeInsertQuery = "insert into theme (id, name, description, thumbnail) values (?, ?, ?, ?)";
-
-        jdbcTemplate.update(memberInsertQuery, 1L, "testName", "testEmail", "1234", "USER");
-        jdbcTemplate.update(timeInsertQuery, 1L, "10:00");
-        jdbcTemplate.update(themeInsertQuery, 1L, "안녕 자두야", "hi", "https://aa");
     }
 
     @AfterEach
@@ -64,6 +53,8 @@ public class JdbcReservationDaoTest {
     @Test
     void given_reservation_then_save_db_and_set_id() {
         //given
+        createFixture();
+
         Reservation reservation = new Reservation(
                 member,
                 new ReservationDate(NOW_DATE),
@@ -82,6 +73,8 @@ public class JdbcReservationDaoTest {
     @Test
     void get_all_reservation() {
         //given
+        createFixture();
+
         Reservation reservation1 = new Reservation(
                 member,
                 new ReservationDate(NOW_DATE.plusDays(1)),
@@ -116,6 +109,8 @@ public class JdbcReservationDaoTest {
     @Test
     void given_reservation_id_then_delete_data() {
         //given
+        createFixture();
+
         Reservation reservation = new Reservation(
                 member,
                 new ReservationDate(NOW_DATE),
@@ -131,4 +126,73 @@ public class JdbcReservationDaoTest {
         assertThat(reservationDao.findAllReservation().size()).isEqualTo(0);
     }
 
+    @DisplayName("특정 기간동안의 예약을 조회 할 수 있다.")
+    @Test
+    void findByCondition() {
+        //given
+        Member member = Member.from(1L, "testName", "testEmail", "1234", MemberRole.ADMIN);
+        String memberInsertQuery = "insert into member (id, name, email, password, role) values (?, ?, ?, ?, ?)";
+        jdbcTemplate.update(memberInsertQuery, 1L, "testName", "testEmail", "1234", "ADMIN");
+
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        String timeInsertQuery = "insert into reservation_time (id, start_at) values (?, ?)";
+        jdbcTemplate.update(timeInsertQuery, 1L, "10:00");
+
+        Theme theme = new Theme(1L, "theme", "des", "thumb");
+        String themeInsertQuery = "insert into theme (id, name, description, thumbnail) values (?, ?, ?, ?)";
+        jdbcTemplate.update(themeInsertQuery, 1L, "theme", "des", "thumb");
+
+        reservationDao.saveReservation(
+                new Reservation(
+                        1L,
+                        member,
+                        new ReservationDate(LocalDate.of(2025, 5, 2)),
+                        reservationTime,
+                        theme
+                )
+        );
+
+        reservationDao.saveReservation(
+                new Reservation(
+                        1L,
+                        member,
+                        new ReservationDate(LocalDate.of(2025, 5, 3)),
+                        reservationTime,
+                        theme
+                )
+        );
+
+        reservationDao.saveReservation(
+                new Reservation(
+                        1L,
+                        member,
+                        new ReservationDate(LocalDate.of(2025, 5, 12)),
+                        reservationTime,
+                        theme
+                )
+        );
+
+        LocalDate dateFrom = LocalDate.of(2025, 5, 1);
+        LocalDate dateTo = LocalDate.of(2025, 5, 11);
+
+        //when
+        List<Reservation> actual = reservationDao.findByDate(dateFrom, dateTo);
+
+        //then
+        assertThat(actual).hasSize(2);
+    }
+
+    private void createFixture() {
+        member = Member.from(1L, "testName", "testEmail", "1234", MemberRole.USER);
+        reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        theme = new Theme(1L, "안녕 자두야", "hi", "https://aa");
+
+        String memberInsertQuery = "insert into member (id, name, email, password, role) values (?, ?, ?, ?, ?)";
+        String timeInsertQuery = "insert into reservation_time (id, start_at) values (?, ?)";
+        String themeInsertQuery = "insert into theme (id, name, description, thumbnail) values (?, ?, ?, ?)";
+
+        jdbcTemplate.update(memberInsertQuery, 1L, "testName", "testEmail", "1234", "USER");
+        jdbcTemplate.update(timeInsertQuery, 1L, "10:00");
+        jdbcTemplate.update(themeInsertQuery, 1L, "안녕 자두야", "hi", "https://aa");
+    }
 }

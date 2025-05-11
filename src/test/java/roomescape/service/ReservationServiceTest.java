@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,8 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.AdminReservationRequest;
@@ -26,6 +29,7 @@ import roomescape.dto.MemberResponse;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.dto.SearchConditionRequest;
 import roomescape.dto.ThemeResponseDto;
 
 public class ReservationServiceTest {
@@ -150,5 +154,60 @@ public class ReservationServiceTest {
                 )
         );
     }
+
+    @DisplayName("관리자는 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색이 가능하다.")
+    @Test
+    void findByCondition() {
+        //given
+        Theme theme = new Theme(1L, "tesTheme", "testDescription", "testThumbnail");
+        themeDao.saveTheme(theme);
+
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        reservationTimeDao.saveReservationTime(reservationTime);
+
+        Member member = Member.from(1L, "testName", "testEmail", "1234", MemberRole.ADMIN);
+        memberDao.save(member);
+
+        reservationDao.saveReservation(
+                new Reservation(
+                        1L,
+                        member,
+                        new ReservationDate(LocalDate.of(2025, 5, 1)),
+                        reservationTime,
+                        theme)
+        );
+
+        reservationDao.saveReservation(
+                new Reservation(
+                        2L,
+                        member,
+                        new ReservationDate(LocalDate.of(2025, 5, 3)),
+                        reservationTime,
+                        theme)
+        );
+
+        reservationDao.saveReservation(
+                new Reservation(
+                        3L,
+                        member,
+                        new ReservationDate(LocalDate.of(2025, 5, 5)),
+                        reservationTime,
+                        theme)
+        );
+
+        SearchConditionRequest request = new SearchConditionRequest(
+                1L,
+                1L,
+                LocalDate.of(2025, 5, 1),
+                LocalDate.of(2025, 5, 4)
+        );
+
+        //when
+        List<ReservationResponseDto> actual = reservationService.findByCondition(request);
+
+        //then
+        assertThat(actual).hasSize(2);
+    }
+
 
 }

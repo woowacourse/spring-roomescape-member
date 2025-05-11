@@ -19,6 +19,14 @@ public class FakeReservationDaoImpl implements ReservationDao {
     }
 
     @Override
+    public List<Reservation> findByDate(final LocalDate dateFrom, final LocalDate dateTo) {
+        return reservations.stream()
+                .filter(reservation -> !reservation.getDate().isBefore(dateFrom))
+                .filter(reservation -> !reservation.getDate().isAfter(dateTo))
+                .toList();
+    }
+
+    @Override
     public void saveReservation(Reservation reservation) {
         reservation.setId(index.getAndIncrement());
         reservations.add(reservation);

@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
@@ -29,13 +30,7 @@ public class JdbcThemeDaoImpl implements ThemeDao {
     @Override
     public List<Theme> findAllTheme() {
         String query = "select * from theme";
-        return jdbcTemplate.query(query,
-                (resultSet, RowNum) -> new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                ));
+        return jdbcTemplate.query(query, getThemeRowMapper());
     }
 
     @Override
@@ -70,12 +65,9 @@ public class JdbcThemeDaoImpl implements ThemeDao {
     public Optional<Theme> findById(Long id) {
         String query = "select * from theme where id = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(query,
-                    (resultSet, rowNum) -> new Theme(
-                            resultSet.getLong("id"),
-                            resultSet.getString("name"),
-                            resultSet.getString("description"),
-                            resultSet.getString("thumbnail")), id));
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(query, getThemeRowMapper(), id)
+            );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -96,12 +88,15 @@ public class JdbcThemeDaoImpl implements ThemeDao {
                         LIMIT ?
                 """;
 
-        return jdbcTemplate.query(query,
-                (resultSet, rowNum) -> new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                ), startDate, currentDate, limitCount);
+        return jdbcTemplate.query(query, getThemeRowMapper(), startDate, currentDate, limitCount);
+    }
+
+    private RowMapper<Theme> getThemeRowMapper() {
+        return (resultSet, RowNum) -> new Theme(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail")
+        );
     }
 }

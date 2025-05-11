@@ -19,6 +19,7 @@ import roomescape.dto.AvailableReservationTimeRequestDto;
 import roomescape.dto.AvailableReservationTimeResponseDto;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
+import roomescape.dto.SearchConditionRequest;
 import roomescape.exception.InvalidReservationException;
 import roomescape.exception.InvalidReservationTimeException;
 import roomescape.exception.InvalidThemeException;
@@ -134,5 +135,22 @@ public class ReservationService {
 
     private boolean isAlreadyBookedTime(LocalDate date, Long timeId, Long themeId) {
         return reservationDao.existsReservationBy(date, timeId, themeId);
+    }
+
+    public List<ReservationResponseDto> findByCondition(final SearchConditionRequest request) {
+        Long themeId = request.themeId();
+        Long memberId = request.memberId();
+        LocalDate dateFrom = request.dateFrom();
+        LocalDate dateTo = request.dateTo();
+
+        List<Reservation> reservations = reservationDao.findByDate(dateFrom, dateTo);
+        List<Reservation> filterReservations = reservations.stream()
+                .filter(reservation -> reservation.getMemberId().equals(memberId))
+                .filter(reservation -> reservation.getThemeId().equals(themeId))
+                .toList();
+
+        return filterReservations.stream()
+                .map(ReservationResponseDto::from)
+                .toList();
     }
 }

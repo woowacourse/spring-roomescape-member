@@ -8,6 +8,8 @@ public interface ReservationDao {
 
     List<Reservation> findAllReservation();
 
+    List<Reservation> findByDate(LocalDate dateFrom, LocalDate dateTo);
+
     void saveReservation(Reservation reservation);
 
     void deleteReservation(Long id);
