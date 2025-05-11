@@ -12,15 +12,28 @@ import roomescape.auth.login.infrastructure.argumentresolver.LoginMemberArgument
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
+    private final LoginAdminArgumentResolver loginAdminArgumentResolver;
+    private final LoginMemberArgumentResolver loginMemberArgumentResolver;
+    private final AdminRoleInterceptor adminRoleInterceptor;
+
+    public WebMvcConfig(final LoginAdminArgumentResolver loginAdminArgumentResolver,
+                        final LoginMemberArgumentResolver loginMemberArgumentResolver,
+                        final AdminRoleInterceptor adminRoleInterceptor)
+    {
+        this.loginAdminArgumentResolver = loginAdminArgumentResolver;
+        this.loginMemberArgumentResolver = loginMemberArgumentResolver;
+        this.adminRoleInterceptor = adminRoleInterceptor;
+    }
+
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginAdminArgumentResolver());
-        resolvers.add(new LoginMemberArgumentResolver());
+        resolvers.add(loginAdminArgumentResolver);
+        resolvers.add(loginMemberArgumentResolver);
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminRoleInterceptor())
+        registry.addInterceptor(adminRoleInterceptor)
                 .addPathPatterns("/admin/**")
                 .excludePathPatterns("/admin/login");
     }

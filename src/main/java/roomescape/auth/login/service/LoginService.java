@@ -12,10 +12,12 @@ import roomescape.member.service.MemberService;
 @Service
 public class LoginService {
 
+    private final JwtTokenManager jwtTokenManager;
     private final AdminService adminService;
     private final MemberService memberService;
 
-    public LoginService(final AdminService adminService, final MemberService memberService) {
+    public LoginService(JwtTokenManager jwtTokenManager, AdminService adminService, MemberService memberService) {
+        this.jwtTokenManager = jwtTokenManager;
         this.adminService = adminService;
         this.memberService = memberService;
     }
@@ -26,7 +28,7 @@ public class LoginService {
         Admin admin = adminService.findByEmail(request.email());
         validateAdminSamePassword(request, admin);
 
-        return JwtTokenManager.crateToken(admin.getId(), "ADMIN");
+        return jwtTokenManager.crateToken(admin.getId(), "ADMIN");
     }
 
     public String createMemberToken(final LoginRequest request) {
@@ -35,7 +37,7 @@ public class LoginService {
         Member member = memberService.findByEmail(request.email());
         validateMemberSamePassword(request, member);
 
-        return JwtTokenManager.crateToken(member.getId(), "ADMIN");
+        return jwtTokenManager.crateToken(member.getId(), "ADMIN");
     }
 
     private static void validateAdminSamePassword(final LoginRequest request, final Admin admin) {

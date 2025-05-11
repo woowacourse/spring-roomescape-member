@@ -2,6 +2,7 @@ package roomescape.auth.login.infrastructure.argumentresolver;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -12,9 +13,16 @@ import roomescape.auth.login.infrastructure.token.TokenExtractor;
 import roomescape.auth.login.presentation.dto.LoginMemberInfo;
 import roomescape.auth.login.presentation.dto.annotation.LoginMember;
 
+@Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     public static final String MEMBER_STRING = "MEMBER";
+
+    private final JwtTokenManager jwtTokenManager;
+
+    public LoginMemberArgumentResolver(JwtTokenManager jwtTokenManager) {
+        this.jwtTokenManager = jwtTokenManager;
+    }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -27,10 +35,10 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = TokenExtractor.extract(request);
 
-        String role = JwtTokenManager.getRole(token);
+        String role = jwtTokenManager.getRole(token);
         validateRoleIsMember(role);
 
-        return new LoginMemberInfo(JwtTokenManager.getId(token));
+        return new LoginMemberInfo(jwtTokenManager.getId(token));
     }
 
     private static void validateRoleIsMember(String role) {
