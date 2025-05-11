@@ -12,19 +12,19 @@ import roomescape.exception.UnauthorizedException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = {NotFoundException.class})
+    @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Void> handleNotFoundException(final NotFoundException e) {
         e.printStackTrace();
         return ResponseEntity.notFound().build();
     }
 
-    @ExceptionHandler(value = {DuplicateException.class})
+    @ExceptionHandler(DuplicateException.class)
     public ResponseEntity<Void> handleDuplicateException(final DuplicateException e) {
         e.printStackTrace();
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
-    @ExceptionHandler(value = IllegalArgumentException.class)
+    @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Void> handleIllegalArgumentException(final IllegalArgumentException e) {
         e.printStackTrace();
         return ResponseEntity.badRequest().build();
@@ -32,6 +32,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<Void> handleUnauthorizedException(final UnauthorizedException e) {
+        e.printStackTrace();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
