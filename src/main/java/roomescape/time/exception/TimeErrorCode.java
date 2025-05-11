@@ -1,7 +1,7 @@
 package roomescape.time.exception;
 
 import org.springframework.http.HttpStatus;
-import roomescape.exception.ErrorCode;
+import roomescape.global.exception.ErrorCode;
 
 public enum TimeErrorCode implements ErrorCode {
     TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "시간 정보를 찾을 수 없습니다"),

@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.global.exception;
 
 public class InvalidInputException extends CustomException {
     public InvalidInputException(ErrorCode errorCode) {

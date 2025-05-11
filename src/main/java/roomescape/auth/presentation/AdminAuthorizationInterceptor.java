@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.application.AuthService;
-import roomescape.auth.dto.LoginMember;
+import roomescape.auth.presentation.dto.LoginMember;
 import roomescape.auth.exception.AuthErrorCode;
 import roomescape.auth.exception.AuthorizationException;
 import roomescape.auth.infrastructure.CookieAuthorizationExtractor;

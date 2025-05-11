@@ -5,7 +5,7 @@ import static roomescape.theme.exception.InputErrorCode.INVALID_DATE_RANGE;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Optional;
-import roomescape.exception.InvalidInputException;
+import roomescape.global.exception.InvalidInputException;
 
 public record ThemeRankingCondition(LocalDate startDate, LocalDate endDate, int limit) {
 

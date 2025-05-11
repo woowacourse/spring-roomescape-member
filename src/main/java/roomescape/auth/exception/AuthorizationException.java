@@ -1,7 +1,7 @@
 package roomescape.auth.exception;
 
-import roomescape.exception.CustomException;
-import roomescape.exception.ErrorCode;
+import roomescape.global.exception.CustomException;
+import roomescape.global.exception.ErrorCode;
 
 public class AuthorizationException extends CustomException {
     public AuthorizationException(ErrorCode errorCode) {

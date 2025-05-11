@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import roomescape.theme.application.dto.ThemeDto;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.repository.ThemeRepository;
-import roomescape.exception.BusinessException;
-import roomescape.exception.NotFoundException;
+import roomescape.global.exception.BusinessException;
+import roomescape.global.exception.NotFoundException;
 import roomescape.theme.presentation.controller.ThemeRankingCondition;
 import roomescape.theme.presentation.dto.request.ThemeRequest;
 

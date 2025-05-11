@@ -14,8 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.auth.dto.TokenRequest;
-import roomescape.auth.dto.TokenResponse;
+import roomescape.auth.presentation.dto.request.TokenRequest;
+import roomescape.auth.application.dto.TokenDto;
 import roomescape.auth.exception.AuthorizationException;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.member.domain.Member;
@@ -44,7 +44,7 @@ class AuthServiceTest {
         String payload = String.valueOf(memberId);
         given(jwtTokenProvider.createToken(payload, member.getRole())).willReturn("token-value");
 
-        TokenResponse response = authService.createToken(request);
+        TokenDto response = authService.createToken(request);
 
         assertThat(response.accessToken()).isEqualTo("token-value");
     }

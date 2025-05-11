@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.application.AuthService;
-import roomescape.auth.dto.LoginMember;
-import roomescape.auth.dto.TokenRequest;
-import roomescape.auth.dto.TokenResponse;
+import roomescape.auth.presentation.dto.LoginMember;
+import roomescape.auth.presentation.dto.request.TokenRequest;
+import roomescape.auth.application.dto.TokenDto;
 import roomescape.auth.infrastructure.CookieProvider;
 import roomescape.member.presentation.dto.response.MemberResponse;
 
@@ -35,9 +35,9 @@ public class TokenLoginController {
             @Valid @RequestBody TokenRequest tokenRequest,
             HttpServletResponse response) {
 
-        TokenResponse tokenResponse = authService.createToken(tokenRequest);
+        TokenDto tokenDto = authService.createToken(tokenRequest);
 
-        Cookie cookie = cookieProvider.createTokenCookie(tokenResponse.accessToken());
+        Cookie cookie = cookieProvider.createTokenCookie(tokenDto.accessToken());
         response.addCookie(cookie);
 
         return ResponseEntity.status(HttpStatus.OK)

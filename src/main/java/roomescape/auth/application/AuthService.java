@@ -5,8 +5,8 @@ import static roomescape.auth.exception.AuthErrorCode.INVALID_TOKEN;
 import static roomescape.auth.exception.AuthErrorCode.MEMBER_NOT_FOUND;
 
 import org.springframework.stereotype.Service;
-import roomescape.auth.dto.TokenRequest;
-import roomescape.auth.dto.TokenResponse;
+import roomescape.auth.presentation.dto.request.TokenRequest;
+import roomescape.auth.application.dto.TokenDto;
 import roomescape.auth.exception.AuthorizationException;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.member.domain.Member;
@@ -22,7 +22,7 @@ public class AuthService {
         this.memberRepository = memberRepository;
     }
 
-    public TokenResponse createToken(TokenRequest tokenRequest) {
+    public TokenDto createToken(TokenRequest tokenRequest) {
         Member member = getMemberByEmail(tokenRequest.email());
 
         if (!tokenRequest.password().equals(member.getPassword())) {
@@ -31,7 +31,7 @@ public class AuthService {
 
         String payload = String.valueOf(member.getId());
         String accessToken = jwtTokenProvider.createToken(payload, member.getRole());
-        return new TokenResponse(accessToken);
+        return new TokenDto(accessToken);
     }
 
     private Member getMemberByEmail(String email) {

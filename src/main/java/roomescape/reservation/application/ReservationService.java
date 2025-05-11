@@ -2,7 +2,7 @@ package roomescape.reservation.application;
 
 import java.time.LocalDate;
 import org.springframework.stereotype.Service;
-import roomescape.exception.NotFoundException;
+import roomescape.global.exception.NotFoundException;
 import roomescape.member.application.MemberService;
 import roomescape.reservation.application.dto.ReservationDto;
 import roomescape.reservation.domain.Reservation;

@@ -1,7 +1,7 @@
 package roomescape.auth.exception;
 
 import org.springframework.http.HttpStatus;
-import roomescape.exception.ErrorCode;
+import roomescape.global.exception.ErrorCode;
 
 public enum AuthErrorCode implements ErrorCode {
     MEMBER_NOT_FOUND("해당 email의 member가 존재하지 않습니다.", HttpStatus.UNAUTHORIZED),

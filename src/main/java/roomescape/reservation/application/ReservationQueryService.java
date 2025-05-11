@@ -2,7 +2,7 @@ package roomescape.reservation.application;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.exception.NotFoundException;
+import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.presentation.controller.ReservationSearchCondition;
 import roomescape.reservation.infrastructure.JdbcReservationQueryDao;
 import roomescape.reservation.infrastructure.dto.ReservationDetailData;

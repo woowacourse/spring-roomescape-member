@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.global.exception;
 
 import java.util.stream.Collectors;
 import org.slf4j.Logger;

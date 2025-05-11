@@ -19,7 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.exception.NotFoundException;
+import roomescape.global.exception.NotFoundException;
 import roomescape.member.application.MemberService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRegistrationPolicy;

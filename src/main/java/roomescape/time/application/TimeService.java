@@ -10,8 +10,8 @@ import roomescape.time.application.dto.TimeDto;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.repository.TimeRepository;
 import roomescape.reservation.domain.repository.dto.TimeDataWithBookingInfo;
-import roomescape.exception.BusinessException;
-import roomescape.exception.NotFoundException;
+import roomescape.global.exception.BusinessException;
+import roomescape.global.exception.NotFoundException;
 import roomescape.time.presentation.dto.request.TimeRequest;
 
 @Service

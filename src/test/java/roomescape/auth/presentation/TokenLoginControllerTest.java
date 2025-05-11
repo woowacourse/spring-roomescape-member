@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.AbstractRestDocsTest;
-import roomescape.auth.dto.TokenRequest;
+import roomescape.auth.presentation.dto.request.TokenRequest;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.member.domain.Role;
 import roomescape.testFixture.JdbcHelper;
