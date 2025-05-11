@@ -18,6 +18,7 @@ import roomescape.domain.auth.repository.UserRepository;
 
 @Slf4j
 @Service
+@Transactional(readOnly = true)
 public class AuthService {
 
     private final JwtManager jwtManager;
@@ -34,7 +35,6 @@ public class AuthService {
         this.cookieKey = jwtProperties.getCookieKey();
     }
 
-    @Transactional(readOnly = true)
     public TokenResponse login(final LoginRequest loginRequest) {
         final User user = userRepository.findByEmail(loginRequest.email())
                 .orElseThrow(() -> new UserNotFoundException("해당 계정이 존재하지 않습니다."));
@@ -46,14 +46,12 @@ public class AuthService {
         return new TokenResponse(token);
     }
 
-    @Transactional(readOnly = true)
     public UserInfoResponse getUserInfo(final LoginUserDto loginUserDto) {
         return userRepository.findById(loginUserDto.id())
                 .map(UserInfoResponse::from)
                 .orElseThrow(() -> new UserNotFoundException("해당 계정이 존재하지 않습니다."));
     }
 
-    @Transactional(readOnly = true)
     public LoginUserDto getLoginUser(final Cookie[] cookies) {
         return Arrays.stream(cookies)
                 .filter(cookie -> cookieKey.equals(cookie.getName()))
@@ -63,7 +61,6 @@ public class AuthService {
                 .orElseThrow(() -> new InvalidAuthorizationException("토큰이 존재하지 않습니다."));
     }
 
-    @Transactional(readOnly = true)
     public LoginUserDto getLoginUser(final String token) {
         if (!jwtManager.validateToken(token)) {
             log.error("잘못된 토큰입니다! token = {}", token);
