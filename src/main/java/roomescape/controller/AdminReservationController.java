@@ -21,7 +21,7 @@ public class AdminReservationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponse createForAdmin(@Valid @RequestBody final AdminReservationRequest request) {
+    public ReservationResponse saveReservation(@Valid @RequestBody final AdminReservationRequest request) {
         return reservationService.saveReservation(request);
     }
 }

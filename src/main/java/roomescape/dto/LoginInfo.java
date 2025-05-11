@@ -1,5 +1,7 @@
 package roomescape.dto;
 
-public record LoginInfo(Long id, String name) {
+import roomescape.domain.Role;
+
+public record LoginInfo(Long id, String name, Role role) {
 
 }
