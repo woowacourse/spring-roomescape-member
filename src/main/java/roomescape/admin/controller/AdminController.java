@@ -21,7 +21,7 @@ public class AdminController {
         this.adminService = adminService;
     }
 
-    @PostMapping("/reservation")
+    @PostMapping("/reservations")
     public ResponseEntity<AdminReservationResponseDto> createReservation(
             @RequestBody AdminReservationRequestDto adminReservationRequestDto,
             User user) {
