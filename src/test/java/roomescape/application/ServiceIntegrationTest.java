@@ -19,7 +19,9 @@ import roomescape.infrastructure.persistance.JdbcThemeRepository;
 
 public abstract class ServiceIntegrationTest extends JdbcSupportTest {
 
-    protected static final Clock clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
+    protected static final Clock clock = Clock.fixed(
+            Instant.parse("2025-05-11T00:00:00Z"),
+            ZoneId.of("Asia/Seoul"));
 
     protected static final MemberRepository memberRepository = new JdbcMemberRepository(
             new NamedParameterJdbcTemplate(TEST_DATASOURCE)

@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -39,7 +40,9 @@ public class MissionStepTest {
 
     @Test
     void admin_경로로_요청을_보내면_어드민_메인_페이지를_응답할_수_있다() {
+        String cookie = getAdminTokenCookie();
         RestAssured.given().log().all()
+                .header("Cookie", cookie)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -47,7 +50,9 @@ public class MissionStepTest {
 
     @Test
     void 예약_관리_페이지를_응답할_수_있다() {
+        String cookie = getAdminTokenCookie();
         RestAssured.given().log().all()
+                .header("Cookie", cookie)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
@@ -109,5 +114,21 @@ public class MissionStepTest {
         }
 
         assertThat(isJdbcTemplateInjected).isFalse();
+    }
+
+    private String getAdminTokenCookie() {
+        jdbcTemplate.update("INSERT INTO member(name, email, password, role) VALUES (?, ?, ?, ?)", "member1",
+                "email@gmail.com", "password", "ADMIN");
+        Map<String, String> params = Map.of(
+                "email", "email@gmail.com",
+                "password", "password"
+        );
+        String cookie = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+        return cookie;
     }
 }
