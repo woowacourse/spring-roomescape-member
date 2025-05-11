@@ -126,7 +126,8 @@ public class ReservationDao {
             themeId, date);
     }
 
-    public List<Reservation> findByFilters(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+    public List<Reservation> findByFilters(Long themeId, Long memberId, LocalDate dateFrom,
+        LocalDate dateTo) {
         String query = """
             SELECT
             r.id as reservation_id,

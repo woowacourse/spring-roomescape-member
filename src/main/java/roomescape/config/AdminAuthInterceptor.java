@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.Member;
-import roomescape.domain.Role;
 import roomescape.service.LoginService;
 
 public class AdminAuthInterceptor implements HandlerInterceptor {
@@ -26,5 +25,4 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
         }
         return true;
     }
-
 }

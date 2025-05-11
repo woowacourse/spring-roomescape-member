@@ -34,7 +34,8 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest request, LoginMember loginMember) {
+    public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest request,
+        LoginMember loginMember) {
         ReservationResponse response = reservationService.save(request, loginMember);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -46,8 +47,9 @@ public class ReservationController {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<List<ReservationResponse>> findFiltered(@RequestParam("themeId") Long themeId,
-    @RequestParam("memberId") Long memberId, @RequestParam("dateFrom") LocalDate dateFrom,
+    public ResponseEntity<List<ReservationResponse>> findFiltered(
+        @RequestParam("themeId") Long themeId,
+        @RequestParam("memberId") Long memberId, @RequestParam("dateFrom") LocalDate dateFrom,
         @RequestParam("dateTo") LocalDate dateTo) {
         List<ReservationResponse> response = reservationService.findFiltered(themeId, memberId,
             dateFrom, dateTo);

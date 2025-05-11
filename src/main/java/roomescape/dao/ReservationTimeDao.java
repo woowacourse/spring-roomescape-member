@@ -50,7 +50,8 @@ public class ReservationTimeDao {
 
     public ReservationTime save(ReservationTime reservationTime) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("start_at", reservationTime.getStartAt().format(DateTimeFormatter.ofPattern("HH:mm")).toString());
+        parameters.put("start_at",
+            reservationTime.getStartAt().format(DateTimeFormatter.ofPattern("HH:mm")).toString());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new ReservationTime(id, reservationTime.getStartAt());
     }
