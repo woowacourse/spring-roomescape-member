@@ -108,7 +108,7 @@ class ReservationTimeServiceTest {
 
         // then
         assertThat(responses).hasSize(1);
-        var response = responses.get(0);
+        var response = responses.getFirst();
         assertThat(response.id()).isEqualTo(1L);
         assertThat(response.startAt()).isEqualTo(startAt.toString());
         assertThat(response.alreadyBooked()).isFalse();

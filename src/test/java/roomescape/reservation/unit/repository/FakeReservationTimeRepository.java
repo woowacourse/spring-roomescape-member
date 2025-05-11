@@ -1,6 +1,7 @@
 package roomescape.reservation.unit.repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,13 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<AvailableReservationTimeResponse> findAvailableTimes(LocalDate date, Long themeId) {
-        return List.of();
+        return times.values().stream()
+                .map(time -> new AvailableReservationTimeResponse(
+                        time.getId(),
+                        time.getStartAt().toString(),
+                        false
+                ))
+                .toList();
     }
 
     @Override
