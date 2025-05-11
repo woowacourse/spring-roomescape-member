@@ -41,4 +41,13 @@ public class AuthService {
         return jwtTokenProvider.createToken(member);
     }
 
+
+    public Member findMemberByToken(final String token) {
+        long id = jwtTokenProvider.extractMemberId(token);
+        Member member = jdbcAuthRepository.findMemberById(id);
+        if (member == null) {
+            throw new MemberNotFountException();
+        }
+        return member;
+    }
 }

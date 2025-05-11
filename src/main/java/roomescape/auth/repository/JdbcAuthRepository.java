@@ -2,6 +2,7 @@ package roomescape.auth.repository;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,17 @@ import java.sql.Statement;
 
 @Repository
 public class JdbcAuthRepository implements AuthRepository {
+
+    private static RowMapper<Member> ROWMAPPER() {
+        return (resultSet, rowNum) ->
+                Member.afterSave(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        Role.valueOf(resultSet.getString("role"))
+                );
+    }
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -51,20 +63,19 @@ public class JdbcAuthRepository implements AuthRepository {
     public Member findByEmail(final String email) {
         try {
             final String sql = "SELECT * FROM member WHERE email = ?";
-            return jdbcTemplate.queryForObject(
-                    sql,
-                    (resultSet, rowNum) ->
-                            Member.afterSave(
-                                    resultSet.getLong("id"),
-                                    resultSet.getString("name"),
-                                    resultSet.getString("email"),
-                                    resultSet.getString("password"),
-                                    Role.valueOf(resultSet.getString("role"))
-                            ),
-                    email);
+            return jdbcTemplate.queryForObject(sql, ROWMAPPER(), email);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
     }
 
+    public Member findMemberById(final long id) {
+        try {
+            final String sql = "SELECT * FROM member WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, ROWMAPPER(), id);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+
+    }
 }
