@@ -29,8 +29,30 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAllByFilter(ReservationWithFilterRequest filterRequest) {
-        // TODO: 로직 작성
-        return null;
+        List<Reservation> result = new ArrayList<>(entities);
+        if (filterRequest.from() != null) {
+             result = result.stream()
+                     .filter(reservation -> reservation.getDate().isAfter(filterRequest.from())
+                             || reservation.getDate().isEqual(filterRequest.from()))
+                     .toList();
+        }
+        if (filterRequest.to() != null) {
+            result = result.stream()
+                    .filter(reservation -> reservation.getDate().isBefore(filterRequest.to())
+                            || reservation.getDate().isEqual(filterRequest.to()))
+                    .toList();
+        }
+        if (filterRequest.themeId() != null) {
+            result = result.stream()
+                    .filter(reservation -> reservation.getThemeId().equals(filterRequest.themeId()))
+                    .toList();
+        }
+        if (filterRequest.memberId() != null) {
+            result = result.stream()
+                    .filter(reservation -> reservation.getMemberId().equals(filterRequest.memberId()))
+                    .toList();
+        }
+        return Collections.unmodifiableList(result);
     }
 
     @Override
