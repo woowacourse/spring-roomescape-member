@@ -34,4 +34,34 @@
     - [x] 클라이언트 코드 변경
     - [x] HandlerMethodArgumentResolver을 활용하여 회원 객체를 컨트롤러 메서드에 주입
     - [x] 기존 예약 추가 방식(이름을 필드에 입력하는 방식) -> 쿠키에서 멤버 이름 조회해서 name 의 not null
-- [ ] 
+
+## 6단계
+
+### 요구사항
+
+- 접근 권한 제어
+    - [x] Memeber의 Roledl Admin인 사람만 /admin 으로 시작하는 페이지에 접근할 수 있도록 구현
+        - [x] /admin으로 시작하는 요청들을 확인
+        - [x] cookie -> token -> email 로 member.role 조회
+    - [x] HandlerInterceptor를 이용해 요청자의 권한을 확인하고, 권한이 없는 경우 거부 응답
+    - [x] 컨트롤러에 진입하기 전에 Cookie 값을 확인하여 role를 확인
+    - [x] return 값에 따라 처리되는 방식을 확인
+        - return false 의 경우 컨트롤러 진입이 안된다.
+            ```java
+            @Override
+            public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+          
+                // ...
+          
+                if (member == null || !member.getRole().equals("ADMIN")) {
+                    response.setStatus(401);
+                    return false;
+                }
+          
+                return true;
+            }
+            ```
+
+- 예약 검색 기능 추가
+    - 어드민 > 예약 관리 페이지에서 검색 조건을 선택하고 적용을 누르면, reservation-with-member.js의 applyFilter() 함수가 실행된다.
+    - [ ] 입력한 themeId, memberId, dateFrom, dateTo 값을 사용해 검색 기능을 완성
