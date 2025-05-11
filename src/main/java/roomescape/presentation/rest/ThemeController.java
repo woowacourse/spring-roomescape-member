@@ -1,4 +1,4 @@
-package roomescape.presentation.api;
+package roomescape.presentation.rest;
 
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -19,11 +19,11 @@ import roomescape.presentation.response.ThemeResponse;
 
 @Controller
 @RequestMapping("/themes")
-public class ThemeApiController {
+public class ThemeController {
 
     private final ThemeService service;
 
-    public ThemeApiController(final ThemeService service) {
+    public ThemeController(final ThemeService service) {
         this.service = service;
     }
 

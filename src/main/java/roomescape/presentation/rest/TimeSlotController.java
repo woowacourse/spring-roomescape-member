@@ -1,4 +1,4 @@
-package roomescape.presentation.api;
+package roomescape.presentation.rest;
 
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -18,11 +18,11 @@ import roomescape.presentation.response.AvailableTimeSlotResponse;
 import roomescape.presentation.response.TimeSlotResponse;
 
 @Controller
-public class TimeSlotApiController {
+public class TimeSlotController {
 
     private final TimeSlotService service;
 
-    public TimeSlotApiController(final TimeSlotService service) {
+    public TimeSlotController(final TimeSlotService service) {
         this.service = service;
     }
 

@@ -1,4 +1,4 @@
-package roomescape.presentation.api;
+package roomescape.presentation.rest;
 
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -22,11 +22,11 @@ import roomescape.presentation.response.ReservationResponse;
 
 @Controller
 @RequestMapping("/reservations")
-public class ReservationApiController {
+public class ReservationController {
 
     private final ReservationService service;
 
-    public ReservationApiController(final ReservationService service) {
+    public ReservationController(final ReservationService service) {
         this.service = service;
     }
 

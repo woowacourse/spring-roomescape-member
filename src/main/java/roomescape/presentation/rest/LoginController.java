@@ -1,4 +1,4 @@
-package roomescape.presentation.api;
+package roomescape.presentation.rest;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,11 +16,11 @@ import roomescape.presentation.request.LoginRequest;
 import roomescape.presentation.response.UserResponse;
 
 @Controller
-public class LoginApiController {
+public class LoginController {
 
     private final AuthenticationService authenticationService;
 
-    public LoginApiController(final AuthenticationService authenticationService) {
+    public LoginController(final AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
 

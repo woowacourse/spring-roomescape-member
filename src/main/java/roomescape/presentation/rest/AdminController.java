@@ -1,4 +1,4 @@
-package roomescape.presentation.api;
+package roomescape.presentation.rest;
 
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -17,12 +17,12 @@ import roomescape.presentation.response.UserResponse;
 
 @Controller
 @RequestMapping("/admin")
-public class AdminApiController {
+public class AdminController {
 
     private final ReservationService reservationService;
     private final UserService userService;
 
-    public AdminApiController(final ReservationService reservationService, final UserService userService) {
+    public AdminController(final ReservationService reservationService, final UserService userService) {
         this.reservationService = reservationService;
         this.userService = userService;
     }

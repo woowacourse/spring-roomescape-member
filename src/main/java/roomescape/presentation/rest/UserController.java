@@ -1,4 +1,4 @@
-package roomescape.presentation.api;
+package roomescape.presentation.rest;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +12,11 @@ import roomescape.presentation.response.UserResponse;
 
 @Controller
 @RequestMapping("/users")
-public class UserApiController {
+public class UserController {
 
     private final UserService userService;
 
-    public UserApiController(final UserService userService) {
+    public UserController(final UserService userService) {
         this.userService = userService;
     }
 
