@@ -9,6 +9,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.entity.AccessToken;
+import roomescape.exception.InvalidAccessTokenException;
 import roomescape.web.LoginMember;
 
 @Component
@@ -26,6 +27,9 @@ public class AuthorizationArgumentResolver implements HandlerMethodArgumentResol
         Cookie[] cookies = request.getCookies();
 
         Cookie tokenCookie = null;
+        if (cookies == null) {
+            throw new InvalidAccessTokenException();
+        }
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 tokenCookie = cookie;
@@ -34,7 +38,7 @@ public class AuthorizationArgumentResolver implements HandlerMethodArgumentResol
         }
 
         if (tokenCookie == null) {
-            throw new IllegalArgumentException("필수 쿠키가 존재하지 않습니다.");
+            throw new InvalidAccessTokenException();
         }
 
         AccessToken accessToken = new AccessToken(tokenCookie.getValue());
