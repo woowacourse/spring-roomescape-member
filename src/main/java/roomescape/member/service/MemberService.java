@@ -2,6 +2,7 @@ package roomescape.member.service;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.member.controller.dto.LoginRequest;
 import roomescape.member.controller.dto.MemberSearchResponse;
@@ -30,6 +31,13 @@ public class MemberService {
                 .claim("role", member.getRole())
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
+    }
+
+    public List<MemberSearchResponse> getAll() {
+        return memberRepository.findAll()
+                .stream()
+                .map(MemberSearchResponse::from)
+                .toList();
     }
 
     public MemberSearchResponse search(String token) {

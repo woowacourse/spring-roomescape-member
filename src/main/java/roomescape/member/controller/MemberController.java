@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,20 @@ public class MemberController {
     }
 
     @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/login/check")
+    public MemberSearchResponse loginCheck(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String token = extractTokenFromCookie(cookies)
+                .orElseThrow(() -> new IllegalArgumentException("token 쿠키가 없습니다."));
+        return memberService.search(token);
+    }
+
+    @GetMapping("/members")
+    public List<MemberSearchResponse> getMembers() {
+        return memberService.getAll();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
     public void login(@RequestBody LoginRequest request, HttpServletResponse response) {
         String accessToken = memberService.login(request);
@@ -34,15 +49,6 @@ public class MemberController {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/login/check")
-    public MemberSearchResponse loginCheck(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies)
-                .orElseThrow(() -> new IllegalArgumentException("token 쿠키가 없습니다."));
-        return memberService.search(token);
     }
 
     @PostMapping("/logout")

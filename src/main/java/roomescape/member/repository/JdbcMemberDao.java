@@ -2,6 +2,7 @@ package roomescape.member.repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -38,6 +39,12 @@ public class JdbcMemberDao implements MemberRepository {
     public Optional<Member> findById(Long id) {
         String sql = "SELECT id, email, password, name, role FROM member WHERE id = ?";
         return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String sql = "SELECT id, email, password, name, role FROM member";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
