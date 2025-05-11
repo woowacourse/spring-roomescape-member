@@ -22,6 +22,7 @@ VALUES ('08:00'),
 INSERT INTO member (name, email, password, role)
 VALUES
     ('Admin', 'admin@gmail.com', 'password', 'ADMIN'),
+    ('User', 'user@gmail.com', 'password', 'USER'),
     ('Alice', 'alice@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
     ('Bob', 'bob@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
     ('Carol', 'carol@example.com', '$2a$10$hKDVYxLefVHV/vtuPhWD3OigtRyOykRLDdUAp80Z1crSoS1lFqF.W', 'USER'),
@@ -53,52 +54,53 @@ VALUES
 INSERT INTO reservation(date, time_id, theme_id, member_id)
 VALUES
     -- theme_id = 12 (6회)
-    ('2025-05-11', 1, 12, 2), -- Alice
-    ('2025-05-11', 2, 12, 3), -- Bob
-    ('2025-05-11', 3, 12, 4), -- Carol
-    ('2025-05-11', 4, 12, 5), -- Dave
-    ('2025-05-11', 5, 12, 6), -- Eve
-    ('2025-05-11', 1, 12, 7), -- Frank
+    ('2025-05-10', 1, 12, 3), -- Alice
+    ('2025-05-10', 2, 12, 4), -- Bob
+    ('2025-05-10', 3, 12, 5), -- Carol
+    ('2025-05-10', 4, 12, 6), -- Dave
+    ('2025-05-10', 5, 12, 7), -- Eve
+    ('2025-05-10', 1, 12, 8), -- Frank
 
     -- theme_id = 11 (5회)
-    ('2025-05-11', 2, 11, 8), -- Grace
-    ('2025-05-11', 3, 11, 9), -- Heidi
-    ('2025-05-11', 4, 11, 10), -- Ivan
-    ('2025-05-11', 5, 11, 11), -- Judy
-    ('2025-05-11', 1, 11, 12), -- Mallory
+    ('2025-05-10', 2, 11, 9), -- Grace
+    ('2025-05-10', 3, 11, 10), -- Heidi
+    ('2025-05-10', 4, 11, 11), -- Ivan
+    ('2025-05-10', 5, 11, 12), -- Judy
+    ('2025-05-10', 1, 11, 13), -- Mallory
 
     -- theme_id = 3 (4회)
-    ('2025-05-13', 2, 3, 13), -- Niaj
-    ('2025-05-13', 3, 3, 14), -- Olivia
-    ('2025-05-13', 4, 3, 15), -- Peggy
-    ('2025-05-13', 5, 3, 16), -- Rupert
+    ('2025-05-10', 2, 3, 14), -- Niaj
+    ('2025-05-10', 3, 3, 15), -- Olivia
+    ('2025-05-10', 4, 3, 16), -- Peggy
+    ('2025-05-10', 5, 3, 17), -- Rupert
 
     -- theme_id = 4 (3회)
-    ('2025-05-13', 1, 4, 17), -- Sybil
-    ('2025-05-13', 2, 4, 18), -- Trent
-    ('2025-05-13', 3, 4, 19), -- Uma
+    ('2025-05-11', 1, 4, 18), -- Sybil
+    ('2025-05-11', 2, 4, 19), -- Trent
+    ('2025-05-11', 3, 4, 20), -- Uma
 
     -- theme_id = 5 (2회)
-    ('2025-05-13', 4, 5, 20), -- Victor
-    ('2025-05-13', 5, 5, 21), -- Wendy
+    ('2025-05-11', 4, 5, 21), -- Victor
+    ('2025-05-11', 5, 5, 22), -- Wendy
 
     -- theme_id = 6 (1회)
-    ('2025-05-13', 1, 6, 22), -- Xander
+    ('2025-05-11', 1, 6, 23), -- Xander
 
     -- theme_id = 7 (1회)
-    ('2025-05-13', 2, 7, 23), -- Yvonne
+    ('2025-05-11', 2, 7, 24), -- Yvonne
 
     -- theme_id = 8 (1회)
-    ('2025-05-13', 3, 8, 24), -- Zack
+    ('2025-05-11', 3, 8, 25), -- Zack
 
     -- theme_id = 9 (1회)
-    ('2025-05-13', 4, 9, 25), -- Amy
+    ('2025-05-11', 4, 9, 26), -- Amy
 
     -- theme_id = 10 (1회)
-    ('2025-05-13', 5, 10, 26), -- Brian
+    ('2025-05-11', 5, 10, 27), -- Brian
 
     -- theme_id = 11 (1회)
-    ('2025-05-13', 1, 11, 27), -- Chloe
+    ('2025-05-11', 1, 11, 28), -- Chloe
 
     -- theme_id = 12 (1회)
-    ('2025-05-13', 2, 12, 28); -- Daniel
+    ('2025-05-11', 2, 12, 29); -- Daniel
+

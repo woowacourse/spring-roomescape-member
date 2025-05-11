@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import roomescape.reservation.fixture.TestFixture;
 import roomescape.theme.domain.Theme;
 
 class JDBCThemeRepositoryTest {
@@ -40,7 +41,7 @@ class JDBCThemeRepositoryTest {
     @Test
     void findTop10PopularThemesWithinLastWeek_shouldReturnCorrectly() {
         List<Theme> top10PopularThemesWithinLastWeek = themeRepository.findTop10PopularThemesWithinLastWeek(
-                LocalDate.now());
+                TestFixture.makeNowDate());
 
         List<Long> ids = top10PopularThemesWithinLastWeek.stream()
                 .map(Theme::getId)
