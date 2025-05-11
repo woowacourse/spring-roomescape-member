@@ -23,6 +23,7 @@ import roomescape.presentation.dto.response.ReservationResponse;
 import roomescape.presentation.dto.response.ReservationTimeResponse;
 import roomescape.presentation.dto.response.ThemeResponse;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -46,6 +47,26 @@ class ReservationServiceTest extends BaseTest {
 
     @Autowired
     private ReservationDbFixture reservationDbFixture;
+
+    @Test
+    void 예약을_모두_조회한다() {
+        ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
+        Theme theme = themeDbFixture.공포();
+        Member member = memberDbFixture.한스_사용자();
+        reservationDbFixture.예약_한스_25_4_22_10시_공포(member, reservationTime, theme);
+
+        List<ReservationResponse> responses = reservationService.getReservations();
+        ReservationResponse response = responses.getFirst();
+
+        assertAll(
+                () -> assertThat(responses).hasSize(1),
+                () -> assertThat(response.id()).isEqualTo(1L),
+                () -> assertThat(response.date()).isEqualTo(ReservationDateFixture.예약날짜_25_4_22.getDate()),
+                () -> assertThat(response.time()).isEqualTo(ReservationTimeResponse.from(reservationTime)),
+                () -> assertThat(response.theme()).isEqualTo(ThemeResponse.from(theme)),
+                () -> assertThat(response.member()).isEqualTo(MemberResponse.from(member))
+        );
+    }
 
     @Test
     void 사용자가_예약을_생성한다() {
@@ -96,24 +117,6 @@ class ReservationServiceTest extends BaseTest {
     }
 
     @Test
-    void 같은일시_같은테마_예약이_존재하면_예약을_생성할_수_없다() {
-        ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
-        Theme theme = themeDbFixture.공포();
-        Member member = memberDbFixture.한스_사용자();
-        reservationDbFixture.예약_한스_25_4_22_10시_공포(member, reservationTime, theme);
-
-        ReservationCreateRequest request = new ReservationCreateRequest(
-                ReservationDateFixture.예약날짜_25_4_22.getDate(),
-                reservationTime.getId(),
-                theme.getId()
-        );
-        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), Role.USER, member.getEmail());
-
-        assertThatThrownBy(() -> reservationService.createReservation(request, loginMember))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
     void 같은일시_다른테마_예약은_생성할_수_있다() {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme horror = themeDbFixture.공포();
@@ -133,23 +136,21 @@ class ReservationServiceTest extends BaseTest {
     }
 
     @Test
-    void 예약을_모두_조회한다() {
+    void 같은일시_같은테마_예약이_존재할때_예약을_생성하면_예외가_발생한다() {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
         Member member = memberDbFixture.한스_사용자();
         reservationDbFixture.예약_한스_25_4_22_10시_공포(member, reservationTime, theme);
 
-        List<ReservationResponse> responses = reservationService.getReservations();
-        ReservationResponse response = responses.getFirst();
-
-        assertAll(
-                () -> assertThat(responses).hasSize(1),
-                () -> assertThat(response.id()).isEqualTo(1L),
-                () -> assertThat(response.date()).isEqualTo(ReservationDateFixture.예약날짜_25_4_22.getDate()),
-                () -> assertThat(response.time()).isEqualTo(ReservationTimeResponse.from(reservationTime)),
-                () -> assertThat(response.theme()).isEqualTo(ThemeResponse.from(theme)),
-                () -> assertThat(response.member()).isEqualTo(MemberResponse.from(member))
+        ReservationCreateRequest request = new ReservationCreateRequest(
+                ReservationDateFixture.예약날짜_25_4_22.getDate(),
+                reservationTime.getId(),
+                theme.getId()
         );
+        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), Role.USER, member.getEmail());
+
+        assertThatThrownBy(() -> reservationService.createReservation(request, loginMember))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -166,8 +167,30 @@ class ReservationServiceTest extends BaseTest {
     }
 
     @Test
-    void 존재하지_않는_예약을_삭제할_수_없다() {
+    void 존재하지_않는_예약을_삭제하면_예외가_발생한다() {
         assertThatThrownBy(() -> reservationService.deleteReservationById(3L))
                 .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    void 조건에따라_예약을_조회한다() {
+        ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
+        Theme theme = themeDbFixture.공포();
+        Member member = memberDbFixture.한스_사용자();
+        Reservation reservation = reservationDbFixture.예약_한스_25_4_22_10시_공포(member, reservationTime, theme);
+
+        Long themeId = theme.getId();
+        Long memberId = member.getId();
+        LocalDate dateFrom = LocalDate.of(2025, 4, 22);
+        LocalDate dateTo = LocalDate.of(2025, 4, 22);
+
+        List<ReservationResponse> responses = reservationService.getReservationsByFilter(themeId, memberId, dateFrom, dateTo);
+        ReservationResponse response = responses.getFirst();
+
+        assertAll(
+                () -> assertThat(responses).hasSize(1),
+                () -> assertThat(response.id()).isEqualTo(reservation.getId()),
+                () -> assertThat(response.date()).isEqualTo(reservation.getDate())
+        );
     }
 }

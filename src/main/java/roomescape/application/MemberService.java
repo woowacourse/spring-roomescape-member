@@ -29,9 +29,10 @@ public class MemberService {
         return MemberResponse.from(members);
     }
 
-    public void createMember(MemberCreateRequest request) {
+    public MemberResponse createMember(MemberCreateRequest request) {
         Member member = Member.create(request.name(), Role.USER, request.email(), request.password());
-        memberRepository.save(member);
+        Member created = memberRepository.save(member);
+        return MemberResponse.from(created);
     }
 
     public Member findMemberById(Long id) {

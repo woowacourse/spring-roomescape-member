@@ -44,21 +44,7 @@ class ThemeServiceTest extends BaseTest {
     private ReservationDbFixture reservationDbFixture;
 
     @Test
-    void 테마를_생성한다() {
-        ThemeCreateRequest request = new ThemeCreateRequest("공포", "공포 테마", "공포.jpg");
-
-        ThemeResponse response = themeService.createTheme(request);
-
-        assertAll(
-                () -> assertThat(response.id()).isEqualTo(1L),
-                () -> assertThat(response.name()).isEqualTo("공포"),
-                () -> assertThat(response.description()).isEqualTo("공포 테마"),
-                () -> assertThat(response.thumbnail()).isEqualTo("공포.jpg")
-        );
-    }
-
-    @Test
-    void 테마를_조회한다() {
+    void 테마를_모두_조회한다() {
         Theme theme = themeDbFixture.공포();
         List<ThemeResponse> responses = themeService.getThemes();
         ThemeResponse response = responses.getFirst();
@@ -73,6 +59,20 @@ class ThemeServiceTest extends BaseTest {
     }
 
     @Test
+    void 테마를_생성한다() {
+        ThemeCreateRequest request = new ThemeCreateRequest("공포", "공포 테마", "공포.jpg");
+
+        ThemeResponse response = themeService.createTheme(request);
+
+        assertAll(
+                () -> assertThat(response.id()).isEqualTo(1L),
+                () -> assertThat(response.name()).isEqualTo(request.name()),
+                () -> assertThat(response.description()).isEqualTo(request.description()),
+                () -> assertThat(response.thumbnail()).isEqualTo(request.thumbnail())
+        );
+    }
+
+    @Test
     void 테마를_삭제한다() {
         Theme theme = themeDbFixture.공포();
         themeService.deleteThemeById(theme.getId());
@@ -81,7 +81,7 @@ class ThemeServiceTest extends BaseTest {
     }
 
     @Test
-    void 이미_해당_테마의_예약이_존재한다면_삭제할_수_없다() {
+    void 이미_해당_테마의_예약이_존재할때_삭제하면_예외가_발생한다() {
         Theme theme = themeDbFixture.공포();
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Member member = memberDbFixture.한스_사용자();
@@ -92,8 +92,23 @@ class ThemeServiceTest extends BaseTest {
     }
 
     @Test
-    void 존재하지_않는_테마를_삭제할_수_없다() {
+    void 존재하지_않는_테마를_삭제하면_예외가_발생한다() {
         assertThatThrownBy(() -> themeService.deleteThemeById(3L))
+                .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    void 아이디로_테마를_조회한다() {
+        Theme theme = themeDbFixture.공포();
+        Theme findTheme = themeService.findThemeById(theme.getId());
+
+        assertThat(theme).isEqualTo(findTheme);
+    }
+
+    @Test
+    void 존재하지_않는_아이디로_조회하면_예외가_발생한다() {
+        Long notExistId = 2L;
+        assertThatThrownBy(() -> themeService.findThemeById(notExistId))
                 .isInstanceOf(NoSuchElementException.class);
     }
 
