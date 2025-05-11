@@ -19,6 +19,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -174,10 +175,10 @@ class ReservationDaoTest {
     }
 
     private Member saveMember(Long id, String name, String email, String password) {
-        String insertSql = "insert into member (id, name, email, password) values (?, ?, ?, ?)";
-        jdbcTemplate.update(insertSql, id, name, email, password);
+        String insertSql = "insert into member (id, name, email, password, role) values (?, ?, ?, ?, ?)";
+        jdbcTemplate.update(insertSql, id, name, email, password, Role.MEMBER.name());
 
-        return new Member(id, name, email, password);
+        return new Member(id, name, email, password, Role.MEMBER);
     }
 
     private void saveReservation(Long id, LocalDate date, Long timeId, Long themeId, Long memberId) {

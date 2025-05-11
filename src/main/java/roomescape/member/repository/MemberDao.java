@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 @Repository
 public class MemberDao {
@@ -27,7 +28,8 @@ public class MemberDao {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
-            resultSet.getString("password")
+            resultSet.getString("password"),
+            Role.valueOf(resultSet.getString("role"))
     );
 
     public MemberDao(final NamedParameterJdbcTemplate jdbcTemplate, final DataSource dataSource) {
@@ -41,18 +43,20 @@ public class MemberDao {
         String name = member.getName();
         String email = member.getEmail();
         String password = member.getPassword();
+        String role = member.getRole();
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", name)
                 .addValue("email", email)
-                .addValue("password", password);
+                .addValue("password", password)
+                .addValue("role", role);
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Member(id, name, email, password);
+        return new Member(id, name, email, password, Role.valueOf(role));
     }
 
     public Optional<Member> findByEmailAndPassword(final String email, final String password) {
         String sql = """
-                SELECT id, name, email, password
+                SELECT id, name, email, password, role
                 FROM member
                 WHERE email = :email AND password = :password
                 """;
@@ -68,7 +72,7 @@ public class MemberDao {
 
     public Optional<Member> findById(final Long id) {
         String sql = """
-                SELECT id, name, email, password
+                SELECT id, name, email, password, role
                 FROM member
                 WHERE id = :id
                 """;
@@ -84,7 +88,7 @@ public class MemberDao {
 
     public List<Member> findAll() {
         String sql = """
-                SELECT id, name, email, password
+                SELECT id, name, email, password, role
                 FROM member
                 """;
 

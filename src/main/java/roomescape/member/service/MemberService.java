@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import jakarta.validation.Valid;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.dto.MemberCreateRequest;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.repository.MemberDao;
@@ -36,7 +37,8 @@ public class MemberService {
         final Member member = new Member(
                 request.name(),
                 request.email(),
-                request.password()
+                request.password(),
+                Role.MEMBER
         );
         memberDao.save(member);
     }

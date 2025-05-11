@@ -16,7 +16,7 @@ class MemberTest {
     @MethodSource
     @ParameterizedTest
     void createMemberByNullMemberInfo(String memberName, String email, String password) {
-        assertThatThrownBy(() -> new Member(memberName, email, password))
+        assertThatThrownBy(() -> new Member(memberName, email, password, Role.MEMBER))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -35,7 +35,7 @@ class MemberTest {
         String email = "if@posty.com";
         String password = "12345678";
 
-        assertThatThrownBy(() -> new Member(invalidName, email, password))
+        assertThatThrownBy(() -> new Member(invalidName, email, password, Role.MEMBER))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -46,7 +46,7 @@ class MemberTest {
         String name = "이프";
         String password = "12345678";
 
-        assertThatThrownBy(() -> new Member(name, invalidEmail, password))
+        assertThatThrownBy(() -> new Member(name, invalidEmail, password, Role.MEMBER))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -57,7 +57,7 @@ class MemberTest {
         String name = "이프";
         String email = "if@posty.com";
 
-        assertThatThrownBy(() -> new Member(name, email, invalidPassword))
+        assertThatThrownBy(() -> new Member(name, email, invalidPassword, Role.MEMBER))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

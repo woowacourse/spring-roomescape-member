@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.repository.MemberDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
@@ -117,7 +118,7 @@ class ThemeServiceTest {
         LocalTime time = LocalTime.of(8, 0);
         ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
 
-        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member member = new Member("포스티", "test@test.com", "12341234", Role.MEMBER);
         Member savedMember = memberDao.save(member);
 
         LocalDate date = LocalDate.of(2024, 4, 29);
@@ -135,7 +136,7 @@ class ThemeServiceTest {
         ReservationTime reservationTime = reservationTimeRepository.save(
                 ReservationTime.withoutId(LocalTime.of(10, 0)));
         LocalDate date = LocalDateTime.now().toLocalDate();
-        Member member = memberDao.save(new Member("포스티", "test@test.com", "12341234"));
+        Member member = memberDao.save(new Member("포스티", "test@test.com", "12341234", Role.MEMBER));
 
         Theme theme1 = themeDao.save(Theme.withoutId("테마1", "테마1", "www.m.com"));
         Theme theme2 = themeDao.save(Theme.withoutId("테마2", "테마2", "www.m.com"));

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -42,7 +43,7 @@ public class ReservationDao {
     public List<Reservation> findAll() {
         String sql = """
                 select rs.id as reservation_id, rs.date,
-                       m.id as member_id, m.name, m.email, m.password,
+                       m.id as member_id, m.name, m.email, m.password, m.role,
                        rt.id as reservation_time_id, rt.start_at,
                        th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
                 from reservation rs
@@ -59,7 +60,7 @@ public class ReservationDao {
     public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
         String sql = """
                 select rs.id as reservation_id, rs.date,
-                    m.id as member_id, m.name, m.email, m.password,
+                    m.id as member_id, m.name, m.email, m.password, m.role,
                     rt.id as reservation_time_id, rt.start_at,
                     th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
                 from reservation rs
@@ -79,7 +80,7 @@ public class ReservationDao {
     public Optional<Reservation> findById(final Long id) {
         String sql = """
                 select rs.id as reservation_id, rs.date,
-                       m.id as member_id, m.name, m.email, m.password,
+                       m.id as member_id, m.name, m.email, m.password, m.role,
                        rt.id as reservation_time_id, rt.start_at,
                        th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
                 from reservation rs
@@ -175,7 +176,8 @@ public class ReservationDao {
                 resultSet.getLong("member_id"),
                 resultSet.getString("name"),
                 resultSet.getString("email"),
-                resultSet.getString("password")
+                resultSet.getString("password"),
+                Role.valueOf(resultSet.getString("role"))
         );
     }
 

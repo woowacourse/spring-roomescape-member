@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 class ReservationTest {
 
@@ -21,7 +22,7 @@ class ReservationTest {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         Theme theme = new Theme(1L, "공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member member = new Member("포스티", "test@test.com", "12341234", Role.MEMBER);
 
         Reservation reservation = new Reservation(id, member, LocalDate.now(), reservationTime, theme);
 

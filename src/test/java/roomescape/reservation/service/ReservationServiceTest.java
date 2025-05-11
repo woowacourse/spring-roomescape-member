@@ -20,6 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.repository.MemberDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
@@ -59,7 +60,7 @@ class ReservationServiceTest {
 
         LocalTime time = LocalTime.of(8, 0);
         ReservationTime savedTime = reservationTimeDao.save(ReservationTime.withoutId(time));
-        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member member = new Member("포스티", "test@test.com", "12341234", Role.MEMBER);
         Member savedMember = memberDao.save(member);
 
         LocalDate date = LocalDate.of(2024, 4, 29);
@@ -90,7 +91,7 @@ class ReservationServiceTest {
         LocalTime time = LocalTime.of(8, 0);
         ReservationTime savedTime = reservationTimeDao.save(ReservationTime.withoutId(time));
         Long timeId = savedTime.getId();
-        Member savedMember = memberDao.save(new Member("포스티", "test@test.com", "12341234"));
+        Member savedMember = memberDao.save(new Member("포스티", "test@test.com", "12341234", Role.MEMBER));
 
         LocalDate date = nextDay();
 
@@ -122,7 +123,7 @@ class ReservationServiceTest {
         LocalTime time = LocalTime.of(8, 0);
         ReservationTime savedTime = reservationTimeDao.save(ReservationTime.withoutId(time));
         Long timeId = savedTime.getId();
-        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member member = new Member("포스티", "test@test.com", "12341234", Role.MEMBER);
         Member savedMember = memberDao.save(member);
         LocalDate date = nextDay();
 
@@ -140,7 +141,7 @@ class ReservationServiceTest {
         // given
         Theme savedTheme = themeDao.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         Long themeId = savedTheme.getId();
-        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member member = new Member("포스티", "test@test.com", "12341234", Role.MEMBER);
         Member savedMember = memberDao.save(member);
 
         LocalDate date = now.toLocalDate();
@@ -161,7 +162,7 @@ class ReservationServiceTest {
     void test6() {
         Theme savedTheme = themeDao.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         Long themeId = savedTheme.getId();
-        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member member = new Member("포스티", "test@test.com", "12341234", Role.MEMBER);
         Member savedMember = memberDao.save(member);
 
         LocalDate date = nextDay();
@@ -181,7 +182,7 @@ class ReservationServiceTest {
         LocalTime time = LocalTime.of(8, 0);
         ReservationTime savedTime = reservationTimeDao.save(ReservationTime.withoutId(time));
         Long timeId = savedTime.getId();
-        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member member = new Member("포스티", "test@test.com", "12341234", Role.MEMBER);
         Member savedMember = memberDao.save(member);
 
         Long notExistId = 1000L;
@@ -199,7 +200,7 @@ class ReservationServiceTest {
 
         LocalTime time = LocalTime.of(8, 0);
         ReservationTime savedTime = reservationTimeDao.save(ReservationTime.withoutId(time));
-        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member member = new Member("포스티", "test@test.com", "12341234", Role.MEMBER);
         Member savedMember = memberDao.save(member);
 
         LocalDate date = nextDay();
@@ -232,7 +233,7 @@ class ReservationServiceTest {
         ReservationTime reservationTime2 = reservationTimeDao.save(ReservationTime.withoutId(time2));
         Theme savedTheme = themeDao.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         Long themeId = savedTheme.getId();
-        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member member = new Member("포스티", "test@test.com", "12341234", Role.MEMBER);
         Member savedMember = memberDao.save(member);
         reservationDao.save(Reservation.withoutId(savedMember, date, reservationTime1, savedTheme));
 

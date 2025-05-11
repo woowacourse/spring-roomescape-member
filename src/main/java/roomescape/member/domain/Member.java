@@ -8,17 +8,19 @@ public class Member {
     private final MemberName name;
     private final Email email;
     private final Password password;
+    private final Role role;
 
-    public Member(final Long id, final String name, final String email, final String password) {
+    public Member(final Long id, final String name, final String email, final String password, final Role role) {
         validateNull(id, name, email, password);
         this.id = id;
         this.name = new MemberName(name);
         this.email = new Email(email);
         this.password = new Password(password);
+        this.role = role;
     }
 
-    public Member(final String name, final String email, final String password) {
-        this(EMPTY_ID, name, email, password);
+    public Member(final String name, final String email, final String password, final Role role) {
+        this(EMPTY_ID, name, email, password, role);
     }
 
     private void validateNull(final Long id, final String name, final String email, final String password) {
@@ -41,5 +43,9 @@ public class Member {
 
     public String getPassword() {
         return password.getValue();
+    }
+
+    public String getRole() {
+        return role.name();
     }
 }

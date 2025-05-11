@@ -19,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.repository.MemberDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
@@ -136,7 +137,7 @@ class ReservationTimeApiTest {
         Theme theme = Theme.withoutId("공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         Theme savedTheme = themeDao.save(theme);
-        Member member = new Member("포스티", "test@test.com", "12341234");
+        Member member = new Member("포스티", "test@test.com", "12341234", Role.MEMBER);
         Member savedMember = memberDao.save(member);
 
         Reservation reservation = Reservation.withoutId(savedMember, LocalDate.now(), savedTime, savedTheme);
