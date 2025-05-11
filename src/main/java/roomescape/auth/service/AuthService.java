@@ -28,7 +28,7 @@ public class AuthService {
         if (jdbcAuthRepository.isExistEmail(email)) {
             throw new HasDuplicatedEmailException();
         }
-        Member member = Member.beforeSave(name, email, password);
+        Member member = Member.beforeMemberSave(name, email, password);
         return jdbcAuthRepository.save(member);
     }
 

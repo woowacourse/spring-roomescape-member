@@ -45,7 +45,8 @@ public class JdbcAuthRepository implements AuthRepository {
         String name = member.getName();
         String email = member.getEmail();
         String password = member.getPassword();
-        final String sql = "INSERT INTO member (name, email, password) VALUES (?,?,?)";
+        String role = String.valueOf(member.getRole());
+        final String sql = "INSERT INTO member (name, email, password,role) VALUES (?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -53,11 +54,12 @@ public class JdbcAuthRepository implements AuthRepository {
             ps.setString(1, name);
             ps.setString(2, email);
             ps.setString(3, password);
+            ps.setString(4, role);
             return ps;
         }, keyHolder);
 
         long id = keyHolder.getKey().longValue();
-        return Member.afterSave(id, name, email, password, Role.USER);
+        return Member.afterSave(id, name, email, password, Role.valueOf(role));
     }
 
     public Member findByEmail(final String email) {

@@ -30,8 +30,12 @@ public class Member {
         this.role = role;
     }
 
-    public static Member beforeSave(String name, String email, String password) {
-        return new Member(null, name, email, password, null);
+    public static Member beforeMemberSave(String name, String email, String password) {
+        return new Member(null, name, email, password, Role.USER);
+    }
+
+    public static Member beforeAdminSave(String name, String email, String password) {
+        return new Member(null, name, email, password, Role.ADMIN);
     }
 
     public static Member afterSave(
@@ -58,6 +62,12 @@ public class Member {
         }
     }
 
+    public void validatePassword(final String password) {
+        if (!this.password.equals(password)) {
+            throw new InvalidLoginException();
+        }
+    }
+
     public Long getId() {
         return id;
     }
@@ -76,11 +86,5 @@ public class Member {
 
     public Role getRole() {
         return role;
-    }
-
-    public void validatePassword(final String password) {
-        if (!this.password.equals(password)) {
-            throw new InvalidLoginException();
-        }
     }
 }
