@@ -16,7 +16,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     private final AuthService authService;
 
-    public LoginMemberArgumentResolver(AuthService authService) {
+    public LoginMemberArgumentResolver(final AuthService authService) {
         this.authService = authService;
     }
 
@@ -28,7 +28,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws UnauthorizedException {
+                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory
+    ) throws UnauthorizedException {
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         final String accessToken = getAccessToken(request);
         final LoginMember loginMember = authService.getLoginMemberByAccessToken(accessToken);

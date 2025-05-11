@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import roomescape.business.domain.Member;
 import roomescape.exception.UnauthorizedException;
 import roomescape.persistence.dao.MemberDao;
-import roomescape.presentation.dto.LoginCheckResponse;
 import roomescape.presentation.dto.LoginMember;
 
 @Service
@@ -45,12 +44,6 @@ public class AuthService {
                 .compact();
     }
 
-    public LoginCheckResponse getMemberNameByAccessToken(final String accessToken) {
-        final String name = parseClaims(accessToken).getPayload()
-                .get("name", String.class);
-        return new LoginCheckResponse(name);
-    }
-
     public LoginMember getLoginMemberByAccessToken(final String accessToken) {
         final Jws<Claims> claimsJws = parseClaims(accessToken);
         final Long id = claimsJws.getPayload()
@@ -63,7 +56,7 @@ public class AuthService {
         return new LoginMember(id, name, email);
     }
 
-    public Jws<Claims> parseClaims(final String accessToken) {
+    private Jws<Claims> parseClaims(final String accessToken) {
         try {
             return jwtParser.parseSignedClaims(accessToken);
         } catch (JwtException e) {

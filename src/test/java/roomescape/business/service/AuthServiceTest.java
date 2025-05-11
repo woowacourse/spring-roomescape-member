@@ -51,22 +51,4 @@ class AuthServiceTest {
         assertThatThrownBy(() -> authService.login(email, password))
                 .isInstanceOf(UnauthorizedException.class);
     }
-
-    @Test
-    @DisplayName("AccessToken 통해 Member 의 name 반환한다")
-    void getMemberNameByAccessToken(){
-        // given
-        // data-authService.sql
-        final String exceptedName = "kim";
-        final String email = "email@test.com";
-        final String password = "pass";
-        final String accessToken = authService.login(email, password);
-
-        // when
-        final String name = authService.getMemberNameByAccessToken(accessToken)
-                .name();
-
-        // then
-        assertThat(name).isEqualTo(exceptedName);
-    }
 }

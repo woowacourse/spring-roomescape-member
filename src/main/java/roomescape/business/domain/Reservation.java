@@ -11,7 +11,8 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(final Long id, final LocalDate date, final Member member, final PlayTime playTime,
-                       final Theme theme) {
+                       final Theme theme
+    ) {
         validateDate(date);
 
         this.id = id;

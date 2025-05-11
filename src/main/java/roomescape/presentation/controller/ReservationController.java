@@ -32,8 +32,10 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createByLoginMember(@RequestBody final ReservationRequest reservationRequest,
-                                                                   final LoginMember loginMember) {
+    public ResponseEntity<ReservationResponse> createByLoginMember(
+            @RequestBody final ReservationRequest reservationRequest,
+            final LoginMember loginMember
+    ) {
         final ReservationResponse reservationResponse = reservationService.insert(
                 reservationRequest.date(),
                 loginMember.id(),

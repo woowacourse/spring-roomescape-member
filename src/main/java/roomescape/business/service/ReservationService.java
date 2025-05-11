@@ -27,7 +27,8 @@ public class ReservationService {
     private final ThemeDao themeDao;
 
     public ReservationService(final ReservationDao reservationDao, final MemberDao memberDao,
-                              final PlayTimeDao playTimeDao, final ThemeDao themeDao) {
+                              final PlayTimeDao playTimeDao, final ThemeDao themeDao
+    ) {
         this.reservationDao = reservationDao;
         this.memberDao = memberDao;
         this.playTimeDao = playTimeDao;
@@ -35,7 +36,8 @@ public class ReservationService {
     }
 
     public ReservationResponse insert(final LocalDate date, final Long memberId, final Long timeId,
-                                       final Long themeId) {
+                                       final Long themeId
+    ) {
         validateMemberIdExists(memberId);
         validateTimeIdExists(timeId);
         validateThemeIdExists(themeId);
