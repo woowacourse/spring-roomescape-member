@@ -1,9 +1,12 @@
 package roomescape.global.auth.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import java.util.Date;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,8 +61,14 @@ public class JwtHandler {
                     .setSigningKey(secretKey)
                     .parseClaimsJws(token)
                     .getBody();
-        } catch (SignatureException exception) {
-            throw new UnauthorizedException("인증 정보가 올바르지 않습니다.");
+        } catch (ExpiredJwtException e) {
+            throw new UnauthorizedException("토큰이 만료되었습니다.");
+        } catch (UnsupportedJwtException e) {
+            throw new UnauthorizedException("지원하지 않는 JWT 형식입니다.");
+        } catch (MalformedJwtException e) {
+            throw new UnauthorizedException("잘못된 JWT 형식입니다.");
+        } catch (SignatureException e) {
+            throw new UnauthorizedException("JWT 서명이 유효하지 않습니다.");
         }
     }
 }
