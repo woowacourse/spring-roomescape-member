@@ -20,11 +20,12 @@ import roomescape.persistence.MemberRepository;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
 import roomescape.persistence.ReservationTimeRepository;
-import roomescape.presentation.dto.MemberResponseDto;
-import roomescape.presentation.dto.ReservationRequestDto;
-import roomescape.presentation.dto.ReservationResponseDto;
-import roomescape.presentation.dto.ReservationThemeResponseDto;
-import roomescape.presentation.dto.ReservationTimeResponseDto;
+import roomescape.presentation.dto.request.AdminReservationRequestDto;
+import roomescape.presentation.dto.response.MemberResponseDto;
+import roomescape.presentation.dto.request.ReservationRequestDto;
+import roomescape.presentation.dto.response.ReservationResponseDto;
+import roomescape.presentation.dto.response.ReservationThemeResponseDto;
+import roomescape.presentation.dto.response.ReservationTimeResponseDto;
 
 @Service
 @Transactional
@@ -106,6 +107,16 @@ public class ReservationService {
         Reservation reservation = new Reservation(member, reservationDto.date(), reservationTime, theme);
         validateDuplicatedReservation(reservation);
         return reservationRepository.add(reservation);
+    }
+
+    public Long createReservationWithMember(AdminReservationRequestDto reservationDto) {
+        return createReservation(
+                new ReservationRequestDto(
+                        reservationDto.date(),
+                        reservationDto.timeId(),
+                        reservationDto.themeId()),
+                reservationDto.memberId()
+        );
     }
 
     private void validatePastDateTime(LocalDate date, LocalTime time) {
