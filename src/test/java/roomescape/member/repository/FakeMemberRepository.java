@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import roomescape.global.auth.dto.UserInfo;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRole;
 
@@ -21,10 +22,11 @@ public class FakeMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findMemberByEmailAndPassword(final String email, final String password) {
+    public Optional<UserInfo> findMemberByEmailAndPassword(final String email, final String password) {
         return members.values()
                 .stream()
                 .filter(member -> member.getEmail().equals(email) && member.getPassword().equals(password))
+                .map(member -> new UserInfo(member.getId(), member.getName(), member.getMemberRole()))
                 .findFirst();
     }
 
@@ -57,7 +59,10 @@ public class FakeMemberRepository implements MemberRepository {
     }
 
     @Override
-    public List<Member> findAllUsers() {
-        return members.values().stream().toList();
+    public List<UserInfo> findAllUsers() {
+        return members.values()
+                .stream()
+                .map(member -> new UserInfo(member.getId(), member.getName(), member.getMemberRole()))
+                .toList();
     }
 }

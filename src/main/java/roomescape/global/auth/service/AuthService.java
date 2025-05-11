@@ -7,7 +7,6 @@ import roomescape.global.auth.dto.UserInfo;
 import roomescape.global.auth.exception.AuthException;
 import roomescape.global.auth.exception.UnAuthorizedException;
 import roomescape.global.auth.infrastructure.JwtProvider;
-import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRole;
 import roomescape.member.repository.MemberRepository;
 
@@ -23,8 +22,8 @@ public class AuthService {
     }
 
     public LoginResponse createToken(final LoginRequest loginRequest) {
-        Member member = getMemberByEmailAndPassword(loginRequest.email(), loginRequest.password());
-        String accessToken = jwtProvider.createToken(member);
+        UserInfo userInfo = getUserInfoByEmailAndPassword(loginRequest.email(), loginRequest.password());
+        String accessToken = jwtProvider.createToken(userInfo);
         return new LoginResponse(accessToken);
     }
 
@@ -41,7 +40,7 @@ public class AuthService {
         }
     }
 
-    private Member getMemberByEmailAndPassword(final String email, final String password) {
+    private UserInfo getUserInfoByEmailAndPassword(final String email, final String password) {
         return memberRepository.findMemberByEmailAndPassword(email, password)
                 .orElseThrow(() -> new AuthException("존재하지 않은 사용자입니다."));
     }

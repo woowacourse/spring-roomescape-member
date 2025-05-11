@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.global.auth.dto.UserInfo;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRole;
 import roomescape.member.entity.MemberEntity;
@@ -19,8 +20,13 @@ public class JdbcMemberRepository implements MemberRepository {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
-            resultSet.getString("password"),
+            null,
             resultSet.getString("role")
+    );
+    private static final RowMapper<UserInfo> USER_INFO_ROW_MAPPER = (resultSet, rowNum) -> new UserInfo(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            MemberRole.from(resultSet.getString("role"))
     );
 
     private final JdbcTemplate jdbcTemplate;
@@ -48,13 +54,11 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findMemberByEmailAndPassword(final String email, final String password) {
+    public Optional<UserInfo> findMemberByEmailAndPassword(final String email, final String password) {
         try {
-            MemberEntity memberEntity = jdbcTemplate.queryForObject(
-                    "SELECT id, name, email, password, role FROM member WHERE (email, password) = (?, ?)",
-                    MEMBER_ENTITY_ROW_MAPPER, email, password);
-            return Optional.ofNullable(memberEntity)
-                    .map(MemberEntity::toMember);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                    "SELECT id, name, role FROM member WHERE (email, password) = (?, ?)",
+                    USER_INFO_ROW_MAPPER, email, password));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -111,12 +115,9 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public List<Member> findAllUsers() {
-        final String sql = "SELECT * FROM member WHERE role = ?";
-        List<MemberEntity> memberEntities = jdbcTemplate.query(sql, MEMBER_ENTITY_ROW_MAPPER,
+    public List<UserInfo> findAllUsers() {
+        final String sql = "SELECT id, name, role FROM member WHERE role = ?";
+        return jdbcTemplate.query(sql, USER_INFO_ROW_MAPPER,
                 MemberRole.USER.name());
-        return memberEntities.stream()
-                .map(MemberEntity::toMember)
-                .toList();
     }
 }

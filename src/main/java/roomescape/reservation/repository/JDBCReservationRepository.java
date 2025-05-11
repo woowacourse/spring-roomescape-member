@@ -31,7 +31,6 @@ public class JDBCReservationRepository implements ReservationRepository {
             + "m.id as member_id, "
             + "m.name as member_name, "
             + "m.email as member_email, "
-            + "m.password as member_password, "
             + "m.role as member_role "
             + "FROM reservation as r "
             + "inner join reservation_time as t "
@@ -53,7 +52,6 @@ public class JDBCReservationRepository implements ReservationRepository {
             + "m.id as member_id, "
             + "m.name as member_name, "
             + "m.email as member_email, "
-            + "m.password as member_password, "
             + "m.role as member_role "
             + "FROM reservation as r "
             + "inner join reservation_time as t on r.time_id = t.id "
@@ -79,7 +77,7 @@ public class JDBCReservationRepository implements ReservationRepository {
                 resultSet.getLong("member_id"),
                 resultSet.getString("member_name"),
                 resultSet.getString("member_email"),
-                resultSet.getString("member_password"),
+                null,
                 resultSet.getString("member_role")
         );
 
