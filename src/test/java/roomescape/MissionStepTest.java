@@ -41,7 +41,10 @@ class MissionStepTest {
     @DisplayName("어드민 경로 페이지 요청에 성공하면 200 코드를 반환한다")
     @Test
     void admin_request_test() {
+        String token = getToken("ADMIN");
+
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -50,7 +53,10 @@ class MissionStepTest {
     @DisplayName("예약 경로 페이지 요청에 성공하면 200 코드를 반환한다")
     @Test
     void reservation_request_test() {
+        String token = getToken("ADMIN");
+
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
@@ -65,6 +71,8 @@ class MissionStepTest {
     @DisplayName("예약 및 삭제 요청이 200 코드를 반환한다")
     @Test
     void reservation_delete_test() {
+        String token = getToken("MEMBER");
+
         Map<String, String> params = new HashMap<>();
         params.put("date", "2026-08-05");
         params.put("timeId", "6");
@@ -72,6 +80,7 @@ class MissionStepTest {
         params.put("memberId", "1");
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -80,17 +89,20 @@ class MissionStepTest {
                 .body("id", is(17));
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(17));
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -203,4 +215,13 @@ class MissionStepTest {
                 .statusCode(204);
     }
 
+    private String getToken(String role) {
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("email", "a@gmail.com", "password", "a", "name", "test", "role", role))
+                .when().post("/login")
+                .then().log().all()
+                .extract()
+                .cookie("token");
+    }
 }

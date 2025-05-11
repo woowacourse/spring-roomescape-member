@@ -38,4 +38,5 @@ public class Member {
     public String getRole() {
         return role;
     }
+
 }

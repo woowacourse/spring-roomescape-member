@@ -11,7 +11,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.controller.dto.MemberResponse;
 import roomescape.member.domain.Member;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
@@ -23,6 +25,7 @@ import roomescape.time.controller.dto.AvailableTimeResponse;
 import roomescape.time.controller.dto.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.util.repository.MemberFakeRepository;
 import roomescape.util.repository.ReservationFakeRepository;
 import roomescape.util.repository.ReservationTimeFakeRepository;
 import roomescape.util.repository.ThemeFakeRepository;
@@ -36,6 +39,7 @@ class ReservationServiceTest {
         ReservationRepository reservationRepository = new ReservationFakeRepository();
         ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
         ThemeRepository themeRepository = new ThemeFakeRepository(reservationRepository);
+        MemberRepository memberRepository = new MemberFakeRepository();
 
         List<ReservationTime> times = List.of(
                 new ReservationTime(null, LocalTime.of(3, 12)),
@@ -61,6 +65,8 @@ class ReservationServiceTest {
         }
 
         Member member = new Member(1L, "a", "a", "하루", "member");
+        memberRepository.saveAndReturnId(member);
+
         List<Reservation> reservations = List.of(
                 new Reservation(null, member, LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L).get(),
                         themeRepository.findById(1L).get()),
@@ -75,7 +81,7 @@ class ReservationServiceTest {
         }
 
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
-                null);
+                memberRepository);
     }
 
     @DisplayName("전체 예약 정보를 조회한다")
@@ -101,9 +107,14 @@ class ReservationServiceTest {
         ReservationTimeResponse expectedTimeResponse = new ReservationTimeResponse(4L, LocalTime.of(23, 53));
         ThemeResponse expectedThemeResponse = new ThemeResponse(3L, "레벨3 탈출", "우테코 레벨3를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-
-        ReservationResponse expected = new ReservationResponse(4L, "루키", LocalDate.now(), expectedTimeResponse,
-                expectedThemeResponse);
+        MemberResponse expectedMemberResponse = new MemberResponse(1L, "a", "a", "하루", "member");
+        ReservationResponse expected = new ReservationResponse(
+                4L,
+                expectedMemberResponse,
+                LocalDate.now(),
+                expectedTimeResponse,
+                expectedThemeResponse
+        );
         assertThat(response).isEqualTo(expected);
     }
 
