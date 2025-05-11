@@ -76,7 +76,7 @@ class JdbcReservationRepositoryTest {
         // given
         sut.save(new Reservation(null, savedMember, LocalDate.of(2025, 7, 1), savedTime, savedTheme));
 
-        // when & then
+        // when // then
         assertSoftly(soft -> {
             soft.assertThat(sut.existsByDateAndTimeAndTheme(
                     LocalDate.of(2025, 7, 1), savedTime.getStartAt(), savedTheme.getId())).isTrue();
@@ -154,7 +154,7 @@ class JdbcReservationRepositoryTest {
     @DisplayName("예약 ID로 예약을 제거할 때 예약이 존재하지 않으면 예외를 던진다")
     @Test
     void deleteById_not_found() {
-        // when & then
+        // when // then
         assertThatThrownBy(() -> sut.deleteById(999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("삭제하려고 하는 예약이 존재하지 않습니다. 999");
