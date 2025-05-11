@@ -72,7 +72,7 @@ class AdminReservationServiceTest {
     void shouldThrowException_WhenCreatingReservationWithPastDate() {
         // given
         Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now())).getId();
-        Long themeId = reservationThemeRepository.add(new ReservationTheme("��마", "설명", "썸네일")).getId();
+        Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일")).getId();
         AdminReservationRequestDto reservationRequestDto = new AdminReservationRequestDto(
                 1L,
                 LocalDate.now().minusDays(1),
