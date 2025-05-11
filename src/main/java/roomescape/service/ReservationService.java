@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.request.LoginMember;
@@ -42,7 +41,7 @@ public class ReservationService {
                 reservationRequest.timeId(), reservationRequest.themeId());
         Theme theme = themeFinder.getThemeById(reservationRequest.themeId());
         Member member = memberFinder.getMemberById(reservationRequest.memberId());
-        return reservationRepository.addReservation(new Reservation(null, member, reservationDateTime, theme));
+        return reservationRepository.addReservation(Reservation.create(null, member, reservationDateTime, theme));
     }
 
     public Reservation addReservationByUser(final UserReservationRequest userReservationRequest,
@@ -52,7 +51,7 @@ public class ReservationService {
                 userReservationRequest.timeId(), userReservationRequest.themeId());
         Theme theme = themeFinder.getThemeById(userReservationRequest.themeId());
         Member member = loginMember.toEntity();
-        return reservationRepository.addReservation(new Reservation(null, member, reservationDateTime, theme));
+        return reservationRepository.addReservation(Reservation.create(null, member, reservationDateTime, theme));
     }
 
     private ReservationDateTime validateAndGetDateTime(LocalDate date,
@@ -60,21 +59,12 @@ public class ReservationService {
                                                        Long themeId) {
         ReservationTime reservationTime = reservationTimeFinder.getReservationTimeById(timeId);
         ReservationDateTime reservationDateTime = new ReservationDateTime(date, reservationTime);
-        validateFutureDateTime(reservationDateTime);
         if (isAlreadyExist(reservationDateTime.getDate(), timeId, themeId)) {
             throw new IllegalArgumentException("Reservation already exists");
         }
         return reservationDateTime;
     }
 
-    private void validateFutureDateTime(ReservationDateTime reservationDateTime) {
-        LocalDateTime dateTime = LocalDateTime.of(reservationDateTime.getDate(),
-                reservationDateTime.getTime().getStartAt());
-        LocalDateTime now = LocalDateTime.now();
-        if (dateTime.isBefore(now)) {
-            throw new IllegalArgumentException("과거 예약은 불가능합니다.");
-        }
-    }
 
     public void deleteReservation(long id) {
         int result = reservationRepository.deleteReservation(id);
