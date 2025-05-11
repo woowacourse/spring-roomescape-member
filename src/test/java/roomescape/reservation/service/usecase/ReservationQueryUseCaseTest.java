@@ -161,4 +161,70 @@ class ReservationQueryUseCaseTest {
 
         });
     }
+
+    @Test
+    void 멤버ID를_통해_예약_정보를_조회한다() {
+        final ReservationTime booked = reservationTimeRepository.save(
+                ReservationTime.withoutId(
+                        LocalTime.of(10, 18)));
+
+        final Theme theme = themeRepository.save(
+                Theme.withoutId(ThemeName.from("공포"),
+                        ThemeDescription.from("지구별 방탈출 최고"),
+                        ThemeThumbnail.from("www.making.com")));
+
+        final Member member = memberRepository.save(
+                Account.of(Member.withoutId(
+                                MemberName.from("강산"),
+                                MemberEmail.from("123@gmail.com"),
+                                Role.MEMBER),
+                        Password.from("1234"))
+        );
+
+        final ReservationDate date = ReservationDate.from(LocalDate.now().plusDays(1));
+
+        final Reservation reservation = reservationRepository.save(Reservation.withoutId(
+                member,
+                date,
+                booked,
+                theme));
+
+        // when & then
+        assertThat(reservationQueryUseCase.getAllByMemberId(member.getId()))
+                .contains(reservation);
+    }
+
+    @Test
+    void 멤버ID_시작일_종료일_테마ID로_예약된_정보를_조회한다() {
+        final ReservationTime booked = reservationTimeRepository.save(
+                ReservationTime.withoutId(
+                        LocalTime.of(10, 18)));
+
+        final Theme theme = themeRepository.save(
+                Theme.withoutId(ThemeName.from("공포"),
+                        ThemeDescription.from("지구별 방탈출 최고"),
+                        ThemeThumbnail.from("www.making.com")));
+
+        final Member member = memberRepository.save(
+                Account.of(Member.withoutId(
+                                MemberName.from("강산"),
+                                MemberEmail.from("123@gmail.com"),
+                                Role.MEMBER),
+                        Password.from("1234"))
+        );
+
+        final ReservationDate date = ReservationDate.from(LocalDate.now().plusDays(1));
+        final ReservationDate from = ReservationDate.from(LocalDate.now());
+        final ReservationDate to = ReservationDate.from(LocalDate.now().plusDays(2));
+
+        final Reservation reservation = reservationRepository.save(Reservation.withoutId(
+                member,
+                date,
+                booked,
+                theme));
+
+        // when & then
+        assertThat(reservationQueryUseCase.search(member.getId(), theme.getId(), from, to))
+                .contains(reservation);
+    }
 }

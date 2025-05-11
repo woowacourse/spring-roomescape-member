@@ -1,13 +1,11 @@
 package roomescape.member.service;
 
-import jakarta.servlet.http.Cookie;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import roomescape.common.exception.AuthenticationException;
 import roomescape.member.auth.JwtTokenExtractor;
 import roomescape.member.auth.JwtTokenProvider;
 import roomescape.member.auth.dto.MemberInfo;
@@ -18,7 +16,6 @@ import roomescape.member.service.usecase.MemberCommandUseCase;
 import roomescape.member.service.usecase.MemberQueryUseCase;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class AuthServiceTest {
@@ -87,6 +84,16 @@ class AuthServiceTest {
     }
 
     @Test
+    void 로그인_상태가_아니라면_로그인_체크_시_예외가_발생한다() {
+        // given
+        final String token = "OMG";
+
+        // when & then
+        assertThatThrownBy(() -> authService.checkLogin(token))
+                .isInstanceOf(AuthenticationException.class);
+    }
+
+    @Test
     void 로그인_된_사용자의_정보를_반환한다() {
         // given
         final String password = "1234";
@@ -107,7 +114,7 @@ class AuthServiceTest {
         final LoginRequest request = new LoginRequest(memberInfo.email(), password);
 
         final String token = authService.login(request);
-        
+
         assertThat(authService.get(token))
                 .isEqualTo(MemberConverter.toDomain(memberInfo));
     }
