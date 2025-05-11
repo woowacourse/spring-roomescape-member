@@ -29,18 +29,17 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+        Cookie[] cookies = request.getCookies();
 
-        String token = extractTokenFromCookie(request.getCookies());
-        if (token.isBlank()) {
-            throw new AuthenticationException("로그인 정보가 없습니다.");
-        }
-
+        String token = extractTokenFromCookie(cookies);
         Long memberId = jwtProvider.extractMemberId(token);
         return memberService.findById(memberId);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies == null) return "";
+        if (cookies == null || cookies.length == 0) {
+            throw new AuthenticationException("로그인 정보가 없습니다.");
+        }
 
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {

@@ -22,7 +22,7 @@ public class RoomEscapeConfiguration implements WebMvcConfigurer {
         this.memberService = memberService;
         this.jwtProvider = jwtProvider;
     }
-
+    
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new LoginMemberArgumentResolver(memberService, jwtProvider));
