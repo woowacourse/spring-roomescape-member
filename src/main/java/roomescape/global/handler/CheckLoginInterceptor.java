@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.model.Role;
-import roomescape.domain.member.service.MemberService;
 import roomescape.global.auth.Cookies;
 import roomescape.global.auth.JwtProvider;
 
@@ -13,11 +12,9 @@ import roomescape.global.auth.JwtProvider;
 public class CheckLoginInterceptor implements HandlerInterceptor {
 
     private final JwtProvider jwtProvider;
-    private final MemberService memberService;
 
-    public CheckLoginInterceptor(JwtProvider jwtProvider, MemberService memberService) {
+    public CheckLoginInterceptor(JwtProvider jwtProvider) {
         this.jwtProvider = jwtProvider;
-        this.memberService = memberService;
     }
 
     @Override
