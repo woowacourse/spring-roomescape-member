@@ -21,19 +21,15 @@ import java.util.Optional;
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
     private final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> {
-        final long id = resultSet.getLong("id");
-        final long memberId = resultSet.getLong("member_id");
-        LocalDate date = resultSet.getObject("date", LocalDate.class);
         final long timeId = resultSet.getLong("time_id");
         LocalTime timeValue = resultSet.getObject("start_at", LocalTime.class);
-        ReservationTime timeEntity = ReservationTime.of(timeId, timeValue);
-        final long themeId = resultSet.getLong("theme_id");
-        return Reservation.of(
-                id,
-                memberId,
-                date,
+        ReservationTime timeEntity = new ReservationTime(timeId, timeValue);
+        return new Reservation(
+                resultSet.getLong("id"),
+                resultSet.getLong("member_id"),
+                resultSet.getObject("date", LocalDate.class),
                 timeEntity,
-                themeId
+                resultSet.getLong("theme_id")
         );
     };
     private final NamedParameterJdbcTemplate jdbcTemplate;

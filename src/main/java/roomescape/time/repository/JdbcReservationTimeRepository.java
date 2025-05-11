@@ -17,11 +17,11 @@ import java.util.Optional;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
-    private final RowMapper<ReservationTime> ROW_MAPPER = (resultSet, rowNum) -> {
-        Long id = resultSet.getLong("id");
-        LocalTime time = resultSet.getObject("start_at", LocalTime.class);
-        return new ReservationTime(id, time);
-    };
+    private final RowMapper<ReservationTime> ROW_MAPPER = (resultSet, rowNum) ->
+        new ReservationTime(
+                resultSet.getLong("id"),
+                resultSet.getObject("start_at", LocalTime.class)
+        );
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
