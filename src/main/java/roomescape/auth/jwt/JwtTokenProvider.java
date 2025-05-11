@@ -16,7 +16,7 @@ import roomescape.exception.custom.AuthorizationException;
 import roomescape.member.domain.Member;
 
 @Component
-public class JwtTokenProvider {
+public class JwtTokenProvider implements AuthTokenProvider {
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
     @Value("${security.jwt.token.expire-length}")
@@ -31,6 +31,7 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    @Override
     public String createToken(Member member) {
         Claims claims = Jwts.claims().setSubject(String.valueOf(member.getId()));
 
@@ -47,6 +48,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    @Override
     public String extractPayload(String token) {
         validateValidToken(token);
 
@@ -58,8 +60,10 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
+    @Override
     public String extractRole(String token) {
         validateValidToken(token);
+
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()

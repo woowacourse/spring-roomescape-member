@@ -4,7 +4,7 @@ import jakarta.servlet.http.Cookie;
 import java.util.Arrays;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
-import roomescape.auth.jwt.JwtTokenProvider;
+import roomescape.auth.jwt.AuthTokenProvider;
 import roomescape.auth.service.dto.CreateTokenServiceRequest;
 import roomescape.exception.custom.AuthorizationException;
 import roomescape.exception.custom.NotExistedValueException;
@@ -15,18 +15,18 @@ import roomescape.member.domain.Member;
 public class AuthService {
 
     private final MemberDao memberDao;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthTokenProvider authTokenProvider;
 
-    public AuthService(final MemberDao memberDao, final JwtTokenProvider jwtTokenProvider) {
+    public AuthService(final MemberDao memberDao, final AuthTokenProvider authTokenProvider) {
         this.memberDao = memberDao;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.authTokenProvider = authTokenProvider;
     }
 
     public String createToken(final CreateTokenServiceRequest request) {
         final Member member = findMemberByEmail(request.email());
         member.validateRightPassword(request.password());
 
-        return jwtTokenProvider.createToken(member);
+        return authTokenProvider.createToken(member);
     }
 
     private Member findMemberByEmail(final String email) {
@@ -62,7 +62,7 @@ public class AuthService {
 
     public Member findMemberByToken(final String token) {
         validateTokenExisted(token);
-        final long memberId = Long.parseLong(jwtTokenProvider.extractPayload(token));
+        final long memberId = Long.parseLong(authTokenProvider.extractPayload(token));
 
         return memberDao.findById(memberId)
                 .orElseThrow(() -> new NotExistedValueException("존재하지 않는 멤버 입니다"));
@@ -75,6 +75,6 @@ public class AuthService {
     }
 
     public boolean isAdmin(final String token) {
-        return jwtTokenProvider.extractRole(token).equals("Admin");
+        return authTokenProvider.extractRole(token).equals("Admin");
     }
 }
