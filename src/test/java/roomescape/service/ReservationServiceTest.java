@@ -23,6 +23,8 @@ import roomescape.dto.ReservationResponse;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 import roomescape.model.ThemeName;
+import roomescape.model.User;
+import roomescape.model.UserName;
 
 class ReservationServiceTest {
 
@@ -50,10 +52,11 @@ class ReservationServiceTest {
     void 예약을_정상적으로_추가() {
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(null, LocalTime.of(10, 0)));
         Theme savedTheme = themeDao.save(new Theme(null, new ThemeName("제목"), "de", "th"));
-        ReservationRequest request = new ReservationRequest("이름", LocalDate.of(2025, 12, 16), savedTime.getId(),
+        ReservationRequest request = new ReservationRequest(LocalDate.of(2025, 12, 16), savedTime.getId(),
                 savedTheme.getId());
+        User user = new User(1L, new UserName("이름"), "", "");
 
-        ReservationResponse response = reservationService.addReservation(request);
+        ReservationResponse response = reservationService.addReservation(user, request);
 
         assertThat(response.id()).isNotNull();
         assertThat(response.name()).isEqualTo("이름");
@@ -65,14 +68,14 @@ class ReservationServiceTest {
         // given
         Long nonExistTimeId = 999L;
         ReservationRequest request = new ReservationRequest(
-                "testName",
                 LocalDate.of(2026, 12, 12),
                 nonExistTimeId,
                 1L
         );
+        User user = new User(1L, new UserName("이름"), "", "");
 
         // when, then
-        assertThatThrownBy(() -> reservationService.addReservation(request))
+        assertThatThrownBy(() -> reservationService.addReservation(user, request))
                 .isInstanceOf(IllegalStateException.class);
     }
 
@@ -81,14 +84,14 @@ class ReservationServiceTest {
         // given
         Long nonExistThemeId = 999L;
         ReservationRequest request = new ReservationRequest(
-                "testName",
                 LocalDate.of(2026, 12, 12),
                 1L,
                 nonExistThemeId
         );
+        User user = new User(1L, new UserName("이름"), "", "");
 
         // when, then
-        assertThatThrownBy(() -> reservationService.addReservation(request))
+        assertThatThrownBy(() -> reservationService.addReservation(user, request))
                 .isInstanceOf(IllegalStateException.class);
     }
 
@@ -96,14 +99,14 @@ class ReservationServiceTest {
     void 과거_날짜로_예약_생성_시_예외_발생() {
         // given
         ReservationRequest request = new ReservationRequest(
-                "testName",
                 LocalDate.of(2023, 2, 25),
                 1L,
                 1L
         );
+        User user = new User(1L, new UserName("이름"), "", "");
 
         // when, then
-        assertThatThrownBy(() -> reservationService.addReservation(request))
+        assertThatThrownBy(() -> reservationService.addReservation(user, request))
                 .isInstanceOf(IllegalStateException.class);
 
     }
@@ -112,14 +115,14 @@ class ReservationServiceTest {
     void 날짜와_테마와_시간이_동시에_중복된_예약에_대해서_예외처리() {
         // given
         ReservationRequest request = new ReservationRequest(
-                "testName",
                 LocalDate.of(2023, 3, 1),
                 1L,
                 1L
         );
+        User user = new User(1L, new UserName("이름"), "", "");
 
         // when, then
-        assertThatThrownBy(() -> reservationService.addReservation(request))
+        assertThatThrownBy(() -> reservationService.addReservation(user, request))
                 .isInstanceOf(IllegalStateException.class);
     }
 
@@ -133,9 +136,10 @@ class ReservationServiceTest {
     void 예약을_정상적으로_삭제() {
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(null, LocalTime.of(10, 0)));
         Theme savedTheme = themeDao.save(new Theme(null, new ThemeName("제목"), "de", "th"));
-        ReservationRequest request = new ReservationRequest("이름", LocalDate.of(2025, 12, 16), savedTime.getId(),
+        ReservationRequest request = new ReservationRequest(LocalDate.of(2025, 12, 16), savedTime.getId(),
                 savedTheme.getId());
-        ReservationResponse response = reservationService.addReservation(request);
+        User user = new User(1L, new UserName("이름"), "", "");
+        ReservationResponse response = reservationService.addReservation(user, request);
 
         reservationService.deleteReservation(response.id());
         List<ReservationResponse> reservations = reservationService.getReservations();

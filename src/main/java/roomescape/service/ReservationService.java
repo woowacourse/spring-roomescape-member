@@ -12,6 +12,7 @@ import roomescape.dto.ReservationResponse;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
+import roomescape.model.User;
 
 @Service
 public class ReservationService {
@@ -31,12 +32,12 @@ public class ReservationService {
         this.clock = clock;
     }
 
-    public ReservationResponse addReservation(ReservationRequest reservationRequest) {
+    public ReservationResponse addReservation(User user, ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new IllegalStateException("존재하지 않는 시간입니다."));
         Theme theme = themeDao.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new IllegalStateException("존재하지 않는 테마입니다."));
-        Reservation reservation = reservationRequest.toEntityWithReservationTime(reservationTime, theme);
+        Reservation reservation = reservationRequest.toEntityWith(user.getName(), reservationTime, theme);
         if (reservation.isPast(LocalDate.now(clock))) {
             throw new IllegalStateException("하루 전 까지 예약 가능합니다.");
         }

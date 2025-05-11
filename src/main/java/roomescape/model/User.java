@@ -2,11 +2,11 @@ package roomescape.model;
 
 public class User {
     Long id;
-    String name;
+    UserName name;
     String email;
     String password;
 
-    public User(Long id, String name, String email, String password) {
+    public User(Long id, UserName name, String email, String password) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -17,7 +17,7 @@ public class User {
         return id;
     }
 
-    public String getName() {
+    public UserName getName() {
         return name;
     }
 
@@ -27,5 +27,9 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getNameValue() {
+        return name.getName();
     }
 }

@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.config.LoginUser;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.model.User;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -33,8 +35,10 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> addReservation(
-            @RequestBody @Valid ReservationRequest reservationRequest) {
-        ReservationResponse newReservation = reservationService.addReservation(reservationRequest);
+            @LoginUser User user,
+            @RequestBody @Valid ReservationRequest reservationRequest
+    ) {
+        ReservationResponse newReservation = reservationService.addReservation(user, reservationRequest);
         Long id = newReservation.id();
         return ResponseEntity.created(URI.create("/reservations/" + id)).body(newReservation);
     }

@@ -6,6 +6,6 @@ public record UserResponse(
         String name
 ) {
     public static UserResponse from(User user) {
-        return new UserResponse(user.getName());
+        return new UserResponse(user.getNameValue());
     }
 }

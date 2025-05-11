@@ -20,7 +20,7 @@ public class LoginService {
 
     public String loginAndGetToken(LoginRequest loginRequest) {
         User user = login(loginRequest);
-        return jwtTokenProvider.createToken(user.getId(), user.getName(), "USER");
+        return jwtTokenProvider.createToken(user.getId(), user.getNameValue(), "USER");
     }
 
     private User login(LoginRequest loginRequest) {

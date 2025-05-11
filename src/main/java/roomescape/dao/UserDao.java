@@ -6,6 +6,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import roomescape.model.User;
+import roomescape.model.UserName;
 
 @Repository
 public class UserDao {
@@ -29,7 +30,7 @@ public class UserDao {
                     Map.of("email", email),
                     (rs, rowNum) -> new User(
                             rs.getLong("id"),
-                            rs.getString("name"),
+                            new UserName(rs.getString("name")),
                             rs.getString("email"),
                             rs.getString("password")
                     )
@@ -52,7 +53,7 @@ public class UserDao {
                     Map.of("id", id),
                     (rs, rowNum) -> new User(
                             rs.getLong("id"),
-                            rs.getString("name"),
+                            new UserName(rs.getString("name")),
                             rs.getString("email"),
                             rs.getString("password")
                     ));
