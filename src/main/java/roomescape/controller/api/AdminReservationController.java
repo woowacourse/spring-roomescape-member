@@ -10,16 +10,11 @@ import roomescape.config.annotation.AuthMember;
 import roomescape.domain.Member;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
-import roomescape.exception.custom.AuthenticatedException;
 import roomescape.service.ReservationService;
 
 @RestController
 @RequestMapping("/admin/reservations")
 public class AdminReservationController {
-
-    private static final String ADMIN_NAME = "admin";
-    private static final String ADMIN_EMAIL = "admin";
-    private static final String ADMIN_PASSWORD = "1234";
 
     private final ReservationService reservationService;
 
@@ -32,16 +27,6 @@ public class AdminReservationController {
     public ReservationResponse createReservation(
         @AuthMember Member member,
         @RequestBody ReservationRequest request) {
-        validateAdmin(member);
-
         return ReservationResponse.from(reservationService.addReservation(request));
-    }
-
-    private void validateAdmin(Member member) {
-        if (!member.getName().equals(ADMIN_NAME)
-            || !member.getEmail().equals(ADMIN_EMAIL)
-            || !member.getPassword().equals(ADMIN_PASSWORD)) {
-            throw new AuthenticatedException("not admin");
-        }
     }
 }
