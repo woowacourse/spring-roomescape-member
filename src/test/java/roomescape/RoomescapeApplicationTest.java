@@ -27,8 +27,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.application.auth.dto.LoginRequest;
 import roomescape.application.auth.dto.MemberAuthResponse;
-import roomescape.application.auth.dto.TokenRequest;
 import roomescape.domain.repository.dto.TimeDataWithBookingInfo;
 import roomescape.testFixture.JdbcHelper;
 
@@ -152,7 +152,7 @@ class RoomescapeApplicationTest {
         String cookie = RestAssured
                 .given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new TokenRequest("admin@email.com", "password"))
+                .body(new LoginRequest("admin@email.com", "password"))
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())

@@ -14,9 +14,9 @@ public class MemberAuthRequestExtractor {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public MemberAuthRequest extract(HttpServletRequest request) {
-        String token = tokenExtractor.extract(request);
+    public MemberIdDto extract(HttpServletRequest request) {
+        String token = jwtTokenExtractor.extract(request);
         String payload = jwtTokenProvider.getPayload(token);
-        return new MemberAuthRequest(Long.parseLong(payload));
+        return new MemberIdDto(Long.parseLong(payload));
     }
 }

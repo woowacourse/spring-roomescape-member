@@ -8,7 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.application.dto.MemberDto;
+import roomescape.application.auth.dto.MemberIdDto;
 import roomescape.exception.AuthorizationException;
 
 @Component
@@ -18,12 +18,12 @@ public class JwtTokenProvider {
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
-    public String createToken(MemberDto memberDto) {
+    public String createToken(MemberIdDto dto) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .setSubject(memberDto.id().toString())
+                .setSubject(dto.id().toString())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
