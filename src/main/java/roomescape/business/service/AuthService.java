@@ -52,7 +52,6 @@ public class AuthService {
                 .get("name", String.class);
         final String email = claimsJws.getPayload()
                 .get("email", String.class);
-        // TODO: null 체크 해야 하나? get에서 null이면 터지나?
         return new LoginMember(id, name, email);
     }
 
