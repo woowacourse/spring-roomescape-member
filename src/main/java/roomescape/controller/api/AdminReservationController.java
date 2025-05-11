@@ -1,10 +1,7 @@
 package roomescape.controller.api;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import roomescape.domain.member.Member;
 import roomescape.dto.reservation.AdminReservationCreateRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
@@ -13,6 +10,8 @@ import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationCreateDto;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin/reservations")
@@ -32,5 +31,15 @@ public class AdminReservationController {
         ReservationCreateDto createDto = new ReservationCreateDto(memberById.getName(), requestDto.date(), requestDto.timeId(), requestDto.themeId());
         ReservationResponseDto responseDto = reservationService.createReservation(createDto);
         return ResponseEntity.created(URI.create("reservations/" + responseDto.id())).body(responseDto);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ReservationResponseDto>> searchReservationsByPeriod(
+            @RequestParam long themeId,
+            @RequestParam long memberId,
+            @RequestParam LocalDate dateFrom,
+            @RequestParam LocalDate dateTo) {
+        List<ReservationResponseDto> reservationBetween = reservationService.findReservationBetween(themeId, memberId, dateFrom, dateTo);
+        return ResponseEntity.ok(reservationBetween);
     }
 }

@@ -60,6 +60,13 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponseDto> findReservationBetween(long themeId, long memberId, LocalDate from, LocalDate to) {
+        List<Reservation> reservationsByPeriodAndMemberAndTheme = reservationRepository.findReservationsByPeriodAndMemberAndTheme(themeId, memberId, from, to);
+        return reservationsByPeriodAndMemberAndTheme.stream()
+                .map(reservation -> ReservationResponseDto.of(reservation, reservation.getTime(), reservation.getTheme()))
+                .toList();
+    }
+
     public void deleteReservation(Long id) {
         int deletedReservationCount = reservationRepository.deleteById(id);
 

@@ -1,10 +1,5 @@
 package roomescape.repository;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-import javax.sql.DataSource;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,6 +11,12 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+
+import javax.sql.DataSource;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JdbcReservationDao implements ReservationRepository {
@@ -74,7 +75,7 @@ public class JdbcReservationDao implements ReservationRepository {
                 SELECT
                 r.id,
                 r.date,
-                r.name,
+                m.name,
                 r.time_id as reservation_time_id,
                 r.theme_id as reservation_theme_id,
                 t.start_at,
@@ -83,6 +84,7 @@ public class JdbcReservationDao implements ReservationRepository {
                 th.thumbnail
                 FROM reservation as r
                 inner join reservation_time as t on r.time_id = t.id 
+                inner join member as m on r.member_id = m.member_id
                 inner join theme as th on r.theme_id = th.id
                 """;
         return jdbcTemplate.query(sql, rowMapper);
@@ -94,7 +96,7 @@ public class JdbcReservationDao implements ReservationRepository {
                 SELECT
                 r.id,
                 r.date,
-                r.name,
+                m.name,
                 r.time_id as reservation_time_id,
                 r.theme_id as reservation_theme_id,
                 t.start_at,
@@ -102,7 +104,8 @@ public class JdbcReservationDao implements ReservationRepository {
                 th.description,
                 th.thumbnail
                 FROM reservation as r
-                inner join reservation_time as t on r.time_id = t.id
+                inner join reservation_time as t on r.time_id = t.id 
+                inner join member as m on r.member_id = m.member_id
                 inner join theme as th on r.theme_id = th.id
                 where r.id = ?
                 """;
@@ -119,7 +122,7 @@ public class JdbcReservationDao implements ReservationRepository {
                 SELECT
                 r.id,
                 r.date,
-                r.name,
+                m.name,
                 r.time_id as reservation_time_id,
                 r.theme_id as reservation_theme_id,
                 t.start_at,
@@ -127,7 +130,8 @@ public class JdbcReservationDao implements ReservationRepository {
                 th.description,
                 th.thumbnail
                 FROM reservation as r
-                inner join reservation_time as t on r.time_id = t.id
+                inner join reservation_time as t on r.time_id = t.id 
+                inner join member as m on r.member_id = m.member_id
                 inner join theme as th on r.theme_id = th.id
                 where r.date = ? and t.start_at = ? and r.theme_id = ?
                 """;
@@ -140,7 +144,29 @@ public class JdbcReservationDao implements ReservationRepository {
                 SELECT
                 r.id,
                 r.date,
-                r.name,
+                m.name,
+                r.time_id as reservation_time_id,
+                r.theme_id as reservation_theme_id,
+                t.start_at,
+                th.name as theme_name,
+                th.description,
+                th.thumbnail
+                FROM reservation as r
+                inner join reservation_time as t on r.time_id = t.id 
+                inner join member as m on r.member_id = m.member_id
+                inner join theme as th on r.theme_id = th.id
+                WHERE r.date = ? AND th.id = ?
+                """;
+        return jdbcTemplate.query(sql, rowMapper, date, themeId);
+    }
+
+    @Override
+    public List<Reservation> findReservationsByPeriodAndMemberAndTheme(long themeId, long memberId, LocalDate from, LocalDate to) {
+        String sql = """
+                SELECT
+                r.id,
+                r.date,
+                m.name,
                 r.time_id as reservation_time_id,
                 r.theme_id as reservation_theme_id,
                 t.start_at,
@@ -150,20 +176,21 @@ public class JdbcReservationDao implements ReservationRepository {
                 FROM reservation as r
                 INNER JOIN reservation_time as t on r.time_id = t.id
                 INNER JOIN theme as th on r.theme_id = th.id
-                WHERE r.date = ? AND th.id = ?
+                INNER JOIN member as m on r.member_id = m.member_id
+                WHERE r.date >= ? AND r.date <= ? AND th.id = ? AND m.member_id = ?
                 """;
-        return jdbcTemplate.query(sql, rowMapper, date, themeId);
+        return jdbcTemplate.query(sql, rowMapper, from, to, themeId, memberId);
     }
 
     @Override
-    public boolean existsByThemeId(long themeId){
+    public boolean existsByThemeId(long themeId) {
         String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE theme_id = ?)";
         Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
         return Boolean.TRUE.equals(exists);
     }
 
     @Override
-    public boolean existsByTimeId(long timeId){
+    public boolean existsByTimeId(long timeId) {
         String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)";
         Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
         return Boolean.TRUE.equals(exists);

@@ -1,10 +1,11 @@
 package roomescape.repository;
 
+import roomescape.domain.Reservation;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import roomescape.domain.Reservation;
 
 public interface ReservationRepository {
 
@@ -21,6 +22,8 @@ public interface ReservationRepository {
     boolean existsByThemeId(long themeId);
 
     boolean existsByTimeId(long timeId);
+
+    List<Reservation> findReservationsByPeriodAndMemberAndTheme(long themeId, long memberId, LocalDate from, LocalDate to);
 
     int deleteById(final long id);
 }
