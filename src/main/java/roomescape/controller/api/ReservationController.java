@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.annotation.LoginRequired;
 import roomescape.controller.dto.request.CreateReservationRequest;
 import roomescape.controller.dto.response.ReservationResponse;
 import roomescape.domain.LoginMember;
@@ -19,7 +18,6 @@ import roomescape.service.ReservationService;
 import roomescape.service.dto.request.ReservationCreation;
 import roomescape.service.dto.response.ReservationResult;
 
-@LoginRequired
 @RequestMapping("/reservations")
 @RestController
 public class ReservationController {

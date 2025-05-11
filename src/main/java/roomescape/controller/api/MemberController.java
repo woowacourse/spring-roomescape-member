@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.annotation.AdminOnly;
-import roomescape.annotation.LoginRequired;
 import roomescape.controller.dto.request.MemberLoginRequest;
 import roomescape.controller.dto.request.MemberSignUpRequest;
 import roomescape.controller.dto.response.MemberLoginCheckResponse;
@@ -33,7 +32,6 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @LoginRequired
     @AdminOnly
     @GetMapping("/members")
     public List<MemberResponse> findAllMembers() {
@@ -50,7 +48,6 @@ public class MemberController {
         return MemberSignUpResponse.from(signUpResult);
     }
 
-    @LoginRequired
     @GetMapping("/login/check")
     public ResponseEntity<MemberLoginCheckResponse> checkLogin(LoginMember loginMember) {
         return ResponseEntity.ok(MemberLoginCheckResponse.from(loginMember));
@@ -63,7 +60,6 @@ public class MemberController {
         addCookieToken(servletResponse, loginToken, 1000 * 60 * 60 * 24);
     }
 
-    @LoginRequired
     @PostMapping("/logout")
     public void logout(HttpServletResponse response) {
         addCookieToken(response, "", 0);
