@@ -15,9 +15,9 @@ public class MemberEmail {
 
     private final String value;
 
-    public static MemberEmail from(final String name) {
-        validate(name);
-        return new MemberEmail(name);
+    public static MemberEmail from(final String value) {
+        validate(value);
+        return new MemberEmail(value);
     }
 
     private static void validate(final String value) {

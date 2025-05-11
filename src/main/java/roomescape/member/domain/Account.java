@@ -29,6 +29,6 @@ public class Account {
     }
 
     public boolean isSamePassword(final PasswordEncoder passwordEncoder, final String password) {
-        return passwordEncoder.matches(password, this.password.getValue());
+        return this.password.matches(passwordEncoder, password);
     }
 }

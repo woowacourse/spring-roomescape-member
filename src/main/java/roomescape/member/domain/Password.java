@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.FieldNameConstants;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import roomescape.common.utils.Validator;
 
 @Getter
@@ -22,6 +23,11 @@ public class Password {
 
     private static void validate(final String value) {
         Validator.of(Password.class)
+                .notNullField(Password.Fields.value, value)
                 .notBlankField(Password.Fields.value, value.strip());
+    }
+
+    public boolean matches(PasswordEncoder passwordEncoder, String password) {
+        return passwordEncoder.matches(password, value);
     }
 }

@@ -31,38 +31,36 @@ public class MissionStepTest {
     private ReservationController reservationController;
 
     @Test
-    @DisplayName("1단계: localhost:8080/admin 요청 시 어드민 메인 페이지가 성공적으로 응답된다")
+    @DisplayName("권한이 없다면 어드민 페이지에 접속할 수 없다")
     void first() {
         RestAssured.given().log().all()
                 .when().get("/admin")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(401);
     }
 
     @Test
-    @DisplayName("2단계: localhost:8080/admin/reservation 요청 시 예약 관리 페이지가 성공적으로 응답된다, " +
-            "예약들을 조회할 수 있다")
+    @DisplayName("권한이 없다면 예약들을 조회할 수 없다")
     void second() {
         RestAssured.given().log().all()
+
                 .when().get("/admin/reservation")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(401);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
+                .statusCode(401);
     }
 
     @Test
     @DisplayName("3단계: localhost:8080/reservations 에 POST 요청 시 예약이 추가되고, DELETE 요청 시 각각 예약이 취소된다")
     void third() {
-        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
-                "1", "10:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
 
-        jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) VALUES (?, ?, ?, ?)",
-                "1", "공포", "설명", "엄지손톱");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                "공포", "설명", "엄지손톱");
 
         final Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
@@ -113,14 +111,16 @@ public class MissionStepTest {
     @Test
     @DisplayName("데이터베이스에 예약 하나 추가 후 예약 조회 API를 통해 조회한 예약 수와 데이터베이스 쿼리를 통해 조회한 예약 수가 같은지 비교할 수 있다")
     void fifth() {
-        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
-                "1", "10:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
 
-        jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) VALUES (?, ?, ?, ?)",
-                "1", "공포", "설명", "엄지손톱");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                "공포", "설명", "엄지손톱");
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2023-08-05", 1, 1);
+        jdbcTemplate.update("INSERT INTO member (name, password, email, role) VALUES (?, ?, ?, ?)",
+                "브라운", "1234", "brown@naver.com", "MEMBER");
+
+        jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1, "2023-08-05", 1, 1);
 
         final List<ReservationWebResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -136,11 +136,11 @@ public class MissionStepTest {
     @Test
     @DisplayName("예약 추가/삭제 API를 활용하고, 조회로 확인할 수 있다")
     void sixth() {
-        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
-                "1", "10:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)",
+                "10:00");
 
-        jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) VALUES (?, ?, ?, ?)",
-                "1", "공포", "설명", "엄지손톱");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                "공포", "설명", "엄지손톱");
 
         final Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
@@ -170,8 +170,8 @@ public class MissionStepTest {
     @Test
     @DisplayName("시간으로 API를 관리할 수 있다")
     void seventh() {
-        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
-                "1", "10:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)",
+                "10:00");
 
         RestAssured.given().log().all()
                 .when().get("/times")

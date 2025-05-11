@@ -34,7 +34,7 @@ public class JwtTokenExtractor {
         }
 
         for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
+            if (cookie.getName().equals("token")) {
                 return cookie.getValue();
             }
         }
