@@ -3,7 +3,6 @@ package roomescape.unit.fake;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Reservation;
@@ -42,10 +41,9 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
-        return Optional.ofNullable(reservationTimes.stream()
+        return reservationTimes.stream()
                 .filter(reservationTime -> reservationTime.getId().equals(id))
-                .findFirst()
-                .orElseThrow(NoSuchElementException::new));
+                .findFirst();
     }
 
     @Override
