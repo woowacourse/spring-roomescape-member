@@ -1,6 +1,5 @@
 package roomescape.domain;
 
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
@@ -14,7 +13,7 @@ public class Reservation {
     private final Long id;
 
     @NonNull
-    private final String name;
+    private final Member member;
 
     @NonNull
     private final LocalDate date;
@@ -25,11 +24,10 @@ public class Reservation {
     @NonNull
     private final Theme theme;
 
-    public Reservation(@NonNull final String name, @NonNull final LocalDate date,
-                       @NonNull final ReservationTime reservationTime,
-                       @NonNull final Theme theme) {
+    public Reservation(@NonNull final Member member, @NonNull final LocalDate date,
+                       @NonNull final ReservationTime reservationTime, @NonNull final Theme theme) {
         this.id = null;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = reservationTime;
         this.theme = theme;

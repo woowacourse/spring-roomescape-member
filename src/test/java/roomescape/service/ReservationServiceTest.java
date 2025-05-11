@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.request.UserReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.error.NotFoundException;
 import roomescape.error.ReservationException;
@@ -55,7 +55,7 @@ class ReservationServiceTest {
     @Test
     void 중복된_날짜와_시간이면_예외가_발생한다() {
         // given: r1과 동일한 date/time 요청
-        ReservationRequest dupReq = new ReservationRequest(
+        UserReservationRequest dupReq = new UserReservationRequest(
                 reservation1.getName(), reservation1.getDate(), time1.getId(), theme1.getId()
         );
 
@@ -69,7 +69,7 @@ class ReservationServiceTest {
     @Test
     void 지나간_날짜와_시간이면_예외가_발생한다() {
         // given: r1과 동일한 date/time 요청
-        ReservationRequest afterReq = new ReservationRequest(
+        UserReservationRequest afterReq = new UserReservationRequest(
                 reservation1.getName(), LocalDate.now().minusYears(1), time1.getId(), theme1.getId()
         );
 
@@ -83,7 +83,7 @@ class ReservationServiceTest {
     @Test
     void 새로운_예약은_정상_생성된다() {
         // given
-        ReservationRequest req = new ReservationRequest(
+        UserReservationRequest req = new UserReservationRequest(
                 "철원", LocalDate.of(2999, 4, 21), time1.getId(), theme1.getId()
         );
 

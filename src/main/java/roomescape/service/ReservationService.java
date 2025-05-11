@@ -1,19 +1,22 @@
 package roomescape.service;
 
-import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.LoginInfo;
+import roomescape.dto.request.AdminReservationRequest;
+import roomescape.dto.request.UserReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.error.NotFoundException;
 import roomescape.error.ReservationException;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -23,6 +26,7 @@ import roomescape.repository.ThemeRepository;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final MemberRepository memberRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
@@ -33,20 +37,33 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse saveReservation(final @Valid ReservationRequest request) {
-        final ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
+    public ReservationResponse saveReservation(final UserReservationRequest request, final LoginInfo loginInfo) {
+        final Member member = memberRepository.findById(loginInfo.id())
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 사용자입니다."));
+        return save(request.date(), request.timeId(), request.themeId(), member);
+    }
+
+    public ReservationResponse saveReservation(final AdminReservationRequest request) {
+        final Member member = memberRepository.findById(request.memberId())
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 사용자입니다."));
+        return save(request.date(), request.timeId(), request.themeId(), member);
+    }
+
+    private ReservationResponse save(final LocalDate date, final Long timeId, final Long themeId, final Member member) {
+        final ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
-        final Theme theme = themeRepository.findById(request.themeId())
+        final Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
-        if (reservationRepository.existsByDateAndTimeAndTheme(request.date(), reservationTime.getStartAt(),
-                theme.getId())) {
-            throw new ReservationException("해당 시간은 이미 예약되어있습니다.");
+
+        if (reservationRepository.existsByDateAndTimeAndTheme(date, reservationTime.getStartAt(), themeId)) {
+            throw new ReservationException("해당 시간은 이미 예약되어 있습니다.");
         }
 
-        final Reservation reservation = new Reservation(request.name(), request.date(), reservationTime, theme);
+        final Reservation reservation = new Reservation(member, date, reservationTime, theme);
         validateFutureOrPresent(reservation.getDate(), reservation.extractTime());
-        final Reservation newReservation = reservationRepository.save(reservation);
-        return new ReservationResponse(newReservation);
+
+        final Reservation saved = reservationRepository.save(reservation);
+        return new ReservationResponse(saved);
     }
 
     private void validateFutureOrPresent(final LocalDate date, final LocalTime time) {

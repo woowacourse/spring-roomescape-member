@@ -1,34 +1,27 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.request.MemberRequest;
-import roomescape.dto.response.MemberResponse;
-import roomescape.service.MemberService;
+import roomescape.dto.request.AdminReservationRequest;
+import roomescape.dto.response.ReservationResponse;
+import roomescape.service.ReservationService;
 
 @RestController
-@RequestMapping("/members")
+@RequestMapping("/admin/reservations")
 @RequiredArgsConstructor
-public class MemberController {
+public class AdminReservationController {
 
-    private final MemberService memberService;
+    private final ReservationService reservationService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveMember(@Valid @RequestBody final MemberRequest request) {
-        memberService.saveMember(request);
-    }
-
-    @GetMapping
-    public List<MemberResponse> findAllMember() {
-        return memberService.findAllMember();
+    public ReservationResponse createForAdmin(@Valid @RequestBody final AdminReservationRequest request) {
+        return reservationService.saveReservation(request);
     }
 }

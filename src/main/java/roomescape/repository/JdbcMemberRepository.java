@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -66,5 +67,26 @@ public class JdbcMemberRepository implements MemberRepository {
         return jdbcTemplate.query(findByEmailSql, memeberRowMapper, email)
                 .stream()
                 .findFirst();
+    }
+
+    @Override
+    public Optional<Member> findById(final Long id) {
+        final String findByIdSql = """
+                    select *
+                    from member as m
+                    where m.id = ?
+                """;
+        return jdbcTemplate.query(findByIdSql, memeberRowMapper, id)
+                .stream()
+                .findFirst();
+    }
+
+    @Override
+    public List<Member> findAll() {
+        final String findAllSql = """
+                    select *
+                    from member as m
+                """;
+        return jdbcTemplate.query(findAllSql, memeberRowMapper);
     }
 }

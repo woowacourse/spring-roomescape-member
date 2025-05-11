@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.config.LoginRequired;
 import roomescape.dto.LoginInfo;
 import roomescape.dto.request.AuthRequest;
 import roomescape.service.AuthService;
@@ -28,7 +29,7 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public LoginInfo checkLogin(final HttpSession session) {
-        return authService.checkLogin(session);
+    public LoginInfo checkLogin(@LoginRequired final LoginInfo loginInfo) {
+        return loginInfo;
     }
 }

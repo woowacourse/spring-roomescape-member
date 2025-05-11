@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.util.List;
 import java.util.Optional;
 import roomescape.domain.Member;
 
@@ -10,4 +11,8 @@ public interface MemberRepository {
     boolean existsByEmail(final String email);
 
     Optional<Member> findByEmail(final String email);
+
+    Optional<Member> findById(Long id);
+
+    List<Member> findAll();
 }
