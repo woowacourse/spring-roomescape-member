@@ -48,17 +48,9 @@ public class ReservationRestController {
             @PathVariable final Long id,
             final Member member
     ) {
-        if(member.getRole() == AuthRole.MEMBER) {
-            reservationService.deleteIfOwner(id, member);
-            return ResponseEntity.noContent().build();
-        }
+        reservationService.deleteIfOwner(id, member);
 
-        if(member.getRole() == AuthRole.ADMIN) {
-            reservationService.delete(id);
-            return ResponseEntity.noContent().build();
-        }
-
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/reservations")

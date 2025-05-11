@@ -95,7 +95,7 @@ class ReservationRestControllerTest {
                 .cookies(adminCookies)
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(HttpStatus.NO_CONTENT.value());
+                .statusCode(HttpStatus.FORBIDDEN.value());
 
         RestAssured.given().log().all()
                 .cookies(adminCookies)

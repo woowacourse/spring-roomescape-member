@@ -1,6 +1,7 @@
 package roomescape.reservation.application;
 
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.exception.auth.AuthorizationException;
@@ -46,22 +47,15 @@ public class ReservationService {
         return ReservationResponse.from(found);
     }
 
-    public void deleteIfOwner(final Long id, final Member member) {
-        final Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 데이터가 존재하지 않습니다. id = " + id));
+    public void deleteIfOwner(final Long reservationId, final Member member) {
+        final Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 데이터가 존재하지 않습니다. id = " + reservationId));
 
-        if (reservation.getMember() != member) {
+        if (!Objects.equals(reservation.getMember(), member)) {
             throw new AuthorizationException("삭제할 권한이 없습니다.");
         }
 
-        reservationRepository.deleteById(id);
-    }
-
-    public void delete(final Long id) {
-        reservationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 데이터가 존재하지 않습니다. id = " + id));
-
-        reservationRepository.deleteById(id);
+        reservationRepository.deleteById(reservationId);
     }
 
     public List<ReservationResponse> findAll() {

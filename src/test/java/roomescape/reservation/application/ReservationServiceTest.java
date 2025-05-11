@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.exception.auth.AuthorizationException;
 import roomescape.exception.resource.AlreadyExistException;
 import roomescape.exception.resource.ResourceNotFoundException;
 import roomescape.fixture.domain.ThemeFixture;
@@ -60,7 +61,7 @@ class ReservationServiceTest {
     private ReservationRepository reservationRepository;
 
     @Test
-    void 예약_정보를_저장한다() {
+    void 예약을_추가한다() {
         // given
         final LocalDate date = LocalDate.now().plusDays(1);
         final Long timeId = reservationTimeRepository.save(NOT_SAVED_RESERVATION_TIME_1);
@@ -75,18 +76,54 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약_정보를_삭제한다() {
+    void 예약을_삭제한다() {
         // given
-        final Reservation reservation = createNotSavedReservation1();
+        final LocalDate date = LocalDate.now().plusDays(1);
+        final Long timeId1 = reservationTimeRepository.save(NOT_SAVED_RESERVATION_TIME_1);
+        final ReservationTime reservationTime1 = reservationTimeRepository.findById(timeId1)
+                .orElseThrow(() -> new ResourceNotFoundException("예약시간이 존재하지 않습니다."));
+        final Long themeId1 = themeRepository.save(NOT_SAVED_THEME_1);
+        final Theme theme1 = themeRepository.findById(themeId1)
+                .orElseThrow(() -> new ResourceNotFoundException("테마가 존재하지 않습니다."));
+        final Long memberId1 = memberCommandRepository.save(NOT_SAVED_MEMBER_1);
+        final Member member1 = memberQueryRepository.findById(memberId1)
+                .orElseThrow(() -> new ResourceNotFoundException("회원이 존재하지 않습니다."));
+
+        final Reservation reservation = new Reservation(date, reservationTime1, theme1, member1);
         final Long reservationId = reservationRepository.save(reservation);
 
         // when & then
-        Assertions.assertThatCode(() -> reservationService.delete(reservationId))
+        Assertions.assertThatCode(() -> reservationService.deleteIfOwner(reservationId, member1))
                 .doesNotThrowAnyException();
     }
 
     @Test
-    void 예약_정보_목록을_조회한다() {
+    void 본인의_예약이_아니면_삭제할_수_없다() {
+        // given
+        final LocalDate date = LocalDate.now().plusDays(1);
+        final Long timeId1 = reservationTimeRepository.save(NOT_SAVED_RESERVATION_TIME_1);
+        final ReservationTime reservationTime1 = reservationTimeRepository.findById(timeId1)
+                .orElseThrow(() -> new ResourceNotFoundException("예약시간이 존재하지 않습니다."));
+        final Long themeId1 = themeRepository.save(NOT_SAVED_THEME_1);
+        final Theme theme1 = themeRepository.findById(themeId1)
+                .orElseThrow(() -> new ResourceNotFoundException("테마가 존재하지 않습니다."));
+        final Long memberId1 = memberCommandRepository.save(NOT_SAVED_MEMBER_1);
+        final Long memberId2 = memberCommandRepository.save(NOT_SAVED_MEMBER_2);
+        final Member member1 = memberQueryRepository.findById(memberId1)
+                .orElseThrow(() -> new ResourceNotFoundException("회원이 존재하지 않습니다."));
+        final Member member2 = memberQueryRepository.findById(memberId2)
+                .orElseThrow(() -> new ResourceNotFoundException("회원이 존재하지 않습니다."));
+
+        final Reservation reservation = new Reservation(date, reservationTime1, theme1, member1);
+        final Long reservationId = reservationRepository.save(reservation);
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> reservationService.deleteIfOwner(reservationId, member2))
+                .isInstanceOf(AuthorizationException.class);
+    }
+
+    @Test
+    void 예약_목록_전체를_조회한다() {
         // given
 
         final int beforeCount = reservationService.findAll().size();
@@ -133,7 +170,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약_정보를_저장할_때_이미_예약된_시간이면_예외가_발생한다() {
+    void 예약을_추가할_때_이미_예약된_시간이면_예외가_발생한다() {
         // given
         final LocalDate date = LocalDate.now().plusDays(1);
 
