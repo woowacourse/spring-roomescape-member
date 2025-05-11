@@ -1,6 +1,5 @@
 package roomescape.auth;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import javax.naming.AuthenticationException;
@@ -12,6 +11,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import roomescape.auth.util.LoginTokenParser;
 import roomescape.domain.Member;
 import roomescape.exception.InvalidTokenException;
 import roomescape.repository.MemberRepository;
@@ -26,15 +26,9 @@ public class AdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws
             Exception {
-        if (request == null || request.getCookies() == null) {
+        String token = LoginTokenParser.getLoginToken(request);
+        if (token == null) {
             throw new IllegalArgumentException();
-        }
-        String token = null;
-        for (var cookie : request.getCookies()) {
-            if (Objects.equals(cookie.getName(), "token")) {
-                token = cookie.getValue();
-                break;
-            }
         }
 
         try {

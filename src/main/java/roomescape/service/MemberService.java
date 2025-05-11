@@ -22,7 +22,6 @@ public class MemberService {
     private final JwtProvider jwtProvider;
     private final MemberRepository memberRepository;
 
-    // TODO: password 암호화
     public String login(LoginRequest request) {
         Optional<Member> member = memberRepository.findByEmail(request.email());
         if (member.isEmpty() || !Objects.equals(member.get().password(), request.password())) {
