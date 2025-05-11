@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.currentdate.CurrentDateTime;
-import roomescape.domain.member.dao.MemberDao;
 import roomescape.domain.member.model.Member;
 import roomescape.domain.reservation.dao.ReservationDao;
 import roomescape.domain.reservation.dto.request.AdminReservationRequestDto;
@@ -23,19 +22,16 @@ import roomescape.global.exception.InvalidReservationException;
 @Service
 public class ReservationService {
 
-    private final MemberDao memberDao;
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
     private final CurrentDateTime currentDateTime;
 
     public ReservationService(
-        MemberDao memberDao,
         ReservationDao reservationDao,
         ReservationTimeDao reservationTimeDao,
         ThemeDao themeDao,
         CurrentDateTime currentDateTime) {
-        this.memberDao = memberDao;
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
@@ -61,31 +57,23 @@ public class ReservationService {
     }
 
     public ReservationResponseDto saveReservationOfMember(
-        ReservationRequestDto request,
-        long memberId) {
+        ReservationRequestDto request, Member member) {
         Reservation reservation = saveReservation(
-            request.date(), memberId, request.timeId(), request.themeId());
+            member, request.date(), request.timeId(), request.themeId());
         return ReservationResponseDto.from(reservation);
     }
 
     public AdminReservationResponse saveReservationOfAdmin(
-        AdminReservationRequestDto request,
-        long memberId) {
+        AdminReservationRequestDto request, Member member) {
         Reservation reservation = saveReservation(
-            request.date(), memberId, request.timeId(), request.themeId());
+            member, request.date(), request.timeId(), request.themeId());
         return new AdminReservationResponse(reservation.getId());
     }
 
-    private Reservation saveReservation(String date, long memberId, long timeId, long themeId) {
-        Member member = findMemberBy(memberId);
+    private Reservation saveReservation(Member member, String date, long timeId, long themeId) {
         Reservation reservation = createReservation(member, date, timeId, themeId);
         validateDateTimeAndSaveReservation(reservation, themeId);
         return reservation;
-    }
-
-    public Member findMemberBy(long memberId) {
-        return memberDao.findById(memberId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
 
     private Reservation createReservation(Member member, String date, long timeId, long themeId) {

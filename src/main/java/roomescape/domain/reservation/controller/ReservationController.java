@@ -16,6 +16,7 @@ import roomescape.domain.reservation.dto.request.ReservationRequestDto;
 import roomescape.domain.reservation.dto.response.AdminReservationResponse;
 import roomescape.domain.reservation.dto.response.ReservationResponseDto;
 import roomescape.domain.reservation.service.ReservationService;
+import roomescape.global.annotation.LoginMember;
 
 @RestController
 public class ReservationController {
@@ -43,16 +44,16 @@ public class ReservationController {
     @PostMapping("/reservations")
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponseDto createReservation(
-        @RequestBody ReservationRequestDto reservationRequestDto, Member member) {
-        return reservationService.saveReservationOfMember(reservationRequestDto, member.getId());
+        @RequestBody ReservationRequestDto reservationRequestDto, @LoginMember Member member) {
+        return reservationService.saveReservationOfMember(reservationRequestDto, member);
     }
 
     @PostMapping("/admin/reservations")
     @ResponseStatus(HttpStatus.CREATED)
     public AdminReservationResponse createReservationOfAdmin(
-        @RequestBody AdminReservationRequestDto adminReservationRequestDto, Member member) {
-        return reservationService.saveReservationOfAdmin(adminReservationRequestDto,
-            member.getId());
+        @RequestBody AdminReservationRequestDto adminReservationRequestDto,
+        @LoginMember Member member) {
+        return reservationService.saveReservationOfAdmin(adminReservationRequestDto, member);
     }
 
     @DeleteMapping("/reservations/{id}")

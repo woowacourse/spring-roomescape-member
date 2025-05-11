@@ -38,8 +38,8 @@ public class MemberService {
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
 
-    public Member getMemberFrom(String email) {
-        return memberDao.findByEmail(email)
+    public Member getMemberFrom(Long memberId) {
+        return memberDao.findById(memberId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
 

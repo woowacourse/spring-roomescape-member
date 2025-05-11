@@ -1,5 +1,6 @@
 package roomescape.global.handler;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -30,10 +31,11 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String token = Cookies.get(request.getCookies());
-        String email = jwtProvider.getTokenSubject(token);
-        return memberService.getMemberFrom(email);
+        Claims claims = jwtProvider.validateToken(token);
+        Long memberId = Long.parseLong(claims.getSubject());
+        return memberService.getMemberFrom(memberId);
     }
 }

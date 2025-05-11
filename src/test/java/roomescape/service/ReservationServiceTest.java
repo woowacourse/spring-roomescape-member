@@ -41,7 +41,7 @@ public class ReservationServiceTest {
         themeDao = new FakeThemeDaoImpl();
         reservationTimeDao = new FakeReservationTimeDaoImpl();
         reservationService = new ReservationService(
-            memberDao, reservationDao, reservationTimeDao, themeDao, new TestTime());
+            reservationDao, reservationTimeDao, themeDao, new TestTime());
     }
 
     @Test
@@ -106,7 +106,7 @@ public class ReservationServiceTest {
 
         //when, then
         assertThatThrownBy(
-            () -> reservationService.saveReservationOfMember(reservationRequestDto, savedMemberId))
+            () -> reservationService.saveReservationOfMember(reservationRequestDto, member))
             .isInstanceOf(InvalidReservationException.class)
             .hasMessage("중복된 날짜와 시간을 예약할 수 없습니다.");
     }

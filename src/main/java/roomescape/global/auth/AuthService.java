@@ -1,10 +1,8 @@
 package roomescape.global.auth;
 
-import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.model.Member;
 import roomescape.domain.member.service.MemberService;
-import roomescape.global.dto.CheckResponseDto;
 import roomescape.global.dto.TokenRequest;
 
 @Service
@@ -21,11 +19,5 @@ public class AuthService {
     public String requestLogin(TokenRequest tokenRequest) {
         Member member = memberService.getMemberOf(tokenRequest.email(), tokenRequest.password());
         return jwtProvider.createToken(JwtRequest.from(member));
-    }
-
-    public CheckResponseDto authenticateByToken(String value) {
-        Claims claims = jwtProvider.validateToken(value);
-        String name = (String) claims.get("name");
-        return new CheckResponseDto(name);
     }
 }
