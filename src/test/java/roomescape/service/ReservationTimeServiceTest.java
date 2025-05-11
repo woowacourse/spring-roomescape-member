@@ -93,23 +93,4 @@ public class ReservationTimeServiceTest {
             .isInstanceOf(InvalidReservationException.class)
             .hasMessage("이미 예약된 예약 시간을 삭제할 수 없습니다.");
     }
-
-    @Test
-    @DisplayName("존재하지 않는 예약 시간 id를 조회하려고 할 경우, 예외가 발생해야 한다.")
-    void not_exist_reservation_id_then_throw_exception() {
-        assertThatThrownBy(() -> reservationTimeService.findById(999999L))
-            .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    @DisplayName("존재하는 예약 시간 id를 조회하려고 할 경우, 성공해야 한다.")
-    void exist_reservation_id_get_then_success() {
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
-        long savedReservationTimeId = reservationTimeDao.save(reservationTime);
-        reservationTime.setId(savedReservationTimeId);
-
-        assertThatCode(
-            () -> reservationTimeService.findById(savedReservationTimeId))
-            .doesNotThrowAnyException();
-    }
 }

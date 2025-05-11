@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,15 +41,15 @@ public class FakeReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public boolean existReservationByTime(Long id) {
+    public boolean existReservationByTime(Long timeId) {
         return reservations.stream()
-            .anyMatch(reservation -> reservation.getId().equals(id));
+            .anyMatch(reservation -> reservation.getTimeId() == timeId);
     }
 
     @Override
-    public boolean existReservationByTheme(Long id) {
+    public boolean existReservationByTheme(Long themeId) {
         return reservations.stream()
-            .anyMatch(reservation -> reservation.getId().equals(id));
+            .anyMatch(reservation -> reservation.getThemeId().equals(themeId));
     }
 
     @Override
@@ -61,6 +62,11 @@ public class FakeReservationDaoImpl implements ReservationDao {
 
     @Override
     public List<Reservation> findOf(String dateFrom, String dateTo, Long memberId, Long themeId) {
-        return List.of();
+        return reservations.stream()
+            .filter(reservation -> reservation.getMemberId() == memberId
+                && reservation.getThemeId().equals(themeId)
+                && reservation.getReservationDate().getDate().isAfter(LocalDate.parse(dateFrom))
+                && reservation.getReservationDate().getDate().isBefore(LocalDate.parse(dateTo)))
+            .toList();
     }
 }

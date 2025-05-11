@@ -48,11 +48,6 @@ public class ReservationTimeService {
         }
     }
 
-    public void findById(Long id) {
-        reservationTimeDao.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 예약시간을 찾을 수 없습니다"));
-    }
-
     public List<BookedReservationTimeResponseDto> getTimesContainsReservationInfoBy(
         String date, Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();

@@ -63,7 +63,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 예약ID를 삭제하려고 할 경우, 예외가 발생해야 한다.")
+    @DisplayName("존재하는 예약ID를 삭제하려고 할 경우, 성공해야 한다.")
     void not_exist_theme_id_delete_then_throw_exception() {
         Reservation reservation = createReservation(createMember(), createTheme(),
             createReservationTime());
