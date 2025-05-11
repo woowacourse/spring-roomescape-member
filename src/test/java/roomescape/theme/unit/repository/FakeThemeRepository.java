@@ -2,69 +2,58 @@ package roomescape.theme.unit.repository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import roomescape.reservation.entity.Reservation;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
 public class FakeThemeRepository implements ThemeRepository {
 
-    private final List<Theme> themes = new ArrayList<>();
-    private final List<Reservation> reservations = new ArrayList<>();
+    private final Map<Long, Theme> themes = new ConcurrentHashMap<>();
+    private final AtomicLong index = new AtomicLong(1);
 
     @Override
     public Theme save(Theme theme) {
-        themes.add(theme);
-        return theme;
+        Long id = index.getAndIncrement();
+        Theme savedTheme = new Theme(
+                id,
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnail()
+        );
+        themes.put(id, savedTheme);
+        return savedTheme;
     }
 
     @Override
     public List<Theme> findAll() {
-        return Collections.unmodifiableList(themes);
-    }
-
-    @Override
-    public boolean deleteById(Long id) {
-        return themes.removeIf(entity -> entity.getId().equals(id));
-    }
-
-    @Override
-    public Optional<Theme> findById(Long id) {
-        return themes.stream()
-                .filter(entity -> entity.getId().equals(id))
-                .findFirst();
-    }
-
-    @Override
-    public Optional<Theme> findByName(String name) {
-        return themes.stream()
-                .filter(entity -> entity.getName().equals(name))
-                .findFirst();
+        return new ArrayList<>(themes.values());
     }
 
     @Override
     public List<Theme> findPopularDescendingUpTo(LocalDate startDate, LocalDate endDate, int limit) {
-        Map<Long, Long> reservationCountByTheme = reservations.stream()
-                .filter(r -> !r.getDate().isBefore(startDate) && !r.getDate().isAfter(endDate))
-                .collect(Collectors.groupingBy(
-                        Reservation::getThemeId,
-                        Collectors.counting()
-                ));
-
-        return themes.stream()
-                .sorted((a, b) -> {
-                    long countA = reservationCountByTheme.getOrDefault(a.getId(), 0L);
-                    long countB = reservationCountByTheme.getOrDefault(b.getId(), 0L);
-                    if (countA != countB) {
-                        return Long.compare(countB, countA);
-                    }
-                    return Long.compare(b.getId(), a.getId());
-                })
+        return themes.values().stream()
                 .limit(limit)
                 .toList();
+    }
+
+    @Override
+    public Optional<Theme> findById(Long id) {
+        return Optional.ofNullable(themes.get(id));
+    }
+
+    @Override
+    public Optional<Theme> findByName(String name) {
+        return themes.values().stream()
+                .filter(theme -> theme.getName().equals(name))
+                .findFirst();
+    }
+
+    @Override
+    public boolean deleteById(Long id) {
+        return themes.remove(id) != null;
     }
 }
