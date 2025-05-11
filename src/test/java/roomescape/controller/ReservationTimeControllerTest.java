@@ -25,9 +25,6 @@ class ReservationTimeControllerTest {
     @DisplayName("예약 추가 이후 예약 개수 확인 테스트")
     @Test
     void test() {
-//        jdbcTemplate.update(
-//                "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "공포", "무서워요", "image");
-//
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:59");
 
@@ -59,5 +56,47 @@ class ReservationTimeControllerTest {
                 .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(422);
+    }
+
+    @Test
+    @DisplayName("예약시간 등록 시 예약시간 null이라면 400에러를 반환한다.")
+    void test1() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", null);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("예약시간 등록 시 예약시간 형식이 올바르지 않다면 400에러를 반환한다.")
+    void test2() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", "12:89");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("예약시간 등록 시 예약시간 공백이라면 400에러를 반환한다.")
+    void test3() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", "");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
     }
 }
