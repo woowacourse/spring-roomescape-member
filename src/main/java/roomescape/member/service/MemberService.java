@@ -1,5 +1,6 @@
 package roomescape.member.service;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.exception.BadRequestException;
@@ -8,9 +9,10 @@ import roomescape.exception.ExceptionCause;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
-import roomescape.member.dto.UserLoginCheckResponse;
-import roomescape.member.dto.UserLoginRequest;
-import roomescape.member.dto.UserSignupRequest;
+import roomescape.member.dto.MemberNameResponse;
+import roomescape.member.dto.MemberLoginRequest;
+import roomescape.member.dto.MemberResponse;
+import roomescape.member.dto.MemberSignupRequest;
 
 @Service
 public class MemberService {
@@ -24,14 +26,14 @@ public class MemberService {
         this.memberDao = memberDao;
     }
 
-    public String login(UserLoginRequest userLoginRequest) {
-        Member member = findByEmailAndPassword(userLoginRequest.email(), userLoginRequest.password());
+    public String login(MemberLoginRequest memberLoginRequest) {
+        Member member = findByEmailAndPassword(memberLoginRequest.email(), memberLoginRequest.password());
         return jwtUtil.generateToken(member);
     }
 
-    public UserLoginCheckResponse getUserNameFromToken(String token) {
+    public MemberNameResponse getUserNameFromToken(String token) {
         String name = jwtUtil.getMemberNameFromToken(token);
-        return UserLoginCheckResponse.from(name);
+        return MemberNameResponse.from(name);
     }
 
     private Member findByEmailAndPassword(String email, String password) {
@@ -42,12 +44,12 @@ public class MemberService {
         return memberOptional.get();
     }
 
-    public void signup(UserSignupRequest userSignupRequest) {
-        if (memberDao.findByEmail(userSignupRequest.email()).isPresent()) {
+    public void signup(MemberSignupRequest memberSignupRequest) {
+        if (memberDao.findByEmail(memberSignupRequest.email()).isPresent()) {
             throw new ConflictException(ExceptionCause.MEMBER_EXIST);
         }
-        Member member = Member.createWithoutId(userSignupRequest.name(), userSignupRequest.email(),
-                userSignupRequest.password(), USER_ROLE);
+        Member member = Member.createWithoutId(memberSignupRequest.name(), memberSignupRequest.email(),
+                memberSignupRequest.password(), USER_ROLE);
         memberDao.create(member);
     }
 
@@ -57,5 +59,11 @@ public class MemberService {
             throw new BadRequestException(ExceptionCause.MEMBER_NOTFOUND);
         }
         return memberOptional.get();
+    }
+
+    public List<MemberResponse> findAllMembers() {
+        return memberDao.findAll().stream()
+                .map(MemberResponse::from)
+                .toList();
     }
 }

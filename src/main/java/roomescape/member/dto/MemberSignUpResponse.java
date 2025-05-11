@@ -1,6 +1,6 @@
 package roomescape.member.dto;
 
-public record SignUpSuccessResponse(
+public record MemberSignUpResponse(
         String message
 ) {
 }
