@@ -134,7 +134,6 @@ function register(event) {
             throw new Error(error.message); // 에러 메시지를 실제로 추출
           });
         }
-        return response.json();
       })
       .then(data => {
         // 성공적인 응답 처리

@@ -36,6 +36,12 @@ public final class Member {
         return new Member(id, new MemberName(name), new Email(email), null, role);
     }
 
+    public boolean matchesPassword(String rawPassword) {
+        return password != null
+                && rawPassword != null
+                && password.matches(rawPassword);
+    }
+
     public Long getId() {
         return id;
     }
