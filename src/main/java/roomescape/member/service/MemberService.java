@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
+import roomescape.member.presentation.dto.MemberRequest;
 import roomescape.member.presentation.dto.MemberResponse;
 
 @Service
@@ -13,6 +14,12 @@ public class MemberService {
 
     public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
+    }
+
+    public MemberResponse save(final MemberRequest request) {
+        Long id = memberRepository.save(Member.createWithoutId(request.name(), request.email(), request.password()));
+
+        return new MemberResponse(id, request.name());
     }
 
     public Member findByEmail(final String email) {
