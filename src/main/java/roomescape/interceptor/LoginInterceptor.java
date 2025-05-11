@@ -2,8 +2,6 @@ package roomescape.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.LoginMember;
 import roomescape.exception.InvalidAuthorizationException;
@@ -13,7 +11,6 @@ import roomescape.util.JwtTokenProvider;
 
 public class LoginInterceptor implements HandlerInterceptor {
 
-    private static final Logger log = LoggerFactory.getLogger(LoginInterceptor.class);
     private final LoginMemberService loginMemberService;
     private final JwtTokenProvider jwtTokenProvider;
     private final CookieTokenExtractor authorizationExtractor;

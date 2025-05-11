@@ -42,7 +42,7 @@ public class JdbcMemberDao implements MemberRepository {
                 .addValue("email", registrationDetails.email())
                 .addValue("password", registrationDetails.password());
 
-        jdbcInsert.executeAndReturnKey(params).longValue();
+        jdbcInsert.executeAndReturnKey(params);
     }
 
     @Override

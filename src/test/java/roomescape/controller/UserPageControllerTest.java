@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class UserPageControllerTest {
 
-    @DisplayName("Reservation Page 테스트")
+    @DisplayName("유저용 reservation 페이지를 반환한다")
     @Test
     void reservationPageTest() {
         RestAssured.given().log().all()
@@ -17,7 +17,7 @@ class UserPageControllerTest {
                 .statusCode(200);
     }
 
-    @DisplayName("Login Page 테스트")
+    @DisplayName("login 페이지를 반환한다")
     @Test
     void loginPageTest() {
         RestAssured.given().log().all()
@@ -26,7 +26,7 @@ class UserPageControllerTest {
                 .statusCode(200);
     }
 
-    @DisplayName("Signup Page 테스트")
+    @DisplayName("signup 페이지를 반환한다")
     @Test
     void signupPageTest() {
         RestAssured.given().log().all()

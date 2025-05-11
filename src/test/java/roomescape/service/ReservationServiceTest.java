@@ -2,23 +2,24 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.dto.member.NameResponse;
 import roomescape.dto.reservation.ReservationResponse;
-import roomescape.repository.FakeReservationRepository;
+import roomescape.dto.theme.ThemeResponse;
+import roomescape.dto.time.ReservationTimeResponse;
+import roomescape.fixture.FakeReservationRepositoryFixture;
 import roomescape.repository.ReservationRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class ReservationServiceTest {
 
-    ReservationService reservationService;
+    private final ReservationRepository reservationRepository = FakeReservationRepositoryFixture.create();
+    private final ReservationService reservationService = new ReservationService(reservationRepository);
 
     @Nested
     @DisplayName("예약 조회")
@@ -26,21 +27,48 @@ class ReservationServiceTest {
 
         @DisplayName("모든 Reservation을 조회할 수 있다")
         @Test
-        void findAllReservationResponsesTest() {
-            LocalTime startTime = LocalTime.of(10, 0);
-            ReservationTime reservationTime = new ReservationTime(1L, startTime);
-            Theme theme = new Theme(1L, "우테코", "방탈출", "https://");
-
-            Reservation reservation1 = new Reservation(1L, "가이온", LocalDate.of(2025, 4, 24), reservationTime, theme);
-            Reservation reservation2 = new Reservation(2L, "홍길동", LocalDate.of(2025, 4, 25), reservationTime, theme);
-
-            ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>(List.of(reservation1, reservation2)));
-            reservationService = new ReservationService(reservationRepository);
-
+        void findAllReservationsTest() {
+            // when
             List<ReservationResponse> responses = reservationService.findAllReservationResponses();
 
-            assertThat(responses).hasSize(2);
-            assertThat(responses).extracting("name").containsExactly("가이온", "홍길동");
+            // then
+            assertAll(
+                    () -> assertThat(responses).hasSize(1),
+                    () -> assertThat(responses).extracting("member")
+                            .containsExactly(new NameResponse(1L, "어드민")),
+                    () -> assertThat(responses).extracting("date")
+                            .containsExactly(LocalDate.now().plusDays(7)),
+                    () -> assertThat(responses).extracting("theme")
+                            .containsExactly(new ThemeResponse(1L, "우테코", "방탈출", "https://")),
+                    () -> assertThat(responses).extracting("time")
+                            .containsExactly(new ReservationTimeResponse(1L, LocalTime.of(10, 0)))
+            );
+        }
+
+        @DisplayName("주어진 검색 조건에 해당하는 Reservation을 조회할 수 있다")
+        @Test
+        void searchReservationsTest() {
+            // given
+            long targetThemeId = 1L;
+            long targetMemberId = 1L;
+            LocalDate from = LocalDate.now();
+            LocalDate to = LocalDate.now().plusDays(10);
+
+            // when
+            List<ReservationResponse> responses = reservationService.searchReservations(targetThemeId, targetMemberId, from, to);
+
+            // then
+            assertAll(
+                    () -> assertThat(responses).hasSize(1),
+                    () -> assertThat(responses).extracting("member")
+                            .containsExactly(new NameResponse(1L, "어드민")),
+                    () -> assertThat(responses).extracting("date")
+                            .containsExactly(LocalDate.now().plusDays(7)),
+                    () -> assertThat(responses).extracting("theme")
+                            .containsExactly(new ThemeResponse(1L, "우테코", "방탈출", "https://")),
+                    () -> assertThat(responses).extracting("time")
+                            .containsExactly(new ReservationTimeResponse(1L, LocalTime.of(10, 0)))
+            );
         }
     }
 }

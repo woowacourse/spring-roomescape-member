@@ -2,27 +2,20 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import roomescape.dto.reservation.ReservationCreateRequest;
+import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
-import roomescape.dto.time.ReservationTimeResponse;
 import roomescape.exception.DuplicateContentException;
 import roomescape.exception.InvalidRequestException;
 import roomescape.exception.NotFoundException;
+import roomescape.fixture.FakeMemberRepositoryFixture;
 import roomescape.fixture.FakeReservationRepositoryFixture;
 import roomescape.fixture.FakeReservationTimeRepositoryFixture;
 import roomescape.fixture.FakeThemeRepositoryFixture;
-import roomescape.repository.FakeReservationRepository;
-import roomescape.repository.FakeReservationTimeRepository;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -32,7 +25,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class BookServiceTest {
 
-    BookService bookService;
+    private final ReservationRepository reservationRepository = FakeReservationRepositoryFixture.create();
+    private final ReservationTimeRepository reservationTimeRepository = FakeReservationTimeRepositoryFixture.create();
+    private final ThemeRepository themeRepository = FakeThemeRepositoryFixture.create();
+    private final MemberRepository memberRepository = FakeMemberRepositoryFixture.create();
+    private final BookService bookService = new BookService(reservationRepository, reservationTimeRepository, themeRepository, memberRepository);
 
     @Nested
     @DisplayName("예약 생성")
@@ -41,106 +38,81 @@ class BookServiceTest {
         @DisplayName("요청에 따라 Reservation을 생성 할 수 있다")
         @Test
         void createReservationTest() {
-            LocalTime startTime = LocalTime.of(10, 0);
+            // given
+            LocalDate date = LocalDate.now().plusDays(10);
+            ReservationRequest requestDto = new ReservationRequest(date, 1L, 1L, 1L);
 
-            ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
-            ReservationTimeRepository reservationTimeRepository = FakeReservationTimeRepositoryFixture.create();
-            ThemeRepository themeRepository = FakeThemeRepositoryFixture.create();
-            bookService = new BookService(reservationRepository, reservationTimeRepository, themeRepository);
+            // when
+            ReservationResponse responseDto = bookService.createAdminReservation(requestDto);
 
-            ReservationCreateRequest requestDto = new ReservationCreateRequest("가이온", LocalDate.now().plusDays(7), 1L, 1L);
-            ReservationResponse responseDto = bookService.createReservation(requestDto);
-
-            Long id = responseDto.id();
-            LocalDate date = responseDto.date();
-            String name = requestDto.name();
-            ReservationTimeResponse time = responseDto.time();
-            Long timeId = time.id();
-            LocalTime localTime = time.startAt();
-
+            // then
             Assertions.assertAll(
-                    () -> assertThat(id).isEqualTo(1L),
-                    () -> assertThat(date).isEqualTo(requestDto.date()),
-                    () -> assertThat(name).isEqualTo("가이온"),
-                    () -> assertThat(timeId).isEqualTo(1L),
-                    () -> assertThat(localTime).isEqualTo(startTime)
+                    () -> assertThat(responseDto.id()).isEqualTo(2L),
+                    () -> assertThat(responseDto.date()).isEqualTo(date),
+                    () -> assertThat(responseDto.member().name()).isEqualTo("어드민"),
+                    () -> assertThat(responseDto.time().startAt()).isEqualTo(LocalTime.of(10, 0)),
+                    () -> assertThat(responseDto.theme().name()).isEqualTo("우테코")
             );
         }
 
         @DisplayName("요청한 ReservationTime의 id가 존재하지 않으면 Reservation을 생성할 수 없다")
         @Test
         void invalidReservationTimeIdTest() {
-            ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
-            ReservationTimeRepository reservationTimeRepository = FakeReservationTimeRepositoryFixture.create();
-            ThemeRepository themeRepository = FakeThemeRepositoryFixture.create();
-            bookService = new BookService(reservationRepository, reservationTimeRepository, themeRepository);
+            // given
+            ReservationRequest requestDto = new ReservationRequest(LocalDate.now().plusDays(10), 10L,
+                    1L, 1L);
 
-            ReservationCreateRequest requestDto = new ReservationCreateRequest("가이온", LocalDate.now().plusDays(7), 10L, 1L);
-
-            assertThatThrownBy(() -> bookService.createReservation(requestDto)).isInstanceOf(NotFoundException.class);
+            // when & then
+            assertThatThrownBy(() -> bookService.createAdminReservation(requestDto))
+                    .isInstanceOf(NotFoundException.class);
         }
 
         @DisplayName("요청한 Theme의 id가 존재하지 않으면 Reservation을 생성할 수 없다")
         @Test
         void invalidThemeIdTest() {
-            ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
-            ReservationTimeRepository reservationTimeRepository = FakeReservationTimeRepositoryFixture.create();
-            ThemeRepository themeRepository = FakeThemeRepositoryFixture.create();
-            bookService = new BookService(reservationRepository, reservationTimeRepository, themeRepository);
+            // given
+            ReservationRequest requestDto = new ReservationRequest(LocalDate.now().plusDays(10), 1L,
+                    10L, 1L);
 
-            ReservationCreateRequest requestDto = new ReservationCreateRequest("가이온", LocalDate.now().plusDays(7), 1L, 10L);
-
-            assertThatThrownBy(() -> bookService.createReservation(requestDto)).isInstanceOf(NotFoundException.class);
+            // when & then
+            assertThatThrownBy(() -> bookService.createAdminReservation(requestDto))
+                    .isInstanceOf(NotFoundException.class);
         }
 
-        @DisplayName("이름이 공백이거나 존재하지 않으면 Reservation을 생성할 수 없다")
-        @ParameterizedTest
-        @MethodSource("invalidNames")
-        void createInvalidNameTest(String name) {
-            ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
-            ReservationTimeRepository reservationTimeRepository = FakeReservationTimeRepositoryFixture.create();
-            ThemeRepository themeRepository = FakeThemeRepositoryFixture.create();
-            bookService = new BookService(reservationRepository, reservationTimeRepository, themeRepository);
+        @DisplayName("유저가 존재하지 않으면 Reservation을 생성할 수 없다")
+        @Test
+        void createInvalidNameTest() {
+            // given
+            ReservationRequest requestDto = new ReservationRequest(LocalDate.now().plusDays(10), 1L,
+                    1L, 10L);
 
-            ReservationCreateRequest requestDto = new ReservationCreateRequest(name, LocalDate.now().plusDays(7), 1L, 1L);
-
-            assertThatThrownBy(() -> bookService.createReservation(requestDto)).isInstanceOf(IllegalArgumentException.class);
-        }
-
-        static Stream<Arguments> invalidNames() {
-            return Stream.of(
-                    Arguments.of(" "),
-                    Arguments.of(""),
-                    Arguments.of((String) null)
-            );
+            // when & then
+            assertThatThrownBy(() -> bookService.createAdminReservation(requestDto))
+                    .isInstanceOf(NotFoundException.class);
         }
 
         @DisplayName("이미 동일한 날짜와 시간에 예약이 있으면 생성할 수 없다")
         @Test
         void createDuplicateReservationTest() {
-            ReservationRepository reservationRepository = FakeReservationRepositoryFixture.create();
-            FakeReservationTimeRepository reservationTimeRepository = FakeReservationTimeRepositoryFixture.create();
-            ThemeRepository themeRepository = FakeThemeRepositoryFixture.create();
-            bookService = new BookService(reservationRepository, reservationTimeRepository, themeRepository);
+            // given
+            ReservationRequest requestDto = new ReservationRequest(LocalDate.now().plusDays(7), 1L,
+                    1L, 1L);
 
-            LocalDate date = LocalDate.now().plusDays(7);
-            ReservationCreateRequest requestDto = new ReservationCreateRequest("가이온", date, 1L, 1L);
-
-            assertThatThrownBy(() -> bookService.createReservation(requestDto)).isInstanceOf(DuplicateContentException.class);
+            // when & then
+            assertThatThrownBy(() -> bookService.createAdminReservation(requestDto))
+                    .isInstanceOf(DuplicateContentException.class);
         }
 
         @DisplayName("이미 지난 날짜의 경우 예약 생성이 불가능 하다")
         @Test
         void createInvalidDateTest() {
-            ReservationRepository reservationRepository = FakeReservationRepositoryFixture.create();
-            FakeReservationTimeRepository reservationTimeRepository = FakeReservationTimeRepositoryFixture.create();
-            ThemeRepository themeRepository = FakeThemeRepositoryFixture.create();
-            bookService = new BookService(reservationRepository, reservationTimeRepository, themeRepository);
+            // given
+            ReservationRequest requestDto = new ReservationRequest(LocalDate.now().minusDays(7), 1L,
+                    1L, 1L);
 
-            LocalDate date = LocalDate.now().minusDays(7);
-            ReservationCreateRequest requestDto = new ReservationCreateRequest("가이온", date, 1L, 1L);
-
-            assertThatThrownBy(() -> bookService.createReservation(requestDto)).isInstanceOf(InvalidRequestException.class);
+            // when & then
+            assertThatThrownBy(() -> bookService.createAdminReservation(requestDto))
+                    .isInstanceOf(InvalidRequestException.class);
         }
     }
 
@@ -151,28 +123,24 @@ class BookServiceTest {
         @DisplayName("Reservation을 삭제할 수 있다")
         @Test
         void deleteReservationTest() {
-            ReservationRepository reservationRepository = FakeReservationRepositoryFixture.create();
-            ReservationTimeRepository reservationTimeRepository = FakeReservationTimeRepositoryFixture.create();
-            ThemeRepository themeRepository = FakeThemeRepositoryFixture.create();
-            bookService = new BookService(reservationRepository, reservationTimeRepository, themeRepository);
+            // given
             ReservationService reservationService = new ReservationService(reservationRepository);
 
+            // when
             bookService.deleteReservation(1L);
 
-            List<ReservationResponse> responses = reservationService.findAllReservationResponses();
-
-            assertThat(responses).isEmpty();
+            // then
+            assertThat(reservationService.findAllReservationResponses()).isEmpty();
         }
 
         @DisplayName("존재하지 않는 Id의 Reservation을 삭제할 수 없다")
         @Test
         void deleteInvalidReservationIdTest() {
-            ReservationRepository reservationRepository = FakeReservationRepositoryFixture.create();
-            ReservationTimeRepository reservationTimeRepository = FakeReservationTimeRepositoryFixture.create();
-            ThemeRepository themeRepository = FakeThemeRepositoryFixture.create();
-            bookService = new BookService(reservationRepository, reservationTimeRepository, themeRepository);
+            // given
+            long targetId = 10L;
 
-            assertThatThrownBy(() -> bookService.deleteReservation(10L)).isInstanceOf(NotFoundException.class);
+            // when & then
+            assertThatThrownBy(() -> bookService.deleteReservation(targetId)).isInstanceOf(NotFoundException.class);
         }
     }
 }

@@ -2,7 +2,6 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,87 +9,112 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dto.time.ReservationTimeCreateRequest;
-import roomescape.dto.theme.ThemeCreateRequest;
+import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.LoginMember;
+import roomescape.dto.member.LoginRequest;
+import roomescape.fixture.LoginMemberFixture;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql("/test-data.sql")
 class ReservationControllerTest {
 
-    @DisplayName("Reservation 목록 내용 갯수를 검사한다")
-    @Test
-    void reservationTest() {
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
+    private String cookie;
+
+    @BeforeEach
+    void loginAsAdmin() {
+        LoginMember user = LoginMemberFixture.getUser();
+
+        cookie = RestAssured
+                .given().log().all()
+                .body(new LoginRequest(user.getPassword(), user.getEmail()))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
     }
 
     @Nested
-    @DisplayName("예약 생성")
-    class ReservationPostTest {
+    @DisplayName("에약 조회")
+    class ReservationGetTest {
 
-        @BeforeEach
-        void setUp() {
-            ReservationTimeCreateRequest reservationTime = new ReservationTimeCreateRequest(LocalTime.of(10, 0));
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(reservationTime)
-                    .when().post("/times")
-                    .then().log().all()
-                    .statusCode(201);
-
-            ThemeCreateRequest theme = new ThemeCreateRequest("a", "b", "https://");
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(theme)
-                    .when().post("/themes")
-                    .then().log().all()
-                    .statusCode(201);
-        }
-
-
-        @DisplayName("Reservation 입력 테스트")
+        @DisplayName("예약 목록을 조회한다")
         @Test
-        void addReservationTest() {
-            Map<String, Object> params = new HashMap<>();
-            params.put("name", "브라운");
-            params.put("date", "2030-08-05");
-            params.put("timeId", 1);
-            params.put("themeId", 1);
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(params)
-                    .when().post("/reservations")
-                    .then().log().all()
-                    .statusCode(201)
-                    .body("id", is(1));
-
+        void reservationsTest() {
             RestAssured.given().log().all()
                     .when().get("/reservations")
                     .then().log().all()
                     .statusCode(200)
                     .body("size()", is(1));
         }
+    }
 
-        @DisplayName("Reservation 응답의 LocalTime 형식은 xx:xx 이다")
+    @Nested
+    @DisplayName("예약 생성")
+    class ReservationPostTest {
+
+        @DisplayName("일반 유저는 /reservations API를 통해 Reservation을 생성할 수 있다")
         @Test
-        void reservationResponseTest() {
+        void addReservationTest() {
             Map<String, Object> params = new HashMap<>();
-            params.put("name", "브라운");
             params.put("date", "2030-08-05");
             params.put("timeId", 1);
             params.put("themeId", 1);
 
             RestAssured.given().log().all()
+                    .header("Cookie", cookie)
+                    .contentType(ContentType.JSON)
+                    .body(params)
+                    .when().post("/reservations")
+                    .then().log().all()
+                    .statusCode(201)
+                    .body("id", is(2));
+
+            RestAssured.given().log().all()
+                    .when().get("/reservations")
+                    .then().log().all()
+                    .statusCode(200)
+                    .body("size()", is(2));
+        }
+
+        @DisplayName("어드민은 /reservations API를 통해 Reservation을 생성할 수 없다")
+        @Test
+        void addReservationExceptionTest1() {
+            LoginMember admin = LoginMemberFixture.getAdmin();
+            String admin_cookie = RestAssured
+                    .given().log().all()
+                    .body(new LoginRequest(admin.getPassword(), admin.getEmail()))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().post("/login")
+                    .then().log().all().extract().header("Set-Cookie").split(";")[0];
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("date", "2030-08-05");
+            params.put("timeId", 1);
+            params.put("themeId", 1);
+
+            RestAssured.given().log().all()
+                    .header("Cookie", admin_cookie)
+                    .contentType(ContentType.JSON)
+                    .body(params)
+                    .when().post("/reservations")
+                    .then().log().all()
+                    .statusCode(403);
+        }
+
+        @DisplayName("동일한 날짜, 시간, 테마로는 예약을 할 수 없다")
+        @Test
+        void addReservationExceptionTest2() {
+            Map<String, Object> params = new HashMap<>();
+            params.put("date", "2030-08-05");
+            params.put("timeId", 1);
+            params.put("themeId", 1);
+
+            RestAssured.given().log().all()
+                    .header("Cookie", cookie)
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/reservations")
@@ -98,9 +122,12 @@ class ReservationControllerTest {
                     .statusCode(201);
 
             RestAssured.given().log().all()
-                    .when().get("/reservations")
+                    .header("Cookie", cookie)
+                    .contentType(ContentType.JSON)
+                    .body(params)
+                    .when().post("/reservations")
                     .then().log().all()
-                    .body("[0].time.startAt", equalTo("10:00"));
+                    .statusCode(400);
         }
     }
 
@@ -111,37 +138,6 @@ class ReservationControllerTest {
         @DisplayName("존재하는 예약을 삭제할 수 있다")
         @Test
         void deleteReservationTest() {
-            ReservationTimeCreateRequest reservationTime = new ReservationTimeCreateRequest(LocalTime.of(10, 0));
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(reservationTime)
-                    .when().post("/times")
-                    .then().log().all()
-                    .statusCode(201);
-
-            ThemeCreateRequest theme = new ThemeCreateRequest("a", "b", "https://");
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(theme)
-                    .when().post("/themes")
-                    .then().log().all()
-                    .statusCode(201);
-
-            Map<String, Object> params = new HashMap<>();
-            params.put("name", "브라운");
-            params.put("date", "2030-08-05");
-            params.put("timeId", 1);
-            params.put("themeId", 1);
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(params)
-                    .when().post("/reservations")
-                    .then().log().all()
-                    .statusCode(201);
-
             RestAssured.given().log().all()
                     .when().delete("/reservations/1")
                     .then().log().all()

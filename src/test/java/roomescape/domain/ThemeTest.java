@@ -20,13 +20,21 @@ class ThemeTest {
 
     @DisplayName("Thumbnail이 존재하지 않으면 생성 불가능하다")
     @Test
-    void invalidThemeThumbnailTest() {
+    void invalidThemeThumbnailTest1() {
         Assertions.assertThatThrownBy(() ->
                         new Theme(1L, "가이온", ".", null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("공백이거나 이름이 존재하지 않는 경우 생성할 수 없다.")
+    @DisplayName("Thumbnail이 https URL 형식이 아니면 생성 불가능하다")
+    @Test
+    void invalidThemeThumbnailTest2() {
+        Assertions.assertThatThrownBy(() ->
+                        new Theme(1L, "가이온", ".", "."))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("테마 이름이 공백이거나 존재하지 않는 경우 생성할 수 없다.")
     @ParameterizedTest
     @MethodSource("invalidNames")
     void invalidThemeNameTest(String themeName) {

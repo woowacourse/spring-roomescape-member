@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationName;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.time.AvailableReservationTimeResponse;
@@ -32,7 +33,7 @@ class ReservationTimeServiceTest {
 
     @Nested
     @DisplayName("예약시간 생성")
-    class ReservationTimeCreateTest{
+    class ReservationTimeCreateTest {
 
         @DisplayName("ReservationTime을 생성할 수 있다")
         @Test
@@ -58,7 +59,7 @@ class ReservationTimeServiceTest {
 
     @Nested
     @DisplayName("예약시간 조회")
-    class ReservationTimeFindTest{
+    class ReservationTimeFindTest {
 
         @DisplayName("모든 ReservationTime을 조회할 수 있다")
         @Test
@@ -79,8 +80,8 @@ class ReservationTimeServiceTest {
             reservationTimeService.createReservationTime(new ReservationTimeCreateRequest(LocalTime.of(11, 0)));
 
             ReservationTime reservationTime = reservationTimeRepository.findById(1L).get();
-            Theme theme = new Theme(1L, "ABC","DEF","https://");
-            Reservation reservation = new Reservation(1L, "가이온", LocalDate.now().plusDays(1), reservationTime, theme);
+            Theme theme = new Theme(1L, "ABC", "DEF", "https://");
+            Reservation reservation = new Reservation(1L, new ReservationName(1L, "가이온"), LocalDate.now().plusDays(1), reservationTime, theme);
             reservationRepository.save(reservation);
 
             List<AvailableReservationTimeResponse> availableReservationTimes = reservationTimeService.findAvailableReservationTimes(LocalDate.now().plusDays(1), 1L);
