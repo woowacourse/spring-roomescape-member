@@ -2,42 +2,35 @@ package roomescape.auth.infrastructure;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import java.util.Date;
-import org.springframework.beans.factory.annotation.Value;
+import io.jsonwebtoken.JwtParser;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import roomescape.auth.dto.AuthenticatedMember;
-import roomescape.global.exception.AuthenticationException.InvalidTokenException;
-import roomescape.global.util.NumberParser;
 import roomescape.domain.member.model.Member;
 import roomescape.domain.member.model.Role;
+import roomescape.global.exception.AuthenticationException.InvalidTokenException;
+import roomescape.global.util.NumberParser;
 
 @Component
+@RequiredArgsConstructor
 public class JwtTokenService implements TokenService {
 
     private static final String CLAIM_EMAIL_KEY = "email";
     private static final String CLAIM_ROLE_KEY = "role";
     private static final String CLAIM_NAME_KEY = "name";
 
-    @Value("${jwt.secret-key}")
-    String secretKey;
-    @Value("${jwt.expiration}")
-    int expiration;
-    @Value("${jwt.issure}")
-    String issure;
+    private final JwtBuilder jwtBuilder;
+    private final JwtParser jwtParser;
 
     @Override
     public String create(Member member) {
-        return Jwts.builder()
+        return jwtBuilder
                 .subject(member.getId().toString())
-                .expiration(new Date(System.currentTimeMillis() + expiration))
                 .claim(CLAIM_EMAIL_KEY, member.getEmail())
                 .claim(CLAIM_ROLE_KEY, member.getRole().name())
                 .claim(CLAIM_NAME_KEY, member.getName())
-                .issuer(issure)
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
 
@@ -55,9 +48,7 @@ public class JwtTokenService implements TokenService {
 
     private Claims extracClaims(String token) {
         try {
-            return Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                    .build()
+            return jwtParser
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (ExpiredJwtException e) {

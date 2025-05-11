@@ -4,11 +4,9 @@ import static roomescape.auth.web.constant.AuthConstant.AUTH_COOKIE_KEY;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.stereotype.Component;
 import roomescape.global.exception.AuthenticationException;
 import roomescape.global.util.CookieUtils;
 
-@Component
 public class CookieAuthorizationExtractor {
 
     public static String extract(HttpServletRequest request) {

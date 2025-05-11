@@ -10,4 +10,4 @@ spring:
 jwt:
   secret-key: Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=
   expiration: 3600000  # ms, 1시간
-  issure: wade
+  issuer: wade
