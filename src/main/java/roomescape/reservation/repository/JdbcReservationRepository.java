@@ -28,7 +28,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         String sql = "SELECT r.id AS reservation_id, " +
-                "r.date, " +
+                "r.date AS reservation_date, " +
                 "rt.id AS reservation_time_id, " +
                 "rt.start_at AS reservation_time_start_at, " +
                 "t.id AS theme_id, " +
