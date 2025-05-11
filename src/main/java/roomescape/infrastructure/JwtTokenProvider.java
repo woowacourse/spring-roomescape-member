@@ -2,6 +2,7 @@ package roomescape.infrastructure;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
@@ -38,27 +39,33 @@ public class JwtTokenProvider {
 
     public String extractSubject(String token) {
         validateToken(token);
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
+        return createTokenParser()
                 .parseSignedClaims(token).getPayload().getSubject();
     }
 
     public Role extractRole(String token) {
         validateToken(token);
-        return Role.of(Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token).getPayload().get("role", String.class));
+        return Role.of(
+                createTokenParser()
+                        .parseSignedClaims(token)
+                        .getPayload()
+                        .get("role", String.class)
+        );
     }
 
     private void validateToken(String token) {
         try {
-            Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
+            createTokenParser().parseSignedClaims(token);
         } catch (ExpiredJwtException e) {
             throw new ExpiredTokenException();
         } catch (JwtException | IllegalArgumentException e) {
             throw new InvalidTokenException();
         }
     }
+
+    private JwtParser createTokenParser() {
+        return Jwts.parser().verifyWith(secretKey).build();
+    }
+
+
 }
