@@ -17,9 +17,18 @@ public class MemberService {
     }
 
     public MemberResponse save(final MemberRequest request) {
+        boolean emailExist = memberRepository.isExistsByEmail(request.email());
+        validateEmailExists(emailExist);
+
         Long id = memberRepository.save(Member.createWithoutId(request.name(), request.email(), request.password()));
 
         return new MemberResponse(id, request.name());
+    }
+
+    private static void validateEmailExists(boolean emailExist) {
+        if (emailExist) {
+            throw new IllegalArgumentException("중복되는 이메일입니다.");
+        }
     }
 
     public Member findByEmail(final String email) {
