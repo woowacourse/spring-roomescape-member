@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import roomescape.exception.DBFKException;
+import roomescape.exception.DatabaseForeignKeyException;
 import roomescape.exception.InvalidTokenException;
 
 @RestControllerAdvice
@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
     public static final String ERROR_MESSAGE_PREFIX = "[ERROR] ";
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = {IllegalArgumentException.class, DBFKException.class})
+    @ExceptionHandler(value = {IllegalArgumentException.class, DatabaseForeignKeyException.class})
     public String handleBadRequestException(RuntimeException e) {
         return ERROR_MESSAGE_PREFIX + e.getMessage();
     }

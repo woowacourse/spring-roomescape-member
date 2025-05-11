@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import roomescape.domain.ReservationTheme;
-import roomescape.exception.DBFKException;
+import roomescape.exception.DatabaseForeignKeyException;
 
 @Component
 @RequiredArgsConstructor
@@ -74,7 +74,7 @@ public class ReservationThemeDao {
         try {
             jdbcTemplate.update(deleteQuery, id);
         } catch (DataIntegrityViolationException e) {
-            throw new DBFKException("삭제하려는 테마에 예약이 존재합니다.", e);
+            throw new DatabaseForeignKeyException("삭제하려는 테마에 예약이 존재합니다.", e);
         }
     }
 

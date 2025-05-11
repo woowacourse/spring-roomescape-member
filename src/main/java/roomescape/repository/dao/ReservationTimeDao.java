@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.DBFKException;
+import roomescape.exception.DatabaseForeignKeyException;
 
 @Component
 @RequiredArgsConstructor
@@ -71,7 +71,7 @@ public class ReservationTimeDao {
         try {
             jdbcTemplate.update(deleteQuery, id);
         } catch (DataIntegrityViolationException e) {
-            throw new DBFKException("삭제하려는 시간을 사용중인 예약이 있습니다.", e);
+            throw new DatabaseForeignKeyException("삭제하려는 시간을 사용중인 예약이 있습니다.", e);
         }
     }
 

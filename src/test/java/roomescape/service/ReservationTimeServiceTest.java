@@ -22,7 +22,7 @@ import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.CreateReservationTimeRequest;
 import roomescape.dto.response.ReservationTimeResponse;
-import roomescape.exception.DBFKException;
+import roomescape.exception.DatabaseForeignKeyException;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationThemeRepository;
@@ -129,7 +129,7 @@ class ReservationTimeServiceTest extends DataBasedTest {
 
         // then
         assertThatThrownBy(throwingCallable)
-                .isInstanceOf(DBFKException.class)
+                .isInstanceOf(DatabaseForeignKeyException.class)
                 .hasMessage("삭제하려는 시간을 사용중인 예약이 있습니다.");
     }
 }

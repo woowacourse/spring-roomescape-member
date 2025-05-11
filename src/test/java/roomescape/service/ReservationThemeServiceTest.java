@@ -21,7 +21,7 @@ import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.CreateReservationThemeRequest;
 import roomescape.dto.response.ReservationThemeResponse;
-import roomescape.exception.DBFKException;
+import roomescape.exception.DatabaseForeignKeyException;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationThemeRepository;
@@ -102,7 +102,7 @@ class ReservationThemeServiceTest extends DataBasedTest {
 
         // then
         assertThatThrownBy(throwingCallable)
-                .isInstanceOf(DBFKException.class)
+                .isInstanceOf(DatabaseForeignKeyException.class)
                 .hasMessage("삭제하려는 테마에 예약이 존재합니다.");
     }
 
