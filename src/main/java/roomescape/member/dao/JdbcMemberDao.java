@@ -2,8 +2,12 @@ package roomescape.member.dao;
 
 import java.util.List;
 import java.util.Optional;
+import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 
@@ -21,9 +25,31 @@ public class JdbcMemberDao implements MemberDao {
                     );
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public JdbcMemberDao(final JdbcTemplate jdbcTemplate) {
+    public JdbcMemberDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id");
+    }
+
+    @Override
+    public long insert(final Member member) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("id", member.getId())
+                .addValue("role", member.getRole().toString())
+                .addValue("name", member.getName())
+                .addValue("email", member.getEmail())
+                .addValue("password", member.getPassword());
+        final Number newId = simpleJdbcInsert.executeAndReturnKey(parameters);
+        return newId.longValue();
+    }
+
+    @Override
+    public boolean existsByEmail(final String email) {
+        final String query = "SELECT EXISTS (SELECT 1 FROM member WHERE email = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, email));
     }
 
     @Override

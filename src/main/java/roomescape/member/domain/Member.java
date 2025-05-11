@@ -6,6 +6,7 @@ import roomescape.exception.custom.InvalidInputException;
 
 public class Member {
 
+    private static final int NON_SAVED_STATUS = 0;
     private static final int NAME_MAX_LENGTH = 15;
     private static final int EMAIL_MAX_LENGTH = 30;
     private static final int PASSWORD_MAX_LENGTH = 20;
@@ -30,6 +31,14 @@ public class Member {
         this.name = name;
         this.email = email;
         this.password = password;
+    }
+
+    public Member(final String name, final String email, final String password) {
+        this(NON_SAVED_STATUS, Role.USER, name, email, password);
+    }
+
+    public Member(final long id, final Member savedMember) {
+        this(id, savedMember.getRole(), savedMember.getName(), savedMember.getEmail(), savedMember.getPassword());
     }
 
     public static Member of(long id, String role, String name, String email, String password) {
