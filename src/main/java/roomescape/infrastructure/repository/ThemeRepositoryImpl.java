@@ -15,11 +15,11 @@ import roomescape.infrastructure.dao.ThemeDao;
 import java.util.List;
 
 @Repository
-public class JdbcThemeRepository implements ThemeRepository {
+public class ThemeRepositoryImpl implements ThemeRepository {
 
     private final ThemeDao themeDao;
 
-    public JdbcThemeRepository(final ThemeDao themeDao) {
+    public ThemeRepositoryImpl(final ThemeDao themeDao) {
         this.themeDao = themeDao;
     }
 

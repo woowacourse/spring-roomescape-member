@@ -9,8 +9,12 @@ import roomescape.domain.model.Reservation;
 import roomescape.domain.model.Theme;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ThemeRepository;
-import roomescape.fake.FakeReservationRepository;
-import roomescape.fake.FakeThemeRepository;
+import roomescape.fake.ReservationDaoFake;
+import roomescape.fake.ThemeDaoFake;
+import roomescape.infrastructure.dao.ReservationDao;
+import roomescape.infrastructure.dao.ThemeDao;
+import roomescape.infrastructure.repository.ReservationRepositoryImpl;
+import roomescape.infrastructure.repository.ThemeRepositoryImpl;
 import roomescape.presentation.dto.request.ThemeRequest;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -19,19 +23,24 @@ import static roomescape.fixture.TestFixture.*;
 
 public class ThemeServiceTest {
 
+    ReservationDao reservationDao;
     ReservationRepository reservationRepository;
+    ThemeDao themeDao;
     ThemeRepository themeRepository;
     ThemeService themeService;
 
     public ThemeServiceTest() {
-        reservationRepository = new FakeReservationRepository();
-        themeRepository = new FakeThemeRepository();
+        reservationDao = new ReservationDaoFake();
+        reservationRepository = new ReservationRepositoryImpl(reservationDao);
+        themeDao = new ThemeDaoFake();
+        themeRepository = new ThemeRepositoryImpl(themeDao);
         this.themeService = new ThemeService(reservationRepository, themeRepository);
     }
 
     @BeforeEach
     void setUp() {
-        ((FakeThemeRepository) themeRepository).clear();
+        ((ReservationDaoFake) reservationDao).clear();
+        ((ThemeDaoFake) themeDao).clear();
     }
 
     @Test

@@ -1,17 +1,23 @@
-package roomescape.fake;
+package roomescape.infrastructure.repository;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.stereotype.Repository;
+import roomescape.domain.exception.ReservationDuplicatedException;
 import roomescape.domain.model.Reservation;
 import roomescape.domain.repository.ReservationRepository;
+import roomescape.infrastructure.dao.ReservationDao;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public class FakeReservationRepository implements ReservationRepository {
+@Repository
+public class ReservationRepositoryImpl implements ReservationRepository {
 
-    private final FakeReservationDao reservationDao;
+    private final ReservationDao reservationDao;
 
-    public FakeReservationRepository() {
-        this.reservationDao = new FakeReservationDao();
+    public ReservationRepositoryImpl(final ReservationDao reservationDao) {
+        this.reservationDao = reservationDao;
     }
 
     @Override
@@ -26,7 +32,13 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(final Reservation reservation) {
-        return reservationDao.save(reservation);
+        try {
+            return reservationDao.save(reservation);
+        } catch (DuplicateKeyException e) {
+            throw new ReservationDuplicatedException();
+        } catch (DataAccessException e) {
+            throw new IllegalArgumentException("[ERROR] 예약 생성에 실패하였습니다");
+        }
     }
 
     @Override
@@ -52,9 +64,5 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findByThemeIdAndMemberIdAndDate(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
         return reservationDao.findByThemeIdAndMemberIdAndDate(themeId, memberId, dateFrom, dateTo);
-    }
-
-    public void clear() {
-        reservationDao.clear();
     }
 }

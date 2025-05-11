@@ -12,11 +12,11 @@ import roomescape.infrastructure.dao.MemberDao;
 import java.util.List;
 
 @Repository
-public class JdbcMemberRepository implements MemberRepository {
+public class MemberRepositoryImpl implements MemberRepository {
 
     private final MemberDao memberDao;
 
-    public JdbcMemberRepository(final MemberDao memberDao) {
+    public MemberRepositoryImpl(final MemberDao memberDao) {
         this.memberDao = memberDao;
     }
 

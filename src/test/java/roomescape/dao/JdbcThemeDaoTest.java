@@ -6,22 +6,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.model.Theme;
-import roomescape.infrastructure.dao.ThemeDao;
+import roomescape.infrastructure.dao.JdbcThemeDao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.fixture.TestFixture.DEFAULT_THEME;
 
 @JdbcTest
-public class ThemeDaoTest {
+public class JdbcThemeDaoTest {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
-    ThemeDao themeDao;
+    JdbcThemeDao themeDao;
 
     @BeforeEach
     void setUp() {
-        themeDao = new ThemeDao(jdbcTemplate);
+        themeDao = new JdbcThemeDao(jdbcTemplate);
     }
 
     @Test

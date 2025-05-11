@@ -10,8 +10,11 @@ import roomescape.domain.model.Reservation;
 import roomescape.domain.model.ReservationTime;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
-import roomescape.fake.FakeReservationRepository;
-import roomescape.fake.FakeReservationTimeRepository;
+import roomescape.fake.ReservationDaoFake;
+import roomescape.fake.ReservationTimeDaoFake;
+import roomescape.infrastructure.dao.ReservationTimeDao;
+import roomescape.infrastructure.repository.ReservationRepositoryImpl;
+import roomescape.infrastructure.repository.ReservationTimeRepositoryImpl;
 import roomescape.presentation.dto.request.ReservationTimeRequest;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -20,19 +23,21 @@ import static roomescape.fixture.TestFixture.*;
 
 public class ReservationTimeServiceTest {
 
+    ReservationTimeDao reservationTimeDao;
     ReservationRepository reservationRepository;
     ReservationTimeRepository reservationTimeRepository;
     ReservationTimeService reservationTimeService;
 
     public ReservationTimeServiceTest() {
-        reservationRepository = new FakeReservationRepository();
-        reservationTimeRepository = new FakeReservationTimeRepository();
+        reservationTimeDao = new ReservationTimeDaoFake();
+        reservationRepository = new ReservationRepositoryImpl(new ReservationDaoFake());
+        reservationTimeRepository = new ReservationTimeRepositoryImpl(reservationTimeDao);
         this.reservationTimeService = new ReservationTimeService(reservationRepository, reservationTimeRepository);
     }
 
     @BeforeEach
     void setUp() {
-        ((FakeReservationTimeRepository) reservationTimeRepository).clear();
+        ((ReservationTimeDaoFake) reservationTimeDao).clear();
     }
 
     @Test

@@ -9,10 +9,10 @@ import roomescape.domain.model.Member;
 import roomescape.domain.model.Reservation;
 import roomescape.domain.model.ReservationTime;
 import roomescape.domain.model.Theme;
-import roomescape.infrastructure.dao.MemberDao;
-import roomescape.infrastructure.dao.ReservationDao;
-import roomescape.infrastructure.dao.ReservationTimeDao;
-import roomescape.infrastructure.dao.ThemeDao;
+import roomescape.infrastructure.dao.JdbcMemberDao;
+import roomescape.infrastructure.dao.JdbcReservationDao;
+import roomescape.infrastructure.dao.JdbcReservationTimeDao;
+import roomescape.infrastructure.dao.JdbcThemeDao;
 
 import java.time.LocalDate;
 
@@ -21,22 +21,22 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.fixture.TestFixture.*;
 
 @JdbcTest
-class ReservationDaoTest {
+class JdbcReservationDaoTest {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
-    ReservationDao reservationDao;
-    ReservationTimeDao reservationTimeDao;
-    ThemeDao themeDao;
+    JdbcReservationDao reservationDao;
+    JdbcReservationTimeDao reservationTimeDao;
+    JdbcThemeDao themeDao;
     Long memberId;
 
     @BeforeEach
     void setUp() {
-        reservationDao = new ReservationDao(jdbcTemplate);
-        reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
-        themeDao = new ThemeDao(jdbcTemplate);
+        reservationDao = new JdbcReservationDao(jdbcTemplate);
+        reservationTimeDao = new JdbcReservationTimeDao(jdbcTemplate);
+        themeDao = new JdbcThemeDao(jdbcTemplate);
 
-        MemberDao memberDao = new MemberDao(jdbcTemplate);
+        JdbcMemberDao memberDao = new JdbcMemberDao(jdbcTemplate);
         memberId = memberDao.save(new Member("유저", "user@gmail.com", "1234", "user"));
     }
 

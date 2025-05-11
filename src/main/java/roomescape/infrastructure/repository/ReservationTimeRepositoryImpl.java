@@ -15,11 +15,11 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Repository
-public class JdbcReservationTimeRepository implements ReservationTimeRepository {
+public class ReservationTimeRepositoryImpl implements ReservationTimeRepository {
 
     private final ReservationTimeDao reservationTimeDao;
 
-    public JdbcReservationTimeRepository(final ReservationTimeDao reservationTimeDao) {
+    public ReservationTimeRepositoryImpl(final ReservationTimeDao reservationTimeDao) {
         this.reservationTimeDao = reservationTimeDao;
     }
 
