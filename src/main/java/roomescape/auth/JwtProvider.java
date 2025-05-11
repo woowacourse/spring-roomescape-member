@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.dto.TokenInfo;
 import roomescape.dto.request.LoginMember;
+import roomescape.global.exception.AuthenticationException;
 
 @Service
 public class JwtProvider {
@@ -35,7 +36,7 @@ public class JwtProvider {
                     .getPayload();
             return new TokenInfo(Long.parseLong(payload.getSubject()), payload.get("role", String.class));
         } catch (JwtException e) {
-            throw new IllegalArgumentException("접근할 수 없습니다.");
+            throw new AuthenticationException("접근할 수 없습니다.");
         }
     }
 }

@@ -3,6 +3,7 @@ package roomescape.global.interceptor;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.JwtProvider;
@@ -17,14 +18,15 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws IOException {
         Cookie[] cookies = request.getCookies();
         String accessToken = extractTokenFromCookie(cookies);
         if (accessToken == null) {
-            throw new IllegalArgumentException("토큰이 존재하지 않습니다.");
+            response.sendRedirect(request.getContextPath() + "/login");
+            return false;
         }
         TokenInfo tokenInfo = jwtProvider.validateTokenAndGetInfo(accessToken);
-        System.out.println("id = " + tokenInfo.id());
         request.setAttribute("memberId", tokenInfo.id());
         return true;
     }
