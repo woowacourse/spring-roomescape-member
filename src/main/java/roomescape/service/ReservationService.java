@@ -36,6 +36,11 @@ public class ReservationService {
         return reservationDao.findAllReservations();
     }
 
+    public List<Reservation> findReservationsByFilters(Long themeId, Long memberId, LocalDate dateFrom,
+        LocalDate dateTo) {
+        return reservationDao.findReservationsByFilters(themeId, memberId, dateFrom, dateTo);
+    }
+
     public Reservation addReservationAfterNow(Member member, ReservationRequest request) {
         LocalDate date = request.date();
         ReservationTime time = reservationTimeDao.findTimeById(request.timeId());

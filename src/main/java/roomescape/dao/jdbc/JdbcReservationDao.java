@@ -55,6 +55,37 @@ public class JdbcReservationDao implements ReservationDao {
         return jdbcTemplate.query(sql, createReservationMapper());
     }
 
+    public List<Reservation> findReservationsByFilters(Long themeId, Long memberId,
+        LocalDate dateFrom, LocalDate dateTo) {
+        String sql = """
+            SELECT
+                r.id as reservation_id,
+                m.id as member_id,
+                m.name as member_name,
+                m.email as member_email,
+                m.password as member_password,
+                r.date,
+                rt.id as time_id,
+                rt.start_at as time_value,
+                t.id as theme_id,
+                t.name as theme_name,
+                t.description,
+                t.thumbnail
+            FROM reservation as r
+            INNER JOIN member as m
+            INNER JOIN reservation_time as rt
+            INNER JOIN theme as t
+            ON r.member_id = m.id
+            ON r.time_id = rt.id
+            ON r.theme_id = t.id
+            WHERE theme_id = ?
+                AND member_id = ?
+                AND r.date >= ?
+                AND r.date <= ?
+            """;
+        return jdbcTemplate.query(sql, createReservationMapper(), themeId, memberId, dateFrom, dateTo);
+    }
+
     public boolean existReservationByDateTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
         String sql = """
             SELECT EXISTS (

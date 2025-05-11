@@ -17,6 +17,16 @@ public class FakeReservationDao implements ReservationDao {
         return Collections.unmodifiableList(reservations);
     }
 
+    public List<Reservation> findReservationsByFilters(Long themeId, Long memberId,
+        LocalDate dateFrom, LocalDate dateTo) {
+        return reservations.stream()
+            .filter(r -> themeId == null || r.getTheme().getId().equals(themeId))
+            .filter(r -> memberId == null || r.getMember().getId().equals(memberId))
+            .filter(r -> dateFrom == null || !r.getDate().isBefore(dateFrom))
+            .filter(r -> dateTo == null || !r.getDate().isAfter(dateTo))
+            .toList();
+    }
+
     public boolean existReservationByDateTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
         return reservations.stream()
             .anyMatch(r -> r.getDate().equals(date)
