@@ -23,7 +23,7 @@ public class TestFixture {
 
     public static Reservation makeReservation(final Long reservationId, final long reservationTimeId) {
         ReservationTime reservationTime = makeReservationTime(reservationTimeId);
-        return Reservation.of(reservationId, LocalDate.now().plusDays(1), makeMember(), reservationTime, makeTheme(1L));
+        return Reservation.of(reservationId, makeFutureDate(), makeMember(), reservationTime, makeTheme(1L));
     }
 
     public static ReservationTime makeReservationTime(final long reservationTimeId) {
@@ -32,6 +32,10 @@ public class TestFixture {
 
     public static LocalDate makeFutureDate() {
         return LocalDate.now().plusDays(5);
+    }
+
+    public static LocalDate makeNowDate() {
+        return LocalDate.of(2025, 5, 11);
     }
 
     public static Member makeMember() {

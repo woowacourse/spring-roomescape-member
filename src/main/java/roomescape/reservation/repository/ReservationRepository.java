@@ -9,6 +9,8 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
+    List<Reservation> findFilteredReservations(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo);
+
     Reservation save(Reservation reservation);
 
     boolean deleteById(Long id);

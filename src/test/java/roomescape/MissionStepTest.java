@@ -26,6 +26,8 @@ import roomescape.global.auth.dto.LoginRequest;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.dto.SignupRequest;
 import roomescape.reservation.controller.ReservationController;
+import roomescape.reservation.dto.response.ReservationResponse;
+import roomescape.reservation.fixture.TestFixture;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -38,7 +40,7 @@ public class MissionStepTest {
     private static final String USER_EMAIL = "user@gmail.com";
     private static final String ADMIN_EMAIL = "admin@gmail.com";
     private static final String PASSWORD = "password";
-    private static final String futureDate = LocalDate.now().plusDays(1).toString();
+    private static final String futureDate = TestFixture.makeFutureDate().toString();
     private static final String TOKEN = "token";
 
     @Nested
@@ -77,7 +79,7 @@ public class MissionStepTest {
 
             createReservationTime();
             createTheme("추리");
-            createUserReservation();
+            createUserReservation(1L);
 
             RestAssured.given().log().all()
                     .when().get("/reservations")
@@ -133,7 +135,7 @@ public class MissionStepTest {
 
             createReservationTime();
             createTheme("추리");
-            createUserReservation();
+            createUserReservation(1L);
 
             Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
             assertThat(count).isEqualTo(1);
@@ -170,7 +172,7 @@ public class MissionStepTest {
         void step8_schemaModification() {
             createReservationTime();
             createTheme("추리");
-            createUserReservation();
+            createUserReservation(1L);
 
             RestAssured.given().log().all()
                     .when().get("/reservations")
@@ -355,6 +357,26 @@ public class MissionStepTest {
                     .then().log().all()
                     .statusCode(403);
         }
+
+        @Test
+        void step7_filterReservations() {
+            createReservationTime();
+            createTheme("추리");
+            createTheme("로맨스");
+            createUserReservation(1L);
+            createUserReservation(2L);
+
+            List<ReservationResponse> reservations = RestAssured.given().log().all()
+                    .when().queryParams("themeId", 1L, "memberId", 2L, "dateFrom", futureDate,
+                            "dateTo", TestFixture.makeFutureDate().plusDays(1).toString())
+                    .get("/reservations")
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .as(new TypeRef<>() {
+                    });
+            assertThat(reservations.size()).isEqualTo(1);
+        }
     }
 
     private static String loginAndGetAuthToken(final String email, final String password) {
@@ -377,13 +399,13 @@ public class MissionStepTest {
                 .statusCode(201);
     }
 
-    private void createUserReservation() {
+    private void createUserReservation(final Long themeId) {
         String authToken = loginAndGetAuthToken(USER_EMAIL, PASSWORD);
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("date", futureDate);
         reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
+        reservation.put("themeId", themeId);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

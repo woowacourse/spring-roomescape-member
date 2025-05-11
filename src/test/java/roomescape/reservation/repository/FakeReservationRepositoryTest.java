@@ -16,7 +16,8 @@ import roomescape.theme.repository.ThemeRepository;
 
 class FakeReservationRepositoryTest {
 
-    private final LocalDate futureDate = LocalDate.now().plusDays(1);
+    private final LocalDate futureDate = TestFixture.makeFutureDate();
+
     private ReservationRepository reservationRepository;
     private Reservation reservation;
     private Theme theme;
@@ -37,7 +38,8 @@ class FakeReservationRepositoryTest {
     void save_shouldStoreReservation() {
         reservationRepository.save(reservation);
 
-        assertThat(reservationRepository.findAll()).hasSize(1);
+        assertThat(reservationRepository.findAll())
+                .hasSize(1);
     }
 
     @Test

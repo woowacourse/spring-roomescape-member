@@ -28,6 +28,8 @@ class ReservationServiceTest {
 
     private static final LocalDate futureDate = TestFixture.makeFutureDate();
     private static final LocalDateTime afterOneHour = TestFixture.makeTimeAfterOneHour();
+    private static final Long themeId = 1L;
+    private static final Long memberId = 1L;
 
     private ReservationService reservationService;
     private ReservationTimeRepository reservationTimeRepository;
@@ -52,7 +54,7 @@ class ReservationServiceTest {
 
     @Test
     void createReservation_shouldReturnResponseWhenSuccessful() {
-        ReservationResponse response = reservationService.create(futureDate, 1L, 1L, 1L, afterOneHour);
+        ReservationResponse response = reservationService.create(futureDate, 1L, 1L, memberId, afterOneHour);
 
         Assertions.assertAll(
                 () -> assertThat(response.member().name()).isEqualTo("Mint"),
@@ -64,10 +66,10 @@ class ReservationServiceTest {
     @Test
     void getReservations_shouldReturnAllCreatedReservations() {
         reservationTimeRepository.save(ReservationTime.of(2L, LocalTime.of(10, 0)));
-        reservationService.create(futureDate, 1L, 1L, 1L, afterOneHour);
-        reservationService.create(futureDate, 2L, 1L, 1L, afterOneHour);
+        reservationService.create(futureDate, 1L, 1L, memberId, afterOneHour);
+        reservationService.create(futureDate, 2L, 1L, memberId, afterOneHour);
 
-        List<ReservationResponse> result = reservationService.getReservations();
+        List<ReservationResponse> result = reservationService.findReservations(null, null, null, null);
         assertThat(result).hasSize(2);
     }
 
@@ -80,10 +82,11 @@ class ReservationServiceTest {
 
     @Test
     void deleteReservation_shouldRemoveSuccessfully() {
-        ReservationResponse response = reservationService.create(futureDate, 1L, 1L, 1L, afterOneHour);
+        ReservationResponse response = reservationService.create(futureDate, 1L, 1L, memberId, afterOneHour);
         reservationService.delete(response.id());
 
-        List<ReservationResponse> result = reservationService.getReservations();
+        List<ReservationResponse> result = reservationService.findReservations(themeId, memberId, futureDate,
+                futureDate.plusDays(1));
         assertThat(result).isEmpty();
     }
 
@@ -91,14 +94,14 @@ class ReservationServiceTest {
     void createReservation_shouldThrowException_WhenDuplicated() {
         reservationService.create(futureDate, 1L, 1L, 1L, afterOneHour);
 
-        assertThatThrownBy(() -> reservationService.create(futureDate, 1L, 1L, 1L, afterOneHour))
+        assertThatThrownBy(() -> reservationService.create(futureDate, 1L, 1L, memberId, afterOneHour))
                 .isInstanceOf(ReservationAlreadyExistsException.class)
                 .hasMessageContaining("해당 시간에 이미 예약이 존재합니다.");
     }
 
     @Test
     void createReservation_shouldThrowException_WhenTimeIdNotFound() {
-        assertThatThrownBy(() -> reservationService.create(futureDate, 3L, 1L, 1L, afterOneHour))
+        assertThatThrownBy(() -> reservationService.create(futureDate, 3L, 1L, memberId, afterOneHour))
                 .isInstanceOf(ReservationNotFoundException.class)
                 .hasMessageContaining("요청한 id와 일치하는 예약 시간 정보가 없습니다.");
     }

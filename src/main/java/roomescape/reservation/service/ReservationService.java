@@ -35,8 +35,10 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public List<ReservationResponse> getReservations() {
-        return reservationRepository.findAll().stream()
+    public List<ReservationResponse> findReservations(final Long themeId, final Long memberId, final LocalDate dateFrom,
+                                                      final LocalDate dateTo) {
+        return getReservations(themeId, memberId, dateFrom, dateTo)
+                .stream()
                 .map(reservation -> {
                     ReservationTime time = reservation.getTime();
                     Theme theme = reservation.getTheme();
@@ -44,6 +46,14 @@ public class ReservationService {
                     return ReservationResponse.of(reservation, time, theme, member);
                 })
                 .toList();
+    }
+
+    private List<Reservation> getReservations(final Long themeId, final Long memberId,
+                                              final LocalDate dateFrom, final LocalDate dateTo) {
+        if (themeId == null && memberId == null && dateFrom == null && dateTo == null) {
+            return reservationRepository.findAll();
+        }
+        return reservationRepository.findFilteredReservations(themeId, memberId, dateFrom, dateTo);
     }
 
     public void delete(Long id) {

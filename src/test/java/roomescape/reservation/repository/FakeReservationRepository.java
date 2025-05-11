@@ -26,6 +26,25 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findFilteredReservations(final Long themeId, final Long memberId, final LocalDate dateFrom,
+                                     final LocalDate dateTo) {
+        return reservations.entrySet().stream()
+                .filter(entry -> {
+                    Reservation reservation = entry.getValue();
+                    return reservation.getTheme().getId().equals(themeId) &&
+                            reservation.getMember().getId().equals(memberId) &&
+                            (reservation.getDate().isBefore(dateFrom) || reservation.getDate().equals(dateFrom)) &&
+                            (reservation.getDate().isAfter(dateTo) || reservation.getDate().equals(dateTo));
+                })
+                .map(entry -> {
+                    Reservation value = entry.getValue();
+                    return Reservation.of(entry.getKey(), value.getDate(), value.getMember(),
+                            value.getTime(), value.getTheme());
+                })
+                .toList();
+    }
+
+    @Override
     public Reservation save(final Reservation reservation) {
         Long id = index.getAndIncrement();
         reservations.put(id, reservation);

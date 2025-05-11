@@ -19,7 +19,7 @@ import roomescape.theme.entity.ThemeEntity;
 @Repository
 public class JDBCReservationRepository implements ReservationRepository {
 
-    private static final String SELECT_RESERVATION_WITH_JOIN = "SELECT "
+    private static final String SELECT_ALL_RESERVATION_WITH_JOIN = "SELECT "
             + "r.id as reservation_id, "
             + "r.date, "
             + "t.id as time_id, "
@@ -40,6 +40,29 @@ public class JDBCReservationRepository implements ReservationRepository {
             + "on r.theme_id = th.id "
             + "inner join member as m "
             + "on r.member_id = m.id";
+
+    private static final String SELECT_FILTERED_RESERVATION_WITH_JOIN = "SELECT "
+            + "r.id as reservation_id, "
+            + "r.date, "
+            + "t.id as time_id, "
+            + "t.start_at as time_value, "
+            + "th.id as theme_id, "
+            + "th.name as theme_name, "
+            + "th.description, "
+            + "th.thumbnail, "
+            + "m.id as member_id, "
+            + "m.name as member_name, "
+            + "m.email as member_email, "
+            + "m.password as member_password, "
+            + "m.role as member_role "
+            + "FROM reservation as r "
+            + "inner join reservation_time as t "
+            + "on r.time_id = t.id "
+            + "inner join theme as th "
+            + "on r.theme_id = th.id and r.theme_id = ? "
+            + "inner join member as m "
+            + "on r.member_id = m.id and r.member_id = ? "
+            + "WHERE PARSEDATETIME(r.date, 'yyyy-MM-dd') between ? and ? ";
 
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> {
         ReservationTimeEntity timeEntity = new ReservationTimeEntity(
@@ -91,8 +114,18 @@ public class JDBCReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         return jdbcTemplate.query(
-                SELECT_RESERVATION_WITH_JOIN,
+                SELECT_ALL_RESERVATION_WITH_JOIN,
                 RESERVATION_ROW_MAPPER
+        );
+    }
+
+    @Override
+    public List<Reservation> findFilteredReservations(final Long themeId, final Long memberId, final LocalDate dateFrom,
+                                                      final LocalDate dateTo) {
+        return jdbcTemplate.query(
+                SELECT_FILTERED_RESERVATION_WITH_JOIN,
+                RESERVATION_ROW_MAPPER,
+                themeId, memberId, dateFrom, dateTo
         );
     }
 
