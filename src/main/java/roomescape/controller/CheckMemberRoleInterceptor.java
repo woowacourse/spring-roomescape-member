@@ -28,9 +28,10 @@ public class CheckMemberRoleInterceptor implements HandlerInterceptor {
             throw new AuthorizationException("인증 정보가 올바르지 않습니다.");
         }
         Long memberId = Long.parseLong(jwtTokenProvider.getSub(token));
-        String role = jwtTokenProvider.getPayloadByKey(token, "role");
-        if (!memberService.isExistMemberById(memberId) || !MemberRole.from(role).equals(MemberRole.ADMIN)) {
-            response.setStatus(401);
+        String byKey = jwtTokenProvider.getPayloadByKey(token, "role");
+        MemberRole memberRole = MemberRole.valueOf(byKey);
+        if (!memberService.isExistMemberById(memberId) || !memberRole.equals(MemberRole.ADMIN)) {
+            response.setStatus(403);
             return false;
         }
         return true;
