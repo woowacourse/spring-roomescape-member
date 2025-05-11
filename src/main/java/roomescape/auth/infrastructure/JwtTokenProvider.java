@@ -1,11 +1,15 @@
 package roomescape.auth.infrastructure;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import java.util.Date;
+import java.util.Map;
+import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.global.exception.error.UnauthorizedException;
@@ -19,7 +23,7 @@ public class JwtTokenProvider {
     private static final String EMAIL_CLAIM_KEY = "email";
     private static final String ROLE_CLAIM_KEY = "role";
 
-    private final String secretKey;
+    private final Algorithm algorithm;
     private final Long expirationInMilliseconds;
 
     public JwtTokenProvider(
@@ -27,7 +31,7 @@ public class JwtTokenProvider {
             @Value("${security.jwt.token.expiration}") Long expirationInMilliseconds
 
     ) {
-        this.secretKey = secretKey;
+        algorithm = Algorithm.HMAC256(secretKey);
         this.expirationInMilliseconds = expirationInMilliseconds;
     }
 
@@ -35,39 +39,48 @@ public class JwtTokenProvider {
         Date now = new Date();
         Date expirationDate = new Date(now.getTime() + expirationInMilliseconds);
 
-        return Jwts.builder()
-                .setSubject(member.getId().toString())
-                .claim(NAME_CLAIM_KEY, member.getName())
-                .claim(EMAIL_CLAIM_KEY, member.getEmail())
-                .claim(ROLE_CLAIM_KEY, member.getRole())
-                .setIssuedAt(now)
-                .setExpiration(expirationDate)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
-                .compact();
+        return JWT.create()
+                .withSubject(member.getId().toString())
+                .withClaim(NAME_CLAIM_KEY, member.getName())
+                .withClaim(EMAIL_CLAIM_KEY, member.getEmail())
+                .withClaim(ROLE_CLAIM_KEY, member.getRole().toString())
+                .withIssuedAt(now)
+                .withExpiresAt(expirationDate)
+                .sign(algorithm);
     }
 
     public JwtPayload getPayload(String token) {
-        try {
-            Claims claims = extractClaims(token);
+        DecodedJWT decodedJWT = verifyAndDecodeToken(token);
+        Map<String, Claim> claims = decodedJWT.getClaims();
 
-            return new JwtPayload(
-                    Long.parseLong(claims.getSubject()),
-                    claims.get(NAME_CLAIM_KEY, String.class),
-                    claims.get(EMAIL_CLAIM_KEY, String.class),
-                    Role.valueOf(claims.get(ROLE_CLAIM_KEY, String.class))
-            );
-        } catch (ExpiredJwtException e) {
-            throw new UnauthorizedException("만료된 토큰 입니다.");
-        } catch (JwtException | IllegalArgumentException e) {
-            throw new UnauthorizedException("유효하지 않은 토큰입니다.");
+        return new JwtPayload(
+                Long.parseLong(decodedJWT.getSubject()),
+                getRequiredClaim(claims, NAME_CLAIM_KEY, Claim::asString),
+                getRequiredClaim(claims, EMAIL_CLAIM_KEY, Claim::asString),
+                getRequiredClaim(claims, ROLE_CLAIM_KEY, claim -> Role.valueOf(claim.asString()))
+        );
+    }
+
+    private DecodedJWT verifyAndDecodeToken(String token) {
+        try {
+            return JWT.require(algorithm)
+                    .build()
+                    .verify(token);
+        } catch (TokenExpiredException e) {
+            throw new UnauthorizedException("토큰이 만료되었습니다.");
+        } catch (SignatureVerificationException e) {
+            throw new UnauthorizedException("토큰 내부 서명이 올바르지 않습니다.");
+        } catch (JWTVerificationException e) {
+            throw new UnauthorizedException("JWT 검증에 실패했습니다.");
         }
     }
 
-    private Claims extractClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody();
+    private <T> T getRequiredClaim(Map<String, Claim> claims, String key, Function<Claim, T> extractor) {
+        Claim claim = claims.get(key);
+        if (claim == null || claim.isNull()) {
+            throw new UnauthorizedException("JWT에 [" + key + "] 클레임이 없습니다.");
+        }
+        return extractor.apply(claim);
     }
 
 }

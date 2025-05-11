@@ -4,9 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import java.util.Date;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,16 +35,13 @@ class JwtTokenProviderTest {
         String token = jwtTokenProvider.createToken(member);
 
         // then
-        Claims claims = Jwts.parser()
-                .setSigningKey("mySecretKey")
-                .parseClaimsJws(token)
-                .getBody();
+        JwtPayload payload = jwtTokenProvider.getPayload(token);
 
         assertAll(
                 () -> assertThat(token).isNotNull(),
-                () -> assertThat(claims.get("sub")).isEqualTo("3"),
-                () -> assertThat(claims.get("name")).isEqualTo("행성이"),
-                () -> assertThat(claims.get("email")).isEqualTo("woowa@woowa.com")
+                () -> assertThat(payload.memberId()).isEqualTo(id),
+                () -> assertThat(payload.name()).isEqualTo(name),
+                () -> assertThat(payload.email()).isEqualTo(email)
         );
     }
 
@@ -79,16 +75,16 @@ class JwtTokenProviderTest {
     void validate_token_expiration_exception() {
         // given
         Date now = new Date();
-        String expiredToken = Jwts.builder()
-                .signWith(SignatureAlgorithm.HS256, secretKey)
-                .setIssuedAt(new Date(now.getTime() - expiration))
-                .setExpiration(new Date(now.getTime() - expiration))
-                .compact();
+
+        String expiredToken = JWT.create()
+                .withIssuedAt(new Date(now.getTime() - expiration))
+                .withExpiresAt(new Date(now.getTime() - expiration))
+                .sign(Algorithm.HMAC256(secretKey));
 
         // when & then
         assertThatThrownBy(() -> jwtTokenProvider.getPayload(expiredToken))
                 .isInstanceOf(UnauthorizedException.class)
-                .hasMessage("만료된 토큰 입니다.");
+                .hasMessage("토큰이 만료되었습니다.");
     }
 
     @DisplayName("토큰이 올바르지 않은 경우 예외가 발생한다")
@@ -97,16 +93,40 @@ class JwtTokenProviderTest {
         // given
         Date now = new Date();
 
-        String invalidSignatureToken = Jwts.builder()
-                .signWith(SignatureAlgorithm.HS256, "invalidKey")
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + expiration))
-                .compact();
+        String invalidSignatureToken = JWT.create()
+                .withIssuedAt(now)
+                .withExpiresAt(new Date(now.getTime() + expiration))
+                .sign(Algorithm.HMAC256("invalidKey"));
 
         // when & then
         assertThatThrownBy(() -> jwtTokenProvider.getPayload(invalidSignatureToken))
                 .isInstanceOf(UnauthorizedException.class)
-                .hasMessage("유효하지 않은 토큰입니다.");
+                .hasMessage("토큰 내부 서명이 올바르지 않습니다.");
+    }
+
+    @DisplayName("토큰 내부에 값이 존재하지 않으면 예외가 발생한다")
+    @Test
+    void get_required_claim_test() {
+        // given
+        Long id = 3L;
+        String email = "woowa@woowa.com";
+        String password = "woowa123";
+        Role role = Role.USER;
+
+        Date now = new Date();
+        String token = JWT.create()
+                .withSubject(id.toString())
+                .withClaim("email", email)
+                .withClaim("password", password)
+                .withClaim("role", role.toString())
+                .withIssuedAt(new Date(now.getTime()))
+                .withExpiresAt(new Date(now.getTime() + expiration))
+                .sign(Algorithm.HMAC256(secretKey));
+
+        // when & then
+        assertThatThrownBy(() -> jwtTokenProvider.getPayload(token))
+                .isInstanceOf(UnauthorizedException.class)
+                .hasMessage("JWT에 [name] 클레임이 없습니다.");
     }
 
 }

@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public String handleUnauthorizedException(UnauthorizedException exception) {
         LOGGER.error(exception.getMessage());
-        return exception.getMessage();
+        return "인증에 실패했습니다.";
     }
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
