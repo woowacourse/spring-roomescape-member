@@ -5,7 +5,11 @@ import io.restassured.http.ContentType;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class LoginControllerTest {
 
     private static String getToken(String email, String password) {
@@ -59,5 +63,20 @@ class LoginControllerTest {
                 .body(Map.of("email", "wrong@email.com", "password", "password"))
                 .when().post("/login")
                 .then().statusCode(401);
+    }
+
+    @DisplayName("로그아웃 시 토큰 쿠키가 삭제되고 메인 페이지로 리다이렉트 된다")
+    @Test
+    void logoutTest() {
+        final String token = getToken("user@email.com", "password");
+
+        RestAssured.given()
+                .cookie("token", token)
+                .redirects().follow(false) // 리다이렉트 따라가지 않게 설정
+                .when().post("/logout")
+                .then()
+                .statusCode(303)
+                .header("Location", "/")
+                .cookie("token", "");
     }
 }

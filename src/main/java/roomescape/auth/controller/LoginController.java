@@ -3,6 +3,7 @@ package roomescape.auth.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.net.URI;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -41,7 +42,7 @@ public class LoginController {
     public ResponseEntity<Void> logout() {
         return ResponseEntity
                 .status(HttpStatus.SEE_OTHER)
-                .header("Location", "/")
+                .location(URI.create("/"))
                 .header("Set-Cookie", CookieHandler.createLogoutCookie().toString())
                 .build();
     }
