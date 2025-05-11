@@ -1,4 +1,4 @@
-package roomescape.controller.dto.request;
+package roomescape.controller.dto.response;
 
 import roomescape.service.dto.response.MemberSignUpResult;
 
