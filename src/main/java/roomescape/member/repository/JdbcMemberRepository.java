@@ -82,7 +82,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
         try {
             Member member = jdbcTemplate.queryForObject(query, params, rowMapper);
-            return Optional.of(member);
+            return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -105,21 +105,8 @@ public class JdbcMemberRepository implements MemberRepository {
                 .addValue("email", email);
 
         try {
-            Member member = jdbcTemplate.queryForObject(query, params, (resultSet, rowNum) -> {
-                long id = resultSet.getLong("id");
-                String name = resultSet.getString("name");
-                String password = resultSet.getString("password");
-                RoleType role = RoleType.valueOf(resultSet.getString("role"));
-
-                return new Member(
-                        id,
-                        name,
-                        email,
-                        password,
-                        role
-                );
-            });
-            return Optional.of(member);
+            Member member = jdbcTemplate.queryForObject(query, params, rowMapper);
+            return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
