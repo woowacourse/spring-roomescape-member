@@ -1,6 +1,6 @@
 package roomescape.reservation.exception;
 
-import roomescape.common.exception.EntityDuplicateException;
+import roomescape.global.exception.EntityDuplicateException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

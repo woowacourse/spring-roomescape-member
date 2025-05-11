@@ -1,4 +1,4 @@
-package roomescape.common.util;
+package roomescape.global.util;
 
 import org.springframework.http.ResponseCookie;
 

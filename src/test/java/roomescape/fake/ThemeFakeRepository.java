@@ -1,6 +1,6 @@
 package roomescape.fake;
 
-import roomescape.common.exception.EntityNotFoundException;
+import roomescape.global.exception.EntityNotFoundException;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.ThemeRepository;
 

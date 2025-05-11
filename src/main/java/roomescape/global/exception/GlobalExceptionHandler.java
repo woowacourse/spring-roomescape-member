@@ -1,4 +1,4 @@
-package roomescape.common.exception;
+package roomescape.global.exception;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.auth.exception.ForbiddenException;
 import roomescape.auth.exception.UnauthorizedException;
 
 @RestControllerAdvice
@@ -37,5 +38,12 @@ public class GlobalExceptionHandler {
         ErrorResponse error = ErrorResponse.create(e, HttpStatus.UNAUTHORIZED, e.getMessage());
         e.printStackTrace();
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler({ForbiddenException.class})
+    public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException e) {
+        ErrorResponse error = ErrorResponse.create(e, HttpStatus.FORBIDDEN, e.getMessage());
+        e.printStackTrace();
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 }

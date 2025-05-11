@@ -2,7 +2,7 @@ package roomescape.time.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.common.exception.EntityNotFoundException;
+import roomescape.global.exception.EntityNotFoundException;
 import roomescape.time.exception.ReservationTimeDuplicateException;
 import roomescape.fake.ReservationTimeFakeRepository;
 import roomescape.time.dto.ReservationTimeRequest;

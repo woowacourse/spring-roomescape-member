@@ -9,8 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.common.exception.EntityNotFoundException;
-import roomescape.common.security.jwt.JwtTokenProvider;
+import roomescape.global.exception.EntityNotFoundException;
+import roomescape.global.security.jwt.JwtTokenExtractor;
+import roomescape.global.security.jwt.JwtTokenProvider;
 import roomescape.member.service.MemberService;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
@@ -39,6 +40,9 @@ public class ThemeControllerTest {
 
     @MockitoBean
     private JwtTokenProvider jwtTokenProvider;
+
+    @MockitoBean
+    private JwtTokenExtractor jwtTokenExtractor;
 
     @BeforeEach
     void setUp() {

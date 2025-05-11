@@ -1,6 +1,6 @@
 package roomescape.fake;
 
-import roomescape.common.exception.EntityNotFoundException;
+import roomescape.global.exception.EntityNotFoundException;
 import roomescape.time.entity.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
