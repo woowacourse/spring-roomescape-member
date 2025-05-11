@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.global.exception.forbidden.ForbiddenException;
+import roomescape.global.exception.notFound.MemberNotFoundException;
+import roomescape.global.exception.notFound.NotFoundException;
 import roomescape.global.exception.unauthorized.UnauthorizedException;
 
 @RestControllerAdvice
@@ -17,5 +19,10 @@ public class AuthExceptionHandler {
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<String> forbidden(ForbiddenException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+    }
+
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<String> notFound(NotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 }
