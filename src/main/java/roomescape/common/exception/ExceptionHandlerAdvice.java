@@ -28,4 +28,10 @@ public class ExceptionHandlerAdvice {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(exception.getMessage());
     }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<String> handleAuthenticationException(final AuthenticationException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(exception.getMessage());
+    }
 }

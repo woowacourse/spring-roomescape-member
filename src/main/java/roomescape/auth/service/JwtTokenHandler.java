@@ -12,7 +12,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import roomescape.common.exception.LoginFailException;
+import roomescape.common.exception.AuthenticationException;
+import roomescape.member.domain.Role;
 
 @Component
 public class JwtTokenHandler {
@@ -25,8 +26,9 @@ public class JwtTokenHandler {
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
-    public String createToken(final String payload) {
-        Claims claims = Jwts.claims().setSubject(payload);
+    public String createToken(final String payload, final String role) {
+        Claims claims = Jwts.claims()
+                .setSubject(payload);
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
@@ -34,6 +36,7 @@ public class JwtTokenHandler {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
+                .claim("role", role)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
@@ -60,7 +63,21 @@ public class JwtTokenHandler {
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
         } catch (JwtException | IllegalArgumentException e) {
-            throw new LoginFailException(e.getMessage());
+            throw new AuthenticationException("사용할 수 없는 토큰입니다.");
         }
+    }
+
+    public Role getRole(final String token) {
+        if (token == null || token.isEmpty()) {
+            throw new AuthenticationException("토큰이 존재하지 않습니다.");
+        }
+
+        String role = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role", String.class);
+
+        return Role.from(role);
     }
 }

@@ -24,7 +24,7 @@ public class AuthService {
         Member member = memberDao.findByEmailAndPassword(request.email(), request.password())
                 .orElseThrow(() -> new LoginFailException("이메일 또는 비밀번호가 잘못 되었습니다."));
 
-        String tokenValue = jwtTokenHandler.createToken(member.getId().toString());
+        String tokenValue = jwtTokenHandler.createToken(member.getId().toString(), member.getRole());
         return new LoginResponse(tokenValue);
     }
 
