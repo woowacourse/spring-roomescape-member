@@ -7,6 +7,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.exception.AuthenticationRequiredException;
+import roomescape.exception.InvalidTokenException;
 import roomescape.infrastructure.JwtTokenProvider;
 
 public class AuthenticationArgumentResolver implements HandlerMethodArgumentResolver {
@@ -35,6 +36,10 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
         String token = authorizationExtractor.extract(httpServletRequest)
                 .orElseThrow(AuthenticationRequiredException::new);
         String subject = tokenProvider.extractSubject(token);
-        return Long.parseLong(subject);
+        try {
+            return Long.parseLong(subject);
+        } catch (NumberFormatException e) {
+            throw new InvalidTokenException();
+        }
     }
 }
