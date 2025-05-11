@@ -59,7 +59,7 @@
       ```
 
   - 예약 하기
-    - request
+    - request (관리자)
       ```
       POST /reservations HTTP/1.1
       cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
@@ -67,8 +67,21 @@
       
       {
           "reservation_date": "2025-04-29",
-          "theme_id": "1",
-          "time_id": "1"
+          "theme_id": 1,
+          "time_id": 1,
+          "memberId": 1
+      }
+      ```
+    - request (사용자)
+      ```
+      POST /reservations HTTP/1.1
+      cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+      content-type: application/json
+      
+      {
+          "reservation_date": "2025-04-29",
+          "theme_id": 1,
+          "time_id": 1
       }
       ```
     - response
