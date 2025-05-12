@@ -1,8 +1,6 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Objects;
 import roomescape.common.domain.Id;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -18,7 +16,6 @@ public class Reservation {
     private Reservation(final Id id, final String name, final LocalDate date, final ReservationTime time,
                         final Theme theme) {
         validateNameLength(name);
-        validateDateTime(date, time.getStartAt());
         this.id = id;
         this.name = name;
         this.date = date;
@@ -39,12 +36,6 @@ public class Reservation {
     private void validateNameLength(final String value) {
         if (value.length() > 10) {
             throw new IllegalArgumentException("이름은 10글자 이내여야 합니다.");
-        }
-    }
-
-    private void validateDateTime(LocalDate date, LocalTime time) {
-        if (LocalDateTime.of(date, time).isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("예약 시간이 현재 시간보다 이전일 수 없습니다.");
         }
     }
 

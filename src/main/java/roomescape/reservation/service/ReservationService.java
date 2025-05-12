@@ -1,5 +1,8 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
@@ -50,11 +53,19 @@ public class ReservationService {
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new ReservationNotFoundException("요청한 id와 일치하는 예약 시간 정보가 없습니다."));
 
+        validateDateTime(request.date(), time.getStartAt());
+
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new ReservationNotFoundException("요청한 id와 일치하는 테마 정보가 없습니다."));
 
         Reservation newReservation = reservationRepository.put(
                 Reservation.withUnassignedId(request.name(), request.date(), time, theme));
         return ReservationResponse.from(newReservation, time, theme);
+    }
+
+    private void validateDateTime(LocalDate date, LocalTime time) {
+        if (LocalDateTime.of(date, time).isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("예약 시간이 현재 시간보다 이전일 수 없습니다.");
+        }
     }
 }
