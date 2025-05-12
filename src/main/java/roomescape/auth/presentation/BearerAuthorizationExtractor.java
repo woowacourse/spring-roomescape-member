@@ -2,6 +2,8 @@ package roomescape.auth.presentation;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
+import roomescape.auth.application.exception.InvalidTokenException;
 
 public class BearerAuthorizationExtractor implements AuthorizationExtractor<String> {
     private final String TOKEN = "token";
@@ -13,11 +15,14 @@ public class BearerAuthorizationExtractor implements AuthorizationExtractor<Stri
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
+        if (cookies == null) {
+            throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "유효한 인증 정보가 존재하지 않습니다.");
+        }
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(TOKEN)) {
                 return cookie.getValue();
             }
         }
-        return null;
+        throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "유효한 인증 정보가 존재하지 않습니다.");
     }
 }
