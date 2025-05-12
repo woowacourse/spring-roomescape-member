@@ -1,8 +1,9 @@
-package roomescape.admin;
+package roomescape.reservation.service;
 
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.reservation.dto.AdminReservationRequest;
 import roomescape.exception.ConflictException;
 import roomescape.exception.ExceptionCause;
 import roomescape.exception.UnauthorizedException;

@@ -1,4 +1,4 @@
-package roomescape.admin;
+package roomescape.reservation.controller;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.reservation.dto.AdminReservationRequest;
+import roomescape.reservation.service.AdminReservationService;
 import roomescape.member.domain.Visitor;
 import roomescape.reservation.dto.ReservationCreateResponse;
 import roomescape.reservation.dto.ReservationResponse;
