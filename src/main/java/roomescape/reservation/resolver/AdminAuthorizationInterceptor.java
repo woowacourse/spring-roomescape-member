@@ -1,5 +1,7 @@
 package roomescape.reservation.resolver;
 
+import static roomescape.member.role.Role.ADMIN;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,6 +11,7 @@ import roomescape.member.resolver.UnauthenticatedException;
 import roomescape.member.service.AutoService;
 
 public class AdminAuthorizationInterceptor implements HandlerInterceptor {
+    public static final String TOKEN = "token";
     private final AutoService autoService;
 
     public AdminAuthorizationInterceptor(AutoService autoService) {
@@ -32,7 +35,7 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
         try {
             MemberResponse member = autoService.findUserByToken(token);
 
-            if (!"ADMIN".equals(member.role())) {
+            if (!ADMIN.getRole().equals(member.role())) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return false;
             }
@@ -46,7 +49,7 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
 
     private String extractTokenFromCookie(Cookie[] cookies) {
         for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
+            if (TOKEN.equals(cookie.getName())) {
                 return cookie.getValue();
             }
         }

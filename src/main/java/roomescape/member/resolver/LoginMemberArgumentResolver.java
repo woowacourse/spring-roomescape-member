@@ -14,6 +14,7 @@ import roomescape.member.service.AutoService;
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
+    public static final String TOKEN = "token";
     private final AutoService autoService;
 
     public LoginMemberArgumentResolver(AutoService autoService) {
@@ -51,7 +52,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     private String extractTokenFromCookie(Cookie[] cookies) {
         for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
+            if (TOKEN.equals(cookie.getName())) {
                 return cookie.getValue();
             }
         }
