@@ -99,7 +99,7 @@ public class MissionStepTest {
 
         RestAssured.given().log().all()
                 .cookie("token", token)
-                .when().get("/reservations")
+                .when().get("/reservations/mine")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
@@ -112,7 +112,7 @@ public class MissionStepTest {
 
         RestAssured.given().log().all()
                 .cookie("token", token)
-                .when().get("/reservations")
+                .when().get("/reservations/mine")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
@@ -145,7 +145,7 @@ public class MissionStepTest {
 
         final List<ReservationWebResponse> reservations = RestAssured.given().log().all()
                 .cookie("token", token)
-                .when().get("/reservations")
+                .when().get("/reservations/mine")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationWebResponse.class);

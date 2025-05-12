@@ -13,6 +13,7 @@ import roomescape.member.domain.Password;
 import roomescape.member.domain.Role;
 import roomescape.member.repository.FakeMemberRepository;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -26,7 +27,7 @@ class MemberCommandUseCaseTest {
     }
 
     @Test
-    void 멤버가_정상적으로_생성된다() {
+    void 멤버가_정상적으로_생성되면_예외가_발생하지_않는다() {
         // when & then
         assertThatNoException().isThrownBy(() -> memberCommandUseCase.create(
                 Account.of(
@@ -37,6 +38,20 @@ class MemberCommandUseCaseTest {
                         ),
                         Password.from("1234"))
         ));
+    }
+
+    @Test
+    void 멤버가_정상적으로_생성된다() {
+        // when & then
+        assertThat(memberCommandUseCase.create(
+                Account.of(
+                        Member.withoutId(
+                                MemberName.from("siso"),
+                                MemberEmail.from("siso@gmail.com"),
+                                Role.ADMIN
+                        ),
+                        Password.from("1234"))
+        ).id()).isNotNull();
     }
 
     @Test

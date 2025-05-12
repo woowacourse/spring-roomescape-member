@@ -18,14 +18,6 @@ public class MemberConverter {
                 member.getRole());
     }
 
-    public static Member toDomain(MemberInfo memberInfo) {
-        return Member.withId(
-                MemberId.from(memberInfo.id()),
-                MemberName.from(memberInfo.name()),
-                MemberEmail.from(memberInfo.email()),
-                memberInfo.role());
-    }
-
     public static MemberInfoResponse toResponse(MemberInfo memberInfo) {
         return new MemberInfoResponse(
                 memberInfo.id(),
