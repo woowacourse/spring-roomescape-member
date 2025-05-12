@@ -25,8 +25,9 @@ public class MemberService {
         return findMember(payload);
     }
 
-    public LoginMember findMember(String email) {
-        return memberRepository.findByEmail(email).orElseThrow();
+    private LoginMember findMember(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new InvalidAuthorizationException("[ERROR] 유효하지 않은 가입 정보입니다."));
     }
 
     public List<LoginMember> findAllMembers() {

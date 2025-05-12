@@ -14,10 +14,12 @@ import roomescape.util.TokenProvider;
 public class LoginService {
 
     private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final TokenProvider jwtTokenProvider;
 
-    public LoginService(MemberRepository memberRepository, TokenProvider jwtTokenProvider) {
+    public LoginService(MemberRepository memberRepository, MemberService memberService, TokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;
+        this.memberService = memberService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -37,15 +39,7 @@ public class LoginService {
     }
 
     public LoginMemberResponse findMemberByToken(String token) {
-        if (token == null || token.isBlank()) throw new InvalidAuthorizationException("[ERROR] 로그인이 필요합니다.");
-        if (!jwtTokenProvider.validateToken(token)) throw new InvalidAuthorizationException("[ERROR] 로그인 상태가 만료되었습니다.");
-        String payload = jwtTokenProvider.getPayload(token);
-        return findMember(payload);
-    }
-
-    private LoginMemberResponse findMember(String email) {
-        Optional<LoginMember> member = memberRepository.findByEmail(email);
-        return member.map(value -> new LoginMemberResponse(value.getId(), value.getName()))
-                .orElseThrow(() -> new InvalidAuthorizationException("[ERROR] 유효하지 않은 가입 정보입니다."));
+        LoginMember loginMember = memberService.findMemberByToken(token);
+        return new LoginMemberResponse(loginMember.getId(), loginMember.getName());
     }
 }

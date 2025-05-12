@@ -9,6 +9,7 @@ import roomescape.exception.InvalidAuthorizationException;
 import roomescape.fixture.FakeMemberRepositoryFixture;
 import roomescape.repository.FakeTokenProvider;
 import roomescape.repository.MemberRepository;
+import roomescape.util.TokenProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -18,7 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class LoginServiceTest {
 
     private final MemberRepository memberRepository = FakeMemberRepositoryFixture.create();
-    private final LoginService loginService = new LoginService(memberRepository, new FakeTokenProvider());
+    private final TokenProvider tokenProvider = new FakeTokenProvider();
+    private final LoginService loginService = new LoginService(memberRepository, new MemberService(memberRepository, tokenProvider), tokenProvider);
 
     @DisplayName("올바른 사용자 정보를 전달하면 로그인 토큰을 생성한다")
     @Test
@@ -34,7 +36,7 @@ class LoginServiceTest {
         assertThat(token.accessToken()).isEqualTo(expected);
     }
 
-    @DisplayName("토큰 정보로 사용자를 추출할 수 있다")
+    @DisplayName("토큰 정보로 사용자 응답 DTO를 추출할 수 있다")
     @Test
     void findMemberTest() {
         // given
@@ -48,16 +50,6 @@ class LoginServiceTest {
                 () -> assertThat(response.id()).isEqualTo(1L),
                 () -> assertThat(response.name()).isEqualTo("어드민")
         );
-    }
-
-    @DisplayName("사용자 추출 시 토큰 정보가 잘못되면 예외가 발생한다")
-    @Test
-    void findMemberExceptionTest() {
-        // given
-        String token = "invalid";
-
-        // when & then
-        assertThatThrownBy(() -> loginService.findMemberByToken(token)).isInstanceOf(InvalidAuthorizationException.class);
     }
 
     @DisplayName("토큰 생성 시 사용자 정보가 잘못되면 예외가 발생한다")
