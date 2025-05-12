@@ -1,21 +1,27 @@
 package roomescape.member.domain;
 
-import java.util.Objects;
+import roomescape.member.exception.NameException;
 
 public class Name {
 
     private final String name;
 
     public Name(String name) {
-        name = Objects.requireNonNull(name);
+        validateNameIsNonEmpty(name);
         validateNameLength(name);
 
         this.name = name;
     }
 
-    private static void validateNameLength(String name) {
+    private void validateNameIsNonEmpty(final String name) {
+        if (name == null || name.isEmpty()) {
+            throw new NameException("이름은 비어있을 수 없습니다.");
+        }
+    }
+
+    private void validateNameLength(String name) {
         if (name.isEmpty() || name.length() > 5) {
-            throw new IllegalArgumentException("이름은 1-5글자 사이여야 합니다.");
+            throw new NameException("이름은 1-5글자 사이여야 합니다.");
         }
     }
 

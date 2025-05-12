@@ -1,6 +1,6 @@
 package roomescape.member.domain;
 
-import java.util.Objects;
+import roomescape.common.exception.BusinessException;
 
 public class Member {
 
@@ -11,13 +11,20 @@ public class Member {
 
     private Member(final Long id, final Name name, final Email email, final Password password) {
         this.id = id;
-        this.name = Objects.requireNonNull(name);
-        this.email = Objects.requireNonNull(email);
-        this.password = Objects.requireNonNull(password);
+        this.name = name;
+        this.email = email;
+        this.password = password;
     }
 
     public static Member createWithId(final Long id, String name, String email, String password) {
-        return new Member(Objects.requireNonNull(id), new Name(name), new Email(email), new Password(password));
+        validateIdIsNonNull(id);
+        return new Member(id, new Name(name), new Email(email), new Password(password));
+    }
+
+    private static void validateIdIsNonNull(final Long id) {
+        if (id == null) {
+            throw new BusinessException("회원 id는 null일 수 없습니다.");
+        }
     }
 
     public static Member createWithoutId(String name, String email, String password) {

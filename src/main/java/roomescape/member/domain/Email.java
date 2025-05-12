@@ -1,6 +1,6 @@
 package roomescape.member.domain;
 
-import java.util.Objects;
+import roomescape.member.exception.EmailException;
 
 public class Email {
 
@@ -9,15 +9,21 @@ public class Email {
     private final String email;
 
     public Email(String email) {
-        email = Objects.requireNonNull(email);
+        validateEmailIsNonBlank(email);
         validateEmailFormat(email);
 
         this.email = email;
     }
 
-    private static void validateEmailFormat(String email) {
+    private void validateEmailIsNonBlank(final String email) {
+        if (email == null || email.isEmpty()) {
+            throw new EmailException("이메일은 비어있을 수 없습니다.");
+        }
+    }
+
+    private void validateEmailFormat(String email) {
         if (!email.matches(EMAIL_REGEX)) {
-            throw new IllegalArgumentException("이메일 형식이 맞지 않습니다.");
+            throw new EmailException("이메일 형식이 맞지 않습니다.");
         }
     }
 
