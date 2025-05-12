@@ -42,7 +42,7 @@ public class ThemeServiceTest {
         // given
         ThemeRequest theme = new ThemeRequest("name3", "description3", "thumbnail3");
         // when
-        ThemeResponse savedTheme = themeService.create(theme);
+        ThemeResponse savedTheme = themeService.createTheme(theme);
         // then
         assertThat(savedTheme.name()).isEqualTo("name3");
         assertThat(savedTheme.description()).isEqualTo("description3");
@@ -52,10 +52,10 @@ public class ThemeServiceTest {
     @Test
     void 테마_목록을_조회할_수_있다() {
         // given
-        themeRepository.create(Theme.createWithoutId("name1", "description1", "thumbnail1"));
-        themeRepository.create(Theme.createWithoutId("name2", "description2", "thumbnail2"));
+        themeRepository.save(Theme.createWithoutId("name1", "description1", "thumbnail1"));
+        themeRepository.save(Theme.createWithoutId("name2", "description2", "thumbnail2"));
         // when
-        List<ThemeResponse> themes = themeService.findAll();
+        List<ThemeResponse> themes = themeService.findAllThemes();
         // then
         assertThat(themes).hasSize(2);
         assertThat(themes.getFirst().name()).isEqualTo("name1");
@@ -65,21 +65,21 @@ public class ThemeServiceTest {
     @Test
     void 예약이_존재하는_테마를_삭제하면_예외가_발생한다() {
         // given
-        Theme theme = themeRepository.create(Theme.createWithoutId("name1", "description1", "thumbnail1"));
+        Theme theme = themeRepository.save(Theme.createWithoutId("name1", "description1", "thumbnail1"));
         Member member = new Member(1L, "name1", "email@domain.com", "password1", Role.MEMBER);
         ReservationTime time = ReservationTime.createWithoutId(LocalTime.of(9, 0));
-        reservationRepository.create(Reservation.createWithoutId(member, LocalDate.of(2025, 1, 1), time, theme));
+        reservationRepository.save(Reservation.createWithoutId(member, LocalDate.of(2025, 1, 1), time, theme));
         // when & then
-        assertThatThrownBy(() -> themeService.delete(theme.getId()))
+        assertThatThrownBy(() -> themeService.deleteThemeById(theme.getId()))
                 .isInstanceOf(ExistedReservationException.class);
     }
 
     @Test
     void 테마를_삭제할_수_있다() {
         // given
-        Theme savedTheme = themeRepository.create(Theme.createWithoutId("name1", "description1", "thumbnail1"));
+        Theme savedTheme = themeRepository.save(Theme.createWithoutId("name1", "description1", "thumbnail1"));
         // when
-        themeService.delete(savedTheme.getId());
+        themeService.deleteThemeById(savedTheme.getId());
         // then
         assertThat(themeRepository.findAll()).hasSize(0);
     }
@@ -87,10 +87,10 @@ public class ThemeServiceTest {
     @Test
     void 중복된_이름으로_테마를_생성할_수_없다() {
         // given
-        themeRepository.create(Theme.createWithoutId("name1", "desc1", "thumb1"));
+        themeRepository.save(Theme.createWithoutId("name1", "desc1", "thumb1"));
         ThemeRequest themeRequest = new ThemeRequest("name1", "desc2", "thumb2");
         // when & then
-        assertThatThrownBy(() -> themeService.create(themeRequest))
+        assertThatThrownBy(() -> themeService.createTheme(themeRequest))
                 .isInstanceOf(ExistedThemeException.class);
     }
 

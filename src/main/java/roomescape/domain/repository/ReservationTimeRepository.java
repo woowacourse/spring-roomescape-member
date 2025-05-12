@@ -9,9 +9,9 @@ import roomescape.dto.response.AvailableTimeResponse;
 public interface ReservationTimeRepository {
     List<ReservationTime> findAll();
 
-    ReservationTime create(ReservationTime reservationTime);
+    ReservationTime save(ReservationTime reservationTime);
 
-    void delete(Long id);
+    void deleteById(Long id);
 
     Optional<ReservationTime> findById(Long id);
 

@@ -43,14 +43,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime create(ReservationTime reservationTime) {
+    public ReservationTime save(ReservationTime reservationTime) {
         Map<String, Object> parameter = Map.of("start_at", reservationTime.getStartAt());
         Long newId = simpleJdbcInsert.executeAndReturnKey(parameter).longValue();
         return reservationTime.withId(newId);
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         String sql = "delete from reservation_time where id = :id";
         SqlParameterSource parameter = new MapSqlParameterSource()
                 .addValue("id", id);

@@ -93,7 +93,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation create(Reservation reservation) {
+    public Reservation save(Reservation reservation) {
         Map<String, Object> parameter = Map.of(
                 "member_id", reservation.getMember().getId(),
                 "date", reservation.getDate(),
@@ -105,7 +105,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         String sql = "delete from reservation where id = :id";
         SqlParameterSource parameter = new MapSqlParameterSource()
                 .addValue("id", id);

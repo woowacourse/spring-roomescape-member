@@ -24,7 +24,7 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<ReservationTimeResponse> findAll() {
+    public List<ReservationTimeResponse> findAllTimes() {
         List<ReservationTime> reservationTimeDaoAll = reservationTimeRepository.findAll();
 
         return reservationTimeDaoAll.stream()
@@ -32,23 +32,23 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public ReservationTimeResponse create(ReservationTimeRequest reservationTimeRequest) {
+    public ReservationTimeResponse createTime(ReservationTimeRequest reservationTimeRequest) {
         ReservationTime reservationTime = reservationTimeRequest.toTime();
-        ReservationTime savedReservationTime = reservationTimeRepository.create(reservationTime);
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
         return new ReservationTimeResponse(
                 savedReservationTime.getId(),
                 savedReservationTime.getStartAt()
         );
     }
 
-    public void delete(Long id) {
+    public void deleteTimeById(Long id) {
         if (reservationTimeRepository.findById(id).isEmpty()) {
             throw new ReservationTimeNotFoundException();
         }
         if (reservationRepository.findByTimeId(id).size() > 0) {
             throw new ExistedReservationException();
         }
-        reservationTimeRepository.delete(id);
+        reservationTimeRepository.deleteById(id);
     }
 
     public List<AvailableTimeResponse> findTimesByDateAndThemeIdWithBooked(LocalDate date, Long themeId) {

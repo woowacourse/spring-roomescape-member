@@ -51,13 +51,13 @@ public class AdminApiTest {
         Member member = memberRepository.save(
                 new Member(null, "member1", "member1@domain.com", "password1", Role.MEMBER)
         );
-        Theme theme = themeRepository.create(Theme.createWithoutId("name", "desc", "thumb"));
-        ReservationTime reservationTime = reservationTimeRepository.create(
+        Theme theme = themeRepository.save(Theme.createWithoutId("name", "desc", "thumb"));
+        ReservationTime reservationTime = reservationTimeRepository.save(
                 ReservationTime.createWithoutId(LocalTime.of(9, 0)));
-        reservationRepository.create(Reservation.createWithoutId(
+        reservationRepository.save(Reservation.createWithoutId(
                 member, LocalDate.of(2025, 1, 1), reservationTime, theme
         ));
-        reservationRepository.create(Reservation.createWithoutId(
+        reservationRepository.save(Reservation.createWithoutId(
                 member, LocalDate.of(2025, 1, 2), reservationTime, theme
         ));
         String token = tokenProvider.createToken(admin.getId().toString(), admin.getRole());
@@ -78,8 +78,8 @@ public class AdminApiTest {
         Member member = memberRepository.save(
                 new Member(null, "member1", "member1@domain.com", "password1", Role.MEMBER)
         );
-        Theme theme = themeRepository.create(Theme.createWithoutId("name", "desc", "thumb"));
-        ReservationTime reservationTime = reservationTimeRepository.create(
+        Theme theme = themeRepository.save(Theme.createWithoutId("name", "desc", "thumb"));
+        ReservationTime reservationTime = reservationTimeRepository.save(
                 ReservationTime.createWithoutId(LocalTime.of(9, 0)));
         String token = tokenProvider.createToken(admin.getId().toString(), admin.getRole());
 
@@ -105,8 +105,8 @@ public class AdminApiTest {
         Member member = memberRepository.save(
                 new Member(null, "member1", "member1@domain.com", "password1", Role.MEMBER)
         );
-        Theme theme = themeRepository.create(Theme.createWithoutId("name", "desc", "thumb"));
-        ReservationTime reservationTime = reservationTimeRepository.create(
+        Theme theme = themeRepository.save(Theme.createWithoutId("name", "desc", "thumb"));
+        ReservationTime reservationTime = reservationTimeRepository.save(
                 ReservationTime.createWithoutId(LocalTime.of(9, 0)));
         String token = tokenProvider.createToken(member.getId().toString(), member.getRole());
 

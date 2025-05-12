@@ -25,10 +25,10 @@ public class ReservationController {
     }
 
     @PostMapping()
-    public ResponseEntity<ReservationResponse> create(
+    public ResponseEntity<ReservationResponse> createNewReservation(
             @Authenticated Long memberId,
             @Valid @RequestBody ReservationCreateRequest request) {
-        ReservationResponse reservationResponse = reservationService.create(
+        ReservationResponse reservationResponse = reservationService.createReservation(
                 memberId, request.timeId(), request.themeId(), request.date()
         );
         return ResponseEntity
@@ -37,8 +37,8 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        reservationService.delete(id);
+    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
+        reservationService.deleteReservationById(id);
         return ResponseEntity.noContent().build();
     }
 }

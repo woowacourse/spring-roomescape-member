@@ -46,7 +46,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse create(Long memberId, Long timeId, Long themeId, LocalDate date) {
+    public ReservationResponse createReservation(Long memberId, Long timeId, Long themeId, LocalDate date) {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(ReservationTimeNotFoundException::new);
         Theme theme = themeRepository.findById(themeId).orElseThrow(ThemeNotFoundException::new);
@@ -54,7 +54,7 @@ public class ReservationService {
         Reservation reservation = Reservation.createWithoutId(member, date, reservationTime, theme);
         reservation.validateDateTime();
         validateDuplicate(date, reservationTime, theme);
-        Reservation savedReservation = reservationRepository.create(reservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponse.toDto(savedReservation);
     }
 
@@ -64,8 +64,8 @@ public class ReservationService {
         }
     }
 
-    public void delete(Long id) {
+    public void deleteReservationById(Long id) {
         reservationRepository.findById(id).orElseThrow(ReservationNotFoundException::new);
-        reservationRepository.delete(id);
+        reservationRepository.deleteById(id);
     }
 }

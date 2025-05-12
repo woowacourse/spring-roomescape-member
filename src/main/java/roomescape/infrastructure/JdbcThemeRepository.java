@@ -37,7 +37,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme create(Theme theme) {
+    public Theme save(Theme theme) {
         Map<String, Object> parameter = Map.of(
                 "name", theme.getName(),
                 "description", theme.getDescription(),
@@ -54,7 +54,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public int delete(long id) {
+    public int deleteById(long id) {
         String sql = "delete from theme where id = :id";
         SqlParameterSource parameter = new MapSqlParameterSource()
                 .addValue("id", id);

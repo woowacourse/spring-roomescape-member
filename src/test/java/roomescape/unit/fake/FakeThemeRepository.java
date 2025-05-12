@@ -20,7 +20,7 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme create(Theme theme) {
+    public Theme save(Theme theme) {
         Theme themeWithId = new Theme(index.getAndIncrement(),
                 theme.getName(),
                 theme.getDescription(),
@@ -36,7 +36,7 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public int delete(long id) {
+    public int deleteById(long id) {
         fakeThemes.removeIf(theme -> theme.getId().equals(id));
         return fakeThemes.size();
     }

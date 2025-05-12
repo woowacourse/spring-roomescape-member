@@ -29,23 +29,23 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> findAll() {
-        List<ReservationTimeResponse> all = reservationTimeService.findAll();
+    public ResponseEntity<List<ReservationTimeResponse>> getAllReservationTimes() {
+        List<ReservationTimeResponse> all = reservationTimeService.findAllTimes();
         return ResponseEntity.ok(all);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> create(
+    public ResponseEntity<ReservationTimeResponse> createNewReservationTime(
             @Valid @RequestBody ReservationTimeRequest reservationTimeRequest) {
-        ReservationTimeResponse reservationTime = reservationTimeService.create(reservationTimeRequest);
+        ReservationTimeResponse reservationTime = reservationTimeService.createTime(reservationTimeRequest);
         return ResponseEntity
                 .created(URI.create("/times/" + reservationTime.id()))
                 .body(reservationTime);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        reservationTimeService.delete(id);
+    public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
+        reservationTimeService.deleteTimeById(id);
         return ResponseEntity.noContent().build();
     }
 

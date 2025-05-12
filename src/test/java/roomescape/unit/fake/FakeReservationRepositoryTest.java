@@ -30,8 +30,8 @@ class FakeReservationRepositoryTest {
         Reservation reservation2 = Reservation.createWithoutId(
                 member, LocalDate.of(2025, 1, 2), reservationTime, theme
         );
-        reservationRepository.create(reservation1);
-        reservationRepository.create(reservation2);
+        reservationRepository.save(reservation1);
+        reservationRepository.save(reservation2);
         // when
         List<Reservation> allReservation = reservationRepository.findAll();
         // then
@@ -51,7 +51,7 @@ class FakeReservationRepositoryTest {
                 member, LocalDate.of(2025, 1, 1), reservationTime, theme
         );
         // when
-        reservationRepository.create(reservation1);
+        reservationRepository.save(reservation1);
         // then
         List<Reservation> allReservation = reservationRepository.findAll();
         assertThat(allReservation).hasSize(1);
@@ -67,9 +67,9 @@ class FakeReservationRepositoryTest {
         Reservation reservation1 = Reservation.createWithoutId(
                 member, LocalDate.of(2025, 1, 1), reservationTime, theme
         );
-        reservationRepository.create(reservation1);
+        reservationRepository.save(reservation1);
         // when
-        reservationRepository.delete(1L);
+        reservationRepository.deleteById(1L);
         // then
         List<Reservation> allReservation = reservationRepository.findAll();
         assertThat(allReservation).hasSize(0);
@@ -87,8 +87,8 @@ class FakeReservationRepositoryTest {
         Reservation reservation2 = Reservation.createWithoutId(
                 member, LocalDate.of(2025, 1, 2), reservationTime, theme
         );
-        reservationRepository.create(reservation1);
-        reservationRepository.create(reservation2);
+        reservationRepository.save(reservation1);
+        reservationRepository.save(reservation2);
         // when
         List<Reservation> reservations = reservationRepository.findByThemeId(theme.getId());
         // then

@@ -29,7 +29,7 @@ class JdbcReservationTimeRepositoryTest {
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
 
         // when
-        reservationTimeRepository.create(reservationTime);
+        reservationTimeRepository.save(reservationTime);
         List<ReservationTime> reservationTimeDaoAll = reservationTimeRepository.findAll();
 
         // then
@@ -42,7 +42,7 @@ class JdbcReservationTimeRepositoryTest {
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
 
         // when
-        reservationTimeRepository.create(reservationTime);
+        reservationTimeRepository.save(reservationTime);
         List<ReservationTime> reservationTimeDaoAll = reservationTimeRepository.findAll();
 
         // then
@@ -52,12 +52,12 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void 예약_시간을_삭제할_수_있다() {
         // given
-        ReservationTime savedTime = reservationTimeRepository.create(
+        ReservationTime savedTime = reservationTimeRepository.save(
                 ReservationTime.createWithoutId(LocalTime.of(10, 0)));
         int beforeSize = reservationTimeRepository.findAll().size();
 
         // when
-        reservationTimeRepository.delete(savedTime.getId());
+        reservationTimeRepository.deleteById(savedTime.getId());
         int afterSize = reservationTimeRepository.findAll().size();
 
         // then

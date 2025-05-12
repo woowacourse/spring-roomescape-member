@@ -65,7 +65,7 @@ public class ReservationTimeApiTest {
     @Test
     void 예약시간_조회_테스트() {
         // given
-        reservationTimeRepository.create(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
+        reservationTimeRepository.save(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
         // when
         List<ReservationTimeResponse> response = RestAssured.given().log().all()
                 .when().get("/api/times")
@@ -83,7 +83,7 @@ public class ReservationTimeApiTest {
     @Test
     void 예약시간_삭제_테스트() {
         // given
-        reservationTimeRepository.create(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
+        reservationTimeRepository.save(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
         // when
         RestAssured.given().log().all()
                 .when().delete("/api/times/{timeId}", 1L)
@@ -98,16 +98,16 @@ public class ReservationTimeApiTest {
     @Test
     void 가능한_예약시간_조회_테스트() {
         // when
-        ReservationTime reservationTime1 = reservationTimeRepository.create(
+        ReservationTime reservationTime1 = reservationTimeRepository.save(
                 ReservationTime.createWithoutId(LocalTime.of(10, 0))
         );
-        ReservationTime reservationTime2 = reservationTimeRepository.create(
+        ReservationTime reservationTime2 = reservationTimeRepository.save(
                 ReservationTime.createWithoutId(LocalTime.of(11, 0))
         );
-        Theme theme = themeRepository.create(Theme.createWithoutId("theme1", "desc", "thumb"));
+        Theme theme = themeRepository.save(Theme.createWithoutId("theme1", "desc", "thumb"));
         Member member = memberRepository.save(
                 new Member(null, "member1", "email1@domain.com", "password1", Role.MEMBER));
-        reservationRepository.create(
+        reservationRepository.save(
                 Reservation.createWithoutId(member, LocalDate.of(2025, 1, 1), reservationTime1, theme));
         // when
         List<AvailableTimeResponse> response = RestAssured.given().log().all()

@@ -7,11 +7,11 @@ import java.util.Optional;
 import roomescape.domain.Theme;
 
 public interface ThemeRepository {
-    Theme create(Theme theme);
+    Theme save(Theme theme);
 
     List<Theme> findAll();
 
-    int delete(long id);
+    int deleteById(long id);
 
     Optional<Theme> findByName(String name);
 

@@ -44,10 +44,10 @@ class ReservationTimeServiceTest {
         // given
         ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
         ReservationTime reservationTime2 = new ReservationTime(2L, LocalTime.of(11, 0));
-        reservationTimeRepository.create(reservationTime1);
-        reservationTimeRepository.create(reservationTime2);
+        reservationTimeRepository.save(reservationTime1);
+        reservationTimeRepository.save(reservationTime2);
         // when
-        List<ReservationTimeResponse> allTimes = reservationTimeService.findAll();
+        List<ReservationTimeResponse> allTimes = reservationTimeService.findAllTimes();
 
         // then
         SoftAssertions soft = new SoftAssertions();
@@ -61,8 +61,8 @@ class ReservationTimeServiceTest {
     void 예약_시간을_추가할_수_있다() {
         // given & when
         ReservationTimeRequest newTime = new ReservationTimeRequest(LocalTime.of(2, 0));
-        reservationTimeService.create(newTime);
-        List<ReservationTimeResponse> all = reservationTimeService.findAll();
+        reservationTimeService.createTime(newTime);
+        List<ReservationTimeResponse> all = reservationTimeService.findAllTimes();
 
         // then
         assertThat(all.size()).isEqualTo(1);
@@ -74,11 +74,11 @@ class ReservationTimeServiceTest {
         // given
         ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
         ReservationTime reservationTime2 = new ReservationTime(2L, LocalTime.of(11, 0));
-        reservationTimeRepository.create(reservationTime1);
-        reservationTimeRepository.create(reservationTime2);
+        reservationTimeRepository.save(reservationTime1);
+        reservationTimeRepository.save(reservationTime2);
         // when
-        reservationTimeService.delete(2L);
-        List<ReservationTimeResponse> all = reservationTimeService.findAll();
+        reservationTimeService.deleteTimeById(2L);
+        List<ReservationTimeResponse> all = reservationTimeService.findAllTimes();
 
         // then
         assertThat(all.size()).isEqualTo(1);
@@ -89,26 +89,26 @@ class ReservationTimeServiceTest {
     void 특정_시간에_대한_예약이_존재하면_예약시간을_삭제할_수_없다() {
         // given
         ReservationTime reservationTime1 = ReservationTime.createWithoutId(LocalTime.of(10, 0));
-        ReservationTime savedReservationTime1 = reservationTimeRepository.create(reservationTime1);
+        ReservationTime savedReservationTime1 = reservationTimeRepository.save(reservationTime1);
         Member member1 = new Member(1L, "name1", "email1@domain.com", "password1", Role.MEMBER);
         Reservation reservation1 = Reservation.createWithoutId(
                 member1, LocalDate.of(2025, 7, 25), savedReservationTime1, theme
         );
-        reservationRepository.create(reservation1);
+        reservationRepository.save(reservation1);
 
         // when & then
-        assertThatThrownBy(() -> reservationTimeService.delete(1L))
+        assertThatThrownBy(() -> reservationTimeService.deleteTimeById(1L))
                 .isInstanceOf(ExistedReservationException.class);
     }
 
     @Test
     void 특정날짜와_테마의_예약시간들을_예약여부와_함께_조회한다() {
         // given
-        ReservationTime savedTime = reservationTimeRepository.create(
+        ReservationTime savedTime = reservationTimeRepository.save(
                 ReservationTime.createWithoutId(LocalTime.of(9, 0)));
         Theme theme = new Theme(1L, "name", "desc", "thumb");
         Member member = new Member(1L, "name1", "email@domain.com", "pass1", Role.MEMBER);
-        reservationRepository.create(
+        reservationRepository.save(
                 Reservation.createWithoutId(member, LocalDate.of(2025, 1, 1), savedTime, theme)
         );
         // when

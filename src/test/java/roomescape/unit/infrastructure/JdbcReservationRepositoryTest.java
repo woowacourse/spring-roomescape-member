@@ -45,9 +45,9 @@ class JdbcReservationRepositoryTest {
     void 예약_시간을_추가할_수_있다() {
         // given
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
-        ReservationTime savedReservationTime = reservationTimeRepository.create(reservationTime);
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
         Theme theme = new Theme(null, "themeName", "des", "th");
-        Theme savedTheme = themeRepository.create(theme);
+        Theme savedTheme = themeRepository.save(theme);
         Member member = new Member(null, "name1", "email1@domain.com", "password1", Role.MEMBER);
         Member savedMember = memberRepository.save(member);
         Reservation reservation = Reservation.createWithoutId(
@@ -58,7 +58,7 @@ class JdbcReservationRepositoryTest {
         );
 
         // when
-        reservationRepository.create(reservation);
+        reservationRepository.save(reservation);
 
         // then
         List<Reservation> reservationDaoAll = reservationRepository.findAll();
@@ -69,9 +69,9 @@ class JdbcReservationRepositoryTest {
     void 예약_시간을_조회할_수_있다() {
         // given
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
-        ReservationTime savedReservationTime = reservationTimeRepository.create(reservationTime);
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
         Theme theme = new Theme(null, "themeName", "des", "th");
-        Theme savedTheme = themeRepository.create(theme);
+        Theme savedTheme = themeRepository.save(theme);
         Member member = new Member(null, "포라", "email1@domain.com", "password1", Role.MEMBER);
         Member savedMember = memberRepository.save(member);
         Reservation reservation = Reservation.createWithoutId(
@@ -80,7 +80,7 @@ class JdbcReservationRepositoryTest {
                 savedReservationTime,
                 savedTheme
         );
-        reservationRepository.create(reservation);
+        reservationRepository.save(reservation);
 
         // when
         List<Reservation> reservationDaoAll = reservationRepository.findAll();
@@ -94,9 +94,9 @@ class JdbcReservationRepositoryTest {
     void 예약_시간을_삭제할_수_있다() {
         // given
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
-        ReservationTime savedReservationTime = reservationTimeRepository.create(reservationTime);
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
         Theme theme = new Theme(null, "themeName", "des", "th");
-        Theme savedTheme = themeRepository.create(theme);
+        Theme savedTheme = themeRepository.save(theme);
         Member member = new Member(null, "name1", "email1@domain.com", "password1", Role.MEMBER);
         Member savedMember = memberRepository.save(member);
         Reservation reservation = Reservation.createWithoutId(
@@ -105,11 +105,11 @@ class JdbcReservationRepositoryTest {
                 savedReservationTime,
                 savedTheme
         );
-        reservationRepository.create(reservation);
+        reservationRepository.save(reservation);
         int beforeSize = reservationRepository.findAll().size();
 
         // when
-        reservationRepository.delete(savedReservationTime.getId());
+        reservationRepository.deleteById(savedReservationTime.getId());
         int afterSize = reservationRepository.findAll().size();
 
         // then
@@ -120,13 +120,13 @@ class JdbcReservationRepositoryTest {
     @Test
     void timeId로_예약을_조회한다() {
         // given
-        ReservationTime savedReservationTime = reservationTimeRepository.create(
+        ReservationTime savedReservationTime = reservationTimeRepository.save(
                 ReservationTime.createWithoutId(LocalTime.of(10, 0)));
         Theme theme = new Theme(null, "themeName", "des", "th");
-        Theme savedTheme = themeRepository.create(theme);
+        Theme savedTheme = themeRepository.save(theme);
         Member member = new Member(null, "포라", "email1@domain.com", "password1", Role.MEMBER);
         Member savedMember = memberRepository.save(member);
-        Reservation savedReservation = reservationRepository.create(Reservation.createWithoutId(
+        Reservation savedReservation = reservationRepository.save(Reservation.createWithoutId(
                 savedMember,
                 LocalDate.now().plusDays(1),
                 savedReservationTime,
@@ -142,12 +142,12 @@ class JdbcReservationRepositoryTest {
     void id로_예약을_조회한다() {
         // given
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
-        ReservationTime savedReservationTime = reservationTimeRepository.create(reservationTime);
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
         Theme theme = new Theme(null, "themeName", "des", "th");
-        Theme savedTheme = themeRepository.create(theme);
+        Theme savedTheme = themeRepository.save(theme);
         Member member = new Member(null, "포라", "email1@domain.com", "password1", Role.MEMBER);
         Member savedMember = memberRepository.save(member);
-        Reservation savedReservation = reservationRepository.create(Reservation.createWithoutId(
+        Reservation savedReservation = reservationRepository.save(Reservation.createWithoutId(
                 savedMember,
                 LocalDate.now().plusDays(1),
                 savedReservationTime,
@@ -163,14 +163,14 @@ class JdbcReservationRepositoryTest {
     @Test
     void 날짜와_시간과_테마로_예약을_조회한다() {
         // given
-        ReservationTime savedTime = reservationTimeRepository.create(
+        ReservationTime savedTime = reservationTimeRepository.save(
                 ReservationTime.createWithoutId(LocalTime.of(9, 0))
         );
-        Theme saveTheme = themeRepository.create(
+        Theme saveTheme = themeRepository.save(
                 Theme.createWithoutId("theme1", "desc", "thumb1")
         );
         Member member = memberRepository.save(new Member(null, "name1", "email1@domain.com", "pass1", Role.MEMBER));
-        Reservation savedReservation = reservationRepository.create(
+        Reservation savedReservation = reservationRepository.save(
                 Reservation.createWithoutId(member, LocalDate.of(2025, 1, 1), savedTime, saveTheme)
         );
         // when
@@ -184,15 +184,15 @@ class JdbcReservationRepositoryTest {
     @Test
     void 테마id_회원id_날짜범위로_예약을_조회한다() {
         // given
-        ReservationTime savedTime = reservationTimeRepository.create(
+        ReservationTime savedTime = reservationTimeRepository.save(
                 ReservationTime.createWithoutId(LocalTime.of(9, 0))
         );
-        Theme saveTheme = themeRepository.create(
+        Theme saveTheme = themeRepository.save(
                 Theme.createWithoutId("theme1", "desc", "thumb1")
         );
         Member savedMember = memberRepository.save(
                 new Member(null, "name1", "email1@domain.com", "pass1", Role.MEMBER));
-        Reservation savedReservation = reservationRepository.create(
+        Reservation savedReservation = reservationRepository.save(
                 Reservation.createWithoutId(savedMember, LocalDate.of(2025, 1, 1), savedTime, saveTheme)
         );
         ReservationCondition condition = new ReservationCondition(
@@ -210,12 +210,12 @@ class JdbcReservationRepositoryTest {
     @Test
     void 테마id로_예약을_조회한다() {
         // given
-        ReservationTime savedReservationTime = reservationTimeRepository.create(
+        ReservationTime savedReservationTime = reservationTimeRepository.save(
                 ReservationTime.createWithoutId(LocalTime.of(10, 0)));
-        Theme theme = themeRepository.create(Theme.createWithoutId("themeName", "des", "th"));
+        Theme theme = themeRepository.save(Theme.createWithoutId("themeName", "des", "th"));
         Member member = new Member(null, "포라", "email1@domain.com", "password1", Role.MEMBER);
         Member savedMember = memberRepository.save(member);
-        reservationRepository.create(Reservation.createWithoutId(
+        reservationRepository.save(Reservation.createWithoutId(
                 savedMember,
                 LocalDate.now().plusDays(1),
                 savedReservationTime,

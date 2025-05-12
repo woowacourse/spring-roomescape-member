@@ -51,14 +51,14 @@ class ReservationServiceTest {
     void 예약을_조회할_수_있다() {
         // given
         ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
-        reservationTimeRepository.create(reservationTime1);
+        reservationTimeRepository.save(reservationTime1);
         Theme theme1 = new Theme(1L, "themeName1", "des", "th");
-        themeRepository.create(theme1);
+        themeRepository.save(theme1);
         Member member1 = new Member(1L, "포라", "email1@domain.com", "password1", Role.MEMBER);
         memberRepository.save(member1);
         Reservation reservation1 = Reservation.of(null, member1, LocalDate.of(2025, 7, 25),
                 reservationTime1, theme1);
-        reservationRepository.create(reservation1);
+        reservationRepository.save(reservation1);
         // when
         List<ReservationResponse> all = reservationService.findReservations(
                 new ReservationCondition(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
@@ -72,15 +72,15 @@ class ReservationServiceTest {
     void 예약을_추가할_수_있다() {
         // given
         ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
-        reservationTimeRepository.create(reservationTime1);
+        reservationTimeRepository.save(reservationTime1);
         Theme theme1 = new Theme(1L, "themeName1", "des", "th");
-        themeRepository.create(theme1);
+        themeRepository.save(theme1);
         Member member1 = new Member(1L, "name1", "email1@domain.com", "password1", Role.MEMBER);
         memberRepository.save(member1);
         Reservation reservation1 = Reservation.of(null, member1, LocalDate.of(2025, 7, 25),
                 reservationTime1, theme1);
         // when
-        reservationRepository.create(reservation1);
+        reservationRepository.save(reservation1);
 
         // then
         List<ReservationResponse> all = reservationService.findReservations(
@@ -93,16 +93,16 @@ class ReservationServiceTest {
     void 예약을_삭제할_수_있다() {
         // given
         ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
-        reservationTimeRepository.create(reservationTime1);
+        reservationTimeRepository.save(reservationTime1);
         Theme theme1 = new Theme(1L, "themeName1", "des", "th");
-        themeRepository.create(theme1);
+        themeRepository.save(theme1);
         Member member1 = new Member(1L, "name1", "email1@domain.com", "password1", Role.MEMBER);
         memberRepository.save(member1);
         Reservation reservation1 = Reservation.of(null, member1, LocalDate.of(2025, 7, 25),
                 reservationTime1, theme1);
-        Reservation savedReservation = reservationRepository.create(reservation1);
+        Reservation savedReservation = reservationRepository.save(reservation1);
         // when
-        reservationService.delete(savedReservation.getId());
+        reservationService.deleteReservationById(savedReservation.getId());
 
         // then
         List<ReservationResponse> all = reservationService.findReservations(
@@ -113,25 +113,26 @@ class ReservationServiceTest {
     @Test
     void id에_대한_예약이_없을_경우_예외가_발생한다() {
         // when & then
-        Assertions.assertThatThrownBy(() -> reservationService.delete(10L))
+        Assertions.assertThatThrownBy(() -> reservationService.deleteReservationById(10L))
                 .isInstanceOf(ReservationNotFoundException.class);
     }
 
     @Test
     void 중복_예약하면_예외가_발생한다() {
         // given
-        ReservationTime savedTime = reservationTimeRepository.create(
+        ReservationTime savedTime = reservationTimeRepository.save(
                 new ReservationTime(1L, LocalTime.of(10, 0)));
-        Theme savedTheme = themeRepository.create(new Theme(null, "themeName1", "des", "th"));
+        Theme savedTheme = themeRepository.save(new Theme(null, "themeName1", "des", "th"));
         Member savedMember = memberRepository.save(
                 new Member(1L, "name1", "email1@domain.com", "password1", Role.MEMBER));
         Reservation reservation1 = Reservation.of(null, savedMember, LocalDate.of(2025, 7, 25),
                 savedTime, savedTheme);
-        reservationRepository.create(reservation1);
+        reservationRepository.save(reservation1);
 
         // when & then
         assertThatThrownBy(
-                () -> reservationService.create(1L, savedTime.getId(), savedTheme.getId(), LocalDate.of(2025, 7, 25)))
+                () -> reservationService.createReservation(1L, savedTime.getId(), savedTheme.getId(),
+                        LocalDate.of(2025, 7, 25)))
                 .isInstanceOf(ExistedReservationException.class);
     }
 }

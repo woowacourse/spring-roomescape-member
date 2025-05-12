@@ -13,9 +13,9 @@ public interface ReservationRepository {
 
     List<Reservation> findByCondition(ReservationCondition cond);
 
-    Reservation create(Reservation reservation);
+    Reservation save(Reservation reservation);
 
-    void delete(Long id);
+    void deleteById(Long id);
 
     List<Reservation> findByTimeId(Long id);
 

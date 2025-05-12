@@ -18,7 +18,7 @@ class FakeThemeRepositoryTest {
         // given
         Theme theme = Theme.createWithoutId("theme1", "desc1", "thumb1");
         // when
-        themeRepository.create(theme);
+        themeRepository.save(theme);
         // then
         List<Theme> allTheme = themeRepository.findAll();
         assertThat(allTheme.getFirst().getName()).isEqualTo("theme1");
@@ -28,9 +28,9 @@ class FakeThemeRepositoryTest {
     void 전체_테마를_조회한다() {
         // given
         Theme theme1 = Theme.createWithoutId("theme1", "desc1", "thumb1");
-        themeRepository.create(theme1);
+        themeRepository.save(theme1);
         Theme theme2 = Theme.createWithoutId("theme2", "desc2", "thumb2");
-        themeRepository.create(theme2);
+        themeRepository.save(theme2);
         // when
         List<Theme> allTheme = themeRepository.findAll();
         // then
@@ -45,9 +45,9 @@ class FakeThemeRepositoryTest {
     void 테마를_삭제한다() {
         // given
         Theme theme1 = Theme.createWithoutId("theme1", "desc1", "thumb1");
-        Theme savedTheme = themeRepository.create(theme1);
+        Theme savedTheme = themeRepository.save(theme1);
         // when
-        themeRepository.delete(savedTheme.getId());
+        themeRepository.deleteById(savedTheme.getId());
         // then
         List<Theme> allTheme = themeRepository.findAll();
         assertThat(allTheme).hasSize(0);
@@ -57,7 +57,7 @@ class FakeThemeRepositoryTest {
     void id로_테마를_조회한다() {
         // given
         Theme theme1 = Theme.createWithoutId("theme1", "desc1", "thumb1");
-        Theme savedTheme = themeRepository.create(theme1);
+        Theme savedTheme = themeRepository.save(theme1);
         // when
         Optional<Theme> optionalTheme = themeRepository.findById(savedTheme.getId());
         // then
@@ -71,7 +71,7 @@ class FakeThemeRepositoryTest {
     void 이름으로_테마를_조회한다() {
         // given
         Theme theme1 = Theme.createWithoutId("theme1", "desc1", "thumb1");
-        Theme savedTheme = themeRepository.create(theme1);
+        Theme savedTheme = themeRepository.save(theme1);
         // when
         Optional<Theme> optionalTheme = themeRepository.findByName(savedTheme.getName());
         // then

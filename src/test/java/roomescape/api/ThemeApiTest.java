@@ -61,9 +61,9 @@ public class ThemeApiTest {
     @Test
     void 테마를_전체조회한다() {
         // given
-        themeRepository.create(Theme.createWithoutId("theme1", "desc", "thumb1"));
-        themeRepository.create(Theme.createWithoutId("theme2", "desc", "thumb2"));
-        themeRepository.create(Theme.createWithoutId("theme3", "desc", "thumb3"));
+        themeRepository.save(Theme.createWithoutId("theme1", "desc", "thumb1"));
+        themeRepository.save(Theme.createWithoutId("theme2", "desc", "thumb2"));
+        themeRepository.save(Theme.createWithoutId("theme3", "desc", "thumb3"));
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -76,8 +76,8 @@ public class ThemeApiTest {
     @Test
     void 테마를_삭제한다() {
         // given
-        themeRepository.create(Theme.createWithoutId("theme1", "desc", "thumb1"));
-        Theme savedTheme = themeRepository.create(Theme.createWithoutId("theme2", "desc", "thumb2"));
+        themeRepository.save(Theme.createWithoutId("theme1", "desc", "thumb1"));
+        Theme savedTheme = themeRepository.save(Theme.createWithoutId("theme2", "desc", "thumb2"));
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -94,10 +94,10 @@ public class ThemeApiTest {
     @Test
     void 예약이_존재하는_테마를_삭제하는_경우_400에러가_발생한다() {
         // given
-        Theme theme = themeRepository.create(Theme.createWithoutId("theme3", "desc", "thumb3"));
-        ReservationTime time = timeRepository.create(ReservationTime.createWithoutId(LocalTime.of(9, 0)));
+        Theme theme = themeRepository.save(Theme.createWithoutId("theme3", "desc", "thumb3"));
+        ReservationTime time = timeRepository.save(ReservationTime.createWithoutId(LocalTime.of(9, 0)));
         Member member = memberRepository.save(new Member(null, "name1", "email@domain.com", "password1", Role.MEMBER));
-        reservationRepository.create(Reservation.createWithoutId(member, LocalDate.now().minusDays(1), time, theme));
+        reservationRepository.save(Reservation.createWithoutId(member, LocalDate.now().minusDays(1), time, theme));
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -110,12 +110,12 @@ public class ThemeApiTest {
     @Test
     void 인기테마_상위10개_조회_테스트() {
         // given
-        themeRepository.create(Theme.createWithoutId("theme1", "desc", "thumb1"));
-        themeRepository.create(Theme.createWithoutId("theme2", "desc", "thumb2"));
-        Theme theme = themeRepository.create(Theme.createWithoutId("theme3", "desc", "thumb3"));
-        ReservationTime time = timeRepository.create(ReservationTime.createWithoutId(LocalTime.of(9, 0)));
+        themeRepository.save(Theme.createWithoutId("theme1", "desc", "thumb1"));
+        themeRepository.save(Theme.createWithoutId("theme2", "desc", "thumb2"));
+        Theme theme = themeRepository.save(Theme.createWithoutId("theme3", "desc", "thumb3"));
+        ReservationTime time = timeRepository.save(ReservationTime.createWithoutId(LocalTime.of(9, 0)));
         Member member = memberRepository.save(new Member(null, "name1", "email@domain.com", "password1", Role.MEMBER));
-        reservationRepository.create(Reservation.createWithoutId(member, LocalDate.now().minusDays(1), time, theme));
+        reservationRepository.save(Reservation.createWithoutId(member, LocalDate.now().minusDays(1), time, theme));
         // when & then
         RestAssured.given()
                 .contentType(ContentType.JSON)

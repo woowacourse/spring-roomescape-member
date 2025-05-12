@@ -29,7 +29,7 @@ class FakeReservationTimeRepositoryTest {
         // given
         ReservationTime time = ReservationTime.createWithoutId(LocalTime.of(9, 0));
         // when
-        ReservationTime savedTime = reservationTimeRepository.create(time);
+        ReservationTime savedTime = reservationTimeRepository.save(time);
         // then
         List<ReservationTime> allTimes = reservationTimeRepository.findAll();
         assertThat(allTimes).hasSize(1);
@@ -40,9 +40,9 @@ class FakeReservationTimeRepositoryTest {
     void 예약_시간_삭제() {
         // given
         ReservationTime time = ReservationTime.createWithoutId(LocalTime.of(9, 0));
-        ReservationTime savedTime = reservationTimeRepository.create(time);
+        ReservationTime savedTime = reservationTimeRepository.save(time);
         // when
-        reservationTimeRepository.delete(savedTime.getId());
+        reservationTimeRepository.deleteById(savedTime.getId());
         // then
         List<ReservationTime> allTimes = reservationTimeRepository.findAll();
         assertThat(allTimes).hasSize(0);
@@ -52,7 +52,7 @@ class FakeReservationTimeRepositoryTest {
     void id로_예약_시간_조회() {
         // given
         ReservationTime time = ReservationTime.createWithoutId(LocalTime.of(9, 0));
-        ReservationTime savedTime = reservationTimeRepository.create(time);
+        ReservationTime savedTime = reservationTimeRepository.save(time);
         // when
         Optional<ReservationTime> optionalTime = reservationTimeRepository.findById(savedTime.getId());
         // then
@@ -63,11 +63,11 @@ class FakeReservationTimeRepositoryTest {
     @Test
     void 특정날짜와_테마의_예약시간들을_예약여부와_함께_조회한다() {
         // given
-        ReservationTime savedTime = reservationTimeRepository.create(
+        ReservationTime savedTime = reservationTimeRepository.save(
                 ReservationTime.createWithoutId(LocalTime.of(9, 0)));
         Theme theme = new Theme(1L, "name", "desc", "thumb");
         Member member = new Member(1L, "name1", "email@domain.com", "pass1", Role.MEMBER);
-        reservationRepository.create(
+        reservationRepository.save(
                 Reservation.createWithoutId(member, LocalDate.of(2025, 1, 1), savedTime, theme)
         );
         // when

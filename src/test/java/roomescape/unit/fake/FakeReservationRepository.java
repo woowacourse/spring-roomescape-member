@@ -27,7 +27,7 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation create(Reservation reservation) {
+    public Reservation save(Reservation reservation) {
         Reservation reservationWithId = Reservation.of(index.getAndIncrement(), reservation.getMember(),
                 reservation.getDate(), reservation.getReservationTime(), reservation.getTheme());
         reservations.add(reservationWithId);
@@ -35,7 +35,7 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         reservations.removeIf(reservation -> reservation.getId().equals(id));
     }
 

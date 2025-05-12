@@ -24,19 +24,19 @@ public class ThemeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public ThemeResponse create(ThemeRequest themeRequest) {
+    public ThemeResponse createTheme(ThemeRequest themeRequest) {
         Optional<Theme> optionalTheme = themeRepository.findByName(themeRequest.name());
         if (optionalTheme.isPresent()) {
             throw new ExistedThemeException();
         }
 
         Theme theme = Theme.createWithoutId(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
-        Theme themeWithId = themeRepository.create(theme);
+        Theme themeWithId = themeRepository.save(theme);
         return new ThemeResponse(themeWithId.getId(), themeWithId.getName(), themeWithId.getDescription(),
                 themeWithId.getThumbnail());
     }
 
-    public List<ThemeResponse> findAll() {
+    public List<ThemeResponse> findAllThemes() {
         List<Theme> themes = themeRepository.findAll();
         return themes.stream()
                 .map(theme ->
@@ -50,12 +50,12 @@ public class ThemeService {
                 .toList();
     }
 
-    public int delete(long id) {
+    public int deleteThemeById(long id) {
         List<Reservation> reservations = reservationRepository.findByThemeId(id);
         if (reservations.size() > 0) {
             throw new ExistedReservationException();
         }
-        return themeRepository.delete(id);
+        return themeRepository.deleteById(id);
     }
 
     public List<ThemeResponse> getTop10MostReservedThemesInLast7Days() {

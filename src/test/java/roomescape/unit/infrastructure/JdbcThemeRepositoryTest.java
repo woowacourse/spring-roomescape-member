@@ -30,7 +30,7 @@ public class JdbcThemeRepositoryTest {
         Theme theme = Theme.createWithoutId("레벨2", "탈출하자",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         // when
-        Theme createdTheme = themeRepository.create(theme);
+        Theme createdTheme = themeRepository.save(theme);
         // then
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
         assertThat(count).isEqualTo(Integer.valueOf(1));
@@ -39,13 +39,13 @@ public class JdbcThemeRepositoryTest {
     @Test
     void 전체_테마를_조회한다() {
         // given
-        themeRepository.create(
+        themeRepository.save(
                 Theme.createWithoutId(
                         "레벨1",
                         "탈출하자",
                         "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
         );
-        themeRepository.create(
+        themeRepository.save(
                 Theme.createWithoutId(
                         "레벨2",
                         "탈출하자",
@@ -64,20 +64,20 @@ public class JdbcThemeRepositoryTest {
     @Test
     void 테마를_삭제한다() {
         // given
-        Theme theme1 = themeRepository.create(
+        Theme theme1 = themeRepository.save(
                 Theme.createWithoutId(
                         "레벨2",
                         "탈출하자",
                         "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
         );
-        Theme theme2 = themeRepository.create(
+        Theme theme2 = themeRepository.save(
                 Theme.createWithoutId(
                         "레벨1",
                         "탈출하자",
                         "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
         );
         // when
-        themeRepository.delete(theme1.getId());
+        themeRepository.deleteById(theme1.getId());
         // then
         List<Theme> allThemes = themeRepository.findAll();
         assertThat(allThemes).hasSize(1);
