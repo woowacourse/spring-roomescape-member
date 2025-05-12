@@ -1,7 +1,6 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
-import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ReservationThemeRequest;
-import roomescape.dto.ReservationThemeResponse;
 import roomescape.service.ReservationThemeService;
 
 @RestController
@@ -26,23 +24,23 @@ public class ReservationThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationThemeResponse>> reservationThemeList() {
+    public ResponseEntity<Object> reservationThemeList() {
         return ResponseEntity.ok(reservationThemeService.findReservationThemes());
     }
 
     @GetMapping("/ranking")
-    public ResponseEntity<List<ReservationThemeResponse>> reservationThemeRankingList() {
+    public ResponseEntity<Object> reservationThemeRankingList() {
         return ResponseEntity.ok(reservationThemeService.findPopularReservations());
     }
 
     @PostMapping
-    public ResponseEntity<ReservationThemeResponse> reservationThemeAdd(
+    public ResponseEntity<Object> reservationThemeAdd(
             @Valid @RequestBody ReservationThemeRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationThemeService.addReservationTheme(request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> reservationThemeRemove(@PathVariable(name = "id") long id) {
+    public ResponseEntity<Object> reservationThemeRemove(@PathVariable(name = "id") long id) {
         reservationThemeService.removeReservationTheme(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
