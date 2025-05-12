@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.member.constant.Role;
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
@@ -70,7 +71,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                                 resultSet.getString("user_name"),
                                 resultSet.getString("user_email"),
                                 resultSet.getString("user_password"),
-                                resultSet.getString("user_role")
+                                Role.valueOf(resultSet.getString("user_role"))
                         )));
     }
 
@@ -131,7 +132,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                                         resultSet.getString("user_name"),
                                         resultSet.getString("user_email"),
                                         resultSet.getString("user_password"),
-                                        resultSet.getString("user_role")
+                                        Role.valueOf(resultSet.getString("user_role"))
                                 )), id)
                 .stream()
                 .findFirst();
@@ -207,7 +208,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                                 resultSet.getString("user_name"),
                                 resultSet.getString("user_email"),
                                 resultSet.getString("user_password"),
-                                resultSet.getString("user_role")
+                                Role.valueOf(resultSet.getString("user_role"))
                         )), memberId, themeId, start.toString(), end.toString());
     }
 

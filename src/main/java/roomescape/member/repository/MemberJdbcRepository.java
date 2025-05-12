@@ -1,5 +1,7 @@
 package roomescape.member.repository;
 
+import static roomescape.member.constant.Role.MEMBER;
+
 import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -9,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.member.constant.Role;
 import roomescape.member.domain.Member;
 import roomescape.member.service.MemberRepository;
 
@@ -23,7 +26,7 @@ public class MemberJdbcRepository implements MemberRepository {
             result.getString("name"),
             result.getString("email"),
             result.getString("password"),
-            result.getString("role")
+            Role.valueOf(result.getString("role"))
     );
 
 
@@ -43,7 +46,7 @@ public class MemberJdbcRepository implements MemberRepository {
 
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new Member(id, name, email, password, "MEMBER");
+        return new Member(id, name, email, password, MEMBER);
     }
 
     @Override

@@ -1,14 +1,15 @@
 package roomescape.member.domain;
 
+import roomescape.member.constant.Role;
+
 public class Member {
     private final Long id;
     private final String name;
     private final String email;
     private final String password;
-    private final String role;
+    private final Role role;
 
-    public Member(Long id, String name, String email, String passWord, String role) {
-        validateRole(role);
+    public Member(Long id, String name, String email, String passWord, Role role) {
         validateName(name);
         validateEmail(email);
         validatePassword(passWord);
@@ -37,12 +38,6 @@ public class Member {
         }
     }
 
-    private void validateRole(String role) {
-        if (!role.matches("ADMIN") && !role.matches("MEMBER")) {
-            throw new IllegalArgumentException("[ERROR] Role 은 ADMIN 또는 MEMBER 입니다.");
-        }
-    }
-
     public String getName() {
         return name;
     }
@@ -60,6 +55,6 @@ public class Member {
     }
 
     public String getRole() {
-        return role;
+        return role.getRole();
     }
 }
