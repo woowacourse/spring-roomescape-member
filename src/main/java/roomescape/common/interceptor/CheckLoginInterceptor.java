@@ -26,20 +26,22 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
         Cookie[] cookies = request.getCookies();
         String token = TokenUtil.extractTokenFromCookie(cookies);
 
-        validateToken(token);
+        if (!validateToken(token)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
 
         Member member = authService.findMemberByToken(token);
         if (member == null || !member.getRole().equals(Role.ADMIN)) {
-            response.setStatus(401);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return false;
         }
         return true;
     }
 
-    private void validateToken(final String token) {
+    private boolean validateToken(final String token) {
         if (token == null || token.isBlank()) {
             throw new TokenNotFountException();
         }
-        jwtTokenProvider.validateToken(token);
+        return jwtTokenProvider.validateToken(token);
     }
 }
