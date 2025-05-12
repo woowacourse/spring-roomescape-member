@@ -78,9 +78,11 @@ public class ReservationService {
     private void validateDuplicateReservation(final Reservation reservation) {
         final List<Reservation> reservations = reservationRepository.findAll();
         final boolean hasDuplicate = reservations.stream()
-                .anyMatch(r -> r.isSameDateTime(reservation));
+                .anyMatch(r -> r.isSameDateTime(reservation) && r.isSameTheme(reservation));
         if (hasDuplicate) {
-            throw new RoomescapeException("이미 예약된 날짜와 시간에 대한 예약은 불가능합니다. 예약 날짜: " + reservation.date());
+            throw new RoomescapeException(
+                    String.format("이미 예약된 슬롯에 대한 예약은 불가능합니다. 예약 날짜: %s, 시간: %s, 테마: %s", reservation.date(),
+                            reservation.timeSlot(), reservation.theme()));
         }
     }
 

@@ -34,4 +34,8 @@ public class Reservation {
     public boolean isSameDateTime(final Reservation reservation) {
         return this.date.isEqual(reservation.date()) && this.timeSlot.isSameTimeSlot(reservation.timeSlot());
     }
+
+    public boolean isSameTheme(final Reservation reservation) {
+        return this.theme.equals(reservation.theme());
+    }
 }
