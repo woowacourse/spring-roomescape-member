@@ -31,6 +31,12 @@ class ThemeControllerTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @BeforeEach
+    void cleanUp() {
+        jdbcTemplate.execute("DELETE FROM reservation");
+        jdbcTemplate.execute("DELETE FROM theme");
+    }
+
     @DisplayName("theme를 생성하면, 201 응답이 도착한다.")
     @Test
     public void add() {
@@ -65,5 +71,4 @@ class ThemeControllerTest {
         Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Long.class);
         assertThat(count).isZero();
     }
-
 }
