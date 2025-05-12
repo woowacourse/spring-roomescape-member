@@ -10,8 +10,8 @@ import roomescape.persistence.dao.UserDao;
 public class FakeUserDao implements UserDao {
 
     private static final List<User> USERS_FIXTURE = new ArrayList<>(List.of(
-            User.createWithId(1L, "hotteok", "111@111.com", "qwe123", Role.USER),
-            User.createWithId(2L, "gugu", "222@222.com", "qwe123", Role.ADMIN)
+            User.createWithId(1L, "hotteok", "hoho", "qwe123", Role.USER),
+            User.createWithId(2L, "gugu", "gugu", "qwe123", Role.ADMIN)
     ));
 
     @Override

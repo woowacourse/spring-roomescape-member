@@ -144,7 +144,7 @@ class JdbcThemeDaoTest {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마2', '소개2', '썸네일2')");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마3', '소개3', '썸네일3')");
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('hotteok', '2025-01-01', 1, 2)");
+                "INSERT INTO reservation (user_id, date, time_id, theme_id) VALUES (1, '2025-01-01', 1, 2)");
 
         // when
         final List<Theme> actual = themeDao.findPopularThemesBetweenWithLimit(
