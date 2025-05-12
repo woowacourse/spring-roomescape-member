@@ -53,8 +53,8 @@ public class ReservationService {
             throw new ReservationException("해당 시간은 이미 예약되어있습니다.");
         }
 
-        final Member member = new Member(loginMember.getId(), loginMember.getName(), loginMember.getEmail(),
-                loginMember.getPassword(), loginMember.getRole());
+        final Member member = new Member(loginMember.id(), loginMember.name(), loginMember.email(),
+                loginMember.password(), loginMember.role());
         final Reservation reservation = new Reservation(request.date(), reservationTime, theme, member);
         final Reservation newReservation = reservationRepository.save(reservation);
         return new ReservationResponse(newReservation);
