@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.auth.service.dto.response.LoginMember;
+import roomescape.auth.service.dto.LoginMember;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.dto.request.CreateReservationRequest;
 import roomescape.reservation.service.dto.request.ReservationRequest;

@@ -3,7 +3,7 @@ package roomescape.reservation.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.auth.service.dto.response.LoginMember;
+import roomescape.auth.service.dto.LoginMember;
 import roomescape.auth.entity.Member;
 import roomescape.auth.entity.Role;
 import roomescape.auth.repository.FakeMemberRepository;

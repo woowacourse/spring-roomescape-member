@@ -1,7 +1,7 @@
 package roomescape.reservation.service.dto.response;
 
 import roomescape.auth.entity.Member;
-import roomescape.auth.service.dto.response.LoginMember;
+import roomescape.auth.service.dto.LoginMember;
 import roomescape.theme.service.dto.response.ThemeResponse;
 import roomescape.theme.entity.Theme;
 import roomescape.time.service.dto.response.ReservationTimeResponse;

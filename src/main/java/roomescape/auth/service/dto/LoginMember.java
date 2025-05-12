@@ -1,4 +1,4 @@
-package roomescape.auth.service.dto.response;
+package roomescape.auth.service.dto;
 
 import roomescape.auth.entity.Role;
 
