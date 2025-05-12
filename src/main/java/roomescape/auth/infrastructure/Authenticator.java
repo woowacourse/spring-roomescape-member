@@ -65,7 +65,7 @@ public class Authenticator {
 
             return Payload.from(claims.getSubject(), role);
         }
-        catch (JwtException | IllegalArgumentException exception) {
+        catch (JwtException | IllegalArgumentException e) {
             throw new AuthorizationException();
         }
     }
