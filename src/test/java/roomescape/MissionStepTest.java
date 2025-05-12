@@ -70,7 +70,21 @@ public class MissionStepTest {
     @Test
     @DisplayName("1단계: localhost:8080/admin 요청 시 어드민 메인 페이지가 성공적으로 응답된다")
     void first() {
+        final User user = userRepository.save(
+                User.withoutId(
+                        UserName.from("강산"),
+                        Email.from("email@email.com"),
+                        Password.fromEncoded("1234"),
+                        UserRole.ADMIN));
+
+        final Claims claims = Jwts.claims()
+                .add(User.Fields.id, user.getId().getValue())
+                .add(User.Fields.name, user.getName().getValue())
+                .add(User.Fields.role, user.getRole().name())
+                .build();
+
         RestAssured.given().log().all()
+                .cookie(TokenType.ACCESS.getDescription(), jwtManager.generate(claims, TokenType.ACCESS).getValue())
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -80,7 +94,21 @@ public class MissionStepTest {
     @DisplayName("2단계: localhost:8080/admin/reservation 요청 시 예약 관리 페이지가 성공적으로 응답된다, " +
             "예약들을 조회할 수 있다")
     void second() {
+        final User user = userRepository.save(
+                User.withoutId(
+                        UserName.from("강산"),
+                        Email.from("email@email.com"),
+                        Password.fromEncoded("1234"),
+                        UserRole.ADMIN));
+
+        final Claims claims = Jwts.claims()
+                .add(User.Fields.id, user.getId().getValue())
+                .add(User.Fields.name, user.getName().getValue())
+                .add(User.Fields.role, user.getRole().name())
+                .build();
+
         RestAssured.given().log().all()
+                .cookie(TokenType.ACCESS.getDescription(), jwtManager.generate(claims, TokenType.ACCESS).getValue())
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
