@@ -1,7 +1,7 @@
 package roomescape.domain;
 
 import java.util.Objects;
-import roomescape.domain.regex.BaseFormat;
+import roomescape.domain.regex.MemberFormat;
 import roomescape.exception.InternalServerException;
 
 public class Member {
@@ -96,7 +96,7 @@ public class Member {
         if (email.length() >= MAX_NAME_LENGTH) {
             throw new InternalServerException("[ERROR] 최대길이를 초과한 이메일로는 멤버를 생성할 수 없습니다.");
         }
-        if (!email.matches(BaseFormat.EMAIL)) {
+        if (!email.matches(MemberFormat.EMAIL)) {
             throw new InternalServerException("[ERROR] 올바르지 않은 형식의 이메일로는 멤버를 생성할 수 없습니다.");
         }
     }
@@ -105,7 +105,7 @@ public class Member {
         if (password == null || password.isBlank()) {
             throw new InternalServerException("[ERROR] 비어있는 비밀번호로 멤버를 생성할 수 없습니다.");
         }
-        if (!password.matches(BaseFormat.PASSWORD)) {
+        if (!password.matches(MemberFormat.PASSWORD)) {
             throw new InternalServerException("[ERROR] 올바르지 않은 형식의 비밀번호로는 멤버를 생성할 수 없습니다.");
         }
     }
