@@ -10,20 +10,20 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Member;
 import roomescape.dto.login.LoginRequest;
 import roomescape.dto.member.MemberResponse;
-import roomescape.service.member.MemberServiceImpl;
+import roomescape.service.member.MemberService;
 
 @RestController
 public class LoginLogoutController {
 
-    private final MemberServiceImpl memberServiceImpl;
+    private final MemberService memberService;
 
-    public LoginLogoutController(MemberServiceImpl memberServiceImpl) {
-        this.memberServiceImpl = memberServiceImpl;
+    public LoginLogoutController(MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @PostMapping("/login")
     public void userLogin(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse) {
-        String jwtToken = memberServiceImpl.createToken(loginRequest);
+        String jwtToken = memberService.createToken(loginRequest);
         Cookie cookie = new Cookie("token", jwtToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
