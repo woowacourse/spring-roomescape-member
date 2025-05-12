@@ -38,7 +38,7 @@ function renderTheme(themes) {
     themes.forEach(theme => {
         const name = theme.name;
         const themeId = theme.id;
-        // TODO: 명세에 맞춰 클라이언트 코드 수정 (완료)
+
         themeSlots.appendChild(createSlot('theme', name, themeId));
     });
 }
@@ -83,11 +83,6 @@ function checkDateAndTheme() {
 }
 
 function fetchAvailableTimes(date, themeId) {
-    /*
-    TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출
-          요청 포맷에 맞게 설정 (완료)
-    */
-
     fetch(`/reservations/themes/${themeId}/times?date=${date}`, { // 예약 가능 시간 조회 API endpoint
         method: 'GET',
         headers: {
@@ -113,9 +108,6 @@ function renderAvailableTimes(times) {
         return;
     }
     times.forEach(time => {
-        /*
-        TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출 후 렌더링
-              response 명세에 맞춰 createSlot 함수 호출 시 값 설정 (완료)        */
         const startAt = time.startAt;
         const timeId = time.id;
         const alreadyBooked = time.isBooked;
@@ -149,20 +141,19 @@ function onReservationButtonClick() {
     const selectedDate = document.getElementById("datepicker").value;
     const selectedThemeId = document.querySelector('.theme-slot.active')?.getAttribute('data-theme-id');
     const selectedTimeId = document.querySelector('.time-slot.active')?.getAttribute('data-time-id');
-    const name = document.getElementById('user-name').value;
+    // const name = document.getElementById('user-name').value;
 
     if (selectedDate && selectedThemeId && selectedTimeId) {
 
         /*
-        TODO: [3단계] 사용자 예약 - 예약 요청 API 호출 (완료)
-              [5단계] 예약 생성 기능 변경 - 사용자
+        TODO: [5단계] 예약 생성 기능 변경 - 사용자
               request 명세에 맞게 설정
         */
         const reservationData = {
             date: selectedDate,
             themeId: selectedThemeId,
             timeId: selectedTimeId,
-            name: name
+            // name: name
         };
 
         fetch('/reservations', {

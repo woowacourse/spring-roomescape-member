@@ -1,3 +1,12 @@
+INSERT INTO member (name, password, email, role)
+VALUES ('엠제이', '1234', 'test1@test.com', 'MEMBER');
+INSERT INTO member (name, password, email, role)
+VALUES ('저스틴', '1234', 'test2@test.com', 'MEMBER');
+INSERT INTO member (name, password, email, role)
+VALUES ('리사', '1234', 'test3@test.com', 'MEMBER');
+INSERT INTO member (name, password, email, role)
+VALUES ('관리자', '1234', 'admin@admin.com', 'ADMIN');
+
 INSERT INTO reservation_time (start_at)
 VALUES ('10:00');
 INSERT INTO reservation_time (start_at)
@@ -23,17 +32,17 @@ VALUES ('컨저링', '실화 기반의 공포가 현실이 된다, 악령이 도
 
 -- 2 -> 1 -> 3
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('예약1', DATEADD('DAY', -3, CURRENT_DATE), 1, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('예약2', DATEADD('DAY', -4, CURRENT_DATE), 2, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('예약3', DATEADD('DAY', -3, CURRENT_DATE), 2, 2);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES (DATEADD('DAY', -3, CURRENT_DATE), 1, 2, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES (DATEADD('DAY', -4, CURRENT_DATE), 2, 2, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES (DATEADD('DAY', -3, CURRENT_DATE), 2, 2, 2);
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('예약4', DATEADD('DAY', -3, CURRENT_DATE), 3, 1);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('예약5', DATEADD('DAY', -3, CURRENT_DATE), 4, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES (DATEADD('DAY', -3, CURRENT_DATE), 3, 1, 2);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES (DATEADD('DAY', -3, CURRENT_DATE), 4, 1, 3);
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('예약6', DATEADD('DAY', -3, CURRENT_DATE), 4, 3);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES (DATEADD('DAY', -3, CURRENT_DATE), 4, 3, 3);
