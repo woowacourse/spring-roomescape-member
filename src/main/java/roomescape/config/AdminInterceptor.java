@@ -6,15 +6,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.common.Role;
-import roomescape.controller.member.dto.MemberInfoDto;
-import roomescape.service.AuthService;
+import roomescape.common.util.JwtProvider;
 
 public class AdminInterceptor implements HandlerInterceptor {
 
-    private final AuthService authService;
+    private final JwtProvider jwtProvider;
 
-    public AdminInterceptor(AuthService authService) {
-        this.authService = authService;
+
+    public AdminInterceptor(JwtProvider jwtProvider) {
+        this.jwtProvider = jwtProvider;
     }
 
     @Override
@@ -22,8 +22,9 @@ public class AdminInterceptor implements HandlerInterceptor {
             throws Exception {
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies).orElse("");
-        MemberInfoDto memberInfoDto = authService.findByToken(token);
-        if (!memberInfoDto.role().equals(Role.ADMIN)) {
+        String role = jwtProvider.getRoleFromToken(token);
+        Role tokenRole = Role.fromMemberRole(role);
+        if (!tokenRole.equals(Role.ADMIN)) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }
@@ -41,5 +42,4 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
         return Optional.empty();
     }
-
 }

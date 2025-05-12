@@ -9,6 +9,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.common.annotation.LoginCustomer;
+import roomescape.common.exception.NotFoundException;
+import roomescape.controller.member.dto.MemberInfoDto;
 import roomescape.service.AuthService;
 
 public class LoginCustomerResolver implements HandlerMethodArgumentResolver {
@@ -34,7 +36,11 @@ public class LoginCustomerResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies).orElse("");
-        return authService.findByToken(token);
+        Optional<MemberInfoDto> byToken = authService.findByToken(token);
+        if (byToken.isEmpty()){
+            throw new NotFoundException("존재하지 않는 유저정보입니다");
+        }
+        return byToken.get();
     }
 
     private Optional<String> extractTokenFromCookie(Cookie[] cookies) {

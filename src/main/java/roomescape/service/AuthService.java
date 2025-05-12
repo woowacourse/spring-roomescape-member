@@ -2,7 +2,6 @@ package roomescape.service;
 
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-import roomescape.common.exception.NotFoundException;
 import roomescape.common.exception.UnauthorizedException;
 import roomescape.dao.MemberDao;
 import roomescape.controller.member.dto.MemberInfoDto;
@@ -26,10 +25,9 @@ public class AuthService {
                 .orElseThrow(() -> new UnauthorizedException("존재하지 않는 email 혹은 틀린 password 입니다."));
     }
 
-    public MemberInfoDto findByToken(String token) {
+    public Optional<MemberInfoDto> findByToken(String token) {
         return Optional.ofNullable(jwtProvider.getSubjectFromToken(token))
                 .flatMap(memberDao::findById)
-                .map(member -> new MemberInfoDto(member.getId(), member.getRole()))
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 user 정보입니다."));
+                .map(member -> new MemberInfoDto(member.getId(), member.getRole()));
     }
 }
