@@ -27,14 +27,14 @@ import static org.hamcrest.Matchers.is;
 @Sql("/test-data.sql")
 class ThemeControllerTest {
 
-    private String admin_cookie;
-    private String user_cookie;
+    private String adminCookie;
+    private String userCookie;
 
     @BeforeEach
-    void loginAsAdmin() {
+    void login() {
         LoginMember admin = LoginMemberFixture.getAdmin();
 
-        admin_cookie = RestAssured
+        adminCookie = RestAssured
                 .given().log().all()
                 .body(new LoginRequest(admin.getPassword(), admin.getEmail()))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -43,7 +43,7 @@ class ThemeControllerTest {
 
         LoginMember user = LoginMemberFixture.getUser();
 
-        user_cookie = RestAssured
+        userCookie = RestAssured
                 .given().log().all()
                 .body(new LoginRequest(user.getPassword(), user.getEmail()))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -76,7 +76,7 @@ class ThemeControllerTest {
             ThemeCreateRequest request = new ThemeCreateRequest("테마", "설명", "https://");
 
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when().post("/themes")
@@ -97,7 +97,7 @@ class ThemeControllerTest {
             ThemeCreateRequest request = new ThemeCreateRequest("테마", "설명", "https://");
 
             RestAssured.given().log().all()
-                    .header("Cookie", user_cookie)
+                    .header("Cookie", userCookie)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when().post("/themes")
@@ -111,7 +111,7 @@ class ThemeControllerTest {
             ThemeCreateRequest requestTheme = new ThemeCreateRequest("테마 A", "설명", "https://");
 
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .contentType(ContentType.JSON)
                     .body(requestTheme)
                     .when().post("/themes")
@@ -130,7 +130,7 @@ class ThemeControllerTest {
             );
 
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/themes")
@@ -150,7 +150,7 @@ class ThemeControllerTest {
             );
 
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/themes")
@@ -176,7 +176,7 @@ class ThemeControllerTest {
             );
 
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/themes")
@@ -201,13 +201,13 @@ class ThemeControllerTest {
         @Test
         void deleteThemeTest() {
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .when().delete("/reservations/1")
                     .then().log().all()
                     .statusCode(204);
 
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .when().delete("/themes/1")
                     .then().log().all()
                     .statusCode(204);
@@ -223,7 +223,7 @@ class ThemeControllerTest {
         @Test
         void deleteThemeExceptionTest() {
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .when().delete("/themes/1")
                     .then().log().all()
                     .statusCode(409);
@@ -233,13 +233,13 @@ class ThemeControllerTest {
         @Test
         void deleteThemeExceptionTest2() {
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .when().delete("/reservations/1")
                     .then().log().all()
                     .statusCode(204);
 
             RestAssured.given().log().all()
-                    .header("Cookie", user_cookie)
+                    .header("Cookie", userCookie)
                     .when().delete("/themes/1")
                     .then().log().all()
                     .statusCode(403);
@@ -249,7 +249,7 @@ class ThemeControllerTest {
         @Test
         void invalidThemeIdTest() {
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .when().delete("/themes/5")
                     .then().log().all()
                     .statusCode(404);

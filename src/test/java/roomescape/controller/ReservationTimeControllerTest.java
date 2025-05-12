@@ -25,14 +25,14 @@ import static org.hamcrest.Matchers.is;
 @Sql("/test-data.sql")
 class ReservationTimeControllerTest {
 
-    private String user_cookie;
-    private String admin_cookie;
+    private String userCookie;
+    private String adminCookie;
 
     @BeforeEach
-    void loginAsAdmin() {
+    void login() {
         LoginMember admin = LoginMemberFixture.getAdmin();
 
-        admin_cookie = RestAssured
+        adminCookie = RestAssured
                 .given().log().all()
                 .body(new LoginRequest(admin.getPassword(), admin.getEmail()))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -41,7 +41,7 @@ class ReservationTimeControllerTest {
 
         LoginMember user = LoginMemberFixture.getUser();
 
-        user_cookie = RestAssured
+        userCookie = RestAssured
                 .given().log().all()
                 .body(new LoginRequest(user.getPassword(), user.getEmail()))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -74,7 +74,7 @@ class ReservationTimeControllerTest {
             ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(15, 30));
 
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when().post("/times")
@@ -95,7 +95,7 @@ class ReservationTimeControllerTest {
             ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(15, 30));
 
             RestAssured.given().log().all()
-                    .header("Cookie", user_cookie)
+                    .header("Cookie", userCookie)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when().post("/times")
@@ -109,7 +109,7 @@ class ReservationTimeControllerTest {
             ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(9, 0));
 
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when().post("/times")
@@ -124,7 +124,7 @@ class ReservationTimeControllerTest {
             params.put("startAt", "25:40");
 
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/times")
@@ -141,13 +141,13 @@ class ReservationTimeControllerTest {
         @Test
         void deleteTimeTest() {
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .when().delete("/reservations/1")
                     .then().log().all()
                     .statusCode(204);
 
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .when().delete("/times/1")
                     .then().log().all()
                     .statusCode(204);
@@ -163,7 +163,7 @@ class ReservationTimeControllerTest {
         @Test
         void deleteTimeExceptionTest1() {
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .when().delete("/times/1")
                     .then().log().all()
                     .statusCode(409);
@@ -173,13 +173,13 @@ class ReservationTimeControllerTest {
         @Test
         void deleteTimeExceptionTest2() {
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .when().delete("/reservations/1")
                     .then().log().all()
                     .statusCode(204);
 
             RestAssured.given().log().all()
-                    .header("Cookie", user_cookie)
+                    .header("Cookie", userCookie)
                     .when().delete("/times/1")
                     .then().log().all()
                     .statusCode(403);
@@ -189,7 +189,7 @@ class ReservationTimeControllerTest {
         @Test
         void invalidTimeIdTest() {
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .when().delete("/times/5")
                     .then().log().all()
                     .statusCode(404);

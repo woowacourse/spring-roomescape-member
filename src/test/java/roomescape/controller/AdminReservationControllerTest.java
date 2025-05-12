@@ -60,7 +60,7 @@ class AdminReservationControllerTest {
         @Test
         void searchReservationsExceptionTest() {
             LoginMember user = LoginMemberFixture.getUser();
-            String user_cookie = RestAssured
+            String userCookie = RestAssured
                     .given().log().all()
                     .body(new LoginRequest(user.getPassword(), user.getEmail()))
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -68,7 +68,7 @@ class AdminReservationControllerTest {
                     .then().log().all().extract().header("Set-Cookie").split(";")[0];
 
             RestAssured.given().log().all()
-                    .header("Cookie", user_cookie)
+                    .header("Cookie", userCookie)
                     .param("member", 1)
                     .param("theme", 1)
                     .param("from", "2025-05-05")
@@ -112,7 +112,7 @@ class AdminReservationControllerTest {
         @Test
         void addReservationExceptionTest1() {
             LoginMember user = LoginMemberFixture.getUser();
-            String user_cookie = RestAssured
+            String userCookie = RestAssured
                     .given().log().all()
                     .body(new LoginRequest(user.getPassword(), user.getEmail()))
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -126,7 +126,7 @@ class AdminReservationControllerTest {
             params.put("memberId", 1);
 
             RestAssured.given().log().all()
-                    .header("Cookie", user_cookie)
+                    .header("Cookie", userCookie)
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/admin/reservations")

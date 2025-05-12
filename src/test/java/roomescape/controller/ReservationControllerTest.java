@@ -26,7 +26,7 @@ class ReservationControllerTest {
     private String cookie;
 
     @BeforeEach
-    void loginAsAdmin() {
+    void loginAsUser() {
         LoginMember user = LoginMemberFixture.getUser();
 
         cookie = RestAssured
@@ -111,11 +111,11 @@ class ReservationControllerTest {
     class ReservationDeleteTest {
 
         private final LoginMember admin = LoginMemberFixture.getAdmin();
-        private String admin_cookie;
+        private String adminCookie;
 
         @BeforeEach
         void loginAsAdmin() {
-            admin_cookie = RestAssured
+            adminCookie = RestAssured
                     .given().log().all()
                     .body(new LoginRequest(admin.getPassword(), admin.getEmail()))
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -127,7 +127,7 @@ class ReservationControllerTest {
         @Test
         void deleteReservationTest() {
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .when().delete("/reservations/1")
                     .then().log().all()
                     .statusCode(204);
@@ -143,7 +143,7 @@ class ReservationControllerTest {
         @Test
         void invalidReservationIdDeleteTest() {
             RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
+                    .header("Cookie", adminCookie)
                     .when().delete("/reservations/5")
                     .then().log().all()
                     .statusCode(404);

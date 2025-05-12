@@ -75,7 +75,7 @@ class AdminPageControllerTest {
     @Test
     void pageAccessTest() {
         LoginMember user = LoginMemberFixture.getUser();
-        String user_cookie = RestAssured
+        String userCookie = RestAssured
                 .given().log().all()
                 .body(new LoginRequest(user.getPassword(), user.getEmail()))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -83,25 +83,25 @@ class AdminPageControllerTest {
                 .then().log().all().extract().header("Set-Cookie").split(";")[0];
 
         RestAssured.given().log().all()
-                .header("Cookie", user_cookie)
+                .header("Cookie", userCookie)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(403);
 
         RestAssured.given().log().all()
-                .header("Cookie", user_cookie)
+                .header("Cookie", userCookie)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(403);
 
         RestAssured.given().log().all()
-                .header("Cookie", user_cookie)
+                .header("Cookie", userCookie)
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(403);
 
         RestAssured.given().log().all()
-                .header("Cookie", user_cookie)
+                .header("Cookie", userCookie)
                 .when().get("/admin/time")
                 .then().log().all()
                 .statusCode(403);
