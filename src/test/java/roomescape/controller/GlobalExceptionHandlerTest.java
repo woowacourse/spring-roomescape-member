@@ -25,10 +25,10 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("인증할 수 없을 경우, 401 에러가 발생한다.")
-    void handleEntityNotFound() {
+    @DisplayName("인가할 수 없을 경우, 401 에러가 발생한다.")
+    void handleAuthorizationException() {
         // given
-        AuthorizationException exception = new AuthorizationException("인증 오류");
+        AuthorizationException exception = new AuthorizationException("권한 부족");
 
         // when
         ProblemDetail result = globalExceptionHandler.handleAuthorizationException(exception);
@@ -41,10 +41,10 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("인가할 수 없을 경우, 403 에러가 발생한다.")
-    void handleAuthorizationException() {
+    @DisplayName("인증할 수 없을 경우, 403 에러가 발생한다.")
+    void handleAuthenticationException() {
         // given
-        AuthenticationException exception = new AuthenticationException("권한 부족");
+        AuthenticationException exception = new AuthenticationException("인증 오류");
 
         // when
         ProblemDetail result = globalExceptionHandler.handleAuthenticationException(exception);
@@ -59,7 +59,7 @@ class GlobalExceptionHandlerTest {
 
     @Test
     @DisplayName("데이터를 찾을 수 없을 경우, 404 에러가 발생한다.")
-    void handleAuthenticationException() {
+    void handleEntityNotFound() {
         // given
         EntityNotFoundException exception = new EntityNotFoundException("엔티티를 찾을 수 없습니다");
 
