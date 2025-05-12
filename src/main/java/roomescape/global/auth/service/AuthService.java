@@ -30,7 +30,7 @@ public class AuthService {
     public UserInfo makeUserInfo(final String token, final MemberRole memberRole) {
         validateToken(token);
         Long memberId = jwtProvider.getMemberId(token);
-        validateMember(memberId, memberRole);
+        checkIfRoleIsAdmin(memberId, memberRole);
         return new UserInfo(memberId, jwtProvider.getName(token), jwtProvider.getRole(token));
     }
 
@@ -45,17 +45,9 @@ public class AuthService {
                 .orElseThrow(() -> new AuthException("존재하지 않은 사용자입니다."));
     }
 
-    private void validateMember(final Long id, final MemberRole memberRole) {
-        if (memberRole == MemberRole.USER) {
-            validateExistsById(id);
-            return;
-        }
-        validateExistsByIdAndMemberRole(id, memberRole);
-    }
-
-    private void validateExistsById(final Long id) {
-        if (!memberRepository.existsById(id)) {
-            throw new AuthException("존재하지 않은 사용자입니다.");
+    private void checkIfRoleIsAdmin(final Long id, final MemberRole memberRole) {
+        if (memberRole == MemberRole.ADMIN) {
+            validateExistsByIdAndMemberRole(id, memberRole);
         }
     }
 
