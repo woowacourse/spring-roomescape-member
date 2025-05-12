@@ -1,5 +1,6 @@
 package roomescape.member.domain;
 
+import java.util.Objects;
 import roomescape.member.exception.NameException;
 
 public class Name {
@@ -27,5 +28,18 @@ public class Name {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof Name name1)) {
+            return false;
+        }
+        return Objects.equals(getName(), name1.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getName());
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.member.domain;
 
+import java.util.Objects;
 import roomescape.member.exception.PasswordException;
 
 public class Password {
@@ -19,5 +20,18 @@ public class Password {
 
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof Password password1)) {
+            return false;
+        }
+        return Objects.equals(getPassword(), password1.getPassword());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getPassword());
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.member.domain;
 
+import java.util.Objects;
 import roomescape.member.exception.EmailException;
 
 public class Email {
@@ -29,5 +30,18 @@ public class Email {
 
     public String getEmail() {
         return email;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof Email email1)) {
+            return false;
+        }
+        return Objects.equals(getEmail(), email1.getEmail());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getEmail());
     }
 }
