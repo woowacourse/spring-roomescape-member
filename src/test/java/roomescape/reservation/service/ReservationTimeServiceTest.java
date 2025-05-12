@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRole;
 import roomescape.reservation.service.dto.AvailableTimeInfo;
-import roomescape.reservation.service.dto.CreateReservationTimeCommand;
+import roomescape.reservation.service.dto.ReservationTimeCreateCommand;
 import roomescape.reservation.service.dto.ReservationTimeInfo;
 import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeReservationTimeDao;
@@ -32,7 +32,7 @@ class ReservationTimeServiceTest {
     @Test
     void should_ThrowException_WhenCreateDuplicateTime() {
         // given
-        CreateReservationTimeCommand request = new CreateReservationTimeCommand(LocalTime.of(11, 0));
+        ReservationTimeCreateCommand request = new ReservationTimeCreateCommand(LocalTime.of(11, 0));
         reservationTimeService.createReservationTime(request);
         // when
         // then
@@ -46,7 +46,7 @@ class ReservationTimeServiceTest {
     void create() {
         // given
         LocalTime time = LocalTime.of(11, 0);
-        CreateReservationTimeCommand request = new CreateReservationTimeCommand(time);
+        ReservationTimeCreateCommand request = new ReservationTimeCreateCommand(time);
         // when
         ReservationTimeInfo result = reservationTimeService.createReservationTime(request);
         // then
@@ -63,8 +63,8 @@ class ReservationTimeServiceTest {
     @Test
     void findAll() {
         // given
-        CreateReservationTimeCommand request1 = new CreateReservationTimeCommand(LocalTime.of(11, 0));
-        CreateReservationTimeCommand request2 = new CreateReservationTimeCommand(LocalTime.of(12, 0));
+        ReservationTimeCreateCommand request1 = new ReservationTimeCreateCommand(LocalTime.of(11, 0));
+        ReservationTimeCreateCommand request2 = new ReservationTimeCreateCommand(LocalTime.of(12, 0));
         reservationTimeService.createReservationTime(request1);
         reservationTimeService.createReservationTime(request2);
         // when
@@ -77,7 +77,7 @@ class ReservationTimeServiceTest {
     @Test
     void testDelete() {
         // given
-        CreateReservationTimeCommand request = new CreateReservationTimeCommand(LocalTime.of(11, 0));
+        ReservationTimeCreateCommand request = new ReservationTimeCreateCommand(LocalTime.of(11, 0));
         reservationTimeService.createReservationTime(request);
         // when
         reservationTimeService.deleteReservationTimeById(1L);
@@ -89,7 +89,7 @@ class ReservationTimeServiceTest {
     @Test
     void should_ThrowException_WhenDeleteTimeWithinReservation() {
         // given
-        CreateReservationTimeCommand request = new CreateReservationTimeCommand(LocalTime.of(11, 0));
+        ReservationTimeCreateCommand request = new ReservationTimeCreateCommand(LocalTime.of(11, 0));
         ReservationTimeInfo response = reservationTimeService.createReservationTime(request);
         ReservationTime time = new ReservationTime(response.id(), response.startAt());
         Theme theme = new Theme(1L, "우테코방탈출", "탈출탈출탈출", "abcdefg");

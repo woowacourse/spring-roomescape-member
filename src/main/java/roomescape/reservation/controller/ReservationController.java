@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.service.dto.LoginMemberInfo;
 import roomescape.reservation.controller.dto.AdminReservationCreateRequest;
 import roomescape.reservation.controller.dto.ReservationCreateRequest;
+import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.controller.dto.ReservationSearchConditionRequest;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.dto.ReservationCreateCommand;
@@ -32,26 +33,33 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationInfo> create(
+    public ResponseEntity<ReservationResponse> create(
             @RequestBody @Valid final ReservationCreateRequest request,
             LoginMemberInfo loginMemberInfo
     ) {
         ReservationCreateCommand reservationCreateCommand = request.convertToCreateCommand(loginMemberInfo.id());
         final ReservationInfo reservationInfo = reservationService.createReservation(reservationCreateCommand);
-        return ResponseEntity.created(URI.create("/reservations/" + reservationInfo.id())).body(reservationInfo);
+        URI uri = URI.create("/reservations/" + reservationInfo.id());
+        ReservationResponse response = new ReservationResponse(reservationInfo);
+        return ResponseEntity.created(uri).body(response);
     }
 
     @PostMapping("/admin/reservations")
-    public ResponseEntity<ReservationInfo> create(@RequestBody @Valid final AdminReservationCreateRequest request) {
+    public ResponseEntity<ReservationResponse> create(@RequestBody @Valid final AdminReservationCreateRequest request) {
         final ReservationInfo reservationInfo = reservationService.createReservation(request.convertToCreateCommand());
-        return ResponseEntity.created(URI.create("/reservations/" + reservationInfo.id())).body(reservationInfo);
+        URI uri = URI.create("/reservations/" + reservationInfo.id());
+        ReservationResponse response = new ReservationResponse(reservationInfo);
+        return ResponseEntity.created(uri).body(response);
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<List<ReservationInfo>> findAll(@ModelAttribute ReservationSearchConditionRequest request) {
+    public ResponseEntity<List<ReservationResponse>> findAll(@ModelAttribute ReservationSearchConditionRequest request) {
         ReservationSearchCondition condition = request.toCondition();
         final List<ReservationInfo> reservationInfos = reservationService.getReservations(condition);
-        return ResponseEntity.ok().body(reservationInfos);
+        List<ReservationResponse> responses = reservationInfos.stream()
+                .map(ReservationResponse::new)
+                .toList();
+        return ResponseEntity.ok().body(responses);
     }
 
     @DeleteMapping("/reservations/{id}")

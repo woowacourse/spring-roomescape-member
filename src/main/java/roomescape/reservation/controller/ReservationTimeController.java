@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservation.service.dto.AvailableTimeInfo;
-import roomescape.reservation.service.dto.CreateReservationTimeCommand;
-import roomescape.reservation.service.dto.ReservationTimeInfo;
+import roomescape.reservation.controller.dto.ReservationTimeCreateRequest;
+import roomescape.reservation.controller.dto.ReservationTimeResponse;
 import roomescape.reservation.service.ReservationTimeService;
+import roomescape.reservation.service.dto.AvailableTimeInfo;
+import roomescape.reservation.service.dto.ReservationTimeCreateCommand;
+import roomescape.reservation.service.dto.ReservationTimeInfo;
 
 @RestController
 public class ReservationTimeController {
@@ -27,16 +29,20 @@ public class ReservationTimeController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<ReservationTimeInfo> create(
-            @RequestBody @Valid final CreateReservationTimeCommand createReservationTimeCommand
-    ) {
-        ReservationTimeInfo response = reservationTimeService.createReservationTime(createReservationTimeCommand);
-        return ResponseEntity.created(URI.create("/times/" + response.id())).body(response);
+    public ResponseEntity<ReservationTimeResponse> create(@RequestBody @Valid final ReservationTimeCreateRequest request) {
+        ReservationTimeCreateCommand command = request.toCreateCommand();
+        ReservationTimeInfo timeInfo = reservationTimeService.createReservationTime(command);
+        URI uri = URI.create("/times/" + timeInfo.id());
+        ReservationTimeResponse response = new ReservationTimeResponse(timeInfo);
+        return ResponseEntity.created(uri).body(response);
     }
 
     @GetMapping("/times")
-    public ResponseEntity<List<ReservationTimeInfo>> findAll() {
-        List<ReservationTimeInfo> responses = reservationTimeService.getReservationTimes();
+    public ResponseEntity<List<ReservationTimeResponse>> findAll() {
+        List<ReservationTimeInfo> timeInfos = reservationTimeService.getReservationTimes();
+        List<ReservationTimeResponse> responses = timeInfos.stream()
+                .map(ReservationTimeResponse::new)
+                .toList();
         return ResponseEntity.ok().body(responses);
     }
 

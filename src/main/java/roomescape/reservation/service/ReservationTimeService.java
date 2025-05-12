@@ -3,13 +3,13 @@ package roomescape.reservation.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.service.dto.AvailableTimeInfo;
-import roomescape.reservation.service.dto.CreateReservationTimeCommand;
-import roomescape.reservation.service.dto.ReservationTimeInfo;
-import roomescape.reservation.repository.ReservationDao;
-import roomescape.reservation.repository.ReservationTimeDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.repository.ReservationDao;
+import roomescape.reservation.repository.ReservationTimeDao;
+import roomescape.reservation.service.dto.AvailableTimeInfo;
+import roomescape.reservation.service.dto.ReservationTimeCreateCommand;
+import roomescape.reservation.service.dto.ReservationTimeInfo;
 
 @Service
 public class ReservationTimeService {
@@ -22,7 +22,7 @@ public class ReservationTimeService {
         this.reservationDao = reservationDao;
     }
 
-    public ReservationTimeInfo createReservationTime(final CreateReservationTimeCommand command) {
+    public ReservationTimeInfo createReservationTime(final ReservationTimeCreateCommand command) {
         if (reservationTimeDao.isExistsByTime(command.startAt())) {
             throw new IllegalArgumentException("이미 존재하는 시간입니다.");
         }

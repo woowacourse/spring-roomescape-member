@@ -14,12 +14,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.reservation.service.dto.AvailableTimeInfo;
-import roomescape.reservation.service.dto.CreateReservationTimeCommand;
-import roomescape.reservation.service.dto.ReservationTimeInfo;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.repository.ReservationTimeDao;
 import roomescape.reservation.service.ReservationTimeService;
+import roomescape.reservation.service.dto.AvailableTimeInfo;
+import roomescape.reservation.service.dto.ReservationTimeCreateCommand;
+import roomescape.reservation.service.dto.ReservationTimeInfo;
 
 @SpringBootTest
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -36,7 +36,7 @@ public class TimeServiceIntegrationTest {
     @Test
     void should_ThrowException_WhenCreateDuplicatedTime() {
         // given
-        CreateReservationTimeCommand request = new CreateReservationTimeCommand(LocalTime.of(10, 0));
+        ReservationTimeCreateCommand request = new ReservationTimeCreateCommand(LocalTime.of(10, 0));
         // when
         // then
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(request))
@@ -49,7 +49,7 @@ public class TimeServiceIntegrationTest {
     void createReservationTime() {
         // given
         LocalTime time = LocalTime.of(17, 0);
-        CreateReservationTimeCommand request = new CreateReservationTimeCommand(time);
+        ReservationTimeCreateCommand request = new ReservationTimeCreateCommand(time);
         // when
         ReservationTimeInfo result = reservationTimeService.createReservationTime(request);
         // then
