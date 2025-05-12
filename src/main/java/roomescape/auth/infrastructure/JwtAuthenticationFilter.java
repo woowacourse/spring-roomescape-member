@@ -9,12 +9,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String TOKEN_COOKIE_NAME = "token";
@@ -34,16 +36,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        Long memberId = null;
         try {
             final String subject = jwtTokenProvider.extractPrincipal(token);
-            final Long memberId = Long.valueOf(subject);
+            memberId = Long.valueOf(subject);
             request.setAttribute(MEMBER_ID_ATTRIBUTE, memberId);
-        } catch (JwtException | NumberFormatException e) {
-            if (e instanceof NumberFormatException) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 사용자 ID 형식입니다.");
-            } else {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 토큰입니다.");
-            }
+        } catch (JwtException e) {
+            log.info("토큰을 추출하는 과정에서 문제가 발생했습니다.", e);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증에 실패했습니다.");
+            return;
+        } catch (NumberFormatException e) {
+            log.info("memberId의 형식이 올바르지 않습니다 memberId = {}", memberId, e);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 요청입니다.");
             return;
         }
 
