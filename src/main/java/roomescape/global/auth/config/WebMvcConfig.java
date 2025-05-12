@@ -27,18 +27,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
 
     @Override
-    public void addViewControllers(final ViewControllerRegistry registry) {
-        registry.addViewController("/").setViewName("index");
-        registry.addViewController("/reservation").setViewName("reservation");
-        registry.addViewController("/signup").setViewName("signup");
-
-        registry.addViewController("/admin").setViewName("admin/index");
-        registry.addViewController("/admin/reservation").setViewName("admin/reservation-new");
-        registry.addViewController("/admin/time").setViewName("admin/time");
-        registry.addViewController("/admin/theme").setViewName("admin/theme");
-    }
-
-    @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new AuthenticationPrincipalArgumentResolver(authService, authorizationExtractor));
     }

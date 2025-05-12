@@ -2,20 +2,19 @@ package roomescape.global.auth.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
-import roomescape.global.auth.annotation.MemberPrincipal;
-import roomescape.global.auth.dto.UserInfo;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.global.auth.dto.CheckLoginResponse;
 import roomescape.global.auth.dto.LoginRequest;
 import roomescape.global.auth.dto.LoginResponse;
+import roomescape.global.auth.dto.UserInfo;
 import roomescape.global.auth.infrastructure.CookieManager;
 import roomescape.global.auth.service.AuthService;
 
-@Controller
+@RestController
 public class AuthController {
 
     private static final String TOKEN = "token";
@@ -26,11 +25,6 @@ public class AuthController {
     public AuthController(final AuthService authService, final CookieManager cookieManager) {
         this.authService = authService;
         this.cookieManager = cookieManager;
-    }
-
-    @GetMapping("/login")
-    public String login() {
-        return "login";
     }
 
     @PostMapping("/login")
@@ -44,13 +38,13 @@ public class AuthController {
 
     @GetMapping("/login/check")
     @ResponseBody
-    public ResponseEntity<CheckLoginResponse> checkLogin(final @MemberPrincipal UserInfo userInfo) {
+    public ResponseEntity<CheckLoginResponse> checkLogin(final UserInfo userInfo) {
         return ResponseEntity.ok(CheckLoginResponse.from(userInfo));
     }
 
     @PostMapping("/logout")
     @ResponseBody
-    public ResponseEntity<Void> logout(final @MemberPrincipal UserInfo userInfo,
+    public ResponseEntity<Void> logout(final UserInfo userInfo,
                                        final HttpServletResponse httpServletResponse) {
         cookieManager.deleteCookie(httpServletResponse, TOKEN);
         return ResponseEntity.noContent().build();
