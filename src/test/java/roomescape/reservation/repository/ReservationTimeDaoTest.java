@@ -2,11 +2,9 @@ package roomescape.reservation.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
 
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,7 +15,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
-import roomescape.common.exception.EntityNotFoundException;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.utils.JdbcTemplateUtils;
 
@@ -50,21 +47,6 @@ class ReservationTimeDaoTest {
         // then
         assertThat(result.getId()).isEqualTo(id);
         assertThat(result.getStartAt()).isEqualTo(now);
-    }
-
-    @DisplayName("해당 id가 없다면 예외를 반환한다.")
-    @Test
-    void test2() {
-        assertThatThrownBy(() -> reservationTimeRepository.deleteById(1L))
-                .isInstanceOf(EntityNotFoundException.class);
-
-    }
-
-    @DisplayName("해당 ID가 DB에 없다면 예외를 반환한다.")
-    @Test
-    void test7() {
-        assertThatThrownBy(() -> reservationTimeRepository.deleteById(1L))
-                .isInstanceOf(EntityNotFoundException.class);
     }
 
     private void saveReservationTime(Long id, LocalTime startAt) {
@@ -108,43 +90,6 @@ class ReservationTimeDaoTest {
             // then
             assertThat(saved.getId()).isNotNull();
             assertThat(saved.getStartAt()).isEqualTo(now);
-        }
-
-        @DisplayName("ID가 있다면 해당 ID로 데이터를 업데이트한다.")
-        @Test
-        void test5() {
-            // given
-            Long id = 1L;
-            LocalTime now = LocalTime.of(9, 0);
-            String sql = "insert into reservation_time(id, start_at) values(?, ?)";
-            jdbcTemplate.update(sql, id, now);
-
-            // when
-            LocalTime changeTime = LocalTime.of(10, 0);
-            ReservationTime reservationTime = new ReservationTime(id, changeTime);
-            ReservationTime result = reservationTimeRepository.save(reservationTime);
-
-            // then
-
-            SoftAssertions softly = new SoftAssertions();
-
-            softly.assertThat(result.getId()).isEqualTo(id);
-            softly.assertThat(result.getStartAt()).isEqualTo(changeTime);
-
-            softly.assertAll();
-        }
-
-        @DisplayName("DB에 해당 ID가 없고, 객체에 ID가 존재하는데 저장 시 예외를 반환한다.")
-        @Test
-        void test6() {
-            // given
-            Long id = 1L;
-            LocalTime now = LocalTime.of(9, 0);
-            ReservationTime reservationTime = new ReservationTime(id, now);
-
-            // when & then
-            assertThatThrownBy(() -> reservationTimeRepository.save(reservationTime))
-                    .isInstanceOf(EntityNotFoundException.class);
         }
     }
 }

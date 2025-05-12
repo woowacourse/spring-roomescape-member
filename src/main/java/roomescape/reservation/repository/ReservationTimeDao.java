@@ -16,7 +16,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import roomescape.common.exception.EntityNotFoundException;
 import roomescape.reservation.domain.ReservationTime;
 
 @Repository
@@ -56,7 +55,7 @@ public class ReservationTimeDao {
 
             return Optional.ofNullable(reservationTime);
         } catch (EmptyResultDataAccessException e) {
-            throw new EntityNotFoundException("ReservationTime with id " + id + " not found");
+            return Optional.empty();
         }
     }
 
@@ -68,33 +67,6 @@ public class ReservationTimeDao {
     }
 
     public ReservationTime save(final ReservationTime reservationTime) {
-        if (reservationTime.getStartAt() == null) {
-            throw new IllegalArgumentException("start_at cannot be null");
-        }
-
-        if (reservationTime.existId()) {
-            return update(reservationTime);
-        }
-
-        return create(reservationTime);
-    }
-
-    private ReservationTime update(final ReservationTime reservationTime) {
-        String sql = "update reservation_time set start_at = :start_at where id = :id";
-
-        Map<String, Object> params = Map.of("start_at", reservationTime.getStartAt(),
-                "id", reservationTime.getId());
-
-        int updateRowCount = jdbcTemplate.update(sql, params);
-
-        if (updateRowCount == 0) {
-            throw new EntityNotFoundException("ReservationTime with id " + reservationTime.getId() + " not found");
-        }
-
-        return reservationTime;
-    }
-
-    private ReservationTime create(final ReservationTime reservationTime) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.getStartAt());
 
@@ -103,14 +75,18 @@ public class ReservationTimeDao {
         return new ReservationTime(id, reservationTime.getStartAt());
     }
 
-    public void deleteById(final Long id) {
+    public int deleteById(final Long id) {
         String deleteSql = "delete from reservation_time where id = :id";
         Map<String, Long> params = Map.of("id", id);
 
-        int deleteRowCount = jdbcTemplate.update(deleteSql, params);
+        return jdbcTemplate.update(deleteSql, params);
+    }
 
-        if (deleteRowCount != 1) {
-            throw new EntityNotFoundException("ReservationTime with id " + id + " not found");
-        }
+    public boolean existsByStartAt(final LocalTime startAt) {
+        String existsSql = "select count(*) from reservation_time where start_at = :startAt";
+        Map<String, LocalTime> params = Map.of("startAt", startAt);
+
+        int count = jdbcTemplate.queryForObject(existsSql, params, Integer.class);
+        return count != 0;
     }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import roomescape.common.exception.AlreadyInUseException;
+import roomescape.common.exception.EntityNotFoundException;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.ReservationTimeRequest;
 import roomescape.reservation.dto.ReservationTimeResponse;
@@ -31,6 +32,9 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse create(final ReservationTimeRequest request) {
+        if (reservationTimeDao.existsByStartAt(request.startAt())) {
+            throw new AlreadyInUseException("Reservation time already exists");
+        }
         ReservationTime reservationTime = request.toEntity();
 
         ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
@@ -43,6 +47,9 @@ public class ReservationTimeService {
             throw new AlreadyInUseException("Reservation is already in use");
         }
 
-        reservationTimeDao.deleteById(id);
+        int updatedRow = reservationTimeDao.deleteById(id);
+        if (updatedRow == 0) {
+            throw new EntityNotFoundException("Reservation time not found");
+        }
     }
 }
