@@ -16,6 +16,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(e.getStatusValue()).body(new ErrorResponse(e.getMessage()));
     }
 
+    @ExceptionHandler(InternalServerException.class)
+    public ResponseEntity<ErrorResponse> handleInternalServerException(InternalServerException e) {
+        e.printStackTrace();
+        System.out.println("InternalServerException 이 발생했습니다 message = " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("예상치 못한 서버 오류가 발생했습니다."));
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         e.printStackTrace();
