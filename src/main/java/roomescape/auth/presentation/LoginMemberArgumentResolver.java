@@ -14,7 +14,7 @@ import roomescape.member.domain.Member;
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final AuthorizationExtractor<String> authorizationExtractor; // TODO : 이게 base, jwt, session 다양하게 적용될 수도 있는건가?
+    private final AuthorizationExtractor<String> authorizationExtractor;
     private final AuthService authService;
 
     @Autowired

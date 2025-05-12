@@ -3,6 +3,7 @@ package roomescape.auth.application.service;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import roomescape.auth.application.exception.InvalidMemberException;
+import roomescape.auth.application.exception.InvalidTokenException;
 import roomescape.auth.presentation.JwtTokenProvider;
 import roomescape.auth.presentation.dto.LoginRequest;
 import roomescape.auth.presentation.dto.TokenResponse;
@@ -28,6 +29,10 @@ public class AuthService {
     }
 
     public Member getMember(String token) {
+        if (tokenProvider.validateToken(token)) {
+            throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "로그인 정보가 유효하지 않습니다.");
+        }
+        
         Long id = tokenProvider.resolveTokenToMemberId(token);
         return memberRepository.findById(id)
                 .orElseThrow(() -> new InvalidMemberException("존재하지 않는 유저입니다.", HttpStatus.NOT_FOUND));
