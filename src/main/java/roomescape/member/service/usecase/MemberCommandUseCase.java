@@ -3,7 +3,7 @@ package roomescape.member.service.usecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.ConflictException;
-import roomescape.member.auth.dto.MemberInfo;
+import roomescape.member.auth.vo.MemberInfo;
 import roomescape.member.domain.Account;
 import roomescape.member.repository.MemberRepository;
 import roomescape.member.service.MemberConverter;

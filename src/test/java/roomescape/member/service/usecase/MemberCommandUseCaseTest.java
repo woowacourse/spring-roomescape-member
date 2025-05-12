@@ -1,10 +1,8 @@
 package roomescape.member.service.usecase;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.common.exception.ConflictException;
-import roomescape.member.auth.dto.MemberInfo;
 import roomescape.member.domain.Account;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberEmail;

@@ -1,4 +1,4 @@
-package roomescape.member.auth.dto;
+package roomescape.member.auth.vo;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;

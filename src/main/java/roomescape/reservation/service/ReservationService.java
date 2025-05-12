@@ -2,7 +2,7 @@ package roomescape.reservation.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.member.auth.dto.MemberInfo;
+import roomescape.member.auth.vo.MemberInfo;
 import roomescape.member.domain.MemberId;
 import roomescape.reservation.controller.dto.CreateReservationByAdminWebRequest;
 import roomescape.reservation.controller.dto.ReservationSearchWebRequest;

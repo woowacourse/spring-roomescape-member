@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.common.exception.AuthenticationException;
 import roomescape.common.exception.ErrorCode;
 import roomescape.common.exception.NotFoundException;
-import roomescape.member.auth.dto.MemberInfo;
+import roomescape.member.auth.vo.MemberInfo;
 import roomescape.member.controller.dto.LoginRequest;
 import roomescape.member.domain.Account;
 import roomescape.member.domain.Member;

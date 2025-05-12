@@ -7,7 +7,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.member.auth.dto.MemberInfo;
+import roomescape.member.auth.jwt.JwtTokenExtractor;
+import roomescape.member.auth.vo.MemberInfo;
 import roomescape.member.service.AuthService;
 
 @RequiredArgsConstructor
@@ -18,11 +19,11 @@ public class MemberInfoArgumentResolver implements HandlerMethodArgumentResolver
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
-        return parameter.getParameterType().equals(MemberInfo.class);
+        return parameter.hasParameterAnnotation(LoginMember.class);
     }
 
     @Override
-    public MemberInfo resolveArgument(final MethodParameter parameter,
+    public Object resolveArgument(final MethodParameter parameter,
                                       final ModelAndViewContainer mavContainer,
                                       final NativeWebRequest webRequest,
                                       final WebDataBinderFactory binderFactory) {

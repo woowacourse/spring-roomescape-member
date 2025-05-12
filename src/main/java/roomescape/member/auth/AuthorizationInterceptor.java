@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.common.exception.AuthorizationException;
-import roomescape.member.auth.dto.MemberInfo;
+import roomescape.member.auth.jwt.JwtTokenExtractor;
+import roomescape.member.auth.vo.MemberInfo;
 import roomescape.member.domain.Role;
 import roomescape.member.service.AuthService;
 

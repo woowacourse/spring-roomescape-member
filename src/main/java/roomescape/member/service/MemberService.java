@@ -3,7 +3,7 @@ package roomescape.member.service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.member.auth.dto.MemberInfo;
+import roomescape.member.auth.vo.MemberInfo;
 import roomescape.member.controller.dto.LoginRequest;
 import roomescape.member.controller.dto.MemberInfoResponse;
 import roomescape.member.controller.dto.SignupRequest;

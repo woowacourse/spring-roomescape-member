@@ -1,12 +1,9 @@
 package roomescape.member.service;
 
 import java.util.List;
-import roomescape.member.auth.dto.MemberInfo;
+import roomescape.member.auth.vo.MemberInfo;
 import roomescape.member.controller.dto.MemberInfoResponse;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.MemberEmail;
-import roomescape.member.domain.MemberId;
-import roomescape.member.domain.MemberName;
 
 public class MemberConverter {
 

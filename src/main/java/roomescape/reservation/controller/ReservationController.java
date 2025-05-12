@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.utils.UriFactory;
+import roomescape.member.auth.LoginMember;
 import roomescape.member.auth.RoleRequired;
-import roomescape.member.auth.dto.MemberInfo;
+import roomescape.member.auth.vo.MemberInfo;
 import roomescape.member.domain.Role;
 import roomescape.reservation.controller.dto.AvailableReservationTimeWebResponse;
 import roomescape.reservation.controller.dto.CreateReservationByAdminWebRequest;
@@ -42,7 +43,7 @@ public class ReservationController {
     }
 
     @GetMapping(BASE_PATH + "/mine")
-    public List<ReservationWebResponse> getAll(MemberInfo memberInfo) {
+    public List<ReservationWebResponse> getAll(@LoginMember MemberInfo memberInfo) {
         return reservationService.getAll(memberInfo.id());
     }
 
@@ -56,7 +57,7 @@ public class ReservationController {
     @PostMapping(BASE_PATH)
     public ResponseEntity<ReservationWebResponse> create(
             @RequestBody final CreateReservationWebRequest createReservationWebRequest,
-            MemberInfo memberInfo) {
+            @LoginMember MemberInfo memberInfo) {
         final ReservationWebResponse reservationWebResponse = reservationService.create(createReservationWebRequest, memberInfo);
         final URI location = UriFactory.buildPath(BASE_PATH, String.valueOf(reservationWebResponse.id()));
         return ResponseEntity.created(location)

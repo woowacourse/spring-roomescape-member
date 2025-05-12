@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.common.exception.AuthorizationException;
+import roomescape.member.auth.jwt.JwtTokenExtractor;
 import roomescape.member.domain.Member;
 import roomescape.member.service.AuthService;
 

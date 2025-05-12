@@ -1,4 +1,4 @@
-package roomescape.member.auth;
+package roomescape.member.auth.jwt;
 
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;

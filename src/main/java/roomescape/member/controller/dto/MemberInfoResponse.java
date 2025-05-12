@@ -3,7 +3,7 @@ package roomescape.member.controller.dto;
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.utils.Validator;
-import roomescape.member.auth.dto.MemberInfo;
+import roomescape.member.auth.vo.MemberInfo;
 
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 public record MemberInfoResponse(

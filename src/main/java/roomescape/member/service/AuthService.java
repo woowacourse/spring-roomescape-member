@@ -7,13 +7,13 @@ import roomescape.common.exception.AuthenticationException;
 import roomescape.common.exception.ErrorCode;
 import roomescape.member.controller.dto.LoginCheckResponse;
 import roomescape.member.controller.dto.LoginRequest;
-import roomescape.member.auth.dto.MemberInfo;
+import roomescape.member.auth.vo.MemberInfo;
 import roomescape.member.controller.dto.MemberInfoResponse;
 import roomescape.member.controller.dto.SignupRequest;
 import roomescape.member.domain.Account;
 import roomescape.member.domain.Member;
-import roomescape.member.auth.JwtTokenExtractor;
-import roomescape.member.auth.JwtTokenProvider;
+import roomescape.member.auth.jwt.JwtTokenExtractor;
+import roomescape.member.auth.jwt.JwtTokenProvider;
 import roomescape.member.domain.MemberName;
 
 @Service
