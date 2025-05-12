@@ -2,14 +2,15 @@ package roomescape;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
+import static roomescape.testFixture.Fixture.MEMBER1_ADMIN;
 import static roomescape.testFixture.Fixture.RESERVATION_BODY;
+import static roomescape.testFixture.Fixture.resetH2TableIds;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,10 +25,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.application.auth.dto.MemberIdDto;
+import roomescape.application.dto.ReservationDto;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.TimeRepository;
+import roomescape.infrastructure.jwt.JwtTokenProvider;
 import roomescape.presentation.controller.ReservationController;
-import roomescape.presentation.dto.response.AdminReservationResponse;
+import roomescape.testFixture.JdbcHelper;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class MissionStepTest {
@@ -47,23 +51,17 @@ public class MissionStepTest {
     @Autowired
     private ReservationController reservationController;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    private String tokenForAdmin;
+
     @BeforeEach
     void cleanDatabase() {
         RestAssured.port = port;
 
-        jdbcTemplate.execute((Connection connection) -> {
-            try (Statement statement = connection.createStatement()) {
-                statement.execute("SET REFERENTIAL_INTEGRITY FALSE");
-                statement.execute("TRUNCATE TABLE reservation");
-                statement.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-                statement.execute("TRUNCATE TABLE reservation_time");
-                statement.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-                statement.execute("TRUNCATE TABLE theme");
-                statement.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-                statement.execute("SET REFERENTIAL_INTEGRITY TRUE");
-            }
-            return null;
-        });
+        resetH2TableIds(jdbcTemplate);
+        tokenForAdmin = jwtTokenProvider.createToken(new MemberIdDto(MEMBER1_ADMIN.getId()));
     }
 
     @DisplayName("/ 요청 시 200 OK 반환")
@@ -79,7 +77,10 @@ public class MissionStepTest {
     @DisplayName("/admin 요청 시 200 OK 응답")
     @Test
     void request_adminPage_then_200() {
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER1_ADMIN);
+
         RestAssured.given().log().all()
+                .cookie("token", tokenForAdmin)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -88,8 +89,12 @@ public class MissionStepTest {
     @DisplayName("1단계 - /admin/reservation 요청 시 200 OK")
     @Test
     void request_ReservationAdminPage_then_200() {
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER1_ADMIN);
+
         RestAssured.given().log().all()
-                .when().get("/admin/reservation")
+                .cookie("token", tokenForAdmin)
+                .when()
+                .get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
     }
@@ -109,6 +114,7 @@ public class MissionStepTest {
     @DisplayName("3단계 - 예약 추가 api 호출 시, id가 정상적으로 부여된다.")
     @Test
     public void request_addReservation() {
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER1_ADMIN);
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '테마 1입니다.', '썸네일입니다.')");
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
                 1L, "10:00");
@@ -117,6 +123,7 @@ public class MissionStepTest {
         int expectedSize = repositorySize + 1;
 
         RestAssured.given().log().all()
+                .cookie("token", tokenForAdmin)
                 .contentType(ContentType.JSON)
                 .body(RESERVATION_BODY)
                 .when().post("/reservations")
@@ -131,12 +138,13 @@ public class MissionStepTest {
     @DisplayName("3단계 - id로 예약을 삭제할 수 있다.")
     @Test
     void requestDeleteReservation() {
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER1_ADMIN);
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '테마 1입니다.', '썸네일입니다.')");
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
                 1L, "10:00");
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2023-08-05", 1L, 1L
+        jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, "2023-08-05", 1L, 1L
         );
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
@@ -159,19 +167,20 @@ public class MissionStepTest {
     @DisplayName("5단계 - 데이터베이스에 예약 추가 및 조회 성공")
     @Test
     void postAndGetReservation() {
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER1_ADMIN);
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '테마 1입니다.', '썸네일입니다.')");
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
                 1L, "10:00");
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2023-08-05", 1L, 1L
+        jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, "2023-08-05", 1L, 1L
         );
 
-        List<AdminReservationResponse> reservations = RestAssured.given().log().all()
+        List<ReservationDto> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", AdminReservationResponse.class);
+                .jsonPath().getList(".", ReservationDto.class);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
 
@@ -181,6 +190,8 @@ public class MissionStepTest {
     @DisplayName("6단계 - 데이터베이스에 예약 추가 성공")
     @Test
     void postAndDeleteReservation() {
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER1_ADMIN);
+
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '테마 1입니다.', '썸네일입니다.')");
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
                 1L, "10:00");
@@ -188,6 +199,7 @@ public class MissionStepTest {
         int beforeCount = reservationRepository.findAll().size();
 
         RestAssured.given().log().all()
+                .cookie("token", tokenForAdmin)
                 .contentType(ContentType.JSON)
                 .body(RESERVATION_BODY)
                 .when().post("/reservations")
@@ -236,12 +248,14 @@ public class MissionStepTest {
     @DisplayName("8단계 - 시간을 선택해서 예약 추가 및 조회 성공")
     @Test
     void postAndGetReservationWithTime() {
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER1_ADMIN);
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '테마 1입니다.', '썸네일입니다.')");
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
                 1L, "10:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", tokenForAdmin)
                 .body(RESERVATION_BODY)
                 .when().post("/reservations")
                 .then().log().all()
@@ -272,10 +286,11 @@ public class MissionStepTest {
     @DisplayName("예약이 존재하는 시간은 삭제 불가")
     @Test
     void cannotDeleteTime_when_hasReservation() {
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER1_ADMIN);
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00')");
         jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '테마1', '테마1입니다.', '썸네일')");
         jdbcTemplate.update(
-                "INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (1, '아이나', '2025-01-01', 1, 1)");
+                "INSERT INTO reservation (id, member_id, date, time_id, theme_id) VALUES (1, 1, '2025-01-01', 1, 1)");
 
         RestAssured.given().log().all()
                 .when().delete("/times/1")
@@ -283,12 +298,14 @@ public class MissionStepTest {
                 .statusCode(400);
     }
 
-    @DisplayName("존재하지 않는 id로 조회 시 예외 발생")
+    @DisplayName("존재하지 않는 테마 id로 예약 생성 시 예외 발생")
     @Test
     void error_when_id_notFound() {
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER1_ADMIN);
+
         Long timeId = 999L;
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
+        reservation.put("member_id", 1);
         String date = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         reservation.put("date", date);
         reservation.put("timeId", timeId);
@@ -296,6 +313,7 @@ public class MissionStepTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", tokenForAdmin)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -308,9 +326,11 @@ public class MissionStepTest {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
         Long timeId = 1L;
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER1_ADMIN);
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00')");
         jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '테마1', '테마1입니다.', '썸네일')");
-        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (1, '아이나', ?, ?, 1)",
+        jdbcTemplate.update(
+                "INSERT INTO reservation (id, member_id, date, time_id, theme_id) VALUES (1, 1, ?, ?, 1)",
                 date, timeId);
 
         // when
@@ -331,7 +351,10 @@ public class MissionStepTest {
     @DisplayName("/admin/theme 요청 시 200 OK 응답")
     @Test
     void request_adminThemePage_then_200() {
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER1_ADMIN);
+
         RestAssured.given().log().all()
+                .cookie("token", tokenForAdmin)
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200);

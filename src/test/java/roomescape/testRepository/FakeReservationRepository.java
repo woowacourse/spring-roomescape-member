@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import roomescape.domain.Reservation;
 import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.repository.dto.ReservationSearchFilter;
 import roomescape.exception.NotFoundException;
 
 public class FakeReservationRepository implements ReservationRepository {
@@ -29,6 +30,11 @@ public class FakeReservationRepository implements ReservationRepository {
         Reservation reservation = findById(id);
         reservations.remove(reservation);
         return true;
+    }
+
+    @Override
+    public List<Reservation> searchWith(ReservationSearchFilter reservationSearchFilter) {
+        return List.of();
     }
 
     private Reservation findById(Long id) {

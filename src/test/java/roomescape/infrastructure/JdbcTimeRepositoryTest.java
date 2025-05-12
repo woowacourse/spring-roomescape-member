@@ -3,9 +3,8 @@ package roomescape.infrastructure;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.testFixture.Fixture.resetH2TableIds;
 
-import java.sql.Connection;
-import java.sql.Statement;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
@@ -20,6 +19,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.ReservationTime;
+import roomescape.infrastructure.jdbc.JdbcTimeRepository;
 
 @JdbcTest
 @Import(JdbcTimeRepository.class)
@@ -34,19 +34,7 @@ class JdbcTimeRepositoryTest {
 
     @BeforeEach
     void cleanDatabase() {
-        jdbcTemplate.execute((Connection connection) -> {
-            try (Statement statement = connection.createStatement()) {
-                statement.execute("SET REFERENTIAL_INTEGRITY FALSE");
-                statement.execute("TRUNCATE TABLE reservation");
-                statement.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-                statement.execute("TRUNCATE TABLE reservation_time");
-                statement.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-                statement.execute("TRUNCATE TABLE theme");
-                statement.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-                statement.execute("SET REFERENTIAL_INTEGRITY TRUE");
-            }
-            return null;
-        });
+        resetH2TableIds(jdbcTemplate);
     }
 
     @DisplayName("save 후 생성된 id를 반환한다.")
@@ -111,7 +99,8 @@ class JdbcTimeRepositoryTest {
     void error_when_delete_referencedTime() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1L, '10:00:00')");
-        jdbcTemplate.update("INSERT INTO reservation (name, date,time_id) VALUES ('브라운', '2025-01-01', 1)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (date ,time_id) VALUES ('2025-01-01', 1L)");
 
         // when & then
         assertThatThrownBy(() -> timeRepository.deleteById(1L))

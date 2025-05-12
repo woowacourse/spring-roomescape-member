@@ -4,12 +4,12 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import roomescape.application.dto.TimeCreateDto;
 import roomescape.application.dto.TimeDto;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.repository.TimeRepository;
 import roomescape.domain.repository.dto.TimeDataWithBookingInfo;
 import roomescape.exception.NotFoundException;
-import roomescape.presentation.dto.request.TimeRequest;
 
 @Service
 public class TimeService {
@@ -25,7 +25,7 @@ public class TimeService {
         return TimeDto.from(reservationTimes);
     }
 
-    public TimeDto registerNewTime(TimeRequest request) {
+    public TimeDto registerNewTime(TimeCreateDto request) {
         ReservationTime newReservationTime = ReservationTime.withoutId(request.startAt());
         Long id = repository.save(newReservationTime);
 

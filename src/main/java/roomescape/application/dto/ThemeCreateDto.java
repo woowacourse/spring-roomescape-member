@@ -1,9 +1,9 @@
-package roomescape.presentation.dto.request;
+package roomescape.application.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record ThemeRequest(
+public record ThemeCreateDto(
 
         @NotBlank
         @NotNull

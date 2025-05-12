@@ -7,9 +7,9 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.application.dto.TimeCreateDto;
 import roomescape.application.dto.TimeDto;
 import roomescape.domain.ReservationTime;
-import roomescape.presentation.dto.request.TimeRequest;
 
 class ReservationTimeMapperTest {
 
@@ -18,7 +18,7 @@ class ReservationTimeMapperTest {
     void request_toReservation() {
         // given
         LocalTime time = LocalTime.of(10, 0);
-        TimeRequest request = new TimeRequest(time);
+        TimeCreateDto request = new TimeCreateDto(time);
 
         // when
         ReservationTime reservationTime = ReservationTime.withoutId(request.startAt());

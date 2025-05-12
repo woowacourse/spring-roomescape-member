@@ -2,13 +2,17 @@ package roomescape.application;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.application.dto.ReservationCreateDto;
 import roomescape.application.dto.ReservationDto;
+import roomescape.application.dto.UserReservationCreateDto;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.repository.dto.ReservationSearchFilter;
 import roomescape.exception.NotFoundException;
-import roomescape.presentation.dto.request.ReservationRequest;
 
 @Service
 public class ReservationService {
@@ -16,26 +20,39 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final TimeService timeService;
     private final ThemeService themeService;
+    private final MemberService memberService;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeService timeService,
-                              ThemeService themeService) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            TimeService timeService,
+            ThemeService themeService,
+            MemberService memberService
+    ) {
         this.reservationRepository = reservationRepository;
         this.timeService = timeService;
         this.themeService = themeService;
+        this.memberService = memberService;
     }
 
-    public ReservationDto registerReservation(ReservationRequest request) {
+    @Transactional
+    public ReservationDto registerReservationByUser(UserReservationCreateDto request, Long memberId) {
+        return registerReservation(ReservationCreateDto.of(request, memberId));
+    }
+
+    @Transactional
+    public ReservationDto registerReservation(ReservationCreateDto request) {
         Theme theme = themeService.getThemeById(request.themeId()).toEntity();
         ReservationTime reservationTime = timeService.getTimeById(request.timeId()).toEntity();
-        Reservation reservation = Reservation.withoutId(request.name(), theme, request.date(), reservationTime);
+        Member member = memberService.getMemberById(request.memberId()).toEntity();
+        Reservation reservation = Reservation.withoutId(member, theme, request.date(), reservationTime);
         validateNotPast(reservation);
-        validteNotDuplicate(reservation);
+        validateNotDuplicate(reservation);
         Long id = reservationRepository.save(reservation);
 
         return ReservationDto.from(Reservation.assignId(id, reservation));
     }
 
-    private void validteNotDuplicate(Reservation reservation) {
+    private void validateNotDuplicate(Reservation reservation) {
         List<Reservation> allReservations = reservationRepository.findAll();
         boolean duplicated = allReservations.stream()
                 .anyMatch(r -> r.isDuplicated(reservation));
@@ -52,6 +69,11 @@ public class ReservationService {
 
     public List<ReservationDto> getAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
+        return ReservationDto.from(reservations);
+    }
+
+    public List<ReservationDto> searchReservationsWith(ReservationSearchFilter reservationSearchFilter) {
+        List<Reservation> reservations = reservationRepository.searchWith(reservationSearchFilter);
         return ReservationDto.from(reservations);
     }
 
