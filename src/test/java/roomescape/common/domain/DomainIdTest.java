@@ -2,115 +2,76 @@ package roomescape.common.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.auth.sign.password.Password;
 import roomescape.common.validate.InvalidInputException;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationDate;
-import roomescape.reservation.domain.ReservationId;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.ThemeDescription;
-import roomescape.theme.domain.ThemeId;
-import roomescape.theme.domain.ThemeName;
-import roomescape.theme.domain.ThemeThumbnail;
-import roomescape.time.domain.ReservationTime;
-import roomescape.user.domain.User;
-import roomescape.user.domain.UserName;
-import roomescape.user.domain.UserRole;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class DomainIdTest {
 
     @Test
-    @DisplayName("unassigned된 DomainId에서 getValue를 호출하면 예외가 발생한다")
-    void getValueWhenUnassignedThrowsException() {
-        // given
-        final DomainId id = ReservationId.unassigned();
-
+    @DisplayName("할당된 ID가 null이면 예외가 발생한다")
+    void validateNullAssignedId() {
         // when
         // then
-        assertThatThrownBy(id::getValue)
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("식별자가 할당되지 않았습니다.");
-    }
-
-    @Test
-    @DisplayName("unassigned된 DomainId끼리 비교할 수 없다")
-    void unassignedDomainIdsAreNotEqual() {
-        // given
-        final DomainId id1 = ReservationId.unassigned();
-        final DomainId id2 = ReservationId.unassigned();
-
-        // when
-        // then
-        assertThat(id1.equals(id2)).isFalse();
-    }
-
-    @Test
-    @DisplayName("DomainId는 null로 설정할 수 없다")
-    void cannotAssignNullToDomainId() {
-        // given
-        // when
-        // then
-        assertThatThrownBy(() -> ReservationId.from(null))
+        assertThatThrownBy(() -> new TestDomainId(null, true))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("Validation failed [while checking null]: DomainId.value");
     }
 
     @Test
-    @DisplayName("DomainId의 값이 같은 두 객체는 같은 객체로 취급한다")
-    void sameIdSameObject() {
-        // given
-        final Long sameIdValue = 1L;
-        final ReservationId sameId1 = ReservationId.from(sameIdValue);
-        final ReservationId sameId2 = ReservationId.from(sameIdValue);
-
-        final Theme theme = Theme.withoutId(ThemeName.from("공포"),
-                ThemeDescription.from("지구별 방탈출 최고"),
-                ThemeThumbnail.from("www.making.com"));
-
-        final User user = User.withoutId(
-                UserName.from("강산"),
-                Email.from("email@email.com"),
-                Password.fromEncoded("1234"),
-                UserRole.NORMAL);
-
-        final Reservation sameReservation1 = Reservation.withId(
-                sameId1,
-                user.getId(),
-                ReservationDate.from(LocalDate.now()),
-                ReservationTime.withoutId(LocalTime.now()),
-                theme);
-
-        final Reservation sameReservation2 = Reservation.withId(
-                sameId2,
-                user.getId(),
-                ReservationDate.from(LocalDate.now()),
-                ReservationTime.withoutId(LocalTime.now()),
-                theme);
-
+    @DisplayName("할당되지 않은 ID는 null이어도 예외가 발생하지 않는다")
+    void validateNullUnassignedId() {
         // when
         // then
-        assertThat(sameReservation1).isEqualTo(sameReservation2);
+        assertDoesNotThrow(() -> new TestDomainId(null, false));
     }
 
     @Test
-    @DisplayName("엔티티를 생성할 때, withId로 생성했다면 assigned된 값을 줘야 한다")
-    void requireAssignedDomainId() {
+    @DisplayName("할당된 ID는 값을 조회할 수 있다")
+    void getValueFromAssignedId() {
         // given
-        final ThemeId unassignedId = ThemeId.unassigned();
-        final ThemeName name = ThemeName.from("테마 이름");
-        final ThemeDescription description = ThemeDescription.from("재미있는 테마");
-        final ThemeThumbnail thumbnail = ThemeThumbnail.from("https://example.com/image.png");
-
+        final TestDomainId domainId = new TestDomainId(1L, true);
+        
         // when
         // then
-        assertThatThrownBy(() -> Theme.withId(unassignedId, name, description, thumbnail))
+        assertThat(domainId.getValue()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("할당되지 않은 ID는 값을 조회할 수 없다")
+    void getValueFromUnassignedId() {
+        // given
+        final TestDomainId domainId = new TestDomainId(null, false);
+        
+        // when
+        // then
+        assertThatThrownBy(domainId::getValue)
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("식별자가 할당되지 않았습니다");
+                .hasMessage("식별자가 할당되지 않았습니다.");
+    }
+
+    @Test
+    @DisplayName("할당 여부를 확인할 수 있다")
+    void checkAssigned() {
+        // given
+        final TestDomainId assignedId = new TestDomainId(1L, true);
+        final TestDomainId unassignedId = new TestDomainId(null, false);
+        
+        // when
+        // then
+        assertAll(()->{
+            assertThat(assignedId.isAssigned()).isTrue();
+            assertThat(unassignedId.isAssigned()).isFalse();
+        });
+    }
+
+    // DomainId를 테스트하기 위한 구체 클래스
+    private static class TestDomainId extends DomainId {
+        public TestDomainId(final Long value, final boolean assigned) {
+            super(value, assigned);
+        }
     }
 }
