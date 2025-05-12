@@ -12,4 +12,6 @@ public interface MemberRepository {
     Member findByEmail(String email);
 
     List<Member> findAll();
+
+    Member save(Member member, String password);
 }

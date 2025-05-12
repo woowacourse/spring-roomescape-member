@@ -1,10 +1,13 @@
 package roomescape.repository.member;
 
 import java.util.List;
+import java.util.Objects;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.member.Member;
 import roomescape.exceptions.EntityNotFoundException;
@@ -52,5 +55,20 @@ public class MemberJdbcDao implements MemberRepository {
     public List<Member> findAll() {
         String sql = "select * from member order by id;";
         return namedJdbcTemplate.query(sql, MemberRowMapper.INSTANCE);
+    }
+
+    @Override
+    public Member save(Member member, String encoded) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sql = "insert into member (name, email, password,role) values (:name, :email, :password, 'USER')";
+
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", member.getName())
+                .addValue("email", member.getEmail())
+                .addValue("password", encoded);
+        namedJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
+
+        Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return new Member(id, member.getName(), member.getEmail(), encoded);
     }
 }

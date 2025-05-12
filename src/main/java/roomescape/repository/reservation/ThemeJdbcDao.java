@@ -3,6 +3,7 @@ package roomescape.repository.reservation;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -43,10 +44,7 @@ public class ThemeJdbcDao implements ThemeRepository {
     public Theme save(Theme theme) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into theme (name,description,thumbnail) values (:name,:description,:thumbnail)";
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", theme.getName())
-                .addValue("description", theme.getDescription())
-                .addValue("thumbnail", theme.getThumbnail());
+        SqlParameterSource params = new BeanPropertySqlParameterSource(theme);
 
         namedJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
 
