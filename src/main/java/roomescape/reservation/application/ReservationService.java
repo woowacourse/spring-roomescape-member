@@ -1,5 +1,6 @@
 package roomescape.reservation.application;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -87,18 +88,21 @@ public class ReservationService {
             final AvailableReservationTimeRequest request
     ) {
         final List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+        final List<LocalTime> bookedTimes = reservationRepository.findReservationsByDateAndThemeId(
+                        request.date(),
+                        request.themeId()
+                ).stream()
+                .map(reservation -> reservation.getTime().getStartAt())
+                .toList();
 
         return reservationTimes.stream()
                 .map(reservationTime ->
                         new AvailableReservationTimeResponse(
                                 reservationTime.getId(),
                                 reservationTime.getStartAt(),
-                                reservationRepository.existsByDateAndStartAtAndThemeId(
-                                        request.date(),
-                                        reservationTime.getStartAt(),
-                                        request.themeId()
-                                )
+                                bookedTimes.contains(reservationTime.getStartAt())
                         )
-                ).toList();
+                )
+                .toList();
     }
 }
