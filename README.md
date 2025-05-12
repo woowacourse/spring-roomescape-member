@@ -7,27 +7,27 @@
 
 ## ✅ REST API
 
-| HTTP Method | Endpoint                      | AuthRole      | Success          | Description                                                               |
-|-------------|-------------------------------|---------------|------------------|---------------------------------------------------------------------------|
-| POST        | /login                        | PUBLIC        | 200 OK           | 클라이언트의 로그인 요청 처리. 로그인에 성공하면 Set-Cookie헤더에 token={access-token};을 추가하여 응답. |
-| POST        | /logout                       | ADMIN, MEMBER | 200 OK           | 브라우저에 저장된 token의 만료기한 0초로 수정 요청                                           |
-| GET         | /login/check                  | PUBLIC        | 200 OK           | 클라이언트가 로그인 된 상태면 사용자의 이름을 응답으로 반환.                                        |
-| GET         | /login/check                  | PUBLIC        | 401 UNAUTHORIZED | 클라이언트가 로그인되지 않은 상태면 권한 없음 반환.                                             |
-| GET         | /members                      | ADMIN         | 200 OK           | 모든 회원 목록 조회 (id(PK), 이름만)                                                 |
-| POST        | /members                      | PUBLIC        | 200 OK           | token의 만료기한을 0초로 세팅하여 응답 (브라우저에서 token이 삭제되길 기대)                          |
-| DELETE      | /members/{id}                 | ADMIN, MEMBER | 204 NO_CONTENT   | id(PK)에 해당하는 회원 정보 삭제 처리                                                  |
-| POST        | /reservations                 | ADMIN, MEMBER | 200 OK           | 예약 추가 요청 처리                                                               |
-| DELETE      | /reservations/{id}            | ADMIN, MEMBER | 204 NO_CONTENT   | id(PK)에 해당하는 예약 정보 삭제 처리                                                  |
-| GET         | /reservations                 | ADMIN         | 200 OK           | 모든 회원의 전체 예약 목록 조회                                                        |
-| GET         | /admin/reservations           | ADMIN         | 200 OK           | 조건부 예약 목록 조회 (회원 id, 테마 id, 시작 기간, 끝 기간으로 필터링)                            |
-| GET         | /reservations/available-times | PUBLIC        | 200 OK           | 조건부 예약 가능한 시간 목록 조회(예약 날짜, 테마 id)                                         |
-| POST        | /times                        | ADMIN         | 201 CREATED      | 예약 시간 추가 기능                                                               |
-| DELETE      | /times/{id}                   | ADMIN         | 204 NO_CONTENT   | 예약 시간 삭제 기능                                                               |
-| GET         | /times                        | PUBLIC        | 200 OK           | 모든 예약 시간 목록 조회                                                            |
-| POST        | /themes                       | ADMIN         | 201 CREATED      | 테마 추가 기능                                                                  |
-| DELETE      | /themes/{id}                  | ADMIN         | 204 NO_CONTENT   | 테마 삭제 기능                                                                  |
-| GET         | /themes                       | PUBLIC        | 200 OK           | 모든 테마 목록 조회                                                               |
-| GET         | /themes/popular-list          | PUBLIC        | 200 OK           | 인기 테마 목록 조회                                                               |
+| HTTP Method | Endpoint                      | AuthRole      | Success          | Description                                                                |
+|-------------|-------------------------------|---------------|------------------|----------------------------------------------------------------------------|
+| POST        | /login                        | PUBLIC        | 200 OK           | 클라이언트의 로그인 요청 처리. 로그인에 성공하면 Set-Cookie 헤더에 token={access-token};을 추가하여 응답. |
+| POST        | /logout                       | ADMIN, MEMBER | 200 OK           | Set-Cookie 헤더에 token의 만료기한을 0초로 세팅하여 응답 (브라우저에서 token이 삭제되길 기대)            |
+| GET         | /login/check                  | PUBLIC        | 200 OK           | 클라이언트가 로그인 된 상태면 사용자의 이름을 응답으로 반환.                                         |
+| GET         | /login/check                  | PUBLIC        | 401 UNAUTHORIZED | 클라이언트가 로그인되지 않은 상태면 권한 없음 반환.                                              |
+| POST        | /members                      | PUBLIC        | 201 CREATED      | 회원 추가                                                                      |
+| DELETE      | /members/{id}                 | ADMIN, MEMBER | 204 NO_CONTENT   | id(PK)에 해당하는 회원 삭제                                                         |
+| GET         | /members                      | ADMIN         | 200 OK           | 모든 회원 목록 조회 (id(PK), 이름만)                                                  |
+| POST        | /reservations                 | ADMIN, MEMBER | 201 CREATED      | 예약 추가                                                                      |
+| DELETE      | /reservations/{id}            | ADMIN, MEMBER | 204 NO_CONTENT   | id(PK)에 해당하는 예약 삭제                                                         |
+| GET         | /reservations                 | ADMIN         | 200 OK           | 모든 회원의 전체 예약 목록 조회                                                         |
+| GET         | /admin/reservations           | ADMIN         | 200 OK           | 조건부 예약 목록 조회 (회원 id, 테마 id, 시작 기간, 끝 기간으로 필터링)                             |
+| GET         | /reservations/available-times | PUBLIC        | 200 OK           | 조건부 예약 가능한 시간 목록 조회(예약 날짜, 테마 id)                                          |
+| POST        | /times                        | ADMIN         | 201 CREATED      | 예약 시간 추가                                                                   |
+| DELETE      | /times/{id}                   | ADMIN         | 204 NO_CONTENT   | id(PK)에 해당하는 예약 시간 삭제                                                      |
+| GET         | /times                        | PUBLIC        | 200 OK           | 모든 예약 시간 목록 조회                                                             |
+| POST        | /themes                       | ADMIN         | 201 CREATED      | 테마 추가                                                                      |
+| DELETE      | /themes/{id}                  | ADMIN         | 204 NO_CONTENT   | id(PK)에 해당하는 테마 삭제                                                         |
+| GET         | /themes                       | PUBLIC        | 200 OK           | 모든 테마 목록 조회                                                                |
+| GET         | /themes/popular-list          | PUBLIC        | 200 OK           | 인기 테마 목록 조회                                                                |
 
 ## ✅ View API
 
