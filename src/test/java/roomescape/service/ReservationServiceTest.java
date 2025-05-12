@@ -24,6 +24,7 @@ import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.request.ReservationSearchRequest;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.exception.InvalidReservationFilterException;
 import roomescape.exception.ReservationDuplicateException;
 
 @ExtendWith(MockitoExtension.class)
@@ -87,5 +88,39 @@ class ReservationServiceTest {
 
         // then
         assertThat(reservationResponses.size()).isEqualTo(1);
+    }
+
+    @DisplayName("테마와 멤버 날짜로 예약 목록을 조회하는 경우, 시간이 잘못된 경우 예외를 발생한다.")
+    @Test
+    void findThemeAndMemberAndInvalidDateTest() {
+
+        // given
+        final ReservationSearchRequest reservationSearchRequest = new ReservationSearchRequest(1L, 1L,
+                LocalDate.of(2025, 4, 29), LocalDate.of(2025, 4, 28));
+
+        // when
+
+        // then
+        assertThatThrownBy(() -> reservationService.findByThemeAndMemberAndDate(reservationSearchRequest))
+                .isInstanceOf(InvalidReservationFilterException.class)
+                .hasMessage("시작 날짜는 종료 날짜보다 이후일 수 없습니다.");
+    }
+
+    @DisplayName("테마와 멤버 날짜로 예약 목록을 조회하는 경우, 시간이 잘못된 경우 예외를 발생한다.")
+    @Test
+    void findInvalidThemeAndMemberAndDateTest() {
+
+        // given
+        final ReservationSearchRequest reservationSearchRequest = new ReservationSearchRequest(1L, 1L,
+                LocalDate.of(2025, 4, 25), LocalDate.of(2025, 4, 28));
+
+        // when
+        when(memberService.existsById(1L)).thenReturn(true);
+        when(themeService.existsById(1L)).thenReturn(false);
+
+        // then
+        assertThatThrownBy(() -> reservationService.findByThemeAndMemberAndDate(reservationSearchRequest))
+                .isInstanceOf(InvalidReservationFilterException.class)
+                .hasMessage("테마가 존재하지 않습니다.");
     }
 }
