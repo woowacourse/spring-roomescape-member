@@ -2,6 +2,7 @@ package roomescape.member.repository;
 
 import static roomescape.member.role.Role.MEMBER;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -53,9 +54,9 @@ public class MemberJdbcRepository implements MemberRepository {
 
     @Override
     public boolean isExistUser(String email, String password) {
-        String sql = "SELECT COUNT(*) FROM users where email = ? AND password = ?";
-        int count  = jdbcTemplate.queryForObject(sql, Integer.class, email, password);
-        return count > 0;
+        String sql = "SELECT 1 FROM users WHERE email = ? AND password = ? LIMIT 1";
+        List<Integer> result = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt(1), email, password);
+        return !result.isEmpty();
     }
 
     @Override
