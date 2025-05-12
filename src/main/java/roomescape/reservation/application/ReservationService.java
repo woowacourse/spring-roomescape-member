@@ -1,5 +1,6 @@
 package roomescape.reservation.application;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
@@ -40,6 +41,12 @@ public class ReservationService {
 
         final ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new ResourceNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + request.timeId()));
+        final LocalDateTime now = LocalDateTime.now();
+        final LocalDateTime reservationDateTime = LocalDateTime.of(request.date(), reservationTime.getStartAt());
+        if (reservationDateTime.isBefore(now)) {
+            throw new IllegalArgumentException("예약 시간은 현재 시간보다 이후여야 합니다.");
+        }
+
         final Theme theme = themeQueryRepository.findById(request.themeId())
                 .orElseThrow(() -> new ResourceNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + request.themeId()));
         final Member member = memberQueryRepository.findById(memberAuthInfo.id())
