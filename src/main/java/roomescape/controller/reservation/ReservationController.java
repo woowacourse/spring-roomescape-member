@@ -62,7 +62,6 @@ public class ReservationController {
         return reservationService.saveReservation(adminReservationRequestDto);
     }
 
-
     @DeleteMapping("/reservations/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservation(@PathVariable("id") Long id) {

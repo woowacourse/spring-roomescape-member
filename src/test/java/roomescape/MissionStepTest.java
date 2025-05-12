@@ -73,7 +73,6 @@ public class MissionStepTest {
                 .statusCode(403);
     }
 
-
     @DisplayName("admin은 GET /admin/reservation 및 /reservations 요청 시 200 OK와 빈 목록 반환 확인")
     @Test
     void reservation_접근_성공() {
