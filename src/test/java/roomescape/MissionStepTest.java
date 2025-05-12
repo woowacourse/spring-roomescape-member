@@ -41,7 +41,7 @@ class MissionStepTest {
     @DisplayName("어드민 경로 페이지 요청에 성공하면 200 코드를 반환한다")
     @Test
     void admin_request_test() {
-        String token = getToken("ADMIN");
+        String token = getToken("admin@gmail.com", "a", "어드민", "ADMIN");
 
         RestAssured.given().log().all()
                 .cookie("token", token)
@@ -53,7 +53,7 @@ class MissionStepTest {
     @DisplayName("예약 경로 페이지 요청에 성공하면 200 코드를 반환한다")
     @Test
     void reservation_request_test() {
-        String token = getToken("ADMIN");
+        String token = getToken("admin@gmail.com", "a", "어드민", "ADMIN");
 
         RestAssured.given().log().all()
                 .cookie("token", token)
@@ -71,13 +71,13 @@ class MissionStepTest {
     @DisplayName("예약 및 삭제 요청이 200 코드를 반환한다")
     @Test
     void reservation_delete_test() {
-        String token = getToken("MEMBER");
+        String token = getToken("a@gmail.com", "a", "하루", "MEMBER");
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2026-08-05");
         params.put("timeId", "6");
         params.put("themeId", "2");
-        params.put("memberId", "1");
+//        params.put("memberId", "1");
 
         RestAssured.given().log().all()
                 .cookie("token", token)
@@ -215,10 +215,10 @@ class MissionStepTest {
                 .statusCode(204);
     }
 
-    private String getToken(String role) {
+    private String getToken(String email, String password, String name, String role) {
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(Map.of("email", "a@gmail.com", "password", "a", "name", "test", "role", role))
+                .body(Map.of("email", email, "password", password, "name", name, "role", role))
                 .when().post("/login")
                 .then().log().all()
                 .extract()
