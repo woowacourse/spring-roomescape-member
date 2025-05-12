@@ -9,7 +9,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.service.AuthService;
 import roomescape.common.util.TokenUtil;
 import roomescape.entity.Member;
-import roomescape.exception.impl.TokenNotFountException;
+import roomescape.exception.impl.TokenNotFoundException;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -36,7 +36,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         String token = TokenUtil.extractTokenFromCookie(request.getCookies());
 
         if (token == null || token.isBlank()) {
-            throw new TokenNotFountException();
+            throw new TokenNotFoundException();
         }
         return authService.findMemberByToken(token);
     }

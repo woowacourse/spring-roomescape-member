@@ -9,7 +9,7 @@ import roomescape.auth.service.AuthService;
 import roomescape.common.util.TokenUtil;
 import roomescape.entity.Member;
 import roomescape.entity.Role;
-import roomescape.exception.impl.TokenNotFountException;
+import roomescape.exception.impl.TokenNotFoundException;
 
 public class CheckLoginInterceptor implements HandlerInterceptor {
 
@@ -40,7 +40,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
 
     private boolean validateToken(final String token) {
         if (token == null || token.isBlank()) {
-            throw new TokenNotFountException();
+            throw new TokenNotFoundException();
         }
         return jwtTokenProvider.validateToken(token);
     }
