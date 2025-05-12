@@ -1,22 +1,54 @@
 package roomescape.member.domain;
 
 import java.util.Objects;
+import roomescape.exception.BadRequestException;
+import roomescape.exception.ExceptionCause;
 
 public class Member {
 
     private final Long id;
     private final String name;
     private final String email;
-    //TODO :  password 형식 검증
     private final String password;
     private final Role role;
 
     public Member(Long id, String name, String email, String password, Role role) {
+        validatePassword(password);
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+    private void validatePassword(String password) {
+        if (password.length() < 8 || password.length() > 16) {
+            throw new BadRequestException(ExceptionCause.MEMBER_PASSWORD_INVALID);
+        }
+        if (!isStrongEnoughPassword(password)) {
+            throw new BadRequestException(ExceptionCause.MEMBER_PASSWORD_INVALID);
+        }
+    }
+
+    private boolean isStrongEnoughPassword(String password) {
+        boolean hasLower = password.chars().anyMatch(Character::isLowerCase);
+        boolean hasUpper = password.chars().anyMatch(Character::isUpperCase);
+        boolean hasDigit = password.chars().anyMatch(Character::isDigit);
+        boolean hasSpecial = password.chars().anyMatch(c -> !Character.isLetterOrDigit(c));
+        int count = 0;
+        if (hasLower) {
+            count++;
+        }
+        if (hasUpper) {
+            count++;
+        }
+        if (hasDigit) {
+            count++;
+        }
+        if (hasSpecial) {
+            count++;
+        }
+        return count >= 3;
     }
 
     public static Member createWithoutId(String name, String email, String password, Role role) {
