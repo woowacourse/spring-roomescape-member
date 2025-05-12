@@ -27,19 +27,19 @@ public class MemberDao {
     }
 
     public List<Member> findAll() {
-        String sql = "SELECT * FROM member";
+        String sql = "SELECT id, email, name, password, role FROM member";
         return jdbcTemplate.query(sql, customerRowMapper);
     }
 
     public Optional<Member> findByEmailAndPassword(String email, String password) {
-        String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
+        String sql = "SELECT id, email, name, password, role FROM member WHERE email = ? AND password = ?";
         return jdbcTemplate.query(sql, customerRowMapper, email, password)
                 .stream()
                 .findFirst();
     }
 
     public Optional<Member> findById(Long customerId) {
-        String sql = "SELECT * FROM member WHERE id = ?";
+        String sql = "SELECT id, email, name, password, role FROM member WHERE id = ?";
         return jdbcTemplate.query(sql, customerRowMapper, customerId)
                 .stream().
                 findFirst();

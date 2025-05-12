@@ -30,7 +30,7 @@ public class ThemeDao {
     }
 
     public List<Theme> findAll() {
-        String sql = "SELECT * FROM theme";
+        String sql = "SELECT id, name, description, thumbnail FROM theme";
         return jdbcTemplate.query(sql, themeRowMapper);
     }
 
@@ -50,7 +50,7 @@ public class ThemeDao {
     }
 
     public Optional<Theme> findById(Long id) {
-        String sql = "SELECT * FROM theme WHERE id = ?";
+        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         return jdbcTemplate.query(sql, themeRowMapper, id).stream().findFirst();
     }
 
@@ -60,7 +60,7 @@ public class ThemeDao {
     }
 
     public boolean isDuplicatedNameExisted(String name) {
-        String sql = "SELECT EXISTS (SELECT * FROM theme WHERE name = ?)";
+        String sql = "SELECT EXISTS (SELECT id, name, description, thumbnail FROM theme WHERE name = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
     }
 
