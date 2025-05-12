@@ -1,46 +1,27 @@
 package roomescape.presentation.interceptor;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.application.service.AuthService;
+import roomescape.domain.model.Member;
 
 public class AdminAuthorizationInterceptor implements HandlerInterceptor {
 
-    private final AuthService authService;
-
-    public AdminAuthorizationInterceptor(final AuthService authService) {
-        this.authService = authService;
+    public AdminAuthorizationInterceptor() {
     }
 
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) throws Exception {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            return reject(response);
-        }
+        Member member = (Member) request.getAttribute("member");
 
-        String token = extractTokenFromCookie(cookies);
-        boolean isAdmin = authService.checkIfAdmin(token);
-        if (!isAdmin) {
+        if (!member.isAdmin()) {
             return reject(response);
         }
         return true;
     }
 
     private boolean reject(HttpServletResponse response) {
-        response.setStatus(401);
+        response.setStatus(403);
         return false;
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-
-        return "";
     }
 }

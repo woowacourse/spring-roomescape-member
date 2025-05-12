@@ -34,7 +34,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/signup/**")
                 .excludePathPatterns("/");
 
-        registry.addInterceptor(new AdminAuthorizationInterceptor(authService))
+        registry.addInterceptor(new AdminAuthorizationInterceptor())
                 .addPathPatterns("/admin/**");
     }
 }

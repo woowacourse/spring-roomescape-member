@@ -43,7 +43,7 @@ public class AdminControllerTest {
     }
 
     @Test
-    @DisplayName("/admin api에 접근 시, 관리자가 아닌 경우 401을 응답한다")
+    @DisplayName("/admin api에 접근 시, 관리자가 아닌 경우 403을 응답한다")
     void admin_not_admin() {
         Map<String, Object> memberParams = new HashMap<>();
         memberParams.put("email", "user@gmail.com");
@@ -69,7 +69,7 @@ public class AdminControllerTest {
                 .body(params)
                 .when().post("/admin/reservations")
                 .then().log().all()
-                .statusCode(401);
+                .statusCode(403);
     }
 
     @Test
