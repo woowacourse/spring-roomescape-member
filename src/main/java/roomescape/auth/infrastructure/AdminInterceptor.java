@@ -26,8 +26,7 @@ public class AdminInterceptor implements HandlerInterceptor {
             final HttpServletResponse response,
             final Object handler
     ) {
-        // 컨트롤러 메서드에만 적용
-        if (!(handler instanceof HandlerMethod)) {
+        if (isNotControllerMethod(handler)) {
             return true;
         }
 
@@ -41,5 +40,9 @@ public class AdminInterceptor implements HandlerInterceptor {
             throw new UnauthorizedException("인증에 실패했습니다.");
         }
         return true;
+    }
+
+    private boolean isNotControllerMethod(final Object handler) {
+        return !(handler instanceof HandlerMethod);
     }
 }
