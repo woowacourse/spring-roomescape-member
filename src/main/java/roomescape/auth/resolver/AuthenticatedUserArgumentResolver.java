@@ -8,18 +8,15 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.auth.jwt.manager.JwtManager;
 import roomescape.auth.session.Session;
 import roomescape.auth.session.annotation.UserSession;
 import roomescape.auth.session.util.UserSessionExtractor;
-import roomescape.common.cookie.manager.CookieManager;
 
 @Component
 @RequiredArgsConstructor
 public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final JwtManager jwtManager;
-    private final CookieManager cookieManager;
+    private final UserSessionExtractor userSessionExtractor;
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
@@ -32,10 +29,7 @@ public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentR
                                   final ModelAndViewContainer mavContainer,
                                   final NativeWebRequest webRequest,
                                   final WebDataBinderFactory binderFactory) {
-        return UserSessionExtractor.execute(
-                (HttpServletRequest) webRequest.getNativeRequest(),
-                cookieManager,
-                jwtManager
-        );
+        return userSessionExtractor.execute(
+                (HttpServletRequest) webRequest.getNativeRequest());
     }
 }

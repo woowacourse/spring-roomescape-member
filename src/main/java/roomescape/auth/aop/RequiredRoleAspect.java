@@ -6,11 +6,9 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
-import roomescape.auth.jwt.manager.JwtManager;
 import roomescape.auth.session.Session;
 import roomescape.auth.session.annotation.UserSession;
 import roomescape.auth.session.util.UserSessionExtractor;
-import roomescape.common.cookie.manager.CookieManager;
 import roomescape.common.servlet.ServletRequestHolder;
 import roomescape.user.domain.UserRole;
 
@@ -24,8 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RequiredRoleAspect {
 
-    private final CookieManager cookieManager;
-    private final JwtManager jwtManager;
+    private final UserSessionExtractor userSessionExtractor;
 
     @Around("@annotation(requiredRoles)")
     public Object checkMethodLevel(final ProceedingJoinPoint joinPoint,
@@ -80,9 +77,7 @@ public class RequiredRoleAspect {
     }
 
     private Session extractUserSessionFromRequest() {
-        return UserSessionExtractor.execute(
-                ServletRequestHolder.getRequest(),
-                cookieManager,
-                jwtManager);
+        return userSessionExtractor.execute(
+                ServletRequestHolder.getRequest());
     }
 }
