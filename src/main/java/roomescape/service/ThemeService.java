@@ -49,7 +49,7 @@ public class ThemeService {
     @Transactional
     public void deleteIfNoReservation(final long id) {
         if (!themeDao.existsById(id)) {
-            throw new NoSuchElementException("예약 시간이 존재하지 않습니다.");
+            throw new NoSuchElementException("테마가 존재하지 않습니다.");
         }
         if (themeDao.deleteIfNoReservation(id)) {
             return;
@@ -63,5 +63,10 @@ public class ThemeService {
         return themeDao.findPopularThemesInRecentSevenDays(today.minusDays(7), today.minusDays(1)).stream()
                 .map(ThemeResponse::from)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsById(final Long id) {
+        return themeDao.existsById(id);
     }
 }

@@ -53,4 +53,9 @@ public class MemberService {
                 .map(MemberResponse::from)
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    public boolean existsById(final Long id) {
+        return memberDao.existsById(id);
+    }
 }

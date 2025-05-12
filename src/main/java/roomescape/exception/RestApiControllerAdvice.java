@@ -34,7 +34,7 @@ public class RestApiControllerAdvice {
         return createFailureResponse(ex, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(value = DateTimeParseException.class)
+    @ExceptionHandler(DateTimeParseException.class)
     public ResponseEntity<FailureResponse> handleJsonParseException(final DateTimeParseException ex) {
         return createFailureResponse(ex, HttpStatus.BAD_REQUEST);
     }
@@ -42,6 +42,12 @@ public class RestApiControllerAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<FailureResponse> handleMethodArgumentNotValidException(
             final MethodArgumentNotValidException ex) {
+        return createFailureResponse(ex, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidReservationFilterException.class)
+    public ResponseEntity<FailureResponse> handleInvalidReservationFilterException(
+            final InvalidReservationFilterException ex) {
         return createFailureResponse(ex, HttpStatus.BAD_REQUEST);
     }
 

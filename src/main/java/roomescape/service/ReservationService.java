@@ -14,6 +14,7 @@ import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.request.ReservationSearchRequest;
 import roomescape.dto.response.ReservationCreateResponse;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.exception.InvalidReservationFilterException;
 import roomescape.exception.ReservationDuplicateException;
 
 @Service
@@ -85,9 +86,7 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public List<ReservationResponse> findByThemeAndMemberAndDate(
             final ReservationSearchRequest reservationSearchRequest) {
-        if (reservationSearchRequest.dateFrom().isAfter(reservationSearchRequest.dateTo())) {
-            throw new IllegalArgumentException("시작 날짜는 종료 날짜보다 이후일 수 없습니다.");
-        }
+        validateFilter(reservationSearchRequest);
         final List<Reservation> reservations = reservationDao.findByThemeAndMemberAndDate(
                 reservationSearchRequest.themeId(),
                 reservationSearchRequest.memberId(),
@@ -97,5 +96,17 @@ public class ReservationService {
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
+    }
+
+    private void validateFilter(final ReservationSearchRequest reservationSearchRequest) {
+        if (reservationSearchRequest.dateFrom().isAfter(reservationSearchRequest.dateTo())) {
+            throw new InvalidReservationFilterException("시작 날짜는 종료 날짜보다 이후일 수 없습니다.");
+        }
+        if (!memberService.existsById(reservationSearchRequest.memberId())) {
+            throw new InvalidReservationFilterException("멤버가 존재하지 않습니다.");
+        }
+        if (!themeService.existsById(reservationSearchRequest.themeId())) {
+            throw new InvalidReservationFilterException("테마가 존재하지 않습니다.");
+        }
     }
 }

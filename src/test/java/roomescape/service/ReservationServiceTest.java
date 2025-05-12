@@ -77,13 +77,15 @@ class ReservationServiceTest {
                 LocalDate.of(2025, 4, 25), LocalDate.of(2025, 4, 28));
 
         // when
+        when(memberService.existsById(1L)).thenReturn(true);
+        when(themeService.existsById(1L)).thenReturn(true);
         when(reservationDao.findByThemeAndMemberAndDate(1L, 1L, LocalDate.of(2025, 4, 25),
                 LocalDate.of(2025, 4, 28))).thenReturn(reservations);
+
         final List<ReservationResponse> reservationResponses = reservationService.findByThemeAndMemberAndDate(
                 reservationSearchRequest);
 
         // then
         assertThat(reservationResponses.size()).isEqualTo(1);
-
     }
 }
