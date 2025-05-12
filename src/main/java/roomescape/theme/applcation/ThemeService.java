@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.exception.resource.AlreadyExistException;
+import roomescape.exception.resource.ResourceInUseException;
 import roomescape.exception.resource.ResourceNotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeCommandRepository;
@@ -40,7 +41,7 @@ public class ThemeService {
         try {
             themeCommandRepository.deleteById(id);
         } catch (final DataIntegrityViolationException e) {
-            throw new AlreadyExistException("해당 테마를 사용하고 있는 예약이 존재합니다. id = " + id);
+            throw new ResourceInUseException("해당 테마를 사용하고 있는 예약이 존재합니다. id = " + id);
         }
     }
 

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.exception.resource.AlreadyExistException;
+import roomescape.exception.resource.ResourceInUseException;
 import roomescape.exception.resource.ResourceNotFoundException;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.ReservationTimeRepository;
@@ -43,7 +44,7 @@ public class ReservationTimeService {
         try {
             reservationTimeRepository.deleteById(id);
         } catch (final DataIntegrityViolationException e) {
-            throw new AlreadyExistException("해당 예약 시간을 사용하고 있는 예약이 존재합니다. id = " + id);
+            throw new ResourceInUseException("해당 예약 시간을 사용하고 있는 예약이 존재합니다. id = " + id);
         }
     }
 
