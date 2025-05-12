@@ -2,10 +2,10 @@ package roomescape.auth.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.auth.domain.AuthRole;
 import roomescape.auth.domain.AuthTokenProvider;
 import roomescape.auth.ui.dto.CreateAccessTokenRequest;
 import roomescape.exception.auth.AuthenticationException;
+import roomescape.exception.resource.MemberNotFoundException;
 import roomescape.exception.resource.ResourceNotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberQueryRepository;
@@ -30,6 +30,6 @@ public class AuthService {
 
     public Member getMemberById(final Long id) {
         return memberQueryRepository.findById(id)
-                .orElseGet(() -> new Member("게스트", "게스트는_이메일이_없습니다", "패스워드도_없습니다", AuthRole.GUEST));
+                .orElseThrow(() -> new MemberNotFoundException("해당 사용자가 존재하지 않습니다. id=" + id));
     }
 }
