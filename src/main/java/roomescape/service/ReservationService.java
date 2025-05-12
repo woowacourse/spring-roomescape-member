@@ -25,9 +25,8 @@ public class ReservationService {
     private final ThemeService themeService;
     private final MemberService memberService;
 
-    public ReservationService(final ReservationDao reservationDao,
-                              final ReservationTimeService reservationTimeService, final ThemeService themeService,
-                              final MemberService memberService) {
+    public ReservationService(final ReservationDao reservationDao, final ReservationTimeService reservationTimeService,
+                              final ThemeService themeService, final MemberService memberService) {
         this.reservationDao = reservationDao;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;

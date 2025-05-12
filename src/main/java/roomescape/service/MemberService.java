@@ -38,4 +38,9 @@ public class MemberService {
     public boolean existsById(final Long id) {
         return memberDao.existsById(id);
     }
+
+    @Transactional(readOnly = true)
+    public Optional<Member> findByEmail(final String email) {
+        return memberDao.findByEmail(email);
+    }
 }

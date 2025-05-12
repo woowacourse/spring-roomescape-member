@@ -15,12 +15,9 @@ import roomescape.service.MemberLoginService;
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberLoginService memberLoginService;
-    private final AuthorizationExtractor authorizationExtractor;
 
-    public MemberArgumentResolver(MemberLoginService memberLoginService,
-                                  AuthorizationExtractor authorizationExtractor) {
+    public MemberArgumentResolver(MemberLoginService memberLoginService) {
         this.memberLoginService = memberLoginService;
-        this.authorizationExtractor = authorizationExtractor;
     }
 
     @Override
@@ -32,7 +29,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
     public Object resolveArgument(final MethodParameter parameter, final ModelAndViewContainer mavContainer,
                                   final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        final String token = authorizationExtractor.extract(request);
+        final String token = memberLoginService.extractToken(request);
         if (token == null || token.isEmpty()) {
             throw new IllegalArgumentException("인증 정보가 없습니다.");
         }

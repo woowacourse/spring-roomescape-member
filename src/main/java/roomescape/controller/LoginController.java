@@ -19,18 +19,15 @@ import roomescape.dto.request.TokenRequest;
 import roomescape.dto.response.MemberResponse;
 import roomescape.dto.response.TokenResponse;
 import roomescape.service.MemberLoginService;
-import roomescape.support.auth.AuthorizationExtractor;
 
 @RestController
 @RequestMapping("/login")
 public class LoginController {
 
     private final MemberLoginService memberLoginService;
-    private final AuthorizationExtractor authorizationExtractor;
 
-    public LoginController(MemberLoginService memberLoginService, AuthorizationExtractor authorizationExtractor) {
+    public LoginController(MemberLoginService memberLoginService) {
         this.memberLoginService = memberLoginService;
-        this.authorizationExtractor = authorizationExtractor;
     }
 
     @PostMapping()
@@ -71,7 +68,7 @@ public class LoginController {
             }
     )
     public ResponseEntity<MemberResponse> findInfo(final HttpServletRequest request) {
-        final String token = authorizationExtractor.extract(request);
+        final String token = memberLoginService.extractToken(request);
         final MemberResponse memberResponse = memberLoginService.findByToken(token);
         return ResponseEntity.ok().body(memberResponse);
     }

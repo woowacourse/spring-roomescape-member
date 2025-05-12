@@ -9,22 +9,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.dao.member.MemberDao;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
-import roomescape.support.auth.JwtTokenProvider;
 
 @ExtendWith(MockitoExtension.class)
-class MemberServiceTest {
+public class MemberLoginServiceTest {
 
     @Mock
-    private MemberDao memberDao;
+    private MemberService memberService;
 
     @Mock
-    private JwtTokenProvider jwtTokenProvider;
+    private AuthService authService;
 
     @InjectMocks
-    private MemberService memberService;
+    private MemberLoginService memberLoginService;
 
     @Test
     void findByTokenTest() {
@@ -32,10 +30,10 @@ class MemberServiceTest {
         // given
         final Member member = new Member("체체", "cheche903@naver.com", "password1234", MemberRole.USER);
         final String token = "token";
-        when(jwtTokenProvider.getPayload(token)).thenReturn("cheche903@naver.com");
-        when(memberDao.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
+        when(authService.getPayload(token)).thenReturn("cheche903@naver.com");
+        when(memberService.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
 
         // when
-        assertThat(memberService.findByToken(token).name()).isEqualTo("체체");
+        assertThat(memberLoginService.findByToken(token).name()).isEqualTo("체체");
     }
 }
