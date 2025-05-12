@@ -17,6 +17,11 @@ public class FakeMemberDao implements MemberDao {
     }
 
     @Override
+    public List<Member> findAll() {
+        return new ArrayList<>(fakeMembers);
+    }
+
+    @Override
     public Optional<Member> findMember(String payload) {
         return Optional.empty();
     }
@@ -24,10 +29,5 @@ public class FakeMemberDao implements MemberDao {
     @Override
     public Optional<Member> findById(Long id) {
         return Optional.empty();
-    }
-
-    @Override
-    public List<Member> findAll() {
-        return List.of();
     }
 }
