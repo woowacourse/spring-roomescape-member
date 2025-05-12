@@ -12,8 +12,4 @@ public record ReservationTimeRequest(
     public ReservationTime toEntity() {
         return new ReservationTime(null, this.startAt());
     }
-
-    public ReservationTime toEntity(long id) {
-        return new ReservationTime(id, this.startAt());
-    }
 }
