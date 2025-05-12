@@ -48,7 +48,7 @@ public class ThemeService {
 
     public List<Theme> getWeeklyBestThemes() {
         LocalDate now = LocalDate.now(ZoneId.of("Asia/Seoul"));
-        List<Long> bestThemesIds = reservedThemeChecker.getBestThemesIdsInDays(now.minusDays(8), now.minusDays(1));
+        List<Long> bestThemesIds = reservedThemeChecker.getBestThemesIdsInDays(now.minusDays(7), now);
         return themeRepository.findAllByIdIn(bestThemesIds);
     }
 }
