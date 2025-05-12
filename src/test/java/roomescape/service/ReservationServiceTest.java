@@ -95,14 +95,26 @@ class ReservationServiceTest {
     void addReservationByAdmin_pastDate() {
         // given
         LocalDate date = LocalDate.now().minusDays(1);
+        LocalTime time = LocalTime.of(14, 0);
+        ReservationTime reservationTime = new ReservationTime(1L, time);
+        Theme theme = new Theme(2L, "공포", "무섭다", "aaa");
+        Member member = new Member(3L, Role.valueOf("USER"), new MemberName("vector"), "abc", "def");
+
         ReservationRequest request = new ReservationRequest(
-                3L,
+                1L,
                 date,
                 1L,
                 2L
         );
+
         when(reservationTimeFinder.getReservationTimeById(1L))
-                .thenReturn(new ReservationTime(1L, LocalTime.of(14, 0)));
+                .thenReturn(reservationTime);
+        when(reservedChecker.contains(date, 1L, 2L))
+                .thenReturn(false);
+        when(themeFinder.getThemeById(2L))
+                .thenReturn(theme);
+        when(memberFinder.getMemberById(1L))
+                .thenReturn(member);
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservationByAdmin(request))
