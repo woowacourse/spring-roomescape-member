@@ -14,6 +14,16 @@ CREATE TABLE theme
     PRIMARY KEY (id)
 );
 
+CREATE TABLE member
+(
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(255) NOT NULL,
+    email    VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role     VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
 CREATE TABLE reservation
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
@@ -27,15 +37,7 @@ CREATE TABLE reservation
     FOREIGN KEY (theme_id) REFERENCES theme (id) -- 외래키 추가
 );
 
-CREATE TABLE member
-(
-    id       BIGINT       NOT NULL AUTO_INCREMENT,
-    name     VARCHAR(255) NOT NULL,
-    email    VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    role     VARCHAR(255) NOT NULL,
-    PRIMARY KEY (id)
-);
+
 
 insert into member (name, email, password, role)
 values ('띠용', 'asd@asd.com', 'asd123', 'admin');
@@ -60,19 +62,19 @@ values ('테마3', '설명3', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f
 
 insert into reservation (member_id, date, time_id, theme_id)
 values (2, '2025-05-30', 1, 1);
-insert into reservation (name, date, time_id, theme_id)
+insert into reservation (member_id, date, time_id, theme_id)
 values (2, '2025-05-29', 1, 1);
-insert into reservation (name, date, time_id, theme_id)
+insert into reservation (member_id, date, time_id, theme_id)
 values (2, '2025-05-28', 1, 1);
 
-insert into reservation (name, date, time_id, theme_id)
+insert into reservation (member_id, date, time_id, theme_id)
 values (1, '2025-05-30', 2, 2);
-insert into reservation (name, date, time_id, theme_id)
+insert into reservation (member_id, date, time_id, theme_id)
 values (1, '2025-05-29', 2, 2);
-insert into reservation (name, date, time_id, theme_id)
+insert into reservation (member_id, date, time_id, theme_id)
 values (1, '2025-05-22', 2, 2);
-insert into reservation (name, date, time_id, theme_id)
+insert into reservation (member_id, date, time_id, theme_id)
 values (1, '2025-05-21', 2, 2);
 
-insert into reservation (name, date, time_id, theme_id)
+insert into reservation (member_id, date, time_id, theme_id)
 values (3, '2025-05-30', 3, 3);

@@ -1,17 +1,20 @@
 package roomescape.controller;
 
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.AdminReservationRequest;
 import roomescape.dto.UserReservationRequest;
 import roomescape.model.Reservation;
-import roomescape.model.user.Name;
+import roomescape.model.user.Member;
 import roomescape.service.MemberService;
 import roomescape.service.ReservationService;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 public class AdminController {
@@ -24,11 +27,12 @@ public class AdminController {
     }
 
     @PostMapping("/admin/reservations")
-    public ResponseEntity<Name> addReservation(@RequestBody AdminReservationRequest request) {
-        Name name = memberService.getUserNameByUserId(request.userId());
-        reservationService.addReservation(name,
+    public ResponseEntity<Member> addReservation(@RequestBody AdminReservationRequest request) {
+
+        Member member = memberService.getMemberById(request.userId());
+        reservationService.addReservation(member,
                 UserReservationRequest.of(request.date(), request.timeId(), request.themeId()));
-        return ResponseEntity.status(HttpStatus.CREATED).body(name);
+        return ResponseEntity.status(HttpStatus.CREATED).body(member);
     }
 
     @GetMapping("/admin/reservations/filter")

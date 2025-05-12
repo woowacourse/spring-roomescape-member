@@ -18,7 +18,11 @@ import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
+import roomescape.model.user.Email;
+import roomescape.model.user.Member;
 import roomescape.model.user.Name;
+import roomescape.model.user.Password;
+import roomescape.model.user.Role;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservedChecker;
 
@@ -34,15 +38,16 @@ class ReservationServiceTest {
     @DisplayName("전체 예약 조회")
     void test1() {
         // given
+
         Reservation reservation1 = new Reservation(
                 1L,
-                new Name("띠용"),
+                new Member(1L, new Name("띠용원"), new Email("이메일1"), new Password("비번1"), Role.ADMIN),
                 new ReservationDateTime(LocalDate.now().minusDays(1), new ReservationTime(1L, LocalTime.of(11, 0))),
                 new Theme(1L, "테마명1", "테마설명1", "테마썸네일링크1")
         );
         Reservation reservation2 = new Reservation(
                 2L,
-                new Name("띠용투"),
+                new Member(2L, new Name("띠용투"), new Email("이메일2"), new Password("비번2"), Role.USER),
                 new ReservationDateTime(LocalDate.now().minusDays(1), new ReservationTime(1L, LocalTime.of(11, 0))),
                 new Theme(2L, "테마명2", "테마설명2", "테마썸네일링크2")
         );
@@ -66,6 +71,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약 생성 조회")
     void test2() {
+        Member member = new Member(1L, new Name("띠용원"), new Email("이메일1"), new Password("비번1"), Role.ADMIN);
         ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(11, 0));
         Theme theme1 = new Theme(1L, "테마명1", "테마설명1", "테마썸네일링크1");
         UserReservationRequest userReservationRequest = new UserReservationRequest(LocalDate.now().plusDays(1), 1L, 1L);
@@ -74,7 +80,7 @@ class ReservationServiceTest {
         when(themeService.getThemeById(1L)).thenReturn(theme1);
         when(reservedChecker.contains(LocalDate.now().plusDays(1), 1L, 1L)).thenReturn(false);
 
-        assertThatCode(() -> reservationService.addReservation(new Name("유저명"),
+        assertThatCode(() -> reservationService.addReservation(member,
                 userReservationRequest)).doesNotThrowAnyException();
     }
 

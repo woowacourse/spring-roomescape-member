@@ -7,7 +7,7 @@ import roomescape.dto.UserReservationRequest;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
-import roomescape.model.user.Name;
+import roomescape.model.user.Member;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservedChecker;
 
@@ -30,11 +30,11 @@ public class ReservationService {
         return reservationRepository.getAllReservations();
     }
 
-    public Reservation addReservation(Name name, UserReservationRequest userReservationRequest) {
+    public Reservation addReservation(Member member, UserReservationRequest userReservationRequest) {
         ReservationTime reservationTime = reservationTimeService.getReservationTimeById(
                 userReservationRequest.timeId());
         Theme theme = themeService.getThemeById(userReservationRequest.themeId());
-        Reservation reservationWithNoId = Reservation.createWithNoId(name, userReservationRequest, reservationTime,
+        Reservation reservationWithNoId = Reservation.createWithNoId(member, userReservationRequest, reservationTime,
                 theme);
 
         validateUniqueReservation(userReservationRequest.date(), userReservationRequest.timeId(),
