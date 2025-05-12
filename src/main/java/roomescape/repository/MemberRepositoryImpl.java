@@ -63,6 +63,12 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
+    public List<Member> findAll() {
+        String sql = "SELECT id, email, password, name, session_id FROM member";
+        return jdbcTemplate.query(sql, MEMBER_ROW_MAPPER);
+    }
+
+    @Override
     public Optional<Member> findByEmail(final String email) {
         String sql = "SELECT id, email, password, name, session_id FROM member WHERE email = ?";
         List<Member> members = jdbcTemplate.query(sql, MEMBER_ROW_MAPPER, email);

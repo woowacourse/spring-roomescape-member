@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationV2;
 
 public interface ReservationRepository {
 
@@ -14,7 +15,11 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
+    List<ReservationV2> findAllReservationsV2();
+
     Reservation save(final Reservation reservation);
+
+    ReservationV2 saveWithMember(final ReservationV2 reservation);
 
     int deleteById(final long id);
 

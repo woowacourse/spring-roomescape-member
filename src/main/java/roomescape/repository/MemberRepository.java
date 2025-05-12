@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.util.List;
 import java.util.Optional;
 import roomescape.domain.Member;
 
@@ -18,4 +19,6 @@ public interface MemberRepository {
     void updateSessionId(final long memberId, final String sessionId);
 
     Optional<Member> findById(final long id);
+
+    List<Member> findAll();
 }

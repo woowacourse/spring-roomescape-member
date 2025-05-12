@@ -9,9 +9,11 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationV2;
 
 @Repository
 public class ReservationRepositoryImpl implements ReservationRepository {
@@ -45,12 +47,35 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
+    public List<ReservationV2> findAllReservationsV2() {
+        String sql = joinReservationV2AndRelatedTables("");
+        return template.query(sql, reservationV2RowMapper());
+    }
+
+    @Override
     public Reservation save(final Reservation reservation) {
         String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, reservation.getName());
+            ps.setString(2, reservation.getDate().toString());
+            ps.setLong(3, reservation.getTime().getId());
+            ps.setLong(4, reservation.getTheme().getId());
+            return ps;
+        }, keyHolder);
+
+        long id = keyHolder.getKey().longValue();
+        return reservation.toEntity(id);
+    }
+
+    @Override
+    public ReservationV2 saveWithMember(final ReservationV2 reservation) {
+        String sql = "insert into reservation_v2 (member_id,date, time_id, theme_id) values (? ,?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        template.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setLong(1, reservation.getMemberId());
             ps.setString(2, reservation.getDate().toString());
             ps.setLong(3, reservation.getTime().getId());
             ps.setLong(4, reservation.getTheme().getId());
@@ -94,6 +119,68 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                     reservationTheme
             );
         };
+    }
+
+    private RowMapper<ReservationV2> reservationV2RowMapper() {
+        return (rs, rowNum) -> {
+            // ReservationTime 생성
+            ReservationTime reservationTime = new ReservationTime(
+                    rs.getLong("time_id"),
+                    rs.getString("time_value")
+            );
+
+            // ReservationTheme 생성
+            ReservationTheme reservationTheme = new ReservationTheme(
+                    rs.getLong("theme_id"),
+                    rs.getString("theme_name"),
+                    rs.getString("theme_description"),
+                    rs.getString("theme_thumbnail")
+            );
+
+            // Member 생성
+            Member member = new Member(
+                    rs.getLong("member_id"),
+                    rs.getString("member_email"),
+                    rs.getString("member_password"),
+                    rs.getString("member_name"),
+                    rs.getString("member_session_id")
+            );
+
+            return new ReservationV2(
+                    rs.getLong("reservation_id"),
+                    rs.getString("date"),
+                    reservationTime,
+                    reservationTheme,
+                    member
+            );
+        };
+    }
+
+    private String joinReservationV2AndRelatedTables(String where) {
+        String sql = """
+                SELECT 
+                    rv.id AS reservation_id, 
+                    rv.date, 
+                    m.id AS member_id, 
+                    m.email AS member_email, 
+                    m.password AS member_password, 
+                    m.name AS member_name, 
+                    m.session_id AS member_session_id,
+                    t.id AS time_id, 
+                    t.start_at AS time_value, 
+                    th.id AS theme_id, 
+                    th.name AS theme_name, 
+                    th.description AS theme_description, 
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation_v2 AS rv 
+                INNER JOIN member AS m
+                ON rv.member_id = m.id
+                INNER JOIN reservation_time AS t
+                ON rv.time_id = t.id
+                INNER JOIN reservation_theme AS th
+                ON rv.theme_id = th.id
+                """;
+        return sql + where;
     }
 
     private String wrapExistsQuery(String sql) {
