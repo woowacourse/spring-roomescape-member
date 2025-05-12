@@ -1,4 +1,4 @@
-const THEME_API_ENDPOINT = '/themes';
+const THEME_API_ENDPOINT = '/themes/all';
 
 document.addEventListener('DOMContentLoaded', () => {
     requestRead(THEME_API_ENDPOINT)
@@ -35,8 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderTheme(themes) {
     const themeSlots = document.getElementById('theme-slots');
     themeSlots.innerHTML = '';
-    themeItems = themes.themes;
-    themeItems.forEach(theme => {
+    themes.forEach(theme => {
         const name = theme.name;
         const themeId = theme.id;
         /*

@@ -1,10 +1,10 @@
-package roomescape.user.controller;
+package roomescape.ui;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class UserViewController {
+public class ViewController {
 
     @GetMapping("/reservation")
     public String userReservationView() {
