@@ -1,6 +1,5 @@
 package roomescape.theme.service;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -15,12 +14,10 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
-    private final Clock clock;
 
-    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository, Clock clock) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
-        this.clock = clock;
     }
 
     public void deleteById(Long id) {
@@ -46,8 +43,12 @@ public class ThemeService {
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당 테마가 존재하지 않습니다."));
     }
 
-    public List<ThemeResponse> getPopularThemes() {
-        List<Theme> themes = themeRepository.findPopularThemeDuringAWeek(10, LocalDate.now(clock));
+    public List<ThemeResponse> getPopularThemes(LocalDate now) {
+        List<Theme> themes = themeRepository.findPopularThemeDuringAWeek(10, now);
         return ThemeResponse.from(themes);
+    }
+
+    public List<ThemeResponse> getPopularThemes() {
+        return getPopularThemes(LocalDate.now());
     }
 }

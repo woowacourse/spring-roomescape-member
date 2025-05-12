@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.common.BaseTest;
+import roomescape.member.controller.request.TokenLoginCreateRequest;
+import roomescape.member.service.AutoService;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeRepository;
@@ -28,21 +30,37 @@ public class ReservationTest extends BaseTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @Autowired
+    private AutoService autoService;
+
     private Theme theme;
 
     private Map<String, Object> reservation;
 
     private Map<String, String> reservationTime;
 
+    private String token;
+
     @BeforeEach
     void setUp() {
+        //포트 설정
         RestAssured.port = port;
+        //테마 추가
         theme = themeRepository.save("테마1", "설명1", "썸네일1");
+        //회원추가
+        jdbcTemplate.update(
+                "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)",
+                "매트", "matt.kakao", "1234", "ADMIN"
+        );
+
+        //토큰추출
+        token = autoService.tokenLogin(new TokenLoginCreateRequest("matt.kakao", "1234")).tokenResponse();
+
         reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", "2025-08-05");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
+        reservation.put("memberId", 1);
         reservationTime = Map.of("startAt", "10:00");
     }
 
@@ -52,31 +70,36 @@ public class ReservationTest extends BaseTest {
         params.put("startAt", "10:00");
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("admin/reservations")
                 .then().log().all()
                 .statusCode(201);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -91,7 +114,7 @@ public class ReservationTest extends BaseTest {
                 .body(reservationTime)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/times")
@@ -108,6 +131,7 @@ public class ReservationTest extends BaseTest {
     @Test
     void 관리자_페이지를_응답한다() {
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -116,6 +140,7 @@ public class ReservationTest extends BaseTest {
     @Test
     void 방탈출_예약_페이지를_응답한다() {
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
@@ -128,25 +153,6 @@ public class ReservationTest extends BaseTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
-    }
-
-    @Test
-    void 방탈출_예약_생성시_예약자_이름이_비어있으면_예외를_응답한다() {
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTime)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(200);
-
-        reservation.remove("name");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
     }
 
     @Test
@@ -183,8 +189,8 @@ public class ReservationTest extends BaseTest {
     void 방탈출_예약_목록을_조회한다() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)",
                 "10:00");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2025-08-05", 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation (date, time_id, theme_id, user_id) VALUES (?, ?, ?, ?)",
+                "2025-08-05", 1, 1, 1);
 
         List<ReservationResponse> response = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -203,9 +209,10 @@ public class ReservationTest extends BaseTest {
                 "10:00");
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("admin/reservations")
                 .then().log().all()
                 .statusCode(201);
 
@@ -213,6 +220,7 @@ public class ReservationTest extends BaseTest {
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
@@ -228,9 +236,10 @@ public class ReservationTest extends BaseTest {
         reservationFail.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(reservationFail)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(400);
     }

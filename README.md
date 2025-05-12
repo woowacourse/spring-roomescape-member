@@ -1,102 +1,76 @@
 # 방탈출 사용자 예약
 
-## 1단계
+## 예외 처리
 
 - 예외 처리 후 적절한 응답 반환 (404, 403.. 등)
 - 예외 처리
-    - 예약
-        - 시간: not null
-        - 날짜: not null
-        - 예약자명: not null, not blank
-        - 시간 + 날짜
-            - 예약 일시가 현재 일시 이후여야 한다.
-            - 같은 일시에 예약이 있는 경우
-    - 시간
-        - not null, 25시, 61분 같은 값
-        - 이미 있는 시간인 경우 생성 불가
-        - 특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때
+    - 회원
+        - 이름 : not null, not blank
+        - 이메일 : not null, not blank
+        - 비밀번호 : not null, not blank
 
-## 2단계
+## 신규 기능
 
-> 클라이언트 코드를 수정해야 한다.
+- 회원 entity 추가된다.
+    - users 테이블이 추가된다.
+- 회원 가입 기능이 추가된다.
+- 로그인 기능이 추가된다.
+  - 로그인 하기 위해선 회원 가입이 선행되어야 한다.
 
-- 테마 entity가 추가된다.
-    - 테마 table추가 및 reservation테이블 수정(제공되는 sql이용)
-    - 기존 reservation entity 코드에 theme 추가
-- `/admin/theme` -> `theme.html`반환
-- reservation페이지 `reservation-new.html`로 변경
-- `/reservations`api 필드에 theme 관련 필드 추가
-- 테마 조회, 추가, 삭제 구현
-- 클라이언트 코드를 수정해야 한다.
-    - `/reservations`의 명세가 바뀌게 될텐데 테마와 관련된 필드와 프론트의 맵핑을 해야함
+## Api
 
-## 3단계
+- 회원 가입
+  - `/signup` 요청하면 `signup.html` 반환
+- 로그인
+  - `/login` 요청하면 `login.html` 반환
+- API 명세
+  - 회원 가입
+    - request
+    ```
+    POST /members HTTP/1.1
+    ```
+    response
+    ```
+    HTTP/1.1 201
+    Content-Type: application/json
+    ```
 
-> 클라이언트 코드를 수정해야 한다.
+  - 로그인
+    - request
+    ```
+    POST /login HTTP/1.1
+    content-type: application/json
+    host: localhost:8080
 
-- 예약 조회
-    - `/reservation`요청하면 `reservation.html`반환
-    - 날짜와 테마에 따른 예약시간 조회
-- 예약 추가
-    - 예약 추가 api적절히 수정한다.
-- 인기테마
-    - 최근 일주일 기준 예약이 많은 테마 10개
-    - `/`url요청시 `templates/index.html`반환(인기페이지)
-
-    - API 명세
-        - 예약 가능 시간 조회
-            - request
-          ```
-          GET /times/available
-          ```
-            - response
-          ```
-          HTTP/1.1 200
-          Content-Type: application/json
-          [
-            {
-              "id": 1,
-              "start_at": "11:00",
-              "is_reserved": "true"
-            }
-          ]
-          ```
-
-    - 예약 하기
-        - request
-          ```
-          POST /reservation HTTP/1.1
-          content-type: application/json
-          
-          {
-          "name": "예약자명",
-          "reservation_date": "2025-04-29",
-          "theme_id": "1",
-          "time_id": "1"
-          }
-          ```
-        - response
-          ```
-          HTTP/1.1 201
-          Location: /reservation/1
-          Content-Type: application/json
-          ```
-
-    - 인기 테마 조회
-        - request
-          ```
-          GET /theme/popular
-          ```
-            - response
-          ```
-          HTTP/1.1 200
-          Content-Type: application/json
-          [
-            {
-              "id": 1,
-              "name": "레벨2 탈출",
-              "description": "우테코 레벨2를 탈출하는 내용입니다.",
-              "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-            }
-          ]
-          ```
+    {
+    "password": "password",
+    "email": "admin@email.com"
+    }
+    ```
+    response
+    ```
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    Keep-Alive: timeout=60
+    Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+    ```
+  - 인증 정보 조회
+      - request
+    ```
+    GET /login/check HTTP/1.1
+    cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+    host: localhost:8080
+    ```
+    response
+    ```
+    HTTP/1.1 200 OK
+    Connection: keep-alive
+    Content-Type: application/json
+    Date: Sun, 03 Mar 2024 19:16:56 GMT
+    Keep-Alive: timeout=60
+    Transfer-Encoding: chunked
+    
+    {
+    "name": "어드민"
+    }
+    ```

@@ -28,4 +28,11 @@ public class SimpleJdbcInsertConfig {
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
     }
+
+    @Bean
+    public SimpleJdbcInsert userJdbcInsert(JdbcTemplate jdbcTemplate) {
+        return new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("users")
+                .usingGeneratedKeyColumns("id");
+    }
 }

@@ -1,13 +1,10 @@
 package roomescape.global;
 
 import java.util.NoSuchElementException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.reservation.domain.exception.PastReservationException;
-import roomescape.reservation.domain.exception.ReservationDateNullException;
-import roomescape.reservation.domain.exception.ReservationTimeNullException;
-import roomescape.reservation.domain.exception.ReserverNameEmptyException;
 
 @RestControllerAdvice
 public class RoomescapeExceptionHandler {
@@ -22,23 +19,8 @@ public class RoomescapeExceptionHandler {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler(PastReservationException.class)
-    public ResponseEntity<String> handelPastReservationException(PastReservationException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(ReserverNameEmptyException.class)
-    public ResponseEntity<String> handelReserverNameEmptyException(ReserverNameEmptyException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(ReservationDateNullException.class)
-    public ResponseEntity<String> handelReservationDateNullException(ReservationDateNullException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(ReservationTimeNullException.class)
-    public ResponseEntity<String> handelReservationTimeNullException(ReservationTimeNullException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handelException(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("[ERROR] 잠시 후 시도해 주세요.");
     }
 }

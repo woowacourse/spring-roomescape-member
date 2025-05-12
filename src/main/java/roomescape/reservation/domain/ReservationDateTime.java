@@ -1,6 +1,5 @@
 package roomescape.reservation.domain;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -12,18 +11,18 @@ public class ReservationDateTime {
     private final ReservationDate reservationDate;
     private final ReservationTime reservationTime;
 
-    public ReservationDateTime(ReservationDate reservationDate, ReservationTime reservationTime, Clock clock) {
-        validatePast(reservationDate, reservationTime, clock);
+    public ReservationDateTime(ReservationDate reservationDate, ReservationTime reservationTime) {
+        validatePast(reservationDate, reservationTime);
         this.reservationDate = reservationDate;
         this.reservationTime = reservationTime;
     }
 
-    private void validatePast(ReservationDate reservationDate, ReservationTime reservationTime, Clock clock) {
+    private void validatePast(ReservationDate reservationDate, ReservationTime reservationTime) {
         LocalDate localDate = reservationDate.getDate();
         LocalTime localTime = reservationTime.getStartAt();
 
         LocalDateTime reservationDateTime = LocalDateTime.of(localDate, localTime);
-        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDateTime now = LocalDateTime.now();
 
         if (reservationDateTime.isBefore(now)) {
             throw new PastReservationException("[ERROR] 현재 시간 이후로 예약할 수 있습니다.");
