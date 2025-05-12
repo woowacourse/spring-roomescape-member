@@ -158,7 +158,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findReservationsInConditions(final Long memberId, final Long themeId, final LocalDate dateFrom, final LocalDate dateTo) {
-        String sql = """
+        String baseSelectSql = """
                         SELECT
                             r.id as reservation_id,
                             r.date,
@@ -179,48 +179,48 @@ public class JdbcReservationRepository implements ReservationRepository {
                             inner join member as m on r.member_id = m.id
                         """;
 
+        StringBuilder sql = new StringBuilder(baseSelectSql);
         List<Object> parameters = new ArrayList<>();
         boolean isFirstCondition = true;
 
-        // WHERE 절 추가 로직
         if (memberId != null || themeId != null || dateFrom != null || dateTo != null) {
-            sql += " WHERE";
+            sql.append(" WHERE");
         }
 
         if (memberId != null) {
-            sql += " r.member_id = ?";
+            sql.append(" r.member_id = ?");
             parameters.add(memberId);
             isFirstCondition = false;
         }
 
         if (themeId != null) {
-            if (!isFirstCondition) {
-                sql += " AND";
-            }
-            sql += " r.theme_id = ?";
+            appendAndIfNotFirstCondition(isFirstCondition, sql);
+            sql.append(" r.theme_id = ?");
             parameters.add(themeId);
             isFirstCondition = false;
         }
 
         if (dateFrom != null) {
-            if (!isFirstCondition) {
-                sql += " AND";
-            }
-            sql += " r.date >= ?";
+            appendAndIfNotFirstCondition(isFirstCondition, sql);
+            sql.append(" r.date >= ?");
             parameters.add(dateFrom);
             isFirstCondition = false;
         }
 
         if (dateTo != null) {
-            if (!isFirstCondition) {
-                sql += " AND";
-            }
-            sql += " r.date <= ?";
+            appendAndIfNotFirstCondition(isFirstCondition, sql);
+            sql.append(" r.date <= ?");
             parameters.add(dateTo);
         }
 
-        sql += " ORDER BY r.id";
+        sql.append(" ORDER BY r.id");
 
-        return jdbcTemplate.query(sql, reservationRowMapper, parameters.toArray());
+        return jdbcTemplate.query(sql.toString(), reservationRowMapper, parameters.toArray());
+    }
+
+    private void appendAndIfNotFirstCondition(final boolean isFirstCondition, final StringBuilder sql) {
+        if (!isFirstCondition) {
+            sql.append(" AND");
+        }
     }
 }
