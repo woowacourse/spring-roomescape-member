@@ -20,7 +20,6 @@ public class UserSessionExtractor {
                                   final CookieManager cookieManager,
                                   final JwtManager jwtManager) {
 
-        // TODO 쿠키
         final Jwt accessToken = Jwt.from(
                 cookieManager.extractCookie(request, TokenType.ACCESS.getDescription()));
 

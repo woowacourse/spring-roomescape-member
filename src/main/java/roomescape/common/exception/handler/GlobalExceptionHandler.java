@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
         return createProblemDetail(
                 ex.getHttpStatus(),
                 "인증/인가 로직 오류",
-                ex.getUserMessage().orElse("요청을 처리할 수 없습니다."), request);
+                ex.getUserMessage().orElse("인증/인가를 실패했습니다."), request);
     }
 
     @ExceptionHandler(DateTimeParseException.class)

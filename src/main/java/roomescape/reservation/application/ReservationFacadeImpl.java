@@ -9,6 +9,7 @@ import roomescape.reservation.application.service.ReservationQueryService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
+import roomescape.reservation.ui.ReservationSearchWebRequest;
 import roomescape.reservation.ui.dto.AvailableReservationTimeWebResponse;
 import roomescape.reservation.ui.dto.CreateReservationWebRequest;
 import roomescape.reservation.ui.dto.ReservationResponse;
@@ -48,6 +49,18 @@ public class ReservationFacadeImpl implements ReservationFacade {
         return reservationQueryService.getTimesWithAvailability(request).stream()
                 .map(AvailableReservationTimeWebResponse::from)
                 .toList();
+    }
+
+    @Override
+    public List<ReservationResponse> getByParams(final ReservationSearchWebRequest request) {
+        final List<Reservation> reservations = reservationQueryService.getByParams(request.toServiceRequest());
+        final List<UserId> userIds = reservations.stream()
+                .map(Reservation::getUserId)
+                .toList();
+
+        final List<User> users = userQueryService.getAllByIds(userIds);
+
+        return ReservationResponse.from(reservations, users);
     }
 
     @Override

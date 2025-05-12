@@ -23,6 +23,7 @@ import roomescape.user.domain.UserId;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -245,5 +246,50 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                         (v1, v2) -> v1,
                         LinkedHashMap::new
                 ));
+    }
+
+    @Override
+    public List<Reservation> findAllByParams(final UserId userId,
+                                             final ThemeId themeId,
+                                             final ReservationDate dateFrom,
+                                             final ReservationDate dateTo) {
+        final StringBuilder sql = new StringBuilder("""
+            select
+                r.id,
+                r.user_id,
+                r.date,
+                rt.id as time_id,
+                rt.start_at as start_at,
+                t.id as theme_id,
+                t.name as theme_name,
+                t.description as description,
+                t.thumbnail as thumbnail
+            from reservations r
+            join reservation_times rt
+                on r.time_id = rt.id
+            join themes t
+                on r.theme_id = t.id
+            where 1=1
+            """);
+        final List<Object> params = new ArrayList<>();
+
+        if (userId != null) {
+            sql.append(" AND r.user_id = ?");
+            params.add(userId.getValue());
+        }
+        if (themeId != null) {
+            sql.append(" AND r.theme_id = ?");
+            params.add(themeId.getValue());
+        }
+        if (dateFrom != null) {
+            sql.append(" AND r.date >= ?");
+            params.add(dateFrom.getValue());
+        }
+        if (dateTo != null) {
+            sql.append(" AND r.date <= ?");
+            params.add(dateTo.getValue());
+        }
+
+        return jdbcTemplate.query(sql.toString(), reservationMapper, params.toArray());
     }
 }

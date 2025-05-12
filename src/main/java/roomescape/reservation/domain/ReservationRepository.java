@@ -3,6 +3,7 @@ package roomescape.reservation.domain;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeId;
 import roomescape.time.domain.ReservationTimeId;
+import roomescape.user.domain.UserId;
 
 import java.util.List;
 import java.util.Map;
@@ -27,4 +28,6 @@ public interface ReservationRepository {
     void deleteById(ReservationId id);
 
     Map<Theme, Integer> findThemesToBookedCountByParamsOrderByBookedCount(ReservationDate startDate, ReservationDate endDate, int count);
+
+    List<Reservation> findAllByParams(UserId userId, ThemeId themeId, ReservationDate reservationDate, ReservationDate reservationDate1);
 }

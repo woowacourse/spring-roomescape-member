@@ -11,6 +11,7 @@ import roomescape.reservation.domain.BookedStatus;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservation.ui.ReservationSearchRequest;
 import roomescape.theme.domain.ThemeId;
 import roomescape.time.application.service.ReservationTimeQueryService;
 import roomescape.time.domain.ReservationTime;
@@ -65,6 +66,16 @@ public class ReservationQueryServiceImpl implements ReservationQueryService {
                 .entrySet().stream()
                 .map(entry -> new ThemeToBookCountServiceResponse(entry.getKey(), BookedCount.from(entry.getValue())))
                 .toList();
+    }
+
+    @Override
+    public List<Reservation> getByParams(final ReservationSearchRequest request) {
+        return reservationRepository.findAllByParams(
+                request.userId(),
+                request.themeId(),
+                request.dateFrom(),
+                request.dateTo()
+        );
     }
 
     @Override

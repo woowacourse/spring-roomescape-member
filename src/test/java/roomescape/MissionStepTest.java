@@ -166,7 +166,7 @@ public class MissionStepTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("userId", is(user.getId().getValue().intValue()));
+                .body("user.id", is(user.getId().getValue().intValue()));
 
         RestAssured.given().log().all()
                 .when().get("/reservations")

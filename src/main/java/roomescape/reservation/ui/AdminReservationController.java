@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,6 +47,13 @@ public class AdminReservationController {
             @RequestParam final Long themeId) {
         final List<AvailableReservationTimeWebResponse> reservations = reservationFacade.getAvailable(date, themeId);
         return ResponseEntity.ok(reservations);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ReservationResponse>> searchReservations(
+            @ModelAttribute final ReservationSearchWebRequest request){
+        return ResponseEntity.ok(
+                reservationFacade.getByParams(request));
     }
 
     @PostMapping

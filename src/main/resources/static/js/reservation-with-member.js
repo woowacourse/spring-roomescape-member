@@ -27,15 +27,11 @@ function render(data) {
     data.forEach(item => {
         const row = tableBody.insertRow();
 
-        /*
-        TODO: [5단계] 예약 생성 기능 변경 - 관리자
-              예약 목록 조회 API 응답에 맞게 적용
-        */
-        row.insertCell(0).textContent = item.reservationId;              // 예약 id
-        row.insertCell(1).textContent = item.user.name;       // 사용자 name
-        row.insertCell(2).textContent = item.theme.name;      // 테마 name
-        row.insertCell(3).textContent = item.date;            // date
-        row.insertCell(4).textContent = item.time.startAt;    // 예약 시간 startAt
+        row.insertCell(0).textContent = item.reservationId;
+        row.insertCell(1).textContent = item.user.name;
+        row.insertCell(2).textContent = item.theme.name;
+        row.insertCell(3).textContent = item.date;
+        row.insertCell(4).textContent = item.time.startAt;
 
         const actionCell = row.insertCell(row.cells.length);
         actionCell.appendChild(createActionButton('삭제', 'btn-danger', deleteRow));
@@ -192,18 +188,18 @@ function applyFilter(event) {
     event.preventDefault();
 
     const themeId = document.getElementById('theme').value;
-    const memberId = document.getElementById('user').value;
+    const userId = document.getElementById('user').value;
     const dateFrom = document.getElementById('date-from').value;
     const dateTo = document.getElementById('date-to').value;
 
     const params = new URLSearchParams();
 
     if (themeId) params.append('themeId', themeId);
-    if (memberId) params.append('memberId', memberId);
+    if (userId) params.append('userId', userId);
     if (dateFrom) params.append('dateFrom', dateFrom);
     if (dateTo) params.append('dateTo', dateTo);
 
-    fetch(`/reservations/search?${params.toString()}`, {
+    fetch(`/admin/reservations/search?${params.toString()}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'

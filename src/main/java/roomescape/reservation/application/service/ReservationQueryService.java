@@ -5,6 +5,7 @@ import roomescape.reservation.application.dto.AvailableReservationTimeServiceRes
 import roomescape.reservation.application.dto.ThemeToBookCountServiceResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
+import roomescape.reservation.ui.ReservationSearchRequest;
 import roomescape.theme.domain.ThemeId;
 import roomescape.time.domain.ReservationTimeId;
 
@@ -17,6 +18,8 @@ public interface ReservationQueryService {
     List<AvailableReservationTimeServiceResponse> getTimesWithAvailability(AvailableReservationTimeServiceRequest availableReservationTimeServiceRequest);
 
     List<ThemeToBookCountServiceResponse> getRanking(ReservationDate startDate, ReservationDate endDate, int count);
+
+    List<Reservation> getByParams(ReservationSearchRequest request);
 
     boolean existsByTimeId(ReservationTimeId timeId);
 
