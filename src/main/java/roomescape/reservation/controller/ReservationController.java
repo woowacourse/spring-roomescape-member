@@ -43,7 +43,7 @@ public class ReservationController {
     ) {
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
                 requestDto.date(),
-                loginMember.id(),
+                loginMember,
                 requestDto.timeId(),
                 requestDto.themeId()
         );

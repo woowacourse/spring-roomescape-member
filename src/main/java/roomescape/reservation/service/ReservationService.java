@@ -56,7 +56,7 @@ public class ReservationService {
         final Long memberId = reservation.getMemberId();
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
-        return ReservationResponse.of(reservation, theme, member.getName());
+        return ReservationResponse.of(reservation, theme, member);
     }
 
     public ReservationResponse createReservation(CreateReservationRequest request) {
@@ -64,15 +64,13 @@ public class ReservationService {
                 .orElseThrow(() -> new ReservationTimeNotFoundException(request.timeId()));
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new ThemeNotFoundException(request.themeId()));
-        Member member = memberRepository.findById(request.memberId())
-                .orElseThrow(() -> new MemberNotFoundException(request.memberId()));
 
         Reservation newReservation = request.toEntity(timeEntity);
         validateReservationDate(newReservation);
         validateDuplicated(newReservation);
 
         Reservation saved = reservationRepository.save(newReservation);
-        return ReservationResponse.of(saved, theme, member.getName());
+        return ReservationResponse.of(saved, theme, request.loginMember());
     }
 
     private void validateDuplicated(Reservation newReservation) {
