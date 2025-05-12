@@ -9,16 +9,17 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.Member;
 import roomescape.dto.response.MemberResponse;
-import roomescape.service.MemberService;
+import roomescape.service.MemberLoginService;
 
 @Component
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberService memberService;
+    private final MemberLoginService memberLoginService;
     private final AuthorizationExtractor authorizationExtractor;
 
-    public MemberArgumentResolver(MemberService memberService, AuthorizationExtractor authorizationExtractor) {
-        this.memberService = memberService;
+    public MemberArgumentResolver(MemberLoginService memberLoginService,
+                                  AuthorizationExtractor authorizationExtractor) {
+        this.memberLoginService = memberLoginService;
         this.authorizationExtractor = authorizationExtractor;
     }
 
@@ -35,7 +36,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         if (token == null || token.isEmpty()) {
             throw new IllegalArgumentException("인증 정보가 없습니다.");
         }
-        final MemberResponse member = memberService.findByToken(token);
+        final MemberResponse member = memberLoginService.findByToken(token);
         return new Member(member.id(), member.name(), member.email(), member.memberRole());
     }
 }

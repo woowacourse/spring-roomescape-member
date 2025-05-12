@@ -18,18 +18,18 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.TokenRequest;
 import roomescape.dto.response.MemberResponse;
 import roomescape.dto.response.TokenResponse;
-import roomescape.service.MemberService;
+import roomescape.service.MemberLoginService;
 import roomescape.support.auth.AuthorizationExtractor;
 
 @RestController
 @RequestMapping("/login")
 public class LoginController {
 
-    private final MemberService memberService;
+    private final MemberLoginService memberLoginService;
     private final AuthorizationExtractor authorizationExtractor;
 
-    public LoginController(MemberService memberService, AuthorizationExtractor authorizationExtractor) {
-        this.memberService = memberService;
+    public LoginController(MemberLoginService memberLoginService, AuthorizationExtractor authorizationExtractor) {
+        this.memberLoginService = memberLoginService;
         this.authorizationExtractor = authorizationExtractor;
     }
 
@@ -46,7 +46,7 @@ public class LoginController {
     )
     public ResponseEntity<Void> create(
             @RequestBody @Valid final TokenRequest tokenRequest) {
-        final TokenResponse tokenResponse = memberService.createToken(tokenRequest);
+        final TokenResponse tokenResponse = memberLoginService.createToken(tokenRequest);
 
         final HttpCookie cookie = ResponseCookie.from("token", tokenResponse.accessToken())
                 .path("/")
@@ -72,7 +72,7 @@ public class LoginController {
     )
     public ResponseEntity<MemberResponse> findInfo(final HttpServletRequest request) {
         final String token = authorizationExtractor.extract(request);
-        final MemberResponse memberResponse = memberService.findByToken(token);
+        final MemberResponse memberResponse = memberLoginService.findByToken(token);
         return ResponseEntity.ok().body(memberResponse);
     }
 }

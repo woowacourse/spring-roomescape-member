@@ -6,19 +6,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.MemberRole;
 import roomescape.dto.response.MemberResponse;
-import roomescape.service.MemberService;
+import roomescape.service.MemberLoginService;
 
 @Component
 public class AdminCheckInterceptor implements HandlerInterceptor {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberService memberService;
+    private final MemberLoginService memberLoginService;
     private final AuthorizationExtractor authorizationExtractor;
 
-    public AdminCheckInterceptor(JwtTokenProvider jwtTokenProvider, MemberService memberService,
+    public AdminCheckInterceptor(JwtTokenProvider jwtTokenProvider, MemberLoginService memberLoginService,
                                  AuthorizationExtractor authorizationExtractor) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.memberService = memberService;
+        this.memberLoginService = memberLoginService;
         this.authorizationExtractor = authorizationExtractor;
     }
 
@@ -37,7 +37,7 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        final MemberResponse memberResponse = memberService.findByToken(accessToken);
+        final MemberResponse memberResponse = memberLoginService.findByToken(accessToken);
 
         if (memberResponse == null || !(memberResponse.memberRole() == MemberRole.ADMIN)) {
             response.setStatus(403);
