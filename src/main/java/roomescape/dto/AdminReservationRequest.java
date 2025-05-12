@@ -6,19 +6,20 @@ import java.time.LocalDate;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
+import roomescape.model.User;
 import roomescape.model.UserName;
 
 public record AdminReservationRequest(
         @NotNull @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
+        @NotNull Long userId,
         @NotNull Long timeId,
-        @NotNull Long themeId,
-        @NotNull Long memberId
+        @NotNull Long themeId
 ) {
-    public Reservation toEntityWith(UserName name, ReservationTime reservationTime, Theme theme) {
+    public Reservation toEntityWith(User user, ReservationTime reservationTime, Theme theme) {
         return new Reservation(
                 null,
-                name,
                 date,
+                user,
                 reservationTime,
                 theme
         );

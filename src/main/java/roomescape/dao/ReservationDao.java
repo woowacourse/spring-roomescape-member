@@ -14,8 +14,10 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
+import roomescape.model.Role;
 import roomescape.model.Theme;
 import roomescape.model.ThemeName;
+import roomescape.model.User;
 import roomescape.model.UserName;
 
 @Repository
@@ -29,6 +31,14 @@ public class ReservationDao {
 
     private static RowMapper<Reservation> reservationRowMapper() {
         return (rs, rowNum) -> {
+            var user = new User(
+                    rs.getLong("user_id"),
+                    new UserName(rs.getString("user_name")),
+                    rs.getString("email"),
+                    rs.getString("password"),
+                    Role.valueOf(rs.getString("role"))
+            );
+
             var reservationTime = new ReservationTime(
                     rs.getLong("time_id"),
                     rs.getTime("time_value").toLocalTime()
@@ -43,8 +53,8 @@ public class ReservationDao {
 
             return new Reservation(
                     rs.getLong("reservation_id"),
-                    new UserName(rs.getString("name")),
                     rs.getDate("date").toLocalDate(),
+                    user,
                     reservationTime,
                     theme
             );
@@ -53,13 +63,13 @@ public class ReservationDao {
 
     public Reservation save(Reservation reservation) {
         String sql = """
-                INSERT INTO reservation(name, date, time_id, theme_id) 
-                VALUES(:name, :date, :timeId, :themeId)
+                INSERT INTO reservation(date, user_id, time_id, theme_id) 
+                VALUES(:date, :userId, :timeId, :themeId)
                 """;
 
         Map<String, Object> params = Map.of(
-                "name", reservation.getName(),
                 "date", reservation.getDate(),
+                "userId", reservation.getUser().getId(),
                 "timeId", reservation.getReservationTime().getId(),
                 "themeId", reservation.getTheme().getId()
         );
@@ -72,8 +82,8 @@ public class ReservationDao {
 
         return new Reservation(
                 id,
-                new UserName(reservation.getName()),
                 reservation.getDate(),
+                reservation.getUser(),
                 reservation.getReservationTime(),
                 reservation.getTheme()
         );
@@ -89,8 +99,12 @@ public class ReservationDao {
     public List<Reservation> findAll() {
         String sql = """
                 SELECT r.id as reservation_id,
-                    r.name,
                     r.date,
+                    u.id as user_id,
+                    u.name as user_name,
+                    u.email,
+                    u.password,
+                    u.role,
                     t.id as time_id,
                     t.start_at as time_value,
                     th.id as theme_id,
@@ -98,6 +112,8 @@ public class ReservationDao {
                     th.description,
                     th.thumbnail
                 FROM reservation as r
+                INNER JOIN users as u 
+                ON r.user_id = u.id
                 INNER JOIN reservation_time as t
                 ON r.time_id = t.id
                 INNER JOIN theme as th
@@ -152,15 +168,21 @@ public class ReservationDao {
     public List<Reservation> findByThemeIdAndDate(Long themeId, LocalDate date) {
         String sql = """
                 SELECT r.id as reservation_id,
-                    r.name,
                     r.date,
+                    u.id as user_id,
+                    u.name as user_name,
+                    u.email,
+                    u.password,
+                    u.role,
                     t.id as time_id,
                     t.start_at as time_value,
                     th.id as theme_id,
-                    th.name,
+                    th.name as theme_name,
                     th.description,
                     th.thumbnail
                 FROM reservation as r
+                INNER JOIN users as u 
+                ON r.user_id = u.id
                 INNER JOIN reservation_time as t
                 ON r.time_id = t.id
                 INNER JOIN theme as th

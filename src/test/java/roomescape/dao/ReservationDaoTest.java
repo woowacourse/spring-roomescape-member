@@ -13,8 +13,10 @@
     import org.springframework.test.context.jdbc.Sql;
     import roomescape.model.Reservation;
     import roomescape.model.ReservationTime;
+    import roomescape.model.Role;
     import roomescape.model.Theme;
     import roomescape.model.ThemeName;
+    import roomescape.model.User;
     import roomescape.model.UserName;
 
     @JdbcTest
@@ -45,7 +47,17 @@
                             rs.getString("description"),
                             rs.getString("thumbnail")
                     ));
-            Reservation reservation = new Reservation(null, new UserName("이름"), LocalDate.of(2025, 12, 16), reservationTime, theme);
+            User user = namedParameterJdbcTemplate.queryForObject("SELECT id, name, password, email, role FROM users WHERE id = :id",
+                    Map.of("id", 1L),
+                    (rs, rowNum) -> new User(
+                            rs.getLong("id"),
+                            new UserName(rs.getString("name")),
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            Role.valueOf(rs.getString("role"))
+                    ));
+
+            Reservation reservation = new Reservation(null, LocalDate.of(2025, 12, 16), user,  reservationTime, theme);
 
             // when
             Reservation saved = reservationDao.save(reservation);

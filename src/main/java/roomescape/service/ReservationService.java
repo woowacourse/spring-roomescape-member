@@ -37,7 +37,7 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalStateException("존재하지 않는 시간입니다."));
         Theme theme = themeDao.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new IllegalStateException("존재하지 않는 테마입니다."));
-        Reservation reservation = reservationRequest.toEntityWith(user.getName(), reservationTime, theme);
+        Reservation reservation = reservationRequest.toEntityWith(user, reservationTime, theme);
         if (reservation.isPast(LocalDate.now(clock))) {
             throw new IllegalStateException("하루 전 까지 예약 가능합니다.");
         }

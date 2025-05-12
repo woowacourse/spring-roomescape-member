@@ -4,15 +4,15 @@ import java.time.LocalDate;
 
 public class Reservation {
     private final Long id;
-    private final UserName name;
     private final LocalDate date;
+    private final User user;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
-    public Reservation(Long id, UserName name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+    public Reservation(Long id, LocalDate date, User user, ReservationTime reservationTime, Theme theme) {
         this.id = id;
-        this.name = name;
         this.date = date;
+        this.user = user;
         this.reservationTime = reservationTime;
         this.theme = theme;
     }
@@ -29,8 +29,12 @@ public class Reservation {
         return id;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     public String getName() {
-        return name.getName();
+        return user.getNameValue();
     }
 
     public LocalDate getDate() {

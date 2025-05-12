@@ -60,7 +60,7 @@ class ReservationServiceTest {
         ReservationResponse response = reservationService.addReservation(user, request);
 
         assertThat(response.id()).isNotNull();
-        assertThat(response.name()).isEqualTo("이름");
+        assertThat(response.user().name()).isEqualTo("이름");
         assertThat(response.date()).isEqualTo(LocalDate.of(2025, 12, 16).toString());
     }
 
