@@ -27,12 +27,12 @@ public class AdminController {
     }
 
     @PostMapping("/admin/reservations")
-    public ResponseEntity<Member> addReservation(@RequestBody AdminReservationRequest request) {
+    public ResponseEntity<Reservation> addReservation(@RequestBody AdminReservationRequest request) {
 
         Member member = memberService.getMemberById(request.userId());
-        reservationService.addReservation(member,
+        Reservation reservation = reservationService.addReservation(member,
                 UserReservationRequest.of(request.date(), request.timeId(), request.themeId()));
-        return ResponseEntity.status(HttpStatus.CREATED).body(member);
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
     }
 
     @GetMapping("/admin/reservations/filter")
