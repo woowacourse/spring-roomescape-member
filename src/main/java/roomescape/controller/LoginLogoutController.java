@@ -38,7 +38,7 @@ public class LoginLogoutController {
         if (member == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        return ResponseEntity.ok(MemberResponse.of(member));
+        return ResponseEntity.ok(MemberResponse.from(member));
     }
 
     @PostMapping("/logout")

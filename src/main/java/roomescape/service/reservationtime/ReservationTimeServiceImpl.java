@@ -62,7 +62,7 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
         List<AvailableTimeResponse> availableTimeResponses = reservationTimes.stream()
                 .map(reservationTime -> {
                     boolean alreadyBooked = bookedTimeIds.contains(reservationTime.getId());
-                    return AvailableTimeResponse.of(reservationTime, alreadyBooked);
+                    return AvailableTimeResponse.from(reservationTime, alreadyBooked);
                 })
                 .toList();
 

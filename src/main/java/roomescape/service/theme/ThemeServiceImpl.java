@@ -51,7 +51,7 @@ public class ThemeServiceImpl implements ThemeService {
         return themeIds.stream().map(themeId -> {
             Theme theme = themeRepository.findById(themeId)
                     .orElseThrow(() -> new ThemeNotFoundException(themeId));
-            return PopularThemeResponse.of(theme);
+            return PopularThemeResponse.from(theme);
         }).toList();
     }
 }

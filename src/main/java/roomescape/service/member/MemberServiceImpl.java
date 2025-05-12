@@ -25,7 +25,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public List<MemberResponse> findAllMembers() {
         List<Member> members = memberRepository.findAllMembers();
-        return members.stream().map(member -> MemberResponse.of(member)).toList();
+        return members.stream().map(member -> MemberResponse.from(member)).toList();
     }
 
     @Override
@@ -39,7 +39,7 @@ public class MemberServiceImpl implements MemberService {
                 Role.USER);
         Long id = memberRepository.addMember(member);
         Member addedMember = member.withId(id);
-        return MemberResponse.of(addedMember);
+        return MemberResponse.from(addedMember);
     }
 
     @Override
