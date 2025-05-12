@@ -14,7 +14,7 @@ import roomescape.dto.response.MemberResponseDto;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.dto.response.ReservationTimeResponseDto;
 import roomescape.dto.response.ThemeResponseDto;
-import roomescape.model.LoginMember;
+import roomescape.dto.LoginMember;
 import roomescape.model.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;

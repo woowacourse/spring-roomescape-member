@@ -19,7 +19,7 @@ import roomescape.fake.FakeMemberDao;
 import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeReservationTimeDao;
 import roomescape.fake.FakeThemeDao;
-import roomescape.model.LoginMember;
+import roomescape.dto.LoginMember;
 import roomescape.model.Member;
 import roomescape.model.ReservationTime;
 import roomescape.model.Role;

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.ReservationRegisterDto;
 import roomescape.dto.request.ReservationSearchFilter;
 import roomescape.dto.response.ReservationResponseDto;
-import roomescape.model.LoginMember;
+import roomescape.dto.LoginMember;
 import roomescape.service.ReservationService;
 
 @RestController

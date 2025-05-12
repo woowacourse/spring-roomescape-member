@@ -17,7 +17,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.dto.response.MemberResponseDto;
-import roomescape.model.LoginMember;
+import roomescape.dto.LoginMember;
 import roomescape.model.Role;
 import roomescape.presentation.support.CookieUtils;
 import roomescape.service.AuthService;
