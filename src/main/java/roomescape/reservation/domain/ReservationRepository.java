@@ -1,5 +1,6 @@
 package roomescape.reservation.domain;
 
+import roomescape.reservation.ui.dto.ReservationResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeId;
 import roomescape.time.domain.ReservationTimeId;
@@ -22,6 +23,8 @@ public interface ReservationRepository {
     List<ReservationTimeId> findTimeIdByParams(ReservationDate date, ThemeId themeId);
 
     List<Reservation> findAll();
+
+    List<Reservation> findAllByUserId(UserId userId);
 
     Reservation save(Reservation reservation);
 

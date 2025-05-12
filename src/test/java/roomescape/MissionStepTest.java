@@ -114,7 +114,8 @@ public class MissionStepTest {
                 .statusCode(200);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .cookie(TokenType.ACCESS.getDescription(), jwtManager.generate(claims, TokenType.ACCESS).getValue())
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
@@ -142,7 +143,7 @@ public class MissionStepTest {
                         UserName.from("강산"),
                         Email.from("email@email.com"),
                         Password.fromEncoded("1234"),
-                        UserRole.NORMAL));
+                        UserRole.ADMIN));
 
         final CreateReservationWithUserIdWebRequest request = new CreateReservationWithUserIdWebRequest(
                 LocalDate.now().plusDays(1),
@@ -169,7 +170,8 @@ public class MissionStepTest {
                 .body("user.id", is(user.getId().getValue().intValue()));
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .cookie(TokenType.ACCESS.getDescription(), jwtManager.generate(claims, TokenType.ACCESS).getValue())
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
@@ -180,7 +182,8 @@ public class MissionStepTest {
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .cookie(TokenType.ACCESS.getDescription(), jwtManager.generate(claims, TokenType.ACCESS).getValue())
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
@@ -220,7 +223,7 @@ public class MissionStepTest {
                         UserName.from("강산"),
                         Email.from("email@email.com"),
                         Password.fromEncoded("1234"),
-                        UserRole.NORMAL));
+                        UserRole.ADMIN));
 
         final Reservation reservation = reservationRepository.save(
                 Reservation.withoutId(
@@ -230,11 +233,18 @@ public class MissionStepTest {
                         theme
                 ));
 
+        final Claims claims = Jwts.claims()
+                .add(User.Fields.id, user.getId().getValue())
+                .add(User.Fields.name, user.getName().getValue())
+                .add(User.Fields.role, user.getRole().name())
+                .build();
+
         // when
         // then
 
         final List<ReservationResponse> reservations = RestAssured.given().log().all()
-                .when().get("/reservations")
+                .cookie(TokenType.ACCESS.getDescription(), jwtManager.generate(claims, TokenType.ACCESS).getValue())
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationResponse.class);

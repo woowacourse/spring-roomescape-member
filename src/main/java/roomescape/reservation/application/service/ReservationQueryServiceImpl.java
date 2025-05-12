@@ -12,10 +12,12 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.ui.ReservationSearchRequest;
+import roomescape.reservation.ui.dto.ReservationResponse;
 import roomescape.theme.domain.ThemeId;
 import roomescape.time.application.service.ReservationTimeQueryService;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeId;
+import roomescape.user.domain.UserId;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -76,6 +78,11 @@ public class ReservationQueryServiceImpl implements ReservationQueryService {
                 request.dateFrom(),
                 request.dateTo()
         );
+    }
+
+    @Override
+    public List<Reservation> getAllByUserId(final UserId userId) {
+        return reservationRepository.findAllByUserId(userId);
     }
 
     @Override

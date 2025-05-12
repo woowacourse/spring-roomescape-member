@@ -17,6 +17,8 @@ public interface ReservationFacade {
 
     List<ReservationResponse> getByParams(ReservationSearchWebRequest request);
 
+    List<ReservationResponse> getAllByUserId(Long userId);
+
     ReservationResponse create(CreateReservationWithUserIdWebRequest request, Session session);
 
     void delete(Long id);

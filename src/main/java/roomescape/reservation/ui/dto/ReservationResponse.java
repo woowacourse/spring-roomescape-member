@@ -37,6 +37,12 @@ public record ReservationResponse(Long reservationId,
                 ThemeResponse.from(domain.getTheme()));
     }
 
+    public static List<ReservationResponse> from(final List<Reservation> domains, final User user) {
+        return domains.stream()
+                .map(domain -> ReservationResponse.from(domain, user))
+                .toList();
+    }
+
     public static List<ReservationResponse> from(final List<Reservation> domains, final List<User> users) {
         final Map<UserId, User> userMap = users.stream()
                 .collect(Collectors.toMap(User::getId, Function.identity()));

@@ -11,6 +11,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservation.ui.dto.ReservationResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeId;
@@ -166,6 +167,31 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                 """;
 
         return jdbcTemplate.query(sql, reservationMapper).stream()
+                .toList();
+    }
+
+    @Override
+    public List<Reservation> findAllByUserId(final UserId userId) {
+        final String sql = """
+                select
+                    r.id,
+                    r.user_id,
+                    r.date,
+                    rt.id as time_id,
+                    rt.start_at as start_at,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description as description,
+                    t.thumbnail as thumbnail
+                from reservations r
+                    where r.user_id = ?
+                join reservation_times rt
+                    on r.time_id = rt.id
+                join themes t
+                    on r.theme_id = t.id
+                """;
+
+        return jdbcTemplate.query(sql, reservationMapper, userId).stream()
                 .toList();
     }
 

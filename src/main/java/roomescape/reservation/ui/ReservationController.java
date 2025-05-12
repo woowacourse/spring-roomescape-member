@@ -31,9 +31,9 @@ public class ReservationController {
 
     private final ReservationFacade reservationFacade;
 
-    @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getAll() {
-        final List<ReservationResponse> reservations = reservationFacade.getAll();
+    @GetMapping("/mine")
+    public ResponseEntity<List<ReservationResponse>> getMine(@UserSession final Session session) {
+        final List<ReservationResponse> reservations = reservationFacade.getAllByUserId(session.id().getValue());
         return ResponseEntity.ok(reservations);
     }
 
