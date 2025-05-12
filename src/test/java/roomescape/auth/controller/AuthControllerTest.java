@@ -1,7 +1,5 @@
 package roomescape.auth.controller;
 
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS;
-
 import io.jsonwebtoken.Claims;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -21,18 +19,13 @@ import roomescape.auth.domain.dto.TokenRequestDto;
 import roomescape.auth.domain.dto.TokenResponseDto;
 import roomescape.auth.fixture.AuthFixture;
 import roomescape.auth.service.AuthService;
-import roomescape.user.AdminTestDataConfig;
-import roomescape.user.MemberTestDataConfig;
 import roomescape.user.domain.Role;
 import roomescape.user.domain.User;
+import roomescape.user.fixture.UserFixture;
+import roomescape.user.repository.UserRepository;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-        classes = {
-                MemberTestDataConfig.class,
-                AdminTestDataConfig.class
-        })
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@DirtiesContext(classMode = AFTER_CLASS)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class AuthControllerTest {
 
     private static final String TOKEN_NAME_FILED = "token";
@@ -42,12 +35,10 @@ class AuthControllerTest {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
     @Autowired
-    private MemberTestDataConfig memberConfig;
-    @Autowired
-    private AdminTestDataConfig adminConfig;
+    private UserRepository userRepository;
 
-    private User member;
-    private User admin;
+    private User savedMember;
+    private User savedAdmin;
 
     @LocalServerPort
     int port;
@@ -55,8 +46,11 @@ class AuthControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        member = memberConfig.getSavedMember();
-        admin = adminConfig.getSavedAdmin();
+        User member = UserFixture.create(Role.ROLE_MEMBER, "actlls1n", "actlls1e", "actlls1p");
+        savedMember = userRepository.save(member);
+
+        User admin = UserFixture.create(Role.ROLE_ADMIN, "actlls2n", "actlls2e", "actlls2p");
+        savedAdmin = userRepository.save(admin);
     }
 
     @Nested
@@ -67,8 +61,9 @@ class AuthControllerTest {
         @Test
         void login_success() {
             // given
+
             // when
-            TokenRequestDto requestDto = new TokenRequestDto(member.getEmail(), member.getPassword());
+            TokenRequestDto requestDto = new TokenRequestDto(savedMember.getEmail(), savedMember.getPassword());
 
             // then
             RestAssured
@@ -81,12 +76,31 @@ class AuthControllerTest {
                     .extract().response();
         }
 
-        @DisplayName("유효하지 않는 이메일로 로그인을 시도하여 실패:  상태 코드 404를 반환한다.")
+        @DisplayName("유효한 이메일과 비밀번호로 로그인을 성공한다.")
+        @Test
+        void login_success2() {
+            // given
+
+            // when
+            TokenRequestDto requestDto = new TokenRequestDto(savedAdmin.getEmail(), savedAdmin.getPassword());
+
+            // then
+            RestAssured
+                    .given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(requestDto)
+                    .when().post("/login")
+                    .then().log().all()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract().response();
+        }
+
+        @DisplayName("유효하지 않는 이메일과 비밀번호로 로그인을 시도하여 실패: 상태 코드 404를 반환한다.")
         @Test
         void login_throwException_byInvalidEmail() {
             // given
             // when
-            TokenRequestDto requestDto = new TokenRequestDto("invalidEmail@example.com", member.getPassword());
+            TokenRequestDto requestDto = new TokenRequestDto("invalidEmail@example.com", "adfasdf");
 
             // then
             RestAssured
@@ -108,7 +122,8 @@ class AuthControllerTest {
         @Test
         void checkAuth_success_withRoleISMember() {
             // given
-            TokenRequestDto requestDto = AuthFixture.createTokenRequestDto(member.getEmail(), member.getPassword());
+            TokenRequestDto requestDto = AuthFixture.createTokenRequestDto(savedMember.getEmail(),
+                    savedMember.getPassword());
             TokenResponseDto responseDto = authService.login(requestDto);
             String token = responseDto.accessToken();
 
@@ -131,7 +146,8 @@ class AuthControllerTest {
         @Test
         void checkAuth_success_withRoleISAdmin() {
             // given
-            TokenRequestDto requestDto = AuthFixture.createTokenRequestDto(admin.getEmail(), admin.getPassword());
+            TokenRequestDto requestDto = AuthFixture.createTokenRequestDto(savedAdmin.getEmail(),
+                    savedAdmin.getPassword());
             TokenResponseDto responseDto = authService.login(requestDto);
 
             // when
