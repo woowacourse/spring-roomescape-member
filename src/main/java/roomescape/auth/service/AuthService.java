@@ -18,8 +18,6 @@ import roomescape.member.repository.MemberRepository;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private static final String CLAIM_NAME = "name";
-    private static final String CLAIM_ROLE = "role";
     private static final String MEMBER_ID = "memberId";
 
     private final TokenProvider jwtTokenProvider;
@@ -37,8 +35,6 @@ public class AuthService {
     private Claims createClaims(final Member member) {
         return Jwts.claims()
                 .subject(member.getId().toString())
-                .add(CLAIM_NAME, member.getName())
-                .add(CLAIM_ROLE, member.getRole())
                 .build();
     }
 
