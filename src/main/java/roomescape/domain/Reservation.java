@@ -12,7 +12,7 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
-        validate(date, time, theme);
+        validate(member, date, time, theme);
         this.id = id;
         this.member = member;
         this.date = date;
@@ -25,8 +25,8 @@ public class Reservation {
                 reservation.theme);
     }
 
-    private void validate(LocalDate date, ReservationTime time, Theme theme) {
-        if (date == null || time == null || theme == null) {
+    private void validate(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        if (member == null || date == null || time == null || theme == null) {
             throw new IllegalArgumentException("예약 정보가 비어있습니다.");
         }
     }

@@ -25,6 +25,14 @@ public class MemberController {
         this.memberService = memberService;
     }
 
+    @PostMapping
+    public ResponseEntity<Void> create(@RequestBody CreateMemberRequest request) {
+        Member createdMember = memberService.signUp(request)
+                .orElseThrow(() -> new IllegalArgumentException("이미 존재하는 회원입니다."));
+
+        return ResponseEntity.created(URI.create("/members/" + createdMember.getId())).build();
+    }
+
     @GetMapping
     public ResponseEntity<List<MemberResponse>> readAll() {
         List<Member> members = memberService.readMembers();
@@ -33,13 +41,5 @@ public class MemberController {
                 .toList();
 
         return ResponseEntity.ok(memberResponses);
-    }
-
-    @PostMapping
-    public ResponseEntity<Void> create(@RequestBody CreateMemberRequest request) {
-        Member createdMember = memberService.signUp(request)
-                .orElseThrow(() -> new IllegalArgumentException("이미 존재하는 회원입니다."));
-
-        return ResponseEntity.created(URI.create("/members/" + createdMember.getId())).build();
     }
 }

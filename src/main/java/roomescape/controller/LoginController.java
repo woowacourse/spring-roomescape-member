@@ -29,6 +29,7 @@ public class LoginController {
 
     @PostMapping
     public ResponseEntity<Void> loginAndIssueToken(@RequestBody LoginRequest request, HttpServletResponse response) {
+        // TODO: 회원 관련 예외에 대한 커스텀 익셉션 추가
         Member member = memberRepository.findByEmailAndPassword(request.email(), request.password())
                 .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 회원입니다."));
 

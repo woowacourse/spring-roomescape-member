@@ -5,24 +5,58 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 
 class ReservationTest {
+    private static Theme makeTheme(Long id) {
+        return new Theme(id, "테마", "테마 설명", "테마 이미지");
+    }
+
+    private static Member makeMember(Long id) {
+        return new Member(id, "히스타", "hista@wtc.jjang", "1q2w3e4r!", Role.MEMBER);
+    }
 
     private static Stream<Arguments> getInvalidReservations() {
         return Stream.of(
-                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, null, , LocalDate.now(),
-                        new ReservationTime(1L, LocalTime.now()), new Theme(1L, "테마","테마 설명", "테마 이미지"))),
-                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, "히스타", , null,
-                        new ReservationTime(1L, LocalTime.now()), new Theme(1L, "테마","테마 설명", "테마 이미지"))),
-                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, "히스타", , LocalDate.now(), null,
-                        new Theme(1L, "테마","테마 설명", "테마 이미지"))),
-                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, "히스타", , LocalDate.now(),
-                        new ReservationTime(1L, LocalTime.now()), null))
+                // 유효하지 않는 member
+                Arguments.of((Supplier<Reservation>) () ->
+                        new Reservation(
+                                1L,
+                                null,
+                                LocalDate.now(),
+                                new ReservationTime(1L, LocalTime.now()),
+                                makeTheme(1L))),
+
+                // 유효하지 않는 date
+                Arguments.of((Supplier<Reservation>) () ->
+                        new Reservation(
+                                1L,
+                                makeMember(1L),
+                                null,
+                                new ReservationTime(1L, LocalTime.now()),
+                                makeTheme(1L))),
+
+                // 유효하지 않는 time
+                Arguments.of((Supplier<Reservation>) () ->
+                        new Reservation(
+                                1L,
+                                makeMember(1L),
+                                LocalDate.now(),
+                                null,
+                                makeTheme(1L))),
+
+                // 유효하지 않는 theme
+                Arguments.of((Supplier<Reservation>) () ->
+                        new Reservation(
+                                1L,
+                                makeMember(1L),
+                                LocalDate.now(),
+                                new ReservationTime(1L, LocalTime.now()),
+                                null))
         );
     }
 
@@ -32,20 +66,6 @@ class ReservationTest {
         // when & then
         assertThatIllegalArgumentException().isThrownBy(
                 reservationSupplier::get
-        );
-    }
-
-    @DisplayName("name이 빈 값일 때(공백) IllegalArgumentException을 throw 한다.")
-    @Test
-    void validateBlankName() {
-        // given
-        Supplier<Reservation> supplier = () -> new Reservation(1L, null, , LocalDate.now(),
-                new ReservationTime(1L, LocalTime.now()), new Theme(1L, "테마","테마 설명", "테마 이미지"));
-
-
-        // when & then
-        assertThatIllegalArgumentException().isThrownBy(
-                supplier::get
         );
     }
 }

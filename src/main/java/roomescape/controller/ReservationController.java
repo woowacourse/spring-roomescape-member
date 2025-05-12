@@ -17,18 +17,15 @@ import roomescape.common.annotation.Auth;
 import roomescape.domain.member.Member;
 import roomescape.dto.request.CreateReservationRequest;
 import roomescape.dto.response.ReservationResponse;
-import roomescape.service.AuthService;
 import roomescape.service.ReservationService;
 
 @RestController
 public class ReservationController {
     private final ReservationService reservationService;
-    private final AuthService authService;
 
     @Autowired
-    public ReservationController(ReservationService reservationService, AuthService authService) {
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
-        this.authService = authService;
     }
 
     @PostMapping("/reservations")
@@ -48,7 +45,7 @@ public class ReservationController {
 
     // TODO: 관리자 전용 API - 분리 필요
     @GetMapping("admin/reservations/lists")
-    public ResponseEntity<List<ReservationResponse>> readAllWithFilter(
+    public ResponseEntity<List<ReservationResponse>> readWithFilter(
             @RequestParam(required = false) Long themeId,
             @RequestParam(required = false) Long memberId,
             @RequestParam(required = false) String dateFrom,

@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class AdminViewControllerTest {
+    // TODO: ADMIN 권한을 가지고 있는 토큰이 필요함
     @DisplayName("/admin 페이지 연결 테스트")
     @Test
     void adminPage() {
