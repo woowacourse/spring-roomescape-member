@@ -7,19 +7,18 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.Import;
 import roomescape.exception.resource.AlreadyExistException;
+import roomescape.fixture.config.TestConfig;
 import roomescape.theme.applcation.ThemeService;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeCommandRepository;
 import roomescape.theme.domain.ThemeQueryRepository;
-import roomescape.theme.infrastructure.JdbcThemeRepository;
 import roomescape.theme.ui.dto.CreateThemeRequest;
 import roomescape.theme.ui.dto.ThemeResponse;
 
 @JdbcTest
+@Import(TestConfig.class)
 class ThemeServiceTest {
 
     @Autowired
@@ -104,33 +103,5 @@ class ThemeServiceTest {
         // when & then
         Assertions.assertThatThrownBy(() -> themeService.create(request))
                 .isInstanceOf(AlreadyExistException.class);
-    }
-
-    // TODO: 테스트 추가: 해당_테마로_등록된_예약이_있으면_삭제할_수_없다
-
-    @TestConfiguration
-    static class TestConfig {
-
-        @Bean
-        public ThemeCommandRepository themeCommandRepository(
-                final JdbcTemplate jdbcTemplate
-        ) {
-            return new JdbcThemeRepository(jdbcTemplate);
-        }
-
-        @Bean
-        public ThemeQueryRepository themeQueryRepository(
-                final JdbcTemplate jdbcTemplate
-        ) {
-            return new JdbcThemeRepository(jdbcTemplate);
-        }
-
-        @Bean
-        public ThemeService themeService(
-                final ThemeCommandRepository themeCommandRepository,
-                final ThemeQueryRepository themeQueryRepository
-        ) {
-            return new ThemeService(themeCommandRepository, themeQueryRepository);
-        }
     }
 }

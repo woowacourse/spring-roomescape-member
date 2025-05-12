@@ -7,26 +7,27 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.Import;
 import roomescape.exception.resource.AlreadyExistException;
 import roomescape.exception.resource.ResourceNotFoundException;
-import roomescape.reservation.domain.ReservationRepository;
+import roomescape.fixture.config.TestConfig;
 import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.domain.ReservationTimeRepository;
-import roomescape.reservation.infrastructure.JdbcReservationRepository;
-import roomescape.reservation.infrastructure.JdbcReservationTimeRepository;
+import roomescape.reservation.domain.ReservationTimeCommandRepository;
+import roomescape.reservation.domain.ReservationTimeQueryRepository;
 import roomescape.reservation.ui.dto.request.CreateReservationTimeRequest;
 
 @JdbcTest
+@Import(TestConfig.class)
 class ReservationTimeServiceTest {
 
     @Autowired
     private ReservationTimeService reservationTimeService;
 
     @Autowired
-    private ReservationTimeRepository reservationTimeRepository;
+    private ReservationTimeCommandRepository reservationTimeCommandRepository;
+
+    @Autowired
+    private ReservationTimeQueryRepository reservationTimeQueryRepository;
 
     @ParameterizedTest
     @CsvSource(value = {
@@ -45,7 +46,7 @@ class ReservationTimeServiceTest {
     void 예약_시간을_삭제한다() {
         // given
         final LocalTime startAt = LocalTime.of(20, 28);
-        final Long id = reservationTimeRepository.save(new ReservationTime(startAt));
+        final Long id = reservationTimeCommandRepository.save(new ReservationTime(startAt));
 
         // when & then
         Assertions.assertThatCode(() -> reservationTimeService.deleteById(id))
@@ -56,7 +57,7 @@ class ReservationTimeServiceTest {
     void 이미_존재하는_예약_시간을_추가하면_예외가_발생한다() {
         // given
         final LocalTime startAt = LocalTime.of(19, 55);
-        reservationTimeRepository.save(new ReservationTime(startAt));
+        reservationTimeCommandRepository.save(new ReservationTime(startAt));
 
         final CreateReservationTimeRequest request = new CreateReservationTimeRequest(startAt);
 
@@ -75,30 +76,5 @@ class ReservationTimeServiceTest {
         // when & then
         Assertions.assertThatThrownBy(() -> reservationTimeService.deleteById(id))
                 .isInstanceOf(ResourceNotFoundException.class);
-    }
-
-    @TestConfiguration
-    static class TestConfig {
-
-        @Bean
-        public ReservationTimeRepository reservationTimeRepository(
-                final JdbcTemplate jdbcTemplate
-        ) {
-            return new JdbcReservationTimeRepository(jdbcTemplate);
-        }
-
-        @Bean
-        public ReservationRepository reservationRepository(
-                final JdbcTemplate jdbcTemplate
-        ) {
-            return new JdbcReservationRepository(jdbcTemplate);
-        }
-
-        @Bean
-        public ReservationTimeService reservationTimeService(
-                final ReservationTimeRepository reservationTimeRepository
-        ) {
-            return new ReservationTimeService(reservationTimeRepository);
-        }
     }
 }
