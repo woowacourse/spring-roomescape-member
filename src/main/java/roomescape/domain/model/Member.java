@@ -23,7 +23,7 @@ public class Member {
     }
 
     public Member(final Long id, final String name, final String email, final String role) {
-        this(null, name, email, null, role);
+        this(id, name, email, null, role);
     }
 
     public boolean isAdmin() {
