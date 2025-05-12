@@ -1,4 +1,4 @@
-package roomescape.controller.member;
+package roomescape.controller.reservation;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
@@ -16,8 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.reservation.ReservationAvailableTimeResponse;
-import roomescape.service.memeber.UserReservationTimeService;
 import roomescape.service.reservation.ReservationService;
+import roomescape.service.reservation.UserReservationTimeService;
 
 @WebMvcTest(UserReservationController.class)
 class UserReservationControllerTest {
@@ -38,7 +38,7 @@ class UserReservationControllerTest {
 
     @Test
     @DisplayName("사용자가 예약 가능한 시간을 조회한다.")
-    void readAvailableReservationTimes() {
+    void getAvailableReservationTimes() {
         ReservationAvailableTimeResponse response1
                 = new ReservationAvailableTimeResponse(1L, LocalTime.of(10, 0), false);
         ReservationAvailableTimeResponse response2

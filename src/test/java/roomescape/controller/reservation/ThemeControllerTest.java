@@ -39,7 +39,7 @@ class ThemeControllerTest {
 
     @Test
     @DisplayName("테마 목록을 조회한다.")
-    void readAllThemes() {
+    void getThemes() {
         ThemeResponse response1 = new ThemeResponse(1L, "테스트1", "테스트1 설명", "테스트1 썸네일");
         ThemeResponse response2 = new ThemeResponse(2L, "테스트2", "테스트2 설명", "테스트2 썸네일");
 
@@ -47,7 +47,7 @@ class ThemeControllerTest {
                 response1, response2
         );
 
-        given(themeService.readAllTheme()).willReturn(themeResponses);
+        given(themeService.getThemes()).willReturn(themeResponses);
 
         RestAssuredMockMvc.given().log().all()
                 .when().get("/themes")
@@ -62,7 +62,7 @@ class ThemeControllerTest {
 
     @Test
     @DisplayName("테마 관리 페이지 내에서 테마 추가한다.")
-    void postTheme() {
+    void addTheme() {
         long expectedId = 1L;
         String name = "테스트1";
         String description = "테스트1 설명";
@@ -71,7 +71,7 @@ class ThemeControllerTest {
         ThemeRequest dto = new ThemeRequest(name, description, thumbnail);
 
         ThemeResponse response = new ThemeResponse(expectedId, name, description, thumbnail);
-        given(themeService.postTheme(dto)).willReturn(response);
+        given(themeService.addTheme(dto)).willReturn(response);
 
         RestAssuredMockMvc.given().log().all()
                 .contentType(ContentType.JSON)
@@ -118,7 +118,7 @@ class ThemeControllerTest {
 
     @Test
     @DisplayName("인기 테마 목록을 조회한다.")
-    void readPopularThemesByPeriod() {
+    void getPopularThemesByPeriod() {
         String givenName = "우테코 레벨1 탈출";
         List<ThemeResponse> themeResponses = List.of(new ThemeResponse(1L, givenName, "", ""));
         given(themeService.readPopularThemesByPeriod(7, 10)).willReturn(themeResponses);

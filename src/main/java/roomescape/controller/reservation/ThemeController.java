@@ -28,14 +28,14 @@ public class ThemeController {
 
     @GetMapping
     public List<ThemeResponse> readAllTheme() {
-        return service.readAllTheme();
+        return service.getThemes();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ThemeResponse postTheme(@RequestBody ThemeRequest request,
                                    HttpServletResponse response) {
-        ThemeResponse themeResponse = service.postTheme(request);
+        ThemeResponse themeResponse = service.addTheme(request);
         response.setHeader("Location", "/themes/" + themeResponse.id());
         return themeResponse;
     }
@@ -47,7 +47,7 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public List<ThemeResponse> readPopularThemesByPeriod(
+    public List<ThemeResponse> getPopularThemesByPeriod(
             @RequestParam(value = "period", defaultValue = "7") int period,
             @RequestParam(value = "maxResults", defaultValue = "10") int maxResults) {
         return service.readPopularThemesByPeriod(period, maxResults);

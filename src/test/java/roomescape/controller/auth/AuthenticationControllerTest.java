@@ -44,7 +44,7 @@ class AuthenticationControllerTest {
 
     @Test
     @DisplayName("로그인 성공 시, 쿠키를 반환해야한다")
-    void login_ShouldSetTokenCookie() {
+    void login() {
         // given
         String email = "user@example.com";
         String password = "user123";

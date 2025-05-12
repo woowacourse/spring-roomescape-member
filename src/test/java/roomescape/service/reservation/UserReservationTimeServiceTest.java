@@ -1,4 +1,4 @@
-package roomescape.service.member;
+package roomescape.service.reservation;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.reservation.ReservationAvailableTimeResponse;
-import roomescape.service.memeber.UserReservationTimeService;
 
 @SpringBootTest
 @Transactional

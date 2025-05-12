@@ -49,7 +49,7 @@ class ReservationTimeControllerTest {
                 response1, response2
         );
 
-        given(timeService.readAllReservationTime()).willReturn(reservationTimeResponses);
+        given(timeService.getReservationTimes()).willReturn(reservationTimeResponses);
 
         RestAssuredMockMvc.given().log().all()
                 .when().get("/times")
@@ -64,14 +64,14 @@ class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("예약 시간 관리 페이지 내에서 예악 시간 추가한다.")
-    void postReservationTime() {
+    void addReservationTime() {
         long expectedId = 1L;
         LocalTime time = LocalTime.of(11, 0);
 
         ReservationTimeRequest request = new ReservationTimeRequest(time);
 
         ReservationTimeResponse response = new ReservationTimeResponse(expectedId, time);
-        given(timeService.postReservationTime(request)).willReturn(response);
+        given(timeService.addReservationTime(request)).willReturn(response);
 
         RestAssuredMockMvc.given().log().all()
                 .contentType(ContentType.JSON)
@@ -100,7 +100,7 @@ class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("존재하지 않는 ID로 삭제 요청 시 404 응답이 반환되어야 한다.")
-    void deleteReservationTime() {
+    void deleteReservationTime_WhenNotExistId() {
         long nonExistingId = 999L;
 
         willThrow(new EntityNotFoundException("데이터를 찾을 수 없습니다."))

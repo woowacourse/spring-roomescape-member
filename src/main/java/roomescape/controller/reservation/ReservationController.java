@@ -30,7 +30,7 @@ public class ReservationController {
     }
 
     @GetMapping
-    public List<ReservationResponse> getReservations(
+    public List<ReservationResponse> getAllReservations(
             @RequestParam(required = false) Long themeId,
             @RequestParam(required = false) Long memberId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
@@ -38,14 +38,14 @@ public class ReservationController {
     ) {
         ReservationSearchFilter reservationSearchFilter = new ReservationSearchFilter(themeId, memberId, dateFrom,
                 dateTo);
-        return service.readReservation(reservationSearchFilter);
+        return service.getReservations(reservationSearchFilter);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponse addReservation(@RequestBody ReservationRequest request,
                                               HttpServletResponse response) {
-        ReservationResponse reservationResponse = service.postReservation(request);
+        ReservationResponse reservationResponse = service.addReservation(request);
         response.setHeader("Location", "/reservations/" + reservationResponse.id());
         return reservationResponse;
     }

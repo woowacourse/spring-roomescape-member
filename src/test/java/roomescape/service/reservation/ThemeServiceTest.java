@@ -26,9 +26,9 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("조회된 테마 엔티티를 DTO에 매핑해 반환한다.")
-    void readAllTheme() {
+    void getThemes() {
         // when
-        List<ThemeResponse> themeResponses = themeService.readAllTheme();
+        List<ThemeResponse> themeResponses = themeService.getThemes();
 
         // then
         assertThat(themeResponses.size()).isEqualTo(11);
@@ -42,7 +42,7 @@ class ThemeServiceTest {
         String given = "테스트";
         ThemeRequest request = new ThemeRequest(given, "설명", "썸네일");
         //when
-        ThemeResponse actual = themeService.postTheme(request);
+        ThemeResponse actual = themeService.addTheme(request);
         //then
         AssertionsForClassTypes.assertThat(actual.name()).isEqualTo(given);
     }
@@ -56,12 +56,12 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("테마 생성 시, 중복된 테마명일 경우 예외가 발생한다.")
-    void postThemeIfDuplicationThemeName() {
+    void addThemeIfDuplicationThemeName() {
         //given
         ThemeRequest request = new ThemeRequest("우테코 레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         //when&then
-        assertThatThrownBy(() -> themeService.postTheme(request))
+        assertThatThrownBy(() -> themeService.addTheme(request))
                 .isInstanceOf(ThemeDuplicateException.class)
                 .hasMessageContaining("중복된 테마명이 존재합니다.");
     }

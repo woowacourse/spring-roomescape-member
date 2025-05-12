@@ -1,4 +1,4 @@
-package roomescape.controller.member;
+package roomescape.controller.reservation;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
@@ -17,8 +17,8 @@ import roomescape.dto.reservation.ReservationAvailableTimeResponse;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.infrastructure.intercepter.AuthenticationPrincipal;
 import roomescape.infrastructure.member.MemberInfo;
-import roomescape.service.memeber.UserReservationTimeService;
 import roomescape.service.reservation.ReservationService;
+import roomescape.service.reservation.UserReservationTimeService;
 
 @RestController
 @RequestMapping("/user")
@@ -35,17 +35,17 @@ public class UserReservationController {
 
     @PostMapping("/reservations")
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponse postReservation(
+    public ReservationResponse addReservation(
             @AuthenticationPrincipal MemberInfo memberInfo,
             @RequestBody UserReservationRequest request,
             HttpServletResponse response) {
-        ReservationResponse reservationResponse = reservationService.postReservation(request, memberInfo);
+        ReservationResponse reservationResponse = reservationService.addReservation(request, memberInfo);
         response.setHeader("Location", "/reservations/" + reservationResponse.id());
         return reservationResponse;
     }
 
     @GetMapping("/times")
-    public List<ReservationAvailableTimeResponse> readAvailableReservationTimes(
+    public List<ReservationAvailableTimeResponse> getAvailableReservationTimes(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam Long themeId
     ) {

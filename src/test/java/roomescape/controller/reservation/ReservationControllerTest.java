@@ -45,7 +45,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("예약 목록을 조회한다.")
-    void getReservations() {
+    void getAllReservations() {
         ReservationTimeResponse givenTime = new ReservationTimeResponse(1L, LocalTime.MAX);
         ThemeResponse givenTheme = new ThemeResponse(1L, "테스트", "테스트", "테스트");
         MemberResponse givenMember = new MemberResponse(1L, "테스트");
@@ -64,7 +64,7 @@ class ReservationControllerTest {
                 response1, response2
         );
 
-        given(reservationService.readReservation(any())).willReturn(reservations);
+        given(reservationService.getReservations(any())).willReturn(reservations);
 
         RestAssuredMockMvc.given().log().all()
                 .when().get("/reservations")
@@ -95,7 +95,7 @@ class ReservationControllerTest {
                 givenTime,
                 givenTheme
         );
-        given(reservationService.postReservation(dto)).willReturn(response);
+        given(reservationService.addReservation(dto)).willReturn(response);
 
         RestAssuredMockMvc.given().log().all()
                 .contentType(ContentType.JSON)

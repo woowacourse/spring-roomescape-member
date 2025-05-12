@@ -23,8 +23,8 @@ public class MemberController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public MemberResponse readAvailableReservationTimes(@RequestBody MemberRequest memberRequest,
-                                                        HttpServletResponse response) {
+    public MemberResponse addMember(@RequestBody MemberRequest memberRequest,
+                                    HttpServletResponse response) {
         MemberResponse memberResponse = memberService.addMember(memberRequest);
         response.setHeader("Location", "/reservations/" + memberResponse.id());
         return memberResponse;

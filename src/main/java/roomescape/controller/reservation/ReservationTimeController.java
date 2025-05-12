@@ -26,15 +26,15 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public List<ReservationTimeResponse> readAllReservationTime() {
-        return service.readAllReservationTime();
+    public List<ReservationTimeResponse> getAllReservationTimes() {
+        return service.getReservationTimes();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationTimeResponse postReservationTime(@RequestBody ReservationTimeRequest request,
-                                                       HttpServletResponse response) {
-        ReservationTimeResponse reservationTimeResponse = service.postReservationTime(request);
+    public ReservationTimeResponse addReservationTime(@RequestBody ReservationTimeRequest request,
+                                                      HttpServletResponse response) {
+        ReservationTimeResponse reservationTimeResponse = service.addReservationTime(request);
         response.setHeader("Location", "/times/" + reservationTimeResponse.id());
         return reservationTimeResponse;
     }

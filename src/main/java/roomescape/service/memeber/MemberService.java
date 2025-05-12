@@ -22,7 +22,7 @@ public class MemberService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List<MemberResponse> readAll() {
+    public List<MemberResponse> getAll() {
         List<Member> members = memberRepository.findAll();
 
         return members.stream()

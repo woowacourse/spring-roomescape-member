@@ -26,9 +26,9 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("조회된 엔티티를 DTO로 매핑해 반환한다.")
-    void readAllReservationTime() {
+    void getReservationTimes() {
         //given & when
-        List<ReservationTimeResponse> actual = reservationService.readAllReservationTime();
+        List<ReservationTimeResponse> actual = reservationService.getReservationTimes();
         //then
         assertThat(actual.size()).isEqualTo(15);
         assertThat(actual.getFirst().startAt()).isEqualTo(LocalTime.of(9, 0));
@@ -36,12 +36,12 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("엔티티를 저장한 후, DTO로 반환한다.")
-    void postReservationTime() {
+    void addReservationTime() {
         //given
         LocalTime time = LocalTime.MIN;
         ReservationTimeRequest request = new ReservationTimeRequest(time);
         //when
-        ReservationTimeResponse actual = reservationService.postReservationTime(request);
+        ReservationTimeResponse actual = reservationService.addReservationTime(request);
         //then
         assertThat(actual.startAt()).isEqualTo(time);
     }
@@ -69,11 +69,11 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("예약 시간 생성 시, 중복된 시간일 경우 예외가 발생한다.")
-    void postReservationTimeIfDuplicationDatetime() {
+    void addReservationTimeIfDuplicationDatetime() {
         //given
         ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(14, 0));
         //when&then
-        assertThatThrownBy(() -> reservationService.postReservationTime(request))
+        assertThatThrownBy(() -> reservationService.addReservationTime(request))
                 .isInstanceOf(ReservationTimeDuplicateException.class)
                 .hasMessageContaining("중복된 예약 시간이 존재합니다.");
     }

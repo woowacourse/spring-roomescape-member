@@ -19,14 +19,14 @@ public class ThemeService {
         this.repository = repository;
     }
 
-    public List<ThemeResponse> readAllTheme() {
+    public List<ThemeResponse> getThemes() {
         return repository.findAll().stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
 
     @Transactional
-    public ThemeResponse postTheme(ThemeRequest request) {
+    public ThemeResponse addTheme(ThemeRequest request) {
         if (repository.existsByName(request.name())) {
             throw new ThemeDuplicateException("중복된 테마명이 존재합니다.", request.name());
         }

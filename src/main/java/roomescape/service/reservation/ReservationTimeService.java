@@ -19,14 +19,14 @@ public class ReservationTimeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public List<ReservationTimeResponse> readAllReservationTime() {
+    public List<ReservationTimeResponse> getReservationTimes() {
         return reservationTimeRepository.findAll().stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
     }
 
     @Transactional
-    public ReservationTimeResponse postReservationTime(ReservationTimeRequest request) {
+    public ReservationTimeResponse addReservationTime(ReservationTimeRequest request) {
         if (reservationTimeRepository.existsByStartAt(request.startAt())) {
             throw new ReservationTimeDuplicateException("중복된 예약 시간이 존재합니다.", request.startAt());
         }

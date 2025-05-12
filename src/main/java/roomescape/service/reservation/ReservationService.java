@@ -38,7 +38,7 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public List<ReservationResponse> readReservation(ReservationSearchFilter reservationSearchFilter) {
+    public List<ReservationResponse> getReservations(ReservationSearchFilter reservationSearchFilter) {
         List<Reservation> reservations = reservationRepository.findAll();
 
         if (!reservationSearchFilter.isNeeded()) {
@@ -54,7 +54,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse postReservation(ReservationRequest request) {
+    public ReservationResponse addReservation(ReservationRequest request) {
         Member member = memberRepository.findById(request.memberId());
         ReservationTime time = reservationTimeRepository.findById(request.timeId());
         Theme theme = themeRepository.findById(request.themeId());
@@ -64,7 +64,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse postReservation(UserReservationRequest request, MemberInfo memberInfo) {
+    public ReservationResponse addReservation(UserReservationRequest request, MemberInfo memberInfo) {
         Member member = memberRepository.findById(memberInfo.id());
         ReservationTime time = reservationTimeRepository.findById(request.timeId());
         Theme theme = themeRepository.findById(request.themeId());
