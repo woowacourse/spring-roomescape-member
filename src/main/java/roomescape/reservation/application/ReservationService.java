@@ -13,9 +13,10 @@ import roomescape.exception.resource.ResourceNotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberQueryRepository;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservation.domain.ReservationCommandRepository;
+import roomescape.reservation.domain.ReservationQueryRepository;
 import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.domain.ReservationTimeRepository;
+import roomescape.reservation.domain.ReservationTimeQueryRepository;
 import roomescape.reservation.ui.dto.request.AvailableReservationTimeRequest;
 import roomescape.reservation.ui.dto.request.CreateReservationRequest;
 import roomescape.reservation.ui.dto.request.ReservationsByfilterRequest;
@@ -28,18 +29,20 @@ import roomescape.theme.domain.ThemeQueryRepository;
 @RequiredArgsConstructor
 public class ReservationService {
 
-    private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationCommandRepository reservationCommandRepository;
+    private final ReservationQueryRepository reservationQueryRepository;
+    private final ReservationTimeQueryRepository reservationTimeQueryRepository;
     private final ThemeQueryRepository themeQueryRepository;
     private final MemberQueryRepository memberQueryRepository;
 
     public ReservationResponse create(final CreateReservationRequest request, final MemberAuthInfo memberAuthInfo) {
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(),
-                request.themeId())) {
+        if (reservationQueryRepository.existsByDateAndTimeIdAndThemeId(
+                request.date(), request.timeId(), request.themeId())
+        ) {
             throw new AlreadyExistException("해당 날짜와 시간에 이미 예약된 테마입니다.");
         }
 
-        final ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
+        final ReservationTime reservationTime = reservationTimeQueryRepository.findById(request.timeId())
                 .orElseThrow(() -> new ResourceNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + request.timeId()));
         final LocalDateTime now = LocalDateTime.now();
         final LocalDateTime reservationDateTime = LocalDateTime.of(request.date(), reservationTime.getStartAt());
@@ -53,21 +56,21 @@ public class ReservationService {
                 .orElseThrow(() -> new ResourceNotFoundException("해당 회원 데이터가 존재하지 않습니다. id = " + memberAuthInfo.id()));
         final Reservation reservation = new Reservation(request.date(), reservationTime, theme, member);
 
-        final Long id = reservationRepository.save(reservation);
-        final Reservation found = reservationRepository.findById(id)
+        final Long id = reservationCommandRepository.save(reservation);
+        final Reservation found = reservationQueryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 예약 데이터가 존재하지 않습니다. id = " + id));
 
         return ReservationResponse.from(found);
     }
 
     public void deleteIfOwner(final Long reservationId, final MemberAuthInfo memberAuthInfo) {
-        final Reservation reservation = reservationRepository.findById(reservationId)
+        final Reservation reservation = reservationQueryRepository.findById(reservationId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 예약이 존재하지 않습니다. id = " + reservationId));
         final Member member = memberQueryRepository.findById(memberAuthInfo.id())
                 .orElseThrow(() -> new ResourceNotFoundException("해당 회원이 존재하지 않습니다. id = " + memberAuthInfo.id()));
 
         if (member.isAdmin()) {
-            reservationRepository.deleteById(reservationId);
+            reservationCommandRepository.deleteById(reservationId);
             return;
         }
 
@@ -75,11 +78,11 @@ public class ReservationService {
             throw new AuthorizationException("삭제할 권한이 없습니다.");
         }
 
-        reservationRepository.deleteById(reservationId);
+        reservationCommandRepository.deleteById(reservationId);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationRepository.findAll()
+        return reservationQueryRepository.findAll()
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -90,7 +93,7 @@ public class ReservationService {
             throw new IllegalArgumentException("시작 날짜는 종료 날짜보다 이전이어야 합니다.");
         }
 
-        return reservationRepository.findAllByThemeIdAndMemberIdAndDateRange(
+        return reservationQueryRepository.findAllByThemeIdAndMemberIdAndDateRange(
                         request.themeId(), request.memberId(), request.dateFrom(), request.dateTo()
                 )
                 .stream()
@@ -101,8 +104,8 @@ public class ReservationService {
     public List<AvailableReservationTimeResponse> findAvailableReservationTimes(
             final AvailableReservationTimeRequest request
     ) {
-        final List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        final List<LocalTime> bookedTimes = reservationRepository.findReservationsByDateAndThemeId(
+        final List<ReservationTime> reservationTimes = reservationTimeQueryRepository.findAll();
+        final List<LocalTime> bookedTimes = reservationQueryRepository.findReservationsByDateAndThemeId(
                         request.date(),
                         request.themeId()
                 ).stream()

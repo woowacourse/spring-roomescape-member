@@ -3,7 +3,6 @@ package roomescape.reservation.infrastructure;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +14,14 @@ import org.springframework.stereotype.Repository;
 import roomescape.auth.domain.AuthRole;
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservation.domain.ReservationCommandRepository;
+import roomescape.reservation.domain.ReservationQueryRepository;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 @Repository
 @RequiredArgsConstructor
-public class JdbcReservationRepository implements ReservationRepository {
+public class JdbcReservationRepository implements ReservationCommandRepository, ReservationQueryRepository {
 
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (rs, rowNum) ->
             new Reservation(
@@ -71,25 +71,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     public void deleteById(Long id) {
         final String sql = "DELETE FROM reservations WHERE id = ?";
         jdbcTemplate.update(sql, id);
-    }
-
-    @Override
-    public Boolean existsByDateAndStartAtAndThemeId(final LocalDate date, final LocalTime startAt,
-                                                    final Long themeId) {
-        final String sql = """
-                SELECT EXISTS(
-                    SELECT 1
-                    FROM reservations AS r
-                    INNER JOIN reservation_times AS rt
-                    ON r.time_id = rt.id
-                    INNER JOIN themes AS th
-                    ON r.theme_id = th.id
-                    WHERE r.date = ? AND rt.start_at = ? AND th.id = ?
-                    LIMIT 1
-                )
-                """;
-
-        return jdbcTemplate.queryForObject(sql, Boolean.class, date, startAt, themeId);
     }
 
     @Override
