@@ -69,4 +69,13 @@ public class AuthController {
         LoginMemberResponse response = loginService.findMemberByToken(token);
         return ResponseEntity.ok().body(response);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> processLogout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
+    }
 }
