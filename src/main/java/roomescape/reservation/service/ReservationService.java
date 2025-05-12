@@ -48,9 +48,9 @@ public class ReservationService {
         return convertReservationResponseDto(savedReservation);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         repository.findByIdOrThrow(id);
-        repository.delete(id);
+        repository.deleteById(id);
     }
 
     private void validateDuplicateDateTime(Reservation inputReservation) {

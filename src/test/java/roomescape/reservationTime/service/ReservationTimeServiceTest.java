@@ -74,7 +74,7 @@ class ReservationTimeServiceTest {
         Assertions.assertThat(resDto.startAt()).isEqualTo(TIME_FIELD);
     }
 
-    private void deleteAll() {
+    private void deleteByIdAll() {
         jdbcTemplate.update("delete from reservation_time");
     }
 
@@ -105,7 +105,7 @@ class ReservationTimeServiceTest {
         @Test
         void findAll_success_whenNoData() {
             // given
-            deleteAll();
+            deleteByIdAll();
 
             // when
             List<ReservationTimeResponseDto> resDtos = service.findAll();
@@ -152,13 +152,13 @@ class ReservationTimeServiceTest {
 
     @Nested
     @DisplayName("예약 시간 삭제 기능")
-    class delete {
+    class deleteById {
 
         @DisplayName("존재하는 id로 요청 시 예약 시간이 삭제된다.")
         @Test
-        void delete_success_withValidId() {
+        void deleteById_success_withValidId() {
             // given
-            service.delete(testDataConfig.getSavedId());
+            service.deleteById(testDataConfig.getSavedId());
 
             // when
             List<ReservationTimeResponseDto> resDtos = service.findAll();
@@ -169,18 +169,18 @@ class ReservationTimeServiceTest {
 
         @DisplayName("존재하지 않는 id로 요청 시 예외가 발생한다")
         @Test
-        void delete_throwException_whenIdNotFound() {
+        void deleteById_throwException_whenIdNotFound() {
             // given
             // when
             // then
             Assertions.assertThatCode(
-                    () -> service.delete(Long.MAX_VALUE)
+                    () -> service.deleteById(Long.MAX_VALUE)
             ).isInstanceOf(NotFoundException.class);
         }
 
         @DisplayName("예약에서 사용 중인 시간 삭제 시 예외가 발생한다")
         @Test
-        void delete_throwException_whenUsingInReservation() {
+        void deleteById_throwException_whenUsingInReservation() {
             // given
             Theme theme = themeRepository.save(new Theme("name1", "dd", "tt"));
             User savedUser = userRepository.save(UserFixture.create(Role.ROLE_MEMBER, "n1", "e1", "p1"));
@@ -194,7 +194,7 @@ class ReservationTimeServiceTest {
 
             // when, then
             Assertions.assertThatCode(
-                    () -> service.delete(testDataConfig.getSavedId())
+                    () -> service.deleteById(testDataConfig.getSavedId())
             ).isInstanceOf(AlreadyReservedTimeException.class);
         }
     }

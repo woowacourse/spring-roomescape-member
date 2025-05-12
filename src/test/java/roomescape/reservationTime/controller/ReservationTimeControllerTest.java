@@ -125,11 +125,11 @@ public class ReservationTimeControllerTest {
 
     @Nested
     @DisplayName("DELETE /times/{id} 요청")
-    class delete {
+    class deleteById {
 
         @DisplayName("존재하는 ID로 삭제 요청 시 204 No Content를 반환한다")
         @Test
-        void delete_success_withExistId() {
+        void deleteById_success_withExistId() {
             RestAssured.given().log().all()
                     .when().delete("/times/" + reservationTimeTestDataConfig.getSavedId())
                     .then().log().all()
@@ -143,7 +143,7 @@ public class ReservationTimeControllerTest {
 
         @DisplayName("존재하지 않는 ID로 삭제 요청 시 400 Bad Request를 반환한다")
         @Test
-        void delete_failure_byNonExistenceId() {
+        void deleteById_failure_byNonExistenceId() {
             Long maxValue = Long.MAX_VALUE;
             RestAssured.given().log().all()
                     .when().delete("/times/" + maxValue)

@@ -65,12 +65,12 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         ReservationTime reservationTime = repository.findByIdOrThrow(id);
         if (reservationRepository.existsByReservationTime(reservationTime)) {
             throw new AlreadyReservedTimeException();
         }
-        repository.delete(id);
+        repository.deleteById(id);
     }
 
     public ReservationTimeResponseDto add(ReservationTimeRequestDto requestDto) {

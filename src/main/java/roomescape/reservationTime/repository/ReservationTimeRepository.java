@@ -15,7 +15,7 @@ public interface ReservationTimeRepository {
 
     ReservationTime add(ReservationTime reservationTime);
 
-    void delete(Long id);
+    void deleteById(Long id);
 
     Long insertWithKeyHolder(ReservationTime reservationTime);
 

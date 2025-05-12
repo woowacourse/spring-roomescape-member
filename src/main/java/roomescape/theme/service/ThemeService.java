@@ -38,6 +38,6 @@ public class ThemeService {
     }
 
     public void deleteById(Long id) {
-        repository.delete(id);
+        repository.deleteById(id);
     }
 }
