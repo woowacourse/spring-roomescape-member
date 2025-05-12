@@ -1,26 +1,26 @@
 package roomescape.infrastructure;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.business.LoginInformation;
 import roomescape.business.Member;
 import roomescape.business.service.AuthenticationService;
 import roomescape.exception.MemberException;
-import roomescape.business.LoginInformation;
 
-@Component
+@Named
 public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthenticationService authenticationService;
 
-    @Autowired
+    @Inject
     public LoginArgumentResolver(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }

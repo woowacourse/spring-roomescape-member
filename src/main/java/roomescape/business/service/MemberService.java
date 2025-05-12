@@ -1,21 +1,20 @@
 package roomescape.business.service;
 
-import jakarta.validation.Valid;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import roomescape.business.Member;
 import roomescape.business.MemberRole;
 import roomescape.persistence.MemberRepository;
 import roomescape.presentation.dto.SignUpRequestDto;
 import roomescape.presentation.dto.response.MemberResponseDto;
 
-@Service
+@Named
 public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    @Autowired
+    @Inject
     public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
@@ -32,6 +31,7 @@ public class MemberService {
     }
 
     public MemberResponseDto createMember(SignUpRequestDto signUpRequestDto) {
+
         Member member = new Member(
                 signUpRequestDto.name(),
                 signUpRequestDto.email(),

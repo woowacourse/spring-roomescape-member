@@ -1,11 +1,11 @@
 package roomescape.business.service;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.business.ReservationTheme;
 import roomescape.exception.ReservationThemeException;
@@ -14,14 +14,14 @@ import roomescape.persistence.ReservationThemeRepository;
 import roomescape.presentation.dto.request.ReservationThemeRequestDto;
 import roomescape.presentation.dto.response.ReservationThemeResponseDto;
 
-@Service
+@Named
 @Transactional
 public class ReservationThemeService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationThemeRepository reservationThemeRepository;
 
-    @Autowired
+    @Inject
     public ReservationThemeService(ReservationRepository reservationRepository,
                                    ReservationThemeRepository reservationThemeRepository) {
         this.reservationRepository = reservationRepository;

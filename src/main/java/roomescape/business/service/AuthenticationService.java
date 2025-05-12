@@ -1,20 +1,20 @@
 package roomescape.business.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import roomescape.business.Member;
 import roomescape.exception.MemberException;
 import roomescape.infrastructure.JwtProvider;
 import roomescape.persistence.MemberRepository;
 import roomescape.presentation.dto.request.LoginRequestDto;
 
-@Service
+@Named
 public class AuthenticationService {
 
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
 
-    @Autowired
+    @Inject
     public AuthenticationService(MemberRepository memberRepository, JwtProvider jwtProvider) {
         this.memberRepository = memberRepository;
         this.jwtProvider = jwtProvider;

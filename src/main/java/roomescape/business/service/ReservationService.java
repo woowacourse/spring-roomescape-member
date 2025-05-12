@@ -1,13 +1,12 @@
 package roomescape.business.service;
 
-import jakarta.validation.Valid;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.business.Member;
 import roomescape.business.Reservation;
@@ -22,14 +21,13 @@ import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
 import roomescape.persistence.ReservationTimeRepository;
 import roomescape.presentation.dto.request.AdminReservationRequestDto;
-import roomescape.presentation.dto.request.AdminReservationSearchRequestDto;
-import roomescape.presentation.dto.response.MemberResponseDto;
 import roomescape.presentation.dto.request.ReservationRequestDto;
+import roomescape.presentation.dto.response.MemberResponseDto;
 import roomescape.presentation.dto.response.ReservationResponseDto;
 import roomescape.presentation.dto.response.ReservationThemeResponseDto;
 import roomescape.presentation.dto.response.ReservationTimeResponseDto;
 
-@Service
+@Named
 @Transactional
 public class ReservationService {
 
@@ -38,7 +36,7 @@ public class ReservationService {
     private final ReservationThemeRepository reservationThemeRepository;
     private final MemberRepository memberRepository;
 
-    @Autowired
+    @Inject
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository,
                               ReservationThemeRepository reservationThemeRepository,
