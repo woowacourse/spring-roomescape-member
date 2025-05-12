@@ -1,7 +1,12 @@
 package roomescape.auth.login.infrastructure.token;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.RequiredTypeException;
 import java.util.Date;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,39 +37,44 @@ public class JwtTokenManager {
                 .compact();
     }
 
+    public Claims extractClaims(final String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(new SecretKeySpec(secretKey.getBytes(), "HmacSHA256"))
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (MalformedJwtException malformedJwtException) {
+            throw new JwtExtractException("유효한 토큰이 아닙니다.");
+        } catch (ExpiredJwtException expiredJwtException) {
+            throw new JwtExtractException("토큰이 만료되었습니다.");
+        } catch (IllegalArgumentException argumentException) {
+            throw new JwtExtractException("토큰이 비었습니다.");
+        } catch (JwtException jwtException) {
+            throw new JwtExtractException(jwtException.getMessage());
+        }
+    }
+
     public Long getId(final String token) {
-        validateValidToken(token);
-        
-        return parseLongId(Jwts.parser()
-                .verifyWith(new SecretKeySpec(secretKey.getBytes(), "HmacSHA256"))
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject());
+        Claims claims = extractClaims(token);
+        return parseLongId(claims.getSubject());
     }
 
     private Long parseLongId(final String rawId) {
         try {
             return Long.valueOf(rawId);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("토큰 정보를 파싱할 수 없습니다.");
+            throw new JwtExtractException("토큰 정보를 파싱할 수 없습니다.");
         }
     }
 
     public String getRole(final String token) {
-        validateValidToken(token);
+        Claims claims = extractClaims(token);
 
-        return Jwts.parser()
-                .verifyWith(new SecretKeySpec(secretKey.getBytes(), "HmacSHA256"))
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .get("role", String.class);
-    }
-
-    private void validateValidToken(String token) {
-        if (token == null) {
-            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+        try {
+            return claims.get("role", String.class);
+        } catch (RequiredTypeException requiredTypeException) {
+            throw new JwtExtractException("role에 대한 claim을 찾을 수 없습니다.");
         }
     }
 }

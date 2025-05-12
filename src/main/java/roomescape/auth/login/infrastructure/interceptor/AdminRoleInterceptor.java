@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.exception.ForbiddenException;
 import roomescape.auth.exception.UnauthorizedException;
+import roomescape.auth.login.infrastructure.token.JwtExtractException;
 import roomescape.auth.login.infrastructure.token.JwtTokenManager;
 import roomescape.auth.login.infrastructure.token.TokenExtractor;
 
@@ -33,16 +34,8 @@ public class AdminRoleInterceptor implements HandlerInterceptor {
             validateRoleIsAdmin(role);
 
             return true;
-        } catch (MalformedJwtException malformedJwtException) {
-            throw new UnauthorizedException("유효한 토큰이 아닙니다.");
-        } catch (ExpiredJwtException expiredJwtException) {
-            throw new UnauthorizedException("토큰이 만료되었습니다.");
-        } catch (IllegalArgumentException argumentException) {
-            throw new UnauthorizedException("토큰이 비었습니다.");
-        } catch (RequiredTypeException requiredTypeException) {
-            throw new UnauthorizedException("해당 claim을 찾을 수 없습니다.");
-        } catch (JwtException jwtException) {
-            throw new UnauthorizedException(jwtException.getMessage());
+        } catch (final JwtExtractException exception) {
+            throw new UnauthorizedException(exception.getMessage());
         }
     }
 
