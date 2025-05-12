@@ -33,7 +33,7 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
         final long id = jwtTokenProvider.getId(token);
         final Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new UnauthorizedException("확인할 수 없는 사용자입니다."));
-        if (member.getRole() != Role.ADMIN) {
+        if (!member.hasRole(Role.ADMIN)) {
             throw new ForbiddenException("접근 권한이 없습니다.");
         }
         return HandlerInterceptor.super.preHandle(request, response, handler);
