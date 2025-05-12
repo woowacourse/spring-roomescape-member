@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.auth.controller.resolver.annotation.LoginMemberId;
+import roomescape.auth.controller.annotation.LoginMemberId;
+import roomescape.auth.controller.annotation.LoginRequired;
 import roomescape.auth.dto.MemberProfileResponse;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.service.AuthService;
@@ -36,6 +37,7 @@ public class LoginController {
         response.addCookie(cookie);
     }
 
+    @LoginRequired
     @GetMapping("/login/check")
     public MemberProfileResponse checkMember(@LoginMemberId Long memberId) {
         return memberService.findMemberProfile(memberId);

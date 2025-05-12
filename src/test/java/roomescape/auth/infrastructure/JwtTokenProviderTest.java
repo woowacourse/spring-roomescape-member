@@ -82,7 +82,7 @@ class JwtTokenProviderTest {
                 .sign(Algorithm.HMAC256(secretKey));
 
         // when & then
-        assertThatThrownBy(() -> jwtTokenProvider.getPayload(expiredToken))
+        assertThatThrownBy(() -> jwtTokenProvider.validateToken(expiredToken))
                 .isInstanceOf(UnauthorizedException.class)
                 .hasMessage("토큰이 만료되었습니다.");
     }
@@ -99,7 +99,7 @@ class JwtTokenProviderTest {
                 .sign(Algorithm.HMAC256("invalidKey"));
 
         // when & then
-        assertThatThrownBy(() -> jwtTokenProvider.getPayload(invalidSignatureToken))
+        assertThatThrownBy(() -> jwtTokenProvider.validateToken(invalidSignatureToken))
                 .isInstanceOf(UnauthorizedException.class)
                 .hasMessage("토큰 내부 서명이 올바르지 않습니다.");
     }

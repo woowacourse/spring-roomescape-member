@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.controller.annotation.Admin;
+import roomescape.auth.controller.annotation.LoginRequired;
 import roomescape.reservation.controller.dto.ThemeRankingResponse;
 import roomescape.reservation.controller.dto.ThemeRequest;
 import roomescape.reservation.controller.dto.ThemeResponse;
@@ -36,12 +38,15 @@ public class ThemeController {
         return themeService.getThemeRankings();
     }
 
+    @Admin
+    @LoginRequired
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ThemeResponse addTheme(@Valid @RequestBody ThemeRequest request) {
         return themeService.add(request);
     }
 
+    @Admin
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{themeId}")
     public void deleteTheme(@PathVariable("themeId") Long themeId) {

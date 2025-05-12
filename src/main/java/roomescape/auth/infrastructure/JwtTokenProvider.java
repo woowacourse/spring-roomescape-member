@@ -61,6 +61,10 @@ public class JwtTokenProvider {
         );
     }
 
+    public void validateToken(String token) {
+        verifyAndDecodeToken(token);
+    }
+
     private DecodedJWT verifyAndDecodeToken(String token) {
         try {
             return JWT.require(algorithm)
