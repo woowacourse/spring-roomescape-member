@@ -62,7 +62,6 @@ public class JdbcReservationDao implements ReservationDao {
     public List<Reservation> findFilterByThemeIdOrMemberIdOrDate(Long themeId, Long memberId, LocalDate dateFrom,
                                                                  LocalDate dateTo) {
         StringBuilder sql = new StringBuilder(RESERVATION_SELECT_SQL);
-        sql.append("WHERE 1=1 ");
         List<Object> params = appendFilterCondition(themeId, memberId, dateFrom, dateTo, sql);
 
         return jdbcTemplate.query(
@@ -135,7 +134,7 @@ public class JdbcReservationDao implements ReservationDao {
 
     private List<Object> appendFilterCondition(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo,
                                                StringBuilder sql) {
-        List<Object> params = new ArrayList<>();
+        List<Object> params = new ArrayList<>(List.of("WHERE 1=1 "));
 
         if (themeId != null) {
             sql.append("AND (theme_id = ?) ");
