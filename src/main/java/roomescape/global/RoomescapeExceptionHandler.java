@@ -38,8 +38,8 @@ public class RoomescapeExceptionHandler {
                 .body(ApiResponse.fail(WRONG_ARGUMENT, e.getMessage()));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiResponse<Void>> handleException(RuntimeException e) {
         return ResponseEntity
                 .status(INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.fail(ROOMESCAPE_SERVER_ERROR, e.getMessage()));

@@ -1,5 +1,6 @@
 package roomescape.auth.infrastructure.jwt;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
@@ -33,26 +34,24 @@ public class JwtProvider implements TokenProvider {
     }
 
     public Long getMemberId(String token) {
-        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
-
-        String sub = Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
+        String sub = parseClaims(token)
                 .getSubject();
         return Long.parseLong(sub);
     }
 
     public Role getRole(String token) {
+        String role = parseClaims(token)
+                .get("role", String.class);
+        return Role.valueOf(role);
+    }
+
+    private Claims parseClaims(String token) {
         SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
 
-        String role = Jwts.parser()
+        return Jwts.parser()
                 .verifyWith(key)
                 .build()
                 .parseSignedClaims(token)
-                .getPayload()
-                .get("role", String.class);
-        return Role.valueOf(role);
+                .getPayload();
     }
 }
