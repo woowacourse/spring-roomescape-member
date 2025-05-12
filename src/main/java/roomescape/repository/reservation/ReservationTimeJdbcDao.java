@@ -1,0 +1,74 @@
+package roomescape.repository.reservation;
+
+import java.sql.Time;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Objects;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.exceptions.EntityNotFoundException;
+import roomescape.repository.reservation.mapper.ReservationTimeRowMapper;
+
+@Repository
+public class ReservationTimeJdbcDao implements ReservationTimeRepository {
+
+    private final NamedParameterJdbcTemplate namedJdbcTemplate;
+
+    public ReservationTimeJdbcDao(NamedParameterJdbcTemplate namedJdbcTemplate) {
+        this.namedJdbcTemplate = namedJdbcTemplate;
+    }
+
+    @Override
+    public ReservationTime findById(Long id) {
+        String sql = "select * from reservation_time where id = :id";
+        SqlParameterSource params = new MapSqlParameterSource("id", id);
+        try {
+            return namedJdbcTemplate.queryForObject(sql, params, ReservationTimeRowMapper.INSTANCE);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("예약 시간 데이터를 찾을 수 없습니다: " + id);
+        }
+    }
+
+    @Override
+    public List<ReservationTime> findAll() {
+        String sql = "select * from reservation_time order by id;";
+        return namedJdbcTemplate.query(sql, ReservationTimeRowMapper.INSTANCE);
+    }
+
+    @Override
+    public ReservationTime save(ReservationTime reservationTime) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sql = "insert into reservation_time (start_at) values (:startAt)";
+        SqlParameterSource params = new MapSqlParameterSource("startAt", Time.valueOf(reservationTime.getStartAt()));
+
+        namedJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
+
+        Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return new ReservationTime(id, reservationTime.getStartAt());
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        String sql = "delete from reservation_time where id = :id";
+        SqlParameterSource params = new MapSqlParameterSource("id", id);
+        int result = namedJdbcTemplate.update(sql, params);
+
+        if (result == 0) {
+            throw new EntityNotFoundException("예약 시간 데이터를 찾을 수 없습니다:" + id);
+        }
+    }
+
+    @Override
+    public boolean existsByStartAt(LocalTime startAt) {
+        String sql = "select count(*) from reservation_time where start_at = :startAt";
+        SqlParameterSource params = new MapSqlParameterSource("startAt", startAt);
+        Integer count = namedJdbcTemplate.queryForObject(sql, params, Integer.class);
+        return count != null && count > 0;
+    }
+}

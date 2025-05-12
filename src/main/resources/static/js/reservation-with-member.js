@@ -2,7 +2,7 @@ let isEditing = false;
 const RESERVATION_API_ENDPOINT = '/reservations';
 const TIME_API_ENDPOINT = '/times';
 const THEME_API_ENDPOINT = '/themes';
-const MEMBER_API_ENDPOINT = '/members';
+const MEMBER_API_ENDPOINT = '/admin/members';
 const timesOptions = [];
 const themesOptions = [];
 const membersOptions = [];
@@ -30,10 +30,6 @@ function render(data) {
     data.forEach(item => {
         const row = tableBody.insertRow();
 
-        /*
-        TODO: [5단계] 예약 생성 기능 변경 - 관리자
-              예약 목록 조회 API 응답에 맞게 적용
-        */
         row.insertCell(0).textContent = item.id;              // 예약 id
         row.insertCell(1).textContent = item.member.name;     // 사용자 name
         row.insertCell(2).textContent = item.theme.name;      // 테마 name
@@ -214,11 +210,7 @@ function applyFilter(event) {
     const dateFrom = document.getElementById('date-from').value;
     const dateTo = document.getElementById('date-to').value;
 
-    /*
-    TODO: [6단계] 예약 검색 - 조건에 따른 예약 조회 API 호출
-          요청 포맷에 맞게 설정
-    */
-    fetch('/', { // 예약 검색 API 호출
+    fetch(`/reservations?themeId=${themeId}&memberId=${memberId}&dateFrom=${dateFrom}&dateTo=${dateTo}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -236,7 +228,10 @@ function applyFilter(event) {
 function requestCreate(reservation) {
     const requestOptions = {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
         body: JSON.stringify(reservation)
     };
 
@@ -250,6 +245,7 @@ function requestCreate(reservation) {
 function requestDelete(id) {
     const requestOptions = {
         method: 'DELETE',
+        credentials: 'include',
     };
 
     return fetch(`${RESERVATION_API_ENDPOINT}/${id}`, requestOptions)
