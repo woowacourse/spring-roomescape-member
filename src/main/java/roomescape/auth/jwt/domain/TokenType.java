@@ -15,10 +15,6 @@ public enum TokenType {
         return this.name() + "_TOKEN";
     }
 
-    public boolean matches(final String description) {
-        return this.getDescription().equals(description);
-    }
-
     public int getPeriodInMillis() {
         return Math.toIntExact(period.toMillis());
     }

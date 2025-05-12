@@ -1,6 +1,6 @@
 package roomescape.reservation.application;
 
-import roomescape.auth.resolver.UserSession;
+import roomescape.auth.session.UserSession;
 import roomescape.reservation.ui.dto.AvailableReservationTimeWebResponse;
 import roomescape.reservation.ui.dto.CreateReservationWebRequest;
 import roomescape.reservation.ui.dto.ReservationResponse;

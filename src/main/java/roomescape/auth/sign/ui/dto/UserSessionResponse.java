@@ -2,7 +2,7 @@ package roomescape.auth.sign.ui.dto;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
-import roomescape.auth.resolver.UserSession;
+import roomescape.auth.session.UserSession;
 import roomescape.common.domain.DomainTerm;
 import roomescape.common.validate.Validator;
 import roomescape.user.domain.User;

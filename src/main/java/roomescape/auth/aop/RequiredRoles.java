@@ -1,6 +1,5 @@
-package roomescape.auth.annotation;
+package roomescape.auth.aop;
 
-import org.springframework.core.annotation.AliasFor;
 import roomescape.user.domain.UserRole;
 
 import java.lang.annotation.ElementType;
@@ -12,9 +11,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequiredRoles {
 
-    @AliasFor("userRole")
-    UserRole[] value() default {};
-
-    @AliasFor("value")
-    UserRole[] userRole() default {};
+    UserRole[] value();
 }

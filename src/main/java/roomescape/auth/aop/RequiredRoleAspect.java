@@ -6,20 +6,25 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
-import roomescape.auth.annotation.AuthenticatedUser;
-import roomescape.auth.annotation.RequiredRoles;
-import roomescape.auth.exception.ForbiddenException;
-import roomescape.auth.resolver.UserSession;
+import roomescape.auth.session.annotation.UserSession;
+import roomescape.common.cookie.manager.CookieManager;
+import roomescape.auth.jwt.manager.JwtManager;
+import roomescape.auth.session.util.UserSessionExtractor;
+import roomescape.common.servlet.ServletRequestHolder;
 import roomescape.user.domain.UserRole;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Aspect
 @Component
 @RequiredArgsConstructor
 public class RequiredRoleAspect {
+
+    private final CookieManager cookieManager;
+    private final JwtManager jwtManager;
 
     @Around("@annotation(requiredRoles)")
     public Object checkMethodLevel(final ProceedingJoinPoint joinPoint,
@@ -35,35 +40,48 @@ public class RequiredRoleAspect {
 
     private Object check(final ProceedingJoinPoint joinPoint,
                          final UserRole[] requiredRoles) throws Throwable {
+        final roomescape.auth.session.UserSession session = extractUserSession(joinPoint);
+        validateAuthorization(session, requiredRoles);
+        return joinPoint.proceed();
+    }
 
-        final UserSession session = extractUserSession(joinPoint);
-
+    private void validateAuthorization(final roomescape.auth.session.UserSession session, final UserRole[] requiredRoles) {
         final boolean authorized = Arrays.stream(requiredRoles)
                 .anyMatch(session.role()::includes);
 
-        if (authorized) {
-            return joinPoint.proceed();
+        if (!authorized) {
+            throw new ForbiddenException(session.id(), session.role(), List.of(requiredRoles));
         }
-
-        throw new ForbiddenException(session.id(), session.role(), List.of(requiredRoles));
     }
 
-    private UserSession extractUserSession(final ProceedingJoinPoint joinPoint) {
+    private roomescape.auth.session.UserSession extractUserSession(final ProceedingJoinPoint joinPoint) {
+        return findAnnotatedUserSession(joinPoint)
+                .orElseGet(this::extractUserSessionFromRequest);
+    }
+
+    private Optional<roomescape.auth.session.UserSession> findAnnotatedUserSession(final ProceedingJoinPoint joinPoint) {
         final MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         final Object[] args = joinPoint.getArgs();
         final Annotation[][] paramAnnotations = signature.getMethod().getParameterAnnotations();
 
         for (int i = 0; i < args.length; i++) {
-            final Object arg = args[i];
-
-            final boolean hasAnnotation = Arrays.stream(paramAnnotations[i])
-                    .anyMatch(annotation -> annotation.annotationType().equals(AuthenticatedUser.class));
-
-            if (hasAnnotation && arg instanceof final UserSession session) {
-                return session;
+            if (isAnnotatedUserSession(args[i], paramAnnotations[i])) {
+                return java.util.Optional.of((roomescape.auth.session.UserSession) args[i]);
             }
         }
+        return Optional.empty();
+    }
 
-        throw new IllegalStateException("Required @AuthenticatedUser UserSession not found. Check resolver or handler method.");
+    private boolean isAnnotatedUserSession(final Object arg, final Annotation[] annotations) {
+        return arg instanceof roomescape.auth.session.UserSession &&
+                Arrays.stream(annotations)
+                        .anyMatch(annotation -> annotation.annotationType().equals(UserSession.class));
+    }
+
+    private roomescape.auth.session.UserSession extractUserSessionFromRequest() {
+        return UserSessionExtractor.execute(
+                ServletRequestHolder.getRequest(),
+                cookieManager,
+                jwtManager);
     }
 }
