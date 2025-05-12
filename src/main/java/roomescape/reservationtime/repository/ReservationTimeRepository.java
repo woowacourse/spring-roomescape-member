@@ -6,9 +6,9 @@ import java.util.Optional;
 import roomescape.reservationtime.domain.ReservationTime;
 
 public interface ReservationTimeRepository {
-    List<ReservationTime> getAll();
+    List<ReservationTime> findAll();
 
-    ReservationTime put(ReservationTime reservationTime);
+    ReservationTime save(ReservationTime reservationTime);
 
     boolean deleteById(long id);
 

@@ -20,12 +20,12 @@ public class JDBCMemberRepository implements MemberRepository {
     public JDBCMemberRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("user")
+                .withTableName("member")
                 .usingGeneratedKeyColumns("id");
     }
 
     @Override
-    public List<Member> getAll() {
+    public List<Member> findAll() {
         return jdbcTemplate.query(
                 "SELECT id, name, email, password, role FROM member",
                 (resultSet, rowNum) -> {
@@ -42,7 +42,7 @@ public class JDBCMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Member put(final Member member) {
+    public Member save(final Member member) {
         long generatedId = simpleJdbcInsert.executeAndReturnKey(
                 Map.of("name", member.getName(),
                         "email", member.getEmail(),

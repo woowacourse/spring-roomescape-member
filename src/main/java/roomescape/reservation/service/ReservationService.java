@@ -38,7 +38,7 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> getReservations() {
-        return reservationRepository.getAll().stream()
+        return reservationRepository.findAll().stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
@@ -64,7 +64,7 @@ public class ReservationService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
 
-        Reservation newReservation = reservationRepository.put(
+        Reservation newReservation = reservationRepository.save(
                 Reservation.withUnassignedId(request.date(), member, time, theme));
         return ReservationResponse.from(newReservation);
     }
@@ -84,7 +84,7 @@ public class ReservationService {
         Member member = memberRepository.findById(request.memberId())
                 .orElseThrow(MemberNotFoundException::new);
 
-        Reservation newReservation = reservationRepository.put(
+        Reservation newReservation = reservationRepository.save(
                 Reservation.withUnassignedId(request.date(), member, time, theme));
         return ReservationResponse.from(newReservation);
     }

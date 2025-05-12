@@ -16,7 +16,7 @@ public class MemberService {
     }
 
     public List<MemberResponse> getMembers() {
-        return memberRepository.getAll().stream()
+        return memberRepository.findAll().stream()
                 .map(MemberResponse::from)
                 .toList();
     }

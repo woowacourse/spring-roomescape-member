@@ -22,7 +22,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getThemes() {
-        return themeRepository.getAll().stream()
+        return themeRepository.findAll().stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
@@ -37,7 +37,7 @@ public class ThemeService {
     }
 
     public ThemeResponse create(final ThemeCreateRequest request) {
-        Theme theme = themeRepository.put(request.toTheme());
+        Theme theme = themeRepository.save(request.toTheme());
         return ThemeResponse.from(theme);
     }
 

@@ -27,7 +27,7 @@ public class JDBCReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> getAll() {
+    public List<Reservation> findAll() {
         return jdbcTemplate.query(
                 "SELECT " +
                         "r.id as reservation_id, " +
@@ -82,7 +82,7 @@ public class JDBCReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation put(final Reservation reservation) {
+    public Reservation save(final Reservation reservation) {
         long generatedId = simpleJdbcInsert.executeAndReturnKey(
                 Map.of("date", reservation.getDate(), "member_id", reservation.getMember().getId(), "time_id",
                         reservation.getTime().getId(), "theme_id", reservation.getTheme().getId())

@@ -47,15 +47,15 @@ class JDBCThemeRepositoryTest {
 
         for (int i = 0; i < 5; i++) {
             jdbcTemplate.update(
-                    "INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (?, ?, ?, ?, ?)",
-                    (long) (i + 1), "userA" + i, startDate.plusDays(i).toString(), 100 + i, 1
+                    "INSERT INTO reservation (id, date, member_id, time_id, theme_id) VALUES (?, ?, ?, ?, ?)",
+                    (long) (i + 1), startDate.plusDays(i).toString(), i, 100 + i, 1
             );
         }
 
         for (int i = 0; i < 3; i++) {
             jdbcTemplate.update(
-                    "INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (?, ?, ?, ?, ?)",
-                    (long) (i + 10), "userB" + i, startDate.plusDays(i).toString(), 200 + i, 2
+                    "INSERT INTO reservation (id, date,member_id, time_id, theme_id) VALUES (?, ?, ?, ?, ?)",
+                    (long) (i + 10), startDate.plusDays(i).toString(), i, 200 + i, 2
             );
         }
 

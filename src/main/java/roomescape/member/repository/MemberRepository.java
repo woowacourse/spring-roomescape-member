@@ -5,9 +5,9 @@ import java.util.Optional;
 import roomescape.member.domain.Member;
 
 public interface MemberRepository {
-    List<Member> getAll();
+    List<Member> findAll();
 
-    Member put(Member member);
+    Member save(Member member);
 
     boolean deleteById(long id);
 

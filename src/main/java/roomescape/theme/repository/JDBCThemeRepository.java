@@ -24,7 +24,7 @@ public class JDBCThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> getAll() {
+    public List<Theme> findAll() {
         return jdbcTemplate.query(
                 "SELECT id, name, description, thumbnail FROM theme",
                 (resultSet, rowNum) -> {
@@ -40,7 +40,7 @@ public class JDBCThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme put(final Theme theme) {
+    public Theme save(final Theme theme) {
         long generatedId = simpleJdbcInsert.executeAndReturnKey(
                 Map.of("name", theme.getName(),
                         "description", theme.getDescription(),

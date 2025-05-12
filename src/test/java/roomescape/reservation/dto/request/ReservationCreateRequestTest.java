@@ -13,7 +13,6 @@ class ReservationCreateRequestTest {
                 () -> new ReservationCreateRequest(
                         LocalDate.parse("2025-12"),
                         1L,
-                        1L,
                         1L
                 )
         );
