@@ -3,15 +3,16 @@ package roomescape.ui;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import org.junit.jupiter.api.Test;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-class RoomescapeControllerTest {
+class UserControllerTest {
 
     @Autowired
-    private RoomescapeController roomescapeController;
+    private UserController userController;
 
     @Test
     void 예약_화면_요청을_성공한다() {
@@ -21,7 +22,7 @@ class RoomescapeControllerTest {
                 .then().log().all()
                 .statusCode(200);
 
-        assertThat(roomescapeController).isNotNull();
+        assertThat(userController).isNotNull();
     }
 
     @Test
