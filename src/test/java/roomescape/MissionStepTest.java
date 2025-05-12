@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,19 +18,30 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.repository.impl.JdbcReservationTimeRepository;
+import roomescape.service.AuthService;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class MissionStepTest {
 
+    private final JdbcTemplate jdbcTemplate;
+    private final AuthService authService;
+
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    public MissionStepTest(JdbcTemplate jdbcTemplate, AuthService authService) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.authService = authService;
+    }
 
     @Test
     void 일단계() {
-        RestAssured.given().log().all()
+        Member member = new Member(1L, "히스타", "hista@woowa.jjang", "1q2w3e4r!", Role.ADMIN);
+        Cookie cookie = authService.generateTokenCookie(member);
+        RestAssured.given().log().all().cookie(cookie.getName(), cookie.getValue())
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -37,7 +49,9 @@ public class MissionStepTest {
 
     @Test
     void 이단계() {
-        RestAssured.given().log().all()
+        Member member = new Member(1L, "히스타", "hista@woowa.jjang", "1q2w3e4r!", Role.ADMIN);
+        Cookie cookie = authService.generateTokenCookie(member);
+        RestAssured.given().log().all().cookie(cookie.getName(), cookie.getValue())
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
@@ -60,52 +74,28 @@ public class MissionStepTest {
         }
     }
 
-//    @Test
-//    void 칠단계() {
-//        Map<String, String> params = new HashMap<>();
-//        params.put("startAt", "10:00");
-//
-//        RestAssured.given().log().all()
-//                .contentType(ContentType.JSON)
-//                .body(params)
-//                .when().post("/times")
-//                .then().log().all()
-//                .statusCode(200);
-//
-//        RestAssured.given().log().all()
-//                .when().get("/times")
-//                .then().log().all()
-//                .statusCode(200)
-//                .body("size()", is(1));
-//
-//        RestAssured.given().log().all()
-//                .when().delete("/times/1")
-//                .then().log().all()
-//                .statusCode(200);
-//    }
-//
-//    @Test
-//    void 팔단계() {
-//        Map<String, Object> reservation = new HashMap<>();
-//        reservation.put("name", "브라운");
-//        reservation.put("date", "2023-08-05");
-//        reservation.put("timeId", 1);
-//
-//        new JdbcReservationTimeRepository(jdbcTemplate).saveReservationTime(new ReservationTime(1L, LocalTime.now()));
-//
-//        RestAssured.given().log().all()
-//                .contentType(ContentType.JSON)
-//                .body(reservation)
-//                .when().post("/reservations")
-//                .then().log().all()
-//                .statusCode(200);
-//
-//
-//        RestAssured.given().log().all()
-//                .when().get("/reservations")
-//                .then().log().all()
-//                .statusCode(200)
-//                .body("size()", is(1));
-//    }
+    @Test
+    void 칠단계() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
+
+        RestAssured.given().log().all()
+                .when().delete("/times/1")
+                .then().log().all()
+                .statusCode(204);
+    }
 }
 

@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.integration.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
@@ -10,6 +10,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.Theme;
+import roomescape.service.ThemeService;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)

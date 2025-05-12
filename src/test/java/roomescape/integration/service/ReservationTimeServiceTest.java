@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.integration.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.search.ReservationTimeResponseWithBookedStatus;
+import roomescape.service.ReservationTimeService;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)

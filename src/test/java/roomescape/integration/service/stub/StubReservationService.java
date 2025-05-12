@@ -1,4 +1,4 @@
-package roomescape.service.stub;
+package roomescape.integration.service.stub;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -11,10 +11,6 @@ import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
 import roomescape.dto.request.CreateReservationRequest;
 import roomescape.dto.response.ReservationResponse;
-import roomescape.repository.MemberRepository;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
 import roomescape.service.ReservationService;
 
 // 빠른 Stub 구현을 위해 프로덕션 Service 를 상속 받아서 사용했는데,

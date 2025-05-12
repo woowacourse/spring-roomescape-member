@@ -1,4 +1,4 @@
-package roomescape.service.stub;
+package roomescape.integration.service.stub;
 
 import java.util.List;
 import roomescape.domain.Theme;

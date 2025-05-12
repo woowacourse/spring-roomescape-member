@@ -1,4 +1,4 @@
-package roomescape.domain;
+package roomescape.unit.domain;
 
 import static org.assertj.core.api.Assertions.*;
 import java.time.LocalDate;
@@ -8,6 +8,9 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
 

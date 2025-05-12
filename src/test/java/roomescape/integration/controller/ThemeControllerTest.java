@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.integration.controller;
 
 import static org.hamcrest.Matchers.equalTo;
 import java.util.HashMap;
@@ -10,8 +10,14 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import roomescape.service.stub.StubThemeService;
+import roomescape.controller.ThemeController;
+import roomescape.integration.service.stub.StubThemeService;
 
+/**
+ * 해당 클래스는 ThemeController 의 요청/응답 형식을 테스트합니다.
+ * SpringBootTest 어노테이션을 사용하여 실제로 서버를 띄우는 통합 테스트입니다.
+ * 단, StubThemeService 를 사용하여 프로덕션 Service 와 분리했고, 실제 DB에 접근하지 않고 테스트합니다.
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class ThemeControllerTest {

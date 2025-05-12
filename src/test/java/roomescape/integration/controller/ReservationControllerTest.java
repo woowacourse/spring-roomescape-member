@@ -1,26 +1,28 @@
-package roomescape.controller;
+package roomescape.integration.controller;
 
 import static org.hamcrest.Matchers.equalTo;
 import java.util.HashMap;
 import java.util.Map;
 import io.restassured.RestAssured;
 import jakarta.servlet.http.Cookie;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import roomescape.controller.ReservationController;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
 import roomescape.service.AuthService;
-import roomescape.service.stub.StubReservationService;
-import roomescape.service.stub.StubReservationTimeService;
+import roomescape.integration.service.stub.StubReservationService;
 
+/**
+ * 해당 클래스는 ReservationController 의 요청/응답 형식을 테스트합니다.
+ * SpringBootTest 어노테이션을 사용하여 실제로 서버를 띄우는 통합 테스트입니다.
+ * 단, StubReservationService 를 사용하여 프로덕션 Service 와 분리했고, 실제 DB에 접근하지 않고 테스트합니다.
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class ReservationControllerTest {
