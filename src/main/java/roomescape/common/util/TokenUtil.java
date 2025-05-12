@@ -12,4 +12,11 @@ public class TokenUtil {
         }
         return "";
     }
+
+    public static Cookie addTokenCookie(String token) {
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        return cookie;
+    }
 }

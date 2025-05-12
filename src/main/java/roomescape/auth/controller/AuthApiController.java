@@ -42,11 +42,8 @@ public class AuthApiController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody @Valid TokenRequest tokenRequest, HttpServletResponse response) {
         String jwtToken = authService.login(tokenRequest.email(), tokenRequest.password());
-        Cookie cookie = new Cookie("token", jwtToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
+        Cookie cookie = TokenUtil.addTokenCookie(jwtToken);
         response.addCookie(cookie);
-
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
