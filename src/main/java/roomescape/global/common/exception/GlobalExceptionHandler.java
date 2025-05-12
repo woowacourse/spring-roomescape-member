@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.global.auth.exception.AuthException;
+import roomescape.global.auth.exception.ForbiddenException;
 import roomescape.global.auth.exception.UnAuthorizedException;
 import roomescape.member.exception.MemberDuplicatedException;
 import roomescape.reservationtime.exception.ReservationTimeInUseException;
@@ -38,11 +38,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler(AuthException.class)
-    public ResponseEntity<String> handleAuthException(AuthException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-    }
-
     @ExceptionHandler(MemberDuplicatedException.class)
     public ResponseEntity<String> handleMemberDuplicatedException(MemberDuplicatedException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
@@ -51,5 +46,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnAuthorizedException.class)
     public ResponseEntity<String> handleUnAuthorizedException(UnAuthorizedException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<String> handleForbiddenException(ForbiddenException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 }
