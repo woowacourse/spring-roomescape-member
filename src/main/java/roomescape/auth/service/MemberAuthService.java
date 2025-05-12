@@ -1,5 +1,8 @@
 package roomescape.auth.service;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import org.springframework.stereotype.Service;
 import roomescape.auth.service.dto.response.LoginMember;
 import roomescape.auth.entity.Member;
@@ -30,7 +33,11 @@ public class MemberAuthService {
     public LoginResponse login(LoginRequest request) {
         Member member = memberRepository.findByEmailAndPassword(request.email(), request.password())
                 .orElseThrow(MemberUnauthorizedException::new);
-        String token = jwtTokenProvider.createToken(member);
+        Claims claims = Jwts.claims()
+                .subject(member.getId().toString())
+                .add("role", member.getRole().name())
+                .build();
+        String token = jwtTokenProvider.createToken(claims);
         return new LoginResponse(token);
     }
 
@@ -46,12 +53,14 @@ public class MemberAuthService {
 
     // TODO: 파라미터 토큰 ? user id?
     public LoginMember getLoginMemberByToken(String token) {
-        String subject = jwtTokenProvider.resolve(token);
         try {
-            final long userId = Long.parseLong(subject);
+            Claims claims = jwtTokenProvider.resolve(token);
+            final long userId = Long.parseLong(claims.getSubject());
             Member member = memberRepository.findById(userId)
                     .orElseThrow(() -> new MemberNotFoundException(userId));
             return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        } catch (JwtException e) {
+            throw new BadRequestException("올바르지 않은 토큰입니다.");
         } catch (NumberFormatException e) {
             throw new BadRequestException("잘못된 형식의 토큰입니다.");
         }

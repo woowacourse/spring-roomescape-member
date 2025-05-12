@@ -1,5 +1,7 @@
 package roomescape.time.controller;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
@@ -88,7 +90,11 @@ class ReservationTimeControllerTest {
                 "themeId", 1
         );
 
-        String userToken = jwtTokenProvider.createToken(user);
+        Claims userClaims = Jwts.claims()
+                .subject(user.getId().toString())
+                .add("role", user.getRole().name())
+                .build();
+        String userToken = jwtTokenProvider.createToken(userClaims);
         RestAssured.given().log().all()
                 .cookie("token", userToken)
                 .contentType(ContentType.JSON)
