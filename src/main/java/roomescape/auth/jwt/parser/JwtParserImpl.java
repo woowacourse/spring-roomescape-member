@@ -22,13 +22,12 @@ public class JwtParserImpl implements JwtParser {
                     .build()
                     .parseSignedClaims(token.getValue())
                     .getPayload();
-
         } catch (final SignatureException e) {
-            throw new ParseTokenException("서명");
+            throw new ParseTokenException("Invalid signature", e);
         } catch (final ExpiredJwtException e) {
-            throw new ParseTokenException("기한");
+            throw new ParseTokenException("Token expired", e);
         } catch (final Exception e) {
-            throw new ParseTokenException("알 수 없음");
+            throw new ParseTokenException("Unknown token error", e);
         }
     }
 }

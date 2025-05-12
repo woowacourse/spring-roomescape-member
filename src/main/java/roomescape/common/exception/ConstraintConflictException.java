@@ -2,6 +2,7 @@ package roomescape.common.exception;
 
 import org.springframework.http.HttpStatus;
 import roomescape.common.domain.DomainTerm;
+import roomescape.common.exception.base.BusinessException;
 import roomescape.common.exception.util.ExceptionMessageFormatter;
 
 public class ConstraintConflictException extends BusinessException {

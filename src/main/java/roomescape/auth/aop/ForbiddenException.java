@@ -1,7 +1,7 @@
-package roomescape.auth.exception;
+package roomescape.auth.aop;
 
 import org.springframework.http.HttpStatus;
-import roomescape.auth.sign.exception.AuthException;
+import roomescape.common.exception.base.AuthException;
 import roomescape.user.domain.UserId;
 import roomescape.user.domain.UserRole;
 
@@ -12,8 +12,10 @@ public class ForbiddenException extends AuthException {
     public ForbiddenException(final UserId id,
                               final UserRole role,
                               final List<UserRole> requiredRole) {
-        super(buildLogMessage(id, role, requiredRole),
-                buildUserMessage());
+        super(
+                buildLogMessage(id, role, requiredRole),
+                buildUserMessage()
+        );
     }
 
     private static String buildLogMessage(final UserId id,

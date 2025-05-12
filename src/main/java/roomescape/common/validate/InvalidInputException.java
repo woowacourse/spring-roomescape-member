@@ -1,7 +1,7 @@
 package roomescape.common.validate;
 
 import org.springframework.http.HttpStatus;
-import roomescape.common.exception.BusinessException;
+import roomescape.common.exception.base.BusinessException;
 import roomescape.common.validate.Validator.ValidationType;
 
 public class InvalidInputException extends BusinessException {

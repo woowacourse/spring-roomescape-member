@@ -1,4 +1,4 @@
-package roomescape.common.exception;
+package roomescape.common.exception.base;
 
 import org.springframework.http.HttpStatus;
 
@@ -10,14 +10,29 @@ public abstract class BaseException extends RuntimeException {
     private final boolean userVisible;
 
     protected BaseException(final String logMessage,
+                            final String userMessage,
+                            final Throwable cause) {
+        super(logMessage, cause);
+        this.userMessage = userMessage;
+        this.userVisible = true;
+    }
+
+    protected BaseException(final String logMessage,
+                            final Throwable cause) {
+        super(logMessage, cause);
+        this.userMessage = "";
+        this.userVisible = false;
+    }
+
+    protected BaseException(final String logMessage,
                             final String userMessage) {
         super(logMessage);
         this.userMessage = userMessage;
         this.userVisible = true;
     }
 
-    protected BaseException(final String message) {
-        super(message);
+    protected BaseException(final String logMessage) {
+        super(logMessage);
         this.userMessage = "";
         this.userVisible = false;
     }

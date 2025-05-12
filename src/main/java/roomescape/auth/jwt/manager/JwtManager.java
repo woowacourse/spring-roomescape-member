@@ -8,7 +8,5 @@ public interface JwtManager {
 
     Jwt generate(Claims claims, TokenType type);
 
-    void validate(Jwt token);
-
     Claims parse(Jwt token);
 }
