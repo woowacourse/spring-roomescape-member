@@ -7,9 +7,6 @@ import roomescape.domain.model.Member;
 
 public class AdminAuthorizationInterceptor implements HandlerInterceptor {
 
-    public AdminAuthorizationInterceptor() {
-    }
-
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) throws Exception {
         Member member = (Member) request.getAttribute("member");
