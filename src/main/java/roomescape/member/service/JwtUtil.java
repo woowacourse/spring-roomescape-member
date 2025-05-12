@@ -30,7 +30,6 @@ public class JwtUtil {
         return Jwts.builder()
                 .subject(member.getId().toString())
                 .claim("name", member.getName())
-                .claim("role", member.getRole())
                 .issuedAt(new Date())
                 .expiration(new Date(new Date().getTime() + jwtExpirationMs))
                 .signWith(key)
@@ -39,10 +38,6 @@ public class JwtUtil {
 
     public Long getMemberIdFromToken(String token) {
         return Long.valueOf(getJwtClaims(token).getSubject());
-    }
-
-    public String getMemberNameFromToken(String token) {
-        return getJwtClaims(token).get("name", String.class);
     }
 
     private Claims getJwtClaims(String token) {

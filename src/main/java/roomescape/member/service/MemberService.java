@@ -19,7 +19,6 @@ import roomescape.member.dto.MemberSignupRequest;
 @Service
 public class MemberService {
 
-    private static final Role USER_ROLE = new Role(1L, "user");
     private final JwtUtil jwtUtil;
     private final MemberDao memberDao;
 
@@ -33,20 +32,12 @@ public class MemberService {
         return jwtUtil.generateToken(member);
     }
 
-    private Member findByEmailAndPassword(String email, String password) {
-        Optional<Member> memberOptional = memberDao.findByEmailAndPassword(email, password);
-        if (memberOptional.isEmpty()) {
-            throw new BadRequestException(ExceptionCause.MEMBER_NOTFOUND);
-        }
-        return memberOptional.get();
-    }
-
     public void signup(MemberSignupRequest memberSignupRequest) {
         if (memberDao.findByEmail(memberSignupRequest.email()).isPresent()) {
             throw new ConflictException(ExceptionCause.MEMBER_EXIST);
         }
         Member member = Member.createWithoutId(memberSignupRequest.name(), memberSignupRequest.email(),
-                memberSignupRequest.password(), USER_ROLE);
+                memberSignupRequest.password(), Role.USER);
         memberDao.create(member);
     }
 
@@ -65,13 +56,9 @@ public class MemberService {
 
     public List<MemberResponse> findAllUsers() {
         return findAllMembers().stream()
-                .filter(member -> member.getRole().equals(USER_ROLE))
+                .filter(member -> member.getRole().equals(Role.USER))
                 .map(MemberResponse::from)
                 .toList();
-    }
-
-    private List<Member> findAllMembers() {
-        return memberDao.findAll();
     }
 
     public MemberNameResponse checkUserLogin(Visitor visitor) {
@@ -79,5 +66,17 @@ public class MemberService {
             throw new UnauthorizedException(ExceptionCause.MEMBER_UNAUTHORIZED);
         }
         return new MemberNameResponse(visitor.name());
+    }
+
+    private List<Member> findAllMembers() {
+        return memberDao.findAll();
+    }
+
+    private Member findByEmailAndPassword(String email, String password) {
+        Optional<Member> memberOptional = memberDao.findByEmailAndPassword(email, password);
+        if (memberOptional.isEmpty()) {
+            throw new BadRequestException(ExceptionCause.MEMBER_NOTFOUND);
+        }
+        return memberOptional.get();
     }
 }

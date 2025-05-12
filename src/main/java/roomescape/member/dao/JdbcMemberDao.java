@@ -17,10 +17,7 @@ public class JdbcMemberDao implements MemberDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Member> memberRowMapper = (resultSet, rowNum) -> {
-        Role role = new Role(
-                resultSet.getLong("role_id"),
-                resultSet.getString("role_name")
-        );
+        Role role = Role.getRoleById(resultSet.getLong("role_id"));
         return new Member(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),

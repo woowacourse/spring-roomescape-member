@@ -1,39 +1,27 @@
 package roomescape.member.domain;
 
-import java.util.Objects;
-
-public class Role {
+public enum Role {
+    USER(1L, "user"),
+    ADMIN(2L, "admin");
 
     private final Long id;
     private final String name;
 
-    public Role(Long id, String name) {
+    Role(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
+    public static Role getRoleById(Long id) {
+        for (Role role : Role.values()) {
+            if(role.id.equals(id)) {
+                return role;
+            }
+        }
+        return null;
+    }
+
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Role role = (Role) o;
-        return Objects.equals(id, role.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
     }
 }
