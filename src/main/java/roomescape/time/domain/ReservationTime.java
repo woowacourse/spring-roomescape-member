@@ -1,7 +1,7 @@
 package roomescape.time.domain;
 
 import java.time.LocalTime;
-import roomescape.reservation.domain.exception.ReservationTimeNullException;
+import roomescape.time.domain.exception.ReservationTimeNullException;
 
 public class ReservationTime {
 

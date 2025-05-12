@@ -3,7 +3,7 @@ package roomescape.reservation.domain;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.domain.exception.ReservationTimeNullException;
+import roomescape.time.domain.exception.ReservationTimeNullException;
 import roomescape.time.domain.ReservationTime;
 
 public class ReservationTimeTest {

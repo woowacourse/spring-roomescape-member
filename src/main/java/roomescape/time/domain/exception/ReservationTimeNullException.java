@@ -1,4 +1,4 @@
-package roomescape.reservation.domain.exception;
+package roomescape.time.domain.exception;
 
 public class ReservationTimeNullException extends RuntimeException {
     public ReservationTimeNullException(String message) {
