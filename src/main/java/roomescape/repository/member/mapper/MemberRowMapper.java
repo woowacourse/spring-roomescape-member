@@ -19,9 +19,17 @@ public class MemberRowMapper implements RowMapper<Member> {
         return new Member(
                 rs.getLong("id"),
                 rs.getString("name"),
-                Role.valueOf(rs.getString("role")),
+                safeValueOf(rs.getString("role")),
                 rs.getString("email"),
                 rs.getString("password")
         );
+    }
+
+    private Role safeValueOf(String roleStr) {
+        try {
+            return Role.valueOf(roleStr);
+        } catch (IllegalArgumentException e) {
+            return Role.USER;
+        }
     }
 }
