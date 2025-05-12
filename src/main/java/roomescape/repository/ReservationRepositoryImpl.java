@@ -90,7 +90,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     @Override
     public int deleteById(final long id) {
-        String sql = "delete from reservation where id = ?";
+        String sql = "delete from reservation_v2 where id = ?";
         return template.update(sql, id);
     }
 

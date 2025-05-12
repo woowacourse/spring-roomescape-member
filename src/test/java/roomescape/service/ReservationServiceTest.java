@@ -33,10 +33,10 @@ class ReservationServiceTest {
         ReservationTimeResponse response = timeService.addReservationTime(
                 new ReservationTimeRequest(LocalTime.parse("10:00")));
 
-        service.addReservation(new ReservationRequest("test", date, 1L, response.timeId()));
+        service.addReservation(new ReservationRequest("test", date, 1L, response.id()));
 
         //when & then
-        ReservationRequest duplicated = new ReservationRequest("test2", date, 1L, response.timeId());
+        ReservationRequest duplicated = new ReservationRequest("test2", date, 1L, response.id());
         assertThatThrownBy(() -> service.addReservation(duplicated))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 이미 존재하는 예약시간입니다.");
