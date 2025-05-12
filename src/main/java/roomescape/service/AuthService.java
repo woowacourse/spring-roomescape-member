@@ -6,7 +6,7 @@ import roomescape.common.exception.UnauthorizedException;
 import roomescape.dao.MemberDao;
 import roomescape.controller.member.dto.MemberInfoDto;
 import roomescape.controller.auth.dto.LoginRequestDto;
-import roomescape.common.util.JwtProvider;
+import roomescape.common.auth.JwtProvider;
 
 @Service
 public class AuthService {

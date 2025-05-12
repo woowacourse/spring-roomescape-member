@@ -1,4 +1,4 @@
-package roomescape.config;
+package roomescape.common.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.common.Role;
-import roomescape.common.util.JwtProvider;
 
 public class AdminInterceptor implements HandlerInterceptor {
 
