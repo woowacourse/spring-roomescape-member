@@ -7,12 +7,19 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Theme;
 import roomescape.exception.InvalidThemeException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 public class FakeThemeRepository implements ThemeRepository {
 
     private final AtomicLong index = new AtomicLong(1L);
     private final List<Theme> themes = new ArrayList<>();
+
+    private final ReservationRepository reservationRepository;
+
+    public FakeThemeRepository(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
+    }
 
     @Override
     public Theme add(Theme theme) {
@@ -32,6 +39,13 @@ public class FakeThemeRepository implements ThemeRepository {
         return themes.stream()
                 .filter(theme -> theme.getId().equals(id))
                 .findAny();
+    }
+
+    @Override
+    public boolean existsReservationByThemeId(long id) {
+        return reservationRepository.findAll()
+                .stream()
+                .anyMatch(reservation -> reservation.getTheme().getId().equals(id));
     }
 
     @Override

@@ -22,6 +22,7 @@ import roomescape.dto.request.AvailableTimeRequest;
 import roomescape.dto.request.CreateReservationTimeRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeSlotResponse;
+import roomescape.service.ReservationSlotService;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -29,9 +30,12 @@ import roomescape.service.ReservationTimeService;
 public class ReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
+    private final ReservationSlotService reservationSlotService;
 
-    public ReservationTimeController(ReservationTimeService reservationTimeService) {
+    public ReservationTimeController(ReservationTimeService reservationTimeService,
+                                     ReservationSlotService reservationSlotService) {
         this.reservationTimeService = reservationTimeService;
+        this.reservationSlotService = reservationSlotService;
     }
 
     @GetMapping
@@ -56,7 +60,7 @@ public class ReservationTimeController {
     public ResponseEntity<List<ReservationTimeSlotResponse>> getAvailableReservationTimes(
             @ModelAttribute @Valid AvailableTimeRequest request
     ) {
-        ReservationSlots reservationSlotTimes = reservationTimeService.getReservationSlots(request);
+        ReservationSlots reservationSlotTimes = reservationSlotService.getReservationSlots(request);
         List<ReservationSlot> reservationSlots = reservationSlotTimes.getReservationSlots();
         List<ReservationTimeSlotResponse> responses = reservationSlots.stream()
                 .map(ReservationTimeSlotResponse::from)

@@ -23,7 +23,10 @@ import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.MemberService;
 import roomescape.service.ReservationService;
+import roomescape.service.ReservationTimeService;
+import roomescape.service.ThemeService;
 import roomescape.unit.repository.FakeMemberRepository;
 import roomescape.unit.repository.FakeReservationRepository;
 import roomescape.unit.repository.FakeReservationTimeRepository;
@@ -208,14 +211,26 @@ class ReservationServiceTest {
         assertThat(reservations).hasSize(3);
     }
 
+//    private void initReservationService() {
+//        reservationRepository = new FakeReservationRepository();
+//        reservationTimeRepository = new FakeReservationTimeRepository();
+//        themeRepository = new FakeThemeRepository();
+//        memberRepository = new FakeMemberRepository();
+//
+//        reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
+//                themeRepository, memberRepository);
+//    }
+
     private void initReservationService() {
         reservationRepository = new FakeReservationRepository();
-        reservationTimeRepository = new FakeReservationTimeRepository();
-        themeRepository = new FakeThemeRepository();
+        reservationTimeRepository = new FakeReservationTimeRepository(reservationRepository);
+        themeRepository = new FakeThemeRepository(reservationRepository);
         memberRepository = new FakeMemberRepository();
 
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
-                themeRepository, memberRepository);
+        ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+        ThemeService themeService = new ThemeService(themeRepository);
+        MemberService memberService = new MemberService(memberRepository);
+        reservationService = new ReservationService(reservationTimeService, themeService, memberService, reservationRepository);
     }
 
     private void initLoginMember() {

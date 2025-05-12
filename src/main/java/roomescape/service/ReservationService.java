@@ -9,35 +9,26 @@ import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.request.CreateReservationRequest;
 import roomescape.dto.request.AdminCreateReservationRequest;
-import roomescape.exception.InvalidMemberException;
+import roomescape.dto.request.CreateReservationRequest;
 import roomescape.exception.InvalidReservationException;
-import roomescape.exception.InvalidReservationTimeException;
-import roomescape.exception.InvalidThemeException;
-import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
 
-    private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
-    private final MemberRepository memberRepository;
+    private final ReservationTimeService reservationTimeService;
+    private final ThemeService themeService;
+    private final MemberService memberService;
 
-    public ReservationService(
-            ReservationRepository reservationRepository,
-            ReservationTimeRepository reservationTimeRepository,
-            ThemeRepository themeRepository,
-            MemberRepository memberRepository
-    ) {
+    private final ReservationRepository reservationRepository;
+
+    public ReservationService(ReservationTimeService reservationTimeService, ThemeService themeService,
+                              MemberService memberService, ReservationRepository reservationRepository) {
+        this.reservationTimeService = reservationTimeService;
+        this.themeService = themeService;
+        this.memberService = memberService;
         this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
-        this.memberRepository = memberRepository;
     }
 
     public Reservation addReservation(CreateReservationRequest request, LoginMember loginMember) {
@@ -49,9 +40,9 @@ public class ReservationService {
     }
 
     private Reservation createReservation(long memberId, long themeId, LocalDate date, long timeId) {
-        Member member = getMemberById(memberId);
-        ReservationTime reservationTime = getReservationTimeById(timeId);
-        Theme theme = getThemeById(themeId);
+        Member member = memberService.getMemberById(memberId);
+        ReservationTime reservationTime = reservationTimeService.getReservationTimeById(timeId);
+        Theme theme = themeService.getThemeById(themeId);
 
         Reservation reservation = new Reservation(member, date, reservationTime, theme);
 
@@ -90,18 +81,11 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    private Theme getThemeById(long themeId) {
-        return themeRepository.findById(themeId)
-                .orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마 id입니다."));
+    public List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId) {
+        return reservationRepository.findAllByDateAndThemeId(date, themeId);
     }
 
-    private ReservationTime getReservationTimeById(long timeId) {
-        return reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간 id입니다."));
-    }
-
-    private Member getMemberById(long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new InvalidMemberException("존재하지 않는 멤버 id입니다."));
+    public List<Reservation> findAllByDateInRange(LocalDate start, LocalDate end) {
+        return reservationRepository.findAllByDateInRange(start, end);
     }
 }

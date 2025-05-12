@@ -18,6 +18,7 @@ import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.dto.request.CreateThemeRequest;
 import roomescape.dto.response.ThemeResponse;
+import roomescape.service.ThemeRankingService;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -25,9 +26,11 @@ import roomescape.service.ThemeService;
 public class ThemeController {
 
     private final ThemeService themeService;
+    private final ThemeRankingService themeRankingService;
 
-    public ThemeController(ThemeService themeService) {
+    public ThemeController(ThemeService themeService, ThemeRankingService themeRankingService) {
         this.themeService = themeService;
+        this.themeRankingService = themeRankingService;
     }
 
     @GetMapping
@@ -50,7 +53,7 @@ public class ThemeController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> popularThemes() {
-        List<Theme> rankingThemes = themeService.getRankingThemes(LocalDate.now());
+        List<Theme> rankingThemes = themeRankingService.getRankingThemes(LocalDate.now());
         List<ThemeResponse> responses = rankingThemes.stream()
                 .map(ThemeResponse::from)
                 .toList();

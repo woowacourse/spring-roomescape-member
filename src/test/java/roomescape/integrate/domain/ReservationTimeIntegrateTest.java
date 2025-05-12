@@ -16,7 +16,6 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.config.JwtTokenProvider;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
-import roomescape.dto.request.LoginRequest;
 import roomescape.repository.MemberRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)

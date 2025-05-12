@@ -68,7 +68,18 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         String sql = "select count(id) from reservation_time where start_at = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, time);
         return count != null && count > 0;
+    }
 
+    @Override
+    public boolean existsReservationByTimeId(Long id) {
+        String sql = """
+                select count(rt.id) from reservation_time as rt
+                inner join reservation as r
+                on rt.id = r.time_id
+                where rt.id = ?
+                """;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
     }
 
     @Override

@@ -6,14 +6,22 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.InvalidReservationTimeException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
 public class FakeReservationTimeRepository implements ReservationTimeRepository {
 
     private final AtomicLong index = new AtomicLong(1L);
     private final List<ReservationTime> reservationTimes = new ArrayList<>();
+
+    private final ReservationRepository reservationRepository;
+
+    public FakeReservationTimeRepository(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
+    }
 
     @Override
     public ReservationTime add(ReservationTime reservationTime) {
@@ -39,6 +47,13 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     public boolean existsByTime(LocalTime time) {
         return reservationTimes.stream()
                 .anyMatch((reservationTime) -> reservationTime.getTime().equals(time));
+    }
+
+    @Override
+    public boolean existsReservationByTimeId(Long id) {
+        List<Reservation> reservations = reservationRepository.findAll();
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.getReservationTime().getId().equals(id));
     }
 
     @Override

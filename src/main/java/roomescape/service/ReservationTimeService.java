@@ -2,24 +2,17 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationSlots;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.request.AvailableTimeRequest;
 import roomescape.dto.request.CreateReservationTimeRequest;
 import roomescape.exception.InvalidReservationTimeException;
-import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
 
-    private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationTimeService(ReservationRepository reservationRepository,
-                                  ReservationTimeRepository reservationTimeRepository) {
-        this.reservationRepository = reservationRepository;
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
@@ -41,19 +34,9 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long id) {
-        if (reservationRepository.existsByTimeId(id)) {
+        if (reservationTimeRepository.existsReservationByTimeId(id)) {
             throw new InvalidReservationTimeException("예약이 되어있는 시간은 삭제할 수 없습니다.");
         }
         reservationTimeRepository.deleteById(id);
-    }
-
-
-    public ReservationSlots getReservationSlots(AvailableTimeRequest request) {
-        List<ReservationTime> times = reservationTimeRepository.findAll();
-
-        List<Reservation> alreadyReservedReservations = reservationRepository.findAllByDateAndThemeId(
-                request.date(), request.themeId());
-
-        return new ReservationSlots(times, alreadyReservedReservations);
     }
 }
