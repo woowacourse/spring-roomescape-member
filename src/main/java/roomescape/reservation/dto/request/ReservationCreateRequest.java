@@ -10,9 +10,4 @@ public record ReservationCreateRequest(
         long timeId,
         long themeId
 ) {
-    public ReservationCreateRequest {
-        if (name == null) {
-            throw new IllegalArgumentException("이름은 반드시 입력해야합니다.");
-        }
-    }
 }

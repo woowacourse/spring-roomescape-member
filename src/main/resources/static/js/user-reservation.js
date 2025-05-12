@@ -141,14 +141,18 @@ function onReservationButtonClick() {
     const selectedDate = document.getElementById("datepicker").value;
     const selectedThemeId = document.querySelector('.theme-slot.active')?.getAttribute('data-theme-id');
     const selectedTimeId = document.querySelector('.time-slot.active')?.getAttribute('data-time-id');
-    const name = document.getElementById('user-name').value;
+
+    if (!currentUser) {
+        alert('로그인이 필요합니다.');
+        return;
+    }
 
     if (selectedDate && selectedThemeId && selectedTimeId) {
         const reservationData = {
             date: selectedDate,
             themeId: selectedThemeId,
             timeId: selectedTimeId,
-            name: name
+            name: currentUser.name
         };
 
         fetch('/reservations', {

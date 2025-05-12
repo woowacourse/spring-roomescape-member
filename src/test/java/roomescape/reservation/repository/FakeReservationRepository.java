@@ -13,7 +13,7 @@ public class FakeReservationRepository implements ReservationRepository {
     private final AtomicLong index = new AtomicLong(1);
 
     @Override
-    public List<Reservation> getAll() {
+    public List<Reservation> wgetAll() {
         return reservations.entrySet().stream()
                 .map(entry -> {
                     Reservation value = entry.getValue();

@@ -7,6 +7,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.auth.domain.Role;
 import roomescape.member.domain.Member;
 import roomescape.member.entity.MemberEntity;
 
@@ -32,7 +33,8 @@ public class JDBCMemberRepository implements MemberRepository {
                             resultSet.getLong("id"),
                             resultSet.getString("name"),
                             resultSet.getString("email"),
-                            resultSet.getString("password")
+                            resultSet.getString("password"),
+                            Role.valueOf(resultSet.getString("role"))
                     );
                     return entity.toMember();
                 }
@@ -44,9 +46,11 @@ public class JDBCMemberRepository implements MemberRepository {
         long generatedId = simpleJdbcInsert.executeAndReturnKey(
                 Map.of("name", member.getName(),
                         "email", member.getEmail(),
-                        "password", member.getPassword())).longValue();
+                        "password", member.getPassword(),
+                        "role", member.getRole()
+                )).longValue();
 
-        return Member.of(generatedId, member.getName(), member.getEmail(), member.getPassword());
+        return Member.of(generatedId, member.getName(), member.getEmail(), member.getPassword(), member.getRole());
     }
 
     @Override
@@ -58,12 +62,13 @@ public class JDBCMemberRepository implements MemberRepository {
     public Optional<Member> findById(final long id) {
         try {
             MemberEntity memberEntity = jdbcTemplate.queryForObject(
-                    "SELECT id, name, email, password FROM member WHERE id = ?",
+                    "SELECT id, name, email, password, role FROM member WHERE id = ?",
                     (resultSet, rowNum) -> new MemberEntity(
                             resultSet.getLong("id"),
                             resultSet.getString("name"),
                             resultSet.getString("email"),
-                            resultSet.getString("password")
+                            resultSet.getString("password"),
+                            Role.valueOf(resultSet.getString("role"))
                     ), id
             );
             return Optional.ofNullable(memberEntity)
@@ -76,12 +81,13 @@ public class JDBCMemberRepository implements MemberRepository {
     @Override
     public Optional<Member> findByEmailAndPassword(final String email, final String password) {
         MemberEntity memberEntity = jdbcTemplate.queryForObject(
-                "SELECT id, name, email, password FROM member WHERE email = ? AND password = ?",
+                "SELECT id, name, email, password, role FROM member WHERE email = ? AND password = ?",
                 (resultSet, rowNum) -> new MemberEntity(
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
                         resultSet.getString("email"),
-                        resultSet.getString("password")
+                        resultSet.getString("password"),
+                        Role.valueOf(resultSet.getString("role"))
                 ),
                 email, password
         );

@@ -74,3 +74,4 @@ VALUES
 
 INSERT INTO member (email, password, name)
 VALUES ('danny@example.com', '0000', 'Danny');
+

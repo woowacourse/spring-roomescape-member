@@ -3,7 +3,6 @@ package roomescape.auth.service;
 import org.springframework.stereotype.Service;
 import roomescape.auth.domain.JwtTokenProvider;
 import roomescape.auth.dto.request.TokenRequest;
-import roomescape.auth.dto.response.LoginCheckResponse;
 import roomescape.auth.exception.AuthorizationException;
 import roomescape.member.domain.Member;
 import roomescape.member.exception.MemberNotFoundException;
@@ -28,9 +27,8 @@ public class AuthService {
         }
     }
 
-    public LoginCheckResponse findUserByToken(final String token) {
+    public Member findMemberByToken(final String token) {
         Long id = Long.valueOf(tokenProvider.getPayload(token));
-        Member member = memberService.getMember(id);
-        return new LoginCheckResponse(member.getName());
+        return memberService.getMember(id);
     }
 }

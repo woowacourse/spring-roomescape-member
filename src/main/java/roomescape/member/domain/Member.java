@@ -1,5 +1,6 @@
 package roomescape.member.domain;
 
+import roomescape.auth.domain.Role;
 import roomescape.common.domain.Id;
 
 public class Member {
@@ -7,20 +8,24 @@ public class Member {
     private final String name;
     private final String email;
     private final String password;
+    private final Role role;
 
-    public Member(final Id id, final String name, final String email, final String password) {
+    public Member(final Id id, final String name, final String email, final String password, final Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
-    public static Member of(final Long id, final String name, final String email, final String password) {
-        return new Member(Id.from(id), name, email, password);
+    public static Member of(final Long id, final String name, final String email, final String password,
+                            final Role role) {
+        return new Member(Id.from(id), name, email, password, role);
     }
 
-    public static Member withUnassignedId(final String name, final String email, final String password) {
-        return new Member(Id.unassigned(), name, email, password);
+    public static Member withUnassignedId(final String name, final String email, final String password,
+                                          final Role role) {
+        return new Member(Id.unassigned(), name, email, password, role);
     }
 
     public Long getId() {
@@ -41,5 +46,9 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public Role getRole() {
+        return role;
     }
 }

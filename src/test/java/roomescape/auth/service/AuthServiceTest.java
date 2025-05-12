@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.auth.domain.JwtTokenProvider;
+import roomescape.auth.domain.Role;
 import roomescape.auth.dto.request.TokenRequest;
 import roomescape.auth.exception.AuthorizationException;
 import roomescape.member.domain.Member;
@@ -33,7 +34,8 @@ class AuthServiceTest {
         // given
         String email = "test@example.com";
         String password = "securePassword";
-        Member member = Member.of(1L, "Danny", email, password);
+        Role role = Role.MEMBER;
+        Member member = Member.of(1L, "Danny", email, password, role);
         TokenRequest request = new TokenRequest(email, password);
 
         Mockito.when(memberService.getMember(email, password)).thenReturn(member);
