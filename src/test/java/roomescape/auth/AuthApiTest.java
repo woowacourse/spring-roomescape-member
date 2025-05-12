@@ -125,4 +125,38 @@ public class AuthApiTest {
                     .statusCode(401);
         }
     }
+
+    @DisplayName("로그아웃 테스트")
+    @Nested
+    class LogoutTest {
+
+        @DisplayName("로그아웃에 성공할 경우 204를 반환한다.")
+        @Test
+        void testLogout() {
+            // given
+            String token = RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(new LoginRequest("aaa@gmail.com", "1234"))
+                    .when().post("/login")
+                    .then().log().all()
+                    .extract().cookie("token");
+            // when
+            // then
+            RestAssured.given().log().all()
+                    .cookie("token", token)
+                    .when().post("/logout")
+                    .then().log().all()
+                    .statusCode(204)
+                    .cookie("token", "");
+        }
+
+        @DisplayName("토큰 정보가 올바르지 않을 경우 401을 반환한다.")
+        @Test
+        void testInvalidToken() {
+            RestAssured.given().log().all()
+                    .when().post("/logout")
+                    .then().log().all()
+                    .statusCode(401);
+        }
+    }
 }
