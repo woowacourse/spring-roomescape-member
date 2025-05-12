@@ -16,8 +16,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.dto.response.MemberResponseDto;
 import roomescape.dto.LoginMember;
+import roomescape.model.Member;
 import roomescape.model.Role;
 import roomescape.presentation.support.CookieUtils;
 import roomescape.service.AuthService;
@@ -48,9 +48,9 @@ class LoginMemberArgumentResolverTest {
         servletRequest.setCookies(new Cookie("token", token));
         NativeWebRequest webRequest = new ServletWebRequest(servletRequest);
 
-        MemberResponseDto responseDto = new MemberResponseDto(1L, "히로", email, Role.ADMIN);
+        Member member = new Member(1L, "히로", email, "password", Role.ADMIN);
         given(cookieUtils.getToken(servletRequest)).willReturn(token);
-        given(authService.getMemberByToken(token)).willReturn(responseDto);
+        given(authService.getAuthenticatedMember(token)).willReturn(member);
 
         // when
         Object result = resolver.resolveArgument(
