@@ -9,7 +9,6 @@ import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDateTime;
-import roomescape.reservation.dto.CreateReservationRequest;
 import roomescape.reservation.dto.CreateReservationWithMemberRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
@@ -36,12 +35,6 @@ public class ReservationService {
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
         this.memberRepository = memberRepository;
-    }
-
-    public ReservationResponse createReservation(final CreateReservationRequest request, final Member member) {
-        final Reservation reservation = convertToReservation(request, member);
-        final Reservation savedReservation = reservationRepository.save(reservation);
-        return new ReservationResponse(savedReservation);
     }
 
     public ReservationResponse createReservation(final CreateReservationWithMemberRequest request) {
@@ -84,18 +77,6 @@ public class ReservationService {
                 reservationRequest.themeId(),
                 reservationRequest.timeId(),
                 reservationRequest.date());
-    }
-
-    private Reservation convertToReservation(
-            final CreateReservationRequest createReservationRequest,
-            final Member member
-    ) {
-        return convertToReservation(
-                member,
-                createReservationRequest.themeId(),
-                createReservationRequest.timeId(),
-                createReservationRequest.date())
-                ;
     }
 
     private Reservation convertToReservation(

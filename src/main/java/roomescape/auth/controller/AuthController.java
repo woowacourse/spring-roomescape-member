@@ -14,7 +14,7 @@ import roomescape.auth.dto.TokenResponse;
 import roomescape.auth.service.AuthService;
 import roomescape.global.auth.AuthMember;
 import roomescape.global.auth.CookieUtil;
-import roomescape.member.domain.Member;
+import roomescape.global.auth.LoginMember;
 
 @RestController
 public class AuthController {
@@ -38,17 +38,17 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
-            @AuthMember final Member member,
+            @AuthMember final LoginMember member,
             final HttpServletResponse response
     ) {
-        Cookie cookie = CookieUtil.setTokenInfo(null);
+        final Cookie cookie = CookieUtil.setTokenInfo(null);
         response.addCookie(cookie);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> loginCheck(@AuthMember final Member member) {
-        final LoginCheckResponse response = new LoginCheckResponse(member.getName());
+    public ResponseEntity<LoginCheckResponse> loginCheck(@AuthMember final LoginMember member) {
+        final LoginCheckResponse response = new LoginCheckResponse(member.name());
         return ResponseEntity.ok().body(response);
     }
 }

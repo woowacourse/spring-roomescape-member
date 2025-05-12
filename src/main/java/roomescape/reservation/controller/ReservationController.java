@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.global.auth.AuthMember;
-import roomescape.member.domain.Member;
+import roomescape.global.auth.LoginMember;
 import roomescape.reservation.dto.CreateReservationRequest;
 import roomescape.reservation.dto.CreateReservationWithMemberRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -31,9 +31,12 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> create(
             @RequestBody @Valid final CreateReservationRequest request,
-            @AuthMember Member member
+            @AuthMember final LoginMember member
     ) {
-        final ReservationResponse response = reservationService.createReservation(request, member);
+        final CreateReservationWithMemberRequest newRequest = new CreateReservationWithMemberRequest(
+                request.date(), request.timeId(), request.themeId(), member.id());
+
+        final ReservationResponse response = reservationService.createReservation(newRequest);
         return ResponseEntity.created(URI.create("/reservations/" + response.id())).body(response);
     }
 
@@ -46,10 +49,10 @@ public class ReservationController {
 
     @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponse>> findAll(
-            @RequestParam(value = "memberId", required = false) Long memberId,
-            @RequestParam(value = "themeId", required = false) Long themeId,
-            @RequestParam(value = "dateFrom", required = false) LocalDate dateFrom,
-            @RequestParam(value = "dateTo", required = false) LocalDate dateTo
+            @RequestParam(value = "memberId", required = false) final Long memberId,
+            @RequestParam(value = "themeId", required = false) final Long themeId,
+            @RequestParam(value = "dateFrom", required = false) final LocalDate dateFrom,
+            @RequestParam(value = "dateTo", required = false) final LocalDate dateTo
     ) {
         final List<ReservationResponse> responses = reservationService.getReservations(
                 memberId,

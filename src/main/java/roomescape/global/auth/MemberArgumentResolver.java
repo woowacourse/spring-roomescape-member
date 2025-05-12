@@ -7,6 +7,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.global.exception.custom.UnauthorizedException;
+import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
 
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -31,7 +32,8 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         final String token = CookieUtil.parseCookie(request.getCookies());
         final long id = jwtTokenProvider.getId(token);
-        return memberRepository.findById(id)
+        final Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new UnauthorizedException("확인할 수 없는 사용자입니다."));
+        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole().name());
     }
 }
