@@ -7,7 +7,7 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
-    public Theme(Long id, String name, String description, String thumbnail) {
+    private Theme(Long id, String name, String description, String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;

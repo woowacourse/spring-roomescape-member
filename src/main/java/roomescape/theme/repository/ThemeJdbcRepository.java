@@ -33,7 +33,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
 
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+        return Theme.load(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     @Override

@@ -21,6 +21,25 @@ import roomescape.time.domain.ReservationTime;
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
 
+    private static final String FIND_ALL_RESERVATION_QUERY = """
+            SELECT r.id as id, 
+                   m.id as member_id,
+                   m.name as member_name,
+                   m.role as role,
+                   m.email as email,
+                   m.password as password,
+                   r.date, 
+                   t.id as time_id, 
+                   t.start_at as start_at,
+                   th.id as theme_id, 
+                   th.name as theme_name, 
+                   th.description as theme_description, 
+                   th.thumbnail as theme_thumbnail
+            FROM reservation as r
+            INNER JOIN reservation_time as t ON r.time_id = t.id
+            INNER JOIN theme as th ON r.theme_id = th.id
+            INNER JOIN member as m ON r.member_id = m.id""";
+
     private final JdbcTemplate jdbcTemplate;
 
     public ReservationJdbcRepository(JdbcTemplate jdbcTemplate) {
@@ -29,24 +48,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = """
-                select r.id as id, 
-                       m.id as member_id,
-                       m.name as member_name,
-                       m.role as role,
-                       m.email as email,
-                       m.password as password,
-                       r.date, 
-                       t.id as time_id, 
-                       t.start_at as start_at,
-                       th.id as theme_id, 
-                       th.name as theme_name, 
-                       th.description as theme_description, 
-                       th.thumbnail as theme_thumbnail
-                from reservation as r
-                inner join reservation_time as t on r.time_id = t.id
-                inner join theme as th on r.theme_id = th.id
-                inner join member as m on r.member_id = m.id
+        String sql = FIND_ALL_RESERVATION_QUERY + """
+                ;
                 """;
 
         return jdbcTemplate.query(sql, (resultSet, rowNum) ->
@@ -68,7 +71,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                                         LocalTime.parse(resultSet.getString("start_at")
                                         )
                                 )),
-                        new Theme(
+                        Theme.load(
                                 resultSet.getLong("theme_id"),
                                 resultSet.getString("theme_name"),
                                 resultSet.getString("theme_description"),
@@ -99,25 +102,9 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
     @Override
     public Optional<Reservation> findById(Long id) {
-        String sql = """
-                select r.id as id, 
-                       m.id as member_id,
-                       m.name as member_name,
-                       m.role as role,
-                       m.email as email,
-                       m.password as password,
-                       r.date, 
-                       t.id as time_id, 
-                       t.start_at as start_at,
-                       th.id as theme_id, 
-                       th.name as theme_name, 
-                       th.description as theme_description, 
-                       th.thumbnail as theme_thumbnail
-                from reservation as r
-                inner join reservation_time as t on r.time_id = t.id
-                inner join theme as th on r.theme_id = th.id
-                inner join member as m on r.member_id = m.id
-                where r.id = ?
+        String sql = FIND_ALL_RESERVATION_QUERY + """
+                
+                WHERE r.id = ?
                 """;
 
         return jdbcTemplate.query(sql, (resultSet, rowNum) ->
@@ -138,7 +125,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                                                 resultSet.getLong("time_id"),
                                                 LocalTime.parse(resultSet.getString("start_at"))
                                         )),
-                                new Theme(
+                                Theme.load(
                                         resultSet.getLong("theme_id"),
                                         resultSet.getString("theme_name"),
                                         resultSet.getString("theme_description"),
@@ -218,24 +205,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findFilteredReservations(Long themeId, Long memberId, LocalDate from, LocalDate to) {
-        String sql = """
-                SELECT r.id as id, 
-                       m.id as member_id,
-                       m.name as member_name,
-                       m.role as role,
-                       m.email as email,
-                       m.password as password,
-                       r.date, 
-                       t.id as time_id, 
-                       t.start_at as start_at,
-                       th.id as theme_id, 
-                       th.name as theme_name, 
-                       th.description as theme_description, 
-                       th.thumbnail as theme_thumbnail
-                FROM reservation as r
-                INNER JOIN reservation_time as t ON r.time_id = t.id
-                INNER JOIN theme as th ON r.theme_id = th.id
-                INNER JOIN member as m ON r.member_id = m.id
+        String sql = FIND_ALL_RESERVATION_QUERY + """
+                
                 WHERE (r.theme_id = ? OR ? IS NULL)
                     AND (r.member_id = ? OR ? IS NULL)
                     AND (r.date >= ? OR ? IS NULL)
@@ -260,7 +231,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                                                 resultSet.getLong("time_id"),
                                                 LocalTime.parse(resultSet.getString("start_at"))
                                         )),
-                                new Theme(
+                                Theme.load(
                                         resultSet.getLong("theme_id"),
                                         resultSet.getString("theme_name"),
                                         resultSet.getString("theme_description"),
