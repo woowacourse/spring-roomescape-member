@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
+import roomescape.member.exception.EmailException;
 import roomescape.member.presentation.dto.MemberRequest;
 import roomescape.member.presentation.dto.MemberResponse;
 
@@ -27,7 +28,7 @@ public class MemberService {
 
     private static void validateEmailExists(boolean emailExist) {
         if (emailExist) {
-            throw new IllegalArgumentException("중복되는 이메일입니다.");
+            throw new EmailException("중복되는 이메일입니다.");
         }
     }
 
