@@ -3,7 +3,6 @@ package roomescape.business.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.User;
-import roomescape.exception.ThemeNotFoundException;
 import roomescape.exception.UserNotFoundException;
 import roomescape.persistence.dao.UserDao;
 import roomescape.presentation.dto.UserResponse;
