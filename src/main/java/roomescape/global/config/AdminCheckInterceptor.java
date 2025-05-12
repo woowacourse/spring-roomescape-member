@@ -41,11 +41,11 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
 
     private static String getToken(final Cookie[] cookies) {
         if (cookies == null) {
-            throw new UnauthorizedException("쿠키를 입력해 주세요.");
+            throw new UnauthorizedException("인증할 수 없는 사용자입니다.");
         }
         return Arrays.stream(cookies).filter(cookie -> cookie.getName().equals("token"))
                 .findFirst()
-                .orElseThrow(() -> new UnauthorizedException("토큰을 입력해주세요."))
+                .orElseThrow(() -> new UnauthorizedException("인증할 수 없는 사용자입니다."))
                 .getValue();
     }
 }
