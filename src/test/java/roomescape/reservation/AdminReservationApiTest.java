@@ -12,12 +12,10 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 import roomescape.login.business.service.TokenCookieService;
 import roomescape.login.presentation.request.LoginRequest;
 
 @ActiveProfiles("test")
-@Sql(scripts = {"/schema.sql", "/test.sql"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class AdminReservationApiTest {

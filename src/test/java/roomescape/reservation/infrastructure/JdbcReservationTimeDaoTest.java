@@ -12,13 +12,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.business.domain.ReservationTime;
 import roomescape.reservation.business.repository.ReservationTimeDao;
 
 @JdbcTest
 @ActiveProfiles("test")
-@Sql(scripts = {"/schema.sql", "/test.sql"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class JdbcReservationTimeDaoTest {
 

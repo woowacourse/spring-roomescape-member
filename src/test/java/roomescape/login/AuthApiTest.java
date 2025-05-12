@@ -14,13 +14,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 import roomescape.global.auth.jwt.JwtHandler;
 import roomescape.login.business.service.TokenCookieService;
 import roomescape.login.presentation.request.LoginRequest;
 
 @ActiveProfiles("test")
-@Sql(scripts = {"/schema.sql", "/test.sql"})
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class AuthApiTest {
