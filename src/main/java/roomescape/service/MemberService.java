@@ -3,6 +3,7 @@ package roomescape.service;
 import jakarta.servlet.http.Cookie;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.controller.MemberRequest;
 import roomescape.dto.TokenResponse;
 import roomescape.infra.JwtTokenProcessor;
 import roomescape.model.user.Member;
@@ -46,6 +47,10 @@ public class MemberService {
         return memberRepository.findNameByEmail(email);
     }
 
+    public Member getMemberById(Long id) {
+        return memberRepository.findById(id);
+    }
+
     public Name getUserNameByUserId(Long userId) {
         return memberRepository.findNameById(userId);
     }
@@ -57,5 +62,9 @@ public class MemberService {
     public Role getRoleByEmail(String email) {
         Role role = memberRepository.findRoleByEmail(email);
         return role;
+    }
+
+    public Member addMember(MemberRequest memberRequest) {
+        return memberRepository.addMember(memberRequest);
     }
 }
