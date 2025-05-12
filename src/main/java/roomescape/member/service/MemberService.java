@@ -5,9 +5,8 @@ import io.jsonwebtoken.security.Keys;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.member.controller.dto.LoginRequest;
-import roomescape.member.controller.dto.MemberSearchResponse;
+import roomescape.member.controller.dto.MemberResponse;
 import roomescape.member.controller.dto.SignupRequest;
-import roomescape.member.controller.dto.SignupResponse;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
 
@@ -33,14 +32,14 @@ public class MemberService {
                 .compact();
     }
 
-    public List<MemberSearchResponse> getAll() {
+    public List<MemberResponse> getAll() {
         return memberRepository.findAll()
                 .stream()
-                .map(MemberSearchResponse::from)
+                .map(MemberResponse::from)
                 .toList();
     }
 
-    public MemberSearchResponse search(String token) {
+    public MemberResponse search(String token) {
         Long id = Long.valueOf(Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build()
@@ -48,7 +47,7 @@ public class MemberService {
                 .getBody().getSubject());
         Member findMember = memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        return MemberSearchResponse.from(findMember);
+        return MemberResponse.from(findMember);
     }
 
     public Member searchLoginMember(String token) {
@@ -61,10 +60,10 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
     }
 
-    public SignupResponse add(SignupRequest request) {
+    public MemberResponse add(SignupRequest request) {
         Member member = request.toMemberWithoutId();
         Long id = memberRepository.saveAndReturnId(member);
-        return SignupResponse.from(member.createMemberWithId(id));
+        return MemberResponse.from(member.createMemberWithId(id));
     }
 
 }
