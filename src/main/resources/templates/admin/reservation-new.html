@@ -35,12 +35,12 @@
                 <a class="nav-link" href="/login">Login</a>
             </li>
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-                   aria-haspopup="true" aria-expanded="false">
-                    <img class="profile-image" src="/image/default-profile.png" alt="Profile">
+                <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
+                   id="navbarDropdown" role="button">
+                    <img alt="Profile" class="profile-image" src="/image/default-profile.png">
                     <span id="profile-name">Profile</span>
                 </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <div aria-labelledby="navbarDropdown" class="dropdown-menu">
                     <a class="dropdown-item" href="/reservation-mine">My Reservation</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#" id="logout-btn">Logout</a>
@@ -100,15 +100,7 @@
     </div>
 </div>
 
-<!--TODO: [4단계] 사용자 로그인 - 로그인 기능 구현 후 활성화-->
 <script src="/js/user-scripts.js"></script>
-
-<!--<script src="/js/reservation-new.js"></script>-->
-
-<!--
-  TODO: [5단계] 예약 생성 기능 변경 - 관리자
-        reservation-new.js 파일 대신 reservation-with-member.js 파일 사용
--->
 <script src="/js/reservation-with-member.js"></script>
 </body>
 </html>

@@ -57,7 +57,7 @@ public class MemberService {
 
     public Member findById(Long id) {
         Optional<Member> memberOptional = memberDao.findById(id);
-        if(memberOptional.isEmpty()) {
+        if (memberOptional.isEmpty()) {
             throw new BadRequestException(ExceptionCause.MEMBER_NOTFOUND);
         }
         return memberOptional.get();
@@ -75,7 +75,7 @@ public class MemberService {
     }
 
     public MemberNameResponse checkUserLogin(Visitor visitor) {
-        if(!visitor.isAuthorized()) {
+        if (!visitor.isAuthorized()) {
             throw new UnauthorizedException(ExceptionCause.MEMBER_UNAUTHORIZED);
         }
         return new MemberNameResponse(visitor.name());

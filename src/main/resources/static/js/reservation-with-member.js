@@ -8,12 +8,17 @@ const themesOptions = [];
 const membersOptions = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('add-button').addEventListener('click', addInputRow);
-    document.getElementById('filter-form').addEventListener('submit', applyFilter);
+    const addButton = document.getElementById('add-button');
+    const filterForm = document.getElementById('filter-form');
+
+    if (addButton) addButton.addEventListener('click', addInputRow);
+    if (filterForm) filterForm.addEventListener('submit', applyFilter);
 
     requestRead(RESERVATION_API_ENDPOINT)
-        .then(render)
-        .catch(error => console.error('Error fetching reservations:', error));
+        .then(data => {
+            render(data);
+        })
+        .catch(error => console.error('Error fetching initial reservations:', error)); // 4. Any errors here?
 
     fetchTimes();
     fetchThemes();
@@ -189,18 +194,23 @@ function deleteRow(event) {
 }
 
 function applyFilter(event) {
-    event.preventDefault();
-
     const themeId = document.getElementById('theme').value;
     const memberId = document.getElementById('member').value;
     const dateFrom = document.getElementById('date-from').value;
     const dateTo = document.getElementById('date-to').value;
 
+    const params = new URLSearchParams();
+
+    if (themeId) params.append('themeId', themeId);
+    if (memberId) params.append('memberId', memberId);
+    if (dateFrom) params.append('dateFrom', dateFrom);
+    if (dateTo) params.append('dateTo', dateTo);
+
     /*
     TODO: [6단계] 예약 검색 - 조건에 따른 예약 조회 API 호출
           요청 포맷에 맞게 설정
     */
-    fetch('/', { // 예약 검색 API 호출
+    fetch(`/admin/reservations?${params.toString()}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -210,6 +220,8 @@ function applyFilter(event) {
         throw new Error('Read failed');
     }).then(render)
         .catch(error => console.error("Error fetching available times:", error));
+
+    event.preventDefault();
 }
 
 function requestCreate(reservation) {

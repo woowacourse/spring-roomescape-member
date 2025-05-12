@@ -5,7 +5,9 @@ VALUES ('user'),
 
 -- member
 INSERT INTO member(name, email, password, role_id)
-VALUES ('gabin', 'gazette9@naver.com', '1234', 1),
+VALUES ('test1', 'test1@naver.com', '1234', 1),
+       ('test2', 'test2@naver.com', '1234', 1),
+       ('test3', 'test3@naver.com', '1234', 1),
        ('admin', 'admin@naver.com', '1234', 2);
 
 INSERT INTO reservation_time(start_at)

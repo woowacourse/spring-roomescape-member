@@ -35,7 +35,8 @@ public class ReservationController {
     public ResponseEntity<ReservationCreateResponse> create(
             @CookieValue("token") String token,
             @RequestBody ReservationCreateRequest reservationCreateRequest) {
-        ReservationCreateResponse reservationCreateResponse = reservationService.create(token, reservationCreateRequest);
+        ReservationCreateResponse reservationCreateResponse = reservationService.create(token,
+                reservationCreateRequest);
         return ResponseEntity.created(URI.create("/reservation")).body(reservationCreateResponse);
     }
 

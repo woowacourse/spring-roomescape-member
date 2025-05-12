@@ -7,7 +7,6 @@ import roomescape.exception.ExceptionCause;
 import roomescape.exception.NotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberResponse;
-import roomescape.member.service.JwtUtil;
 import roomescape.member.service.MemberService;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
@@ -24,16 +23,15 @@ import roomescape.theme.service.ThemeService;
 @Service
 public class ReservationService {
 
-    private final JwtUtil jwtUtil;
     private final ReservationDao reservationDao;
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
     private final MemberService memberService;
 
-    public ReservationService(JwtUtil jwtUtil, final ReservationDao reservationDao,
-                              final ReservationTimeService reservationTimeService, final ThemeService themeService,
+    public ReservationService(final ReservationDao reservationDao,
+                              final ReservationTimeService reservationTimeService,
+                              final ThemeService themeService,
                               MemberService memberService) {
-        this.jwtUtil = jwtUtil;
         this.reservationDao = reservationDao;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
@@ -64,7 +62,7 @@ public class ReservationService {
     private Reservation createReservationWithoutId(String token, ReservationCreateRequest reservationCreateRequest) {
         ReservationTime time = reservationTimeService.findById(reservationCreateRequest.timeId());
         Theme theme = themeService.findById(reservationCreateRequest.themeId());
-        Member member = memberService.findById(jwtUtil.getMemberIdFromToken(token));
+        Member member = memberService.findByToken(token);
         return Reservation.create(
                 reservationCreateRequest.date(),
                 member,
