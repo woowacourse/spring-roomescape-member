@@ -38,7 +38,6 @@ public class JwtTokenProvider {
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
-        log.info("로그 생성 시작");
         try {
             return Jwts.builder()
                     .subject(String.valueOf(tokenInfoDto.id()))
