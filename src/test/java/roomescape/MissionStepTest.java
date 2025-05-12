@@ -18,7 +18,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.ui.ReservationController;
-import roomescape.reservation.ui.dto.CreateReservationWebRequest;
+import roomescape.reservation.ui.dto.CreateReservationWithUserIdWebRequest;
 import roomescape.reservation.ui.dto.ReservationResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
@@ -144,7 +144,7 @@ public class MissionStepTest {
                         Password.fromEncoded("1234"),
                         UserRole.NORMAL));
 
-        final CreateReservationWebRequest request = new CreateReservationWebRequest(
+        final CreateReservationWithUserIdWebRequest request = new CreateReservationWithUserIdWebRequest(
                 LocalDate.now().plusDays(1),
                 time.getId().getValue(),
                 theme.getId().getValue(),
@@ -266,7 +266,7 @@ public class MissionStepTest {
                         Password.fromEncoded("1234"),
                         UserRole.NORMAL));
 
-        final CreateReservationWebRequest request = new CreateReservationWebRequest(
+        final CreateReservationWithUserIdWebRequest request = new CreateReservationWithUserIdWebRequest(
                 LocalDate.now().plusDays(1),
                 time.getId().getValue(),
                 theme.getId().getValue(),

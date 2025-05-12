@@ -17,7 +17,7 @@ import roomescape.auth.session.annotation.UserSession;
 import roomescape.common.uri.UriFactory;
 import roomescape.reservation.application.ReservationFacade;
 import roomescape.reservation.ui.dto.AvailableReservationTimeWebResponse;
-import roomescape.reservation.ui.dto.CreateReservationWebRequest;
+import roomescape.reservation.ui.dto.CreateReservationWithUserIdWebRequest;
 import roomescape.reservation.ui.dto.ReservationResponse;
 import roomescape.user.domain.UserRole;
 
@@ -58,7 +58,7 @@ public class AdminReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> create(
-            @RequestBody final CreateReservationWebRequest request,
+            @RequestBody final CreateReservationWithUserIdWebRequest request,
             @UserSession final Session session) {
         final ReservationResponse reservationResponse = reservationFacade.create(request, session);
         final URI location = UriFactory.buildPath(BASE_PATH, String.valueOf(reservationResponse.reservationId()));

@@ -11,7 +11,7 @@ import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.ui.ReservationSearchWebRequest;
 import roomescape.reservation.ui.dto.AvailableReservationTimeWebResponse;
-import roomescape.reservation.ui.dto.CreateReservationWebRequest;
+import roomescape.reservation.ui.dto.CreateReservationWithUserIdWebRequest;
 import roomescape.reservation.ui.dto.ReservationResponse;
 import roomescape.theme.domain.ThemeId;
 import roomescape.user.application.service.UserQueryService;
@@ -64,7 +64,7 @@ public class ReservationFacadeImpl implements ReservationFacade {
     }
 
     @Override
-    public ReservationResponse create(final CreateReservationWebRequest request, final Session session) {
+    public ReservationResponse create(final CreateReservationWithUserIdWebRequest request, final Session session) {
         final Reservation reservation = reservationCommandService.create(
                 request.toServiceRequest());
 

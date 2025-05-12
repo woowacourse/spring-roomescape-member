@@ -3,7 +3,7 @@ package roomescape.reservation.application;
 import roomescape.auth.session.Session;
 import roomescape.reservation.ui.ReservationSearchWebRequest;
 import roomescape.reservation.ui.dto.AvailableReservationTimeWebResponse;
-import roomescape.reservation.ui.dto.CreateReservationWebRequest;
+import roomescape.reservation.ui.dto.CreateReservationWithUserIdWebRequest;
 import roomescape.reservation.ui.dto.ReservationResponse;
 
 import java.time.LocalDate;
@@ -17,7 +17,7 @@ public interface ReservationFacade {
 
     List<ReservationResponse> getByParams(ReservationSearchWebRequest request);
 
-    ReservationResponse create(CreateReservationWebRequest request, Session session);
+    ReservationResponse create(CreateReservationWithUserIdWebRequest request, Session session);
 
     void delete(Long id);
 }
