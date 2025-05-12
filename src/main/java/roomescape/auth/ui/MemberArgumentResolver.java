@@ -10,6 +10,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.application.AuthService;
 import roomescape.auth.domain.AuthTokenExtractor;
 import roomescape.auth.domain.AuthTokenProvider;
+import roomescape.exception.auth.AuthenticationException;
 import roomescape.member.domain.Member;
 
 @RequiredArgsConstructor
@@ -31,8 +32,8 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         final String token = authTokenExtractor.extract(request);
-        if (token == null || !authTokenProvider.validateToken(token)) {
-            return null;
+        if (!authTokenProvider.validateToken(token)) {
+            throw new AuthenticationException("유효하지 않은 토큰입니다.");
         }
         final Long id = Long.parseLong(authTokenProvider.getPrincipal(token));
 

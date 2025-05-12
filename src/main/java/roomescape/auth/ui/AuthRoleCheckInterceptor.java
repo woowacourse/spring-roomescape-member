@@ -14,7 +14,7 @@ import roomescape.exception.auth.AuthenticationException;
 import roomescape.exception.auth.AuthorizationException;
 
 @RequiredArgsConstructor
-public class CheckAuthRoleInterceptor implements HandlerInterceptor {
+public class AuthRoleCheckInterceptor implements HandlerInterceptor {
 
     private final AuthTokenExtractor<String> authTokenExtractor;
     private final AuthTokenProvider authTokenProvider;
@@ -32,7 +32,7 @@ public class CheckAuthRoleInterceptor implements HandlerInterceptor {
         }
 
         final String accessToken = authTokenExtractor.extract(request);
-        if (accessToken == null || !authTokenProvider.validateToken(accessToken)) {
+        if (!authTokenProvider.validateToken(accessToken)) {
             throw new AuthenticationException("유효하지 않은 토큰입니다.");
         }
 

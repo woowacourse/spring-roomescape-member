@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.application.AuthService;
 import roomescape.auth.domain.AuthTokenExtractor;
 import roomescape.auth.domain.AuthTokenProvider;
-import roomescape.auth.ui.CheckAuthRoleInterceptor;
+import roomescape.auth.ui.AuthRoleCheckInterceptor;
 import roomescape.auth.ui.MemberArgumentResolver;
 
 @Configuration
@@ -23,7 +23,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
         registry.addInterceptor(
-                        new CheckAuthRoleInterceptor(authTokenExtractor, authTokenProvider)
+                        new AuthRoleCheckInterceptor(authTokenExtractor, authTokenProvider)
                 )
                 .addPathPatterns("/**");
     }
