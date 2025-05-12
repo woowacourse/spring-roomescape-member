@@ -22,7 +22,7 @@ public class AuthPreHandlerInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         try {
             String token = JwtCookieResolver.getTokenFromCookie(request);
-            MemberInfo memberInfo = jwtTokenProvider.resolveToken(token);
+            MemberInfo memberInfo = jwtTokenProvider.parseTokenToMemberInfo(token);
             if (memberInfo == null || !memberInfo.isAdmin()) {
                 throw new AuthorizationException("권한이 없는 사용자입니다.");
             }

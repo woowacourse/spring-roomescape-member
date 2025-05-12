@@ -1,9 +1,11 @@
 package roomescape.infrastructure.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.RequiredTypeException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import java.util.Date;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
@@ -36,7 +38,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public MemberInfo resolveToken(String token) {
+    public MemberInfo parseTokenToMemberInfo(String token) {
         try {
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
@@ -49,6 +51,10 @@ public class JwtTokenProvider {
             String email = (String) claims.get(EMAIL_KEY);
             Role role = Role.valueOf((String) claims.get(ROLE_KEY));
             return new MemberInfo(id, name, email, role);
+        } catch (ExpiredJwtException e) {
+            throw new AuthorizationException("토큰이 만료되었습니다");
+        } catch (SignatureException e) {
+            throw new AuthorizationException("유효하지 않은 토큰입니다");
         } catch (RequiredTypeException | IllegalArgumentException e) {
             throw new AuthorizationException("토큰 파싱에 실패하였습니다");
         } catch (Exception e) {

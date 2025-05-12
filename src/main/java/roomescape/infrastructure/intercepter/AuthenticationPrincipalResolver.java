@@ -27,6 +27,6 @@ public class AuthenticationPrincipalResolver implements HandlerMethodArgumentRes
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = JwtCookieResolver.getTokenFromCookie(request);
-        return jwtTokenProvider.resolveToken(token);
+        return jwtTokenProvider.parseTokenToMemberInfo(token);
     }
 }

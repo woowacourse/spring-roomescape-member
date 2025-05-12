@@ -30,7 +30,7 @@ class AuthenticationServiceTest {
         // when
         String token = authenticationService.login(email, password);
         // then
-        String actual = jwtTokenProvider.resolveToken(token).email();
+        String actual = jwtTokenProvider.parseTokenToMemberInfo(token).email();
         assertThat(actual).isEqualTo(email);
     }
 

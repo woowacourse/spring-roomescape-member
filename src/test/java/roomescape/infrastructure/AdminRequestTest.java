@@ -49,7 +49,7 @@ class AdminRequestTest {
     @DisplayName("인증되지 않은 사용자가 관리자 페이지 접근 시 403 에러가 발생한다")
     void unauthenticatedUser_cannotAccessAdminPage() throws Exception {
         mockMvc.perform(get("/admin/reservation"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     @Test

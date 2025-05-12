@@ -2,7 +2,6 @@ package roomescape.infrastructure.jwt;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import roomescape.exceptions.auth.AuthenticationException;
 
 public class JwtCookieResolver {
 
@@ -14,7 +13,7 @@ public class JwtCookieResolver {
     public static String getTokenFromCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            throw new AuthenticationException("로그인이 필요한 요청입니다.");
+            return null;
         }
         return extractTokenFromCookie(cookies);
     }
@@ -25,6 +24,6 @@ public class JwtCookieResolver {
                 return cookie.getValue();
             }
         }
-        throw new AuthenticationException("로그인이 필요한 요청입니다.");
+        return null;
     }
 }
