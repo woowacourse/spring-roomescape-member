@@ -53,7 +53,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = "INSERT INTO reservations (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        final int rowAffected = jdbcTemplate.update(connection -> {
+        jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setDate(1, Date.valueOf(reservation.getDate()));
             ps.setLong(2, reservation.getTime().getId());
@@ -62,16 +62,9 @@ public class JdbcReservationRepository implements ReservationRepository {
             return ps;
         }, keyHolder);
 
-        if (rowAffected != 1) {
-            throw new IllegalStateException("예약 정보 저장에 실패했습니다.");
-        }
-
-        final Number key = keyHolder.getKey();
-        if (key == null) {
-            throw new IllegalStateException("생성된 키가 존재하지 않습니다.");
-        }
-
-        return key.longValue();
+        return Optional.of(keyHolder.getKey())
+                .map(Number::longValue)
+                .orElseThrow(() -> new IllegalStateException("예약 추가에 실패했습니다."));
     }
 
     @Override

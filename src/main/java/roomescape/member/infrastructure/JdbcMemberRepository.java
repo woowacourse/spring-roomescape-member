@@ -35,8 +35,9 @@ public class JdbcMemberRepository implements MemberCommandRepository, MemberQuer
                 INSERT INTO members (name, email, password, role)
                 VALUES (?, ?, ?, ?)
                 """;
+
         final KeyHolder keyHolder = new GeneratedKeyHolder();
-        final int rowAffected = jdbcTemplate.update(connection -> {
+        jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, member.getName());
             ps.setString(2, member.getEmail());
@@ -45,16 +46,9 @@ public class JdbcMemberRepository implements MemberCommandRepository, MemberQuer
             return ps;
         }, keyHolder);
 
-        if (rowAffected != 1) {
-            throw new IllegalStateException("멤버 추가에 실패했습니다.");
-        }
-
-        final Number key = keyHolder.getKey();
-        if (key == null) {
-            throw new IllegalStateException("생성된 키가 존재하지 않습니다.");
-        }
-
-        return key.longValue();
+        return Optional.of(keyHolder.getKey())
+                .map(Number::longValue)
+                .orElseThrow(() -> new IllegalStateException("회원 추가에 실패했습니다."));
     }
 
     @Override

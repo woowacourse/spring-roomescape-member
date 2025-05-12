@@ -35,7 +35,7 @@ public class JdbcThemeRepository implements ThemeQueryRepository, ThemeCommandRe
                 """;
         final KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        final int rowAffected = jdbcTemplate.update(connection -> {
+        jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, theme.getName());
             ps.setString(2, theme.getDescription());
@@ -43,16 +43,9 @@ public class JdbcThemeRepository implements ThemeQueryRepository, ThemeCommandRe
             return ps;
         }, keyHolder);
 
-        if (rowAffected != 1) {
-            throw new IllegalStateException("테마 저장에 실패했습니다.");
-        }
-
-        final Number key = keyHolder.getKey();
-        if (key == null) {
-            throw new IllegalStateException("생성된 키가 존재하지 않습니다.");
-        }
-
-        return key.longValue();
+        return Optional.of(keyHolder.getKey())
+                .map(Number::longValue)
+                .orElseThrow(() -> new IllegalStateException("테마 추가에 실패했습니다."));
     }
 
     @Override

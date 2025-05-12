@@ -29,22 +29,15 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         final String sql = "INSERT INTO reservation_times (start_at) VALUES (?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        final int rowAffected = jdbcTemplate.update(connection -> {
+        jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setTime(1, Time.valueOf(reservationTime.getStartAt()));
             return ps;
         }, keyHolder);
 
-        if (rowAffected != 1) {
-            throw new IllegalStateException("예약 시간 저장에 실패했습니다.");
-        }
-
-        final Number key = keyHolder.getKey();
-        if (key == null) {
-            throw new IllegalStateException("생성된 키가 존재하지 않습니다.");
-        }
-
-        return key.longValue();
+        return Optional.of(keyHolder.getKey())
+                .map(Number::longValue)
+                .orElseThrow(() -> new IllegalStateException("예약 시간 추가에 실패했습니다."));
     }
 
     @Override
