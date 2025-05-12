@@ -85,7 +85,7 @@ class ReservationTimeControllerTest {
     void 예약시간_생성_후_전체조회() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("date", LocalDate.now().plusDays(1));
-        reservation.put("userId", 1);
+        reservation.put("memberId", 1);
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 

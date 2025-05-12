@@ -38,7 +38,7 @@ class ReservationControllerTest {
     private void 예약_생성(String date, String userId, String timeId, String themeId) {
         Map<String, String> params = new HashMap<>();
         params.put("date", date);
-        params.put("userId", userId);
+        params.put("memberId", userId);
         params.put("timeId", timeId);
         params.put("themeId", themeId);
 
