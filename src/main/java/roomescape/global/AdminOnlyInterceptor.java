@@ -1,4 +1,4 @@
-package roomescape.global.interceptor;
+package roomescape.global;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRole;
-import roomescape.global.SessionMember;
 import roomescape.repository.MemberRepository;
 
 public class AdminOnlyInterceptor implements HandlerInterceptor {

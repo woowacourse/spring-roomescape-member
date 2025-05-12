@@ -2,6 +2,7 @@ package roomescape.global;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErrorResponse> handleIllegalStateException(final IllegalStateException exception) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponse.from(exception));
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthentication(final AuthenticationException exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.from(exception));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
