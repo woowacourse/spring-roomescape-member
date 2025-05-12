@@ -21,11 +21,11 @@ public class Reservation {
 
     public Reservation(LocalDate date, ReservationTime reservationTime, Theme theme, Member member) {
         this(null, date, reservationTime, theme, member);
-        validateReservationDateInFuture();
+        validateReservationDateInFuture(date);
     }
 
-    private void validateReservationDateInFuture() {
-        if (!this.date.isAfter(LocalDate.now())) {
+    private void validateReservationDateInFuture(LocalDate date) {
+        if (!this.date.isAfter(date)) {
             throw new IllegalStateException("과거 및 당일 예약은 불가능합니다.");
         }
     }
