@@ -8,15 +8,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.domain.LoginSession;
 import roomescape.domain.Role;
 import roomescape.dto.LoginInfo;
 import roomescape.error.AccessDeniedException;
+import roomescape.service.LoginSessionService;
 
 @RequiredArgsConstructor
 public class AdminAuthorizationInterceptor implements HandlerInterceptor {
 
-    private final LoginSession loginSession;
+    private final LoginSessionService loginSessionService;
 
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler)
@@ -28,7 +28,7 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
         }
 
         try {
-            final LoginInfo loginInfo = loginSession.getLoginInfo(session);
+            final LoginInfo loginInfo = loginSessionService.getLoginInfo(session);
             if (Role.ADMIN.equals(loginInfo.role())) {
                 return true;
             }

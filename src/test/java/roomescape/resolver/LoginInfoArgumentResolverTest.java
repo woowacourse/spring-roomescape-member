@@ -15,15 +15,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.core.MethodParameter;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.ServletWebRequest;
-import roomescape.domain.LoginSession;
 import roomescape.domain.Role;
 import roomescape.dto.LoginInfo;
 import roomescape.error.AccessDeniedException;
+import roomescape.service.LoginSessionService;
 
 class LoginInfoArgumentResolverTest {
 
-    private final LoginSession loginSession = mock(LoginSession.class);
-    private final LoginInfoArgumentResolver sut = new LoginInfoArgumentResolver(loginSession);
+    private final LoginSessionService loginSessionService = mock(LoginSessionService.class);
+    private final LoginInfoArgumentResolver sut = new LoginInfoArgumentResolver(loginSessionService);
 
     @DisplayName("LoginRequired 어노테이션과 타입 조건에 따라 supportsParameter 동작을 확인한다")
     @ParameterizedTest
@@ -64,7 +64,7 @@ class LoginInfoArgumentResolverTest {
         var webRequest = new ServletWebRequest(request);
 
         var expectedLoginInfo = new LoginInfo(1L, "홍길동", Role.USER);
-        when(loginSession.getLoginInfo(session)).thenReturn(expectedLoginInfo);
+        when(loginSessionService.getLoginInfo(session)).thenReturn(expectedLoginInfo);
 
         // when
         var result = (LoginInfo) sut.resolveArgument(null, null, webRequest, null);

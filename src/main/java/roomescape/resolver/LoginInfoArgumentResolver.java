@@ -8,14 +8,14 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.domain.LoginSession;
 import roomescape.dto.LoginInfo;
 import roomescape.error.AccessDeniedException;
+import roomescape.service.LoginSessionService;
 
 @RequiredArgsConstructor
 public class LoginInfoArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final LoginSession loginSession;
+    private final LoginSessionService loginSessionService;
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
@@ -34,6 +34,6 @@ public class LoginInfoArgumentResolver implements HandlerMethodArgumentResolver 
             throw new AccessDeniedException("세션이 존재하지 않습니다.");
         }
 
-        return loginSession.getLoginInfo(session);
+        return loginSessionService.getLoginInfo(session);
     }
 }

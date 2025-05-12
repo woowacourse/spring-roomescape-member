@@ -3,7 +3,6 @@ package roomescape.service;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.domain.LoginSession;
 import roomescape.domain.Member;
 import roomescape.dto.LoginInfo;
 import roomescape.dto.request.AuthRequest;
@@ -15,7 +14,7 @@ import roomescape.repository.MemberRepository;
 public class AuthService {
 
     private final MemberRepository memberRepository;
-    private final LoginSession loginSession;
+    private final LoginSessionService loginSessionService;
 
     public void login(final AuthRequest request, final HttpSession session) {
         final Member member = memberRepository.findByEmail(request.email())
@@ -26,10 +25,10 @@ public class AuthService {
         }
 
         final LoginInfo loginInfo = new LoginInfo(member.getId(), member.getName(), member.getRole());
-        loginSession.setLoginInfo(session, loginInfo);
+        loginSessionService.setLoginInfo(session, loginInfo);
     }
 
     public void logout(final HttpSession session) {
-        loginSession.clear(session);
+        loginSessionService.clear(session);
     }
 }
