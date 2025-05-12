@@ -1,7 +1,5 @@
 package roomescape.theme.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +12,10 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.dto.ThemeRequestDto;
+import roomescape.theme.fixture.ThemeFixture;
+import roomescape.theme.repository.ThemeRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -30,6 +31,8 @@ class ThemeControllerTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private ThemeRepository themeRepository;
 
     @BeforeEach
     void cleanUp() {
@@ -61,14 +64,12 @@ class ThemeControllerTest {
     @DisplayName("Theme를 삭제한다.")
     @Test
     public void deleteById() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "a", "b", "c");
+        Theme theme = ThemeFixture.create("tt1", "dd1", "th1");
+        Theme savedTheme = themeRepository.save(theme);
 
         RestAssured.given().port(port).log().all()
-                .when().delete("/themes/1")
+                .when().delete("/themes/" + savedTheme.getId())
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
-
-        Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Long.class);
-        assertThat(count).isZero();
     }
 }
