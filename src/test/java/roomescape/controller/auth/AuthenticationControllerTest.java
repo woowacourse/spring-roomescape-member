@@ -46,7 +46,7 @@ class AuthenticationControllerTest {
     @DisplayName("로그인 성공 시, 쿠키를 반환해야한다")
     void login_ShouldSetTokenCookie() {
         // given
-        String email = "user1@example.com";
+        String email = "user@example.com";
         String password = "user123";
         LoginRequest request = new LoginRequest(email, password);
 
@@ -73,8 +73,8 @@ class AuthenticationControllerTest {
     @DisplayName("로그인 체크 시 유효한 토큰이 있다면, name 값을 반환해야한다")
     void loginCheck() {
         // given
-        String name = "user1";
-        String email = "user1@example.com";
+        String name = "user";
+        String email = "user@example.com";
         String password = "user123";
         LoginRequest request = new LoginRequest(email, password);
 

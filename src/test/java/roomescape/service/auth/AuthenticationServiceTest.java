@@ -25,7 +25,7 @@ class AuthenticationServiceTest {
     @DisplayName("이메일과 비밀번호가 같은 Member가 있을 경우, 토큰값을 반환한다.")
     void login() {
         //given
-        String email = "user1@example.com";
+        String email = "user@example.com";
         String password = "user123";
         // when
         String token = authenticationService.login(email, password);

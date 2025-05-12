@@ -29,8 +29,7 @@ public class AuthenticationController {
     @PostMapping("/login")
     public void login(@RequestBody LoginRequest request,
                       HttpServletResponse response) {
-        String encodedPassword = passwordEncoder.encode(request.password());
-        String token = authenticationService.login(request.email(), encodedPassword);
+        String token = authenticationService.login(request.email(), request.password());
         Cookie cookie = new Cookie("token", token);
         cookie.setPath("/");
         cookie.setHttpOnly(true);

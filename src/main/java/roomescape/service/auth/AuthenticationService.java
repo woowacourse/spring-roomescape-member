@@ -28,8 +28,7 @@ public class AuthenticationService {
             throw new IllegalArgumentException("[ERROR] 회원 정보를 찾을 수 없습니다.");
         }
         Member member = memberRepository.findByEmail(email);
-
-        if (!passwordEncoder.matches(member.getPassword(), password)) {
+        if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new IllegalArgumentException("[ERROR] 비밀번호가 잘못되었습니다.");
         }
         return jwtTokenProvider.createToken(member);
