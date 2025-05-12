@@ -36,3 +36,7 @@ VALUES ('김민준', '2025-04-30', 1, 8),
        ('송지후', '2025-04-30', 3, 8),
        ('남시우', '2025-04-30', 1, 11),
        ('오예린', '2025-04-30', 2, 1);
+
+INSERT INTO member (email, password, name, role, session_id)
+VALUES ('admin@email.com', 'MTIzNA==', '어드민', 'ADMIN', NULL),
+       ('phk1138@naver.com', 'MTIzNA==', '윌슨', 'USER', NULL)

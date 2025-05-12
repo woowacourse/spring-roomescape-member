@@ -9,12 +9,14 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 
 @Repository
 public class MemberRepositoryImpl implements MemberRepository {
 
     private static final RowMapper<Member> MEMBER_ROW_MAPPER = (rs, rowNum) -> new Member(
             rs.getLong("id"),
+            MemberRole.fromName(rs.getString("role")),
             rs.getString("email"),
             rs.getString("password"),
             rs.getString("name"),
@@ -38,6 +40,7 @@ public class MemberRepositoryImpl implements MemberRepository {
     @Override
     public Member save(final Member member) {
         Map<String, Object> parameters = new HashMap<>();
+        parameters.put("role", member.getRole().getName());
         parameters.put("email", member.getEmail());
         parameters.put("password", member.getPassword());
         parameters.put("name", member.getName());
@@ -54,7 +57,7 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public Optional<Member> findById(final long id) {
-        String sql = "SELECT id, email, password, name, session_id FROM member WHERE id = ?";
+        String sql = "SELECT * FROM member WHERE id = ?";
         List<Member> members = jdbcTemplate.query(sql, MEMBER_ROW_MAPPER, id);
         if (members.isEmpty()) {
             return Optional.empty();
@@ -64,13 +67,13 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public List<Member> findAll() {
-        String sql = "SELECT id, email, password, name, session_id FROM member";
+        String sql = "SELECT * FROM member";
         return jdbcTemplate.query(sql, MEMBER_ROW_MAPPER);
     }
 
     @Override
     public Optional<Member> findByEmail(final String email) {
-        String sql = "SELECT id, email, password, name, session_id FROM member WHERE email = ?";
+        String sql = "SELECT * FROM member WHERE email = ?";
         List<Member> members = jdbcTemplate.query(sql, MEMBER_ROW_MAPPER, email);
         if (members.isEmpty()) {
             return Optional.empty();

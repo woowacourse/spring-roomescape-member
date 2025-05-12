@@ -4,6 +4,7 @@ import java.util.Base64;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.dto.MemberRegisterRequest;
 import roomescape.dto.MemberRegisterResponse;
 import roomescape.dto.MemberResponse;
@@ -21,7 +22,7 @@ public class MemberService {
     public MemberRegisterResponse addMember(final MemberRegisterRequest request) {
         validateDuplicateEmail(request.email());
         validateDuplicateName(request.name());
-        final Member newMember = Member.createWithOutIdAndSession(request.email(), encode(request.password()),
+        final Member newMember = Member.createWithOutIdAndSession(request.email(), MemberRole.USER, encode(request.password()),
                 request.name());
         return MemberRegisterResponse.from(memberRepository.save(newMember));
     }

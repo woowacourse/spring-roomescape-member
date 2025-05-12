@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,6 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
@@ -98,6 +100,44 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         return template.queryForObject(sql, Boolean.class, date.toString(), time.getStartAt().toString());
     }
 
+    @Override
+    public List<ReservationV2> findByMemberIdAndThemeIdAndDateFromAndDateTo(final long memberId, final long themeId,
+                                                                            final LocalDate dateFrom,
+                                                                            final LocalDate dateTo) {
+        StringBuilder queryBuilder = new StringBuilder(joinReservationV2AndRelatedTables(""));
+        List<Object> params = new ArrayList<>();
+        List<String> conditions = new ArrayList<>();
+
+        if (memberId > 0) {
+            conditions.add("rv.member_id = ?");
+            params.add(memberId);
+        }
+
+        if (themeId > 0) {
+            conditions.add("rv.theme_id = ?");
+            params.add(themeId);
+        }
+
+        if (dateFrom != null && dateTo != null) {
+            conditions.add("rv.date BETWEEN ? AND ?");
+            params.add(dateFrom.toString());
+            params.add(dateTo.toString());
+        } else if (dateFrom != null) {
+            conditions.add("rv.date >= ?");
+            params.add(dateFrom.toString());
+        } else if (dateTo != null) {
+            conditions.add("rv.date <= ?");
+            params.add(dateTo.toString());
+        }
+
+        if (!conditions.isEmpty()) {
+            queryBuilder.append(" WHERE ");
+            queryBuilder.append(String.join(" AND ", conditions));
+        }
+
+        return template.query(queryBuilder.toString(), reservationV2RowMapper(), params.toArray());
+    }
+
     private RowMapper<Reservation> reservationRowMapper() {
         return (rs, rowNum) -> {
             ReservationTime reservationTime = new ReservationTime(
@@ -137,9 +177,9 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                     rs.getString("theme_thumbnail")
             );
 
-            // Member 생성
             Member member = new Member(
                     rs.getLong("member_id"),
+                    MemberRole.fromName(rs.getString("member_role")),
                     rs.getString("member_email"),
                     rs.getString("member_password"),
                     rs.getString("member_name"),
@@ -159,13 +199,14 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     private String joinReservationV2AndRelatedTables(String where) {
         String sql = """
                 SELECT 
-                    rv.id AS reservation_id, 
+                    rv.id AS reservation_id,
                     rv.date, 
                     m.id AS member_id, 
                     m.email AS member_email, 
                     m.password AS member_password, 
                     m.name AS member_name, 
                     m.session_id AS member_session_id,
+                    m.role AS member_role,
                     t.id AS time_id, 
                     t.start_at AS time_value, 
                     th.id AS theme_id, 
