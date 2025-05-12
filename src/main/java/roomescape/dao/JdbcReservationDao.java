@@ -134,7 +134,8 @@ public class JdbcReservationDao implements ReservationDao {
 
     private List<Object> appendFilterCondition(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo,
                                                StringBuilder sql) {
-        List<Object> params = new ArrayList<>(List.of("WHERE 1=1 "));
+        List<Object> params = new ArrayList<>();
+        sql.append("WHERE 1=1 ");
 
         if (themeId != null) {
             sql.append("AND (theme_id = ?) ");
