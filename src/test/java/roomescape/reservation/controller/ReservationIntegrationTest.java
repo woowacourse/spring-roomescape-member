@@ -68,8 +68,7 @@ class ReservationIntegrationTest {
         Map<String, String> params = Map.of(
                 "date", "2026-08-05",
                 "timeId", "6",
-                "themeId", "2",
-                "memberId", "2"
+                "themeId", "2"
         );
 
         // when
@@ -208,7 +207,6 @@ class ReservationIntegrationTest {
         String token = AuthFixture.createUserToken(authService);
 
         Map<String, String> requestBody = Map.of(
-                "name", "루키",
                 "date", LocalDate.now().plusDays(3).toString(),
                 "timeId", "1",
                 "themeId", "200",
@@ -250,38 +248,34 @@ class ReservationIntegrationTest {
         return Stream.of(
                 Arguments.of(
                         Map.of(
-                                "name", " ",
                                 "date", saveDate,
-                                "timeId", "1L",
-                                "themeId", "1L"
+                                "timeId", "1",
+                                "themeId", "1"
                         )
                 ),
                 Arguments.of(
                         Map.of(
                                 "date", saveDate,
-                                "timeId", "1L",
-                                "themeId", "1L"
+                                "timeId", "1",
+                                "themeId", "1"
                         )
                 ),
                 Arguments.of(
                         Map.of(
-                                "name", "루키",
-                                "timeId", "1L",
-                                "themeId", "1L"
+                                "timeId", "1",
+                                "themeId", "1"
                         )
                 ),
                 Arguments.of(
                         Map.of(
-                                "name", "루키",
                                 "date", saveDate,
-                                "themeId", "1L"
+                                "themeId", "1"
                         )
                 ),
                 Arguments.of(
                         Map.of(
-                                "name", "루키",
                                 "date", saveDate,
-                                "timeId", "1L"
+                                "timeId", "1"
                         )
                 )
         );
@@ -291,7 +285,6 @@ class ReservationIntegrationTest {
         return Stream.of(
                 Arguments.of(
                         Map.of(
-                                "name", "루키",
                                 "date", LocalDate.now().minusDays(10).toString(),
                                 "timeId", "1",
                                 "themeId", "1"
@@ -300,7 +293,6 @@ class ReservationIntegrationTest {
                 ),
                 Arguments.of(
                         Map.of(
-                                "name", "루키",
                                 "date", LocalDate.now().toString(),
                                 "timeId", "1",
                                 "themeId", "1"
