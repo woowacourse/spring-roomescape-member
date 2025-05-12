@@ -353,3 +353,108 @@
 
 - [x] "/" 요청 시 인기 테마 페이지를 응답
   - 페이지는 templates/index.html 파일을 이용
+
+## 4단계
+
+- [x] 사용자 도메인 추가
+  - 사용자는 아래의 정보를 가집니다.
+    - name: 사용자 이름
+    - email: 이메일
+    - password: 비밀번호
+
+로그인 기능 구현
+- [x] /login 요청 시 로그인 페이지 응답
+    - 페이지는 templates/login.html 파일을 이용
+  
+- [x] 로그인 API 구현
+  - Request
+    ```
+    POST /login HTTP/1.1
+    content-type: application/json
+    host: localhost:8080
+    
+    {
+        "email": "admin@email.com"
+        "password": "password",
+    }
+    ```
+  
+  - Response
+    ```
+    HTTP/1.1 200 OK
+    Content-Type: application-json
+    Keep-Alive: timeout=60
+    Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+    ```
+    
+- [x] 사용자 정보 조회 API 구현
+  - Request
+    ```
+    GET /login/check HTTP/1.1
+    cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+    host: localhost:8080
+    ```
+
+  - Response
+    ```
+    HTTP/1.1 200 OK
+    Connection: keep-alive
+    Content-Type: application/json
+    Date: Sun, 03 Mar 2024 19:16:56 GMT
+    Keep-Alive: timeout=60
+    Transfer-Encoding: chunked
+    
+    {
+    "name": "어드민"
+    }
+    ```
+
+## 5단계
+
+로그인 리팩터링
+- [x] Cookie에 담긴 인증 정보를 이용해 사용자 객체를 만드는 로직 분리
+  - HandlerMethodArgumentResolver 활용
+
+예약 생성 기능 변경 - 사용자
+- [x] 사용자가 예약 생성 시, 쿠키를 이용한 로그인한 사용자 정보를 활용하도록 리팩터링 합니다.
+  - Request
+    ```
+    POST /reservations HTTP/1.1
+    content-type: application/json
+    cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+    host: localhost:8080
+    
+    {
+        "date": "2024-03-01",
+        "themeId": 1,
+        "timeId": 1
+    }
+    ```
+    
+예약 생성 기능 변경 - 관리자
+- [x] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링 합니다.
+  - Request
+    ```
+    POST /admin/reservations HTTP/1.1
+    content-type: application/json
+    cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+    host: localhost:8080
+    
+    {
+        "date": "2024-03-01",
+        "themeId": 1,
+        "timeId": 1,
+        "memberId": 1
+    }
+    ```
+
+## 6단계
+
+접근 권한 제어
+- [x] Member의 Role이 ADMIN 인 사람만 /admin 으로 시작하는 페이지에 접근할 수 있습니다.
+  - HandlerInterceptor 활용
+  - 권한이 없는 경우 요청에 대한 거부 응답
+
+예약 목록 검색
+- [x] 예약 검색 기능 추가
+  - 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색이 가능하도록 기능을 추가하세요.

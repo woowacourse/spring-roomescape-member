@@ -15,4 +15,8 @@ public class DateUtils {
     public static LocalDate tomorrow() {
         return LocalDate.now().plusDays(1);
     }
+
+    public static LocalDate afterNDay(final int days) {
+        return LocalDate.now().plusDays(days);
+    }
 }
