@@ -211,16 +211,6 @@ class ReservationServiceTest {
         assertThat(reservations).hasSize(3);
     }
 
-//    private void initReservationService() {
-//        reservationRepository = new FakeReservationRepository();
-//        reservationTimeRepository = new FakeReservationTimeRepository();
-//        themeRepository = new FakeThemeRepository();
-//        memberRepository = new FakeMemberRepository();
-//
-//        reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
-//                themeRepository, memberRepository);
-//    }
-
     private void initReservationService() {
         reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository(reservationRepository);

@@ -10,9 +10,6 @@ import roomescape.repository.ThemeRepository;
 @Service
 public class ThemeService {
 
-    private static final int THEME_RANKING_END_RANGE = 7;
-    private static final int THEME_RANKING_START_RANGE = 1;
-
     private final ThemeRepository themeRepository;
 
     public ThemeService(ThemeRepository themeRepository) {
@@ -39,13 +36,4 @@ public class ThemeService {
         }
         themeRepository.deleteById(id);
     }
-
-//    public List<Theme> getRankingThemes(LocalDate originDate) {
-//        LocalDate end = originDate.minusDays(THEME_RANKING_START_RANGE);
-//        LocalDate start = end.minusDays(THEME_RANKING_END_RANGE);
-//        List<Reservation> inRangeReservations = reservationRepository.findAllByDateInRange(start, end);
-//
-//        ThemeRanking themeRanking = new ThemeRanking(inRangeReservations);
-//        return themeRanking.getAscendingRanking();
-//    }
 }
