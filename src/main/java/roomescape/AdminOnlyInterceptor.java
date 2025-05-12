@@ -25,11 +25,15 @@ public class AdminOnlyInterceptor implements HandlerInterceptor {
         }
 
         Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            response.sendRedirect("/login");
+            return false;
+        }
         for (Cookie cookie : cookies) {
             if ("token".equals(cookie.getName())) {
                 String token = cookie.getValue();
                 Member member = memberService.findByToken(token);
-                if(member.getRole().getId() == 2L) {
+                if (member.getRole().getId() == 2L) {
                     return true;
                 }
             }

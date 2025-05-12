@@ -7,8 +7,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.member.domain.Visitor;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Visitor;
 import roomescape.member.service.MemberService;
 
 public class VisitorArgumentResolver implements HandlerMethodArgumentResolver {
@@ -29,6 +29,9 @@ public class VisitorArgumentResolver implements HandlerMethodArgumentResolver {
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return new Visitor(null, null, null, null);
+        }
         for (Cookie cookie : cookies) {
             if ("token".equals(cookie.getName())) {
                 String token = cookie.getValue();
