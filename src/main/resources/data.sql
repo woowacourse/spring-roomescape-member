@@ -44,7 +44,7 @@ VALUES ('admin@email.com', 'MTIzNA==', '어드민', 'ADMIN', NULL),
        ('phk1158@naver.com', 'MTIzNA==', '한스', 'USER', NULL);
 
 INSERT INTO reservation_v2 (member_id, date, time_id, theme_id)
-VALUES (2, '2025-04-30', 1, 8),
-    (3, '2025-05-12', 3, 6),
-    (4, '2025-05-13', 1, 7),
-       (1, '2025-05-13', 2, 7)
+VALUES (2, '2025-05-07', 1, 8),
+    (3, '2025-05-06', 3, 6),
+    (4, '2025-05-05', 1, 7),
+       (1, '2025-05-01', 2, 7)
