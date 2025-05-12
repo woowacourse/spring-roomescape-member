@@ -3,6 +3,7 @@ package roomescape.reservation.dao;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -29,8 +30,8 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<Reservation> findAll() {
-        String sql = """
+    public List<Reservation> findAll(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        StringBuilder sql = new StringBuilder("""
                     SELECT 
                         r.id as reservation_id, 
                         r.date, 
@@ -49,9 +50,30 @@ public class JdbcReservationDao implements ReservationDao {
                     inner join reservation_time as rt on r.time_id = rt.id
                     inner join theme as t on t.id = r.theme_id
                     INNER JOIN member as m ON m.id = r.member_id
-                """;
+                    WHERE 1=1
+                """);
 
-        return this.jdbcTemplate.query(sql,
+        List<Object> params = new ArrayList<>();
+
+        if (themeId != null) {
+            sql.append(" AND r.theme_id = ?");
+            params.add(themeId);
+        }
+        if (memberId != null) {
+            sql.append(" AND r.member_id = ?");
+            params.add(memberId);
+        }
+        if (dateFrom != null) {
+            sql.append(" AND r.date >= ?");
+            params.add(dateFrom);
+        }
+        if (dateTo != null) {
+            sql.append(" AND r.date <= ?");
+            params.add(dateTo);
+        }
+
+        return this.jdbcTemplate.query(sql.toString(),
+                params.toArray(),
                 (resultSet, rowNum) -> {
                     ReservationTime reservationTime = new ReservationTime(
                             resultSet.getLong("time_id"),

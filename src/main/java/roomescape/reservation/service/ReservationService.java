@@ -38,8 +38,13 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public List<ReservationResponse> findAll() {
-        List<Reservation> reservationDaoAll = reservationDao.findAll();
+    public List<ReservationResponse> findAll(
+            Long themeId,
+            Long memberId,
+            LocalDate dateFrom,
+            LocalDate dateTo
+    ) {
+        List<Reservation> reservationDaoAll = reservationDao.findAll(themeId, memberId, dateFrom, dateTo);
         return reservationDaoAll.stream()
                 .map(ReservationResponse::toDto)
                 .toList();
@@ -81,10 +86,8 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(@Valid ReservationRequest request) {
-        System.out.println("member id: " + request.memberId());
         final Member member = memberDao.findById(request.memberId())
                 .orElseThrow(() -> new NoSuchElementException("예약자를 찾을 수 없습니다."));
-        System.out.println("member 정보: " + member);
 
         return reservationCreation(
                 request.date(),
