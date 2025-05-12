@@ -32,15 +32,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(exceptionResponse);
     }
 
-    @ExceptionHandler(SignatureException.class)
-    public ResponseEntity<ExceptionResponse> handleSignature(final SignatureException exception, final HttpServletRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(
-                HttpStatus.UNAUTHORIZED.value(), "[ERROR] " + exception.getMessage(), request.getRequestURI()
-        );
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(exceptionResponse);
-    }
-
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ExceptionResponse> handleUnauthorize(final UnauthorizedException exception, final HttpServletRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(

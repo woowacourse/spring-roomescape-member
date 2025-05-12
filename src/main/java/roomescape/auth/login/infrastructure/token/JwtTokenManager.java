@@ -34,13 +34,21 @@ public class JwtTokenManager {
 
     public Long getId(final String token) {
         validateValidToken(token);
-
-        return Long.valueOf(Jwts.parser()
+        
+        return parseLongId(Jwts.parser()
                 .verifyWith(new SecretKeySpec(secretKey.getBytes(), "HmacSHA256"))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject());
+    }
+
+    private Long parseLongId(final String rawId) {
+        try {
+            return Long.valueOf(rawId);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("토큰 정보를 파싱할 수 없습니다.");
+        }
     }
 
     public String getRole(final String token) {
