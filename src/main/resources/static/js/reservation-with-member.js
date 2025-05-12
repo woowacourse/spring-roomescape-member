@@ -3,7 +3,6 @@ const RESERVATION_API_ENDPOINT = '/reservations';
 const TIME_API_ENDPOINT = '/times';
 const THEME_API_ENDPOINT = '/themes';
 const MEMBER_API_ENDPOINT = '/members';
-const FILTER_API_ENDPOINT = '/reservations/filter'
 const timesOptions = [];
 const themesOptions = [];
 const membersOptions = [];
@@ -193,7 +192,7 @@ function applyFilter(event) {
     const dateFrom = document.getElementById('date-from').value;
     const dateTo = document.getElementById('date-to').value;
 
-    fetch(`${FILTER_API_ENDPOINT}?themeId=${themeId}&memberId=${memberId}&dateFrom=${dateFrom}&dateTo=${dateTo}`, { // 예약 검색 API 호출
+    fetch(`${RESERVATION_API_ENDPOINT}?themeId=${themeId}&memberId=${memberId}&dateFrom=${dateFrom}&dateTo=${dateTo}`, { // 예약 검색 API 호출
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'

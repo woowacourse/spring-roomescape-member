@@ -29,17 +29,15 @@ public class ReservationController {
     }
 
     @GetMapping
-    public List<ReservationResponse> readReservations() {
-        return reservationService.getReservations();
-    }
-
-    @GetMapping("/filter")
     public List<ReservationResponse> readFilterReservations(
             @RequestParam(required = false) Long themeId,
             @RequestParam(required = false) Long memberId,
             @RequestParam(required = false) LocalDate dateFrom,
             @RequestParam(required = false) LocalDate dateTo
     ) {
+        if (hasNoParameters(themeId, memberId, dateFrom, dateTo)) {
+            return reservationService.getReservations();
+        }
         return reservationService.getFilteredReservations(themeId, memberId, dateFrom, dateTo);
     }
 
@@ -58,5 +56,9 @@ public class ReservationController {
             @PathVariable long id
     ) {
         reservationService.deleteReservation(id);
+    }
+
+    private boolean hasNoParameters(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        return themeId == null && memberId == null && dateFrom == null && dateTo == null;
     }
 }
