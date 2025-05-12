@@ -3,6 +3,7 @@ package roomescape.reservation.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import roomescape.common.exception.BusinessException;
 import roomescape.member.domain.Member;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
@@ -21,11 +22,22 @@ public class Reservation {
                         final Theme theme,
                         final Member member
     ) {
+        validateIsNonNull(date);
+        validateIsNonNull(time);
+        validateIsNonNull(theme);
+        validateIsNonNull(member);
+
         this.id = id;
-        this.date = Objects.requireNonNull(date, "날짜는 null 일 수 없습니다.");
-        this.time = Objects.requireNonNull(time, "예약 시간은 null 일 수 없습니다.");
-        this.theme = Objects.requireNonNull(theme, "테마는 null 일 수 없습니다.");
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
         this.member = member;
+    }
+
+    private void validateIsNonNull(final Object object) {
+        if (object == null) {
+            throw new BusinessException("예약 정보는 null 일 수 없습니다.");
+        }
     }
 
     public static Reservation createWithoutId(final LocalDate date,
