@@ -13,6 +13,7 @@ import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.dto.TokenResponse;
 import roomescape.auth.service.AuthService;
 import roomescape.global.auth.AuthMember;
+import roomescape.global.auth.CookieUtil;
 import roomescape.member.domain.Member;
 
 @RestController
@@ -30,9 +31,7 @@ public class AuthController {
             final HttpServletResponse response
     ) {
         final TokenResponse token = authService.createToken(loginRequest);
-        final Cookie cookie = new Cookie("token", token.accessToken());
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
+        final Cookie cookie = CookieUtil.setTokenInfo(token.accessToken());
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
@@ -42,8 +41,7 @@ public class AuthController {
             @AuthMember final Member member,
             final HttpServletResponse response
     ) {
-        final Cookie cookie = new Cookie("token", null);
-        cookie.setPath("/");
+        Cookie cookie = CookieUtil.setTokenInfo(null);
         response.addCookie(cookie);
         return ResponseEntity.noContent().build();
     }

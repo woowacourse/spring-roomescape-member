@@ -1,8 +1,6 @@
 package roomescape.global.auth;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -31,20 +29,9 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
                                   final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory)
             throws Exception {
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        final Cookie[] cookies = request.getCookies();
-        final String token = getToken(cookies);
-        long id = jwtTokenProvider.getId(token);
+        final String token = CookieUtil.parseCookie(request.getCookies());
+        final long id = jwtTokenProvider.getId(token);
         return memberRepository.findById(id)
                 .orElseThrow(() -> new UnauthorizedException("확인할 수 없는 사용자입니다."));
-    }
-
-    private static String getToken(final Cookie[] cookies) {
-        if (cookies == null) {
-            throw new UnauthorizedException("인증할 수 없는 사용자입니다.");
-        }
-        return Arrays.stream(cookies).filter(cookie -> cookie.getName().equals("token"))
-                .findFirst()
-                .orElseThrow(() -> new UnauthorizedException("인증할 수 없는 사용자입니다."))
-                .getValue();
     }
 }

@@ -1,9 +1,7 @@
 package roomescape.global.auth;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.global.exception.custom.ForbiddenException;
 import roomescape.global.exception.custom.UnauthorizedException;
@@ -27,8 +25,7 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
             final HttpServletRequest request,
             final HttpServletResponse response, final Object handler
     ) throws Exception {
-        final Cookie[] cookies = request.getCookies();
-        final String token = getToken(cookies);
+        final String token = CookieUtil.parseCookie(request.getCookies());
         final long id = jwtTokenProvider.getId(token);
         final Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new UnauthorizedException("확인할 수 없는 사용자입니다."));
@@ -36,15 +33,5 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
             throw new ForbiddenException("접근 권한이 없습니다.");
         }
         return true;
-    }
-
-    private static String getToken(final Cookie[] cookies) {
-        if (cookies == null) {
-            throw new UnauthorizedException("인증할 수 없는 사용자입니다.");
-        }
-        return Arrays.stream(cookies).filter(cookie -> cookie.getName().equals("token"))
-                .findFirst()
-                .orElseThrow(() -> new UnauthorizedException("인증할 수 없는 사용자입니다."))
-                .getValue();
     }
 }
