@@ -3,6 +3,7 @@ package roomescape.reservation.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import roomescape.admin.domain.dto.SearchReservationRequestDto;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.dto.ReservationRequestDto;
 import roomescape.reservation.domain.dto.ReservationResponseDto;
@@ -60,6 +61,16 @@ public class ReservationService {
         if (exists) {
             throw new DuplicateReservationException();
         }
+    }
+
+    public List<ReservationResponseDto> findReservationsByUserAndThemeAndFromAndTo(
+            SearchReservationRequestDto searchReservationRequestDto) {
+        List<Reservation> reservations = repository.findReservationsByUserAndThemeAndFromAndTo(
+                searchReservationRequestDto);
+
+        return reservations.stream()
+                .map(this::convertReservationResponseDto)
+                .toList();
     }
 
     private Reservation convertReservation(ReservationRequestDto dto, User user) {

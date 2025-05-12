@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.admin.domain.dto.SearchReservationRequestDto;
 import roomescape.common.RowMapperManager;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.NotFoundReservationException;
@@ -137,6 +138,37 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND reservation.time_id = ?)";
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, reservationTime.getId());
+    }
+
+    @Override
+    public List<Reservation> findReservationsByUserAndThemeAndFromAndTo(
+            SearchReservationRequestDto searchReservationRequestDto) {
+        String sql = "SELECT reservation.id AS reservation_id, \n" +
+                "       reservation.date AS reservation_date, \n" +
+                "       reservation_time.id AS reservation_time_id, \n" +
+                "       reservation_time.start_at AS reservation_time_start_at, \n" +
+                "       theme.id AS theme_id, \n" +
+                "       theme.name AS theme_name, \n" +
+                "       theme.description AS theme_description, \n" +
+                "       theme.thumbnail AS theme_thumbnail, \n" +
+                "       users.id AS user_id, \n" +
+                "       users.role AS user_role, \n" +
+                "       users.name AS user_name, \n" +
+                "       users.email AS user_email, \n" +
+                "       users.password AS user_password \n" +
+                "FROM reservation\n" +
+                "    JOIN reservation_time ON reservation.time_id = reservation_time.id\n" +
+                "    JOIN theme ON reservation.theme_id = theme.id\n" +
+                "    JOIN users ON reservation.user_id = users.id\n" +
+                "WHERE users.id = ? AND theme.id = ? AND reservation.date BETWEEN ? AND ?";
+
+        return jdbcTemplate.query(
+                sql,
+                RowMapperManager.reservationRowMapper,
+                searchReservationRequestDto.userId(),
+                searchReservationRequestDto.themeId(),
+                searchReservationRequestDto.from(),
+                searchReservationRequestDto.to());
     }
 
     private Long insertWithKeyHolder(Reservation reservation) {

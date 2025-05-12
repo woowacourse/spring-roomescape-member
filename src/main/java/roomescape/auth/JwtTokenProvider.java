@@ -9,13 +9,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.crypto.SecretKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.auth.domain.dto.TokenInfoDto;
+import roomescape.global.exception.AuthorizationException;
 
 @Component
 public class JwtTokenProvider {
 
+    private static final Logger log = LoggerFactory.getLogger(JwtTokenProvider.class);
     @Value("${security.jwt.token.secret-key}")
     private String strSecretKey;
     @Value("${security.jwt.token.expire-length}")
@@ -34,14 +38,20 @@ public class JwtTokenProvider {
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
+        log.info("로그 생성 시작");
+        try {
+            return Jwts.builder()
+                    .subject(String.valueOf(tokenInfoDto.id()))
+                    .claims(claims)
+                    .issuedAt(now)
+                    .expiration(validity)
+                    .signWith(secretKey)
+                    .compact();
+        } catch (JwtException e) {
+            throw new AuthorizationException("토큰 생성 실패");
+        }
 
-        return Jwts.builder()
-                .subject(String.valueOf(tokenInfoDto.id()))
-                .claims(claims)
-                .issuedAt(now)
-                .expiration(validity)
-                .signWith(secretKey)
-                .compact();
+
     }
 
     private Map<String, ?> getMyClaimMap(TokenInfoDto tokenInfoDto) {

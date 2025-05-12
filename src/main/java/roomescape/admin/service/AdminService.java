@@ -1,7 +1,9 @@
 package roomescape.admin.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.admin.domain.dto.AdminReservationRequestDto;
+import roomescape.admin.domain.dto.SearchReservationRequestDto;
 import roomescape.member.exception.UnauthorizedUserRoleException;
 import roomescape.reservation.domain.dto.ReservationRequestDto;
 import roomescape.reservation.domain.dto.ReservationResponseDto;
@@ -22,13 +24,23 @@ public class AdminService {
 
     public ReservationResponseDto createReservation(AdminReservationRequestDto adminReservationRequestDto,
                                                     User admin) {
-        User member = userService.findById(adminReservationRequestDto.memberId());
-        if (!member.isMember()) {
-            throw new UnauthorizedUserRoleException();
-        }
+        User member = getUser(adminReservationRequestDto.memberId());
         ReservationRequestDto reservationRequestDto = convertAdminReservationRequestDtoToReservationRequestDto(
                 adminReservationRequestDto);
         return reservationService.add(reservationRequestDto, member);
+    }
+
+    private User getUser(Long memberId) {
+        User member = userService.findById(memberId);
+        if (!member.isMember()) {
+            throw new UnauthorizedUserRoleException();
+        }
+        return member;
+    }
+
+    public List<ReservationResponseDto> searchReservations(SearchReservationRequestDto searchReservationRequestDto,
+                                                           User admin) {
+        return reservationService.findReservationsByUserAndThemeAndFromAndTo(searchReservationRequestDto);
     }
 
     private static ReservationRequestDto convertAdminReservationRequestDtoToReservationRequestDto(
