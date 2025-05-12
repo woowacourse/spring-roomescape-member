@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.application.service.AuthService;
+import roomescape.domain.exception.UnauthorizedException;
 
 public class AdminAuthorizationInterceptor implements HandlerInterceptor {
 
@@ -27,6 +28,10 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
+        if (cookies == null) {
+            throw new UnauthorizedException();
+        }
+
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();
