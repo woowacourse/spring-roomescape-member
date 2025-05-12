@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.session.Session;
 import roomescape.auth.session.annotation.UserSession;
 import roomescape.common.uri.UriFactory;
 import roomescape.reservation.application.ReservationFacade;
@@ -47,7 +48,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> create(
             @RequestBody final CreateReservationWebRequest request,
-            @UserSession final roomescape.auth.session.UserSession session) {
+            @UserSession final Session session) {
         final ReservationResponse reservationResponse = reservationFacade.create(request, session);
         final URI location = UriFactory.buildPath(BASE_PATH, String.valueOf(reservationResponse.reservationId()));
         return ResponseEntity.created(location)

@@ -7,6 +7,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import roomescape.auth.jwt.manager.JwtManager;
+import roomescape.auth.session.Session;
 import roomescape.auth.session.annotation.UserSession;
 import roomescape.auth.session.util.UserSessionExtractor;
 import roomescape.common.cookie.manager.CookieManager;
@@ -40,12 +41,12 @@ public class RequiredRoleAspect {
 
     private Object check(final ProceedingJoinPoint joinPoint,
                          final UserRole[] requiredRoles) throws Throwable {
-        final roomescape.auth.session.UserSession session = extractUserSession(joinPoint);
+        final Session session = extractUserSession(joinPoint);
         validateAuthorization(session, requiredRoles);
         return joinPoint.proceed();
     }
 
-    private void validateAuthorization(final roomescape.auth.session.UserSession session, final UserRole[] requiredRoles) {
+    private void validateAuthorization(final Session session, final UserRole[] requiredRoles) {
         final boolean authorized = Arrays.stream(requiredRoles)
                 .anyMatch(session.role()::includes);
 
@@ -54,31 +55,31 @@ public class RequiredRoleAspect {
         }
     }
 
-    private roomescape.auth.session.UserSession extractUserSession(final ProceedingJoinPoint joinPoint) {
+    private Session extractUserSession(final ProceedingJoinPoint joinPoint) {
         return findAnnotatedUserSession(joinPoint)
                 .orElseGet(this::extractUserSessionFromRequest);
     }
 
-    private Optional<roomescape.auth.session.UserSession> findAnnotatedUserSession(final ProceedingJoinPoint joinPoint) {
+    private Optional<Session> findAnnotatedUserSession(final ProceedingJoinPoint joinPoint) {
         final MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         final Object[] args = joinPoint.getArgs();
         final Annotation[][] paramAnnotations = signature.getMethod().getParameterAnnotations();
 
         for (int i = 0; i < args.length; i++) {
             if (isAnnotatedUserSession(args[i], paramAnnotations[i])) {
-                return java.util.Optional.of((roomescape.auth.session.UserSession) args[i]);
+                return java.util.Optional.of((Session) args[i]);
             }
         }
         return Optional.empty();
     }
 
     private boolean isAnnotatedUserSession(final Object arg, final Annotation[] annotations) {
-        return arg instanceof roomescape.auth.session.UserSession &&
+        return arg instanceof Session &&
                 Arrays.stream(annotations)
                         .anyMatch(annotation -> annotation.annotationType().equals(UserSession.class));
     }
 
-    private roomescape.auth.session.UserSession extractUserSessionFromRequest() {
+    private Session extractUserSessionFromRequest() {
         return UserSessionExtractor.execute(
                 ServletRequestHolder.getRequest(),
                 cookieManager,

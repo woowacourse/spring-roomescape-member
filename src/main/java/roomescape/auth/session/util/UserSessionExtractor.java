@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import roomescape.auth.jwt.domain.Jwt;
 import roomescape.auth.jwt.domain.TokenType;
 import roomescape.auth.jwt.manager.JwtManager;
-import roomescape.auth.session.UserSession;
+import roomescape.auth.session.Session;
 import roomescape.common.cookie.manager.CookieManager;
 import roomescape.user.domain.UserId;
 import roomescape.user.domain.UserName;
@@ -16,9 +16,9 @@ import roomescape.user.domain.UserRole;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserSessionExtractor {
 
-    public static UserSession execute(final HttpServletRequest request,
-                                      final CookieManager cookieManager,
-                                      final JwtManager jwtManager) {
+    public static Session execute(final HttpServletRequest request,
+                                  final CookieManager cookieManager,
+                                  final JwtManager jwtManager) {
 
         // TODO 쿠키
         final Jwt accessToken = Jwt.from(
@@ -26,10 +26,10 @@ public class UserSessionExtractor {
 
         final Claims claims = jwtManager.parse(accessToken);
 
-        return new UserSession(
-                UserId.from(claims.get(UserSession.Fields.id, Long.class)),
-                UserName.from(claims.get(UserSession.Fields.name, String.class)),
-                UserRole.valueOf(claims.get(UserSession.Fields.role, String.class))
+        return new Session(
+                UserId.from(claims.get(Session.Fields.id, Long.class)),
+                UserName.from(claims.get(Session.Fields.name, String.class)),
+                UserRole.valueOf(claims.get(Session.Fields.role, String.class))
         );
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.jwt.manager.JwtManager;
+import roomescape.auth.session.Session;
 import roomescape.auth.session.annotation.UserSession;
 import roomescape.auth.session.util.UserSessionExtractor;
 import roomescape.common.cookie.manager.CookieManager;
@@ -23,7 +24,7 @@ public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentR
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
         return parameter.hasParameterAnnotation(UserSession.class)
-                && parameter.getParameterType().equals(roomescape.auth.session.UserSession.class);
+                && parameter.getParameterType().equals(Session.class);
     }
 
     @Override

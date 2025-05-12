@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import roomescape.auth.session.Session;
 import roomescape.auth.session.annotation.UserSession;
 import roomescape.auth.sign.application.SignFacade;
 import roomescape.auth.sign.ui.dto.SignInWebRequest;
@@ -30,7 +31,7 @@ public class SignController {
     }
 
     @GetMapping("/sign-in/check")
-    public ResponseEntity<UserSessionResponse> checkSignIn(@UserSession final roomescape.auth.session.UserSession session) {
+    public ResponseEntity<UserSessionResponse> checkSignIn(@UserSession final Session session) {
         return ResponseEntity.ok(
                 UserSessionResponse.from(session));
     }
