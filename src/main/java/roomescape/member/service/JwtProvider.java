@@ -12,7 +12,7 @@ public class JwtProvider implements TokenProvider {
 
     @Value("${security.jwt.token.secret_key}")
     private String SECRET_KEY;
-    @Value("${security.jwt.token.expriation_term}")
+    @Value("${security.jwt.token.expiration_term}")
     private long EXPIRATION_TERM;
 
     @Override
