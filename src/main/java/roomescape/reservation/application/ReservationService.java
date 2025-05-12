@@ -56,9 +56,9 @@ public class ReservationService {
 
     public void deleteIfOwner(final Long reservationId, final MemberAuthInfo memberAuthInfo) {
         final Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 데이터가 존재하지 않습니다. id = " + reservationId));
+                .orElseThrow(() -> new ResourceNotFoundException("해당 예약이 존재하지 않습니다. id = " + reservationId));
         final Member member = memberQueryRepository.findById(memberAuthInfo.id())
-                .orElseThrow(() -> new MemberNotFoundException("해당 회원 데이터가 존재하지 않습니다. id = " + memberAuthInfo.id()));
+                .orElseThrow(() -> new MemberNotFoundException("해당 회원이 존재하지 않습니다. id = " + memberAuthInfo.id()));
 
         if (member.isAdmin()) {
             reservationRepository.deleteById(reservationId);

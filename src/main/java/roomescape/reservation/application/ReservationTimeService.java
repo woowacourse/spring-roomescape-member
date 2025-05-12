@@ -28,7 +28,7 @@ public class ReservationTimeService {
 
         final Long id = reservationTimeRepository.save(new ReservationTime(startAt));
         final ReservationTime found = reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 시간이 존재하지 않습니다. id = " + id));
 
         return ReservationTimeResponse.from(found);
     }
@@ -37,13 +37,13 @@ public class ReservationTimeService {
         final Optional<ReservationTime> found = reservationTimeRepository.findById(id);
 
         if (found.isEmpty()) {
-            throw new ResourceNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + id);
+            throw new ResourceNotFoundException("해당 예약 시간이 존재하지 않습니다. id = " + id);
         }
 
         try {
             reservationTimeRepository.deleteById(id);
         } catch (final DataIntegrityViolationException e) {
-            throw new AlreadyExistException("해당 예약 시간을 사용하고 있는 예약 정보가 존재합니다. id = " + id);
+            throw new AlreadyExistException("해당 예약 시간을 사용하고 있는 예약이 존재합니다. id = " + id);
         }
     }
 

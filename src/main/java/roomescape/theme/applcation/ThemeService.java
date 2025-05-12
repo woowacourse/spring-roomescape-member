@@ -28,19 +28,19 @@ public class ThemeService {
         final Theme theme = new Theme(request.name(), request.description(), request.thumbnail());
         final Long id = themeCommandRepository.save(theme);
         final Theme found = themeQueryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("해당 테마가 존재하지 않습니다. id = " + id));
 
         return ThemeResponse.from(found);
     }
 
     public void delete(final Long id) {
         themeQueryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("해당 테마가 존재하지 않습니다. id = " + id));
 
         try {
             themeCommandRepository.deleteById(id);
         } catch (final DataIntegrityViolationException e) {
-            throw new AlreadyExistException("해당 테마를 사용하고 있는 예약 정보가 존재합니다. id = " + id);
+            throw new AlreadyExistException("해당 테마를 사용하고 있는 예약이 존재합니다. id = " + id);
         }
     }
 
