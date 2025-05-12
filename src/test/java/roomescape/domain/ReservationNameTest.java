@@ -1,11 +1,12 @@
 package roomescape.domain;
 
 import java.util.stream.Stream;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationNameTest {
 
@@ -13,7 +14,7 @@ class ReservationNameTest {
     @ParameterizedTest
     @MethodSource("invalidNames")
     void invalidNameTest(String name) {
-        Assertions.assertThatThrownBy(() -> new ReservationName(1L, name))
+        assertThatThrownBy(() -> new ReservationName(1L, name))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

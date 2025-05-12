@@ -1,36 +1,34 @@
 package roomescape.domain;
 
 import java.util.stream.Stream;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 class ThemeTest {
 
     @DisplayName("Description이 존재하지 않으면 생성 불가능하다")
     @Test
     void invalidThemeDescriptionTest() {
-        Assertions.assertThatThrownBy(() ->
-                        new Theme(1L, "가이온", null, "."))
+        assertThatThrownBy(() -> new Theme(1L, "가이온", null, "."))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("Thumbnail이 존재하지 않으면 생성 불가능하다")
     @Test
     void invalidThemeThumbnailTest1() {
-        Assertions.assertThatThrownBy(() ->
-                        new Theme(1L, "가이온", ".", null))
+        assertThatThrownBy(() -> new Theme(1L, "가이온", ".", null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("Thumbnail이 https URL 형식이 아니면 생성 불가능하다")
     @Test
     void invalidThemeThumbnailTest2() {
-        Assertions.assertThatThrownBy(() ->
-                        new Theme(1L, "가이온", ".", "."))
+        assertThatThrownBy(() -> new Theme(1L, "가이온", ".", "."))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -41,7 +39,7 @@ class ThemeTest {
         String description = ".";
         String thumbnail = ".";
 
-        Assertions.assertThatThrownBy(() -> new Theme(1L, themeName, description, thumbnail))
+        assertThatThrownBy(() -> new Theme(1L, themeName, description, thumbnail))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

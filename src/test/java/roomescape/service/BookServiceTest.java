@@ -2,7 +2,6 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -22,6 +21,7 @@ import roomescape.repository.ThemeRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class BookServiceTest {
 
@@ -46,7 +46,7 @@ class BookServiceTest {
             ReservationResponse responseDto = bookService.createAdminReservation(requestDto);
 
             // then
-            Assertions.assertAll(
+            assertAll(
                     () -> assertThat(responseDto.id()).isEqualTo(2L),
                     () -> assertThat(responseDto.date()).isEqualTo(date),
                     () -> assertThat(responseDto.member().name()).isEqualTo("어드민"),

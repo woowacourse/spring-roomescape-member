@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,9 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 class ReservationTimeServiceTest {
 
-    ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(new ArrayList<>());
-    ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
-    ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
+    private final ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(new ArrayList<>());
+    private final ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
+    private final ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
 
     @Nested
     @DisplayName("예약시간 생성")
@@ -52,7 +51,7 @@ class ReservationTimeServiceTest {
             ReservationTimeCreateRequest invalidRequestDto = new ReservationTimeCreateRequest(LocalTime.of(10, 0));
             reservationTimeService.createReservationTime(requestDto);
 
-            Assertions.assertThatThrownBy(() -> reservationTimeService.createReservationTime(invalidRequestDto));
+            assertThatThrownBy(() -> reservationTimeService.createReservationTime(invalidRequestDto));
         }
     }
 

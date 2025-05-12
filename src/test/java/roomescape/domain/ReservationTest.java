@@ -2,9 +2,10 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationTest {
 
@@ -17,7 +18,7 @@ class ReservationTest {
         Theme theme = new Theme(1L, "우테코", "방탈출", "https://");
 
         // when & then
-        Assertions.assertThatThrownBy(() -> new Reservation(1L, name, null, time, theme))
+        assertThatThrownBy(() -> new Reservation(1L, name, null, time, theme))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -30,7 +31,7 @@ class ReservationTest {
         Theme theme = new Theme(1L, "우테코", "방탈출", "https://");
 
         // when & then
-        Assertions.assertThatThrownBy(() -> new Reservation(1L, name, date, null, theme))
+        assertThatThrownBy(() -> new Reservation(1L, name, date, null, theme))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -43,7 +44,7 @@ class ReservationTest {
         Theme theme = new Theme(1L, "우테코", "방탈출", "https://");
 
         // when & then
-        Assertions.assertThatThrownBy(() -> new Reservation(1L, null, date, time, theme))
+        assertThatThrownBy(() -> new Reservation(1L, null, date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

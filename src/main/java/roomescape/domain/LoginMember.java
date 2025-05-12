@@ -20,7 +20,7 @@ public class LoginMember {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 사용자의 이름은 1글자 이상으로 이루어져야 합니다. ");
+            throw new IllegalArgumentException("[ERROR] 사용자의 이름은 1글자 이상으로 이루어져야 합니다.");
         }
     }
 
