@@ -16,6 +16,9 @@ import java.util.NoSuchElementException;
 @Service
 public class AuthService {
 
+    private static final String COOKIE_PATH = "/";
+    private static final int COOKIE_MAX_AGE = 600;
+
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
 
@@ -47,8 +50,8 @@ public class AuthService {
         return ResponseCookie.from("jwt_token", token)
                 .httpOnly(true)
                 .secure(false)
-                .path("/")
-                .maxAge(600)
+                .path(COOKIE_PATH)
+                .maxAge(COOKIE_MAX_AGE)
                 .build();
     }
 }
