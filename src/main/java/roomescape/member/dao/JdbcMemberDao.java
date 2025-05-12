@@ -30,7 +30,8 @@ public class JdbcMemberDao implements MemberDao {
                                 rs.getLong("id"),
                                 rs.getString("name"),
                                 rs.getString("email"),
-                                rs.getString("password")
+                                rs.getString("password"),
+                                rs.getString("role")
                         );
                     },
                     payload
@@ -52,11 +53,13 @@ public class JdbcMemberDao implements MemberDao {
             Member member = jdbcTemplate.queryForObject(
                     sql,
                     new Object[]{id},
-                    (rs, rowNum) -> new Member(
+                    (rs, rowNum) -> Member.of(
                             rs.getLong("id"),
                             rs.getString("name"),
                             rs.getString("email"),
-                            rs.getString("password")
+                            rs.getString("password"),
+                            rs.getString("role")
+
                     )
             );
             return Optional.ofNullable(member);
@@ -76,7 +79,8 @@ public class JdbcMemberDao implements MemberDao {
                         rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("email"),
-                        rs.getString("password")
+                        rs.getString("password"),
+                        rs.getString("role")
                 )
         );
     }

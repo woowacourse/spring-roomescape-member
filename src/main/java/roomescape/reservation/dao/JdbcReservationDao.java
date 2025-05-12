@@ -43,7 +43,8 @@ public class JdbcReservationDao implements ReservationDao {
                         m.id as member_id,
                         m.name as member_name,
                         m.email as member_email,
-                        m.password as member_password
+                        m.password as member_password,
+                        m.role as member_role
                     FROM reservation as r 
                     inner join reservation_time as rt on r.time_id = rt.id
                     inner join theme as t on t.id = r.theme_id
@@ -64,11 +65,12 @@ public class JdbcReservationDao implements ReservationDao {
                             resultSet.getString("theme_thumb")
                     );
 
-                    Member member = new Member(
+                    Member member = Member.of(
                             resultSet.getLong("member_id"),
                             resultSet.getString("member_name"),
                             resultSet.getString("member_email"),
-                            resultSet.getString("member_password")
+                            resultSet.getString("member_password"),
+                            resultSet.getString("member_role")
                     );
                     return Reservation.of(
                             resultSet.getLong("reservation_id"),

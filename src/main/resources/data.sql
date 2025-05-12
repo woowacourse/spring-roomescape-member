@@ -32,3 +32,5 @@ INSERT INTO member (name, email, password)
 VALUES ('이주연', 'leejuyeon28@gmail.com', 'password');
 INSERT INTO member (name, email, password)
 VALUES ('김영훈', 'younghooni@gmail.com', 'password');
+INSERT INTO member (name, email, password, role)
+VALUES ('관리자', 'admin@gmail.com', 'password', 'ADMIN');
