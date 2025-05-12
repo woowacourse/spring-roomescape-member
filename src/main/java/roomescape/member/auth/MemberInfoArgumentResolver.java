@@ -8,7 +8,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.member.auth.jwt.JwtTokenExtractor;
-import roomescape.member.auth.vo.MemberInfo;
 import roomescape.member.service.AuthService;
 
 @RequiredArgsConstructor

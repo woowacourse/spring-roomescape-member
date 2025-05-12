@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.member.controller.dto.LoginRequest;
 import roomescape.member.controller.dto.SignupRequest;
@@ -39,16 +40,72 @@ public class MissionStepTest {
     @Autowired
     private AuthService authService;
 
-    private String token;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    private String memberToken;
+    private String adminToken;
 
     @BeforeEach
     void setUp() {
-        String email = "brown@naver.com";
-        String password = "1234";
+        String memberEmail = "siso@naver.com";
+        String memberPassword = "1234";
+        String adminEmail = "solar@naver.com";
+        String adminPassword = "1234";
 
-        authService.signup(new SignupRequest(email, password, "브라운"));
+        authService.signup(new SignupRequest(memberEmail, memberPassword, "시소"));
+        jdbcTemplate.update("""
+                INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)
+                """, "솔라", adminEmail, passwordEncoder.encode(memberPassword), Role.ADMIN.name());
 
-        token = authService.login(new LoginRequest(email, password));
+        memberToken = authService.login(new LoginRequest(memberEmail, memberPassword));
+        adminToken = authService.login(new LoginRequest(adminEmail, adminPassword));
+    }
+
+    @Test
+    @DisplayName("회원가입을 통해 회원 정보를 저장하고, 이메일과 비밀번호를 통해 로그인한다")
+    void signup() {
+        final Map<String, String> params = new HashMap<>();
+        params.put("name", "gangsan");
+        params.put("email", "gangsan@gmail.com");
+        params.put("password", "1234");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/signup")
+                .then().log().all()
+                .statusCode(200)
+                .body("id", is(3));
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("로그인 상태라면 로그인 정보를 확인할 수 있고, 로그아웃 할 수 있다")
+    void login() {
+        RestAssured.given().log().all()
+                .cookie("token", memberToken)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(200)
+                .body("name", is("시소"));
+
+        RestAssured.given().log().all()
+                .cookie("token", memberToken)
+                .when().post("/logout")
+                .then().log().all()
+                .statusCode(200);
+
+        RestAssured.given().log().all()
+                .when().post("/logout")
+                .then().log().all()
+                .statusCode(401);
     }
 
     @Test
@@ -58,13 +115,25 @@ public class MissionStepTest {
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(401);
+
+        RestAssured.given().log().all()
+                .cookie("token", memberToken)
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(403);
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(200);
     }
 
     @Test
     @DisplayName("권한이 없다면 예약들을 조회할 수 없다")
     void second() {
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie("token", memberToken)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(403);
@@ -73,6 +142,24 @@ public class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(401);
+
+        RestAssured.given().log().all()
+                .cookie("token", memberToken)
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(403);
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .when().get("/admin/reservation")
+                .then().log().all()
+                .statusCode(200);
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200);
     }
 
     @Test
@@ -90,7 +177,7 @@ public class MissionStepTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", token)
+                .cookie("token", memberToken)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -98,20 +185,29 @@ public class MissionStepTest {
                 .body("id", is(1));
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .cookie("token", adminToken)
+                .body(params)
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
+
+        RestAssured.given().log().all()
+                .cookie("token", memberToken)
                 .when().get("/reservations/mine")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie("token", memberToken)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie("token", memberToken)
                 .when().get("/reservations/mine")
                 .then().log().all()
                 .statusCode(200)
@@ -144,7 +240,7 @@ public class MissionStepTest {
                 1, "2023-08-05", 1, 1);
 
         final List<ReservationWebResponse> reservations = RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie("token", memberToken)
                 .when().get("/reservations/mine")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -171,7 +267,7 @@ public class MissionStepTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", token)
+                .cookie("token", memberToken)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -181,7 +277,7 @@ public class MissionStepTest {
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie("token", memberToken)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
@@ -197,14 +293,20 @@ public class MissionStepTest {
                 "10:00");
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie("token", memberToken)
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie("token", memberToken)
+                .when().delete("/times/1")
+                .then().log().all()
+                .statusCode(403);
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
                 .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(204);
