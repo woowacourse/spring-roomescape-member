@@ -22,7 +22,7 @@ import roomescape.member.domain.MemberQueryRepository;
 @RequiredArgsConstructor
 public class JdbcMemberRepository implements MemberCommandRepository, MemberQueryRepository {
 
-    private static final RowMapper<Member> RESERVATION_ROW_MAPPER = (rs, rowNum) ->
+    private static final RowMapper<Member> MEMBER_ROW_MAPPER = (rs, rowNum) ->
             new Member(
                     rs.getLong("id"),
                     rs.getString("name"),
@@ -75,10 +75,13 @@ public class JdbcMemberRepository implements MemberCommandRepository, MemberQuer
                 WHERE email = ?
                 """;
 
-        // TODO: 여러 개의 행이 조회 되는 경우에 대한 예외 처리
-        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, email)
-                .stream()
-                .findFirst();
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, MEMBER_ROW_MAPPER, email));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new InCorrectResultSizeException("회원이 여러명 존재합니다.");
+        }
     }
 
     @Override
@@ -94,9 +97,13 @@ public class JdbcMemberRepository implements MemberCommandRepository, MemberQuer
                 WHERE id = ?
                 """;
 
-        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id)
-                .stream()
-                .findFirst();
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, MEMBER_ROW_MAPPER, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new InCorrectResultSizeException("회원이 여러명 존재합니다.");
+        }
     }
 
     @Override
@@ -113,13 +120,12 @@ public class JdbcMemberRepository implements MemberCommandRepository, MemberQuer
                 """;
 
         try {
-            return jdbcTemplate.queryForObject(sql, RESERVATION_ROW_MAPPER, id);
+            return jdbcTemplate.queryForObject(sql, MEMBER_ROW_MAPPER, id);
         } catch (EmptyResultDataAccessException e) {
             throw new ResourceNotFoundException("회원이 존재하지 않습니다.");
         } catch (IncorrectResultSizeDataAccessException e) {
-            throw new InCorrectResultSizeException("회원이 여러 개 존재합니다.");
+            throw new InCorrectResultSizeException("회원이 여러명 존재합니다.");
         }
-
     }
 
     @Override
@@ -134,6 +140,6 @@ public class JdbcMemberRepository implements MemberCommandRepository, MemberQuer
                 FROM members
                 """;
 
-        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
+        return jdbcTemplate.query(sql, MEMBER_ROW_MAPPER);
     }
 }

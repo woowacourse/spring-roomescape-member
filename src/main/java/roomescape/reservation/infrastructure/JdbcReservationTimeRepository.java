@@ -60,12 +60,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeCommandRepo
                 FROM reservation_times 
                 WHERE id = ?
                 """;
-        final List<ReservationTime> reservationTimes = jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER, id);
 
-        if (!reservationTimes.isEmpty()) {
-            return Optional.of(reservationTimes.getFirst());
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, RESERVATION_TIME_ROW_MAPPER, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new InCorrectResultSizeException("예약 시간이 여러 개 존재합니다.");
         }
-        return Optional.empty();
     }
 
     @Override

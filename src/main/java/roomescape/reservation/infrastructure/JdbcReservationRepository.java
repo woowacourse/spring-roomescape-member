@@ -118,9 +118,13 @@ public class JdbcReservationRepository implements ReservationCommandRepository, 
                 WHERE r.id = ?
                 """;
 
-        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id)
-                .stream()
-                .findFirst();
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, RESERVATION_ROW_MAPPER, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new InCorrectResultSizeException("예약이 여러 개 존재합니다.");
+        }
     }
 
     @Override

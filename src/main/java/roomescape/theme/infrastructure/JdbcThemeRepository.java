@@ -87,9 +87,13 @@ public class JdbcThemeRepository implements ThemeQueryRepository, ThemeCommandRe
                 WHERE id = ?
                 """;
 
-        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, id)
-                .stream()
-                .findFirst();
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, THEME_ROW_MAPPER, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new InCorrectResultSizeException("테마가 여러 개 존재합니다.");
+        }
     }
 
     @Override
