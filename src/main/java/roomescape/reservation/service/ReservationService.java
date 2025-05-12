@@ -83,7 +83,7 @@ public class ReservationService {
     public ReservationResponse createReservation(@Valid ReservationRequest request) {
         System.out.println("member id: " + request.memberId());
         final Member member = memberDao.findById(request.memberId())
-                .orElseThrow(ReservationNotFoundException::new);
+                .orElseThrow(() -> new NoSuchElementException("예약자를 찾을 수 없습니다."));
         System.out.println("member 정보: " + member);
 
         return reservationCreation(
@@ -106,7 +106,7 @@ public class ReservationService {
 
         return new ReservationResponse(
                 id,
-                new MemberResponse(member.getName()),
+                new MemberResponse(member.getId(), member.getName()),
                 date,
                 new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt()),
                 theme.getName()

@@ -41,11 +41,11 @@ public class ReservationController {
     }
 
     @PostMapping("/admin/reservations")
-    public ResponseEntity<Long> createAdmin(
+    public ResponseEntity<ReservationResponse> createAdmin(
             @Valid @RequestBody ReservationRequest reservationRequest
     ) {
         final ReservationResponse response = reservationService.createReservation(reservationRequest);
-        return ResponseEntity.created(URI.create("/reservations/" + response.id())).body(response.id());
+        return ResponseEntity.created(URI.create("/reservations/" + response.id())).body(response);
     }
 
     @DeleteMapping("/reservations/{id}")

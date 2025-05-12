@@ -14,7 +14,7 @@ public record ReservationResponse(
 ) {
     public static ReservationResponse toDto(Reservation reservation) {
         ReservationTimeResponse dto = ReservationTimeResponse.toDto(reservation.getReservationTime());
-        return new ReservationResponse(reservation.getId(), new MemberResponse(reservation.getMember().getName()), reservation.getDate(), dto,
+        return new ReservationResponse(reservation.getId(), new MemberResponse(reservation.getMember().getId(), reservation.getMember().getName()), reservation.getDate(), dto,
                 reservation.getTheme().getName());
     }
 }
