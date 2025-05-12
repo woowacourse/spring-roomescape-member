@@ -35,7 +35,7 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public ReservationResponse addByUser(MemberReservationRequest request, Member user) {
+    public ReservationResponse addByUser(MemberReservationRequest request, Member member) {
         Time time = findReservationTimeOrThrow(request.timeId());
 
         LocalDate date = request.date();
@@ -44,7 +44,7 @@ public class ReservationService {
 
         Theme theme = findThemeOrThrow(request.themeId());
 
-        Reservation reservation = Reservation.createBeforeSaved(user, date, time, theme);
+        Reservation reservation = Reservation.createBeforeSaved(member, date, time, theme);
         return ReservationResponse.from(reservationRepository.add(reservation));
     }
 
