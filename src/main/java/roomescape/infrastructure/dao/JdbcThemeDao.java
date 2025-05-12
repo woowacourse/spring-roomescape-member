@@ -66,13 +66,24 @@ public class JdbcThemeDao implements ThemeDao {
 
     @Override
     public List<Theme> findPopular(int count) {
+//        String sql = """
+//                SELECT t.id, t.name, t.description, t.thumbnail
+//                FROM theme AS t
+//                LEFT JOIN (
+//                    SELECT r.theme_id
+//                    FROM reservation AS r
+//                    WHERE PARSEDATETIME(r.date, 'yyyy-MM-dd') BETWEEN TIMESTAMPADD(DAY, -7, CURRENT_DATE) AND TIMESTAMPADD(DAY, -1, CURRENT_DATE)
+//                ) AS r ON t.id = r.theme_id
+//                GROUP BY t.id
+//                ORDER BY count(*) DESC
+//                limit ?
+//                """;
+
         String sql = """
-                SELECT count(*), t.id, t.name, t.description, t.thumbnail FROM theme AS t
-                LEFT JOIN (
-                    SELECT * 
-                    FROM reservation AS r 
-                    WHERE PARSEDATETIME(r.date, 'yyyy-MM-dd') BETWEEN TIMESTAMPADD(DAY, -7, CURRENT_DATE) AND TIMESTAMPADD(DAY, -1, CURRENT_DATE)
-                ) AS r ON t.id = r.theme_id
+                SELECT t.id, t.name, t.description, t.thumbnail 
+                FROM theme AS t
+                LEFT JOIN reservation AS r ON t.id = r.theme_id
+                    AND PARSEDATETIME(r.date, 'yyyy-MM-dd') BETWEEN TIMESTAMPADD(DAY, -7, CURRENT_DATE) AND TIMESTAMPADD(DAY, -1, CURRENT_DATE)
                 GROUP BY t.id
                 ORDER BY count(*) DESC
                 limit ?
