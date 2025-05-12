@@ -61,7 +61,7 @@ class ReservationServiceTest {
         LocalDate now = LocalDate.now();
         CreateReservationRequest request = new CreateReservationRequest(
                 now.plusDays(1),
-                loginMember.id(),
+                loginMember,
                 1L,
                 themeId
         );
@@ -83,7 +83,7 @@ class ReservationServiceTest {
         LocalDate now = LocalDate.now();
         CreateReservationRequest request = new CreateReservationRequest(
                 now.minusDays(1),
-                loginMember.id(),
+                loginMember,
                 timeId,
                 themeId
         );
@@ -109,7 +109,7 @@ class ReservationServiceTest {
 
         CreateReservationRequest request = new CreateReservationRequest(
                 now.plusDays(1),
-                loginMember.id(),
+                loginMember,
                 timeId,
                 themeId
         );
@@ -131,7 +131,7 @@ class ReservationServiceTest {
         LocalDate now = LocalDate.now();
         LocalDate date = now.minusDays(1);
 
-        CreateReservationRequest request = new CreateReservationRequest(date, loginMember.id(), timeId, themeId);
+        CreateReservationRequest request = new CreateReservationRequest(date, loginMember, timeId, themeId);
 
         // when & then
         assertThatThrownBy(() -> {

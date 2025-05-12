@@ -1,8 +1,5 @@
 package roomescape.auth.service;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
 import org.springframework.stereotype.Service;
 import roomescape.auth.entity.Member;
 import roomescape.auth.repository.MemberRepository;
@@ -11,7 +8,6 @@ import roomescape.auth.service.dto.request.UserSignupRequest;
 import roomescape.auth.service.dto.LoginMember;
 import roomescape.auth.service.dto.response.LoginResponse;
 import roomescape.auth.service.dto.response.MemberIdAndNameResponse;
-import roomescape.global.exception.badRequest.BadRequestException;
 import roomescape.global.exception.conflict.MemberEmailConflictException;
 import roomescape.global.exception.notFound.MemberNotFoundException;
 import roomescape.global.exception.unauthorized.MemberUnauthorizedException;
@@ -33,11 +29,7 @@ public class MemberAuthService {
     public LoginResponse login(LoginRequest request) {
         Member member = memberRepository.findByEmailAndPassword(request.email(), request.password())
                 .orElseThrow(MemberUnauthorizedException::new);
-        Claims claims = Jwts.claims()
-                .subject(member.getId().toString())
-                .add("role", member.getRole().name())
-                .build();
-        String token = jwtTokenProvider.createToken(claims);
+        String token = jwtTokenProvider.createToken(member);
         return new LoginResponse(token);
     }
 
@@ -51,19 +43,10 @@ public class MemberAuthService {
                 });
     }
 
-    // TODO: 파라미터 토큰 ? user id?
-    public LoginMember getLoginMemberByToken(String token) {
-        try {
-            Claims claims = jwtTokenProvider.resolve(token);
-            final long userId = Long.parseLong(claims.getSubject());
-            Member member = memberRepository.findById(userId)
-                    .orElseThrow(() -> new MemberNotFoundException(userId));
-            return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
-        } catch (JwtException e) {
-            throw new BadRequestException("올바르지 않은 토큰입니다.");
-        } catch (NumberFormatException e) {
-            throw new BadRequestException("잘못된 형식의 토큰입니다.");
-        }
+    public LoginMember getLoginMemberById(final Long userId) {
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new MemberNotFoundException(userId));
+        return LoginMember.of(member);
     }
 
     public List<MemberIdAndNameResponse> getAllMemberNames() {
