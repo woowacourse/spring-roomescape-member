@@ -4,7 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
-import roomescape.application.support.exception.UnauthorizedException;
+import roomescape.application.support.exception.JwtExtractException;
 
 @Component
 public class JwtTokenExtractor {
@@ -17,11 +17,11 @@ public class JwtTokenExtractor {
 
     private Cookie getTokenCookie(HttpServletRequest request) {
         if (request.getCookies() == null) {
-            throw new UnauthorizedException("인증 쿠키값이 존재하지 않습니다.");
+            throw new JwtExtractException("인증 쿠키값이 존재하지 않습니다.");
         }
         return Arrays.stream(request.getCookies())
                 .filter(each -> each.getName().equals(JWT_TOKEN_COOKIE_KEY))
                 .findFirst()
-                .orElseThrow(() -> new UnauthorizedException("인증 쿠키값이 존재하지 않습니다."));
+                .orElseThrow(() -> new JwtExtractException("인증 쿠키값이 존재하지 않습니다."));
     }
 }

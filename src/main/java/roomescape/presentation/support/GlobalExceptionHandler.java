@@ -17,6 +17,7 @@ import roomescape.application.support.exception.NotFoundEntityException;
 import roomescape.application.support.exception.UnauthorizedException;
 import roomescape.application.support.exception.UnauthorizedException.LoginAuthException;
 import roomescape.domain.BusinessRuleViolationException;
+import roomescape.presentation.support.ParameterResolveException.AuthInfoResolveException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -47,7 +48,17 @@ public class GlobalExceptionHandler {
         }
         return ResponseEntity.badRequest().body(new ApiFailResponse("잘못된 요청입니다."));
     }
-    
+
+    @ExceptionHandler(ParameterResolveException.class)
+    public ResponseEntity<ApiFailResponse> handleParameterResolveException(ParameterResolveException e) {
+        return ResponseEntity.badRequest().body(new ApiFailResponse("잘못된 요청입니다."));
+    }
+
+    @ExceptionHandler(AuthInfoResolveException.class)
+    public ResponseEntity<ApiFailResponse> handleAuthInfoResolveException(AuthInfoResolveException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiFailResponse("인증 정보를 확인할 수 없습니다."));
+    }
+
     @ExceptionHandler(CoreException.class)
     public ResponseEntity<ApiFailResponse> handleCoreException(CoreException e) {
         return ResponseEntity.badRequest().body(new ApiFailResponse(e.getMessage()));

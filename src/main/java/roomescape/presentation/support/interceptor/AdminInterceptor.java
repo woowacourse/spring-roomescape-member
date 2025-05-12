@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.application.auth.dto.JwtPayload;
 import roomescape.application.support.exception.ForbiddenException;
+import roomescape.application.support.exception.JwtExtractException;
+import roomescape.application.support.exception.UnauthorizedException;
 import roomescape.domain.member.Role;
 import roomescape.infrastructure.security.JwtProvider;
 import roomescape.presentation.support.JwtTokenExtractor;
@@ -24,11 +26,19 @@ public class AdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        String jwtToken = jwtTokenExtractor.extract(request);
-        JwtPayload jwtPayload = jwtProvider.extractPayload(jwtToken);
+        JwtPayload jwtPayload = getJwtPayload(request);
         if (jwtPayload.role() != Role.ADMIN) {
             throw new ForbiddenException("접근 권한이 없습니다.");
         }
         return true;
+    }
+
+    private JwtPayload getJwtPayload(HttpServletRequest request) {
+        try {
+            String jwtToken = jwtTokenExtractor.extract(request);
+            return jwtProvider.extractPayload(jwtToken);
+        } catch (JwtExtractException e) {
+            throw new UnauthorizedException("인증 정보를 확인할 수 없습니다.", e);
+        }
     }
 }

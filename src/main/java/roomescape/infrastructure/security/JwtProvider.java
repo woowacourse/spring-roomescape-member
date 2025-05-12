@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.Date;
 import org.springframework.stereotype.Component;
 import roomescape.application.auth.dto.JwtPayload;
-import roomescape.application.support.exception.UnauthorizedException;
+import roomescape.application.support.exception.JwtExtractException;
 import roomescape.domain.member.Role;
 
 @Component
@@ -57,9 +57,9 @@ public class JwtProvider {
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (ExpiredJwtException e) {
-            throw new UnauthorizedException("만료된 토큰입니다.", e);
+            throw new JwtExtractException("만료된 토큰입니다.", e);
         } catch (JwtException | IllegalArgumentException e) {
-            throw new UnauthorizedException("잘못된 형식의 토큰입니다.", e);
+            throw new JwtExtractException("잘못된 형식의 토큰입니다.", e);
         }
     }
 }

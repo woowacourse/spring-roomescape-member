@@ -17,6 +17,8 @@ public final class TestFixtures {
             Role.NORMAL);
     public static final MemberResult NORMAL_MEMBER_1_RESULT = new MemberResult(NORMAL_MEMBER_1.getId(),
             NORMAL_MEMBER_1.getName());
+    public static final MemberResult NORMAL_MEMBER_2_RESULT = new MemberResult(NORMAL_MEMBER_2.getId(),
+            NORMAL_MEMBER_2.getName());
 
 
     public static final Theme THEME_1 = new Theme(1L, "test", "description", "thumbnail");
