@@ -8,10 +8,10 @@ import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRole;
 import roomescape.repository.MemberRepository;
 
-public class AuthInterceptorConfig implements HandlerInterceptor {
+public class AuthInterceptor implements HandlerInterceptor {
     private final MemberRepository memberRepository;
 
-    public AuthInterceptorConfig(final MemberRepository memberRepository) {
+    public AuthInterceptor(final MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
