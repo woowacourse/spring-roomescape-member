@@ -66,7 +66,7 @@ class JdbcMemberDaoTest {
             "haru@woowa.com, 2, 하루, USER",
             "verus@woowa.com, 3, 베루스, ADMIN",
             "user@user.com, 4, 사용자, USER",
-            "admin@admin.com, 5, 관리자, ADMIN",
+            "admin@admin.com, 5, 관리자, ADMIN"
     })
     @ParameterizedTest
     void find_by_email_test(String email, Long id, String name, Role role) {
@@ -100,7 +100,7 @@ class JdbcMemberDaoTest {
             "2, haru@woowa.com, 하루, USER",
             "3, verus@woowa.com, 베루스, ADMIN",
             "4, user@user.com, 사용자, USER",
-            "5, admin@admin.com, 관리자, ADMIN",
+            "5, admin@admin.com, 관리자, ADMIN"
     })
     @ParameterizedTest
     void find_by_id_test(Long id, String email, String name, Role role) {
