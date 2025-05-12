@@ -1,16 +1,22 @@
-package roomescape.application.util;
+package roomescape.infrastructure.service;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import roomescape.application.service.TokenService;
 import roomescape.domain.exception.UnauthorizedException;
 import roomescape.domain.model.Member;
 
-public class JwtTokenUtil {
+@Component
+public class JwtTokenService implements TokenService {
 
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+    @Value("${jwt.secret.key}")
+    private String SECRET_KEY;
 
-    public static String createToken(final Member member) {
+    @Override
+    public String createToken(final Member member) {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("role", member.getRole())
@@ -18,7 +24,8 @@ public class JwtTokenUtil {
                 .compact();
     }
 
-    public static String checkByToken(String token) {
+    @Override
+    public String checkByToken(String token) {
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))

@@ -1,7 +1,6 @@
 package roomescape.application.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.application.util.JwtTokenUtil;
 import roomescape.application.util.PasswordUtil;
 import roomescape.domain.exception.MemberDuplicatedException;
 import roomescape.domain.exception.UnauthorizedException;
@@ -15,9 +14,11 @@ import roomescape.presentation.dto.response.SignupResponse;
 @Service
 public class AuthService {
 
+    private final TokenService tokenService;
     private final MemberRepository memberRepository;
 
-    public AuthService(final MemberRepository memberRepository) {
+    public AuthService(final TokenService tokenService, final MemberRepository memberRepository) {
+        this.tokenService = tokenService;
         this.memberRepository = memberRepository;
     }
 
@@ -44,12 +45,12 @@ public class AuthService {
             throw new UnauthorizedException();
         }
 
-        String token = JwtTokenUtil.createToken(member);
+        String token = tokenService.createToken(member);
         return new LoginResponse(token);
     }
 
     public Member loadMemberByAuthInformation(final String token) {
-        Long memberId = Long.valueOf(JwtTokenUtil.checkByToken(token));
+        Long memberId = Long.valueOf(tokenService.checkByToken(token));
         return memberRepository.findById(memberId);
     }
 }
