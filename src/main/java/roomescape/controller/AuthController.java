@@ -16,8 +16,8 @@ import roomescape.dto.member.LoginRequest;
 import roomescape.dto.member.RegistrationRequest;
 import roomescape.dto.member.TokenResponse;
 import roomescape.exception.UnauthorizedAccessException;
-import roomescape.service.LoginMemberService;
 import roomescape.service.LoginService;
+import roomescape.service.MemberService;
 import roomescape.service.SignupService;
 
 @RestController
@@ -25,12 +25,12 @@ public class AuthController {
 
     private final SignupService signupService;
     private final LoginService loginService;
-    private final LoginMemberService loginMemberService;
+    private final MemberService memberService;
 
-    public AuthController(SignupService signupService, LoginService loginService, LoginMemberService loginMemberService) {
+    public AuthController(SignupService signupService, LoginService loginService, MemberService memberService) {
         this.signupService = signupService;
         this.loginService = loginService;
-        this.loginMemberService = loginMemberService;
+        this.memberService = memberService;
     }
 
     @PostMapping("/members")
@@ -45,7 +45,7 @@ public class AuthController {
             throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
         }
 
-        List<LoginMemberResponse> response = loginMemberService.findAllMembers()
+        List<LoginMemberResponse> response = memberService.findAllMembers()
                 .stream()
                 .map(value -> new LoginMemberResponse(value.getId(), value.getName()))
                 .toList();

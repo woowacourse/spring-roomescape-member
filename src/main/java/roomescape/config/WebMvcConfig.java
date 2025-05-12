@@ -8,25 +8,25 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.interceptor.LoginInterceptor;
 import roomescape.resolver.LoginMemberArgumentResolver;
-import roomescape.service.LoginMemberService;
+import roomescape.service.MemberService;
 import roomescape.util.JwtTokenProvider;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Autowired
-    private LoginMemberService loginMemberService;
+    private MemberService memberService;
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberArgumentResolver(loginMemberService));
+        resolvers.add(new LoginMemberArgumentResolver(memberService));
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new LoginInterceptor(loginMemberService, jwtTokenProvider)).addPathPatterns("/admin/**");
+        registry.addInterceptor(new LoginInterceptor(memberService, jwtTokenProvider)).addPathPatterns("/admin/**");
     }
 }
