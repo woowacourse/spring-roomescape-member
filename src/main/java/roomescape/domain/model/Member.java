@@ -22,6 +22,10 @@ public class Member {
         this(null, name, email, password, role);
     }
 
+    public Member(final Long id, final String name, final String email, final String role) {
+        this(null, name, email, null, role);
+    }
+
     public boolean isAdmin() {
         return role.isAdmin();
     }

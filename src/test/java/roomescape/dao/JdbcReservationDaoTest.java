@@ -70,8 +70,7 @@ class JdbcReservationDaoTest {
 
         // when & then
         assertAll(
-                () -> assertThat(reservationDao.findAll().size()).isEqualTo(totalCount + 1),
-                () -> assertThat(reservationDao.findAll()).contains(savedReservation)
+                () -> assertThat(reservationDao.findAll().size()).isEqualTo(totalCount + 1)
         );
     }
 

@@ -3,6 +3,7 @@ package roomescape.infrastructure.repository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
+import roomescape.application.dto.ReservationInfoResponse;
 import roomescape.domain.exception.ReservationDuplicatedException;
 import roomescape.domain.model.Reservation;
 import roomescape.domain.repository.ReservationRepository;
@@ -21,7 +22,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
+    public List<ReservationInfoResponse> findAll() {
         return reservationDao.findAll();
     }
 
@@ -62,7 +63,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByThemeIdAndMemberIdAndDate(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
+    public List<ReservationInfoResponse> findByThemeIdAndMemberIdAndDate(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
         return reservationDao.findByThemeIdAndMemberIdAndDate(themeId, memberId, dateFrom, dateTo);
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.domain.repository;
 
+import roomescape.application.dto.ReservationInfoResponse;
 import roomescape.domain.model.Reservation;
 
 import java.time.LocalDate;
@@ -9,7 +10,7 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    List<Reservation> findAll();
+    List<ReservationInfoResponse> findAll();
 
     int deleteById(Long id);
 
@@ -21,5 +22,5 @@ public interface ReservationRepository {
 
     boolean existByTimeId(Long timeId);
 
-    List<Reservation> findByThemeIdAndMemberIdAndDate(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo);
+    List<ReservationInfoResponse> findByThemeIdAndMemberIdAndDate(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo);
 }

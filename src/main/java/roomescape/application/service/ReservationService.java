@@ -37,19 +37,13 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(reservation -> {
-                    Member member = memberRepository.findById(reservation.getMemberId());
-                    return ReservationResponse.of(reservation, member);
-                })
+                .map(info -> ReservationResponse.of(info.id(), info.member(), info.date(), info.reservationTime(), info.theme()))
                 .toList();
     }
 
     public List<ReservationResponse> findByThemeIdAndMemberIdAndDate(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
         return reservationRepository.findByThemeIdAndMemberIdAndDate(themeId, memberId, dateFrom, dateTo).stream()
-                .map(reservation -> {
-                    Member member = memberRepository.findById(reservation.getMemberId());
-                    return ReservationResponse.of(reservation, member);
-                })
+                .map(info -> ReservationResponse.of(info.id(), info.member(), info.date(), info.reservationTime(), info.theme()))
                 .toList();
     }
 
@@ -126,6 +120,6 @@ public class ReservationService {
     private ReservationResponse getReservationResponse(Reservation reservation) {
         Reservation savedReservation = reservationRepository.save(reservation);
         Member member = memberRepository.findById(savedReservation.getMemberId());
-        return ReservationResponse.of(savedReservation, member);
+        return ReservationResponse.of(savedReservation.getId(), member, savedReservation.getDate(), savedReservation.getTime(), savedReservation.getTheme());
     }
 }

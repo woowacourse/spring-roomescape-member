@@ -1,5 +1,6 @@
 package roomescape.infrastructure.dao;
 
+import roomescape.application.dto.ReservationInfoResponse;
 import roomescape.domain.model.Reservation;
 
 import java.time.LocalDate;
@@ -7,9 +8,9 @@ import java.util.List;
 
 public interface ReservationDao {
 
-    List<Reservation> findAll();
+    List<ReservationInfoResponse> findAll();
 
-    List<Reservation> findByThemeIdAndMemberIdAndDate(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo);
+    List<ReservationInfoResponse> findByThemeIdAndMemberIdAndDate(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo);
 
     Reservation save(Reservation reservation);
 

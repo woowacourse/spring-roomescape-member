@@ -1,5 +1,6 @@
 package roomescape.fake;
 
+import roomescape.application.dto.ReservationInfoResponse;
 import roomescape.domain.model.Reservation;
 import roomescape.infrastructure.dao.ReservationDao;
 
@@ -23,12 +24,14 @@ public class ReservationDaoFake implements ReservationDao {
     }
 
     @Override
-    public List<Reservation> findAll() {
-        return RESERVATIONS.values().stream().toList();
+    public List<ReservationInfoResponse> findAll() {
+        return RESERVATIONS.values().stream()
+                .map(reservation -> new ReservationInfoResponse(reservation.getId(), null, reservation.getDate(), null, null))
+                .toList();
     }
 
     @Override
-    public List<Reservation> findByThemeIdAndMemberIdAndDate(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
+    public List<ReservationInfoResponse> findByThemeIdAndMemberIdAndDate(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
         return RESERVATIONS.values().stream()
                 .filter(reservation -> {
                     boolean isThemeSame = reservation.getTheme().getId().equals(themeId);
@@ -36,7 +39,9 @@ public class ReservationDaoFake implements ReservationDao {
                     boolean isBetweenDate = !reservation.getDate().isAfter(dateTo) && !reservation.getDate().isBefore(dateFrom);
 
                     return isThemeSame && isMemberSame && isBetweenDate;
-                }).toList();
+                })
+                .map(reservation -> new ReservationInfoResponse(reservation.getId(), null, reservation.getDate(), null, null))
+                .toList();
     }
 
     @Override

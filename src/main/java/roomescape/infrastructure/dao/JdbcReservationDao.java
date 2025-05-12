@@ -4,6 +4,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.application.dto.ReservationInfoResponse;
+import roomescape.domain.model.Member;
 import roomescape.domain.model.Reservation;
 import roomescape.domain.model.ReservationTime;
 import roomescape.domain.model.Theme;
@@ -18,21 +20,30 @@ public class JdbcReservationDao implements ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-    private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> new Reservation(
-            resultSet.getLong("id"),
-            resultSet.getLong("member_id"),
-            resultSet.getDate("date").toLocalDate(),
-            new ReservationTime(
-                    resultSet.getLong("time_id"),
-                    resultSet.getTime("time_value").toLocalTime()
-            ),
-            new Theme(
-                    resultSet.getLong("theme_id"),
-                    resultSet.getString("theme_name"),
-                    resultSet.getString("theme_description"),
-                    resultSet.getString("theme_thumbnail")
-            )
-    );
+    private static final RowMapper<ReservationInfoResponse> ROW_MAPPER = (resultSet, rowNum) -> {
+        Member member = new Member(
+                resultSet.getLong("member_id"),
+                resultSet.getString("name"),
+                resultSet.getString("email"),
+                resultSet.getString("role"));
+        ReservationTime reservationTime = new ReservationTime(
+                resultSet.getLong("time_id"),
+                resultSet.getTime("time_value").toLocalTime()
+        );
+        Theme theme = new Theme(
+                resultSet.getLong("theme_id"),
+                resultSet.getString("theme_name"),
+                resultSet.getString("theme_description"),
+                resultSet.getString("theme_thumbnail")
+        );
+        return new ReservationInfoResponse(
+                resultSet.getLong("id"),
+                member,
+                resultSet.getDate("date").toLocalDate(),
+                reservationTime,
+                theme
+        );
+    };
 
     public JdbcReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -42,14 +53,17 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<Reservation> findAll() {
+    public List<ReservationInfoResponse> findAll() {
         String query = """
-                   SELECT r.id, r.member_id, r.date,
+                   SELECT r.id, 
+                   m.id AS member_id, m.name AS member_name, m.email AS member_email, m.role AS member_role,
+                   r.date,
                    rt.id AS time_id, rt.start_at AS time_value,
                    t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, t.thumbnail AS theme_thumbnail
                    FROM reservation AS r
                    INNER JOIN reservation_time AS rt ON r.time_id = rt.id
                    INNER JOIN theme AS t ON r.theme_id = t.id
+                   INNER JOIN member AS m ON r.member_id = m.id
                 """;
         return jdbcTemplate.query(
                 query,
@@ -58,14 +72,17 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<Reservation> findByThemeIdAndMemberIdAndDate(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
+    public List<ReservationInfoResponse> findByThemeIdAndMemberIdAndDate(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
         String query = """
-                   SELECT r.id, r.member_id, r.date,
+                   SELECT r.id,
+                   m.id AS member_id, m.name AS member_name, m.email AS member_email, m.role AS member_role,
+                   r.date,
                    rt.id AS time_id, rt.start_at AS time_value,
                    t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, t.thumbnail AS theme_thumbnail
                    FROM reservation AS r
                    INNER JOIN reservation_time AS rt ON r.time_id = rt.id
                    INNER JOIN theme AS t ON r.theme_id = t.id
+                   INNER JOIN member AS m ON r.member_id = m.id
                    WHERE t.id = ? AND r.member_id = ? AND PARSEDATETIME(r.date, 'yyyy-MM-dd') BETWEEN PARSEDATETIME(?, 'yyyy-MM-dd') AND PARSEDATETIME(?, 'yyyy-MM-dd')
                 """;
         return jdbcTemplate.query(
