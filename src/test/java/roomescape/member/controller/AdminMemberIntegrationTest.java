@@ -1,6 +1,7 @@
 package roomescape.member.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
@@ -38,7 +39,7 @@ class AdminMemberIntegrationTest {
 
     @DisplayName("전체 사용자 목록을 조회한다")
     @Test
-    void login_test() {
+    void get_members_test() {
         // when
         List<MemberResponse> findMembers = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -67,6 +68,22 @@ class AdminMemberIntegrationTest {
                                         .toList()
                         )
         );
+    }
+
+    @DisplayName("권한이 없는 사용자가 접근을 시도하면 오류가 발생한다")
+    @Test
+    void access_denied_for_non_admin_test() {
+        // given
+        String userToken = AuthFixture.createUserToken(authService);
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie(LoginController.TOKEN_COOKIE_NAME, userToken)
+                .when().get("/admin/members")
+                .then().log().all()
+                .statusCode(403)
+                .body(equalTo("접근 권한이 없습니다."));
     }
 
 }

@@ -1,6 +1,7 @@
 package roomescape.member.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import roomescape.auth.dto.MemberProfileResponse;
+import roomescape.global.exception.error.NotFoundException;
 import roomescape.member.domain.enums.Role;
 import roomescape.member.dto.MemberResponse;
 import roomescape.reservation.repository.fake.MemberFakeRepository;
@@ -56,6 +58,18 @@ class MemberServiceTest {
 
         // then
         assertThat(findMemberProfile.name()).isEqualTo(expectedName);
+    }
+
+    @DisplayName("사용자의 ID에 해당하는 데이터가 존재하지 않으면 예외가 발생한다")
+    @Test
+    void find_member_profile_exception_test() {
+        // given
+        Long findId = 999L;
+
+        // when & then
+        assertThatThrownBy(() -> memberService.findMemberProfile(findId))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 사용자입니다.");
     }
 
 }
