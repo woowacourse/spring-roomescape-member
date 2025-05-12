@@ -14,7 +14,7 @@ import roomescape.member.domain.Member;
 
 @Transactional
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-public class MemberServiceTest {
+class MemberServiceTest {
 
     @Autowired
     private MemberService memberService;
@@ -26,7 +26,6 @@ public class MemberServiceTest {
         SignUpRequest request = new SignUpRequest(
                 "user1@email.com",
                 "1234",
-
                 "유저1"
         );
 

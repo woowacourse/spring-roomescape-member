@@ -8,24 +8,27 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.stub.StubTokenProvider;
+import roomescape.common.CleanUp;
 import roomescape.config.AuthServiceTestConfig;
 
 @Import(AuthServiceTestConfig.class)
-@Transactional
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class ApiTest {
 
     @LocalServerPort
     private int port;
+
+    @Autowired
+    private CleanUp cleanUp;
 
     private Map<String, String> theme;
     private Map<String, String> reservationTime;
@@ -44,6 +47,8 @@ class ApiTest {
         reservation.put("date", "2025-08-05");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
+
+        cleanUp.all();
     }
 
     @Test

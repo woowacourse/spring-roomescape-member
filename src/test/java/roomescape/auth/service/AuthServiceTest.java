@@ -18,7 +18,7 @@ import roomescape.member.domain.Member;
 @Import(AuthServiceTestConfig.class)
 @Transactional
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-public class AuthServiceTest {
+class AuthServiceTest {
 
     @Autowired
     private AuthService authService;
