@@ -82,6 +82,12 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
+    public Member findByEmail(String userEmail) {
+        String sql = "select id, name, email, password, role from member where email = ?";
+        return jdbcTemplate.queryForObject(sql, memberRowMapper, userEmail);
+    }
+
+    @Override
     public Name findNameByEmail(String userEmail) {
         String sql = "select name from member where email = ?";
         try {

@@ -25,13 +25,13 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<Reservation>> getReservations() {
         return ResponseEntity.ok().body(reservationService.getAllReservations());
 
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<Reservation> addReservation(@AuthenticationPrincipal Member member,
                                                       @RequestBody @Valid UserReservationRequest userReservationRequest) {
         return ResponseEntity.status(HttpStatus.CREATED)

@@ -20,4 +20,6 @@ public interface MemberRepository {
     Member findById(Long id);
 
     Member addMember(MemberRequest memberRequest);
+
+    Member findByEmail(String userEmail);
 }

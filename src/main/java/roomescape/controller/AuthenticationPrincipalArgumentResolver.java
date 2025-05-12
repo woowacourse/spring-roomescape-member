@@ -31,7 +31,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             String userEmail = memberService.extractEmailFromCookies(cookies);
-            return memberService.getNameByEmail(userEmail);
+            return memberService.findByEmail(userEmail);
         }
         throw new BadRequestException("인증 실패");
     }

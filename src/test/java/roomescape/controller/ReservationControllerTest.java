@@ -9,14 +9,30 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.service.MemberService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationControllerTest {
+
+    @Autowired
+    private MemberService memberService;
+
+    private String adminToken;
+    private String userToken;
+
+    @BeforeEach
+    void setUp() {
+        adminToken = memberService.createToken("asd@asd.com").token();
+        userToken = memberService.createToken("vec@vec.com").token();
+    }
+
     void Test_ReservationTime_Post() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
@@ -46,15 +62,13 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("필드값 null 검증")
     void test1() {
-        Test_ReservationTime_Post();
-        Test_Theme_Post();
         Map<String, Object> params = new HashMap<>();
-        params.put("name", null);
-        params.put("date", "2025-08-05");
+        params.put("date", null);
         params.put("timeId", 1);
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("token", userToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -70,12 +84,12 @@ public class ReservationControllerTest {
         Test_Theme_Post();
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "띠용");
         params.put("date", String.valueOf(LocalDate.now().minusDays(1)));
         params.put("timeId", 1);
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("token", userToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -93,6 +107,7 @@ public class ReservationControllerTest {
         timeParams.put("startAt", LocalTime.now().minusHours(1).format(DateTimeFormatter.ofPattern("HH:mm")));
 
         RestAssured.given().log().all()
+                .cookie("token", userToken)
                 .contentType(ContentType.JSON)
                 .body(timeParams)
                 .when().post("/times")
@@ -100,12 +115,12 @@ public class ReservationControllerTest {
                 .statusCode(201);
 
         Map<String, Object> reservationParams = new HashMap<>();
-        reservationParams.put("name", "띠용");
         reservationParams.put("date", String.valueOf(LocalDate.now()));
         reservationParams.put("timeId", 1);
         reservationParams.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("token", userToken)
                 .contentType(ContentType.JSON)
                 .body(reservationParams)
                 .when().post("/reservations")
@@ -121,12 +136,12 @@ public class ReservationControllerTest {
         Test_Theme_Post();
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "띠용");
         params.put("date", "2222-02-02");
         params.put("timeId", 1);
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("token", userToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -137,6 +152,7 @@ public class ReservationControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", userToken)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()

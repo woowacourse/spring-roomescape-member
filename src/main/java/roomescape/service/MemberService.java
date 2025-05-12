@@ -67,4 +67,8 @@ public class MemberService {
     public Member addMember(MemberRequest memberRequest) {
         return memberRepository.addMember(memberRequest);
     }
+
+    public Member findByEmail(String userEmail) {
+        return memberRepository.findByEmail(userEmail);
+    }
 }
