@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.business.Member;
+import roomescape.business.MemberRole;
 import roomescape.business.Reservation;
 import roomescape.business.ReservationTheme;
 import roomescape.business.ReservationTime;
@@ -32,7 +34,13 @@ public class H2ReservationRepository implements ReservationRepository {
     private final RowMapper<Reservation> reservationRowMapper = (rs, rowNum) -> (
             new Reservation(
                     rs.getLong("id"),
-                    rs.getString("name"),
+                    new Member(
+                            rs.getLong("member_id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            MemberRole.valueOf(rs.getString("role"))
+                    ),
                     rs.getObject("date", LocalDate.class),
                     new ReservationTime(
                             rs.getLong("time_id"),
@@ -51,13 +59,15 @@ public class H2ReservationRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         String query = """
                 SELECT
-                    r.id AS reservation_id, r.name, r.date,
+                    r.id AS reservation_id, r.date,
+                    m.id AS member_id, m.name, m.email, m.password, m.role,
                     t.id AS time_id, t.start_at,
                     th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail
                 FROM reservation AS r
                 JOIN reservation_time AS t
                 JOIN theme AS th
-                ON r.time_id = t.id AND r.theme_id = th.id
+                JOIN member as m
+                ON r.time_id = t.id AND r.theme_id = th.id AND m.id = r.member_id
                 """;
         return jdbcTemplate.query(query, reservationRowMapper);
     }
@@ -66,13 +76,15 @@ public class H2ReservationRepository implements ReservationRepository {
     public Optional<Reservation> findById(Long id) {
         String query = """
                 SELECT
-                    r.id AS reservation_id, r.name, r.date,
+                    r.id AS reservation_id, r.date,
+                    m.id AS member_id, m.name, m.email, m.password, m.role,
                     t.id AS time_id, t.start_at,
                     th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail
                 FROM reservation AS r
                 JOIN reservation_time AS t
                 JOIN theme AS th
-                ON r.time_id = t.id AND r.theme_id = th.id
+                JOIN member as m
+                ON r.time_id = t.id AND r.theme_id = th.id AND m.id = r.member_id
                 WHERE r.id = ?
                 """;
         return jdbcTemplate.query(query, reservationRowMapper, id)
@@ -81,9 +93,35 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAllByThemeAndMemberAndDate(Long themeId,
+                                                            Long memberId,
+                                                            LocalDate dateFrom,
+                                                            LocalDate dateTo) {
+        String query = """
+                SELECT
+                    r.id AS reservation_id, r.date,
+                    m.id AS member_id, m.name, m.email, m.password, m.role,
+                    t.id AS time_id, t.start_at,
+                    th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail
+                FROM reservation AS r
+                JOIN reservation_time AS t
+                JOIN theme AS th
+                JOIN member as m
+                ON r.time_id = t.id AND r.theme_id = th.id AND m.id = r.member_id
+                WHERE th.id = ? AND m.id = ? AND r.date >= ? AND r.date <= ?
+                """;
+        return jdbcTemplate.query(query, reservationRowMapper,
+                themeId,
+                memberId,
+                dateFrom,
+                dateTo
+        );
+    }
+
+    @Override
     public Long add(Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", reservation.getName());
+        parameters.put("member_id", reservation.getMember().getId());
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTime().getId());
         parameters.put("theme_id", reservation.getTheme().getId());

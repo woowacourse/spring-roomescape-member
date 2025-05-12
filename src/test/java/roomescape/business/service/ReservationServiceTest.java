@@ -10,32 +10,39 @@ import java.time.ZoneId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.business.Member;
+import roomescape.business.MemberRole;
 import roomescape.business.ReservationTheme;
 import roomescape.business.ReservationTime;
-import roomescape.business.fakerepository.FakeReservationRepository;
-import roomescape.business.fakerepository.FakeReservationThemeRepository;
-import roomescape.business.fakerepository.FakeReservationTimeRepository;
+import roomescape.persistence.FakeMemberRepository;
+import roomescape.persistence.FakeReservationRepository;
+import roomescape.persistence.FakeReservationThemeRepository;
+import roomescape.persistence.FakeReservationTimeRepository;
 import roomescape.exception.ReservationException;
+import roomescape.persistence.MemberRepository;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
 import roomescape.persistence.ReservationTimeRepository;
-import roomescape.presentation.dto.ReservationRequestDto;
+import roomescape.presentation.dto.request.ReservationRequestDto;
 
 class ReservationServiceTest {
 
     private ReservationService reservationService;
     private ReservationTimeRepository reservationTimeRepository;
     private ReservationThemeRepository reservationThemeRepository;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
         ReservationRepository reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
         reservationThemeRepository = new FakeReservationThemeRepository();
+        memberRepository = new FakeMemberRepository();
         reservationService = new ReservationService(
                 reservationRepository,
                 reservationTimeRepository,
-                reservationThemeRepository
+                reservationThemeRepository,
+                memberRepository
         );
     }
 
@@ -46,9 +53,10 @@ class ReservationServiceTest {
         LocalDate tomorrow = LocalDate.now(ZoneId.of("Asia/Seoul")).plusDays(1);
         Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now(ZoneId.of("Asia/Seoul"))));
         Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일"));
+        Long memberId = memberRepository.add(new Member("예약자", "hi@hi.hi", "1234", MemberRole.ADMIN));
 
         // when
-        reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId, themeId));
+        reservationService.createReservation(new ReservationRequestDto(tomorrow, timeId, themeId), memberId);
 
         // then
         assertThat(reservationService.readReservationAll())
@@ -62,12 +70,13 @@ class ReservationServiceTest {
         LocalDateTime pastDateTime = LocalDateTime.now(ZoneId.of("Asia/Seoul")).minusDays(1);
         Long timeId = reservationTimeRepository.add(new ReservationTime(pastDateTime.toLocalTime()));
         Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일"));
-        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("벨로", pastDateTime.toLocalDate(),
-                timeId, themeId);
+        Long memberId = memberRepository.add(new Member("예약자", "hi@hi.hi", "1234", MemberRole.ADMIN));
+        ReservationRequestDto reservationRequestDto = new ReservationRequestDto(pastDateTime.toLocalDate(), timeId,
+                themeId);
 
         // when
         // then
-        assertThatCode(() -> reservationService.createReservation(reservationRequestDto))
+        assertThatCode(() -> reservationService.createReservation(reservationRequestDto, memberId))
                 .isInstanceOf(ReservationException.class)
                 .hasMessage("과거 일시로 예약을 생성할 수 없습니다.");
     }
@@ -79,12 +88,15 @@ class ReservationServiceTest {
         LocalDate tomorrow = LocalDate.now(ZoneId.of("Asia/Seoul")).plusDays(1);
         Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now(ZoneId.of("Asia/Seoul"))));
         Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일"));
-        reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId, themeId));
+        Long memberId = memberRepository.add(new Member("예약자", "hi@hi.hi", "1234", MemberRole.ADMIN));
+        reservationService.createReservation(new ReservationRequestDto(tomorrow, timeId, themeId), memberId);
 
         // when
         // then
         assertThatCode(
-                () -> reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId, themeId)))
+                () -> reservationService.createReservation(
+                        new ReservationRequestDto(tomorrow, timeId, themeId),
+                        memberId))
                 .isInstanceOf(ReservationException.class)
                 .hasMessage("이미 예약되었습니다.");
     }
@@ -95,11 +107,12 @@ class ReservationServiceTest {
         // given
         Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now(ZoneId.of("Asia/Seoul"))));
         Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일"));
+        Long memberId = memberRepository.add(new Member("예약자", "hi@hi.hi", "1234", MemberRole.ADMIN));
         Long id = reservationService.createReservation(new ReservationRequestDto(
-                "예약자",
-                LocalDate.now(ZoneId.of("Asia/Seoul")).plusDays(1),
-                timeId,
-                themeId)
+                        LocalDate.now(ZoneId.of("Asia/Seoul")).plusDays(1),
+                        timeId,
+                        themeId),
+                memberId
         );
 
         // when
@@ -115,12 +128,13 @@ class ReservationServiceTest {
         // given
         Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now(ZoneId.of("Asia/Seoul"))));
         Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일"));
+        Long memberId = memberRepository.add(new Member("예약자", "hi@hi.hi", "1234", MemberRole.ADMIN));
         Long id = reservationService.createReservation(
                 new ReservationRequestDto(
-                        "예약자",
                         LocalDate.now(ZoneId.of("Asia/Seoul")).plusDays(1),
                         timeId,
-                        themeId)
+                        themeId),
+                memberId
         );
 
         // when

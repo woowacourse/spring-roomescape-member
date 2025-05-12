@@ -31,7 +31,7 @@ public class H2ReservationThemeRepository implements ReservationThemeRepository 
                     rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("description"),
-                    rs.getString("thumbname")
+                    rs.getString("thumbnail")
             )
     );
 

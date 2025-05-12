@@ -11,8 +11,8 @@ import roomescape.business.ReservationTheme;
 import roomescape.exception.ReservationThemeException;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
-import roomescape.presentation.dto.ReservationThemeRequestDto;
-import roomescape.presentation.dto.ReservationThemeResponseDto;
+import roomescape.presentation.dto.request.ReservationThemeRequestDto;
+import roomescape.presentation.dto.response.ReservationThemeResponseDto;
 
 @Service
 @Transactional
