@@ -8,8 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import roomescape.common.exception.AuthenticationException;
 import roomescape.member.auth.JwtTokenExtractor;
 import roomescape.member.auth.JwtTokenProvider;
-import roomescape.member.auth.dto.MemberInfo;
 import roomescape.member.controller.dto.LoginRequest;
+import roomescape.member.controller.dto.MemberInfoResponse;
 import roomescape.member.controller.dto.SignupRequest;
 import roomescape.member.repository.FakeMemberRepository;
 import roomescape.member.service.usecase.MemberCommandUseCase;
@@ -61,9 +61,9 @@ class AuthServiceTest {
     void 이메일과_비밀번호로_로그인한다() {
         // given
         final String password = "1234";
-        final MemberInfo memberInfo = authService.signup(new SignupRequest("siso@gmail.com", password, "siso"));
+        final MemberInfoResponse memberInfoResponse = authService.signup(new SignupRequest("siso@gmail.com", password, "siso"));
 
-        final LoginRequest request = new LoginRequest(memberInfo.email(), password);
+        final LoginRequest request = new LoginRequest(memberInfoResponse.email(), password);
 
         assertThat(authService.login(request))
                 .isNotBlank();
@@ -73,7 +73,7 @@ class AuthServiceTest {
     void 로그인_체크를_통해_로그인_상태를_확인할_수_있다() {
         // given
         final String password = "1234";
-        final MemberInfo memberInfo = authService.signup(new SignupRequest("siso@gmail.com", password, "siso"));
+        final MemberInfoResponse memberInfo = authService.signup(new SignupRequest("siso@gmail.com", password, "siso"));
         final LoginRequest request = new LoginRequest(memberInfo.email(), password);
 
         final String token = authService.login(request);
@@ -97,25 +97,25 @@ class AuthServiceTest {
     void 로그인_된_사용자의_정보를_반환한다() {
         // given
         final String password = "1234";
-        final MemberInfo memberInfo = authService.signup(new SignupRequest("siso@gmail.com", password, "siso"));
+        final MemberInfoResponse memberInfo = authService.signup(new SignupRequest("siso@gmail.com", password, "siso"));
         final LoginRequest request = new LoginRequest(memberInfo.email(), password);
 
         final String token = authService.login(request);
 
-        assertThat(authService.getMemberInfo(token))
-                .isEqualTo(memberInfo);
+        assertThat(authService.getMemberInfo(token).id())
+                .isEqualTo(memberInfo.id());
     }
 
     @Test
     void 쿠키를_통해_회원_정보를_받아온다() {
         // given
         final String password = "1234";
-        final MemberInfo memberInfo = authService.signup(new SignupRequest("siso@gmail.com", password, "siso"));
+        final MemberInfoResponse memberInfo = authService.signup(new SignupRequest("siso@gmail.com", password, "siso"));
         final LoginRequest request = new LoginRequest(memberInfo.email(), password);
 
         final String token = authService.login(request);
 
-        assertThat(authService.get(token))
-                .isEqualTo(MemberConverter.toDomain(memberInfo));
+        assertThat(authService.get(token).getId().getValue())
+                .isEqualTo(memberInfo.id());
     }
 }
