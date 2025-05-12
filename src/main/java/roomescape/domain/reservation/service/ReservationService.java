@@ -1,5 +1,8 @@
 package roomescape.domain.reservation.service;
 
+import static roomescape.global.exception.ErrorMessage.DUPLICATE_RESERVATION;
+import static roomescape.global.exception.ErrorMessage.NOT_FOUND_ID;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,7 +20,8 @@ import roomescape.domain.reservationtime.dao.ReservationTimeDao;
 import roomescape.domain.reservationtime.model.ReservationTime;
 import roomescape.domain.theme.dao.ThemeDao;
 import roomescape.domain.theme.model.Theme;
-import roomescape.global.exception.InvalidReservationException;
+import roomescape.global.exception.DuplicateException;
+import roomescape.global.exception.NotFoundException;
 
 @Service
 public class ReservationService {
@@ -47,13 +51,13 @@ public class ReservationService {
     public void deleteReservation(Long id) {
         boolean isDeleted = reservationDao.delete(id);
         if (!isDeleted) {
-            throw new IllegalArgumentException("존재하지 않는 예약 ID 입니다.");
+            throw new NotFoundException(NOT_FOUND_ID);
         }
     }
 
     public void findReservationBy(Long id) {
         reservationDao.findById(id).
-            orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 ID 입니다."));
+            orElseThrow(() -> new NotFoundException(NOT_FOUND_ID));
     }
 
     public ReservationResponseDto saveReservationOfMember(
@@ -87,12 +91,12 @@ public class ReservationService {
 
     private Theme findThemeBy(long themeId) {
         return themeDao.findById(themeId)
-            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 테마를 찾을 수 없습니다"));
+            .orElseThrow(() -> new NotFoundException(NOT_FOUND_ID));
     }
 
     private ReservationTime findReservationTimeBy(long timeId) {
         return reservationTimeDao.findById(timeId)
-            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 예약시간을 찾을 수 없습니다"));
+            .orElseThrow(() -> new NotFoundException(NOT_FOUND_ID));
     }
 
     private void validateDateTimeAndSaveReservation(Reservation reservation, long themeId,
@@ -105,7 +109,7 @@ public class ReservationService {
 
     private void validateAlreadyExistDateTime(ReservationDate date, long themeId, long timeId) {
         if (reservationDao.existReservationOf(date, themeId, timeId)) {
-            throw new InvalidReservationException("중복된 테마 및 날짜와 시간을 예약할 수 없습니다.");
+            throw new DuplicateException(DUPLICATE_RESERVATION);
         }
     }
 

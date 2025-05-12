@@ -1,5 +1,8 @@
 package roomescape.domain.reservationtime.service;
 
+import static roomescape.global.exception.ErrorMessage.ALREADY_USED_RESOURCE;
+import static roomescape.global.exception.ErrorMessage.NOT_FOUND_ID;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -10,6 +13,7 @@ import roomescape.domain.reservationtime.dto.response.BookedReservationTimeRespo
 import roomescape.domain.reservationtime.dto.response.ReservationTimeResponseDto;
 import roomescape.domain.reservationtime.model.ReservationTime;
 import roomescape.global.exception.InvalidReservationException;
+import roomescape.global.exception.NotFoundException;
 
 @Service
 public class ReservationTimeService {
@@ -40,11 +44,11 @@ public class ReservationTimeService {
 
     public void deleteReservationTime(Long id) {
         if (reservationDao.existReservationByTime(id)) {
-            throw new InvalidReservationException("이미 예약된 예약 시간을 삭제할 수 없습니다.");
+            throw new InvalidReservationException(ALREADY_USED_RESOURCE);
         }
         boolean isDeleted = reservationTimeDao.delete(id);
         if (!isDeleted) {
-            throw new IllegalArgumentException("해당 ID의 예약시간을 찾을 수 없습니다");
+            throw new NotFoundException(NOT_FOUND_ID);
         }
     }
 

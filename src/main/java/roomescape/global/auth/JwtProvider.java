@@ -11,6 +11,8 @@ import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.stereotype.Component;
 import roomescape.domain.member.model.Role;
+import roomescape.global.exception.AuthorizedException;
+import roomescape.global.exception.ErrorMessage;
 
 @Component
 public class JwtProvider {
@@ -45,13 +47,8 @@ public class JwtProvider {
                 .parseSignedClaims(token)
                 .getPayload();
         } catch (JwtException | IllegalArgumentException e) {
-            throw new JwtException("유효하지 않은 토큰입니다.");
+            throw new AuthorizedException(ErrorMessage.INVALID_TOKEN);
         }
-    }
-
-    public String getTokenSubject(String token) {
-        Claims claims = validateToken(token);
-        return claims.getSubject();
     }
 
     public Role getMemberRole(String token) {

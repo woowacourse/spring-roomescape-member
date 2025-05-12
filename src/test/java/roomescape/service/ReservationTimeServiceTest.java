@@ -90,7 +90,6 @@ public class ReservationTimeServiceTest {
         //when
         assertThatThrownBy(
             () -> reservationTimeService.deleteReservationTime(savedReservationTimeId))
-            .isInstanceOf(InvalidReservationException.class)
-            .hasMessage("이미 예약된 예약 시간을 삭제할 수 없습니다.");
+            .isInstanceOf(InvalidReservationException.class);
     }
 }

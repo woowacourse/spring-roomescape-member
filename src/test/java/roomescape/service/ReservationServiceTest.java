@@ -24,7 +24,8 @@ import roomescape.domain.reservationtime.dao.ReservationTimeDao;
 import roomescape.domain.reservationtime.model.ReservationTime;
 import roomescape.domain.theme.dao.ThemeDao;
 import roomescape.domain.theme.model.Theme;
-import roomescape.global.exception.InvalidReservationException;
+import roomescape.global.exception.DuplicateException;
+import roomescape.global.exception.NotFoundException;
 
 public class ReservationServiceTest {
 
@@ -48,7 +49,7 @@ public class ReservationServiceTest {
     @DisplayName("존재하지 않는 예약ID를 가져오려고 할 경우, 예외가 발생해야 한다.")
     void not_exist_reservation_id_get_then_throw_exception() {
         assertThatThrownBy(() -> reservationService.findReservationBy(999L))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -107,8 +108,7 @@ public class ReservationServiceTest {
         //when, then
         assertThatThrownBy(
             () -> reservationService.saveReservationOfMember(reservationRequestDto, member))
-            .isInstanceOf(InvalidReservationException.class)
-            .hasMessage("중복된 날짜와 시간을 예약할 수 없습니다.");
+            .isInstanceOf(DuplicateException.class);
     }
 
     private Reservation createReservation(Member member, Theme theme,

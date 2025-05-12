@@ -1,6 +1,8 @@
 package roomescape.global.auth;
 
 import jakarta.servlet.http.Cookie;
+import roomescape.global.exception.AuthorizedException;
+import roomescape.global.exception.ErrorMessage;
 
 public class Cookies {
 
@@ -28,6 +30,6 @@ public class Cookies {
                 return cookie.getValue();
             }
         }
-        throw new IllegalArgumentException("쿠키가 존재하지 않습니다.");
+        throw new AuthorizedException(ErrorMessage.INVALID_AUTHORIZATION);
     }
 }

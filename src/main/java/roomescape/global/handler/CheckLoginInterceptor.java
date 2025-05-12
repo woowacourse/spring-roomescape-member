@@ -1,5 +1,7 @@
 package roomescape.global.handler;
 
+import static roomescape.global.exception.ErrorMessage.ONLY_ACCESS_ADMIN;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
@@ -7,6 +9,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.model.Role;
 import roomescape.global.auth.Cookies;
 import roomescape.global.auth.JwtProvider;
+import roomescape.global.exception.AuthorizedException;
 
 @Component
 public class CheckLoginInterceptor implements HandlerInterceptor {
@@ -23,7 +26,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
         String token = Cookies.get(request.getCookies());
         Role memberRole = jwtProvider.getMemberRole(token);
         if (memberRole != Role.ADMIN) {
-            throw new IllegalStateException("권한이 없습니다.");
+            throw new AuthorizedException(ONLY_ACCESS_ADMIN);
         }
         return true;
     }

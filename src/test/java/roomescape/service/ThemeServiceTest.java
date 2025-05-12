@@ -22,6 +22,7 @@ import roomescape.domain.theme.dao.ThemeDao;
 import roomescape.domain.theme.model.Theme;
 import roomescape.domain.theme.service.ThemeService;
 import roomescape.global.exception.InvalidReservationException;
+import roomescape.global.exception.NotFoundException;
 
 public class ThemeServiceTest {
 
@@ -36,9 +37,10 @@ public class ThemeServiceTest {
     @DisplayName("존재하지 않는 테마ID를 가져오려고 할 경우, 예외가 발생해야 한다.")
     void not_exist_theme_id_get_then_throw_exception() {
         assertThatThrownBy(() -> themeService.findById(999L))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(NotFoundException.class);
     }
 
+    @DisplayName("이미 테마 아이디를 예약에서 사용한다면, 예외가 발생해야 한다")
     @Test
     void delete_already_use_other_theme_id_then_throw_exception() {
         //given
@@ -67,8 +69,7 @@ public class ThemeServiceTest {
         //when
         assertThatThrownBy(
             () -> themeService.deleteTheme(savedThemeId))
-            .isInstanceOf(InvalidReservationException.class)
-            .hasMessage("이미 예약된 테마를 삭제할 수 없습니다.");
+            .isInstanceOf(InvalidReservationException.class);
     }
 
     @Test

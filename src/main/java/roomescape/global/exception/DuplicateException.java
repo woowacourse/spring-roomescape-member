@@ -2,11 +2,11 @@ package roomescape.global.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class InvalidReservationException extends RuntimeException {
+public class DuplicateException extends RuntimeException {
 
     private final ErrorMessage errorMessage;
 
-    public InvalidReservationException(ErrorMessage errorMessage) {
+    public DuplicateException(ErrorMessage errorMessage) {
         this.errorMessage = errorMessage;
     }
 

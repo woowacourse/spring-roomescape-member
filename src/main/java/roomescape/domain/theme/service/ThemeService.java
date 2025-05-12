@@ -1,5 +1,8 @@
 package roomescape.domain.theme.service;
 
+import static roomescape.global.exception.ErrorMessage.ALREADY_USED_RESOURCE;
+import static roomescape.global.exception.ErrorMessage.NOT_FOUND_ID;
+
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -9,6 +12,7 @@ import roomescape.domain.theme.dto.request.ThemeRequestDto;
 import roomescape.domain.theme.dto.response.ThemeResponseDto;
 import roomescape.domain.theme.model.Theme;
 import roomescape.global.exception.InvalidReservationException;
+import roomescape.global.exception.NotFoundException;
 
 @Service
 public class ThemeService {
@@ -37,18 +41,18 @@ public class ThemeService {
 
     public void deleteTheme(Long id) {
         if (reservationDao.existReservationByTheme(id)) {
-            throw new InvalidReservationException("이미 예약된 테마를 삭제할 수 없습니다.");
+            throw new InvalidReservationException(ALREADY_USED_RESOURCE);
         }
 
         boolean isDeleted = themeDao.delete(id);
         if (!isDeleted) {
-            throw new IllegalArgumentException("해당 ID의 테마를 찾을 수 없습니다");
+            throw new NotFoundException(NOT_FOUND_ID);
         }
     }
 
     public Theme findById(Long id) {
         return themeDao.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 테마를 찾을 수 없습니다"));
+            .orElseThrow(() -> new NotFoundException(NOT_FOUND_ID));
     }
 
     public List<ThemeResponseDto> getAllThemeOfRanks() {
