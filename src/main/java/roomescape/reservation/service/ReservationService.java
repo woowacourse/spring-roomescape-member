@@ -15,6 +15,7 @@ import roomescape.member.dto.response.MemberResponse;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dto.request.ReservationCreateRequest;
+import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.reservationtime.dao.ReservationTimeDao;
@@ -70,17 +71,43 @@ public class ReservationService {
         reservationDao.delete(id);
     }
 
-    public ReservationResponse createReservation(@Valid ReservationCreateRequest reservationCreateRequest, Member member) {
-        final Theme theme = themeDao.findById(reservationCreateRequest.themeId()).orElseThrow(() -> new NoSuchElementException());
-        final ReservationTime reservationTime = reservationTimeDao.findById(reservationCreateRequest.timeId()).orElseThrow(NoSuchElementException::new);
+    public ReservationResponse createReservation(@Valid ReservationCreateRequest request, Member member) {
+        return reservationCreation(
+                request.date(),
+                request.timeId(),
+                request.themeId(),
+                member
+        );
+    }
 
-        final Reservation reservation = Reservation.createWithoutId(member, reservationCreateRequest.date(), reservationTime, theme);
+    public ReservationResponse createReservation(@Valid ReservationRequest request) {
+        System.out.println("member id: " + request.memberId());
+        final Member member = memberDao.findById(request.memberId())
+                .orElseThrow(ReservationNotFoundException::new);
+        System.out.println("member 정보: " + member);
+
+        return reservationCreation(
+                request.date(),
+                request.timeId(),
+                request.themeId(),
+                member
+        );
+    }
+
+    private ReservationResponse reservationCreation(LocalDate date, Long timeId, Long themeId, Member member) {
+        final Theme theme = themeDao.findById(themeId)
+                .orElseThrow(NoSuchElementException::new);
+
+        final ReservationTime reservationTime = reservationTimeDao.findById(timeId)
+                .orElseThrow(NoSuchElementException::new);
+
+        final Reservation reservation = Reservation.createWithoutId(member, date, reservationTime, theme);
         Long id = reservationDao.create(reservation);
 
         return new ReservationResponse(
                 id,
-                new MemberResponse(reservation.getMember().getName()),
-                reservation.getDate(),
+                new MemberResponse(member.getName()),
+                date,
                 new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt()),
                 theme.getName()
         );

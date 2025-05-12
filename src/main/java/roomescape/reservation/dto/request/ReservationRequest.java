@@ -5,8 +5,8 @@ import java.time.LocalDate;
 
 public record ReservationRequest(
         @NotNull LocalDate date,
-        @NotNull long timeId,
-        @NotNull long themeId,
-        @NotNull long memberId
+        @NotNull Long timeId,
+        @NotNull Long themeId,
+        @NotNull Long memberId
 ) {
 }

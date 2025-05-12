@@ -62,6 +62,7 @@ function fetchThemes() {
 function fetchMembers() {
     requestRead(MEMBER_API_ENDPOINT)
         .then(data => {
+            console.log("member 데이터: " + data[0].name);
             membersOptions.push(...data);
             populateSelect('member', membersOptions, 'name');
         })
