@@ -4,10 +4,16 @@ public class LoginMember {
 
     private final Long id;
     private final String name;
+    private final Role role;
 
-    public LoginMember(Long id, String name) {
+    public LoginMember(Long id, String name, Role role) {
         this.id = id;
         this.name = name;
+        this.role = role;
+    }
+
+    public boolean isNotAdmin() {
+        return role.isNotAdmin();
     }
 
     public Long getId() {

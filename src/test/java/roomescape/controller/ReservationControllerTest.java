@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.Role;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -47,6 +48,7 @@ public class ReservationControllerTest {
 
         String token = Jwts.builder()
                 .setSubject(String.valueOf(TEST_ID))
+                .claim("role", Role.USER)
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
 

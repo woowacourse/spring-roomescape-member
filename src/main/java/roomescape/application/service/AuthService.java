@@ -20,7 +20,7 @@ public class AuthService {
     private static final String CLAIM_NAME = "name";
     private static final String CLAIM_ROLE = "role";
     private static final String TOKEN_NAME = "token";
-    
+
     private final MemberService memberService;
 
     @Value("${jwt.secret.key}")
@@ -46,36 +46,19 @@ public class AuthService {
                 .compact();
     }
 
-    public Role extractRoleFromRequest(HttpServletRequest request) {
+    public LoginMember extractLoginMemberFromRequest(HttpServletRequest request) {
         String token = extractTokenFromRequest(request);
-        return Role.valueOf((String) Jwts.parserBuilder()
+        Claims claims = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
                 .parseClaimsJws(token)
-                .getBody().get(CLAIM_ROLE));
-    }
+                .getBody();
 
-    public Long extractMemberIdFromRequest(HttpServletRequest request) {
-        String token = extractTokenFromRequest(request);
-        return Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody().getSubject());
-    }
+        Long memberId = Long.valueOf(claims.getSubject());
+        String name = claims.get(CLAIM_NAME, String.class);
+        Role role = Role.valueOf((String) claims.get(CLAIM_ROLE));
 
-    public LoginMember getLoginMember(HttpServletRequest request) {
-        String token = extractTokenFromRequest(request);
-
-        Claims body = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .build()
-                .parseClaimsJws(token).getBody();
-
-        Long memberId = Long.valueOf(body.getSubject());
-        String name = body.get(CLAIM_NAME, String.class);
-
-        return new LoginMember(memberId, name);
+        return new LoginMember(memberId, name, role);
     }
 
     private String extractTokenFromRequest(HttpServletRequest request) {

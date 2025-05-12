@@ -87,7 +87,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가한다")
     void createReservation() {
         // given
-        LoginMember loginMember = new LoginMember(1L, "name");
+        LoginMember loginMember = new LoginMember(1L, "name", Role.ADMIN);
         Member member = new Member("name", "test@email.com", "password", Role.ADMIN);
         ReservationRequest request = new ReservationRequest(LocalDate.now(), 1L, 1L);
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
