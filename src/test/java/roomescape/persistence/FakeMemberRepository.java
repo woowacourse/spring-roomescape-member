@@ -1,11 +1,10 @@
-package roomescape.business.fakerepository;
+package roomescape.persistence;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.business.Member;
-import roomescape.persistence.MemberRepository;
 
 public class FakeMemberRepository implements MemberRepository {
 

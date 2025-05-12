@@ -1,5 +1,6 @@
 INSERT INTO member (name, email, password, role)
-VALUES ('sooyang', 'sooyang@woowa.com', '1234', 'ADMIN');
+VALUES ('sooyang', 'sooyang@woowa.com', '1234', 'ADMIN'),
+       ('user', 'user@woowa.com', 'user1234', 'USER');
 
 INSERT INTO reservation_time (start_at)
 VALUES ('10:00'),

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.business.Member;
 import roomescape.business.MemberRole;
-import roomescape.business.fakerepository.FakeMemberRepository;
+import roomescape.persistence.FakeMemberRepository;
 import roomescape.exception.MemberException;
 import roomescape.persistence.MemberRepository;
 import roomescape.presentation.dto.request.LoginRequestDto;

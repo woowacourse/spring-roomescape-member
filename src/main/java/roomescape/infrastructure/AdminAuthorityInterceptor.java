@@ -36,6 +36,11 @@ public class AdminAuthorityInterceptor implements HandlerInterceptor {
             return false;
         }
         Member member = authenticationService.findMemberByToken(token.get().getValue());
-        return member.isAdmin();
+        if (!member.isAdmin()) {
+            response.setStatus(401);
+            return false;
+        }
+        return true;
+
     }
 }

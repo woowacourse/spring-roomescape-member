@@ -36,10 +36,8 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            // todo: 401 exception
             throw new MemberException("토큰이 존재하지 않습니다.");
         }
-        // todo: 401 exception
         String token = Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals("token"))
                 .findFirst()

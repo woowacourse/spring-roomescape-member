@@ -1,4 +1,4 @@
-package roomescape.business.fakerepository;
+package roomescape.persistence;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.business.Reservation;
-import roomescape.persistence.ReservationRepository;
 
 public final class FakeReservationRepository implements ReservationRepository {
 

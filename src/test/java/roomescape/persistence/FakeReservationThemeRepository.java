@@ -1,4 +1,4 @@
-package roomescape.business.fakerepository;
+package roomescape.persistence;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.business.ReservationTheme;
-import roomescape.persistence.ReservationThemeRepository;
 
 public final class FakeReservationThemeRepository implements ReservationThemeRepository {
 
