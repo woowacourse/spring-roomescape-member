@@ -1,8 +1,7 @@
 package roomescape.member.repository;
 
-import static roomescape.member.constant.Role.MEMBER;
+import static roomescape.member.role.Role.MEMBER;
 
-import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,7 +10,10 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.member.constant.Role;
+import roomescape.member.domain.Email;
+import roomescape.member.domain.Name;
+import roomescape.member.domain.Password;
+import roomescape.member.role.Role;
 import roomescape.member.domain.Member;
 import roomescape.member.service.MemberRepository;
 
@@ -23,9 +25,9 @@ public class MemberJdbcRepository implements MemberRepository {
 
     private final RowMapper<Member> memberRowMapper = (result, rowNum) -> new Member(
             result.getLong("id"),
-            result.getString("name"),
-            result.getString("email"),
-            result.getString("password"),
+            new Name(result.getString("name")),
+            new Email(result.getString("email")),
+            new Password(result.getString("password")),
             Role.valueOf(result.getString("role"))
     );
 
@@ -37,11 +39,11 @@ public class MemberJdbcRepository implements MemberRepository {
     }
 
     @Override
-    public Member save(String name, String email, String password) {
+    public Member save(Name name, Email email, Password password) {
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", name)
-                .addValue("email", email)
-                .addValue("password", password)
+                .addValue("name", name.getName())
+                .addValue("email", email.getEmail())
+                .addValue("password", password.getPassword())
                 .addValue("role", "MEMBER");
 
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();

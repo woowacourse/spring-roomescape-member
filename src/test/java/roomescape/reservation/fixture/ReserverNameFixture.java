@@ -1,8 +1,8 @@
 package roomescape.reservation.fixture;
 
-import roomescape.reservation.domain.ReserverName;
+import roomescape.member.domain.Name;
 
 public class ReserverNameFixture {
 
-    public static ReserverName 한스 = new ReserverName("한스");
+    public static Name 한스 = new Name("한스");
 }

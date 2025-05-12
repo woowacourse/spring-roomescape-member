@@ -2,7 +2,10 @@ package roomescape.member.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.member.controller.request.SignUpRequest;
+import roomescape.member.domain.Email;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Name;
+import roomescape.member.domain.Password;
 
 @Service
 public class MemberService {
@@ -14,9 +17,10 @@ public class MemberService {
     }
 
     public Member save(SignUpRequest request) {
-        String name = request.name();
-        String email = request.email();
-        String password = request.password();
+        Email email = new Email(request.email());
+        Name name = new Name(request.name());
+        Password password = new Password(request.password());
+
         return memberRepository.save(name, email, password);
     }
 

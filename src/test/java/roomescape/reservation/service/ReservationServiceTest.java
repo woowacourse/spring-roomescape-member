@@ -9,6 +9,9 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.common.BaseTest;
+import roomescape.member.domain.Email;
+import roomescape.member.domain.Name;
+import roomescape.member.domain.Password;
 import roomescape.member.repository.MemberJdbcRepository;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.fixture.ReservationDateFixture;
@@ -35,7 +38,7 @@ public class ReservationServiceTest extends BaseTest {
 
     @Test
     void 예약을_생성한다() {
-        memberJdbcRepository.save(MATT.getName(), MATT.getEmail(), MATT.getPassword());
+        memberJdbcRepository.save(new Name("매트"), new Email("matt.kakao"), new Password("1234"));
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
 
@@ -56,7 +59,7 @@ public class ReservationServiceTest extends BaseTest {
 
     @Test
     void 예약이_존재하면_예약을_생성할_수_없다() {
-        memberJdbcRepository.save(MATT.getName(), MATT.getEmail(), MATT.getPassword());
+        memberJdbcRepository.save(new Name("매트"), new Email("matt.kakao"), new Password("1234"));
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
 
@@ -78,7 +81,7 @@ public class ReservationServiceTest extends BaseTest {
 
     @Test
     void 예약을_모두_조회한다() {
-        memberJdbcRepository.save(MATT.getName(), MATT.getEmail(), MATT.getPassword());
+        memberJdbcRepository.save(new Name("매트"), new Email("matt.kakao"), new Password("1234"));
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
 
@@ -100,7 +103,7 @@ public class ReservationServiceTest extends BaseTest {
 
     @Test
     void 예약을_삭제한다() {
-        memberJdbcRepository.save(MATT.getName(), MATT.getEmail(), MATT.getPassword());
+        memberJdbcRepository.save(new Name("매트"), new Email("matt.kakao"), new Password("1234"));
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
 

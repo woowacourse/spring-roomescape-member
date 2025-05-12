@@ -4,7 +4,9 @@ import org.springframework.stereotype.Service;
 import roomescape.member.controller.request.TokenLoginCreateRequest;
 import roomescape.member.controller.response.MemberResponse;
 import roomescape.member.controller.response.TokenLoginResponse;
+import roomescape.member.domain.Email;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Password;
 import roomescape.member.infrastructure.JwtTokenProvider;
 
 @Service
@@ -18,10 +20,10 @@ public class AutoService {
     }
 
     public TokenLoginResponse tokenLogin(TokenLoginCreateRequest tokenLoginCreateRequest) {
-        String email = tokenLoginCreateRequest.email();
-        String password = tokenLoginCreateRequest.password();
+        Email email = new Email(tokenLoginCreateRequest.email());
+        Password password = new Password(tokenLoginCreateRequest.password());
 
-        if (!memberRepository.isExistUser(email, password)) {
+        if (!memberRepository.isExistUser(email.getEmail(), password.getPassword())) {
             throw new IllegalArgumentException("[ERROR] 등록되지 않은 회원입니다.");
         }
 

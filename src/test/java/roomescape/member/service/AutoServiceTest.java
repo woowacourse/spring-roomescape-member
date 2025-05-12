@@ -11,7 +11,10 @@ import roomescape.common.BaseTest;
 import roomescape.member.controller.request.TokenLoginCreateRequest;
 import roomescape.member.controller.response.MemberResponse;
 import roomescape.member.controller.response.TokenLoginResponse;
+import roomescape.member.domain.Email;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Name;
+import roomescape.member.domain.Password;
 import roomescape.member.infrastructure.JwtTokenProvider;
 import roomescape.member.repository.MemberJdbcRepository;
 
@@ -28,7 +31,7 @@ class AutoServiceTest extends BaseTest {
     @DisplayName("토큰 활용하여 로그인한다.")
     void tokenLoginTest() {
         //given
-        Member matt = memberJdbcRepository.save("매트", "matt.kakao", "1234");
+        Member matt = memberJdbcRepository.save(new Name("매트"), new Email("matt.kakao"), new Password("1234"));
         String email = matt.getEmail();
         String password = matt.getPassword();
 
@@ -43,7 +46,7 @@ class AutoServiceTest extends BaseTest {
     @DisplayName("등록되지 않은 회원은 로그인할 수 없다.")
     void tokenLoginFailTest() {
         //given
-        memberJdbcRepository.save("매트", "matt.kakao", "1234");
+        memberJdbcRepository.save(new Name("매트"), new Email("matt.kakao"), new Password("1234"));
 
         //when - then
         assertThatThrownBy(() ->
@@ -68,7 +71,7 @@ class AutoServiceTest extends BaseTest {
     @DisplayName("토큰을 활용하여 회원을 찾는다.")
     void findMemberByTokenTest() {
         //given
-        Member matt = memberJdbcRepository.save("매트", "matt.kakao", "1234");
+        Member matt = memberJdbcRepository.save(new Name("매트"), new Email("matt.kakao"), new Password("1234"));
         String token = jwtTokenProvider.createToken(matt.getEmail());
 
         //when
