@@ -43,7 +43,7 @@ class AuthControllerTest {
                 .cookie("token", userToken)
                 .when().get("/admin")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(403);
     }
 
 }
