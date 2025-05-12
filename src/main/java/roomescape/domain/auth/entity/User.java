@@ -10,7 +10,6 @@ import roomescape.domain.auth.service.PasswordEncryptor;
 @Getter
 public class User {
 
-    private static final int PASSWORD_MAX_LENGTH = 25;
     private static final String EMAIL_REGEX = "^[a-z+-_]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$";
 
     private final Long id;

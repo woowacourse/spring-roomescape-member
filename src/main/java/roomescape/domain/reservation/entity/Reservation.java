@@ -29,15 +29,23 @@ public class Reservation {
         validateReservation();
     }
 
-    private void validateReservation() {
-        if (user == null || reservationDate == null || reservationTime == null || theme == null) {
-            throw new InvalidArgumentException("Reservation field cannot be null");
-        }
-    }
-
     public static Reservation withoutId(final User user, final LocalDate reservationDate,
                                         final ReservationTime reservationTime, final Theme theme) {
         return new Reservation(null, user, reservationDate, reservationTime, theme);
+    }
+
+    private void validateReservation() {
+        if (user == null || theme == null) {
+            throw new InvalidArgumentException("Reservation field cannot be null");
+        }
+
+        validateReservationDateTime();
+    }
+
+    private void validateReservationDateTime() {
+        if (reservationDate == null || reservationTime == null) {
+            throw new InvalidArgumentException("예약 날짜와 시간이 null일 수 없습니다.");
+        }
     }
 
     public void validateNotPastReservation(final LocalDateTime now) {
