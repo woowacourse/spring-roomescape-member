@@ -32,7 +32,30 @@
   - [x] 메인 페이지 파일은 `templates/admin/theme.html`를 사용한다.
   - [x] 응답 성공시, `200 OK`를 반환한다.
 
+- [x] API 경로는 `GET /login` 으로 구현한다.
+  - 로그인 페이지
+  - [x] 메인 페이지 파일은 `templates/login.html`를 사용한다.
+  - [x] 응답 성공시, `200 OK`를 반환한다.
+
 ## 데이터(JSON) 반환
+
+### POST '/login'
+- id/pw로 로그인 요청
+- 응답: `200 OK`
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+Keep-Alive: timeout=60
+Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+```
+
+### GET '/login/check'
+- 로그인 검증 API
+- 응답: `200 OK`
+```json
+{"name":"관리자"}
+```
 
 ### GET `/reservations`
 - 전체 예약 목록 조회
@@ -79,18 +102,23 @@
 - 요청
 ```json
 {
-  "name": "제프리",
   "date": "2025-05-06",
+  "memberId": 1,
   "themeId": 1,
   "timeId": 1
 }
 ```
 - 응답: `201 Created`
+
 ```json
 {
   "id": 21,
-  "name": "제프리",
   "date": "2025-05-06",
+  "member": {
+    "memberId": 1,
+    "name": "제프리"
+  },
+  "memberId": 1,
   "time": {
     "timeId": 1,
     "startAt": "15:40:00"
