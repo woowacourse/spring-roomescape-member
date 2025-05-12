@@ -102,7 +102,7 @@ class AuthenticationControllerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"", "invalid-token"})
-    @DisplayName("로그인 체크 시, 토큰이 유효하지 않다면 401 코드를 반환해야한다")
+    @DisplayName("로그인 체크 시, 토큰이 유효하지 않다면 403 코드를 반환해야한다")
     void loginCheck_ShouldReturnUnauthorizedWhenInvalidToken(String token) {
         // when & then
         RestAssured.given()
@@ -110,7 +110,7 @@ class AuthenticationControllerTest {
                 .when()
                 .get("/auth/login/check")
                 .then()
-                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .statusCode(HttpStatus.FORBIDDEN.value())
                 .contentType(ContentType.JSON)
                 .body("name", org.hamcrest.Matchers.nullValue());
     }
