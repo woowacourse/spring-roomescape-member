@@ -1,6 +1,7 @@
 package roomescape.reservation.repository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -182,4 +183,86 @@ public class JDBCReservationRepository implements ReservationRepository {
         );
     }
 
+    //TODO: NamedParameterJdbcTemplate 알아보기
+    @Override
+    public List<Reservation> searchByFilters(final Long themeId, final Long memberId,
+                                             final LocalDate dateFrom, final LocalDate dateTo) {
+        List<String> conditions = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
+
+        if (themeId != null) {
+            conditions.add("r.theme_id = ?");
+            params.add(themeId);
+        }
+        if (memberId != null) {
+            conditions.add("r.member_id = ?");
+            params.add(memberId);
+        }
+        if (dateFrom != null) {
+            conditions.add("r.date >= ?");
+            params.add(dateFrom);
+        }
+        if (dateTo != null) {
+            conditions.add("r.date <= ?");
+            params.add(dateTo);
+        }
+
+        String whereClause = "";
+        if (!conditions.isEmpty()) {
+            whereClause = "WHERE " + String.join(" AND ", conditions) + " ";
+        }
+
+        String query =
+                "SELECT " +
+                        "r.id AS reservation_id, " +
+                        "r.date, " +
+                        "t.id AS time_id, " +
+                        "t.start_at AS time_value, " +
+                        "th.id AS theme_id, " +
+                        "th.name AS theme_name, " +
+                        "th.description, " +
+                        "th.thumbnail, " +
+                        "m.id AS member_id, " +
+                        "m.name AS member_name, " +
+                        "m.email AS member_email, " +
+                        "m.password AS member_password, " +
+                        "m.role AS member_role " +
+                        "FROM reservation AS r " +
+                        "INNER JOIN reservation_time AS t ON r.time_id = t.id " +
+                        "INNER JOIN theme AS th ON r.theme_id = th.id " +
+                        "INNER JOIN member AS m ON r.member_id = m.id " +
+                        whereClause;
+
+        return jdbcTemplate.query(query, params.toArray(), (rs, rowNum) -> {
+            ReservationTimeEntity timeEntity = new ReservationTimeEntity(
+                    rs.getLong("time_id"),
+                    rs.getString("time_value")
+            );
+
+            ThemeEntity themeEntity = new ThemeEntity(
+                    rs.getLong("theme_id"),
+                    rs.getString("theme_name"),
+                    rs.getString("description"),
+                    rs.getString("thumbnail")
+            );
+
+            MemberEntity memberEntity = new MemberEntity(
+                    rs.getLong("member_id"),
+                    rs.getString("member_name"),
+                    rs.getString("member_email"),
+                    rs.getString("member_password"),
+                    Role.valueOf(rs.getString("member_role"))
+            );
+
+            ReservationEntity entity = new ReservationEntity(
+                    rs.getLong("reservation_id"),
+                    rs.getString("date"),
+                    memberEntity,
+                    timeEntity,
+                    themeEntity
+            );
+
+            return entity.toReservation();
+        });
+    }
 }

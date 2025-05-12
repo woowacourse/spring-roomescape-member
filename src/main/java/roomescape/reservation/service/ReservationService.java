@@ -94,4 +94,11 @@ public class ReservationService {
             throw new IllegalArgumentException("예약 시간이 현재 시간보다 이전일 수 없습니다.");
         }
     }
+
+    public List<ReservationResponse> getFilteredReservations(final Long themeId, final Long memberId,
+                                                             final LocalDate dateFrom, final LocalDate dateTo) {
+        return reservationRepository.searchByFilters(themeId, memberId, dateFrom, dateTo).stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
 }

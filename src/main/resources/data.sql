@@ -51,6 +51,8 @@ VALUES (1, '2025-05-07', 1, 1),
        (1, '2025-05-07', 5, 5),
        (1, '2025-05-07', 5, 10);
 
-INSERT INTO member (name, email, password)
-VALUES ('Danny', 'danny@example.com', '0000');
+INSERT INTO member (name, email, password, role)
+VALUES ('Danny', 'danny@example.com', '0000', 'ADMIN'),
+       ('Mint', 'mint@example.com', '0000', 'MEMBER');
+
 
