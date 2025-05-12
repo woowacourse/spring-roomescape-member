@@ -1,27 +1,14 @@
 package roomescape.theme.dto;
 
-import roomescape.exception.BadRequestException;
-import roomescape.exception.ExceptionCause;
+import jakarta.validation.constraints.NotBlank;
 
 public record ThemeCreateRequest(
+        @NotBlank(message = "이름은 필수입니다.")
         String name,
+        @NotBlank(message = "설명은 필수입니다.")
         String description,
+        @NotBlank(message = "섬네일은 필수입니다.")
         String thumbnail
 ) {
 
-    public ThemeCreateRequest {
-        validateFields(name, description, thumbnail);
-    }
-
-    private void validateFields(String name, String description, String thumbnail) {
-        if (name.isBlank()) {
-            throw new BadRequestException(ExceptionCause.EMPTY_VALUE_THEME_NAME);
-        }
-        if (description.isBlank()) {
-            throw new BadRequestException(ExceptionCause.EMPTY_VALUE_THEME_DESCRIPTION);
-        }
-        if (thumbnail.isBlank()) {
-            throw new BadRequestException(ExceptionCause.EMPTY_VALUE_THEME_THUMBNAIL);
-        }
-    }
 }

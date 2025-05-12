@@ -1,5 +1,6 @@
 package roomescape.theme.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeCreateResponse> create(@RequestBody ThemeCreateRequest themeCreateRequest) {
+    public ResponseEntity<ThemeCreateResponse> create(@Valid @RequestBody ThemeCreateRequest themeCreateRequest) {
         ThemeCreateResponse themeCreateResponse = themeService.create(themeCreateRequest);
 
         URI location = ServletUriComponentsBuilder
@@ -50,8 +51,8 @@ public class ThemeController {
     }
 
     @GetMapping("/rank")
-    public List<ThemeResponse> findPopularThemesInRecentSevenDays() {
+    public ResponseEntity<List<ThemeResponse>> findPopularThemesInRecentSevenDays() {
         List<ThemeResponse> popularThemesInRecentSevenDays = themeService.findPopularThemesInRecentSevenDays();
-        return popularThemesInRecentSevenDays;
+        return ResponseEntity.ok(popularThemesInRecentSevenDays);
     }
 }
