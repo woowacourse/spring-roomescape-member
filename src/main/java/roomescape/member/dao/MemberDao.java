@@ -8,7 +8,7 @@ public interface MemberDao {
 
     Optional<Member> findByEmailAndPassword(String email, String password);
 
-    void create(Member member);
+    Member create(Member member);
 
     Optional<Member> findByEmail(String email);
 

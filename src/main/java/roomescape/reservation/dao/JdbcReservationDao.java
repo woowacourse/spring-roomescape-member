@@ -39,7 +39,7 @@ public class JdbcReservationDao implements ReservationDao {
                 resultSet.getString("member_name"),
                 resultSet.getString("member_email"),
                 resultSet.getString("member_password"),
-                new Role(1L, "user")
+                Role.USER
         );
 
         return Reservation.load(

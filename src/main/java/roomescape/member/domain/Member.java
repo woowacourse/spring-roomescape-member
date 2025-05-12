@@ -21,6 +21,10 @@ public class Member {
         this.role = role;
     }
 
+    public static Member createWithoutId(String name, String email, String password, Role role) {
+        return new Member(null, name, email, password, role);
+    }
+
     private void validatePassword(String password) {
         if (password.length() < 8 || password.length() > 16) {
             throw new BadRequestException(ExceptionCause.MEMBER_PASSWORD_INVALID);
@@ -49,10 +53,6 @@ public class Member {
             count++;
         }
         return count >= 3;
-    }
-
-    public static Member createWithoutId(String name, String email, String password, Role role) {
-        return new Member(null, name, email, password, role);
     }
 
     public Long getId() {

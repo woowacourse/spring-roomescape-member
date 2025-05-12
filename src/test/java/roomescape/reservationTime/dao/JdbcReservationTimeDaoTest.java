@@ -34,14 +34,11 @@ import roomescape.theme.domain.Theme;
 class JdbcReservationTimeDaoTest {
 
     @Autowired
+    JdbcMemberDao jdbcMemberDao;
+    @Autowired
     private JdbcReservationTimeDao jdbcReservationTimeDao;
-
     @Autowired
     private JdbcReservationDao jdbcReservationDao;
-
-    @Autowired
-    JdbcMemberDao jdbcMemberDao;
-
     @Autowired
     private JdbcThemeDao jdbcThemeDao;
 

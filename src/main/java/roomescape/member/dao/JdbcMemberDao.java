@@ -47,13 +47,15 @@ public class JdbcMemberDao implements MemberDao {
     }
 
     @Override
-    public void create(Member member) {
+    public Member create(Member member) {
         Map<String, Object> parameters = new HashMap<>(Map.of(
                 "name", member.getName(),
                 "email", member.getEmail(),
                 "password", member.getPassword(),
                 "role_id", member.getRole().getId()));
-        simpleJdbcInsert.execute(parameters);
+        Number number = simpleJdbcInsert.executeAndReturnKey(parameters);
+        return new Member(number.longValue(), member.getName(), member.getEmail(), member.getPassword(),
+                member.getRole());
     }
 
     @Override

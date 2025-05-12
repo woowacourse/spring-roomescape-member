@@ -68,9 +68,11 @@ class JdbcReservationDaoTest {
     void findAllTest() {
 
         // given
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(ReservationTime.create(LocalTime.now().plusHours(1)));
+        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(
+                ReservationTime.create(LocalTime.now().plusHours(1)));
         Theme savedTheme = jdbcThemeDao.create(Theme.create("test", "test", "test"));
-        Member savedMember = jdbcMemberDao.create(Member.createWithoutId("test", "test@test.com", "qwer1234!", Role.USER));
+        Member savedMember = jdbcMemberDao.create(
+                Member.createWithoutId("test", "test@test.com", "qwer1234!", Role.USER));
         Reservation reservation1 = Reservation.create(LocalDate.now(), savedMember,
                 savedReservationTime, savedTheme);
         Reservation reservation2 = Reservation.create(LocalDate.now(), savedMember,
@@ -90,9 +92,11 @@ class JdbcReservationDaoTest {
     void deleteTest() {
 
         // given
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(ReservationTime.create(LocalTime.now().plusHours(1)));
+        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(
+                ReservationTime.create(LocalTime.now().plusHours(1)));
         Theme savedTheme = jdbcThemeDao.create(Theme.create("test", "test", "test"));
-        Member savedMember = jdbcMemberDao.create(Member.createWithoutId("test", "test@test.com", "qwer1234!", Role.USER));
+        Member savedMember = jdbcMemberDao.create(
+                Member.createWithoutId("test", "test@test.com", "qwer1234!", Role.USER));
         Reservation reservation = Reservation.create(LocalDate.now(), savedMember, savedReservationTime, savedTheme);
         Reservation savedReservation = jdbcReservationDao.create(reservation);
 
@@ -109,9 +113,11 @@ class JdbcReservationDaoTest {
     void findByThemeAndDateAndTimeTest() {
 
         //given
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(ReservationTime.create(LocalTime.now().plusHours(1)));
+        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(
+                ReservationTime.create(LocalTime.now().plusHours(1)));
         Theme savedTheme = jdbcThemeDao.create(Theme.create("test", "test", "test"));
-        Member savedMember = jdbcMemberDao.create(Member.createWithoutId("test", "test@test.com", "qwer1234!", Role.USER));
+        Member savedMember = jdbcMemberDao.create(
+                Member.createWithoutId("test", "test@test.com", "qwer1234!", Role.USER));
         Reservation reservation = Reservation.create(LocalDate.now(), savedMember, savedReservationTime, savedTheme);
         Reservation savedReservation = jdbcReservationDao.create(reservation);
 
@@ -130,9 +136,11 @@ class JdbcReservationDaoTest {
     void findByTimeId_True() {
 
         // given
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(ReservationTime.create(LocalTime.now().plusHours(1)));
+        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(
+                ReservationTime.create(LocalTime.now().plusHours(1)));
         Theme savedTheme = jdbcThemeDao.create(Theme.create("test", "test", "test"));
-        Member savedMember = jdbcMemberDao.create(Member.createWithoutId("test", "test@test.com", "qwer1234!", Role.USER));
+        Member savedMember = jdbcMemberDao.create(
+                Member.createWithoutId("test", "test@test.com", "qwer1234!", Role.USER));
         Reservation reservation = Reservation.create(LocalDate.now(), savedMember, savedReservationTime, savedTheme);
         jdbcReservationDao.create(reservation);
 
@@ -163,9 +171,11 @@ class JdbcReservationDaoTest {
     void findByThemeId_True() {
 
         // given
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(ReservationTime.create(LocalTime.now().plusHours(1)));
+        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(
+                ReservationTime.create(LocalTime.now().plusHours(1)));
         Theme savedTheme = jdbcThemeDao.create(Theme.create("test", "test", "test"));
-        Member savedMember = jdbcMemberDao.create(Member.createWithoutId("test", "test@test.com", "qwer1234!", Role.USER));
+        Member savedMember = jdbcMemberDao.create(
+                Member.createWithoutId("test", "test@test.com", "qwer1234!", Role.USER));
         Reservation reservation = Reservation.create(LocalDate.now(), savedMember, savedReservationTime, savedTheme);
         jdbcReservationDao.create(reservation);
 

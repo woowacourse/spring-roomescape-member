@@ -25,7 +25,6 @@ public class AdminReservationService {
     private final ReservationDao reservationDao;
     private final MemberService memberService;
     private final ThemeService themeService;
-
     private final ReservationTimeService reservationTimeService;
 
     public AdminReservationService(ReservationDao reservationDao, MemberService memberService,
@@ -35,7 +34,6 @@ public class AdminReservationService {
         this.themeService = themeService;
         this.reservationTimeService = reservationTimeService;
     }
-
 
     public ReservationCreateResponse create(Visitor visitor, AdminReservationRequest adminReservationRequest) {
         if (!visitor.isAdmin()) {

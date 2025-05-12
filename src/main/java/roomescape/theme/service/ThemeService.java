@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import roomescape.exception.BadRequestException;
 import roomescape.exception.ConflictException;
 import roomescape.exception.ExceptionCause;
+import roomescape.exception.NotFoundException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.dao.ThemeDao;
@@ -37,7 +37,7 @@ public class ThemeService {
     public Theme findById(final Long id) {
         Optional<Theme> theme = themeDao.findById(id);
         if (theme.isEmpty()) {
-            throw new BadRequestException(ExceptionCause.THEME_NOTFOUND);
+            throw new NotFoundException(ExceptionCause.THEME_NOTFOUND);
         }
         return theme.get();
     }

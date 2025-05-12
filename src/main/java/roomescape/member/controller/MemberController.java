@@ -1,6 +1,7 @@
 package roomescape.member.controller;
 
 import jakarta.validation.Valid;
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -29,7 +30,7 @@ public class MemberController {
     @PostMapping("/members")
     public ResponseEntity<MemberSignUpResponse> signup(@Valid @RequestBody MemberSignupRequest memberSignupRequest) {
         memberService.signup(memberSignupRequest);
-        return ResponseEntity.ok(new MemberSignUpResponse("회원가입에 성공하였습니다."));
+        return ResponseEntity.created(URI.create("/login")).body(new MemberSignUpResponse("회원가입에 성공하였습니다."));
     }
 
     @GetMapping("/members")
