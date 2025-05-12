@@ -6,6 +6,7 @@ import roomescape.domain.member.Role;
 import roomescape.dto.auth.SignUpRequestDto;
 import roomescape.dto.member.MemberResponseDto;
 import roomescape.dto.member.MemberSignupResponseDto;
+import roomescape.exception.DuplicateContentException;
 import roomescape.exception.UnAuthorizationException;
 import roomescape.repository.MemberRepository;
 
@@ -31,9 +32,13 @@ public class MemberService {
     }
 
     public MemberSignupResponseDto registerMember(SignUpRequestDto requestDto) {
-        Member member = Member.createWithoutId(requestDto.name(), requestDto.email(), Role.USER, requestDto.password());
-        Member save = memberRepository.save(member);
-        MemberSignupResponseDto memberSignupResponseDto = new MemberSignupResponseDto(save.getId(), save.getName(), save.getEmail());
-        return memberSignupResponseDto;
+        try {
+            Member member = Member.createWithoutId(requestDto.name(), requestDto.email(), Role.USER, requestDto.password());
+            Member save = memberRepository.save(member);
+            MemberSignupResponseDto memberSignupResponseDto = new MemberSignupResponseDto(save.getId(), save.getName(), save.getEmail());
+            return memberSignupResponseDto;
+        } catch (IllegalStateException e) {
+            throw new DuplicateContentException(e.getMessage());
+        }
     }
 }
