@@ -1,14 +1,11 @@
 package roomescape.common.exception.handler;
 
-import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.auth.exception.ForbiddenException;
-import roomescape.auth.exception.UnauthorizedException;
 import roomescape.common.exception.handler.dto.ExceptionResponse;
 
 @RestControllerAdvice
@@ -32,24 +29,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(exceptionResponse);
     }
 
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ExceptionResponse> handleUnauthorize(final UnauthorizedException exception, final HttpServletRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(
-                HttpStatus.UNAUTHORIZED.value(), "[ERROR] " + exception.getMessage(), request.getRequestURI()
-        );
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(exceptionResponse);
-    }
-
-    @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<ExceptionResponse> handleForbidden(final ForbiddenException exception, final HttpServletRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(
-                HttpStatus.FORBIDDEN.value(), "[ERROR] " + exception.getMessage(), request.getRequestURI()
-        );
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN.value()).body(exceptionResponse);
-    }
-
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ExceptionResponse> handleHttpMessageNotReadable(
             final HttpMessageNotReadableException exception, final HttpServletRequest request
@@ -68,8 +47,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(exceptionResponse);
     }
 
-    @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<ExceptionResponse> handleIllegalState(final Exception exception, final HttpServletRequest request) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionResponse> handleException(final Exception exception, final HttpServletRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 HttpStatus.BAD_REQUEST.value(), "[ERROR] " + exception.getMessage(), request.getRequestURI()
         );
