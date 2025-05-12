@@ -14,6 +14,7 @@ public enum ErrorCode {
 
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "잘못된 형식의 입력입니다."),
     INVALID_AUTH_INFO(HttpStatus.UNAUTHORIZED, "인증 정보가 올바르지 않습니다."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     INVALID_DATETIME_FORMAT(HttpStatus.BAD_REQUEST, "잘못된 날짜/시간 형식입니다."),
     MEMBER_NOT_FOUND(HttpStatus.UNAUTHORIZED, "사용자를 찾을 수 없습니다."),
     MUST_BE_MEMBER(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
