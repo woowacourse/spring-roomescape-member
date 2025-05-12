@@ -29,6 +29,6 @@ server:
   port: 8081
 
 jwt:
-  secret: "testtesttesttesttesttest"
+  secret: "testtesttesttesttesttesttesttesttesttest"
   expiration:
-    access-token: 100
+    access-token: 1000

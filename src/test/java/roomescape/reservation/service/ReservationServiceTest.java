@@ -151,12 +151,13 @@ class ReservationServiceTest {
         int page = 2;
 
         // when
-        ReservationsWithTotalPageResponse reservationsWithTotalPage = reservationService.getReservationsByPage(page);
+        ReservationsWithTotalPageResponse reservationsWithTotalPage = reservationService.getReservationsByPage(page,
+                null, null, null, null);
 
         // then
         assertThat(reservationsWithTotalPage.reservations()).hasSize(10);
-        assertThat(reservationsWithTotalPage.reservations().getFirst().id()).isEqualTo(11L);
-        assertThat(reservationsWithTotalPage.reservations().getLast().id()).isEqualTo(20L);
+        assertThat(reservationsWithTotalPage.reservations().getFirst().id()).isEqualTo(15L);
+        assertThat(reservationsWithTotalPage.reservations().getLast().id()).isEqualTo(6L);
     }
 
     @Test
@@ -165,7 +166,7 @@ class ReservationServiceTest {
         int page = 4;
 
         // when, then
-        assertThatThrownBy(() -> reservationService.getReservationsByPage(page))
+        assertThatThrownBy(() -> reservationService.getReservationsByPage(page, null, null, null, null))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 }

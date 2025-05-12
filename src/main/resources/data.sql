@@ -54,6 +54,7 @@ VALUES -- 테마 1-10 (각 2개씩)
        (6, DATEADD('DAY', -18, CURRENT_DATE), 2, 4),
        (3, DATEADD('DAY', -17, CURRENT_DATE), 3, 5),
        (4, DATEADD('DAY', -16, CURRENT_DATE), 1, 5),
+
        (5, DATEADD('DAY', -15, CURRENT_DATE), 2, 6),
        (6, DATEADD('DAY', -14, CURRENT_DATE), 3, 6),
        (3, DATEADD('DAY', -13, CURRENT_DATE), 1, 7),

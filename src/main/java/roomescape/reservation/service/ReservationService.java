@@ -98,16 +98,30 @@ public class ReservationService {
         }
     }
 
-    public ReservationsWithTotalPageResponse getReservationsByPage(int page) {
-        int totalReservations = reservationDao.countTotalReservation();
+    public ReservationsWithTotalPageResponse getReservationsByPage(int page,
+                                                                   Long userId,
+                                                                   Long themeId,
+                                                                   LocalDate dateFrom,
+                                                                   LocalDate dateTo) {
+        if (dateFrom != null && dateTo != null && dateTo.isBefore(dateFrom)) {
+            throw new IllegalStateException("dateFrom cannot be after than dateTo");
+        }
+        int totalReservations = reservationDao.countTotalReservation(userId, themeId, dateFrom, dateTo);
         int totalPage = totalReservations % 10 == 0 ?
                 totalReservations / 10 : (totalReservations / 10) + 1;
-        if (page < 1 || page > totalPage) {
+        if (totalReservations != 0 && (page < 1 || page > totalPage)) {
             throw new ResourceNotFoundException("해당하는 페이지가 없습니다");
         }
         int start = (page - 1) * 10 + 1;
         int end = start + 10 - 1;
-        List<BriefReservationElement> briefReservations = reservationDao.findReservationsWithPage(start, end)
+        List<BriefReservationElement> briefReservations = reservationDao.findReservationsWithPage(
+                        start,
+                        end,
+                        userId,
+                        themeId,
+                        dateFrom,
+                        dateTo
+                )
                 .stream()
                 .map(reservation -> new BriefReservationElement(
                         reservation.getId(),

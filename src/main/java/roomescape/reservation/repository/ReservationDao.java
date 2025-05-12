@@ -3,6 +3,7 @@ package roomescape.reservation.repository;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,8 +12,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.user.domain.Role;
 import roomescape.theme.domain.Theme;
+import roomescape.user.domain.Role;
 import roomescape.user.domain.User;
 
 @Repository
@@ -81,8 +82,14 @@ public class ReservationDao {
         return deletedRow == 1;
     }
 
-    public List<Reservation> findReservationsWithPage(int startRowNumber, int endRowNumber) {
-        String sql = """
+    public List<Reservation> findReservationsWithPage(int startRowNumber,
+                                                      int endRowNumber,
+                                                      Long userId,
+                                                      Long themeId,
+                                                      LocalDate dateFrom,
+                                                      LocalDate dateTo) {
+        List<Object> params = new ArrayList<>();
+        StringBuilder sqlBuilder = new StringBuilder("""
                 SELECT r.id as reservation_id,
                     u.id as user_id,
                     u.name as user_name,
@@ -97,8 +104,28 @@ public class ReservationDao {
                     th.description,
                     th.thumbnail
                 FROM (
-                    SELECT ROW_NUMBER() OVER() as row_num, *
-                    FROM reservation
+                    SELECT ROW_NUMBER() OVER(ORDER BY id DESC) as row_num, * 
+                        FROM reservation WHERE 1=1
+                """);
+
+        if (userId != null) {
+            sqlBuilder.append(" AND user_id = ?");
+            params.add(userId);
+        }
+        if (themeId != null) {
+            sqlBuilder.append(" AND theme_id = ?");
+            params.add(themeId);
+        }
+        if (dateFrom != null) {
+            sqlBuilder.append(" AND date >= ?");
+            params.add(dateFrom);
+        }
+        if (dateTo != null) {
+            sqlBuilder.append(" AND date <= ?");
+            params.add(dateTo);
+        }
+
+        sqlBuilder.append("""
                 ) as r
                 INNER JOIN users as u
                 ON r.user_id = u.id
@@ -108,12 +135,13 @@ public class ReservationDao {
                 ON r.theme_id = th.id
                 WHERE r.row_num BETWEEN ? AND ?
                 ORDER BY r.row_num
-                """;
+                """);
+        params.add(startRowNumber);
+        params.add(endRowNumber);
         return jdbcTemplate.query(
-                sql,
+                sqlBuilder.toString(),
                 reservationRowMapper(),
-                startRowNumber,
-                endRowNumber
+                params.toArray()
         );
     }
 
@@ -170,10 +198,27 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, reservationRowMapper(), themeId, date);
     }
 
-    public int countTotalReservation() {
-        String sql = """
-                SELECT COUNT(*) FROM RESERVATION
-                """;
-        return jdbcTemplate.queryForObject(sql, Integer.class);
+    public int countTotalReservation(Long userId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        StringBuilder sqlBuilder = new StringBuilder("SELECT COUNT(*) FROM RESERVATION WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+
+        if (userId != null) {
+            sqlBuilder.append(" AND user_id = ?");
+            params.add(userId);
+        }
+        if (themeId != null) {
+            sqlBuilder.append(" AND theme_id = ?");
+            params.add(themeId);
+        }
+        if (dateFrom != null) {
+            sqlBuilder.append(" AND date >= ?");
+            params.add(dateFrom);
+        }
+        if (dateTo != null) {
+            sqlBuilder.append(" AND date <= ?");
+            params.add(dateTo);
+        }
+
+        return jdbcTemplate.queryForObject(sqlBuilder.toString(), Integer.class, params.toArray());
     }
 }

@@ -1,0 +1,47 @@
+package roomescape.global.interceptor;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.infra.JwtTokenProvider;
+import roomescape.user.domain.Role;
+import roomescape.user.domain.User;
+import roomescape.user.repository.UserDao;
+
+@Component
+public class AdminRoleCheckInterceptor implements HandlerInterceptor {
+
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserDao userDao;
+
+    public AdminRoleCheckInterceptor(JwtTokenProvider jwtTokenProvider, UserDao userDao) {
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.userDao = userDao;
+    }
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
+        String token = extractValue(request.getCookies(), "token");
+        String email = jwtTokenProvider.getPayload(token);
+        User user = userDao.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("cannot find by email"));
+        if (user.getRoles().contains(Role.ADMIN)) {
+            return true;
+        }
+        response.setStatus(HttpStatus.NOT_FOUND.value());
+        return false;
+    }
+
+    private String extractValue(Cookie[] cookies, String key) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(key)) {
+                return cookie.getValue();
+            }
+        }
+        throw new RuntimeException("cannot find key in cookies");
+    }
+}

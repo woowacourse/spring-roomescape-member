@@ -2,6 +2,7 @@ package roomescape.reservation.controller;
 
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.dto.response.ReservationsWithTotalPageResponse;
-import roomescape.user.domain.UserPrinciple;
 import roomescape.reservation.service.ReservationService;
+import roomescape.user.domain.UserPrinciple;
 
 @RestController
 @RequestMapping("/reservations")
@@ -29,8 +30,18 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<ReservationsWithTotalPageResponse> getReservationsByPage(
-            @RequestParam(required = false, defaultValue = "1") int page) {
-        ReservationsWithTotalPageResponse reservationsWithTotalPage = reservationService.getReservationsByPage(page);
+            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) Long themeId,
+            @RequestParam(required = false) LocalDate dateFrom,
+            @RequestParam(required = false) LocalDate dateTo) {
+        ReservationsWithTotalPageResponse reservationsWithTotalPage = reservationService.getReservationsByPage(
+                page,
+                userId,
+                themeId,
+                dateFrom,
+                dateTo
+        );
         return ResponseEntity.ok(reservationsWithTotalPage);
     }
 

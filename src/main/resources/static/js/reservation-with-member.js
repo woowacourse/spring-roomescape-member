@@ -282,12 +282,11 @@ function applyFilter(event) {
     // 필터 조건 쿼리 매개변수 구성
     let queryParams = new URLSearchParams();
     if (themeId) queryParams.append('themeId', themeId);
-    if (memberId) queryParams.append('memberId', memberId);
+    if (memberId) queryParams.append('userId', memberId);
     if (dateFrom) queryParams.append('dateFrom', dateFrom);
     if (dateTo) queryParams.append('dateTo', dateTo);
     queryParams.append('page', currentPage); // 현재 페이지 정보 추가
-
-    fetch(`/${queryParams.toString()}`, { // 예약 검색 API 호출
+    fetch(`${RESERVATION_API_ENDPOINT}?${queryParams.toString()}`, { // 예약 검색 API 호출
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'

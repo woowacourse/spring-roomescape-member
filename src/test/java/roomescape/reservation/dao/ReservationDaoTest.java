@@ -61,7 +61,7 @@ class ReservationDaoTest {
         Reservation saved = reservationDao.save(reservation);
 
         // then
-        assertThat(reservationDao.countTotalReservation()).isEqualTo(26);
+        assertThat(reservationDao.countTotalReservation(null, null, null, null)).isEqualTo(26);
     }
 
     @Test
@@ -71,7 +71,7 @@ class ReservationDaoTest {
 
         // then
         assertThat(isDeleted).isTrue();
-        assertThat(reservationDao.countTotalReservation()).isEqualTo(24);
+        assertThat(reservationDao.countTotalReservation(null, null, null, null)).isEqualTo(24);
     }
 
     @Test
@@ -81,7 +81,7 @@ class ReservationDaoTest {
 
         // then
         assertThat(isDeleted).isFalse();
-        assertThat(reservationDao.countTotalReservation()).isEqualTo(25);
+        assertThat(reservationDao.countTotalReservation(null, null, null, null)).isEqualTo(25);
     }
 
     @Test
@@ -158,7 +158,7 @@ class ReservationDaoTest {
     @Test
     void 예약의_전체_개수를_카운팅한다() {
         // when
-        int count = reservationDao.countTotalReservation();
+        int count = reservationDao.countTotalReservation(null, null, null, null);
 
         // then
         assertThat(count).isEqualTo(25);
@@ -171,11 +171,11 @@ class ReservationDaoTest {
         int end = 10;
 
         // when
-        List<Reservation> reservations = reservationDao.findReservationsWithPage(start, end);
+        List<Reservation> reservations = reservationDao.findReservationsWithPage(start, end, null, null, null, null);
 
         // then
         assertThat(reservations).hasSize(8);
-        assertThat(reservations.getFirst().getId()).isEqualTo(3L);
-        assertThat(reservations.getLast().getId()).isEqualTo(10L);
+        assertThat(reservations.getFirst().getId()).isEqualTo(23L);
+        assertThat(reservations.getLast().getId()).isEqualTo(16L);
     }
 }
