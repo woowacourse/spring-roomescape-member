@@ -62,13 +62,9 @@ public class JwtHandler {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (ExpiredJwtException e) {
-            throw new UnauthorizedException("토큰이 만료되었습니다.");
-        } catch (UnsupportedJwtException e) {
-            throw new UnauthorizedException("지원하지 않는 JWT 형식입니다.");
-        } catch (MalformedJwtException e) {
-            throw new UnauthorizedException("잘못된 JWT 형식입니다.");
-        } catch (SignatureException e) {
-            throw new UnauthorizedException("JWT 서명이 유효하지 않습니다.");
+            throw new UnauthorizedException("로그인 정보가 만료되었습니다.");
+        } catch (UnsupportedJwtException | MalformedJwtException | SignatureException e) {
+            throw new UnauthorizedException("로그인 정보가 유효하지 않습니다.");
         }
     }
 }

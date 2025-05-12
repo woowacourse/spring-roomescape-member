@@ -46,7 +46,7 @@ class JwtHandlerTest {
 
         assertThatThrownBy(() -> jwtHandler.decode(unsupportedToken))
                 .isInstanceOf(UnauthorizedException.class)
-                .hasMessage("잘못된 JWT 형식입니다.");
+                .hasMessage("로그인 정보가 유효하지 않습니다.");
     }
 
     @Test
@@ -61,7 +61,7 @@ class JwtHandlerTest {
 
         assertThatThrownBy(() -> jwtHandler.decode(wrongSignedToken))
                 .isInstanceOf(UnauthorizedException.class)
-                .hasMessage("JWT 서명이 유효하지 않습니다.");
+                .hasMessage("로그인 정보가 유효하지 않습니다.");
     }
 
     @Test
@@ -76,7 +76,7 @@ class JwtHandlerTest {
 
         assertThatThrownBy(() -> jwtHandler.decode(expiredToken))
                 .isInstanceOf(UnauthorizedException.class)
-                .hasMessage("토큰이 만료되었습니다.");
+                .hasMessage("로그인 정보가 만료되었습니다.");
     }
 
     @Test
@@ -88,7 +88,7 @@ class JwtHandlerTest {
 
         assertThatThrownBy(() -> jwtHandler.decode(unsupportedJwt))
                 .isInstanceOf(UnauthorizedException.class)
-                .hasMessage("지원하지 않는 JWT 형식입니다.");
+                .hasMessage("로그인 정보가 유효하지 않습니다.");
     }
 
     @Test
@@ -97,7 +97,7 @@ class JwtHandlerTest {
 
         assertThatThrownBy(() -> jwtHandler.decode(malformedToken))
                 .isInstanceOf(UnauthorizedException.class)
-                .hasMessage("잘못된 JWT 형식입니다.");
+                .hasMessage("로그인 정보가 유효하지 않습니다.");
     }
 
 
