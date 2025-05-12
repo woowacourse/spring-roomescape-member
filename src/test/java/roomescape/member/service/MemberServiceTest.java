@@ -33,6 +33,7 @@ class MemberServiceTest {
         memberService = new MemberService(memberRepository);
     }
 
+    @DisplayName("전체 사용자를 조회한다")
     @Test
     void find_all_test() {
         // when

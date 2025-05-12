@@ -27,7 +27,9 @@ public class MemberFakeRepository implements MemberRepository {
 
     public Long save(Member member) {
         Long generatedId = idGenerator.incrementAndGet();
-        members.put(generatedId, member);
+        Member memberWithId = new Member(generatedId, member.getName(), member.getEmail(), member.getPassword(),
+                member.getRole());
+        members.put(generatedId, memberWithId);
         return generatedId;
     }
 

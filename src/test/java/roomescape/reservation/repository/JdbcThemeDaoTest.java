@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
@@ -146,7 +147,19 @@ class JdbcThemeDaoTest {
                 () -> assertThat(themes).extracting(Theme::getId)
                         .containsExactlyInAnyOrder(2L, 5L)
         );
+    }
 
+    @DisplayName("조회하려는 데이터가 없으면 빈 배열을 반환한다")
+    @Test
+    void find_by_id_in_empty_test() {
+        // given
+        List<Long> ids = new ArrayList<>();
+
+        // when
+        List<Theme> findThemes = jdbcThemeDao.findByIdIn(ids);
+
+        // then
+        assertThat(findThemes).isEmpty();
     }
 
 }
