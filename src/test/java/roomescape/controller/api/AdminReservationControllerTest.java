@@ -1,4 +1,6 @@
-package roomescape.controller.page;
+package roomescape.controller.api;
+
+import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -11,7 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class AdminControllerTest {
+public class AdminReservationControllerTest {
 
     String token;
 
@@ -26,49 +28,36 @@ class AdminControllerTest {
     }
 
     @Test
-    @DisplayName("/admin 요청시 어드민 페이지 응답")
-    void mainPage() {
+    @DisplayName("예약 관리 페이지 내에서 예약 추가")
+    void createReservation() {
         RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
             .cookie("token", token)
-            .when().get("/admin")
+            .body(getTestParamsWithReservation())
+            .when().post("/admin/reservations")
             .then().log().all()
-            .statusCode(200);
-    }
+            .statusCode(201);
 
-    @Test
-    @DisplayName("/admin/reservation 요청시 예약 관리 페이지 응답")
-    void reservationPage() {
         RestAssured.given().log().all()
-            .cookie("token", token)
-            .when().get("/admin/reservation")
+            .when().get("/reservations")
             .then().log().all()
-            .statusCode(200);
-    }
-
-    @Test
-    @DisplayName("/admin/time 요청시 시간 관리 페이지 응답")
-    void timePage() {
-        RestAssured.given().log().all()
-            .cookie("token", token)
-            .when().get("/admin/time")
-            .then().log().all()
-            .statusCode(200);
-    }
-
-    @Test
-    @DisplayName("/admin/theme 요청시 테마 관리 페이지 응답")
-    void themePage() {
-        RestAssured.given().log().all()
-            .cookie("token", token)
-            .when().get("/admin/theme")
-            .then().log().all()
-            .statusCode(200);
+            .statusCode(200)
+            .body("size()", is(4));
     }
 
     private Map<String, String> getTestParamsWithMember() {
         return Map.of(
             "email", "admin",
             "password", "1234"
+        );
+    }
+
+    private Map<String, Object> getTestParamsWithReservation() {
+        return Map.of(
+            "memberId", 1,
+            "date", "2024-04-26",
+            "timeId", 1,
+            "themeId", 1
         );
     }
 }

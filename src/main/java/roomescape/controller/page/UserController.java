@@ -10,4 +10,14 @@ public class UserController {
     public String reservationPage() {
         return "reservation";
     }
+
+    @GetMapping("/signup")
+    public String signupPage() {
+        return "signup";
+    }
+
+    @GetMapping("/login")
+    public String loginPage() {
+        return "login";
+    }
 }
