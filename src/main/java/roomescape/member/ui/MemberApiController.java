@@ -44,14 +44,18 @@ public class MemberApiController {
     @PostMapping("/login")
     public ResponseEntity<Void> createToken(@RequestBody LoginRequest loginRequest) {
         Token accessToken = authService.login(loginRequest);
-        ResponseCookie cookie = ResponseCookie.from("token", accessToken.value())
-                .httpOnly(true)
-                .path("/")
-                .build();
+        ResponseCookie authCookie = createAuthCookie(accessToken);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header(HttpHeaders.SET_COOKIE, authCookie.toString())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+    }
+
+    private ResponseCookie createAuthCookie(Token accessToken) {
+        return ResponseCookie.from("token", accessToken.value())
+                .httpOnly(true)
+                .path("/")
                 .build();
     }
 }
