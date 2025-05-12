@@ -29,7 +29,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findThemesOrderByReservationCount(LocalDate from, LocalDate to,
-                                                         PopularThemeRequestDto dto) { // TODO 2025. 5. 5. 14:51: AS 매번 적는 거 좀 안 좋은 것 같은데 어떻게 한번에 하는 법 없나?
+                                                         PopularThemeRequestDto dto) {
 
         String sql = String.format("SELECT t.id AS theme_id," +
                 "       t.name AS theme_name," +
