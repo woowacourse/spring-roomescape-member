@@ -60,7 +60,7 @@ public class ReservationService {
         ReservationTime reservationTime = getReservationTime(request.timeId());
         Theme theme = getTheme(request.themeId());
 
-        validateSaveReservation(request.date(), request.timeId(), request.timeId(), reservationTime);
+        validateSaveReservation(request.date(), request.timeId(), request.themeId(), reservationTime);
         Reservation reservation = new Reservation(
                 request.memberId(),
                 request.date(),
