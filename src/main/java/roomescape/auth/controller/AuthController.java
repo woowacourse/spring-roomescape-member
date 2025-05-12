@@ -1,6 +1,7 @@
 package roomescape.auth.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -26,7 +27,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public void login(@RequestBody final LoginRequest request, final HttpServletResponse response) {
+    public void login(@RequestBody @Valid final LoginRequest request, final HttpServletResponse response) {
         log.info("로그인 시작");
         final String token = authService.createToken(request);
         log.info("토큰 생성 완료");
