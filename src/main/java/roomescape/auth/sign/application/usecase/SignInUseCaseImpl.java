@@ -3,7 +3,6 @@ package roomescape.auth.sign.application.usecase;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,10 +10,10 @@ import roomescape.auth.jwt.domain.Jwt;
 import roomescape.auth.jwt.domain.TokenType;
 import roomescape.auth.jwt.manager.JwtManager;
 import roomescape.auth.sign.application.dto.SignInRequest;
+import roomescape.auth.sign.application.dto.SignInResult;
 import roomescape.auth.sign.exception.InvalidSignInException;
 import roomescape.auth.sign.password.Password;
 import roomescape.auth.sign.password.PasswordEncoder;
-import roomescape.common.cookie.manager.CookieManager;
 import roomescape.common.domain.Email;
 import roomescape.user.application.service.UserQueryService;
 import roomescape.user.domain.User;
@@ -27,17 +26,15 @@ public class SignInUseCaseImpl implements SignInUseCase {
     private final UserQueryService userQueryService;
     private final PasswordEncoder passwordEncoder;
     private final JwtManager jwtManager;
-    private final CookieManager cookieManager;
 
     @Override
-    public void execute(final SignInRequest request,
-                        final HttpServletResponse response) {
+    public SignInResult execute(final SignInRequest request) {
         final User user = userQueryService.getByEmail(request.email());
         final Password saved = user.getPassword();
         validatePassword(saved, request.rawPassword(), user.getEmail());
 
         final Jwt accessToken = jwtManager.generate(buildClaims(user), TokenType.ACCESS);
-        cookieManager.setCookie(response, buildCookie(accessToken));
+        return SignInResult.from(buildCookie(accessToken));
     }
 
     private void validatePassword(final Password saved,
