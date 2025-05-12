@@ -72,9 +72,9 @@ class ReservationControllerTest {
                 .status(HttpStatus.OK)
                 .body("size()", is(2))
                 .body("[0].id", is(1))
-                .body("[0].name", is("테스트"))
+                .body("[0].member.name", is("테스트"))
                 .body("[1].id", is(2))
-                .body("[1].name", is("테스트"));
+                .body("[1].member.name", is("테스트"));
     }
 
     @Test
@@ -104,7 +104,7 @@ class ReservationControllerTest {
                 .then().log().all()
                 .status(HttpStatus.CREATED)
                 .body("id", is((int) expectedId))
-                .body("name", is("테스트"))
+                .body("member.name", is("테스트"))
                 .body("date", is(fixedDate.toString()))
                 .body("time.id", is((int) expectedTimeId))
                 .body("theme.id", is((int) expectedThemeId))
