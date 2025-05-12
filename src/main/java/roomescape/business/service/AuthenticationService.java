@@ -33,7 +33,6 @@ public class AuthenticationService {
 
     public Member findMemberByToken(String token) {
         if (!jwtProvider.validateToken(token)) {
-            // todo: 401 exception
             throw new MemberException("유효하지 않은 토큰입니다.");
         }
         Long payload = Long.valueOf(jwtProvider.getPayload(token));
