@@ -11,11 +11,12 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.ThemeRepository;
+import roomescape.theme.domain.ThemeCommandRepository;
+import roomescape.theme.domain.ThemeQueryRepository;
 
 @Repository
 @RequiredArgsConstructor
-public class JdbcThemeRepository implements ThemeRepository {
+public class JdbcThemeRepository implements ThemeQueryRepository, ThemeCommandRepository {
 
     private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->
             new Theme(

@@ -19,7 +19,7 @@ import roomescape.reservation.ui.dto.request.ReservationsByfilterRequest;
 import roomescape.reservation.ui.dto.response.AvailableReservationTimeResponse;
 import roomescape.reservation.ui.dto.response.ReservationResponse;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.ThemeRepository;
+import roomescape.theme.domain.ThemeQueryRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
+    private final ThemeQueryRepository themeQueryRepository;
 
     public ReservationResponse create(final CreateReservationRequest request, final Member member) {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(),
@@ -37,7 +37,7 @@ public class ReservationService {
 
         final ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new ResourceNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + request.timeId()));
-        final Theme theme = themeRepository.findById(request.themeId())
+        final Theme theme = themeQueryRepository.findById(request.themeId())
                 .orElseThrow(() -> new ResourceNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + request.themeId()));
         final Reservation reservation = new Reservation(request.date(), reservationTime, theme, member);
 

@@ -4,11 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface ThemeRepository {
-
-    Long save(Theme theme);
-
-    void deleteById(Long id);
+public interface ThemeQueryRepository {
 
     Boolean existsByName(String name);
 

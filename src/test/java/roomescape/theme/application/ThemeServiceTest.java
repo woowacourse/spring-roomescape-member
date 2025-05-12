@@ -13,7 +13,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.exception.resource.AlreadyExistException;
 import roomescape.theme.applcation.ThemeService;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.ThemeRepository;
+import roomescape.theme.domain.ThemeCommandRepository;
+import roomescape.theme.domain.ThemeQueryRepository;
 import roomescape.theme.infrastructure.JdbcThemeRepository;
 import roomescape.theme.ui.dto.CreateThemeRequest;
 import roomescape.theme.ui.dto.ThemeResponse;
@@ -25,7 +26,10 @@ class ThemeServiceTest {
     private ThemeService themeService;
 
     @Autowired
-    private ThemeRepository themeRepository;
+    private ThemeCommandRepository themeCommandRepository;
+
+    @Autowired
+    private ThemeQueryRepository themeQueryRepository;
 
     @Test
     void 테마를_저장한다() {
@@ -48,7 +52,7 @@ class ThemeServiceTest {
         final String description = "우가우가 설명";
         final String thumbnail = "따봉우가.jpg";
         final Theme theme = new Theme(name, description, thumbnail);
-        final Long id = themeRepository.save(theme);
+        final Long id = themeCommandRepository.save(theme);
 
         // when & then
         Assertions.assertThatCode(() -> {
@@ -63,13 +67,13 @@ class ThemeServiceTest {
         final String description1 = "우가우가 설명";
         final String thumbnail1 = "따봉우가.jpg";
         final Theme theme1 = new Theme(name1, description1, thumbnail1);
-        themeRepository.save(theme1);
+        themeCommandRepository.save(theme1);
 
         final String name2 = "우가우가2";
         final String description2 = "우가우가2 설명";
         final String thumbnail2 = "따봉우가2.jpg";
         final Theme theme2 = new Theme(name2, description2, thumbnail2);
-        themeRepository.save(theme2);
+        themeCommandRepository.save(theme2);
 
         // when
         final List<ThemeResponse> themes = themeService.findAll();
@@ -93,7 +97,7 @@ class ThemeServiceTest {
         final String description = "우가우가 설명";
         final String thumbnail = "따봉우가.jpg";
         final Theme theme = new Theme(name, description, thumbnail);
-        themeRepository.save(theme);
+        themeCommandRepository.save(theme);
 
         final CreateThemeRequest request = new CreateThemeRequest(name, description, thumbnail);
 
@@ -108,7 +112,14 @@ class ThemeServiceTest {
     static class TestConfig {
 
         @Bean
-        public ThemeRepository themeRepository(
+        public ThemeCommandRepository themeCommandRepository(
+                final JdbcTemplate jdbcTemplate
+        ) {
+            return new JdbcThemeRepository(jdbcTemplate);
+        }
+
+        @Bean
+        public ThemeQueryRepository themeQueryRepository(
                 final JdbcTemplate jdbcTemplate
         ) {
             return new JdbcThemeRepository(jdbcTemplate);
@@ -116,9 +127,10 @@ class ThemeServiceTest {
 
         @Bean
         public ThemeService themeService(
-                final ThemeRepository themeRepository
+                final ThemeCommandRepository themeCommandRepository,
+                final ThemeQueryRepository themeQueryRepository
         ) {
-            return new ThemeService(themeRepository);
+            return new ThemeService(themeCommandRepository, themeQueryRepository);
         }
     }
 }
