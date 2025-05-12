@@ -14,25 +14,6 @@ import org.junit.jupiter.api.Test;
 @Sql("/sql/test-data.sql")
 public class ReservationControllerTest {
 
-//    @Test
-//    void 예약_추가_테스트() {
-//        Map<String, Object> reservation = new HashMap<>();
-//        reservation.put("date", "2026-08-05");
-//        reservation.put("memberId", 1);
-//        reservation.put("timeId", 1);
-//        reservation.put("themeId", 1);
-//
-//        Long id = RestAssured.given().log().all()
-//                .contentType(ContentType.JSON)
-//                .body(reservation)
-//                .when().post("/reservations")
-//                .then().log().all()
-//                .statusCode(201)
-//                .extract().as(Long.class);
-//
-//        assertThat(id).isEqualTo(6L);
-//    }
-
     @Test
     void 예약_조회_테스트() {
         RestAssured.given().log().all()

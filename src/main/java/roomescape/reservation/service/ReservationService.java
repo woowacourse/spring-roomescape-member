@@ -57,21 +57,6 @@ public class ReservationService {
                 .toList();
     }
 
-//    public Long create(MemberResponse memberResponse, ReservationCreateRequest request) {
-////        final Member member =memberDao.findById()
-//        ReservationTime reservationTime = reservationTimeDao.findById(request.timeId())
-//                .orElseThrow(NoSuchElementException::new);
-//        Theme theme = themeDao.findById(request.themeId()).orElseThrow(NoSuchElementException::new);
-//        Reservation reservation = Reservation.createWithoutId(
-//                ,
-//                request.date(),
-//                reservationTime,
-//                theme
-//        );
-//        validateDuplicate(request.date(), reservationTime.getStartAt());
-//        return reservationDao.create(reservation);
-//    }
-
     private void validateDuplicate(@NotNull LocalDate date, LocalTime startAt) {
         if (reservationDao.findByDateTime(date, startAt).isPresent()) {
             throw new ExistedReservationException();

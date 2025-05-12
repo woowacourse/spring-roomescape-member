@@ -3,14 +3,11 @@ package roomescape.auth.infra;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JwtProvider {
-
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
+    private static final String secretKey = "ThisIsMySecretKeyYouCannot725AcceptMyZone!!";
 
     public String createToken(String payload) {
         Claims claims = Jwts.claims();
