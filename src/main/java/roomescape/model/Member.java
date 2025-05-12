@@ -17,14 +17,6 @@ public class Member {
         this.role = role;
     }
 
-    public Member(String email, String password) {
-        this.id = null;
-        this.email = email;
-        this.name = null;
-        this.password = password;
-        this.role = null;
-    }
-
     public String getName() {
         return name;
     }
