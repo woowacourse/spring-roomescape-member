@@ -173,5 +173,28 @@ class AuthControllerTest {
                     Arguments.of("asdf")
             );
         }
+
+        @DisplayName("동일한 이메일 주소로 중복 가입할 수 없다")
+        @Test
+        void addMemberExceptionTest4() {
+            Map<String, Object> params = new HashMap<>();
+            params.put("name", "브라운");
+            params.put("email", "brown@gmail.com");
+            params.put("password", "wooteco7");
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(params)
+                    .when().post("/members")
+                    .then().log().all()
+                    .statusCode(200);
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(params)
+                    .when().post("/members")
+                    .then().log().all()
+                    .statusCode(400);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -13,7 +14,7 @@ public class FakeMemberRepository implements MemberRepository {
     private final AtomicLong memberId;
 
     public FakeMemberRepository(final List<LoginMember> members) {
-        this.members = members;
+        this.members = new ArrayList<>(members);
         this.memberId = new AtomicLong(members.size() + 1);
     }
 
