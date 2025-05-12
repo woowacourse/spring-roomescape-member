@@ -17,7 +17,7 @@ public class MemberDao {
                 resultSet.getString("email"),
                 resultSet.getString("name"),
                 resultSet.getString("password"),
-                Role.getMemberRole(resultSet.getString("role")));
+                Role.fromMemberRole(resultSet.getString("role")));
     };
 
     private final JdbcTemplate jdbcTemplate;

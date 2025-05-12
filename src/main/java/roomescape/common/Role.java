@@ -14,7 +14,11 @@ public enum Role {
         this.memberRole = memberRole;
     }
 
-    public static Role getMemberRole(String findRole) {
+    public String getMemberRole() {
+        return memberRole;
+    }
+
+    public static Role fromMemberRole(String findRole) {
         return Arrays.stream(Role.values())
                 .filter(role -> Objects.equals(role.memberRole, findRole))
                 .findFirst()
