@@ -129,7 +129,7 @@ public class GlobalExceptionHandler {
                 "인증 토큰이 유효하지 않습니다.",
                 path
         );
-        return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)

@@ -102,7 +102,7 @@ public class ReservationService {
 
     private Member findMember(final long memberId) {
         return memberDao.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("예약 시간이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("멤버가 존재하지 않습니다."));
     }
 
     private ReservationTime findReservationTime(final long timeId) {
