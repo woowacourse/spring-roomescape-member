@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.JwtProvider;
@@ -29,10 +30,8 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         }
         TokenInfo tokenInfo = jwtProvider.validateTokenAndGetInfo(accessToken);
         if (tokenInfo.role().equals(Role.USER.toString())) {
-            response.setStatus(401);
-            return false;
+            throw new AccessDeniedException("접근 권한이 없습니다.");
         }
-
         return true;
     }
 
@@ -42,6 +41,6 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
                 return cookie.getValue();
             }
         }
-        return "";
+        return null;
     }
 }

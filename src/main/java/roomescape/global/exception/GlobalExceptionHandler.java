@@ -36,4 +36,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleException(AuthenticationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("[ERROR] " + e.getMessage());
     }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleException(AccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("[ERROR] " + e.getMessage());
+    }
 }

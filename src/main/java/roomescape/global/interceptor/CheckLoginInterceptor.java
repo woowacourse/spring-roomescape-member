@@ -37,6 +37,6 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
                 return cookie.getValue();
             }
         }
-        return "";
+        return null;
     }
 }
