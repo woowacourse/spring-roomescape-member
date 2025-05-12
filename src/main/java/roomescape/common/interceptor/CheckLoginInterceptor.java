@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.auth.service.AuthService;
 import roomescape.common.util.TokenUtil;
 import roomescape.entity.Member;
@@ -13,18 +14,19 @@ import roomescape.exception.impl.TokenNotFountException;
 public class CheckLoginInterceptor implements HandlerInterceptor {
 
     private final AuthService authService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public CheckLoginInterceptor(final AuthService authService) {
+    public CheckLoginInterceptor(final AuthService authService, final JwtTokenProvider jwtTokenProvider) {
         this.authService = authService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Cookie[] cookies = request.getCookies();
         String token = TokenUtil.extractTokenFromCookie(cookies);
-        if (token == null || token.isBlank()) {
-            throw new TokenNotFountException();
-        }
+
+        validateToken(token);
 
         Member member = authService.findMemberByToken(token);
         if (member == null || !member.getRole().equals(Role.ADMIN)) {
@@ -32,5 +34,12 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
             return false;
         }
         return true;
+    }
+
+    private void validateToken(final String token) {
+        if (token == null || token.isBlank()) {
+            throw new TokenNotFountException();
+        }
+        jwtTokenProvider.validateToken(token);
     }
 }
