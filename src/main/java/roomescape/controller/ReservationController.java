@@ -38,16 +38,16 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> addReservation(@Valid @RequestBody final UserReservationRequest request, LoginMember member) {
-        if (member.getRole().equalsIgnoreCase("ADMIN")) {
-            throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
-        }
-
         ReservationResponse responseDto = bookService.createUserReservation(request, member);
         return ResponseEntity.created(URI.create("reservations/" + responseDto.id())).body(responseDto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable("id") final Long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable("id") final Long id, LoginMember member) {
+        if (member.getRole().equalsIgnoreCase("USER")) {
+            throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
+        }
+
         bookService.deleteReservation(id);
         return ResponseEntity.noContent().build();
     }

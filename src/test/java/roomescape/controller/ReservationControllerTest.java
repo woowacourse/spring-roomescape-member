@@ -56,7 +56,7 @@ class ReservationControllerTest {
     @DisplayName("예약 생성")
     class ReservationPostTest {
 
-        @DisplayName("일반 유저는 /reservations API를 통해 Reservation을 생성할 수 있다")
+        @DisplayName("Reservation을 생성할 수 있다")
         @Test
         void addReservationTest() {
             Map<String, Object> params = new HashMap<>();
@@ -78,31 +78,6 @@ class ReservationControllerTest {
                     .then().log().all()
                     .statusCode(200)
                     .body("size()", is(2));
-        }
-
-        @DisplayName("어드민은 /reservations API를 통해 Reservation을 생성할 수 없다")
-        @Test
-        void addReservationExceptionTest1() {
-            LoginMember admin = LoginMemberFixture.getAdmin();
-            String admin_cookie = RestAssured
-                    .given().log().all()
-                    .body(new LoginRequest(admin.getPassword(), admin.getEmail()))
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .when().post("/login")
-                    .then().log().all().extract().header("Set-Cookie").split(";")[0];
-
-            Map<String, Object> params = new HashMap<>();
-            params.put("date", "2030-08-05");
-            params.put("timeId", 1);
-            params.put("themeId", 1);
-
-            RestAssured.given().log().all()
-                    .header("Cookie", admin_cookie)
-                    .contentType(ContentType.JSON)
-                    .body(params)
-                    .when().post("/reservations")
-                    .then().log().all()
-                    .statusCode(403);
         }
 
         @DisplayName("동일한 날짜, 시간, 테마로는 예약을 할 수 없다")
@@ -135,10 +110,24 @@ class ReservationControllerTest {
     @DisplayName("예약 삭제")
     class ReservationDeleteTest {
 
+        private final LoginMember admin = LoginMemberFixture.getAdmin();
+        private String admin_cookie;
+
+        @BeforeEach
+        void loginAsAdmin() {
+            admin_cookie = RestAssured
+                    .given().log().all()
+                    .body(new LoginRequest(admin.getPassword(), admin.getEmail()))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().post("/login")
+                    .then().log().all().extract().header("Set-Cookie").split(";")[0];
+        }
+
         @DisplayName("존재하는 예약을 삭제할 수 있다")
         @Test
         void deleteReservationTest() {
             RestAssured.given().log().all()
+                    .header("Cookie", admin_cookie)
                     .when().delete("/reservations/1")
                     .then().log().all()
                     .statusCode(204);
@@ -154,9 +143,20 @@ class ReservationControllerTest {
         @Test
         void invalidReservationIdDeleteTest() {
             RestAssured.given().log().all()
+                    .header("Cookie", admin_cookie)
                     .when().delete("/reservations/5")
                     .then().log().all()
                     .statusCode(404);
+        }
+
+        @DisplayName("일반 유저는 /reservations API를 통해 Reservation을 삭제할 수 없다")
+        @Test
+        void deleteReservationExceptionTest() {
+            RestAssured.given().log().all()
+                    .header("Cookie", cookie)
+                    .when().delete("/reservations/1")
+                    .then().log().all()
+                    .statusCode(403);
         }
     }
 }

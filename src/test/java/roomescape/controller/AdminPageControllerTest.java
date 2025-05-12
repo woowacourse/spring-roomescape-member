@@ -70,4 +70,40 @@ class AdminPageControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @DisplayName("일반 유저는 /admin으로 시작하는 페이지에 접근할 수 없다")
+    @Test
+    void pageAccessTest() {
+        LoginMember user = LoginMemberFixture.getUser();
+        String user_cookie = RestAssured
+                .given().log().all()
+                .body(new LoginRequest(user.getPassword(), user.getEmail()))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+
+        RestAssured.given().log().all()
+                .header("Cookie", user_cookie)
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(403);
+
+        RestAssured.given().log().all()
+                .header("Cookie", user_cookie)
+                .when().get("/admin/reservation")
+                .then().log().all()
+                .statusCode(403);
+
+        RestAssured.given().log().all()
+                .header("Cookie", user_cookie)
+                .when().get("/admin/theme")
+                .then().log().all()
+                .statusCode(403);
+
+        RestAssured.given().log().all()
+                .header("Cookie", user_cookie)
+                .when().get("/admin/time")
+                .then().log().all()
+                .statusCode(403);
+    }
 }

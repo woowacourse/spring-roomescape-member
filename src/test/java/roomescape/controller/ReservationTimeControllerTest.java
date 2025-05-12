@@ -25,15 +25,25 @@ import static org.hamcrest.Matchers.is;
 @Sql("/test-data.sql")
 class ReservationTimeControllerTest {
 
-    private String cookie;
+    private String user_cookie;
+    private String admin_cookie;
 
     @BeforeEach
     void loginAsAdmin() {
         LoginMember admin = LoginMemberFixture.getAdmin();
 
-        cookie = RestAssured
+        admin_cookie = RestAssured
                 .given().log().all()
                 .body(new LoginRequest(admin.getPassword(), admin.getEmail()))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+
+        LoginMember user = LoginMemberFixture.getUser();
+
+        user_cookie = RestAssured
+                .given().log().all()
+                .body(new LoginRequest(user.getPassword(), user.getEmail()))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
                 .then().log().all().extract().header("Set-Cookie").split(";")[0];
@@ -64,7 +74,7 @@ class ReservationTimeControllerTest {
             ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(15, 30));
 
             RestAssured.given().log().all()
-                    .header("Cookie", cookie)
+                    .header("Cookie", admin_cookie)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when().post("/times")
@@ -82,14 +92,6 @@ class ReservationTimeControllerTest {
         @DisplayName("일반 유저는 /times API를 통해 ReservationTime을 생성할 수 없다")
         @Test
         void addReservationTimeExceptionTest1() {
-            LoginMember user = LoginMemberFixture.getUser();
-            String user_cookie = RestAssured
-                    .given().log().all()
-                    .body(new LoginRequest(user.getPassword(), user.getEmail()))
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .when().post("/login")
-                    .then().log().all().extract().header("Set-Cookie").split(";")[0];
-
             ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(15, 30));
 
             RestAssured.given().log().all()
@@ -107,6 +109,7 @@ class ReservationTimeControllerTest {
             ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(9, 0));
 
             RestAssured.given().log().all()
+                    .header("Cookie", admin_cookie)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when().post("/times")
@@ -121,6 +124,7 @@ class ReservationTimeControllerTest {
             params.put("startAt", "25:40");
 
             RestAssured.given().log().all()
+                    .header("Cookie", admin_cookie)
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/times")
@@ -137,13 +141,13 @@ class ReservationTimeControllerTest {
         @Test
         void deleteTimeTest() {
             RestAssured.given().log().all()
-                    .header("Cookie", cookie)
+                    .header("Cookie", admin_cookie)
                     .when().delete("/reservations/1")
                     .then().log().all()
                     .statusCode(204);
 
             RestAssured.given().log().all()
-                    .header("Cookie", cookie)
+                    .header("Cookie", admin_cookie)
                     .when().delete("/times/1")
                     .then().log().all()
                     .statusCode(204);
@@ -159,7 +163,7 @@ class ReservationTimeControllerTest {
         @Test
         void deleteTimeExceptionTest1() {
             RestAssured.given().log().all()
-                    .header("Cookie", cookie)
+                    .header("Cookie", admin_cookie)
                     .when().delete("/times/1")
                     .then().log().all()
                     .statusCode(409);
@@ -168,16 +172,8 @@ class ReservationTimeControllerTest {
         @DisplayName("일반 유저는 /times API를 통해 ReservationTime을 삭제할 수 없다")
         @Test
         void deleteTimeExceptionTest2() {
-            LoginMember user = LoginMemberFixture.getUser();
-            String user_cookie = RestAssured
-                    .given().log().all()
-                    .body(new LoginRequest(user.getPassword(), user.getEmail()))
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .when().post("/login")
-                    .then().log().all().extract().header("Set-Cookie").split(";")[0];
-
             RestAssured.given().log().all()
-                    .header("Cookie", cookie)
+                    .header("Cookie", admin_cookie)
                     .when().delete("/reservations/1")
                     .then().log().all()
                     .statusCode(204);
@@ -193,7 +189,7 @@ class ReservationTimeControllerTest {
         @Test
         void invalidTimeIdTest() {
             RestAssured.given().log().all()
-                    .header("Cookie", cookie)
+                    .header("Cookie", admin_cookie)
                     .when().delete("/times/5")
                     .then().log().all()
                     .statusCode(404);

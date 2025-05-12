@@ -43,7 +43,12 @@ public class AdminReservationController {
             @RequestParam(value = "theme", required = false) Long theme,
             @RequestParam(value = "member", required = false) Long member,
             @RequestParam(value = "from", required = false) LocalDate from,
-            @RequestParam(value = "to", required = false) LocalDate to) {
+            @RequestParam(value = "to", required = false) LocalDate to,
+            LoginMember loginMember) {
+        if (loginMember.getRole().equalsIgnoreCase("USER")) {
+            throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
+        }
+
         return ResponseEntity.ok(reservationService.searchReservations(theme, member, from, to));
     }
 }

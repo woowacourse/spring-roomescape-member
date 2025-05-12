@@ -25,7 +25,7 @@ public class Reservation {
 
     private void validateName(ReservationName name) {
         if (name == null) {
-            throw new IllegalArgumentException("[ERROR] 예약자의 이름은 반드시 입력해야 합니다. ");
+            throw new IllegalArgumentException("[ERROR] 예약자의 이름은 반드시 입력해야 합니다.");
         }
     }
 
