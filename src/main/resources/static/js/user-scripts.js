@@ -122,15 +122,16 @@ function register(event) {
     })
         .then(response => {
             if (!response.ok) {
-                alert('Signup request failed');
+                alert(response.message);
                 throw new Error('Signup request failed');
             }
             return response.json(); // 여기서 응답을 JSON 형태로 변환
         })
         .then(data => {
             // 성공적인 응답 처리
+            alert('회원가입이 완료되었습니다!')
             console.log('Signup successful:', data);
-            window.location.href = '/auth/login';
+            window.location.href = '/login';
         })
         .catch(error => {
             // 에러 처리
@@ -139,6 +140,7 @@ function register(event) {
 
     // 폼 제출에 의한 페이지 리로드 방지
     event.preventDefault();
+
 }
 
 function base64DecodeUnicode(str) {
