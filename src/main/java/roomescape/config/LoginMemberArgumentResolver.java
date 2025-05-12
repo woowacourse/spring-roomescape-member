@@ -8,16 +8,18 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.Member;
-import roomescape.service.member.MemberServiceImpl;
+import roomescape.service.member.MemberService;
 import roomescape.util.CookieManager;
 import roomescape.util.JwtTokenProvider;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberServiceImpl memberServiceImpl;
+    private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginMemberArgumentResolver(MemberServiceImpl memberServiceImpl) {
-        this.memberServiceImpl = memberServiceImpl;
+    public LoginMemberArgumentResolver(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
+        this.memberService = memberService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
@@ -31,11 +33,11 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = request.getCookies();
         String jwtToken = CookieManager.extractTokenFromCookies(cookies);
-        if (jwtToken == "") {
+        if (jwtToken == null) {
             return null;
         }
-        Long id = JwtTokenProvider.findMemberIdByToken(jwtToken);
-        Member member = memberServiceImpl.findMemberById(id);
+        Long id = jwtTokenProvider.findMemberIdByToken(jwtToken);
+        Member member = memberService.findMemberById(id);
         return member;
     }
 }

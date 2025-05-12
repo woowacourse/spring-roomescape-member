@@ -3,7 +3,6 @@ package roomescape.service.member;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -28,6 +27,8 @@ class MemberServiceImplTest {
 
     @Mock
     private MemberRepository memberRepository;
+    @Mock
+    private JwtTokenProvider jwtTokenProvider;
 
     @InjectMocks
     private MemberServiceImpl memberService;
@@ -101,7 +102,7 @@ class MemberServiceImplTest {
         when(memberRepository.findMemberByEmailAndPassword("email", "password")).thenReturn(member);
 
         String fakeToken = "jwt.token.here";
-        mockStatic(JwtTokenProvider.class).when(() -> JwtTokenProvider.createToken(member)).thenReturn(fakeToken);
+        when(jwtTokenProvider.createToken(member)).thenReturn(fakeToken);
 
         // when
         String token = memberService.createToken(loginRequest);

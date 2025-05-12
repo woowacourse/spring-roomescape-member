@@ -15,9 +15,11 @@ import roomescape.util.JwtTokenProvider;
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberServiceImpl(MemberRepository memberRepository) {
+    public MemberServiceImpl(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
@@ -44,7 +46,7 @@ public class MemberServiceImpl implements MemberService {
     public String createToken(LoginRequest loginRequest) {
         Member foundMember = memberRepository.findMemberByEmailAndPassword(loginRequest.email(),
                 loginRequest.password());
-        String token = JwtTokenProvider.createToken(foundMember);
+        String token = jwtTokenProvider.createToken(foundMember);
         return token;
     }
 }
