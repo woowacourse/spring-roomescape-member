@@ -16,7 +16,6 @@ public class JwtProvider {
     @Value("${jwt.secret}")
     private String secretKey;
 
-
     public String generateToken(LoginMember member) {
         return Jwts.builder()
                 .subject(member.id().toString())
@@ -25,7 +24,6 @@ public class JwtProvider {
                 .compact();
 
     }
-
 
     public TokenInfo validateTokenAndGetInfo(String accessToken) {
         try {
