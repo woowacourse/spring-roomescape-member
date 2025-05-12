@@ -1,6 +1,5 @@
 package roomescape.controller.rest;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +14,7 @@ import roomescape.dto.request.LoginMemberRequest;
 import roomescape.dto.request.SignUpRequest;
 import roomescape.dto.response.MemberResponse;
 import roomescape.global.resolver.CurrentMember;
+import roomescape.global.util.CookieUtils;
 import roomescape.service.MemberService;
 
 @RestController
@@ -22,22 +22,23 @@ import roomescape.service.MemberService;
 public class LoginController {
     private final JwtProvider jwtProvider;
     private final MemberService memberService;
+    private final CookieUtils cookieUtils;
 
-    public LoginController(final JwtProvider jwtProvider, final MemberService memberService) {
+    public LoginController(final JwtProvider jwtProvider, final MemberService memberService,
+                           final CookieUtils cookieUtils) {
         this.jwtProvider = jwtProvider;
         this.memberService = memberService;
+        this.cookieUtils = cookieUtils;
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<Void> loginUser(@RequestBody LoginMemberRequest loginMemberRequest,
+    public ResponseEntity<Void> loginUser(@RequestBody LoginMemberRequest request,
                                           HttpServletResponse response) {
-        LoginMember loginMember = memberService.loginMember(loginMemberRequest);
+        LoginMember loginMember = memberService.loginMember(request);
         String accessToken = jwtProvider.generateToken(loginMember);
-        Cookie cookie = createCookie(accessToken);
-        response.addCookie(cookie);
+        cookieUtils.addTokenCookie(response, accessToken);
         response.setHeader("Keep-Alive", "timeout=60");
         return ResponseEntity.ok().build();
-
     }
 
     @GetMapping("/auth/login/check")
@@ -59,13 +60,6 @@ public class LoginController {
         URI location = URI.create("/members/" + memberResponse.id());
         return ResponseEntity.created(location)
                 .body(memberResponse);
-    }
-
-    private Cookie createCookie(final String accessToken) {
-        Cookie cookie = new Cookie("token", accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        return cookie;
     }
 }
 
