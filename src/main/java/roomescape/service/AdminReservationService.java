@@ -8,7 +8,6 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dao.UserDao;
 import roomescape.dto.AdminReservationRequest;
-import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
@@ -39,7 +38,7 @@ public class AdminReservationService {
                 .orElseThrow(() -> new IllegalStateException("존재하지 않는 시간입니다."));
         Theme theme = themeDao.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new IllegalStateException("존재하지 않는 테마입니다."));
-        User user = userDao.findById(reservationRequest.userId())
+        User user = userDao.findById(reservationRequest.memberId())
                 .orElseThrow(() -> new IllegalStateException("존재하지 않는 사용자입니다."));
         Reservation reservation = reservationRequest.toEntityWith(user, reservationTime, theme);
         if (reservation.isPast(LocalDate.now(clock))) {

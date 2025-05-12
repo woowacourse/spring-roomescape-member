@@ -27,7 +27,6 @@ public class AdminReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> addReservation(
-            @LoginUser User user,
             @RequestBody @Valid AdminReservationRequest reservationRequest
     ) {
         ReservationResponse newReservation = adminReservationService.addReservation(reservationRequest);
