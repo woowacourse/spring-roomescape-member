@@ -99,7 +99,7 @@ class MemberServiceImplTest {
         LoginRequest loginRequest = new LoginRequest("password", "email");
         Member member = new Member(1L, "슬링키", "email", "password", Role.ADMIN);
 
-        when(memberRepository.findMemberByEmailAndPassword("email", "password")).thenReturn(member);
+        when(memberRepository.findMemberByEmailAndPassword("email", "password")).thenReturn(Optional.of(member));
 
         String fakeToken = "jwt.token.here";
         when(jwtTokenProvider.createToken(member)).thenReturn(fakeToken);
