@@ -1,6 +1,7 @@
 package roomescape.reservation.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -42,7 +44,7 @@ class AdminReservationControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @DisplayName("관리자 예약 생성 시 요청 값이 올바르지 않으면 예외가 발생한다")
+    @DisplayName("관리자 예약 생성 시 memberId를 제외한 요청 값이 올바르지 않으면 예외가 발생한다")
     @MethodSource
     @ParameterizedTest
     void add_reservation_validate_test(LocalDate date, Long timeId, Long themeId, Long memberId, String errorFieldName,
@@ -59,6 +61,24 @@ class AdminReservationControllerTest {
                 .andExpect(jsonPath("$." + errorFieldName).value(errorMessage));
     }
 
+    @DisplayName("관리자 예약 생성 시 memberId가 존재하지 않으면 예외가 발생한다")
+    @Test
+    void add_reservation_validate_member_id_test() throws Exception {
+        // given
+        LocalDate date = LocalDate.of(2099, 12, 31);
+        Long timeId = 1L;
+        Long themeId = 1L;
+        ReservationRequest request = new ReservationRequest(date, timeId, themeId, null);
+
+        // when & then
+        mockMvc.perform(post("/admin/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("사용자가 선택되지 않았습니다."));
+
+    }
+
     @TestConfiguration
     static class MockConfig {
 
@@ -68,6 +88,7 @@ class AdminReservationControllerTest {
         }
 
     }
+
 
     static Stream<Arguments> add_reservation_validate_test() {
         return Stream.of(
