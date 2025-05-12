@@ -89,7 +89,11 @@ public class ReservationJdbcDao implements ReservationRepository {
         return namedJdbcTemplate.query(sql, params, (rs, rowNum) -> rs.getLong("time_id"));
     }
 
-    public boolean existsByDateAndTimeAndTheme(LocalDate date, ReservationTime time, Theme theme, Member member) {
+    @Override
+    public boolean existsByDateAndTimeAndTheme(LocalDate date,
+                                               ReservationTime time,
+                                               Theme theme,
+                                               Member member) {
         String sql = "select count(*) from reservation where date = :date and time_id = :timeId and theme_id = :themeId and member_id = :memberId";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date", date)

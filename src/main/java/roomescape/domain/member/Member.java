@@ -18,6 +18,7 @@ public class Member {
     }
 
     public Member(Long id, String name, Role role, String email, String password) {
+        validate(name, email, password);
         this.id = id;
         this.role = role;
         this.name = name;

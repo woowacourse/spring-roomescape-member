@@ -41,7 +41,7 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("인증할 수 없을 경우, 403 에러가 발생한다.")
+    @DisplayName("인증할 수 없을 경우, 401 에러가 발생한다.")
     void handleAuthenticationException() {
         // given
         AuthenticationException exception = new AuthenticationException("인증 오류");
