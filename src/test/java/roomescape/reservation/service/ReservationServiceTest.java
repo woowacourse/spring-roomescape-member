@@ -15,8 +15,6 @@ import roomescape.common.exception.DataExistException;
 import roomescape.common.exception.DataNotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
-import roomescape.member.repository.JdbcMemberRepository;
-import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.AvailableReservationTime;
@@ -303,13 +301,6 @@ class ReservationServiceTest {
         }
 
         @Bean
-        public MemberRepository memberRepository(
-                final JdbcTemplate jdbcTemplate
-        ) {
-            return new JdbcMemberRepository(jdbcTemplate);
-        }
-
-        @Bean
         public ThemeService themeService(
                 final ThemeRepository themeRepository
         ) {
@@ -320,11 +311,9 @@ class ReservationServiceTest {
         public ReservationService reservationService(
                 final ReservationRepository reservationRepository,
                 final ReservationTimeRepository reservationTimeRepository,
-                final ThemeRepository themeRepository,
-                final MemberRepository memberRepository
+                final ThemeRepository themeRepository
         ) {
-            return new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
-                    memberRepository);
+            return new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
         }
     }
 }
