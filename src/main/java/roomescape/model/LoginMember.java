@@ -1,19 +1,17 @@
 package roomescape.model;
 
-import roomescape.dto.response.MemberResponseDto;
-
 public record LoginMember(
         Long id,
         String name,
         String email,
         Role role
 ) {
-    public LoginMember(MemberResponseDto memberResponseDto) {
+    public LoginMember(Member member) {
         this(
-                memberResponseDto.id(),
-                memberResponseDto.name(),
-                memberResponseDto.email(),
-                memberResponseDto.role()
+                member.getId(),
+                member.getName(),
+                member.getEmail(),
+                member.getRole()
         );
     }
 }

@@ -7,8 +7,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.dto.response.MemberResponseDto;
 import roomescape.model.LoginMember;
+import roomescape.model.Member;
 import roomescape.presentation.support.CookieUtils;
 import roomescape.service.AuthService;
 
@@ -35,8 +35,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
         String token = cookieUtils.getToken(request);
-        MemberResponseDto memberResponseDto = authService.getMemberByToken(token);
+        Member authenticatedMember = authService.getAuthenticatedMember(token);
 
-        return new LoginMember(memberResponseDto);
+        return new LoginMember(authenticatedMember);
     }
 }

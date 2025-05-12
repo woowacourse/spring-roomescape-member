@@ -40,6 +40,11 @@ public class AuthService {
         return new MemberResponseDto(member);
     }
 
+    public Member getAuthenticatedMember(String tokenFromCookie) {
+        String payload = jwtProvider.getPayload(tokenFromCookie);
+        return findMemberByEmail(payload);
+    }
+
     private Member findMemberByEmail(final String email) {
         return memberDao.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 사용자입니다."));
