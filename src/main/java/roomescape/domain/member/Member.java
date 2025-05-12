@@ -14,8 +14,9 @@ public class Member {
 
     public Member(Long id, String name, String email, Role role, String password) {
         validateName(name);
-        validateEamil(email);
+        validateEmail(email);
         validatePassword(password);
+        validateRole(role);
 
         this.id = id;
         this.name = name;
@@ -38,7 +39,7 @@ public class Member {
         }
     }
 
-    private void validateEamil(String email) {
+    private void validateEmail(String email) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 이메일은 1글자 이상으로 이루어져야 합니다. ");
         }
@@ -55,6 +56,12 @@ public class Member {
 
         if (password.length() > MAX_NAME_LENGTH) {
             throw new IllegalArgumentException("[ERROR] 비밀번호는 255자를 초과할 수 없습니다. 비밀번호 길이 : " + password.length());
+        }
+    }
+
+    private void validateRole(Role role) {
+        if (role == null) {
+            throw new IllegalArgumentException("[ERROR] 역할이 존재해야 합니다. ");
         }
     }
 
