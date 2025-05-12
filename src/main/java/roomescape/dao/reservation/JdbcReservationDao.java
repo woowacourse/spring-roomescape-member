@@ -98,7 +98,11 @@ public class JdbcReservationDao implements ReservationDao {
 
     @Override
     public void delete(final long id) {
-        final String sql = "DELETE FROM reservation WHERE id = ?";
+        final String sql = """
+                DELETE
+                FROM reservation
+                WHERE id = ?
+                """;
         jdbcTemplate.update(sql, id);
     }
 
@@ -133,7 +137,10 @@ public class JdbcReservationDao implements ReservationDao {
 
     @Override
     public boolean existsById(final Long id) {
-        final String sql = "SELECT COUNT(*) FROM reservation WHERE id = ?";
+        final String sql = """
+                SELECT COUNT(*)
+                FROM reservation
+                WHERE id = ?""";
         final Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
     }

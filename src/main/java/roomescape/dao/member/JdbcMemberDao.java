@@ -48,13 +48,20 @@ public class JdbcMemberDao implements MemberDao {
 
     @Override
     public List<Member> findAll() {
-        final String sql = "SELECT * FROM member";
+        final String sql = """
+                SELECT * 
+                FROM member
+                """;
         return jdbcTemplate.query(sql, memberMapper);
     }
 
     @Override
     public boolean existsById(final Long id) {
-        final String sql = "SELECT COUNT(*) FROM member WHERE id = ?";
+        final String sql = """
+                SELECT COUNT(*)
+                FROM member
+                WHERE id = ?
+                """;
         final Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
     }
