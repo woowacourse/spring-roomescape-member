@@ -12,7 +12,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
 import roomescape.dto.auth.LoginRequestDto;
-import roomescape.dto.auth.SignUpRequestDto;
 import roomescape.dto.reservation.AdminReservationCreateRequestDto;
 import roomescape.dto.theme.ThemeCreateRequestDto;
 import roomescape.dto.time.ReservationTimeCreateRequestDto;
@@ -30,6 +29,10 @@ class AdminReservationControllerTest {
 
     @Nested
     class AdminAddReservationTest {
+
+        @Autowired
+        MemberRepository memberRepository;
+
         String loginToken;
 
         @BeforeEach
@@ -52,14 +55,8 @@ class AdminReservationControllerTest {
                     .then().log().all()
                     .statusCode(201);
 
-            SignUpRequestDto signUpRequestDto = new SignUpRequestDto("가이온", "hello@woowa.com", "password");
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(signUpRequestDto)
-                    .when().post("/members")
-                    .then().log().all()
-                    .statusCode(200);
+            Member admin = new Member(1L, "가이온", "hello@woowa.com", Role.ADMIN, "password");
+            memberRepository.save(admin);
 
             LoginRequestDto loginRequestDto = new LoginRequestDto("hello@woowa.com", "password");
 
@@ -77,7 +74,7 @@ class AdminReservationControllerTest {
         void addReservationTest() {
             AdminReservationCreateRequestDto dto = new AdminReservationCreateRequestDto(
                     LocalDate.now().plusDays(1), 1L, 1L, 1L);
-            RestAssured.given().cookie(loginToken).log().all()
+            RestAssured.given().cookie("token", loginToken).log().all()
                     .contentType(ContentType.JSON)
                     .body(dto)
                     .when().post("/admin/reservations")
