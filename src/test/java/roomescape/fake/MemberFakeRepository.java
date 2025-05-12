@@ -16,12 +16,12 @@ public class MemberFakeRepository implements MemberRepository {
 
     public MemberFakeRepository() {
         long memberId1 = idGenerator.getAndIncrement();
-        Member defaultMember1 = new Member(memberId1, "abcd@email.com", "12345", "회원1", Role.USER);
+        Member defaultMember1 = new Member(memberId1, "abcd1@email.com", "12345", "회원1", Role.USER);
         members.put(memberId1, defaultMember1);
 
         long memberId2 = idGenerator.getAndIncrement();
 
-        Member defaultMember2 = new Member(memberId2, "abcd@email.com", "12345", "회원2", Role.USER);
+        Member defaultMember2 = new Member(memberId2, "abcd2@email.com", "123456", "회원2", Role.USER);
         members.put(memberId2, defaultMember2);
     }
 
