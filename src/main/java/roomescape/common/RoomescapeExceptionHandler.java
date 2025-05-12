@@ -16,7 +16,6 @@ public class RoomescapeExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<String> handleCustomException(CustomException ex) {
-        System.out.println("커스텀 예외 처리");
         return new ResponseEntity<>(ex.getMessage(), ex.getStatus());
     }
 
