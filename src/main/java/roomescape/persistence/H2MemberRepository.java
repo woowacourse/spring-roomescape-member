@@ -75,6 +75,7 @@ public class H2MemberRepository implements MemberRepository {
         parameters.put("name", member.getName());
         parameters.put("email", member.getEmail());
         parameters.put("password", member.getPassword());
+        parameters.put("role", member.getRole().toString());
         return (Long) jdbcInsert.executeAndReturnKey(parameters);
     }
 }

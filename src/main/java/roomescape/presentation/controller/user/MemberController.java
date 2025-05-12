@@ -1,9 +1,11 @@
 package roomescape.presentation.controller.user;
 
 import jakarta.validation.Valid;
+import java.net.URI;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.business.LoginInformation;
 import roomescape.business.service.AuthenticationService;
 import roomescape.business.service.MemberService;
+import roomescape.presentation.dto.SignUpRequestDto;
 import roomescape.presentation.dto.request.LoginRequestDto;
 import roomescape.presentation.dto.response.MemberCheckResponseDto;
 import roomescape.presentation.dto.response.MemberResponseDto;
@@ -52,5 +55,18 @@ public class MemberController {
         List<MemberResponseDto> members = memberService.readMemberAll();
         return ResponseEntity.ok()
                 .body(members);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        return ResponseEntity.noContent()
+                .build();
+    }
+
+    @PostMapping("/members")
+    public ResponseEntity<MemberResponseDto> signup(@Valid @RequestBody SignUpRequestDto signUpRequestDto) {
+        MemberResponseDto memberResponse = memberService.createMember(signUpRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(memberResponse);
     }
 }
