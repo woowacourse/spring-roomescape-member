@@ -1,219 +1,256 @@
-# 방탈출 예약 관리
+# 방탈출 예약 관리 API 문서
 
-## 홈 화면
+## 홈 및 로그인 관련
 
-### 요청
+### 어드민 페이지
 
-- 메서드 : GET
-- 요청 URL : /admin
-- 설명 : 어드민 페이지를 응답한다.
+* **GET /admin**
 
-`GET /admin HTTP/1.1`
+    * 설명: 어드민 페이지 HTML을 반환한다.
+    * 응답: HTML 페이지
 
-## 예약 목록 조회
+### 로그인 페이지
 
-### 요청
+* **GET /login**
 
-- 메서드 : GET
-- 요청 URL : /reservations
-- 설명 : 예약 목록을 조회한다.
+    * 설명: 로그인 페이지 HTML을 반환한다.
+    * 응답: HTML 페이지
 
-`GET /reservations HTTP/1.1`
+### 예약 페이지
 
-### 응답
+* **GET /reservation**
 
-```json
-HTTP/1.1 200
-Content-Type: application/json
+    * 설명: 예약 페이지 HTML을 반환한다.
+    * 응답: HTML 페이지
 
-[
-{
-"id": 1,
-"name": "브라운",
-"date": "2023-08-05",
-"time": {
-"id": 1,
-"startAt": "10:00"
-}
-}
-]
-```
+### 인기 테마 페이지
 
-## 예약 추가
+* **GET /**
 
-### 요청
+    * 설명: 인기 테마 페이지 HTML을 반환한다.
+    * 응답: HTML 페이지
 
-- 메서드 : POST
-- 요청 URL : /reservations
-- 설명 : 예약을 추가한다.
-- 조건
-    - 이름
-        - 이름은 null이 될 수 없다.
-        - 이름은 10글자를 넘을 수 없다.
-    - dateTime (날짜 & 시간)
-        - 날짜와 시간은 null이 될 수 없다.
-        - 과거 날짜로 예약할 수 없다.
+### 로그인
 
-```json
-POST /reservations HTTP/1.1
-content-type: application/json
+* **POST /login**
 
-{
-"date": "2023-08-05",
-"name": "브라운",
-"timeId": 1
-}
-```
+    * 설명: 사용자 로그인 처리 후 쿠키에 JWT 발급
+    * 요청 본문:
 
-### 응답
+      ```json
+      {
+        "email": "user@example.com",
+        "password": "1234"
+      }
+      ```
+    * 응답:
 
-```json
-HTTP/1.1 200
-Content-Type: application/json
+        * 상태 코드: 200 OK
+        * 헤더: `Set-Cookie: accessToken=...`
 
-{
-"id": 1,
-"name": "브라운",
-"date": "2023-08-05",
-"time": {
-"id": 1,
-"startAt": "10:00"
-}
-}
-```
+### 로그인 체크
 
-## 예약 취소
+* **GET /login/check**
 
-### 요청
+    * 설명: 로그인된 사용자 정보를 확인한다.
+    * 응답 예시:
 
-- 메서드 : DELETE
-- 요청 URL : /reservations
-- 설명 : 예약을 삭제한다.
+      ```json
+      {
+        "name": "브라운"
+      }
+      ```
 
-`DELETE /reservations/1 HTTP/1.1`
+### 로그아웃
 
-### 응답
+* **POST /logout**
 
-```json
-HTTP/1.1 204
-Content-Type: application/json
-```
+    * 설명: accessToken 쿠키를 만료시켜 로그아웃 처리
+    * 응답: `Set-Cookie: accessToken=; Max-Age=0`
 
-## 시간 추가
+---
 
-### 요청
+## 회원 관리
 
-- 메서드 : POST
-- 요청 URL : /times
-- 설명 : 시간을 추가한다.
+### 회원 목록 조회
 
-```json
-POST /times HTTP/1.1
-content-type: application/json
+* **GET /members**
 
-{
-"startAt": "10:00"
-}
-```
+    * 설명: 전체 회원 목록을 조회한다.
+    * 응답 예시:
 
-### 응답
+      ```json
+      [
+        {
+          "id": 1,
+          "name": "브라운"
+        }
+      ]
+      ```
 
-```json
-HTTP/1.1 200
-Content-Type: application/json
+---
 
-{
-"id": 1,
-"startAt": "10:00"
-}
-```
+## 테마 관리
 
-## 시간 조회
+### 테마 목록 조회
 
-### 요청
+* **GET /themes**
 
-- 메서드 : GET
-- 요청 URL : /times
-- 설명 : 시간을 조회한다.
+    * 설명: 전체 테마 목록을 조회한다.
 
-```json
-GET /times HTTP/1.1
-```
+### 인기 테마 조회
 
-### 응답
+* **GET /themes/popular**
 
-```json
-HTTP/1.1 200
-Content-Type: application/json
+    * 설명: 인기 테마 목록을 조회한다.
 
-[
-{
-"id": 1,
-"startAt": "10:00"
-}
-]
-```
+### 테마 추가
 
-## 시간 삭제
+* **POST /themes**
 
-### 요청
+    * 설명: 테마를 추가한다.
+    * 요청 본문:
 
-- 메서드 : DELETE
-- 요청 URL : /times/{id}
-- 설명 : 시간을 삭제한다.
+      ```json
+      {
+        "name": "공포의 하수구",
+        "description": "공포 테마의 탈출 게임"
+      }
+      ```
+    * 응답:
 
-```json
-DELETE /times/1 HTTP/1.1
-```
+      ```json
+      {
+        "id": 1,
+        "name": "공포의 하수구",
+        "description": "공포 테마의 탈출 게임"
+      }
+      ```
 
-### 응답
+### 테마 삭제
 
-```json
-HTTP/1.1 200
-```
+* **DELETE /themes/{id}**
 
-## 예약 가능 시간 조회
+    * 설명: 테마를 삭제한다.
 
-### 요청
+---
 
-- 메서드 : GET
-- 요청 URL : /times/available
-- 설명 : 가능한 시간을 조회한다.
+## 예약 관리
 
-```json
-GET /times/available?date=2020-05-01&themeId=1 HTTP/1.1
-```
+### 예약 목록 조회
 
-### 응답
+* **GET /reservations**
 
-```json
-HTTP/1.1 200
-Content-Type: application/json
+    * 설명: 전체 예약 목록을 조회한다.
 
-[
-{
-"timeId": 1,
-"startAt": "10:00",
-"alreadyBooked": "true"
-}
-{
-"timeId": 2,
-"startAt": "11:00",
-"alreadyBooked": "false"
-}
-]
-```
+### 예약 검색
 
-## 예외
+* **GET /reservations/search?themeId=1\&memberId=2\&dateFrom=2023-08-01\&dateTo=2023-08-10**
 
-### 시간
+    * 설명: 조건에 맞는 예약을 조회한다.
 
-- [x] 시간 생성 시 시작 시간에 유효하지 않은 값이 입력되었을 때
-    - HH:mm 형식이 아닌 경우
-- [x] 예약 생성 시 예약자명, 날짜, 시간에 유효하지 않은 값이 입력 되었을 때
-    - 예약자명 : 10글자 이내
-    - 날짜 : yyyy-MM-dd 형식
-- [x] 특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때
-- [x] 지나간 날짜와 시간에 대한 예약 생성은 불가능하다.
-- [x] 중복 예약은 불가능하다.
-    - ex. 이미 4월 1일 10시에 예약이 되어있다면, 4월 1일 10시에 대한 예약을 생성할 수 없다.
+### 예약 추가
+
+* **POST /reservations**
+
+    * 설명: 예약을 추가한다.
+    * 요청 본문:
+
+      ```json
+      {
+        "name": "브라운",
+        "date": "2023-08-05",
+        "timeId": 1
+      }
+      ```
+    * 응답 예시:
+
+      ```json
+      {
+        "id": 1,
+        "name": "브라운",
+        "date": "2023-08-05",
+        "time": {
+          "id": 1,
+          "startAt": "10:00"
+        }
+      }
+      ```
+
+### 예약 삭제
+
+* **DELETE /reservations/{id}**
+
+    * 설명: 특정 예약을 삭제한다.
+    * 응답: 204 No Content
+
+---
+
+## 시간 관리
+
+### 시간 목록 조회
+
+* **GET /times**
+
+    * 설명: 모든 예약 가능 시간을 조회한다.
+
+### 예약 가능 시간 조회
+
+* **GET /times/available?date=2023-08-05\&themeId=1**
+
+    * 설명: 특정 날짜, 테마 기준으로 예약 가능한 시간을 조회한다.
+    * 응답 예시:
+
+      ```json
+      [
+        {
+          "timeId": 1,
+          "startAt": "10:00",
+          "alreadyBooked": true
+        },
+        {
+          "timeId": 2,
+          "startAt": "11:00",
+          "alreadyBooked": false
+        }
+      ]
+      ```
+
+### 시간 추가
+
+* **POST /times**
+
+    * 설명: 예약 가능한 시간을 추가한다.
+    * 요청 예시:
+
+      ```json
+      {
+        "startAt": "10:00"
+      }
+      ```
+    * 응답 예시:
+
+      ```json
+      {
+        "id": 1,
+        "startAt": "10:00"
+      }
+      ```
+
+### 시간 삭제
+
+* **DELETE /times/{id}**
+
+    * 설명: 특정 시간을 삭제한다. (예약이 존재할 경우 예외 발생)
+
+---
+
+## 예외 처리
+
+* 시간 형식 오류: HH\:mm 형식이 아닐 경우 400 Bad Request
+* 이름이 비어있거나 10자 초과: 400 Bad Request
+* 날짜 형식 오류 또는 과거 날짜 예약: 400 Bad Request
+* 이미 예약된 시간 중복 예약 시: 400 Conflict
+* 예약이 존재하는 시간 삭제 시: 409 Conflict
+
+---
