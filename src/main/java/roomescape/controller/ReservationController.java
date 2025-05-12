@@ -15,7 +15,6 @@ import roomescape.domain.LoginMember;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservation.UserReservationRequest;
 import roomescape.exception.UnauthorizedAccessException;
-import roomescape.service.BookService;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -23,11 +22,9 @@ import roomescape.service.ReservationService;
 public class ReservationController {
 
     private final ReservationService reservationService;
-    private final BookService bookService;
 
-    public ReservationController(ReservationService reservationService, BookService bookService) {
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
-        this.bookService = bookService;
     }
 
     @GetMapping
@@ -38,7 +35,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> addReservation(@Valid @RequestBody final UserReservationRequest request, LoginMember member) {
-        ReservationResponse responseDto = bookService.createUserReservation(request, member);
+        ReservationResponse responseDto = reservationService.createUserReservation(request, member);
         return ResponseEntity.created(URI.create("reservations/" + responseDto.id())).body(responseDto);
     }
 
@@ -48,7 +45,7 @@ public class ReservationController {
             throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
         }
 
-        bookService.deleteReservation(id);
+        reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
     }
 }
