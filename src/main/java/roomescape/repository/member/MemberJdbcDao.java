@@ -1,5 +1,6 @@
 package roomescape.repository.member;
 
+import java.util.List;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -45,5 +46,11 @@ public class MemberJdbcDao implements MemberRepository {
         } catch (EmptyResultDataAccessException e) {
             throw new EntityNotFoundException("사용자 정보를 찾을 수 없습니다: " + email);
         }
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String sql = "select * from member order by id;";
+        return namedJdbcTemplate.query(sql, MemberRowMapper.INSTANCE);
     }
 }

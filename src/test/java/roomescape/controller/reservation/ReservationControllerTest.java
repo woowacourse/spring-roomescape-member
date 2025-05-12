@@ -21,7 +21,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.dto.MemberRequest;
+import roomescape.dto.member.MemberResponse;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservation.ReservationTimeResponse;
@@ -48,14 +48,14 @@ class ReservationControllerTest {
     void getReservations() {
         ReservationTimeResponse givenTime = new ReservationTimeResponse(1L, LocalTime.MAX);
         ThemeResponse givenTheme = new ThemeResponse(1L, "테스트", "테스트", "테스트");
-        MemberRequest givenMember = new MemberRequest(1L, "테스트", "test@example.com", "테스트");
+        MemberResponse givenMember = new MemberResponse(1L, "테스트");
         ReservationResponse response1 = new ReservationResponse(1L,
-                givenMember.name(),
+                givenMember,
                 LocalDate.now().plusDays(1),
                 givenTime,
                 givenTheme);
         ReservationResponse response2 = new ReservationResponse(2L,
-                givenMember.name(),
+                givenMember,
                 LocalDate.now().plusDays(1),
                 givenTime,
                 givenTheme);
@@ -88,9 +88,9 @@ class ReservationControllerTest {
         ReservationRequest dto = new ReservationRequest(fixedDate, expectedTimeId, expectedThemeId, expectedMemberId);
         ReservationTimeResponse givenTime = new ReservationTimeResponse(expectedTimeId, LocalTime.MAX);
         ThemeResponse givenTheme = new ThemeResponse(expectedThemeId, "테스트", "테스트", "테스트");
-        MemberRequest givenMember = new MemberRequest(expectedMemberId, "테스트", "test@example.com", "테스트");
+        MemberResponse givenMember = new MemberResponse(expectedMemberId, "테스트");
         ReservationResponse response = new ReservationResponse(expectedId,
-                givenMember.name(),
+                givenMember,
                 fixedDate,
                 givenTime,
                 givenTheme

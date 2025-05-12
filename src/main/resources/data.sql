@@ -32,7 +32,7 @@ VALUES (1, '우테코 레벨1 탈출', '우테코 레벨1 탈출 설명', 'https
 
 -- member 데이터 삽입
 INSERT INTO member (id, name, role, email, password)
-VALUES (1, 'user1', 'USER', 'user1@example.com', 'user1123'),
+VALUES (1, 'user1', 'USER', 'user1@example.com', '$2a$10$LNmJ9su4AMlEiCv3XXEcOeX.ZObiKWQIm8Qri04/7BA8qmibGrf26'),
        (2, 'user2', 'USER', 'user2@example.com', 'user2123'),
        (3, 'user3', 'USER', 'user3@example.com', 'user3123'),
        (4, 'user4', 'USER', 'user4@example.com', 'user4123'),
@@ -42,7 +42,7 @@ VALUES (1, 'user1', 'USER', 'user1@example.com', 'user1123'),
        (8, 'user8', 'USER', 'user8@example.com', 'user8123'),
        (9, 'user9', 'USER', 'user9@example.com', 'user9123'),
        (10, 'user10', 'USER', 'user10@example.com', 'user10123'),
-       (11, 'admin', 'ADMIN', 'admin@example.com', 'admin123123');
+       (11, 'admin', 'ADMIN', 'admin@example.com', '$2a$10$HskqOYZxYR8F62xgqvvoTeDCnE9mXHZgiAP5Iabhyfd12N0ZrAlWu');
 
 -- reservation 데이터 삽입
 INSERT INTO reservation (date, time_id, theme_id, member_id)
