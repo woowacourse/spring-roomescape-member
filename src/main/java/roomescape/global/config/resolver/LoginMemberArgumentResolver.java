@@ -9,14 +9,14 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.service.dto.response.LoginMember;
 import roomescape.auth.service.MemberAuthService;
-import roomescape.global.infrastructure.TokenCookieProvider;
+import roomescape.global.infrastructure.AuthTokenCookieProvider;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final MemberAuthService service;
-    private final TokenCookieProvider cookieProvider;
+    private final AuthTokenCookieProvider cookieProvider;
 
-    public LoginMemberArgumentResolver(MemberAuthService service, TokenCookieProvider cookieProvider) {
+    public LoginMemberArgumentResolver(MemberAuthService service, AuthTokenCookieProvider cookieProvider) {
         this.service = service;
         this.cookieProvider = cookieProvider;
     }

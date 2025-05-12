@@ -10,22 +10,23 @@ import roomescape.auth.service.MemberAuthService;
 import roomescape.auth.service.dto.request.LoginRequest;
 import roomescape.auth.service.dto.response.LoginMember;
 import roomescape.auth.service.dto.response.LoginResponse;
+import roomescape.global.infrastructure.AuthTokenCookieProvider;
 
 @RestController
 @RequestMapping("/login")
 public class LoginController {
     private final MemberAuthService service;
+    private final AuthTokenCookieProvider authTokenCookieProvider;
 
     public LoginController(MemberAuthService service) {
         this.service = service;
+        this.authTokenCookieProvider = authTokenCookieProvider;
     }
 
     @PostMapping
     public void login(@RequestBody @Valid LoginRequest request, HttpServletResponse response) {
         LoginResponse loginResponse = service.login(request);
-        Cookie cookie = new Cookie("token", loginResponse.token());
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
+        Cookie cookie = authTokenCookieProvider.generate(loginResponse.token());
         response.addCookie(cookie);
     }
 

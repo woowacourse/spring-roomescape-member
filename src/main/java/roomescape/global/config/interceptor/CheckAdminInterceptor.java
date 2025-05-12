@@ -8,21 +8,21 @@ import roomescape.auth.service.dto.response.LoginMember;
 import roomescape.auth.entity.Role;
 import roomescape.auth.service.MemberAuthService;
 import roomescape.global.exception.forbidden.ForbiddenException;
-import roomescape.global.infrastructure.TokenCookieProvider;
+import roomescape.global.infrastructure.AuthTokenCookieProvider;
 
 @Component
 public class CheckAdminInterceptor implements HandlerInterceptor {
     private final MemberAuthService authService;
-    private final TokenCookieProvider tokenCookieProvider;
+    private final AuthTokenCookieProvider authTokenCookieProvider;
 
-    public CheckAdminInterceptor(MemberAuthService authService, TokenCookieProvider tokenCookieProvider) {
+    public CheckAdminInterceptor(MemberAuthService authService, AuthTokenCookieProvider authTokenCookieProvider) {
         this.authService = authService;
-        this.tokenCookieProvider = tokenCookieProvider;
+        this.authTokenCookieProvider = authTokenCookieProvider;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String token = tokenCookieProvider.extractToken(request);
+        String token = authTokenCookieProvider.extractToken(request);
         LoginMember loginMember = authService.getLoginMemberByToken(token);
         if (loginMember.hasRole(Role.ADMIN)) {
             return true;
