@@ -9,14 +9,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -30,8 +27,7 @@ import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.presentation.AdminController;
 import roomescape.service.ReservationService;
 
-@WebMvcTest(value = {AdminController.class})
-@ImportAutoConfiguration
+@WebMvcTest(value = {AdminController.class, AuthorizationExtractor.class})
 class AdminControllerTest {
 
     @Autowired
@@ -46,9 +42,6 @@ class AdminControllerTest {
     @MockitoBean
     private JwtTokenProvider jwtTokenProvider;
 
-    @MockitoBean
-    private AuthorizationExtractor authorizationExtractor;
-
     @Test
     void 관리자가_예약을_생성한다() throws Exception {
         // given
@@ -61,7 +54,6 @@ class AdminControllerTest {
                 "themeName1"
         );
         given(reservationService.createReservation(1L, 1L, 1L, LocalDate.of(2025, 1, 1))).willReturn(response);
-        given(authorizationExtractor.extract(any(HttpServletRequest.class))).willReturn(Optional.of("token"));
         given(jwtTokenProvider.extractRole("token")).willReturn(Role.ADMIN);
         // when & then
         mockMvc.perform(post("/api/admin/reservations")
@@ -84,7 +76,6 @@ class AdminControllerTest {
         );
         List<ReservationResponse> response = List.of(reservationResponse);
         given(reservationService.findReservations(any())).willReturn(response);
-        given(authorizationExtractor.extract(any(HttpServletRequest.class))).willReturn(Optional.of("token"));
         given(jwtTokenProvider.extractRole("token")).willReturn(Role.ADMIN);
         // when & then
         mockMvc.perform(get("/api/admin/reservations")
