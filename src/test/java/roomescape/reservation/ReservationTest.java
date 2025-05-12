@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
 import roomescape.exception.ArgumentNullException;
 import roomescape.exception.PastDateTimeReservationException;
+import roomescape.member.Member;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.theme.Theme;
 
@@ -22,7 +23,7 @@ class ReservationTest {
                                 ReservationTime.createWithoutId(LocalTime.of(9, 0)),
                                 Theme.createWithoutId("themeName", "description", "thumb.jpg")
                         ))
-                .isInstanceOf(ArgumentNullException.class);
+                .isInstanceOf(NullPointerException.class);
 
     }
 
@@ -31,7 +32,7 @@ class ReservationTest {
         // when & then
         Assertions.assertThatThrownBy(
                         () -> Reservation.createWithoutId(
-                                "짱구",
+                                Member.createWithoutId("짱구", "a", "1234", "USER"),
                                 null,
                                 ReservationTime.createWithoutId(LocalTime.of(9, 0)),
                                 Theme.createWithoutId("themeName", "description", "thumb.jpg")
@@ -44,7 +45,7 @@ class ReservationTest {
         // when & then
         Assertions.assertThatThrownBy(
                         () -> Reservation.createWithoutId(
-                                "짱구",
+                                Member.createWithoutId("짱구", "a", "1234", "USER"),
                                 LocalDate.of(2025, 1, 1),
                                 null,
                                 Theme.createWithoutId("themeName", "description", "thumb.jpg")
@@ -57,7 +58,7 @@ class ReservationTest {
         // when & then
         Assertions.assertThatThrownBy(
                         () -> Reservation.createWithoutId(
-                                "짱구",
+                                Member.createWithoutId("짱구", "a", "1234", "USER"),
                                 LocalDate.of(2024, 1, 1),
                                 new ReservationTime(1L, LocalTime.of(9, 0)),
                                 Theme.createWithoutId("themeName", "description", "thumb.jpg")
@@ -70,7 +71,7 @@ class ReservationTest {
         // when & then
         Assertions.assertThatThrownBy(
                         () -> Reservation.createWithoutId(
-                                "name",
+                                Member.createWithoutId("짱구", "a", "1234", "USER"),
                                 LocalDate.now().plusDays(1),
                                 ReservationTime.createWithoutId(LocalTime.of(9, 0)),
                                 null

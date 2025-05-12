@@ -38,6 +38,13 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
+    public List<ReservationResponse> findAll() {
+        List<Reservation> reservationDaoAll = reservationDao.findAll();
+        return reservationDaoAll.stream()
+                .map(ReservationResponse::toDto)
+                .toList();
+    }
+
     public List<ReservationResponse> findAll(
             Long themeId,
             Long memberId,
@@ -77,6 +84,9 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(@Valid ReservationCreateRequest request, Member member) {
+        ReservationTime reservationTime = reservationTimeDao.findById(request.timeId())
+                .orElseThrow(ReservationNotFoundException::new);
+        validateDuplicate(request.date(), reservationTime.getStartAt());
         return reservationCreation(
                 request.date(),
                 request.timeId(),
@@ -86,6 +96,10 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(@Valid ReservationRequest request) {
+        ReservationTime reservationTime = reservationTimeDao.findById(request.timeId())
+                .orElseThrow(ReservationNotFoundException::new);
+        validateDuplicate(request.date(), reservationTime.getStartAt());
+
         final Member member = memberDao.findById(request.memberId())
                 .orElseThrow(() -> new NoSuchElementException("예약자를 찾을 수 없습니다."));
 

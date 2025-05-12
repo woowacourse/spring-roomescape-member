@@ -105,6 +105,60 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
+    public List<Reservation> findAll() {
+        String sql = """
+                    SELECT 
+                        r.id as reservation_id, 
+                        r.date, 
+                        rt.id as time_id, 
+                        rt.start_at as time_value, 
+                        t.id as theme_id,
+                        t.name as theme_name,
+                        t.description as theme_des,
+                        t.thumbnail as theme_thumb,
+                        m.id as member_id,
+                        m.name as member_name,
+                        m.email as member_email,
+                        m.password as member_password,
+                        m.role as member_role
+                    FROM reservation as r 
+                    inner join reservation_time as rt on r.time_id = rt.id
+                    inner join theme as t on t.id = r.theme_id
+                    INNER JOIN member as m ON m.id = r.member_id
+                """;
+
+        return this.jdbcTemplate.query(sql,
+                (resultSet, rowNum) -> {
+                    ReservationTime reservationTime = new ReservationTime(
+                            resultSet.getLong("time_id"),
+                            resultSet.getObject("time_value", LocalTime.class)
+                    );
+
+                    Theme theme = Theme.of(
+                            resultSet.getLong("theme_id"),
+                            resultSet.getString("theme_name"),
+                            resultSet.getString("theme_des"),
+                            resultSet.getString("theme_thumb")
+                    );
+
+                    Member member = Member.of(
+                            resultSet.getLong("member_id"),
+                            resultSet.getString("member_name"),
+                            resultSet.getString("member_email"),
+                            resultSet.getString("member_password"),
+                            resultSet.getString("member_role")
+                    );
+                    return Reservation.of(
+                            resultSet.getLong("reservation_id"),
+                            member,
+                            resultSet.getObject("date", LocalDate.class),
+                            reservationTime,
+                            theme
+                    );
+                });
+    }
+
+    @Override
     public Long create(Reservation reservation) {
         String sql = "insert into reservation (date, member_id, time_id, theme_id) values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();

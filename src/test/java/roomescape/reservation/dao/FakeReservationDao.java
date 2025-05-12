@@ -24,6 +24,11 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
+    public List<Reservation> findAll() {
+        return new ArrayList<>(fakeReservations);
+    }
+
+    @Override
     public List<Reservation> findAll(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
         return new ArrayList<>(fakeReservations);
     }

@@ -18,14 +18,23 @@ VALUES ('테마4', 'description4', 'thumb4.jpg');
 INSERT INTO theme (name, description, thumbnail)
 VALUES ('테마5', 'description5', 'thumb5.jpg');
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('포비', '2025-1-1', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('포라', '2025-1-2', 1, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('포포', '2025-1-3', 2, 1);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('리사', '2025-1-4', 2, 2);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('브라운', '2025-1-4', 3, 2);
+INSERT INTO member (name, email, password)
+VALUES ('이뜽연', 'forarium20@gmail.com', 'password');
+INSERT INTO member (name, email, password)
+VALUES ('이주연', 'leejuyeon28@gmail.com', 'password');
+INSERT INTO member (name, email, password)
+VALUES ('김영훈', 'younghooni@gmail.com', 'password');
+INSERT INTO member (name, email, password, role)
+VALUES ('관리자', 'admin@gmail.com', 'password', 'ADMIN');
+
+INSERT INTO reservation (date, member_id, time_id, theme_id)
+VALUES ('2025-1-1', 1, 1, 1);
+INSERT INTO reservation (date, member_id, time_id, theme_id)
+VALUES ('2025-1-2', 2, 1, 2);
+INSERT INTO reservation (date, member_id, time_id, theme_id)
+VALUES ('2025-1-3', 3, 2, 1);
+INSERT INTO reservation (date, member_id, time_id, theme_id)
+VALUES ('2025-1-4', 3, 2, 2);
+INSERT INTO reservation (date, member_id, time_id, theme_id)
+VALUES ('2025-1-4', 4, 3, 2);
 

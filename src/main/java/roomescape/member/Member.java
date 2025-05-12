@@ -19,6 +19,10 @@ public class Member {
         return new Member(id, name, email, password, Role.of(role));
     }
 
+    public static Member createWithoutId(String name, String email, String password, String role) {
+        return Member.of(null, name, email, password, role);
+    }
+
     public Long getId() {
         return id;
     }
