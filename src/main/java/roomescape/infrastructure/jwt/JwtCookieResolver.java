@@ -8,6 +8,9 @@ public class JwtCookieResolver {
 
     private static final String COOKIE_KEY = "token";
 
+    private JwtCookieResolver() {
+    }
+
     public static String getTokenFromCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
