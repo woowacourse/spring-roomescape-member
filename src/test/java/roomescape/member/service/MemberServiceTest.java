@@ -11,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import roomescape.auth.dto.MemberProfileResponse;
 import roomescape.global.exception.error.NotFoundException;
+import roomescape.member.domain.Member;
 import roomescape.member.domain.enums.Role;
 import roomescape.member.dto.MemberResponse;
 import roomescape.reservation.repository.fake.MemberFakeRepository;
@@ -25,9 +26,9 @@ class MemberServiceTest {
     void setup() {
         memberRepository = new MemberFakeRepository();
 
-        memberRepository.save("루키", "rookie123@woowa.com", "rookierookie123", Role.USER);
-        memberRepository.save("하루", "haru123@woowa.com", "haruharu123", Role.USER);
-        memberRepository.save("베루스", "verus@woowa.com", "verusverus123", Role.ADMIN);
+        memberRepository.save(new Member(null, "루키", "rookie123@woowa.com", "rookierookie123", Role.USER));
+        memberRepository.save(new Member(null, "하루", "haru123@woowa.com", "haruharu123", Role.USER));
+        memberRepository.save(new Member(null, "베루스", "verus@woowa.com", "verusverus123", Role.ADMIN));
 
         memberService = new MemberService(memberRepository);
     }

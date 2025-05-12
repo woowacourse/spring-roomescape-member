@@ -16,6 +16,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import roomescape.global.exception.error.ConflictException;
 import roomescape.global.exception.error.InvalidRequestException;
+import roomescape.member.domain.Member;
 import roomescape.member.domain.enums.Role;
 import roomescape.reservation.controller.dto.AvailableTimeResponse;
 import roomescape.reservation.controller.dto.ReservationRequest;
@@ -55,9 +56,9 @@ class ReservationServiceTest {
         themeRepository.saveAndReturnId(new Theme(null, "레벨3 탈출", "우테코 레벨3를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
-        memberRepository.save("루키", "rookie123@woowa.com", "rookierookie123", Role.USER);
-        memberRepository.save("하루", "haru123@woowa.com", "haruharu123", Role.USER);
-        memberRepository.save("베루스", "verus@woowa.com", "verusverus123", Role.ADMIN);
+        memberRepository.save(new Member(null, "루키", "rookie123@woowa.com", "rookierookie123", Role.USER));
+        memberRepository.save(new Member(null, "하루", "haru123@woowa.com", "haruharu123", Role.USER));
+        memberRepository.save(new Member(null, "베루스", "verus@woowa.com", "verusverus123", Role.ADMIN));
 
         reservationRepository.saveAndReturnId(
                 new Reservation(null, LocalDate.now().minusDays(3), reservationTimeRepository.findById(1L).get(),

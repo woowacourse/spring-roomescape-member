@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.enums.Role;
 import roomescape.member.repository.MemberRepository;
 
 public class MemberFakeRepository implements MemberRepository {
@@ -26,9 +25,8 @@ public class MemberFakeRepository implements MemberRepository {
         return Optional.of(emailMembers.getFirst());
     }
 
-    public Long save(String name, String email, String password, Role role) {
+    public Long save(Member member) {
         Long generatedId = idGenerator.incrementAndGet();
-        Member member = new Member(generatedId, name, email, password, role);
         members.put(generatedId, member);
         return generatedId;
     }
