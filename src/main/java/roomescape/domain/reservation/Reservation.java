@@ -3,33 +3,34 @@ package roomescape.domain.reservation;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.domain.member.Member;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.theme.Theme;
 
 public class Reservation {
 
     private final Long id;
-    private final ReserverName reserverName;
+    private final Member member;
     private final ReservationDate reservationDate;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
     public Reservation(
-            Long id,
-            String reserverName,
-            LocalDate reservationDate,
-            ReservationTime reservationTime,
-            Theme theme
+            final Long id,
+            final Member member,
+            final ReservationDate reservationDate,
+            final ReservationTime reservationTime,
+            final Theme theme
     ) {
         this.id = Objects.requireNonNull(id, "id는 null일 수 없습니다.");
-        this.reserverName = new ReserverName(Objects.requireNonNull(
-                reserverName,
+        this.member = Objects.requireNonNull(
+                member,
                 "예약자 이름은 null일 수 없습니다."
-        ));
-        this.reservationDate = new ReservationDate(Objects.requireNonNull(
+        );
+        this.reservationDate = Objects.requireNonNull(
                 reservationDate,
                 "예약일은 null일 수 없습니다."
-        ));
+        );
         this.reservationTime = Objects.requireNonNull(reservationTime, "예약 시간은 null일 수 없습니다.");
         this.theme = Objects.requireNonNull(theme, "테마는 null일 수 없습니다.");
     }
@@ -38,12 +39,12 @@ public class Reservation {
         return id;
     }
 
-    public String getReserverName() {
-        return reserverName.getName();
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
-        return reservationDate.date();
+        return reservationDate.getDate();
     }
 
     public LocalTime getStartAt() {
@@ -60,5 +61,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public ReservationDate getReservationDate() {
+        return reservationDate;
     }
 }

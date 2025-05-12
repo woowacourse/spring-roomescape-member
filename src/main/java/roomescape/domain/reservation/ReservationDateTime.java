@@ -10,16 +10,24 @@ public class ReservationDateTime {
     private final ReservationDate reservationDate;
     private final ReservationTime reservationTime;
 
-    public ReservationDateTime(ReservationDate reservationDate, ReservationTime reservationTime, Clock clock) {
+    public ReservationDateTime(
+            final ReservationDate reservationDate,
+            final ReservationTime reservationTime,
+            final Clock clock
+    ) {
         this.reservationDate = Objects.requireNonNull(reservationDate, "reservationDate는 null일 수 없습니다.");
         this.reservationTime = Objects.requireNonNull(reservationTime, "reservationTime은 null일 수 없습니다.");
         Objects.requireNonNull(clock, "clock은 null일 수 없습니다.");
         validatePast(this.reservationDate, this.reservationTime, clock);
     }
 
-    private void validatePast(ReservationDate reservationDate, ReservationTime reservationTime, Clock clock) {
+    private void validatePast(
+            final ReservationDate reservationDate,
+            final ReservationTime reservationTime,
+            final Clock clock
+    ) {
         LocalDateTime reservationDateTime = LocalDateTime.of(
-                reservationDate.date(),
+                reservationDate.getDate(),
                 reservationTime.getStartAt()
         );
         LocalDateTime now = LocalDateTime.now(clock);

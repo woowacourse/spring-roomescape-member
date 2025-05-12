@@ -11,17 +11,17 @@ public record ReservationResponse(
         ReservationTimeResponse time,
         ThemeResponse theme
 ) {
-    public static ReservationResponse from(Reservation reservation) {
+    public static ReservationResponse from(final Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getReserverName(),
+                reservation.getMember().getName().name(),
                 reservation.getDate(),
                 ReservationTimeResponse.from(reservation.getReservationTime()),
                 ThemeResponse.from(reservation.getTheme())
         );
     }
 
-    public static List<ReservationResponse> from(List<Reservation> reservations) {
+    public static List<ReservationResponse> from(final List<Reservation> reservations) {
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();

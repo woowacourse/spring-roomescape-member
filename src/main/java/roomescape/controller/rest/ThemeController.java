@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.service.ThemeService;
 import roomescape.service.request.CreateThemeRequest;
 import roomescape.service.response.ThemeResponse;
-import roomescape.service.ThemeService;
 
 @RestController
 @RequestMapping("/themes")
@@ -21,7 +21,7 @@ public class ThemeController {
 
     private final ThemeService themeService;
 
-    public ThemeController(ThemeService themeService) {
+    public ThemeController(final ThemeService themeService) {
         this.themeService = themeService;
     }
 
@@ -31,16 +31,15 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> createTheme(@RequestBody @Valid CreateThemeRequest request) {
+    public ResponseEntity<ThemeResponse> createTheme(@RequestBody @Valid final CreateThemeRequest request) {
         ThemeResponse response = themeService.createTheme(request);
-
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable final Long id) {
         themeService.deleteThemeById(id);
         return ResponseEntity.noContent().build();
     }

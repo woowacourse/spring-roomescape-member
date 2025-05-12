@@ -6,25 +6,10 @@ VALUES
 
 INSERT INTO theme (name, description, thumbnail)
 VALUES
-    ('레벨2 탈출', '우테코 레벨2를 탈출하는 내용입니다.', 'https://example.com/image.jpg'),
-    ('지하 감옥', '깊은 감옥에서 탈출하라!', 'https://example.com/jail.jpg');
+    ('레벨2탈출', '우테코 레벨2를 탈출하는 내용입니다.', 'https://example.com/image.jpg'),
+    ('지하감옥', '깊은 감옥에서 탈출하라!', 'https://example.com/jail.jpg');
 
-INSERT INTO reservation (name, date, time_id, theme_id)
+INSERT INTO member (name, email, password, role)
 VALUES
-    ('오래된예약자10', '2025-04-20', 2, 1),
-    ('오래된예약자11', '2025-04-19', 3, 2),
-    ('오래된예약자12', '2025-04-18', 1, 1),
-    ('오래된예약자13', '2025-04-17', 2, 2),
-    ('오래된예약자14', '2025-04-16', 3, 1),
-    ('오래된예약자15', '2025-04-15', 1, 2),
-    ('오래된예약자16', '2025-04-14', 2, 1),
-    ('오래된예약자17', '2025-04-13', 3, 2),
-    ('오래된예약자18', '2025-04-12', 1, 1),
-    ('오래된예약자19', '2025-04-11', 2, 2),
-    ('최근예약자1', '2025-04-29', 2, 2),
-    ('최근예약자2', '2025-04-28', 3, 1),
-    ('최근예약자3', '2025-04-27', 1, 2),
-    ('최근예약자4', '2025-04-26', 2, 1),
-    ('최근예약자5', '2025-04-25', 3, 2),
-    ('최근예약자6', '2025-04-24', 1, 1),
-    ('최근예약자7', '2025-04-23', 2, 2);
+    ('한스', 'leehyeonsu4888@gmail.com', '$2a$10$JuoTZeZ9AxCZGB/M8U7Ft.y5UBAHrUg7eS3p8ISOcmMmx0Z6t9kfm', 'MEMBER'),
+    ('한스', 'leehyeonsu48888@gmail.com', '$2a$10$JuoTZeZ9AxCZGB/M8U7Ft.y5UBAHrUg7eS3p8ISOcmMmx0Z6t9kfm', 'ADMIN')

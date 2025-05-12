@@ -10,7 +10,7 @@ public record AvailableReservationTimeResponse(
         @JsonFormat(pattern = "HH:mm") LocalTime startAt,
         boolean isReserved
 ) {
-    public static AvailableReservationTimeResponse from(AvailableReservationTime availableReservationTime) {
+    public static AvailableReservationTimeResponse from(final AvailableReservationTime availableReservationTime) {
         return new AvailableReservationTimeResponse(
                 availableReservationTime.time().getId(),
                 availableReservationTime.time().getStartAt(),
@@ -19,7 +19,7 @@ public record AvailableReservationTimeResponse(
     }
 
     public static List<AvailableReservationTimeResponse> from(
-            List<AvailableReservationTime> availableReservationTimes
+            final List<AvailableReservationTime> availableReservationTimes
     ) {
         return availableReservationTimes.stream().map(AvailableReservationTimeResponse::from).toList();
     }
