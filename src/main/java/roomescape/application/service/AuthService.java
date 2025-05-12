@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.LoginRequest;
@@ -16,10 +17,17 @@ import roomescape.domain.Role;
 @Service
 public class AuthService {
 
+    private static final String CLAIM_NAME = "name";
+    private static final String CLAIM_ROLE = "role";
+    private static final String TOKEN_NAME = "token";
+    
     private final MemberService memberService;
 
     @Value("${jwt.secret.key}")
     private String secretKey;
+
+    @Value("${jwt.token.expiration-second}")
+    private long expirationTime;
 
     public AuthService(MemberService memberService) {
         this.memberService = memberService;
@@ -31,8 +39,9 @@ public class AuthService {
 
         return Jwts.builder()
                 .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("role", member.getRole())
+                .claim(CLAIM_NAME, member.getName())
+                .claim(CLAIM_ROLE, member.getRole())
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime * 1000))
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
@@ -43,7 +52,7 @@ public class AuthService {
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
                 .parseClaimsJws(token)
-                .getBody().get("role"));
+                .getBody().get(CLAIM_ROLE));
     }
 
     public Long extractMemberIdFromRequest(HttpServletRequest request) {
@@ -64,14 +73,14 @@ public class AuthService {
                 .parseClaimsJws(token).getBody();
 
         Long memberId = Long.valueOf(body.getSubject());
-        String name = body.get("name", String.class);
+        String name = body.get(CLAIM_NAME, String.class);
 
         return new LoginMember(memberId, name);
     }
 
     private String extractTokenFromRequest(HttpServletRequest request) {
         return Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName().equals("token"))
+                .filter(cookie -> cookie.getName().equals(TOKEN_NAME))
                 .findFirst()
                 .map(Cookie::getValue)
                 .orElse(null);
