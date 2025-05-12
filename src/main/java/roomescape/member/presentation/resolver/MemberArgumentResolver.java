@@ -10,7 +10,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.global.jwt.AuthorizationExtractor;
 import roomescape.global.jwt.CookieAuthorizationExtractor;
 import roomescape.global.jwt.TokenProvider;
-import roomescape.member.application.service.MemberService;
 import roomescape.member.domain.Member;
 
 @Component
@@ -18,31 +17,27 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthorizationExtractor authorizationExtractor;
     private final TokenProvider tokenProvider;
-    private final MemberService memberService;
 
     public MemberArgumentResolver(TokenProvider tokenProvider,
-                                  CookieAuthorizationExtractor cookieAuthorizationExtractor,
-                                  MemberService memberService) {
+                                  CookieAuthorizationExtractor cookieAuthorizationExtractor) {
         this.tokenProvider = tokenProvider;
         this.authorizationExtractor = cookieAuthorizationExtractor;
-        this.memberService = memberService;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(Member.class);
+        return parameter.getParameterType().equals(Long.class);
     }
 
     @Override
-    public Member resolveArgument(
+    public Long resolveArgument(
             final MethodParameter parameter,
             final ModelAndViewContainer mavContainer,
             final NativeWebRequest webRequest,
             final WebDataBinderFactory binderFactory
-    ) throws Exception {
+    ) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = authorizationExtractor.extract(request);
-        Long id = tokenProvider.getInfo(token).getId();
-        return memberService.findById(id);
+        return tokenProvider.getInfo(token).getId();
     }
 }

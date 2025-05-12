@@ -39,11 +39,14 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse createReservation(final ReservationRequest reservationRequest, final Member member) {
+    public ReservationResponse createReservation(final ReservationRequest reservationRequest, final Long memberId) {
         ReservationDate reservationDate = new ReservationDate(reservationRequest.getDate());
         ReservationTime reservationTime = getReservationTime(reservationRequest.getTimeId());
         Theme theme = getTheme(reservationRequest.getThemeId());
         validateReservationDateTime(reservationDate, reservationTime);
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NoSuchElementException("유저 정보를 찾을 수 없습니다."));
 
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
                 member,
