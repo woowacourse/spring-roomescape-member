@@ -34,7 +34,7 @@ class DomainIdTest {
     void getValueFromAssignedId() {
         // given
         final TestDomainId domainId = new TestDomainId(1L, true);
-        
+
         // when
         // then
         assertThat(domainId.getValue()).isEqualTo(1L);
@@ -45,7 +45,7 @@ class DomainIdTest {
     void getValueFromUnassignedId() {
         // given
         final TestDomainId domainId = new TestDomainId(null, false);
-        
+
         // when
         // then
         assertThatThrownBy(domainId::getValue)
@@ -59,10 +59,10 @@ class DomainIdTest {
         // given
         final TestDomainId assignedId = new TestDomainId(1L, true);
         final TestDomainId unassignedId = new TestDomainId(null, false);
-        
+
         // when
         // then
-        assertAll(()->{
+        assertAll(() -> {
             assertThat(assignedId.isAssigned()).isTrue();
             assertThat(unassignedId.isAssigned()).isFalse();
         });
@@ -70,6 +70,7 @@ class DomainIdTest {
 
     // DomainId를 테스트하기 위한 구체 클래스
     private static class TestDomainId extends DomainId {
+
         public TestDomainId(final Long value, final boolean assigned) {
             super(value, assigned);
         }

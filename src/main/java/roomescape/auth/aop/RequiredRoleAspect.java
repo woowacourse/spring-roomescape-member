@@ -6,10 +6,10 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
-import roomescape.auth.session.annotation.UserSession;
-import roomescape.common.cookie.manager.CookieManager;
 import roomescape.auth.jwt.manager.JwtManager;
+import roomescape.auth.session.annotation.UserSession;
 import roomescape.auth.session.util.UserSessionExtractor;
+import roomescape.common.cookie.manager.CookieManager;
 import roomescape.common.servlet.ServletRequestHolder;
 import roomescape.user.domain.UserRole;
 

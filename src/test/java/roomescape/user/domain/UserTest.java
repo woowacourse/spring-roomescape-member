@@ -28,7 +28,7 @@ class UserTest {
 
                 () -> assertThatThrownBy(() -> User.withId(UserId.unassigned(), name, email, password, role))
                         .isInstanceOf(IllegalStateException.class)
-                        .hasMessageContainingAll( "식별자가 할당되지 않았습니다."),
+                        .hasMessageContainingAll("식별자가 할당되지 않았습니다."),
 
                 () -> assertThatThrownBy(() -> User.withoutId(null, email, password, role))
                         .isInstanceOf(InvalidInputException.class)

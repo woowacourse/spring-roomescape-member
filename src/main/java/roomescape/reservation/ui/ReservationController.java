@@ -11,13 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.session.annotation.UserSession;
-import roomescape.auth.aop.RequiredRoles;
 import roomescape.common.uri.UriFactory;
 import roomescape.reservation.application.ReservationFacade;
 import roomescape.reservation.ui.dto.AvailableReservationTimeWebResponse;
 import roomescape.reservation.ui.dto.CreateReservationWebRequest;
 import roomescape.reservation.ui.dto.ReservationResponse;
-import roomescape.user.domain.UserRole;
 
 import java.net.URI;
 import java.time.LocalDate;
