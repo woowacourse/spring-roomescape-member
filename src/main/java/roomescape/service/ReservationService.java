@@ -65,4 +65,12 @@ public class ReservationService {
                 .map(ReservationResponse::fromEntity)
                 .toList();
     }
+
+    public List<ReservationResponse> getFilteredReservations(Long themeId, Long memberId, LocalDate dateFrom,
+                                                             LocalDate dateTo) {
+        return reservationDao.findFilteredAll(themeId, memberId, dateFrom, dateTo)
+                .stream()
+                .map(ReservationResponse::fromEntity)
+                .toList();
+    }
 }

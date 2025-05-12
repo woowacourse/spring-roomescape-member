@@ -3,6 +3,8 @@ package roomescape.dao;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -181,7 +183,7 @@ public class ReservationDao {
                     th.description,
                     th.thumbnail
                 FROM reservation as r
-                INNER JOIN users as u 
+                INNER JOIN users as u
                 ON r.user_id = u.id
                 INNER JOIN reservation_time as t
                 ON r.time_id = t.id
@@ -197,6 +199,55 @@ public class ReservationDao {
                 "date", date
         );
 
+        return namedParameterJdbcTemplate.query(
+                sql,
+                params,
+                reservationRowMapper()
+        );
+    }
+
+    public List<Reservation> findFilteredAll(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = """
+                SELECT r.id as reservation_id,
+                    r.date,
+                    u.id as user_id,
+                    u.name as user_name,
+                    u.email,
+                    u.password,
+                    u.role,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description,
+                    th.thumbnail
+                FROM reservation as r
+                INNER JOIN users as u
+                ON r.user_id = u.id
+                INNER JOIN reservation_time as t
+                ON r.time_id = t.id
+                INNER JOIN theme as th
+                ON r.theme_id = th.id
+                WHERE 1=1
+                """;
+        Map<String, Object> params = new HashMap<>();
+        if (themeId != null) {
+            sql += " AND theme_id = :themeId";
+            params.put("themeId", themeId);
+
+        }
+        if (memberId != null) {
+            sql += " AND user_id = :memberId";
+            params.put("memberId", memberId);
+        }
+        if (dateFrom != null) {
+            sql += " AND date >= :dateFrom";
+            params.put("dateFrom", dateFrom);
+        }
+        if (dateTo != null) {
+            sql += " AND date <= :dateTo";
+            params.put("dateTo", dateTo);
+        }
         return namedParameterJdbcTemplate.query(
                 sql,
                 params,
