@@ -6,11 +6,9 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.global.auth.annotation.AdminPrincipal;
-import roomescape.global.auth.annotation.MemberPrincipal;
+import roomescape.global.auth.dto.UserInfo;
 import roomescape.global.auth.infrastructure.AuthorizationExtractor;
 import roomescape.global.auth.service.AuthService;
-import roomescape.member.domain.MemberRole;
 
 @Component
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
@@ -26,8 +24,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AdminPrincipal.class) ||
-                parameter.hasParameterAnnotation(MemberPrincipal.class);
+        return parameter.getParameterType().equals(UserInfo.class);
     }
 
     @Override
@@ -35,13 +32,6 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
                                   final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory)
             throws Exception {
         String accessToken = authorizationExtractor.extract(webRequest);
-        return authService.makeUserInfo(accessToken, getMemberRole(parameter));
-    }
-
-    private MemberRole getMemberRole(final MethodParameter parameter) {
-        if (parameter.hasParameterAnnotation(AdminPrincipal.class)) {
-            return MemberRole.ADMIN;
-        }
-        return MemberRole.USER;
+        return authService.makeUserInfo(accessToken);
     }
 }

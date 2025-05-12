@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.global.auth.annotation.AdminPrincipal;
-import roomescape.global.auth.annotation.MemberPrincipal;
+import roomescape.global.auth.annotation.RequireRole;
 import roomescape.global.auth.dto.UserInfo;
+import roomescape.member.domain.MemberRole;
 import roomescape.reservation.dto.request.AdminReservationCreateRequest;
 import roomescape.reservation.dto.request.ReservationCreateRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
@@ -39,32 +39,33 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.findReservations(themeId, memberId, dateFrom, dateTo));
     }
 
+    @RequireRole(MemberRole.USER)
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> createReservation(
-            @MemberPrincipal UserInfo userInfo,
-            @RequestBody ReservationCreateRequest request
+            @RequestBody ReservationCreateRequest request,
+            UserInfo userInfo
     ) {
         ReservationResponse dto = reservationService.create(request.date(), request.timeId(), request.themeId(),
                 userInfo.id(), LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
-    @DeleteMapping("/reservations/{id}")
-    public ResponseEntity<Void> deleteReservations(
-            @MemberPrincipal UserInfo userInfo,
-            @PathVariable("id") Long id
-    ) {
-        reservationService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
-
+    @RequireRole(MemberRole.ADMIN)
     @PostMapping("/admin/reservations")
     public ResponseEntity<ReservationResponse> createReservation(
-            @AdminPrincipal UserInfo userInfo,
             @RequestBody AdminReservationCreateRequest request
     ) {
         ReservationResponse dto = reservationService.create(request.date(), request.timeId(), request.themeId(),
                 request.memberId(), LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    }
+
+    @RequireRole(MemberRole.USER)
+    @DeleteMapping("/reservations/{id}")
+    public ResponseEntity<Void> deleteReservations(
+            @PathVariable("id") Long id
+    ) {
+        reservationService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

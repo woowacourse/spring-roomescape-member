@@ -2,9 +2,11 @@ package roomescape.global.auth.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
+import roomescape.global.auth.annotation.RequireRole;
+import roomescape.global.auth.exception.ForbiddenException;
+import roomescape.global.auth.exception.UnAuthorizedException;
 import roomescape.global.auth.infrastructure.AuthorizationExtractor;
 import roomescape.global.auth.infrastructure.JwtProvider;
 import roomescape.member.domain.MemberRole;
@@ -22,28 +24,20 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler)
             throws Exception {
+        HandlerMethod handlerMethod = (HandlerMethod) handler;
+        Class<?> declaringClass = handlerMethod.getMethod().getDeclaringClass();
+        if (!declaringClass.isAnnotationPresent(RequireRole.class)) {
+            return true;
+        }
+
+        MemberRole memberRole = declaringClass.getAnnotation(RequireRole.class).value();
         String token = authorizationExtractor.extract(request);
         if (token == null) {
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            return false;
+            throw new UnAuthorizedException("토큰이 존재하지 않습니다.");
         }
-        if (jwtProvider.getRole(token) != MemberRole.ADMIN) {
-            response.setStatus(HttpStatus.FORBIDDEN.value());
-            return false;
+        if ((memberRole == MemberRole.ADMIN) && (jwtProvider.getRole(token) != MemberRole.ADMIN)) {
+            throw new ForbiddenException("접근할 수 없습니다.");
         }
         return true;
-    }
-
-    @Override
-    public void postHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler,
-                           final ModelAndView modelAndView) throws Exception {
-        HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
-    }
-
-    @Override
-    public void afterCompletion(final HttpServletRequest request, final HttpServletResponse response,
-                                final Object handler, final Exception ex)
-            throws Exception {
-        HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
     }
 }
