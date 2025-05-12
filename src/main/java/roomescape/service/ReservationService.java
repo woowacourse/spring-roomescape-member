@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.UserReservationRequest;
@@ -53,7 +54,23 @@ public class ReservationService {
     }
 
     public List<Reservation> getFilteredReservation(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
-
-        return reservationRepository.getFilteredReservations(themeId, memberId, dateFrom, dateTo);
+        List<Reservation> allReservations = reservationRepository.getAllReservations();
+        List<Reservation> filteredReservation = new ArrayList<>(allReservations);
+        if (themeId != null) {
+            filteredReservation = allReservations.stream().filter(r -> r.getTheme().getId().equals(themeId)).toList();
+        }
+        if (memberId != null) {
+            filteredReservation = filteredReservation.stream().filter(r -> r.getMember().getId().equals(memberId))
+                    .toList();
+        }
+        if (dateFrom != null) {
+            filteredReservation = filteredReservation.stream()
+                    .filter(r -> !r.getReservationDateTime().getDate().isBefore(dateFrom)).toList();
+        }
+        if (dateTo != null) {
+            filteredReservation = filteredReservation.stream()
+                    .filter(r -> !r.getReservationDateTime().getDate().isAfter(dateTo)).toList();
+        }
+        return filteredReservation;
     }
 }

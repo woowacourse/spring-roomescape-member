@@ -37,11 +37,10 @@ public class AdminController {
 
     @GetMapping("/admin/reservations/filter")
     public List<Reservation> filterReservation(
-            @RequestParam Long themeId,
-            @RequestParam Long memberId,
-            @RequestParam LocalDate dateFrom,
-            @RequestParam LocalDate dateTo)
-    {
+            @RequestParam(required = false) Long themeId,
+            @RequestParam(required = false) Long memberId,
+            @RequestParam(required = false) LocalDate dateFrom,
+            @RequestParam(required = false) LocalDate dateTo) {
         return reservationService.getFilteredReservation(themeId, memberId, dateFrom, dateTo);
     }
 }
