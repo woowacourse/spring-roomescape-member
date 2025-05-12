@@ -24,7 +24,7 @@ public record MemberPassword(String password) {
         validatePasswordPattern(password);
     }
 
-    private static void validatePasswordPattern(final String password) {
+    private void validatePasswordPattern(final String password) {
         long digitCount = DIGIT_PATTERN.matcher(password).results().count();
         long specialCharCount = SPECIAL_CHAR_PATTERN.matcher(password).results().count();
         long letterCount = LETTER_PATTERN.matcher(password).results().count();
