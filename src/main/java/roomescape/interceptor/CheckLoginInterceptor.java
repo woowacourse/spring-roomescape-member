@@ -27,7 +27,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
                 .orElseThrow(() -> new IllegalArgumentException("token 쿠키가 없습니다."));
         Member member = memberService.searchLoginMember(token);
 
-        if (member == null || !member.getRole().equals("ADMIN")) {
+        if (member == null || !member.isSameRole("ADMIN")) {
             response.setStatus(401);
             return false;
         }

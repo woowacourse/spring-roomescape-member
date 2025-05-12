@@ -19,6 +19,10 @@ public class Member {
         return new Member(id, this.email, this.password, this.name, this.role);
     }
 
+    public boolean isSameRole(String role) {
+        return this.role.equals(role);
+    }
+
     public Long getId() {
         return id;
     }
