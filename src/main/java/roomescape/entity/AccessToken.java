@@ -5,7 +5,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
-import roomescape.exception.InvalidAccessTokenException;
+import roomescape.exception.InvalidTokenException;
 
 public class AccessToken {
     private static final long EXPIRE_LENGTH = 3600000;
@@ -40,7 +40,7 @@ public class AccessToken {
         try {
             getTokenBody();
             return true;
-        } catch (InvalidAccessTokenException e) {
+        } catch (InvalidTokenException e) {
             return false;
         }
     }
@@ -66,7 +66,7 @@ public class AccessToken {
                     .parseClaimsJws(value)
                     .getBody();
         } catch (NumberFormatException | JwtException e) {
-            throw new InvalidAccessTokenException();
+            throw new InvalidTokenException();
         }
     }
 }

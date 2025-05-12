@@ -1,43 +1,35 @@
 package roomescape.web.support;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.entity.AccessToken;
+import roomescape.exception.InvalidTokenException;
+import roomescape.web.CookieManager;
 
 @Component
 public class CheckAuthorizationInterceptor implements HandlerInterceptor {
+
+    private final CookieManager cookieManager;
+
+    public CheckAuthorizationInterceptor(CookieManager cookieManager) {
+        this.cookieManager = cookieManager;
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        Cookie[] cookies = request.getCookies();
-
-        Cookie tokenCookie = null;
-        if (cookies == null) {
-            response.setStatus(401);
-            return false;
-        }
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                tokenCookie = cookie;
-                break;
+        try {
+            String tokenCookie = cookieManager.getCookieByName("token", request);
+            AccessToken accessToken = new AccessToken(tokenCookie);
+            if (!accessToken.isVerified()) {
+                throw new InvalidTokenException();
             }
-        }
-
-        if (tokenCookie == null) {
-            //TODO 코드중복 없애기
+            return true;
+        } catch (InvalidTokenException e) {
             response.setStatus(401);
             return false;
         }
-
-        AccessToken accessToken = new AccessToken(tokenCookie.getValue());
-        if (!accessToken.isVerified()) {
-            response.setStatus(401);
-            return false;
-        }
-
-        return true;
     }
 }
