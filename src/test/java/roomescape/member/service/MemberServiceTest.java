@@ -19,9 +19,6 @@ public class MemberServiceTest {
     @Autowired
     private MemberService memberService;
 
-    @Autowired
-    private MemberRepository memberRepository;
-
     @Test
     void 이메일에_해당하는_멤버_조회() {
         //given
@@ -45,8 +42,6 @@ public class MemberServiceTest {
 
     @Test
     void 모든_멤버_조회() {
-        //given
-
         //when
         final List<Member> members = memberService.findAll();
 
