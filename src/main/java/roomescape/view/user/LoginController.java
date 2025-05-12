@@ -1,16 +1,15 @@
-package roomescape.member.controller.page;
+package roomescape.view.user;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@RequestMapping("/signup")
 @Controller
-public class SignUpController {
+@RequestMapping("/login")
+public class LoginController {
 
     @GetMapping
-    public String signUp() {
-        return "signup";
+    public String getLogIn() {
+        return "login";
     }
-
 }
