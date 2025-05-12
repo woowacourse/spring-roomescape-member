@@ -15,16 +15,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public static final String ADMIN_PATH_PATTERN = "/admin/**";
 
     private final AuthService authService;
-    private final MemberService memberService;
 
-    public WebMvcConfig(AuthService authService, MemberService memberService) {
+    public WebMvcConfig(AuthService authService) {
         this.authService = authService;
-        this.memberService = memberService;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new AuthenticationPrincipalArgumentResolver(authService, memberService));
+        resolvers.add(new AuthenticationPrincipalArgumentResolver(authService));
     }
 
     @Override

@@ -17,11 +17,6 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public Member findByEmailAndPassword(LoginRequest request) {
-        return memberRepository.findByEmailAndPassword(request.email(), request.password())
-                .orElseThrow(AuthorizationException::new);
-    }
-
     public Member findById(Long id) {
         return memberRepository.findById(id)
                 .orElseThrow(MemberNotFoundException::new);
