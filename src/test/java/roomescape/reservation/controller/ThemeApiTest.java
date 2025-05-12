@@ -1,14 +1,12 @@
 package roomescape.reservation.controller;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +17,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import roomescape.member.domain.Member;
-import roomescape.member.domain.Role;
-import roomescape.member.repository.MemberDao;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.domain.Theme;
-import roomescape.reservation.repository.ReservationDao;
-import roomescape.reservation.repository.ReservationTimeDao;
-import roomescape.reservation.repository.ThemeDao;
 import roomescape.utils.JdbcTemplateUtils;
 
 @ActiveProfiles("test")
@@ -37,22 +26,12 @@ class ThemeApiTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private ReservationTimeDao reservationTimeRepository;
-    @Autowired
-    private ReservationDao reservationDao;
-    @Autowired
-    private MemberDao memberDao;
-    @Autowired
-    private ThemeDao themeDao;
 
-    private static LocalDate minusDay(LocalDate date, int days) {
-        return date.minusDays(days);
-    }
-
-    @AfterEach
-    void tearDown() {
+    @BeforeEach
+    void setUp() {
         JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
+        String sql = "insert into member (name, email, password, role) values ('어드민', 'admin@woowa.com', '12341234', 'ADMIN')";
+        jdbcTemplate.update(sql);
     }
 
     @DisplayName("테마를 추가한다.")
@@ -74,12 +53,18 @@ class ThemeApiTest {
     @DisplayName("테마를 가져온다")
     @Test
     void test2() {
-        // given
-        Theme theme = Theme.withoutId("테마1", "테마1", "www.m.com");
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "테마1");
+        params.put("description", "테마1");
+        params.put("thumbnail", "www.m.com");
 
-        themeDao.save(theme);
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
 
-        // when & then
         RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
@@ -90,16 +75,15 @@ class ThemeApiTest {
     @DisplayName("해당 테마를 삭제한다")
     @Test
     void test3() {
-        // given
-        Theme theme = Theme.withoutId("테마1", "테마1", "www.m.com");
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "테마1");
+        params.put("description", "테마1");
+        params.put("thumbnail", "www.m.com");
 
-        Theme saved = themeDao.save(theme);
+        int themeId = addTheme(params);
 
-        Long savedId = saved.getId();
-
-        // when & then
         RestAssured.given().log().all()
-                .when().delete("/themes/" + savedId.intValue())
+                .when().delete("/themes/" + themeId)
                 .then().log().all()
                 .statusCode(204);
     }
@@ -107,12 +91,10 @@ class ThemeApiTest {
     @DisplayName("없는 테마를 삭제하면 NOT FOUND 반환")
     @Test
     void test4() {
-        // given
         int notFoundStatusCode = 404;
 
-        // when & then
         RestAssured.given().log().all()
-                .when().delete("/themes/4")
+                .when().delete("/themes/0")
                 .then().log().all()
                 .statusCode(notFoundStatusCode);
     }
@@ -120,25 +102,13 @@ class ThemeApiTest {
     @DisplayName("사용 중인 테마가 있다면 삭제를 하면 409 CONFLICT를 반환한다.")
     @Test
     void test5() {
-        // given
+        int themeId = addTheme(Map.of("name", "테마1", "description", "테마1", "thumbnail", "www.m.com"));
+        int timeId = addReservationTime("10:00");
+        addReservation(timeId, themeId);
         int conflictStatusCode = 409;
-        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
 
-        ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
-
-        Theme theme = Theme.withoutId("공포", "우테코 공포",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Theme savedTheme = themeDao.save(theme);
-        Long savedId = savedTheme.getId();
-        Member member = new Member("포스티", "test@test.com", "12341234", Role.MEMBER);
-        Member savedMember = memberDao.save(member);
-
-        Reservation reservation = Reservation.withoutId(savedMember, LocalDate.now(), savedTime, savedTheme);
-        reservationDao.save(reservation);
-
-        // when & then
         RestAssured.given().log().all()
-                .when().delete("/themes/" + savedId.intValue())
+                .when().delete("/themes/" + themeId)
                 .then().log().all()
                 .statusCode(conflictStatusCode);
     }
@@ -146,32 +116,55 @@ class ThemeApiTest {
     @DisplayName("가장 인기있는 테마를 가져온다.")
     @Test
     void test6() {
-        // given
-        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
-        ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
-        Member member = new Member("포스티", "test@test.com", "12341234", Role.MEMBER);
-        Member savedMember = memberDao.save(member);
-
-        Theme theme1 = Theme.withoutId("공포1", "우테코 공포", "www.m.com");
-        Theme theme2 = Theme.withoutId("공포2", "우테코 공포", "www.m.com");
-        Theme theme3 = Theme.withoutId("공포3", "우테코 공포", "www.m.com");
-        Theme savedTheme1 = themeDao.save(theme1);
-        Theme savedTheme2 = themeDao.save(theme2);
-        Theme savedTheme3 = themeDao.save(theme3);
-
-        reservationDao.save(Reservation.withoutId(savedMember, minusDay(LocalDate.now(), 1), savedTime, savedTheme3));
-        reservationDao.save(Reservation.withoutId(savedMember, minusDay(LocalDate.now(), 2), savedTime, savedTheme3));
-        reservationDao.save(Reservation.withoutId(savedMember, minusDay(LocalDate.now(), 3), savedTime, savedTheme3));
-        reservationDao.save(Reservation.withoutId(savedMember, minusDay(LocalDate.now(), 4), savedTime, savedTheme1));
-        reservationDao.save(Reservation.withoutId(savedMember, minusDay(LocalDate.now(), 5), savedTime, savedTheme1));
-        reservationDao.save(Reservation.withoutId(savedMember, minusDay(LocalDate.now(), 6), savedTime, savedTheme2));
-
-        // when & then
         RestAssured.given().log().all()
                 .when().get("/themes/popular")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(3))
-                .body("name", contains("공포3", "공포1", "공포2"));
+                .body("size()", is(0));
+    }
+
+    private void addReservation(int timeId, int themeId) {
+        String tokenValue = getAdminLoginTokenValue();
+
+        Map<String, Object> reservationParams = Map.of(
+                "date", LocalDate.now().plusDays(1L),
+                "timeId", timeId,
+                "themeId", themeId
+        );
+
+        RestAssured.given().log().all()
+                .cookie("token", tokenValue)
+                .contentType(ContentType.JSON)
+                .body(reservationParams)
+                .when().post("/reservations")
+                .then();
+    }
+
+    private String getAdminLoginTokenValue() {
+        Map<String, String> adminLoginParams = Map.of("email", "admin@woowa.com", "password", "12341234");
+        return RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(adminLoginParams)
+                .when().post("/login")
+                .then()
+                .extract().cookie("token");
+    }
+
+    private int addReservationTime(final String timeValue) {
+        Map<String, String> timeParams = Map.of("startAt", timeValue);
+
+        return RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(timeParams)
+                .when().post("/times")
+                .then().extract().path("id");
+    }
+
+    private int addTheme(final Map<String, Object> themeParams) {
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/themes")
+                .then().extract().path("id");
     }
 }

@@ -3,11 +3,10 @@ package roomescape.reservation.controller;
 import static org.hamcrest.Matchers.is;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +17,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import roomescape.member.domain.Member;
-import roomescape.member.domain.Role;
-import roomescape.member.repository.MemberDao;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.domain.Theme;
-import roomescape.reservation.repository.ReservationDao;
-import roomescape.reservation.repository.ReservationTimeDao;
-import roomescape.reservation.repository.ThemeDao;
 import roomescape.utils.JdbcTemplateUtils;
 
 @ActiveProfiles("test")
@@ -36,18 +26,12 @@ class ReservationTimeApiTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private ReservationTimeDao reservationTimeRepository;
-    @Autowired
-    private ReservationDao reservationDao;
-    @Autowired
-    private MemberDao memberDao;
-    @Autowired
-    private ThemeDao themeDao;
 
-    @AfterEach
-    void tearDown() {
+    @BeforeEach
+    void setUp() {
         JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
+        String sql = "insert into member (name, email, password, role) values ('어드민', 'admin@woowa.com', '12341234', 'ADMIN')";
+        jdbcTemplate.update(sql);
     }
 
     @DisplayName("예약 시간을 추가한다.")
@@ -81,12 +65,8 @@ class ReservationTimeApiTest {
     @DisplayName("예약 시간을 가져온다")
     @Test
     void test3() {
-        // given
-        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
+        addReservationTime("10:00");
 
-        reservationTimeRepository.save(reservationTime);
-
-        // when & then
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
@@ -97,16 +77,10 @@ class ReservationTimeApiTest {
     @DisplayName("해당 예약 시간을 삭제한다")
     @Test
     void test4() {
-        // given
-        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
+        int timeId = addReservationTime("10:00");
 
-        ReservationTime saved = reservationTimeRepository.save(reservationTime);
-
-        Long savedId = saved.getId();
-
-        // when & then
         RestAssured.given().log().all()
-                .when().delete("/times/" + savedId.intValue())
+                .when().delete("/times/" + timeId)
                 .then().log().all()
                 .statusCode(204);
     }
@@ -114,12 +88,10 @@ class ReservationTimeApiTest {
     @DisplayName("없는 예약 시간을 삭제하면 NOT FOUND 반환")
     @Test
     void test5() {
-        // given
         int notFoundStatusCode = 404;
 
-        // when & then
         RestAssured.given().log().all()
-                .when().delete("/times/4")
+                .when().delete("/times/0")
                 .then().log().all()
                 .statusCode(notFoundStatusCode);
     }
@@ -127,26 +99,62 @@ class ReservationTimeApiTest {
     @DisplayName("사용 중인 예약 시간이 있다면 삭제를 하면 409 CONFLICT를 반환한다.")
     @Test
     void test6() {
-        // given
         int conflictStatusCode = 409;
-        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
+        int timeId = addReservationTime("10:00");
+        int themeId = addTheme();
+        addReservation(timeId, themeId);
 
-        ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
-        Long savedId = savedTime.getId();
-
-        Theme theme = Theme.withoutId("공포", "우테코 공포",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Theme savedTheme = themeDao.save(theme);
-        Member member = new Member("포스티", "test@test.com", "12341234", Role.MEMBER);
-        Member savedMember = memberDao.save(member);
-
-        Reservation reservation = Reservation.withoutId(savedMember, LocalDate.now(), savedTime, savedTheme);
-        reservationDao.save(reservation);
-
-        // when & then
         RestAssured.given().log().all()
-                .when().delete("/times/" + savedId.intValue())
+                .when().delete("/times/" + timeId)
                 .then().log().all()
                 .statusCode(conflictStatusCode);
+    }
+
+    private int addReservation(final int timeId, final int themeId) {
+        String tokenValue = getAdminLoginTokenValue();
+
+        Map<String, Object> reservationParams = Map.of(
+                "date", LocalDate.now().plusDays(1L),
+                "timeId", timeId,
+                "themeId", themeId
+        );
+
+        return RestAssured.given().log().all()
+                .cookie("token", tokenValue)
+                .contentType(ContentType.JSON)
+                .body(reservationParams)
+                .when().post("/reservations")
+                .then().extract().path("id");
+    }
+
+    private String getAdminLoginTokenValue() {
+        Map<String, String> adminLoginParams = Map.of("email", "admin@woowa.com", "password", "12341234");
+        return RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(adminLoginParams)
+                .when().post("/login")
+                .then()
+                .extract().cookie("token");
+    }
+
+    private int addReservationTime(final String timeValue) {
+        Map<String, String> timeParams = Map.of("startAt", timeValue);
+
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(timeParams)
+                .when().post("/times")
+                .then().extract().path("id");
+    }
+
+    private int addTheme() {
+        Map<String, String> themeParams = Map.of(
+                "name", "테마1", "description", "테마1", "thumbnail", "www.m.com"
+        );
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/themes")
+                .then().extract().path("id");
     }
 }

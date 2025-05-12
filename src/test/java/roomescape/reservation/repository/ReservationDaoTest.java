@@ -36,7 +36,7 @@ class ReservationDaoTest {
     private static final String THEME_NAME = "공포";
     private static final String THEME_DESCRIPTION = "우테코 공포";
     private static final String THEME_THUMBNAIL = "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg";
-    private static final Long MEMBER_ID = 1L;
+    private static final Long MEMBER_ID = 2L;
     private static final String NAME = "포스티";
     private static final String EMAIL = "posty@woowa.com";
     private static final String PASSWORD = "12341234";
