@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ConflictException;
 import roomescape.exception.ExceptionCause;
+import roomescape.exception.NotFoundException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservationtime.dao.ReservationTimeDao;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -54,7 +55,7 @@ public class ReservationTimeService {
     public ReservationTime findById(final Long id) {
         Optional<ReservationTime> reservationTime = reservationTimeDao.findById(id);
         if (reservationTime.isEmpty()) {
-            throw new BadRequestException(ExceptionCause.RESERVATION_TIME_NOTFOUND);
+            throw new NotFoundException(ExceptionCause.RESERVATION_TIME_NOTFOUND);
         }
         return reservationTime.get();
     }
