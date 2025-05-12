@@ -33,19 +33,10 @@ public class ReservationService {
     private final ReservationTimeQueryRepository reservationTimeQueryRepository;
     private final ThemeQueryRepository themeQueryRepository;
     private final MemberQueryRepository memberQueryRepository;
-    
-    public ReservationResponse create(final CreateReservationRequest request, final MemberAuthInfo memberAuthInfo) {
-        if (reservationQueryRepository.existsByDateAndTimeIdAndThemeId(
-                request.date(), request.timeId(), request.themeId())) {
-            throw new AlreadyExistException("해당 날짜와 시간에 이미 예약된 테마입니다.");
-        }
 
-        final ReservationTime reservationTime = reservationTimeQueryRepository.getById(request.timeId());
-        final LocalDateTime now = LocalDateTime.now();
-        final LocalDateTime reservationDateTime = LocalDateTime.of(request.date(), reservationTime.getStartAt());
-        if (reservationDateTime.isBefore(now)) {
-            throw new IllegalArgumentException("예약 시간은 현재 시간보다 이후여야 합니다.");
-        }
+    public ReservationResponse create(final CreateReservationRequest request, final MemberAuthInfo memberAuthInfo) {
+        final ReservationTime reservationTime = getReservationTime(request);
+        validateNoDuplicateReservation(request);
 
         final Theme theme = themeQueryRepository.getById(request.themeId());
         final Member member = memberQueryRepository.getById(memberAuthInfo.id());
@@ -55,6 +46,23 @@ public class ReservationService {
         final Reservation found = reservationQueryRepository.getById(id);
 
         return ReservationResponse.from(found);
+    }
+
+    private ReservationTime getReservationTime(final CreateReservationRequest request) {
+        final ReservationTime reservationTime = reservationTimeQueryRepository.getById(request.timeId());
+        final LocalDateTime now = LocalDateTime.now();
+        final LocalDateTime reservationDateTime = LocalDateTime.of(request.date(), reservationTime.getStartAt());
+        if (reservationDateTime.isBefore(now)) {
+            throw new IllegalArgumentException("예약 시간은 현재 시간보다 이후여야 합니다.");
+        }
+        return reservationTime;
+    }
+
+    private void validateNoDuplicateReservation(final CreateReservationRequest request) {
+        if (reservationQueryRepository.existsByDateAndTimeIdAndThemeId(
+                request.date(), request.timeId(), request.themeId())) {
+            throw new AlreadyExistException("해당 날짜와 시간에 이미 해당 테마에 대한 예약이 있습니다.");
+        }
     }
 
     public void deleteIfOwner(final Long reservationId, final MemberAuthInfo memberAuthInfo) {
