@@ -1,5 +1,15 @@
 # 방탈출 사용자 예약
 
+## 테스트용 계정
+
+- 사용자 테스트 계정
+  email : user1@example.com
+  password : user123
+
+- 어드민 테스트 계정
+  email : admin@example.com
+  password : admin123
+
 ## 요구사항
 
 ### 1단계 - 예외 처리와 응답
