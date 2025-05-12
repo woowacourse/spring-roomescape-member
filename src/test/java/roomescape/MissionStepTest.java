@@ -147,7 +147,8 @@ public class MissionStepTest {
         final CreateReservationWebRequest request = new CreateReservationWebRequest(
                 LocalDate.now().plusDays(1),
                 time.getId().getValue(),
-                theme.getId().getValue()
+                theme.getId().getValue(),
+                user.getId().getValue()
         );
 
         final Claims claims = Jwts.claims()
@@ -268,7 +269,8 @@ public class MissionStepTest {
         final CreateReservationWebRequest request = new CreateReservationWebRequest(
                 LocalDate.now().plusDays(1),
                 time.getId().getValue(),
-                theme.getId().getValue()
+                theme.getId().getValue(),
+                user.getId().getValue()
         );
 
         final Claims claims = Jwts.claims()

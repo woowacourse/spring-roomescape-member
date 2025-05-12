@@ -2,7 +2,7 @@ let isEditing = false;
 const RESERVATION_API_ENDPOINT = '/reservations';
 const TIME_API_ENDPOINT = '/times';
 const THEME_API_ENDPOINT = '/themes';
-const MEMBER_API_ENDPOINT = '/members';
+const USER_API_ENDPOINT = '/users';
 const timesOptions = [];
 const themesOptions = [];
 const membersOptions = [];
@@ -31,8 +31,8 @@ function render(data) {
         TODO: [5단계] 예약 생성 기능 변경 - 관리자
               예약 목록 조회 API 응답에 맞게 적용
         */
-        row.insertCell(0).textContent = item.id;              // 예약 id
-        row.insertCell(1).textContent = item.member.name;     // 사용자 name
+        row.insertCell(0).textContent = item.reservationId;              // 예약 id
+        row.insertCell(1).textContent = item.user.name;       // 사용자 name
         row.insertCell(2).textContent = item.theme.name;      // 테마 name
         row.insertCell(3).textContent = item.date;            // date
         row.insertCell(4).textContent = item.time.startAt;    // 예약 시간 startAt
@@ -60,7 +60,7 @@ function fetchThemes() {
 }
 
 function fetchMembers() {
-    requestRead(MEMBER_API_ENDPOINT)
+    requestRead(USER_API_ENDPOINT)
         .then(data => {
             membersOptions.push(...data);
             populateSelect('member', membersOptions, 'name');
@@ -167,7 +167,7 @@ function saveRow(event) {
         date: dateInput.value,
         themeId: themeSelect.value,
         timeId: timeSelect.value,
-        memberId: memberSelect.value,
+        userId: memberSelect.value,
     };
 
     requestCreate(reservation)
@@ -192,24 +192,29 @@ function applyFilter(event) {
     event.preventDefault();
 
     const themeId = document.getElementById('theme').value;
-    const memberId = document.getElementById('member').value;
+    const memberId = document.getElementById('user').value;
     const dateFrom = document.getElementById('date-from').value;
     const dateTo = document.getElementById('date-to').value;
 
-    /*
-    TODO: [6단계] 예약 검색 - 조건에 따른 예약 조회 API 호출
-          요청 포맷에 맞게 설정
-    */
-    fetch('/', { // 예약 검색 API 호출
+    const params = new URLSearchParams();
+
+    if (themeId) params.append('themeId', themeId);
+    if (memberId) params.append('memberId', memberId);
+    if (dateFrom) params.append('dateFrom', dateFrom);
+    if (dateTo) params.append('dateTo', dateTo);
+
+    fetch(`/reservations/search?${params.toString()}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
         },
-    }).then(response => {
-        if (response.status === 200) return response.json();
-        throw new Error('Read failed');
-    }).then(render)
-        .catch(error => console.error("Error fetching available times:", error));
+    })
+        .then(response => {
+            if (response.ok) return response.json();
+            throw new Error('Read failed');
+        })
+        .then(render)
+        .catch(error => console.error("Error fetching reservations:", error));
 }
 
 function requestCreate(reservation) {

@@ -15,24 +15,26 @@ import java.time.LocalDate;
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 public record CreateReservationWebRequest(LocalDate date,
                                           Long timeId,
-                                          Long themeId) {
+                                          Long themeId,
+                                          Long userId) {
 
     public CreateReservationWebRequest {
-        validate(date, timeId, themeId);
+        validate(date, timeId, themeId, userId);
     }
 
-    public CreateReservationServiceRequest toServiceRequest(final UserId userId) {
+    public CreateReservationServiceRequest toServiceRequest() {
         return new CreateReservationServiceRequest(
-                userId,
+                UserId.from(userId),
                 ReservationDate.from(date),
                 ReservationTimeId.from(timeId),
                 ThemeId.from(themeId));
     }
 
-    private void validate(final LocalDate date, final Long timeId, final Long themeId) {
+    private void validate(final LocalDate date, final Long timeId, final Long themeId, final Long userId) {
         Validator.of(CreateReservationWebRequest.class)
                 .validateNotNull(Fields.date, date, DomainTerm.RESERVATION_DATE.label())
                 .validateNotNull(Fields.timeId, timeId, DomainTerm.RESERVATION_TIME_ID.label())
-                .validateNotNull(Fields.themeId, themeId, DomainTerm.THEME_ID.label());
+                .validateNotNull(Fields.themeId, themeId, DomainTerm.THEME_ID.label())
+                .validateNotNull(Fields.userId, userId, DomainTerm.USER_ID.label());
     }
 }

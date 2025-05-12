@@ -16,8 +16,10 @@ import roomescape.user.domain.UserRepository;
 import roomescape.user.domain.UserRole;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -39,7 +41,7 @@ public class JdbcTemplateUserRepository implements UserRepository {
         final String sql = """
                 SELECT id, name, email, password, role
                 FROM users
-                WHERE email = ?
+                WHERE id = ?
                 """;
         return JdbcUtils.queryForOptional(jdbcTemplate, sql, userRowMapper, id.getValue());
     }
@@ -52,6 +54,35 @@ public class JdbcTemplateUserRepository implements UserRepository {
                 WHERE email = ?
                 """;
         return JdbcUtils.queryForOptional(jdbcTemplate, sql, userRowMapper, email.getValue());
+    }
+
+    @Override
+    public List<User> findAll() {
+        final String sql = "SELECT id, name, email, password, role FROM users";
+        return jdbcTemplate.query(sql, userRowMapper);
+    }
+
+    @Override
+    public List<User> findAllByIds(final List<UserId> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+
+        final String placeholders = ids.stream()
+                .map(id -> "?")
+                .collect(Collectors.joining(", "));
+
+        final String sql = String.format("""
+                SELECT id, name, email, password, role
+                FROM users
+                WHERE id IN (%s)
+                """, placeholders);
+
+        final Object[] idValues = ids.stream()
+                .map(UserId::getValue)
+                .toArray();
+
+        return jdbcTemplate.query(sql, userRowMapper, idValues);
     }
 
     @Override
