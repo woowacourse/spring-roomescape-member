@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.member.Member;
 
@@ -11,6 +12,15 @@ import roomescape.member.Member;
 public class JdbcMemberDao implements MemberDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Member> memberRowMapper = (rs, rowNum) ->
+            Member.of(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("email"),
+                    rs.getString("password"),
+                    rs.getString("role")
+            );
+
 
     public JdbcMemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -23,19 +33,7 @@ public class JdbcMemberDao implements MemberDao {
                     WHERE m.email = ?
                 """;
         try {
-            Member member = jdbcTemplate.queryForObject(
-                    sql,
-                    (rs, rowNum) -> {
-                        return Member.of(
-                                rs.getLong("id"),
-                                rs.getString("name"),
-                                rs.getString("email"),
-                                rs.getString("password"),
-                                rs.getString("role")
-                        );
-                    },
-                    payload
-            );
+            Member member = jdbcTemplate.queryForObject(sql, memberRowMapper, payload);
             return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -50,18 +48,7 @@ public class JdbcMemberDao implements MemberDao {
                 """;
 
         try {
-            Member member = jdbcTemplate.queryForObject(
-                    sql,
-                    new Object[]{id},
-                    (rs, rowNum) -> Member.of(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getString("email"),
-                            rs.getString("password"),
-                            rs.getString("role")
-
-                    )
-            );
+            Member member = jdbcTemplate.queryForObject(sql, new Object[]{id}, memberRowMapper);
             return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -74,14 +61,6 @@ public class JdbcMemberDao implements MemberDao {
                 SELECT * FROM member
                 """;
 
-        return jdbcTemplate.query(sql, (rs, rowNum) ->
-                Member.of(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getString("role")
-                )
-        );
+        return jdbcTemplate.query(sql, memberRowMapper);
     }
 }
