@@ -3,7 +3,6 @@ package roomescape.reservation.repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,7 +15,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import roomescape.common.exception.EntityNotFoundException;
 import roomescape.reservation.domain.Theme;
 
 @Repository
@@ -61,69 +59,6 @@ public class ThemeDao {
     }
 
     public Theme save(final Theme theme) {
-        if (theme.existId()) {
-            return update(theme);
-        }
-        return create(theme);
-    }
-
-    public void deleteById(final Long id) {
-        String deleteSql = "delete from theme where id = :id";
-        Map<String, Long> params = Map.of("id", id);
-
-        int deleteRowCount = jdbcTemplate.update(deleteSql, params);
-
-        if (deleteRowCount != 1) {
-            throw new EntityNotFoundException("ReservationTime with id " + id + " not found");
-        }
-    }
-
-    public Optional<Theme> findById(final Long id) {
-        String sql = "select id, name, description, thumbnail from theme where id = :id";
-
-        Map<String, Long> params = Map.of("id", id);
-        try {
-            Theme theme = jdbcTemplate.queryForObject(sql, params,
-                    (resultSet, rowNum) -> themeOf(resultSet)
-            );
-            return Optional.ofNullable(theme);
-        } catch (EmptyResultDataAccessException e) {
-            throw new EntityNotFoundException("Theme with id " + id + " not found");
-        }
-    }
-
-    private Theme themeOf(final ResultSet resultSet) throws SQLException {
-        return Theme.builder()
-                .id(resultSet.getLong("id"))
-                .name(resultSet.getString("name"))
-                .description(resultSet.getString("description"))
-                .thumbnail(resultSet.getString("thumbnail"))
-                .build();
-    }
-
-    private Theme update(final Theme theme) {
-        String sql = """
-                update theme 
-                set name = :name, description = :description, thumbnail = :thumbnail
-                where id = :id
-                """;
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", theme.getName());
-        params.put("description", theme.getDescription());
-        params.put("thumbnail", theme.getThumbnail());
-        params.put("id", theme.getId());
-
-        int updateRowCount = jdbcTemplate.update(sql, params);
-
-        if (updateRowCount == 0) {
-            throw new EntityNotFoundException("ReservationTime with id " + theme.getId() + " not found");
-        }
-
-        return theme;
-    }
-
-    private Theme create(final Theme theme) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())
@@ -136,6 +71,36 @@ public class ThemeDao {
                 .name(theme.getName())
                 .description(theme.getDescription())
                 .thumbnail(theme.getThumbnail())
+                .build();
+    }
+
+    public int deleteById(final Long id) {
+        String deleteSql = "delete from theme where id = :id";
+        Map<String, Long> params = Map.of("id", id);
+
+        return jdbcTemplate.update(deleteSql, params);
+    }
+
+    public Optional<Theme> findById(final Long id) {
+        String sql = "select id, name, description, thumbnail from theme where id = :id";
+
+        Map<String, Long> params = Map.of("id", id);
+        try {
+            Theme theme = jdbcTemplate.queryForObject(sql, params,
+                    (resultSet, rowNum) -> themeOf(resultSet)
+            );
+            return Optional.ofNullable(theme);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    private Theme themeOf(final ResultSet resultSet) throws SQLException {
+        return Theme.builder()
+                .id(resultSet.getLong("id"))
+                .name(resultSet.getString("name"))
+                .description(resultSet.getString("description"))
+                .thumbnail(resultSet.getString("thumbnail"))
                 .build();
     }
 }
