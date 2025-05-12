@@ -4,18 +4,14 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
-import roomescape.service.MemberService;
 import roomescape.util.JwtTokenProvider;
 
 public class AuthAdminInterceptor implements HandlerInterceptor {
 
-    private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthAdminInterceptor(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
-        this.memberService = memberService;
+    public AuthAdminInterceptor(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -24,10 +20,8 @@ public class AuthAdminInterceptor implements HandlerInterceptor {
         Cookie[] cookies = request.getCookies();
         String token = jwtTokenProvider.extractTokenFromCookie(cookies);
         jwtTokenProvider.validateToken(token);
-        Long id = jwtTokenProvider.extractId(token);
-        Member memberById = memberService.findMemberById(id);
-        Role memberRole = memberById.getRole();
-        memberRole.checkAdminAccess();
+        Role role = jwtTokenProvider.extractRole(token);
+        role.checkAdminAccess();
         return true;
     }
 }

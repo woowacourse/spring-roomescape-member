@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.dto.auth.LoginInfo;
 import roomescape.dto.reservation.MemberReservationCreateRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
-import roomescape.service.MemberService;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationCreateDto;
 
@@ -17,11 +16,9 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
-    private final MemberService memberService;
 
-    public ReservationController(ReservationService reservationService, MemberService memberService) {
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
-        this.memberService = memberService;
     }
 
     @GetMapping

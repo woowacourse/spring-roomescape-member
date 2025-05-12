@@ -8,6 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Component;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.exception.UnAuthorizationException;
 
 import javax.crypto.SecretKey;
@@ -25,7 +26,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .subject(member.getId().toString())
                 .claim("name", member.getName())
-                .claim("role", member.getRole())
+                .claim("role", member.getRole().toString())
                 .issuer(ISSUER)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
@@ -40,6 +41,16 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getPayload().getSubject();
         return Long.parseLong(stringId);
+    }
+
+    public Role extractRole(String token) {
+        String stringRole = Jwts.parser()
+                .verifyWith(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role", String.class);
+        return Role.valueOf(stringRole);
     }
 
     public void validateToken(String token) {
