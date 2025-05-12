@@ -9,4 +9,9 @@ public class MemberNotFoundException extends RoomescapeException {
         super(HttpStatus.NOT_FOUND, "멤버를 찾을 수 없습니다. id=" + memberId);
 
     }
+
+    public MemberNotFoundException() {
+        super(HttpStatus.NOT_FOUND, "멤버를 찾을 수 없습니다.");
+
+    }
 }

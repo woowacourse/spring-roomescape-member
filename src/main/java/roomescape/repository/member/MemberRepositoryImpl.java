@@ -24,7 +24,7 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public Member findMemberByEmailAndPassword(String email, String password) {
+    public Optional<Member> findMemberByEmailAndPassword(String email, String password) {
         String sql = "SELECT * FROM member where email=? and password=?";
         Member member = jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> {
             Member foundMember = new Member(resultSet.getLong("id"), resultSet.getString("name"),
@@ -32,7 +32,7 @@ public class MemberRepositoryImpl implements MemberRepository {
                     Role.from(resultSet.getString("role")));
             return foundMember;
         }, email, password);
-        return member;
+        return Optional.of(member);
     }
 
     @Override

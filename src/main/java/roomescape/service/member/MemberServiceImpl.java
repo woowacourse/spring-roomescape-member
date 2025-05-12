@@ -45,7 +45,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public String createToken(LoginRequest loginRequest) {
         Member foundMember = memberRepository.findMemberByEmailAndPassword(loginRequest.email(),
-                loginRequest.password());
+                loginRequest.password()).orElseThrow(()->new MemberNotFoundException());
         String token = jwtTokenProvider.createToken(foundMember);
         return token;
     }
