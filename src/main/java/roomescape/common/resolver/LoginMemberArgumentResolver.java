@@ -9,6 +9,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.jwt.JwtTokenProvider;
+import roomescape.common.exception.MissingTokenExcpetion;
 import roomescape.member.domain.Member;
 import roomescape.member.service.MemberService;
 
@@ -21,32 +22,31 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    public boolean supportsParameter(MethodParameter parameter) {
+    public boolean supportsParameter(final MethodParameter parameter) {
         return Member.class.equals(parameter.getParameterType());
     }
 
     @Override
     public Object resolveArgument(
-            MethodParameter parameter,
-            ModelAndViewContainer mavContainer,
-            NativeWebRequest webRequest,
-            WebDataBinderFactory binderFactory) throws Exception {
+            final MethodParameter parameter,
+            final ModelAndViewContainer mavContainer,
+            final NativeWebRequest webRequest,
+            final WebDataBinderFactory binderFactory) throws Exception {
 
-        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        String token = extractTokenFromCookies(request.getCookies());
+        final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+        final String token = extractTokenFromCookies(request.getCookies());
 
-        //TODO : 추후에 예외 throw하도록 처리 필요..
         if (token == null || token.isBlank()) {
-            return null;
+            throw new MissingTokenExcpetion("Token is missing");
         }
 
-        String email = jwtTokenProvider.getPayload(token);
+        final String email = jwtTokenProvider.getPayload(token);
         return memberService.findMemberByEmail(email);
     }
 
-    private String extractTokenFromCookies(Cookie[] cookies) {
+    private String extractTokenFromCookies(final Cookie[] cookies) {
         if (cookies == null) {
-            return null;
+            throw new MissingTokenExcpetion("Token is missing");
         }
 
         for (Cookie cookie : cookies) {
@@ -55,6 +55,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             }
         }
 
-        return null;
+        throw new MissingTokenExcpetion("Token is missing");
     }
 }

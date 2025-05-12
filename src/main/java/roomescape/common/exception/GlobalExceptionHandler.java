@@ -28,4 +28,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleSaveException(final SaveException e) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(e.getMessage());
     }
+
+    @ExceptionHandler({MissingTokenExcpetion.class, InvalidTokenException.class})
+    public ResponseEntity<String> handleMissingTokenException(final MissingTokenExcpetion e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDenied(final AccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+    }
 }

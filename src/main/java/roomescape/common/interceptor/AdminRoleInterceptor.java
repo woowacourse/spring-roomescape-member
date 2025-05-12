@@ -6,6 +6,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.jwt.JwtTokenProvider;
+import roomescape.common.exception.AccessDeniedException;
+import roomescape.common.exception.InvalidTokenException;
+import roomescape.common.exception.MissingTokenExcpetion;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.service.MemberService;
@@ -24,20 +27,17 @@ public class AdminRoleInterceptor implements HandlerInterceptor {
 
         final String token = extractTokenFromCookies(request.getCookies());
         if (token == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return false;
+            throw new MissingTokenExcpetion("Token is missing");
         }
 
         final String email = jwtTokenProvider.getPayload(token);
         if (email == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return false;
+            throw new InvalidTokenException("Invalid token");
         }
 
         final Member member = memberService.findMemberByEmail(email);
         if (member == null || member.getRole() != Role.ADMIN) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return false;
+            throw new AccessDeniedException("Access denied");
         }
 
         return true;
@@ -45,7 +45,7 @@ public class AdminRoleInterceptor implements HandlerInterceptor {
 
     private String extractTokenFromCookies(final Cookie[] cookies) {
         if (cookies == null) {
-            return null;
+            throw new MissingTokenExcpetion("Token is missing");
         }
 
         for (Cookie cookie : cookies) {
@@ -54,6 +54,6 @@ public class AdminRoleInterceptor implements HandlerInterceptor {
             }
         }
 
-        return null;
+        throw new MissingTokenExcpetion("Token is missing");
     }
 }
