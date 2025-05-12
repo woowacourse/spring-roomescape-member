@@ -6,6 +6,8 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import java.time.Clock;
+import java.time.Instant;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,13 +32,13 @@ public class Authenticator {
     }
 
     public Token authenticate(Payload payload) {
-        Date now = new Date();
-        Date expiredAt = new Date(now.getTime() + validityInMilliseconds);
+        Date issuedAt = new Date();
+        Date expiredAt = new Date(issuedAt.getTime() + validityInMilliseconds);
 
         String token = Jwts.builder()
                 .setSubject(payload.getMemberIdExpression())
                 .claim(ROLE_CLAIM_EXPRESSION, payload.getRoleExpression())
-                .setIssuedAt(now)
+                .setIssuedAt(issuedAt)
                 .setExpiration(expiredAt)
                 .signWith(signingKey)
                 .compact();
