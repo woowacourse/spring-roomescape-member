@@ -25,7 +25,7 @@ public class AdminPageTest {
                 .body(Map.of("email", email, "password", password))
                 .when().post("/login")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .extract()
                 .cookie("token");
     }

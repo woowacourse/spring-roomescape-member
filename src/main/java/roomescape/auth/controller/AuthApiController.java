@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +36,7 @@ public class AuthApiController {
                 signupRequest.email(),
                 signupRequest.password()
         );
-        return ResponseEntity.ok().body(SignupResponse.from(member));
+        return ResponseEntity.status(HttpStatus.CREATED).body(SignupResponse.from(member));
     }
 
     @PostMapping("/login")
@@ -46,7 +47,7 @@ public class AuthApiController {
         cookie.setPath("/");
         response.addCookie(cookie);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/login/check")
@@ -67,6 +68,6 @@ public class AuthApiController {
 
         response.setHeader("Set-Cookie", deleteCookie.toString());
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
