@@ -45,4 +45,16 @@ class AuthenticationServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("회원 정보를 찾을 수 없습니다.");
     }
+
+    @Test
+    @DisplayName("올바른 이메일이지만 비밀번호가 틀릴 경우, 예외가 발생한다.")
+    void login_ShouldThrowExceptionWhenWrongPassword() {
+        //given
+        String email = "user@example.com";
+        String wrongPassword = "wrongPassword";
+        // when & then
+        assertThatThrownBy(() -> authenticationService.login(email, wrongPassword))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("[ERROR] 비밀번호가 일치하지 않습니다.");
+    }
 }

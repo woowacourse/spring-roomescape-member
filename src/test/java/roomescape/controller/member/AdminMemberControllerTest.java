@@ -38,8 +38,8 @@ class AdminMemberControllerTest {
     }
 
     @Test
-    @DisplayName("사용자가 예약 가능한 시간을 조회한다.")
-    void getAvailableReservationTimes() {
+    @DisplayName("관리자가 모든 회원 목록을 조회한다.")
+    void readAllMembers() {
         MemberResponse response1
                 = new MemberResponse(1L, "user1");
         MemberResponse response2
