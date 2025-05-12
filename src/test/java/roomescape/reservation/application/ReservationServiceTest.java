@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.auth.domain.MemberAuthInfo;
 import roomescape.exception.auth.AuthorizationException;
 import roomescape.exception.resource.AlreadyExistException;
 import roomescape.exception.resource.ResourceNotFoundException;
@@ -73,9 +74,10 @@ class ReservationServiceTest {
         final Member member = memberQueryRepository.findById(memberCommandRepository.save(NOT_SAVED_MEMBER_1))
                 .orElseThrow(() -> new ResourceNotFoundException("회원이 존재하지 않습니다."));
         final CreateReservationRequest request = new CreateReservationRequest(date, timeId, themeId);
+        final MemberAuthInfo memberAuthInfo = new MemberAuthInfo(member.getId(), member.getRole());
 
         // when & then
-        Assertions.assertThatCode(() -> reservationService.create(request, member))
+        Assertions.assertThatCode(() -> reservationService.create(request, memberAuthInfo))
                 .doesNotThrowAnyException();
     }
 
@@ -95,9 +97,10 @@ class ReservationServiceTest {
 
         final Reservation reservation = new Reservation(date, reservationTime1, theme1, member1);
         final Long reservationId = reservationRepository.save(reservation);
+        final MemberAuthInfo member1AuthInfo = new MemberAuthInfo(member1.getId(), member1.getRole());
 
         // when & then
-        Assertions.assertThatCode(() -> reservationService.deleteIfOwner(reservationId, member1))
+        Assertions.assertThatCode(() -> reservationService.deleteIfOwner(reservationId, member1AuthInfo))
                 .doesNotThrowAnyException();
     }
 
@@ -120,9 +123,10 @@ class ReservationServiceTest {
 
         final Reservation reservation = new Reservation(date, reservationTime1, theme1, member1);
         final Long reservationId = reservationRepository.save(reservation);
+        final MemberAuthInfo member2AuthInfo = new MemberAuthInfo(member2.getId(), member2.getRole());
 
         // when & then
-        Assertions.assertThatThrownBy(() -> reservationService.deleteIfOwner(reservationId, member2))
+        Assertions.assertThatThrownBy(() -> reservationService.deleteIfOwner(reservationId, member2AuthInfo))
                 .isInstanceOf(AuthorizationException.class);
     }
 
@@ -190,9 +194,10 @@ class ReservationServiceTest {
         reservationRepository.save(new Reservation(date, reservationTime, theme, member));
 
         final CreateReservationRequest request = new CreateReservationRequest(date, timeId, themeId);
+        final MemberAuthInfo memberAuthInfo = new MemberAuthInfo(member.getId(), member.getRole());
 
         // when & then
-        Assertions.assertThatThrownBy(() -> reservationService.create(request, member))
+        Assertions.assertThatThrownBy(() -> reservationService.create(request, memberAuthInfo))
                 .isInstanceOf(AlreadyExistException.class);
     }
 
@@ -210,11 +215,12 @@ class ReservationServiceTest {
                 .orElseThrow(() -> new ResourceNotFoundException("회원이 존재하지 않습니다."));
 
         final CreateReservationRequest request = new CreateReservationRequest(date, timeId, themeId);
+        final MemberAuthInfo memberAuthInfo = new MemberAuthInfo(member.getId(), member.getRole());
 
         reservationRepository.save(new Reservation(date, reservationTime, theme, member));
 
         // when & then
-        Assertions.assertThatThrownBy(() -> reservationService.create(request, member))
+        Assertions.assertThatThrownBy(() -> reservationService.create(request, memberAuthInfo))
                 .isInstanceOf(AlreadyExistException.class);
     }
 
@@ -296,15 +302,6 @@ class ReservationServiceTest {
         }
 
         @Bean
-        public ReservationService reservationService(
-                final ReservationRepository reservationRepository,
-                final ReservationTimeRepository reservationTimeRepository,
-                final ThemeQueryRepository themeQueryRepository
-        ) {
-            return new ReservationService(reservationRepository, reservationTimeRepository, themeQueryRepository);
-        }
-
-        @Bean
         public MemberCommandRepository memberCommandRepository(
                 final JdbcTemplate jdbcTemplate
         ) {
@@ -316,6 +313,17 @@ class ReservationServiceTest {
                 final JdbcTemplate jdbcTemplate
         ) {
             return new JdbcMemberRepository(jdbcTemplate);
+        }
+
+        @Bean
+        public ReservationService reservationService(
+                final ReservationRepository reservationRepository,
+                final ReservationTimeRepository reservationTimeRepository,
+                final ThemeQueryRepository themeQueryRepository,
+                final MemberQueryRepository memberQueryRepository
+        ) {
+            return new ReservationService(reservationRepository, reservationTimeRepository, themeQueryRepository,
+                    memberQueryRepository);
         }
     }
 }

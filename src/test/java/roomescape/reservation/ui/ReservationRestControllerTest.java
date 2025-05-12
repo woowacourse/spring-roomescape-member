@@ -76,13 +76,14 @@ class ReservationRestControllerTest {
         final Map<String, String> memberCookies = memberLoginAndGetCookies(signUpParams1());
         final Map<String, String> reservationParams = reservationParams1();
 
-        RestAssured.given().log().all()
+        final Integer reservationId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .cookies(memberCookies)
                 .body(reservationParams)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
+                .statusCode(HttpStatus.CREATED.value())
+                .extract().path("id");
 
         RestAssured.given().log().all()
                 .cookies(adminCookies)
@@ -93,7 +94,7 @@ class ReservationRestControllerTest {
 
         RestAssured.given().log().all()
                 .cookies(adminCookies)
-                .when().delete("/reservations/1")
+                .when().delete("/reservations/{id}", reservationId)
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
 

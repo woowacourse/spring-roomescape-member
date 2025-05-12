@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.application.AuthService;
 import roomescape.auth.domain.AuthRole;
+import roomescape.auth.domain.MemberAuthInfo;
 import roomescape.auth.domain.RequiresRole;
-import roomescape.auth.ui.dto.CheckAccessTokenResponse;
 import roomescape.auth.ui.dto.CreateAccessTokenRequest;
-import roomescape.member.domain.Member;
+import roomescape.member.ui.dto.MemberResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,12 +43,12 @@ public class AuthRestController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<CheckAccessTokenResponse> checkAccessToken(final Member member) {
-        if (member == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new CheckAccessTokenResponse("Unauthorized"));
-        }
-        return ResponseEntity.ok(new CheckAccessTokenResponse(member.getName()));
+    public ResponseEntity<MemberResponse.Name> checkAccessToken(
+            final MemberAuthInfo memberAuthInfo
+    ) {
+        final MemberResponse.Name response = new MemberResponse.Name(authService.getMemberById(memberAuthInfo.id()));
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/logout")

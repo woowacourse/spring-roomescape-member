@@ -10,7 +10,7 @@ import roomescape.auth.application.AuthService;
 import roomescape.auth.domain.AuthTokenExtractor;
 import roomescape.auth.domain.AuthTokenProvider;
 import roomescape.auth.ui.AuthRoleCheckInterceptor;
-import roomescape.auth.ui.MemberArgumentResolver;
+import roomescape.auth.ui.MemberAuthInfoArgumentResolver;
 
 @Configuration
 @RequiredArgsConstructor
@@ -30,6 +30,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new MemberArgumentResolver(authTokenExtractor, authTokenProvider, authService));
+        resolvers.add(new MemberAuthInfoArgumentResolver(authTokenExtractor, authTokenProvider));
     }
 }

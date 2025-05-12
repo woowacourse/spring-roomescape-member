@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.domain.AuthTokenProvider;
 import roomescape.auth.ui.dto.CreateAccessTokenRequest;
 import roomescape.exception.auth.AuthenticationException;
-import roomescape.exception.resource.MemberNotFoundException;
 import roomescape.exception.resource.ResourceNotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberQueryRepository;
@@ -28,8 +27,9 @@ public class AuthService {
         return authTokenProvider.createAccessToken(member.getId().toString(), member.getRole());
     }
 
-    public Member getMemberById(final Long id) {
+    public String getMemberById(final Long id) {
         return memberQueryRepository.findById(id)
-                .orElseThrow(() -> new MemberNotFoundException("해당 사용자가 존재하지 않습니다. id=" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("해당 사용자가 존재하지 않습니다."))
+                .getName();
     }
 }

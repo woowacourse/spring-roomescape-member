@@ -1,5 +1,8 @@
 package roomescape.reservation.ui;
 
+import static roomescape.auth.domain.AuthRole.ADMIN;
+import static roomescape.auth.domain.AuthRole.MEMBER;
+
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +16,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.auth.domain.AuthRole;
+import roomescape.auth.domain.MemberAuthInfo;
 import roomescape.auth.domain.RequiresRole;
-import roomescape.member.domain.Member;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.ui.dto.request.AvailableReservationTimeRequest;
 import roomescape.reservation.ui.dto.request.CreateReservationRequest;
@@ -31,30 +33,30 @@ public class ReservationRestController {
     private final ReservationService reservationService;
 
     @PostMapping("/reservations")
-    @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER})
+    @RequiresRole(authRoles = {ADMIN, MEMBER})
     public ResponseEntity<ReservationResponse> create(
             @RequestBody @Valid final CreateReservationRequest request,
-            final Member member
+            final MemberAuthInfo memberAuthInfo
     ) {
-        final ReservationResponse response = reservationService.create(request, member);
+        final ReservationResponse response = reservationService.create(request, memberAuthInfo);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }
 
     @DeleteMapping("/reservations/{id}")
-    @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER})
+    @RequiresRole(authRoles = {ADMIN, MEMBER})
     public ResponseEntity<Void> delete(
             @PathVariable final Long id,
-            final Member member
+            final MemberAuthInfo memberAuthInfo
     ) {
-        reservationService.deleteIfOwner(id, member);
+        reservationService.deleteIfOwner(id, memberAuthInfo);
 
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/reservations")
-    @RequiresRole(authRoles = {AuthRole.ADMIN})
+    @RequiresRole(authRoles = {ADMIN})
     public ResponseEntity<List<ReservationResponse>> findAll() {
         final List<ReservationResponse> reservationResponses = reservationService.findAll();
 
@@ -62,7 +64,7 @@ public class ReservationRestController {
     }
 
     @GetMapping("/reservations/filtered")
-    @RequiresRole(authRoles = {AuthRole.ADMIN})
+    @RequiresRole(authRoles = {ADMIN})
     public ResponseEntity<List<ReservationResponse>> findAllByFilter(
             @ModelAttribute @Valid final ReservationsByfilterRequest request
     ) {
@@ -74,8 +76,8 @@ public class ReservationRestController {
     @GetMapping("/reservations/available-times")
     public ResponseEntity<List<AvailableReservationTimeResponse>> findAvailableReservationTimes(
             @ModelAttribute @Valid final AvailableReservationTimeRequest request) {
-        final List<AvailableReservationTimeResponse> availableReservationTimes
-                = reservationService.findAvailableReservationTimes(request);
+        final List<AvailableReservationTimeResponse> availableReservationTimes =
+                reservationService.findAvailableReservationTimes(request);
 
         return ResponseEntity.ok(availableReservationTimes);
     }

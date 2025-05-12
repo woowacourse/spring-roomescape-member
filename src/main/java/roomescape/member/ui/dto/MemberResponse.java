@@ -17,4 +17,12 @@ public record MemberResponse(
             return new IdName(member.getId(), member.getName());
         }
     }
+
+    public record Name(
+            String name
+    ) {
+        public static Name from(final Member member) {
+            return new Name(member.getName());
+        }
+    }
 }

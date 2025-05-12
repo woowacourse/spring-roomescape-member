@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.auth.domain.MemberAuthInfo;
 import roomescape.exception.auth.AuthorizationException;
 import roomescape.exception.resource.AlreadyExistException;
+import roomescape.exception.resource.MemberNotFoundException;
 import roomescape.exception.resource.ResourceNotFoundException;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberQueryRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReservationTime;
@@ -28,8 +31,9 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeQueryRepository themeQueryRepository;
+    private final MemberQueryRepository memberQueryRepository;
 
-    public ReservationResponse create(final CreateReservationRequest request, final Member member) {
+    public ReservationResponse create(final CreateReservationRequest request, final MemberAuthInfo memberAuthInfo) {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(),
                 request.themeId())) {
             throw new AlreadyExistException("해당 날짜와 시간에 이미 예약된 테마입니다.");
@@ -39,6 +43,8 @@ public class ReservationService {
                 .orElseThrow(() -> new ResourceNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + request.timeId()));
         final Theme theme = themeQueryRepository.findById(request.themeId())
                 .orElseThrow(() -> new ResourceNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + request.themeId()));
+        final Member member = memberQueryRepository.findById(memberAuthInfo.id())
+                .orElseThrow(() -> new ResourceNotFoundException("해당 회원 데이터가 존재하지 않습니다. id = " + memberAuthInfo.id()));
         final Reservation reservation = new Reservation(request.date(), reservationTime, theme, member);
 
         final Long id = reservationRepository.save(reservation);
@@ -48,9 +54,11 @@ public class ReservationService {
         return ReservationResponse.from(found);
     }
 
-    public void deleteIfOwner(final Long reservationId, final Member member) {
+    public void deleteIfOwner(final Long reservationId, final MemberAuthInfo memberAuthInfo) {
         final Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 예약 데이터가 존재하지 않습니다. id = " + reservationId));
+        final Member member = memberQueryRepository.findById(memberAuthInfo.id())
+                .orElseThrow(() -> new MemberNotFoundException("해당 회원 데이터가 존재하지 않습니다. id = " + memberAuthInfo.id()));
 
         if (member.isAdmin()) {
             reservationRepository.deleteById(reservationId);
