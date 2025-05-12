@@ -8,6 +8,7 @@ public enum ExceptionCause {
 
     MEMBER_NOTFOUND("회원이 존재하지 않습니다."),
     MEMBER_EXIST("이미 존재하는 이메일입니다."),
+    MEMBER_UNAUTHORIZED("권한이 없습니다."),
 
     RESERVATION_EXIST_THEME("이 테마에 대한 예약이 존재합니다."),
     RESERVATION_EXIST_TIME("이 시간에 대한 예약이 존재합니다."),
