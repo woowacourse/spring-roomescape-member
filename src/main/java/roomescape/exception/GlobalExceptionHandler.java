@@ -9,17 +9,11 @@ import roomescape.exception.auth.AuthTokenNotFoundException;
 import roomescape.exception.auth.AuthenticationException;
 import roomescape.exception.auth.AuthorizationException;
 import roomescape.exception.resource.AlreadyExistException;
-import roomescape.exception.resource.MemberNotFoundException;
 import roomescape.exception.resource.ResourceNotFoundException;
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-
-    @ExceptionHandler(MemberNotFoundException.class)
-    public ResponseEntity<Void> handleMemberNotFoundException(final MemberNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Void> handleResourceNotFoundException(final ResourceNotFoundException e) {

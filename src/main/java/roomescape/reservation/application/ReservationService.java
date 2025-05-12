@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.domain.MemberAuthInfo;
 import roomescape.exception.auth.AuthorizationException;
 import roomescape.exception.resource.AlreadyExistException;
-import roomescape.exception.resource.MemberNotFoundException;
 import roomescape.exception.resource.ResourceNotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberQueryRepository;
@@ -58,7 +57,7 @@ public class ReservationService {
         final Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 예약이 존재하지 않습니다. id = " + reservationId));
         final Member member = memberQueryRepository.findById(memberAuthInfo.id())
-                .orElseThrow(() -> new MemberNotFoundException("해당 회원이 존재하지 않습니다. id = " + memberAuthInfo.id()));
+                .orElseThrow(() -> new ResourceNotFoundException("해당 회원이 존재하지 않습니다. id = " + memberAuthInfo.id()));
 
         if (member.isAdmin()) {
             reservationRepository.deleteById(reservationId);
