@@ -10,6 +10,7 @@ import roomescape.support.auth.MemberArgumentResolver;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
     private final MemberArgumentResolver loginMemberArgumentResolver;
     private final AdminCheckInterceptor adminCheckInterceptor;
 

@@ -51,6 +51,16 @@ public class RestApiControllerAdvice {
         return createFailureResponse(ex, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(InvalidAuthException.class)
+    public ResponseEntity<FailureResponse> handleInvalidAuthException(final InvalidAuthException ex) {
+        return createFailureResponse(ex, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ForbiddenAuthorityException.class)
+    public ResponseEntity<FailureResponse> handleForbiddenAuthorityException(final ForbiddenAuthorityException ex) {
+        return createFailureResponse(ex, HttpStatus.FORBIDDEN);
+    }
+
     private ResponseEntity<FailureResponse> createFailureResponse(final Exception ex, final HttpStatus status) {
         return new ResponseEntity<>(new FailureResponse(status, ex.getMessage()), status);
     }

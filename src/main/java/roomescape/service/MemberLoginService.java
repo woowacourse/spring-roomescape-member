@@ -9,6 +9,7 @@ import roomescape.domain.Member;
 import roomescape.dto.request.TokenRequest;
 import roomescape.dto.response.MemberResponse;
 import roomescape.dto.response.TokenResponse;
+import roomescape.exception.InvalidAuthException;
 
 @Service
 public class MemberLoginService {
@@ -38,5 +39,12 @@ public class MemberLoginService {
 
     public String extractToken(final HttpServletRequest request) {
         return authService.extractToken(request);
+    }
+
+    public void validateToken(final String accessToken) {
+        if (authService.validateToken(accessToken)) {
+            return;
+        }
+        throw new InvalidAuthException("토큰이 유효하지 않습니다.");
     }
 }
