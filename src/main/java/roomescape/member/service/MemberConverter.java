@@ -1,6 +1,8 @@
 package roomescape.member.service;
 
+import java.util.List;
 import roomescape.member.auth.dto.MemberInfo;
+import roomescape.member.controller.dto.MemberInfoResponse;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberEmail;
 import roomescape.member.domain.MemberId;
@@ -22,5 +24,19 @@ public class MemberConverter {
                 MemberName.from(memberInfo.name()),
                 MemberEmail.from(memberInfo.email()),
                 memberInfo.role());
+    }
+
+    public static MemberInfoResponse toResponse(MemberInfo memberInfo) {
+        return new MemberInfoResponse(
+                memberInfo.id(),
+                memberInfo.name(),
+                memberInfo.email()
+        );
+    }
+
+    public static List<MemberInfoResponse> toResponses(List<MemberInfo> memberInfos) {
+        return memberInfos.stream()
+                .map(MemberConverter::toResponse)
+                .toList();
     }
 }

@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.AuthenticationException;
+import roomescape.common.exception.ErrorCode;
 import roomescape.member.controller.dto.LoginCheckResponse;
 import roomescape.member.controller.dto.LoginRequest;
 import roomescape.member.auth.dto.MemberInfo;
+import roomescape.member.controller.dto.MemberInfoResponse;
 import roomescape.member.controller.dto.SignupRequest;
 import roomescape.member.domain.Account;
 import roomescape.member.domain.Member;
@@ -23,12 +25,16 @@ public class AuthService {
     private final JwtTokenExtractor jwtTokenExtractor;
     private final PasswordEncoder passwordEncoder;
 
-    public MemberInfo signup(SignupRequest signupRequest) {
-        return memberService.create(new SignupRequest(
-                signupRequest.email(),
-                passwordEncoder.encode(signupRequest.password()),
-                signupRequest.name()
-        ));
+    public MemberInfoResponse signup(SignupRequest signupRequest) {
+        return MemberConverter.toResponse(
+                memberService.create(
+                        new SignupRequest(
+                            signupRequest.email(),
+                            passwordEncoder.encode(signupRequest.password()),
+                            signupRequest.name()
+                        )
+                )
+        );
     }
 
     public String login(LoginRequest loginRequest) {
@@ -45,7 +51,11 @@ public class AuthService {
     }
 
     public MemberInfo getMemberInfo(final String token) {
-        return MemberConverter.toDto(memberService.get(jwtTokenExtractor.extractMemberIdFromToken(token)));
+        try {
+            return MemberConverter.toDto(memberService.get(jwtTokenExtractor.extractMemberIdFromToken(token)));
+        } catch (final AuthenticationException e) {
+            throw new AuthenticationException("token이 올바르지 않습니다.", ErrorCode.INVALID_AUTH_INFO);
+        }
     }
 
     public Member get(final String token) {

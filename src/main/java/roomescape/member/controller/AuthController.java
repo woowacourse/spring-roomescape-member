@@ -12,7 +12,7 @@ import roomescape.member.auth.JwtTokenExtractor;
 import roomescape.member.auth.PermitAll;
 import roomescape.member.controller.dto.LoginCheckResponse;
 import roomescape.member.controller.dto.LoginRequest;
-import roomescape.member.auth.dto.MemberInfo;
+import roomescape.member.controller.dto.MemberInfoResponse;
 import roomescape.member.controller.dto.SignupRequest;
 import roomescape.member.service.AuthService;
 
@@ -51,7 +51,7 @@ public class AuthController {
 
     @PermitAll
     @PostMapping("/signup")
-    public ResponseEntity<MemberInfo> signup(@RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<MemberInfoResponse> signup(@RequestBody SignupRequest signupRequest) {
         return ResponseEntity.ok(authService.signup(signupRequest));
     }
 }

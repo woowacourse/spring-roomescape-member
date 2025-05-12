@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.member.auth.dto.MemberInfo;
 import roomescape.member.controller.dto.LoginRequest;
+import roomescape.member.controller.dto.MemberInfoResponse;
 import roomescape.member.controller.dto.SignupRequest;
 import roomescape.member.domain.Account;
 import roomescape.member.domain.Member;
@@ -44,7 +45,7 @@ public class MemberService {
         return memberQueryUseCase.get(id);
     }
 
-    public List<MemberInfo> getAll() {
-        return memberQueryUseCase.getAll();
+    public List<MemberInfoResponse> getAll() {
+        return MemberConverter.toResponses(memberQueryUseCase.getAll());
     }
 }

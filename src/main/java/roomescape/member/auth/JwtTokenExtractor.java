@@ -50,7 +50,7 @@ public class JwtTokenExtractor {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (MalformedJwtException e) {
-            throw new AuthenticationException("잘못된 토큰입니다.");
+            throw new AuthenticationException("잘못된 토큰입니다.", ErrorCode.INVALID_AUTH_INFO);
         }
     }
 }
