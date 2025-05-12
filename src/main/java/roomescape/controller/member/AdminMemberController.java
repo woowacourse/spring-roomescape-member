@@ -18,7 +18,7 @@ public class AdminMemberController {
     }
 
     @GetMapping("/members")
-    public List<MemberResponse> getAvailableReservationTimes() {
+    public List<MemberResponse> readAllMembers() {
         return memberService.getAll();
     }
 }
