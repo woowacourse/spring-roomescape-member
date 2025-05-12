@@ -21,7 +21,7 @@ public class Reservation {
         validate();
     }
 
-    private void validate(){
+    private void validate() {
         Objects.requireNonNull(date, "예약 날짜는 null일 수 없습니다.");
         Objects.requireNonNull(time, "예약 시간은 null일 수 없습니다.");
         Objects.requireNonNull(theme, "테마는 null일 수 없습니다.");

@@ -16,7 +16,7 @@ public class AuthFixture {
         return service.createToken(request);
     }
 
-    public static String createAdminToken(AuthService service){
+    public static String createAdminToken(AuthService service) {
         TokenRequest request = new TokenRequest(ADMIN_EMAIL, ADMIN_PASSWORD);
         return service.createToken(request);
     }

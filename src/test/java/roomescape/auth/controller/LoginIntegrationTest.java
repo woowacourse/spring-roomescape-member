@@ -107,7 +107,7 @@ class LoginIntegrationTest {
 
     @DisplayName("로그아웃 요청 시 토큰 쿠키가 삭제된다")
     @Test
-    void logout_test(){
+    void logout_test() {
         // when
         String header = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
