@@ -43,7 +43,6 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
                     member.getId(),
                     member.getName(),
                     member.getEmail(),
-                    member.getPassword(),
                     member.getRole());
         } catch (IllegalArgumentException | NotFoundException e) {
             log.error(e.getMessage());

@@ -74,7 +74,7 @@ class ReservationServiceTest {
         ReservationRequest dupReq = new ReservationRequest(
                 r1.getDate(), time1.getId(), theme1.getId()
         );
-        LoginMember loginMember = new LoginMember(1L, "사람", "email@naver.com", "1234", MemberRole.ADMIN);
+        LoginMember loginMember = new LoginMember(1L, "사람", "email@naver.com", MemberRole.ADMIN);
         // when
         // then
         assertThatThrownBy(() -> service.saveReservation(dupReq, loginMember))
@@ -88,7 +88,7 @@ class ReservationServiceTest {
         ReservationRequest request = new ReservationRequest(
                 LocalDate.of(2000, 10, 8), time1.getId(), theme1.getId()
         );
-        LoginMember loginMember = new LoginMember(1L, "사람", "email@naver.com", "1234", MemberRole.ADMIN);
+        LoginMember loginMember = new LoginMember(1L, "사람", "email@naver.com", MemberRole.ADMIN);
 
         // when
         // then
@@ -103,7 +103,7 @@ class ReservationServiceTest {
         repo = new FakeReservationRepository();
         timeRepo = new FakeReservationTimeRepository(time1);
         service = new ReservationService(repo, timeRepo, themeRepo, memberRepo);
-        LoginMember loginMember = new LoginMember(1L, "사람", "email@naver.com", "1234", MemberRole.ADMIN);
+        LoginMember loginMember = new LoginMember(1L, "사람", "email@naver.com", MemberRole.ADMIN);
 
         ReservationRequest req = new ReservationRequest(
                 LocalDate.of(2999, 4, 21), time1.getId(), theme1.getId()
