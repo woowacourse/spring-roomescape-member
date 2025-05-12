@@ -6,7 +6,6 @@ import io.jsonwebtoken.security.MacAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import roomescape.auth.jwt.domain.Jwt;
-import roomescape.auth.jwt.domain.TokenType;
 
 import javax.crypto.SecretKey;
 import java.time.Instant;
@@ -21,10 +20,9 @@ public class HmacJwtGenerator implements JwtGenerator {
 
     @Override
     public Jwt execute(final Claims claims,
-                       final TokenType type,
+                       final Instant now,
+                       final Instant expiration,
                        final SecretKey secretKey) {
-        final Instant now = Instant.now();
-        final Instant expiration = now.plusMillis(type.getPeriodInMillis());
         final String uniqueId = UUID.randomUUID().toString(); // JTI
 
         return Jwt.from(

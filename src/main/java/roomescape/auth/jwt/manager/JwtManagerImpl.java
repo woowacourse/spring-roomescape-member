@@ -9,6 +9,7 @@ import roomescape.auth.jwt.generator.JwtGenerator;
 import roomescape.auth.jwt.parser.JwtParser;
 
 import javax.crypto.SecretKey;
+import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor
@@ -20,7 +21,10 @@ public class JwtManagerImpl implements JwtManager {
 
     @Override
     public Jwt generate(final Claims claims, final TokenType type) {
-        return jwtGenerator.execute(claims, type, secretKey);
+        final Instant now = Instant.now();
+        final Instant expiration = now.plusMillis(type.getPeriodInMillis());
+
+        return jwtGenerator.execute(claims, now, expiration, secretKey);
     }
 
     @Override
