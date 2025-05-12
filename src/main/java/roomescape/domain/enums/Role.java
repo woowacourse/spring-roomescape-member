@@ -5,7 +5,7 @@ public enum Role {
     USER;
 
     public static Role from(String value) {
-        return Role.valueOf(value.toUpperCase()); // 예외 발생 가능
+        return Role.valueOf(value.toUpperCase());
     }
 }
 
