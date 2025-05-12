@@ -17,7 +17,7 @@ class MemberTest {
     void validatePassword(String password) {
 
         // when & then
-        assertThatCode(() -> new Member(1L, "test", "test@test.com", password, new Role(1L, "user")))
+        assertThatCode(() -> new Member(1L, "test", "test@test.com", password, Role.USER))
                 .doesNotThrowAnyException();
     }
 
@@ -27,7 +27,7 @@ class MemberTest {
     void validatePasswordThrowsException(String password) {
 
         // when & then
-        assertThatThrownBy(() -> new Member(1L, "test", "test@test.com", password, new Role(1L, "user")))
+        assertThatThrownBy(() -> new Member(1L, "test", "test@test.com", password, Role.USER))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage(ExceptionCause.MEMBER_PASSWORD_INVALID.getMessage());
     }
