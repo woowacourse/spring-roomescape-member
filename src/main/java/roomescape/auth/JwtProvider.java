@@ -25,7 +25,7 @@ public class JwtProvider {
 
     }
 
-    public TokenInfo validateTokenAndGetInfo(String accessToken) {
+    public TokenInfo verifyTokenAndExtractInfo(String accessToken) {
         try {
             Claims payload = Jwts.parser()
                     .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))

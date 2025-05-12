@@ -31,7 +31,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
             response.sendRedirect(request.getContextPath() + "/login");
             return false;
         }
-        TokenInfo tokenInfo = jwtProvider.validateTokenAndGetInfo(accessToken);
+        TokenInfo tokenInfo = jwtProvider.verifyTokenAndExtractInfo(accessToken);
         if (Role.USER.toString().equals(tokenInfo.role())) {
             throw new AccessDeniedException("접근 권한이 없습니다.");
         }

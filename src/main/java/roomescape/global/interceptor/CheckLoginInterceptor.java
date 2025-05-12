@@ -27,7 +27,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
             response.sendRedirect(request.getContextPath() + "/login");
             return false;
         }
-        TokenInfo tokenInfo = jwtProvider.validateTokenAndGetInfo(accessToken);
+        TokenInfo tokenInfo = jwtProvider.verifyTokenAndExtractInfo(accessToken);
         request.setAttribute("memberId", tokenInfo.id());
         return true;
     }
