@@ -23,7 +23,7 @@ public final class Member {
     }
 
     public boolean checkValidPassword(@NotEmpty String password) {
-        return password.equals(password);
+        return this.password.equals(password);
     }
 
     public Long getId() {
