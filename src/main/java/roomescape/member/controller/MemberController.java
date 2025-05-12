@@ -17,6 +17,8 @@ import roomescape.member.service.dto.MemberLoginCommand;
 @RestController
 public class MemberController {
 
+    private static final int LOGIN_COOKIE_MAX_AGE = 3600;
+
     private final AuthService authService;
     private final MemberService memberService;
 
@@ -31,6 +33,7 @@ public class MemberController {
         ResponseCookie cookie = ResponseCookie.from("token", token)
                 .httpOnly(true)
                 .path("/")
+                .maxAge(LOGIN_COOKIE_MAX_AGE)
                 .build();
         return ResponseEntity.ok().header("Set-Cookie", cookie.toString()).build();
     }
