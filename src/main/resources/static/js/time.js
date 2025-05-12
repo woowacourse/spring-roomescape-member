@@ -135,7 +135,10 @@ function requestDelete(id) {
   };
 
   return fetch(`${API_ENDPOINT}/${id}`, requestOptions)
-      .then(response => response.json())
+      .then(response => {
+        if (response.ok) return {};
+        return response.json();
+      })
       .then(data => {
         if (data.hasOwnProperty("status") && data.status !== 204) throw new Error(data.errors);
       });
