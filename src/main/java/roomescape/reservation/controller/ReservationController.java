@@ -35,8 +35,7 @@ public class ReservationController {
             @RequestBody CreateUserReservationRequest request,
             @AuthenticationPrincipal Member member) {
 
-        final CreateReservationServiceRequest creation =
-                CreateReservationServiceRequest.fromUserRequestAndMember(request, member);
+        final CreateReservationServiceRequest creation = request.toCreateReservationServiceRequest(member);
         final Reservation savedReservation = reservationService.addReservation(creation);
 
         return ReservationResponse.from(savedReservation);
@@ -47,9 +46,8 @@ public class ReservationController {
     public ReservationResponse addReservation(
             @RequestBody CreateAdminReservationRequest request) {
 
-        final CreateReservationServiceRequest creation =
-                CreateReservationServiceRequest.fromAdminRequestAndMember(request);
-        final Reservation savedReservation = reservationService.addReservation(creation);
+        final CreateReservationServiceRequest serviceRequest = request.toCreateReservationServiceRequest();
+        final Reservation savedReservation = reservationService.addReservation(serviceRequest);
 
         return ReservationResponse.from(savedReservation);
     }

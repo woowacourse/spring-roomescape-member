@@ -47,9 +47,9 @@ class ReservationServiceTest {
     @DisplayName("테마, 날짜, 시간이 같은 예약이 존재하면 예외를 던진다")
     void addReservationTest_WhenDuplicatedReservationExists() {
         // given
-        reservationService.addReservation(CreateReservationServiceRequest.fromUserRequestAndMember(
-                new CreateUserReservationRequest(FUTURE_DATE, 1L, 1L),
-                Member.of(2L, "USER", "사용자", "user@email.com", "password")));
+        final CreateUserReservationRequest request = new CreateUserReservationRequest(FUTURE_DATE, 1L, 1L);
+        final Member member = Member.of(2L, "USER", "사용자", "user@email.com", "password");
+        reservationService.addReservation(request.toCreateReservationServiceRequest(member));
 
         final CreateReservationServiceRequest duplicated = new CreateReservationServiceRequest(FUTURE_DATE, 1L,
                 1L, 2L);

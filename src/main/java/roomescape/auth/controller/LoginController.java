@@ -30,9 +30,9 @@ public class LoginController {
 
     @PostMapping("/login")
     public void tokenLogin(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        final CreateTokenServiceRequest request = CreateTokenServiceRequest.from(loginRequest);
+        final CreateTokenServiceRequest serviceRequest = loginRequest.toCreateTokenServiceRequest();
 
-        final String token = authService.createToken(request);
+        final String token = authService.createToken(serviceRequest);
         final ResponseCookie cookie = CookieHandler.createCookieFromToken(token);
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());

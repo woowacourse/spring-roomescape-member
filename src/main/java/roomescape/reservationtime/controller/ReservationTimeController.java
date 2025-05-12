@@ -34,8 +34,8 @@ public class ReservationTimeController {
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationTimeResponse addReservationTime(
             @RequestBody CreateReservationTimeRequest request) {
-        final CreateReservationTimeServiceRequest creation = CreateReservationTimeServiceRequest.from(request);
-        final ReservationTime savedReservationTime = reservationTimeService.addReservationTime(creation);
+        final CreateReservationTimeServiceRequest serviceRequest = request.toCreateReservationTimeServiceRequest();
+        final ReservationTime savedReservationTime = reservationTimeService.addReservationTime(serviceRequest);
         return ReservationTimeResponse.from(savedReservationTime);
     }
 
