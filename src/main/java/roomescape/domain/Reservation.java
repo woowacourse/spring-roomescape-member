@@ -9,7 +9,6 @@ import roomescape.exception.InternalServerException;
 public final class Reservation {
 
     private static final long DEFAULT_ID = 0L;
-    private static final int MAX_NAME_LENGTH = 255;
 
     private final Long id;
     private final Member member;

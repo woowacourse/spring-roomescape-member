@@ -40,7 +40,7 @@ public class AuthenticationController {
         return new MemberNameResponse(authenticationInformation.name());
     }
 
-    @PostMapping("logout")
+    @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
         ResponseCookie cookie = ResponseCookie.from("access", null)
                 .path("/")
