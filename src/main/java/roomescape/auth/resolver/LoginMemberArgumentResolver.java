@@ -16,6 +16,8 @@ import roomescape.global.security.jwt.JwtTokenProvider;
 import roomescape.member.entity.Member;
 import roomescape.member.service.MemberService;
 
+import java.util.NoSuchElementException;
+
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -55,6 +57,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             throw new UnauthorizedException("토큰이 만료되었습니다.");
         } catch (JwtException e) {
             throw new UnauthorizedException("유효하지 않은 토큰입니다.");
+        } catch (NoSuchElementException e) {
+            throw new UnauthorizedException("존재하지 않는 사용자입니다.");
         }
     }
 }
