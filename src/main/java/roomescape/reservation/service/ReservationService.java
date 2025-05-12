@@ -104,7 +104,7 @@ public class ReservationService {
                                                                    LocalDate dateFrom,
                                                                    LocalDate dateTo) {
         if (dateFrom != null && dateTo != null && dateTo.isBefore(dateFrom)) {
-            throw new IllegalStateException("dateFrom cannot be after than dateTo");
+            throw new BadRequestException();
         }
         int totalReservations = reservationDao.countTotalReservation(userId, themeId, dateFrom, dateTo);
         int totalPage = totalReservations % 10 == 0 ?

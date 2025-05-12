@@ -20,4 +20,14 @@ public class RoomEscapeException {
             super("잘못된 요청입니다.");
         }
     }
+
+    public static class AuthenticationException extends RuntimeException {
+        public AuthenticationException(String message) {
+            super(message);
+        }
+
+        public AuthenticationException() {
+            super("인증에 실패하였습니다.");
+        }
+    }
 }

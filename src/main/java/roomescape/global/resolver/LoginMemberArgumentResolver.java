@@ -9,6 +9,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.global.exception.RoomEscapeException.AuthenticationException;
 import roomescape.infra.JwtTokenProvider;
 import roomescape.user.domain.Role;
 import roomescape.user.domain.User;
@@ -49,6 +50,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                 return cookie.getValue();
             }
         }
-        throw new RuntimeException("cannot find key in cookies");
+        throw new AuthenticationException("쿠키를 추출할 수 없습니다.");
     }
 }

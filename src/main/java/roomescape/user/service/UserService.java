@@ -2,6 +2,7 @@ package roomescape.user.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.global.exception.RoomEscapeException.AuthenticationException;
 import roomescape.global.exception.RoomEscapeException.BadRequestException;
 import roomescape.global.exception.RoomEscapeException.ResourceNotFoundException;
 import roomescape.infra.JwtTokenProvider;
@@ -31,13 +32,13 @@ public class UserService {
         try {
             return jwtTokenProvider.createAccessToken(loginRequest.email());
         } catch (Exception e) {
-            throw new RuntimeException("cannot create token");
+            throw new AuthenticationException("토큰을 생성하지 못하였습니다.");
         }
     }
 
     public LoginCheckResponse checkUserByToken(String token) {
         if (!jwtTokenProvider.isValidToken(token)) {
-            throw new RuntimeException("not a valid token");
+            throw new AuthenticationException("유효하지 않은 토큰입니다.");
         }
         String email = jwtTokenProvider.getPayload(token);
         User user = userDao.findByEmail(email)
