@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import roomescape.global.interceptor.AdminOnlyInterceptor;
 import roomescape.repository.MemberRepository;
 
 @Configuration
@@ -24,8 +25,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(new AuthInterceptor(memberRepository))
-                .addPathPatterns("/**")
-                .excludePathPatterns("/login", "/css/**", "/js/**", "/images/**");
+        registry.addInterceptor(new AdminOnlyInterceptor(memberRepository))
+                .addPathPatterns("/admin/**");
     }
 }

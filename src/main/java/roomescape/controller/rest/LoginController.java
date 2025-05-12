@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.member.Member;
+import roomescape.global.SessionMember;
 import roomescape.service.LoginService;
 import roomescape.service.request.LoginRequest;
 import roomescape.service.response.LoginCheckResponse;
@@ -25,14 +26,14 @@ public class LoginController {
     @PostMapping
     public ResponseEntity<Void> login(@RequestBody final LoginRequest request, final HttpSession session) {
         Member member = loginService.login(request);
-        session.setAttribute("LOGIN_MEMBER", member);
+        session.setAttribute("LOGIN_MEMBER", new SessionMember(member.getId(), member.getName()));
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/check")
     public ResponseEntity<LoginCheckResponse> loginCheck(final HttpSession httpSession) {
-        Member member = (Member) httpSession.getAttribute("LOGIN_MEMBER");
-        LoginCheckResponse loginCheckResponse = new LoginCheckResponse(member.getName().name());
+        SessionMember member = (SessionMember) httpSession.getAttribute("LOGIN_MEMBER");
+        LoginCheckResponse loginCheckResponse = new LoginCheckResponse(member.name().name());
         return ResponseEntity.ok(loginCheckResponse);
     }
 }
