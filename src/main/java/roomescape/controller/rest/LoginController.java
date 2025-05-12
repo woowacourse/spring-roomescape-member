@@ -1,4 +1,4 @@
-package roomescape.controller.rest.normal;
+package roomescape.controller.rest;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.member.Member;
 import roomescape.service.LoginService;
-import roomescape.service.response.LoginCheckResponse;
 import roomescape.service.request.LoginRequest;
+import roomescape.service.response.LoginCheckResponse;
 
 @RestController
 @RequestMapping("/login")
