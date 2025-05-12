@@ -4,8 +4,11 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.request.LoginMember;
 import roomescape.dto.request.LoginMemberRequest;
+import roomescape.dto.request.SignUpRequest;
 import roomescape.dto.response.MemberResponse;
 import roomescape.model.Member;
+import roomescape.model.MemberName;
+import roomescape.model.Role;
 import roomescape.repository.MemberRepository;
 
 @Service
@@ -42,5 +45,13 @@ public class MemberService {
                     return new MemberResponse(member.getId(), member.getMemberName().getName());
                 })
                 .toList();
+    }
+
+    public MemberResponse signUp(final SignUpRequest signUpRequest) {
+        Member member = new Member(null, Role.USER, new MemberName(signUpRequest.name()), signUpRequest.email(),
+                signUpRequest.password());
+        Member savedMember = memberRepository.saveMember(member);
+        return new MemberResponse(savedMember.getId(), savedMember.getMemberName().getName());
+
     }
 }

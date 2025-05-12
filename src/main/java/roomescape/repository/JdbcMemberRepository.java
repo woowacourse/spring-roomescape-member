@@ -1,9 +1,13 @@
 package roomescape.repository;
 
+import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.model.Member;
 import roomescape.model.MemberName;
@@ -48,5 +52,27 @@ public class JdbcMemberRepository implements MemberRepository {
     public List<Member> findAll() {
         String sql = "SELECT * FROM member";
         return jdbcTemplate.query(sql, MEMBER_ROW_MAPPER);
+    }
+
+    @Override
+    public Member saveMember(final Member member) {
+        String sql = "insert into member(role,name,email,password) values (?,?,?,?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    sql, new String[]{"id"});
+            ps.setString(1, member.getRole().toString());
+            ps.setString(2, member.getMemberName().getName());
+            ps.setString(3, member.getEmail());
+            ps.setString(4, member.getPassword());
+            return ps;
+        }, keyHolder);
+        return new Member(
+                Objects.requireNonNull(keyHolder.getKey()).longValue(),
+                member.getRole(),
+                member.getMemberName(),
+                member.getEmail(),
+                member.getPassword()
+        );
     }
 }
