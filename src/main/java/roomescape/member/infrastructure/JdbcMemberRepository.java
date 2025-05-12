@@ -4,12 +4,16 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.auth.domain.AuthRole;
+import roomescape.exception.resource.InCorrectResultSizeException;
+import roomescape.exception.resource.ResourceNotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberCommandRepository;
 import roomescape.member.domain.MemberQueryRepository;
@@ -31,6 +35,7 @@ public class JdbcMemberRepository implements MemberCommandRepository, MemberQuer
 
     @Override
     public Long save(final Member member) {
+        // TODO: exists를 통해 확인 후 영속시키기
         final String sql = """
                 INSERT INTO members (name, email, password, role)
                 VALUES (?, ?, ?, ?)
@@ -92,6 +97,29 @@ public class JdbcMemberRepository implements MemberCommandRepository, MemberQuer
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id)
                 .stream()
                 .findFirst();
+    }
+
+    @Override
+    public Member getById(Long id) {
+        final String sql = """
+                SELECT
+                    id,
+                    name,
+                    email,
+                    password,
+                    role
+                FROM members
+                WHERE id = ?
+                """;
+
+        try {
+            return jdbcTemplate.queryForObject(sql, RESERVATION_ROW_MAPPER, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundException("회원이 존재하지 않습니다.");
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new InCorrectResultSizeException("회원이 여러 개 존재합니다.");
+        }
+
     }
 
     @Override

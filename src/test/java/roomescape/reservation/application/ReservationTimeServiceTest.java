@@ -13,7 +13,6 @@ import roomescape.exception.resource.ResourceNotFoundException;
 import roomescape.fixture.config.TestConfig;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.ReservationTimeCommandRepository;
-import roomescape.reservation.domain.ReservationTimeQueryRepository;
 import roomescape.reservation.ui.dto.request.CreateReservationTimeRequest;
 
 @JdbcTest
@@ -25,9 +24,6 @@ class ReservationTimeServiceTest {
 
     @Autowired
     private ReservationTimeCommandRepository reservationTimeCommandRepository;
-
-    @Autowired
-    private ReservationTimeQueryRepository reservationTimeQueryRepository;
 
     @ParameterizedTest
     @CsvSource(value = {

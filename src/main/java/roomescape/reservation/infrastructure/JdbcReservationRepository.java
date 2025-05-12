@@ -6,12 +6,16 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.auth.domain.AuthRole;
+import roomescape.exception.resource.InCorrectResultSizeException;
+import roomescape.exception.resource.ResourceNotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationCommandRepository;
@@ -117,6 +121,42 @@ public class JdbcReservationRepository implements ReservationCommandRepository, 
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id)
                 .stream()
                 .findFirst();
+    }
+
+    @Override
+    public Reservation getById(Long id) {
+        final String sql = """
+                SELECT 
+                    r.id AS id,
+                    r.date AS date,
+                    rt.id AS time_id,
+                    rt.start_at AS start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.password AS member_password,
+                    m.role AS member_role
+                FROM reservations AS r
+                INNER JOIN reservation_times AS rt
+                ON r.time_id = rt.id
+                INNER JOIN themes AS th
+                ON r.theme_id = th.id
+                INNER JOIN members AS m
+                ON r.member_id = m.id
+                WHERE r.id = ?
+                """;
+
+        try {
+            return jdbcTemplate.queryForObject(sql, RESERVATION_ROW_MAPPER, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundException("예약이 존재하지 않습니다.");
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new InCorrectResultSizeException("예약이 여러 개 존재합니다.");
+        }
     }
 
     @Override

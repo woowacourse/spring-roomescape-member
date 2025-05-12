@@ -13,7 +13,6 @@ import roomescape.fixture.config.TestConfig;
 import roomescape.theme.applcation.ThemeService;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeCommandRepository;
-import roomescape.theme.domain.ThemeQueryRepository;
 import roomescape.theme.ui.dto.CreateThemeRequest;
 import roomescape.theme.ui.dto.ThemeResponse;
 
@@ -26,9 +25,6 @@ class ThemeServiceTest {
 
     @Autowired
     private ThemeCommandRepository themeCommandRepository;
-
-    @Autowired
-    private ThemeQueryRepository themeQueryRepository;
 
     @Test
     void 테마를_저장한다() {

@@ -5,11 +5,15 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.exception.resource.InCorrectResultSizeException;
+import roomescape.exception.resource.ResourceNotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeCommandRepository;
 import roomescape.theme.domain.ThemeQueryRepository;
@@ -82,12 +86,31 @@ public class JdbcThemeRepository implements ThemeQueryRepository, ThemeCommandRe
                 FROM themes 
                 WHERE id = ?
                 """;
-        final List<Theme> themes = jdbcTemplate.query(sql, THEME_ROW_MAPPER, id);
 
-        if (!themes.isEmpty()) {
-            return Optional.of(themes.getFirst());
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, id)
+                .stream()
+                .findFirst();
+    }
+
+    @Override
+    public Theme getById(final Long id) {
+        final String sql = """
+                SELECT
+                    id,
+                    name,
+                    description,
+                    thumbnail
+                FROM themes 
+                WHERE id = ?
+                """;
+
+        try {
+            return jdbcTemplate.queryForObject(sql, THEME_ROW_MAPPER, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundException("테마가 존재하지 않습니다.");
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new InCorrectResultSizeException("테마가 여러 개 존재합니다.");
         }
-        return Optional.empty();
     }
 
     @Override

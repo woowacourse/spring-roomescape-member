@@ -6,11 +6,15 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.exception.resource.InCorrectResultSizeException;
+import roomescape.exception.resource.ResourceNotFoundException;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.ReservationTimeCommandRepository;
 import roomescape.reservation.domain.ReservationTimeQueryRepository;
@@ -62,6 +66,24 @@ public class JdbcReservationTimeRepository implements ReservationTimeCommandRepo
             return Optional.of(reservationTimes.getFirst());
         }
         return Optional.empty();
+    }
+
+    @Override
+    public ReservationTime getById(final Long id) {
+        final String sql = """
+                SELECT
+                    id,
+                    start_at
+                FROM reservation_times 
+                WHERE id = ?
+                """;
+        try {
+            return jdbcTemplate.queryForObject(sql, RESERVATION_TIME_ROW_MAPPER, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundException("예약 시간이 존재하지 않습니다.");
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new InCorrectResultSizeException("예약 시간이 여러 개 존재합니다.");
+        }
     }
 
     @Override

@@ -10,6 +10,8 @@ public interface ThemeQueryRepository {
 
     Optional<Theme> findById(Long id);
 
+    Theme getById(Long id);
+
     List<Theme> findAll();
 
     List<Theme> findTopNThemesByReservationCountInDateRange(LocalDate dateFrom, LocalDate dateTo, int limit);

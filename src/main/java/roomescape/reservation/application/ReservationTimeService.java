@@ -2,7 +2,6 @@ package roomescape.reservation.application;
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -30,18 +29,14 @@ public class ReservationTimeService {
         }
 
         final Long id = reservationTimeCommandRepository.save(new ReservationTime(startAt));
-        final ReservationTime found = reservationTimeQueryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 시간이 존재하지 않습니다. id = " + id));
+        final ReservationTime found = reservationTimeQueryRepository.getById(id);
 
         return ReservationTimeResponse.from(found);
     }
 
     public void deleteById(final Long id) {
-        final Optional<ReservationTime> found = reservationTimeQueryRepository.findById(id);
-
-        if (found.isEmpty()) {
-            throw new ResourceNotFoundException("해당 예약 시간이 존재하지 않습니다. id = " + id);
-        }
+        reservationTimeQueryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 시간이 존재하지 않습니다. id = " + id));
 
         try {
             reservationTimeCommandRepository.deleteById(id);
