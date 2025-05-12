@@ -10,7 +10,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.LoginRequest;
-import roomescape.domain.LoginMember;
+import roomescape.domain.AuthMember;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
 
@@ -46,7 +46,7 @@ public class AuthService {
                 .compact();
     }
 
-    public LoginMember extractLoginMemberFromRequest(HttpServletRequest request) {
+    public AuthMember extractAuthMemberFromRequest(HttpServletRequest request) {
         String token = extractTokenFromRequest(request);
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
@@ -58,7 +58,7 @@ public class AuthService {
         String name = claims.get(CLAIM_NAME, String.class);
         Role role = Role.valueOf((String) claims.get(CLAIM_ROLE));
 
-        return new LoginMember(memberId, name, role);
+        return new AuthMember(memberId, name, role);
     }
 
     private String extractTokenFromRequest(HttpServletRequest request) {

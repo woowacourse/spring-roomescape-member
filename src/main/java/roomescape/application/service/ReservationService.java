@@ -9,7 +9,7 @@ import roomescape.application.dto.ReservationResponse;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.domain.LoginMember;
+import roomescape.domain.AuthMember;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -53,8 +53,8 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse createReservation(LoginMember loginMember, ReservationRequest request) {
-        Member member = memberService.getMemberById(loginMember.getId());
+    public ReservationResponse createReservation(AuthMember authMember, ReservationRequest request) {
+        Member member = memberService.getMemberById(authMember.getId());
 
         Reservation reservationWithoutId = toReservation(member, request);
         validateForCreation(reservationWithoutId);

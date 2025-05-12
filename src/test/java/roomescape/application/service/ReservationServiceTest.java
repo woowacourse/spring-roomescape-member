@@ -22,7 +22,7 @@ import roomescape.application.dto.ReservationResponse;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.domain.LoginMember;
+import roomescape.domain.AuthMember;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -87,7 +87,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가한다")
     void createReservation() {
         // given
-        LoginMember loginMember = new LoginMember(1L, "name", Role.ADMIN);
+        AuthMember authMember = new AuthMember(1L, "name", Role.ADMIN);
         Member member = new Member("name", "test@email.com", "password", Role.ADMIN);
         ReservationRequest request = new ReservationRequest(LocalDate.now(), 1L, 1L);
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
@@ -106,7 +106,7 @@ class ReservationServiceTest {
                 .save(any());
 
         // when
-        ReservationResponse response = reservationService.createReservation(loginMember, request);
+        ReservationResponse response = reservationService.createReservation(authMember, request);
 
         // then
         assertThat(response)

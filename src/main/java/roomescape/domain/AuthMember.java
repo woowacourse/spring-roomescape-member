@@ -1,12 +1,12 @@
 package roomescape.domain;
 
-public class LoginMember {
+public class AuthMember {
 
     private final Long id;
     private final String name;
     private final Role role;
 
-    public LoginMember(Long id, String name, Role role) {
+    public AuthMember(Long id, String name, Role role) {
         this.id = id;
         this.name = name;
         this.role = role;

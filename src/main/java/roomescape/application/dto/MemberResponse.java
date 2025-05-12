@@ -1,6 +1,6 @@
 package roomescape.application.dto;
 
-import roomescape.domain.LoginMember;
+import roomescape.domain.AuthMember;
 import roomescape.domain.Member;
 
 public record MemberResponse(
@@ -15,10 +15,10 @@ public record MemberResponse(
         );
     }
 
-    public MemberResponse(LoginMember loginMember) {
+    public MemberResponse(AuthMember authMember) {
         this(
-                loginMember.getId(),
-                loginMember.getName()
+                authMember.getId(),
+                authMember.getName()
         );
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.application.service.AuthService;
-import roomescape.domain.LoginMember;
+import roomescape.domain.AuthMember;
 
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -20,13 +20,13 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         boolean hasAuthenticationAnnotation = parameter.hasParameterAnnotation(AuthenticationPrincipal.class);
-        boolean isLoginMemberType = LoginMember.class.isAssignableFrom(parameter.getParameterType());
-        return hasAuthenticationAnnotation && isLoginMemberType;
+        boolean isAuthMemberType = AuthMember.class.isAssignableFrom(parameter.getParameterType());
+        return hasAuthenticationAnnotation && isAuthMemberType;
     }
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        return authService.extractLoginMemberFromRequest((HttpServletRequest) webRequest.getNativeRequest());
+        return authService.extractAuthMemberFromRequest((HttpServletRequest) webRequest.getNativeRequest());
     }
 }

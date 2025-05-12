@@ -6,15 +6,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.application.service.AuthService;
 import roomescape.application.service.MemberService;
-import roomescape.domain.LoginMember;
+import roomescape.domain.AuthMember;
 import roomescape.domain.Member;
 
-public class CheckLoginInterceptor implements HandlerInterceptor {
+public class CheckAuthInterceptor implements HandlerInterceptor {
 
     private final MemberService memberService;
     private final AuthService authService;
 
-    public CheckLoginInterceptor(MemberService memberService, AuthService authService) {
+    public CheckAuthInterceptor(MemberService memberService, AuthService authService) {
         this.memberService = memberService;
         this.authService = authService;
     }
@@ -26,21 +26,21 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        LoginMember loginMember = authService.extractLoginMemberFromRequest(request);
-        if (loginMember.isNotAdmin()) {
+        AuthMember authMember = authService.extractAuthMemberFromRequest(request);
+        if (authMember.isNotAdmin()) {
             response.setStatus(HttpStatus.FORBIDDEN.value());
             return false;
         }
 
-        if (isNotAdminMember(loginMember)) {
+        if (isNotAdminMember(authMember)) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return false;
         }
         return true;
     }
 
-    private boolean isNotAdminMember(LoginMember loginMember) {
-        Member member = memberService.getMemberById(loginMember.getId());
+    private boolean isNotAdminMember(AuthMember authMember) {
+        Member member = memberService.getMemberById(authMember.getId());
         return member.isNotAdmin();
     }
 }
