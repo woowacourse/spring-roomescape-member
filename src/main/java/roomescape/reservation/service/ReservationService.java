@@ -10,6 +10,7 @@ import roomescape.member.domain.MemberRepository;
 import roomescape.member.presentation.dto.MemberResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationResponse;
 import roomescape.reservationTime.domain.ReservationTime;
@@ -58,13 +59,13 @@ public class ReservationService {
 
     private void validateExistDuplicateReservation(final ReservationRequest request, final ReservationTime time) {
         if (reservationRepository.existBy(request.themeId(), request.date(), time.getStartAt())) {
-            throw new IllegalArgumentException("이미 예약이 존재합니다.");
+            throw new ReservationException("이미 예약이 존재합니다.");
         }
     }
 
     private void validateCanReserveDateTime(final Reservation reservation, final LocalDateTime now) {
         if (reservation.isCanReserveDateTime(now)) {
-            throw new IllegalArgumentException("예약할 수 없는 날짜와 시간입니다.");
+            throw new ReservationException("예약할 수 없는 날짜와 시간입니다.");
         }
     }
 
@@ -81,7 +82,7 @@ public class ReservationService {
 
     private void validateExistIdToDelete(boolean isDeleted) {
         if (!isDeleted) {
-            throw new IllegalArgumentException("존재하지 않는 예약입니다.");
+            throw new ReservationException("존재하지 않는 예약입니다.");
         }
     }
 
