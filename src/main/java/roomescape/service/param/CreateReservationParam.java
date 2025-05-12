@@ -3,7 +3,7 @@ package roomescape.service.param;
 import java.time.LocalDate;
 
 public record CreateReservationParam(
-        String name,
+        Long memberId,
         LocalDate date,
         Long timeId,
         Long themeId

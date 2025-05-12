@@ -3,11 +3,14 @@ package roomescape.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.auth.LoginMember;
 import roomescape.controller.request.CreateReservationRequest;
+import roomescape.controller.request.LoginMemberInfo;
 import roomescape.controller.response.ReservationResponse;
 import roomescape.service.ReservationService;
 import roomescape.service.result.ReservationResult;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,8 +25,11 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> findReservations() {
-        List<ReservationResult> reservationResults = reservationService.findAll();
+    public ResponseEntity<List<ReservationResponse>> findReservations(@RequestParam(required = false) Long memberId,
+                                                                      @RequestParam(required = false) Long themeId,
+                                                                      @RequestParam(required = false) LocalDate dateFrom,
+                                                                      @RequestParam(required = false) LocalDate dateTo) {
+        List<ReservationResult> reservationResults = reservationService.findReservationsInConditions(memberId, themeId, dateFrom, dateTo);
         List<ReservationResponse> reservationResponses = reservationResults.stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -32,8 +38,9 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
-            @RequestBody CreateReservationRequest createReservationRequest) {
-        Long reservationId = reservationService.create(createReservationRequest.toServiceParam(), LocalDateTime.now());
+            @RequestBody CreateReservationRequest createReservationRequest,
+            @LoginMember LoginMemberInfo loginMemberInfo) {
+        Long reservationId = reservationService.create(createReservationRequest.toServiceParam(loginMemberInfo.id()), LocalDateTime.now());
         ReservationResult reservationResult = reservationService.findById(reservationId);
         return ResponseEntity.status(HttpStatus.CREATED).body(ReservationResponse.from(reservationResult));
     }

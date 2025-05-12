@@ -76,7 +76,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                     INNER JOIN reservation r ON t.id = r.theme_id
                     WHERE r.date BETWEEN ? AND ?
                     GROUP BY t.id
-                    ORDER BY COUNT(r.id) DESC
+                    ORDER BY COUNT(r.id) DESC, t.name ASC
                     LIMIT ?;
                 """;
         return jdbcTemplate.query(sql, themeRowMapper, startDate, endDate, limit);

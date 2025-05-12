@@ -1,4 +1,4 @@
-package roomescape.global;
+package roomescape.exception;
 
 public class ReservationException extends IllegalArgumentException {
 

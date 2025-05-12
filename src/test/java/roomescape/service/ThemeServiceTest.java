@@ -1,10 +1,9 @@
 package roomescape.service;
 
 import org.junit.jupiter.api.Test;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
+import roomescape.domain.*;
+import roomescape.exception.DeletionNotAllowedException;
+import roomescape.exception.NotFoundThemeException;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeThemeRepository;
 import roomescape.persistence.query.CreateReservationQuery;
@@ -69,7 +68,7 @@ class ThemeServiceTest {
     void id값으로_테마를_찾을때_없다면_예외가_발생한다() {
         // given & when & then
         assertThatThrownBy(() -> themeService.findById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundThemeException.class)
                 .hasMessage("id에 해당하는 Theme이 없습니다.");
     }
 
@@ -89,14 +88,14 @@ class ThemeServiceTest {
     void id값으로_테마를_삭제할떄_예약에서_id가_사용중이라면_예외를_발생시킨다() {
         //given
         themeRepository.create(new Theme("test1", "description1", "thumbnail1"));
-        reservationRepository.create(new CreateReservationQuery("test",
+        reservationRepository.create(new CreateReservationQuery(new Member(1L, "test1", MemberRole.USER, "email", "password"),
                 LocalDate.of(2025, 5, 1),
                 new ReservationTime(1L, LocalTime.of(12, 0)),
                 new Theme(1L, "test1", "description1", "thumbnail1")));
 
         //when & then
         assertThatThrownBy(() -> themeService.deleteById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DeletionNotAllowedException.class)
                 .hasMessage("해당 테마에 예약이 존재합니다.");
     }
 
