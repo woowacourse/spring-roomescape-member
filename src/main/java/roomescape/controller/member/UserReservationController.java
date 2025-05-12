@@ -33,7 +33,7 @@ public class UserReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping
+    @PostMapping("/reservations")
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponse postReservation(
             @AuthenticationPrincipal MemberInfo memberInfo,
