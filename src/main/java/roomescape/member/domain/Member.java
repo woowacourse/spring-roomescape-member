@@ -55,4 +55,8 @@ public class Member {
     public boolean matchesPassword(final String password) {
         return this.password.equals(password);
     }
+
+    public boolean isAdmin() {
+        return this.role.isAdmin();
+    }
 }

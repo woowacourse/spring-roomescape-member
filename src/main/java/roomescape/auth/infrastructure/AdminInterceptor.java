@@ -32,7 +32,7 @@ public class AdminInterceptor implements HandlerInterceptor {
 
         try {
             final Member member = authService.extractMemberByRequest(request);
-            if (!member.getRole().isAdmin()) {
+            if (!member.isAdmin()) {
                 throw new ForbiddenException("관리자 권한이 필요합니다.");
             }
         } catch (IllegalArgumentException | NotFoundException e) {
