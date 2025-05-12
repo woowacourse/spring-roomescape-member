@@ -1,16 +1,11 @@
 package roomescape.domain.enums;
 
 public enum Role {
-    ADMIN("ADMIN"),
-    USER("USER");
+    ADMIN,
+    USER;
 
-    private String role;
-
-    Role(String role) {
-        this.role = role;
-    }
-
-    public static Role valueOfResultSet(String role) {
-        return Role.valueOf(role);
+    public static Role from(String value) {
+        return Role.valueOf(value.toUpperCase()); // 예외 발생 가능
     }
 }
+

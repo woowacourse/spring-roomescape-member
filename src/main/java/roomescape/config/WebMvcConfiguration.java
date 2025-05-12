@@ -6,7 +6,6 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.service.member.MemberService;
-import roomescape.service.member.MemberServiceImpl;
 import roomescape.util.JwtTokenProvider;
 
 @Configuration

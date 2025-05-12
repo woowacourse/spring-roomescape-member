@@ -86,7 +86,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                             resultSet.getLong("member_id"),
                             resultSet.getString("member_name"),
                             resultSet.getString("member_email"),
-                            resultSet.getString("member_password"), Role.valueOfResultSet(resultSet.getString("role")));
+                            resultSet.getString("member_password"), Role.from(resultSet.getString("role")));
 
                     return new Reservation(
                             resultSet.getLong("reservation_id"),
@@ -162,7 +162,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                             resultSet.getLong("member_id"),
                             resultSet.getString("member_name"),
                             resultSet.getString("member_email"),
-                            resultSet.getString("member_password"), Role.valueOfResultSet(resultSet.getString("role")));
+                            resultSet.getString("member_password"), Role.from(resultSet.getString("role")));
 
                     return new Reservation(
                             resultSet.getLong("reservation_id"),

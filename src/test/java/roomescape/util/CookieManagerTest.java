@@ -38,6 +38,6 @@ class CookieManagerTest {
         String token = CookieManager.extractTokenFromCookies(cookies);
 
         // then
-        assertThat(token).isEqualTo("");
+        assertThat(token).isEqualTo(null);
     }
 }

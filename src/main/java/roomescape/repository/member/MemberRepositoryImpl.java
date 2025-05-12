@@ -29,7 +29,7 @@ public class MemberRepositoryImpl implements MemberRepository {
         Member member = jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> {
             Member foundMember = new Member(resultSet.getLong("id"), resultSet.getString("name"),
                     resultSet.getString("email"), resultSet.getString("password"),
-                    Role.valueOfResultSet(resultSet.getString("role")));
+                    Role.from(resultSet.getString("role")));
             return foundMember;
         }, email, password);
         return member;
@@ -41,7 +41,7 @@ public class MemberRepositoryImpl implements MemberRepository {
         Member member = jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> {
             Member foundMember = new Member(resultSet.getLong("id"), resultSet.getString("name"),
                     resultSet.getString("email"), resultSet.getString("password"),
-                    Role.valueOfResultSet(resultSet.getString("role")));
+                    Role.from(resultSet.getString("role")));
             return foundMember;
         }, id);
         return Optional.of(member);
@@ -53,7 +53,7 @@ public class MemberRepositoryImpl implements MemberRepository {
         List<Member> members = jdbcTemplate.query(sql, (resultSet, rowNum) -> {
                     Member member = new Member(resultSet.getLong("id"), resultSet.getString("name"),
                             resultSet.getString("email"), resultSet.getString("password"),
-                            Role.valueOfResultSet(resultSet.getString("role")));
+                            Role.from(resultSet.getString("role")));
                     return member;
                 }
         );
