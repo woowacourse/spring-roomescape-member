@@ -21,6 +21,7 @@ public class CookieProvider {
     public Cookie createTokenCookie(String accessToken) {
         Cookie cookie = new Cookie(TOKEN_COOKIE_NAME, accessToken);
         cookie.setHttpOnly(true);
+        cookie.setAttribute("SameSite", "Strict");
         cookie.setPath("/");
         cookie.setMaxAge(ONE_DAY_SECONDS);
         return cookie;
@@ -29,6 +30,7 @@ public class CookieProvider {
     public Cookie createExpiredTokenCookie() {
         Cookie expiredCookie = new Cookie(TOKEN_COOKIE_NAME, null);
         expiredCookie.setPath("/");
+        expiredCookie.setAttribute("SameSite", "Strict");
         expiredCookie.setMaxAge(0);
         expiredCookie.setHttpOnly(true);
         return expiredCookie;
