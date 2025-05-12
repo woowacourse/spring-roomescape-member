@@ -1,4 +1,4 @@
-package roomescape.presentation.argument_resolver;
+package roomescape.presentation.resvoler;
 
 import jakarta.servlet.http.Cookie;
 import static org.assertj.core.api.Assertions.assertThat;
