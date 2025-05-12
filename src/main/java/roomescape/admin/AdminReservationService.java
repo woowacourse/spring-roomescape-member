@@ -1,25 +1,30 @@
 package roomescape.admin;
 
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.exception.ConflictException;
 import roomescape.exception.ExceptionCause;
 import roomescape.exception.UnauthorizedException;
 import roomescape.member.domain.Visitor;
-import roomescape.member.domain.Role;
+import roomescape.member.dto.MemberResponse;
 import roomescape.member.service.MemberService;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationCreateResponse;
+import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservationtime.dto.ReservationTimeResponse;
 import roomescape.reservationtime.service.ReservationTimeService;
+import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
 
 @Service
 public class AdminReservationService {
 
-    private static final Role ADMIN_ROLE = new Role(2L, "admin");
     private final ReservationDao reservationDao;
     private final MemberService memberService;
     private final ThemeService themeService;
+
     private final ReservationTimeService reservationTimeService;
 
     public AdminReservationService(ReservationDao reservationDao, MemberService memberService,
@@ -32,7 +37,7 @@ public class AdminReservationService {
 
 
     public ReservationCreateResponse create(Visitor visitor, AdminReservationRequest adminReservationRequest) {
-        if(!visitor.isAdmin()) {
+        if (!visitor.isAdmin()) {
             throw new UnauthorizedException(ExceptionCause.MEMBER_UNAUTHORIZED);
         }
         Reservation reservationWithoutId = Reservation.create(
@@ -45,5 +50,24 @@ public class AdminReservationService {
         }
         Reservation reservation = reservationDao.create(reservationWithoutId);
         return ReservationCreateResponse.from(reservation);
+    }
+
+    public List<ReservationResponse> findByFilter(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        //TODO DB 레벨에서 거르기
+        return reservationDao.findAll().stream()
+                .filter(reservation -> themeId == null || reservation.getTheme().getId().equals(themeId))
+                .filter(reservation -> memberId == null || reservation.getMember().getId().equals(memberId))
+                .filter(reservation -> {
+                    LocalDate date = reservation.getDate();
+                    return (dateFrom == null || !date.isBefore(dateFrom)) &&
+                            (dateTo == null || !date.isAfter(dateTo));
+                })
+                .map(reservation -> new ReservationResponse(
+                        reservation.getId(),
+                        reservation.getDate(),
+                        ReservationTimeResponse.from(reservation.getTime()),
+                        ThemeResponse.from(reservation.getTheme()),
+                        MemberResponse.from(reservation.getMember())))
+                .toList();
     }
 }
