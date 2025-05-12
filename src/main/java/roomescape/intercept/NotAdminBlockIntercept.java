@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.domain.MemberRole;
 import roomescape.dto.other.AuthenticationInformation;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ForbiddenException;
@@ -33,7 +32,7 @@ public class NotAdminBlockIntercept implements HandlerInterceptor {
         if (isAdminRequest) {
             String accessToken = getAccessTokenInCookie(request);
             AuthenticationInformation authenticationInformation = jwtTokenProvider.parseToken(accessToken);
-            boolean isAdmin = authenticationInformation.role().equals(MemberRole.ADMIN);
+            boolean isAdmin = authenticationInformation.isAdmin();
             if (!isAdmin) {
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 throw new ForbiddenException("[ERROR] 접근권한이 존재하지 않습니다.");
