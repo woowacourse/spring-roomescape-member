@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.globalexception.BadRequestException;
 import roomescape.globalexception.ConflictException;
+import roomescape.member.domain.Member;
 import roomescape.reservation.ReservationMapper;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.dto.ReservationReqDto;
@@ -39,8 +40,8 @@ public class ReservationService {
             .collect(Collectors.toList());
     }
 
-    public ReservationResDto add(ReservationReqDto reqDto) {
-        Reservation reservation = convertReservation(reqDto);
+    public ReservationResDto add(Member member, ReservationReqDto reqDto) {
+        Reservation reservation = convertReservation(member, reqDto);
         validateDuplicateDateTime(reservation);
         Reservation savedReservation = repository.add(reservation);
         return convertReservationResDto(savedReservation);
@@ -61,8 +62,9 @@ public class ReservationService {
             });
     }
 
-    private Reservation convertReservation(ReservationReqDto dto) {
+    private Reservation convertReservation(Member member, ReservationReqDto dto) {
         return ReservationMapper.toEntity(
+            member,
             dto,
             findExistingReservationTimeById(dto.timeId()),
             findExistingThemeById(dto.themeId())
