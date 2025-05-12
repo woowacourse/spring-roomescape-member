@@ -15,9 +15,9 @@ import roomescape.repository.ThemeRepository;
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
 
-    private final JdbcTemplate jdbcTemplate;
+    private static final String DEFAULT_SELECT_SQL = "select id, name, description, thumbnail from theme";
 
-    private final RowMapper<Theme> themeRowMapper = (resultSet, rowNumber) -> {
+    private static final RowMapper<Theme> themeRowMapper = (resultSet, rowNumber) -> {
         long id = resultSet.getLong("id");
         String name = resultSet.getString("name");
         String description = resultSet.getString("description");
@@ -25,6 +25,8 @@ public class JdbcThemeRepository implements ThemeRepository {
 
         return new Theme(id, name, description, thumbnail);
     };
+
+    private final JdbcTemplate jdbcTemplate;
 
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -54,18 +56,29 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        String sql = "select id, name, description, thumbnail from theme";
-        return jdbcTemplate.query(sql, themeRowMapper);
+        return jdbcTemplate.query(DEFAULT_SELECT_SQL, themeRowMapper);
     }
 
     @Override
     public Optional<Theme> findById(Long id) {
+        String sql = DEFAULT_SELECT_SQL + " where id = ?";
         try {
-            String sql = "select id, name, description, thumbnail from theme where id = ?";
             return Optional.of(jdbcTemplate.queryForObject(sql, themeRowMapper, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public boolean existsReservationByThemeId(long id) {
+        String sql = """
+                select count(t.id) from theme as t
+                inner join reservation as r
+                on t.id = r.time_id
+                where t.id = ?
+                """;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
     }
 
     @Override

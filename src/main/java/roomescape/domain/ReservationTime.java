@@ -9,16 +9,20 @@ public class ReservationTime {
     private final Long id;
     private final LocalTime time;
 
-    private void validate(LocalTime time) {
-        if (time == null) {
-            throw new InvalidReservationTimeException("유효하지 않은 예약시간입니다.");
-        }
-    }
-
     public ReservationTime(Long id, LocalTime time) {
         validate(time);
         this.id = id;
         this.time = time;
+    }
+
+    public ReservationTime(LocalTime time) {
+        this(null, time);
+    }
+
+    private void validate(LocalTime time) {
+        if (time == null) {
+            throw new InvalidReservationTimeException("유효하지 않은 예약시간입니다.");
+        }
     }
 
     public Long getId() {

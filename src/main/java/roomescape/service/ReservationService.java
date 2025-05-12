@@ -2,52 +2,52 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.LoginMember;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationSlots;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeRanking;
-import roomescape.dto.request.AddReservationRequest;
-import roomescape.dto.request.AvailableTimeRequest;
+import roomescape.dto.request.AdminCreateReservationRequest;
+import roomescape.dto.request.CreateReservationRequest;
 import roomescape.exception.InvalidReservationException;
-import roomescape.exception.InvalidReservationTimeException;
-import roomescape.exception.InvalidThemeException;
 import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
 
-    private static final int THEME_RANKING_END_RANGE = 7;
-    private static final int THEME_RANKING_START_RANGE = 1;
+    private final ReservationTimeService reservationTimeService;
+    private final ThemeService themeService;
+    private final MemberService memberService;
 
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository,
-                              ThemeRepository themeRepository) {
+    public ReservationService(ReservationTimeService reservationTimeService, ThemeService themeService,
+                              MemberService memberService, ReservationRepository reservationRepository) {
+        this.reservationTimeService = reservationTimeService;
+        this.themeService = themeService;
+        this.memberService = memberService;
         this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
     }
 
-    public Reservation addReservation(AddReservationRequest newReservation) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(newReservation.timeId())
-                .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간 id입니다."));
-        Theme theme = themeRepository.findById(newReservation.themeId())
-                .orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마 id입니다."));
+    public Reservation addReservation(CreateReservationRequest request, LoginMember loginMember) {
+        return createReservation(loginMember.getId(), request.themeId(), request.date(), request.timeId());
+    }
 
-        Reservation reservation = newReservation.toReservation(reservationTime, theme);
+    public Reservation addReservationByAdmin(AdminCreateReservationRequest request) {
+        return createReservation(request.memberId(), request.themeId(), request.date(), request.timeId());
+    }
+
+    private Reservation createReservation(long memberId, long themeId, LocalDate date, long timeId) {
+        Member member = memberService.getMemberById(memberId);
+        ReservationTime reservationTime = reservationTimeService.getReservationTimeById(timeId);
+        Theme theme = themeService.getThemeById(themeId);
+
+        Reservation reservation = new Reservation(member, date, reservationTime, theme);
 
         validateDuplicateReservation(reservation);
-        LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.now());
-        validateAddReservationDateTime(reservation, currentDateTime);
+        validateAddReservationDateTime(reservation);
         return reservationRepository.add(reservation);
     }
 
@@ -57,14 +57,19 @@ public class ReservationService {
         }
     }
 
-    private void validateAddReservationDateTime(Reservation newReservation, LocalDateTime currentDateTime) {
-        if (newReservation.isBefore(currentDateTime)) {
+    private void validateAddReservationDateTime(Reservation reservation) {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        if (reservation.isBefore(currentDateTime)) {
             throw new InvalidReservationException("과거 시간에 예약할 수 없습니다.");
         }
     }
 
-    public List<Reservation> allReservations() {
+    public List<Reservation> findAll() {
         return reservationRepository.findAll();
+    }
+
+    public List<Reservation> findAllByFilter(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        return reservationRepository.findAllByFilter(memberId, themeId, dateFrom, dateTo);
     }
 
     public Reservation getReservationById(long id) {
@@ -76,21 +81,11 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public ReservationSlots getReservationSlots(AvailableTimeRequest availableTimeRequest) {
-        List<ReservationTime> times = reservationTimeRepository.findAll();
-
-        List<Reservation> alreadyReservedReservations = reservationRepository.findAllByDateAndThemeId(
-                availableTimeRequest.date(), availableTimeRequest.themeId());
-
-        return new ReservationSlots(times, alreadyReservedReservations);
+    public List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId) {
+        return reservationRepository.findAllByDateAndThemeId(date, themeId);
     }
 
-    public List<Theme> getRankingThemes(LocalDate originDate) {
-        LocalDate end = originDate.minusDays(THEME_RANKING_START_RANGE);
-        LocalDate start = end.minusDays(THEME_RANKING_END_RANGE);
-        List<Reservation> inRangeReservations = reservationRepository.findAllByDateInRange(start, end);
-
-        ThemeRanking themeRanking = new ThemeRanking(inRangeReservations);
-        return themeRanking.getAscendingRanking();
+    public List<Reservation> findAllByDateInRange(LocalDate start, LocalDate end) {
+        return reservationRepository.findAllByDateInRange(start, end);
     }
 }

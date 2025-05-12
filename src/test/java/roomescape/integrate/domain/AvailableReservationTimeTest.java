@@ -9,18 +9,38 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import roomescape.config.JwtTokenProvider;
+import roomescape.domain.Member;
+import roomescape.domain.Role;
+import roomescape.repository.MemberRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class AvailableReservationTimeTest {
+
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    private String token;
+
+    @BeforeEach
+    void setUp() {
+        Member member = memberRepository.add(new Member("어드민", "test_admin@test.com", "test", Role.ADMIN));
+        token = jwtTokenProvider.createTokenByMember(member);
+    }
 
     @Test
     void 예약_가능한_시간을_확인할_수_있다() {
@@ -47,22 +67,19 @@ class AvailableReservationTimeTest {
                 "thumbnail", "thumbnail"
         );
 
-        Map<String, Object> reservation = Map.of(
-                "name", "브라운",
-                "date", todayDateString,
-                "timeId", 1,
-                "themeId", 1
-        );
 
-        RestAssured.given().log().all()
+        long timeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(timeParam)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(timeParam2)
                 .when().post("/times")
                 .then().log().all()
@@ -70,6 +87,7 @@ class AvailableReservationTimeTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(timeParam3)
                 .when().post("/times")
                 .then().log().all()
@@ -77,14 +95,22 @@ class AvailableReservationTimeTest {
 
         long themeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(themeParam)
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201)
                 .extract().jsonPath().getLong("id");
 
+        Map<String, Object> reservation = Map.of(
+                "date", todayDateString,
+                "timeId", timeId,
+                "themeId", themeId
+        );
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()

@@ -18,6 +18,10 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
+    public Theme(String name, String description, String thumbnail) {
+        this(null, name, description, thumbnail);
+    }
+
     private void validate(String name, String description, String thumbnail) {
         if (name == null || name.isBlank()) {
             throw new InvalidThemeException("테마 이름은 비어있을 수 없습니다.");

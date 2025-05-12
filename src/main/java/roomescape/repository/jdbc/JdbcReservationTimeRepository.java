@@ -17,17 +17,19 @@ import roomescape.repository.ReservationTimeRepository;
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
-    private final JdbcTemplate jdbcTemplate;
-
-    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private static final String DEFAULT_SELECT_SQL = "select id, start_at from reservation_time";
 
     private final RowMapper<ReservationTime> reservationRowMapper = (resultSet, rowNumber) -> {
         long id = resultSet.getLong("id");
         LocalTime time = LocalTime.parse(resultSet.getTime("start_at").toString());
         return new ReservationTime(id, time);
     };
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public ReservationTime add(ReservationTime reservationTime) {
@@ -47,13 +49,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        String sql = "select id, start_at from reservation_time";
-        return jdbcTemplate.query(sql, reservationRowMapper);
+        return jdbcTemplate.query(DEFAULT_SELECT_SQL, reservationRowMapper);
     }
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
-        String sql = "select id, start_at from reservation_time where id = ?";
+    String sql = DEFAULT_SELECT_SQL + " where id = ?";
         try {
             ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
             return Optional.of(reservationTime);
@@ -65,7 +66,20 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public boolean existsByTime(LocalTime time) {
         String sql = "select count(id) from reservation_time where start_at = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, time) > 0;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, time);
+        return count != null && count > 0;
+    }
+
+    @Override
+    public boolean existsReservationByTimeId(Long id) {
+        String sql = """
+                select count(rt.id) from reservation_time as rt
+                inner join reservation as r
+                on rt.id = r.time_id
+                where rt.id = ?
+                """;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
     }
 
     @Override
