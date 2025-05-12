@@ -8,9 +8,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.entity.Reservation;
-import roomescape.entity.ReservationTime;
-import roomescape.entity.Theme;
+import roomescape.entity.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -45,13 +43,13 @@ class H2ReservationDaoTest {
 
     @Test
     void 예약을_추가한다() {
-        Reservation reservation = new Reservation("드라고", LocalDate.now().plusDays(1),
+        Reservation reservation = new Reservation(new Member(1L, "어드민", "email@email.com", Role.ADMIN), LocalDate.now().plusDays(1),
             new ReservationTime(1L, LocalTime.of(10, 0)),
             new Theme(1L, "", "", ""));
 
         Reservation saved = reservationDao.save(reservation);
 
-        Reservation expected = new Reservation(7L, "드라고", LocalDate.now().plusDays(1),
+        Reservation expected = new Reservation(7L, new Member(1L, "어드민", "email@email.com", Role.ADMIN), LocalDate.now().plusDays(1),
             new ReservationTime(1L, LocalTime.of(10, 0)),
             new Theme(1L, "", "", ""));
         assertThat(saved).isEqualTo(expected);
@@ -70,9 +68,12 @@ class H2ReservationDaoTest {
         Optional<Reservation> findReservation = reservationDao.findById(1L);
 
         assertThat(findReservation.get())
-            .isEqualTo(new Reservation(1L, "드라고", LocalDate.now().plusDays(1),
+            .isEqualTo(new Reservation(1L,
+                new Member(1L, "어드민", "email@email.com", Role.ADMIN),
+                LocalDate.now().plusDays(1),
                 new ReservationTime(1L, LocalTime.of(10, 0)),
-                new Theme(1L, "", "", "")));
+                new Theme(1L, "", "", ""))
+            );
     }
 
     @Test
@@ -87,9 +88,32 @@ class H2ReservationDaoTest {
     void date와_theme_id가_일치하는_예약을_조회한다() {
         List<Reservation> findReservation = reservationDao.findByDateAndThemeId(LocalDate.of(2025, 4, 25), 2L);
 
-        List<Reservation> expected = List.of(new Reservation(2L, "", LocalDate.of(2025, 4, 25),
+        List<Reservation> expected = List.of(new Reservation(
+            2L,
+            new Member(1L, "어드민", "email@email.com", Role.ADMIN),
+            LocalDate.of(2025, 4, 25),
             new ReservationTime(2L, LocalTime.of(12, 0)),
             new Theme(2L, "", "", "")));
         assertThat(findReservation).isEqualTo(expected);
+    }
+
+    @Test
+    void 멤버_ID_테마_ID_날짜_범위로_예약을_조회한다() {
+        Long memberId = 2L;
+        Long themeId = 3L;
+        LocalDate from = LocalDate.of(2025, 4, 20);
+        LocalDate to = LocalDate.of(2025, 4, 30);
+
+        List<Reservation> result = reservationDao.findByMemberIdAndThemeIdAndDateBetween(memberId, themeId, from, to);
+
+        List<Reservation> expected = List.of(new Reservation(
+            6L,
+            new Member(2L, "브라운", "brown@email.com", Role.USER),
+            LocalDate.of(2025, 4, 25),
+            new ReservationTime(4L, LocalTime.of(16, 0)),
+            new Theme(3L, "", "", "")
+        ));
+
+        assertThat(result).isEqualTo(expected);
     }
 }

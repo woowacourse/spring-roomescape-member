@@ -2,12 +2,10 @@ package roomescape.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.exception.ReservationTimeExistException;
+import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
 
 import java.util.List;
@@ -36,13 +34,5 @@ public class ReservationTimeController {
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         reservationTimeService.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(ReservationTimeExistException.class)
-    public ResponseEntity<ProblemDetail> handleReservationTimeExistException(ReservationTimeExistException e) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
-        problemDetail.setDetail(e.getMessage());
-
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
     }
 }
