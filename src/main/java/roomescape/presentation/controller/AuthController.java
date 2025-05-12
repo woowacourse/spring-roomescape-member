@@ -42,34 +42,28 @@ public class AuthController {
         LoginResponse response = authService.login(request);
         String token = response.token();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Keep-Alive", "timeout=" + 60);
-        headers.add("Set-Cookie", "token=" + token + "; Path=/; HttpOnly");
-
         return ResponseEntity.ok()
-                .headers(headers)
+                .header("Keep-Alive", "timeout=" + 60)
+                .header(HttpHeaders.SET_COOKIE, "token=" + token + "; Path=/; HttpOnly")
                 .build();
     }
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberNameResponse> check(@MemberAuthorization Member member) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Keep-Alive", "timeout=" + 60);
-        headers.add("Transfer-Encoding", "chunked");
-
         MemberNameResponse response = new MemberNameResponse(member.getName());
 
         return ResponseEntity.ok()
-                .headers(headers)
+                .header("Keep-Alive", "timeout=" + 60)
+                .header("Transfer-Encoding", "chunked")
                 .body(response);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Set-Cookie", "token=" + "; Path=/; HttpOnly");
 
         return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, "token=" + "; Path=/; HttpOnly")
                 .headers(headers)
                 .build();
     }
