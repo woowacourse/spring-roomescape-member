@@ -10,16 +10,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenManager {
 
-    private final static int EXPIRATION_TIME = 60 * 30 * 1000;
+    private final int expirationTime;
+    private final String secretKey;
 
-    @Value("${secret.key}")
-    private String SECRET_KEY;
+    public JwtTokenManager(
+            @Value("${expiration.time}") final int EXPIRATION_TIME,
+            @Value("${secret.key}") final String SECRET_KEY) {
+        this.expirationTime = EXPIRATION_TIME;
+        this.secretKey = SECRET_KEY;
+    }
 
     public String createToken(final Long id, final String role) {
-        SecretKeySpec key = new SecretKeySpec(SECRET_KEY.getBytes(), "HmacSHA256");
+        SecretKeySpec key = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
 
         return Jwts.builder()
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .expiration(new Date(System.currentTimeMillis() + expirationTime))
                 .subject(id.toString())
                 .claim("role", role)
                 .issuedAt(new Date())
@@ -31,7 +36,7 @@ public class JwtTokenManager {
         validateValidToken(token);
 
         return Long.valueOf(Jwts.parser()
-                .verifyWith(new SecretKeySpec(SECRET_KEY.getBytes(), "HmacSHA256"))
+                .verifyWith(new SecretKeySpec(secretKey.getBytes(), "HmacSHA256"))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
@@ -42,7 +47,7 @@ public class JwtTokenManager {
         validateValidToken(token);
 
         return Jwts.parser()
-                .verifyWith(new SecretKeySpec(SECRET_KEY.getBytes(), "HmacSHA256"))
+                .verifyWith(new SecretKeySpec(secretKey.getBytes(), "HmacSHA256"))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
