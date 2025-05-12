@@ -1,28 +1,31 @@
 package roomescape.global.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.auth.interceptor.RoleCheckInterceptor;
 
 import java.util.List;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    private final HandlerMethodArgumentResolver handlerMethodArgumentResolver;
-    private final RoleCheckInterceptor roleCheckInterceptor;
+    private final HandlerMethodArgumentResolver loginMemberArgumentResolver;
+    private final HandlerInterceptor roleCheckInterceptor;
 
-    public WebMvcConfig(HandlerMethodArgumentResolver handlerMethodArgumentResolver, RoleCheckInterceptor roleCheckInterceptor) {
-        this.handlerMethodArgumentResolver = handlerMethodArgumentResolver;
+    public WebMvcConfig(
+            @Qualifier("loginMemberArgumentResolver") HandlerMethodArgumentResolver loginMemberArgumentResolver,
+            @Qualifier("roleCheckInterceptor") HandlerInterceptor roleCheckInterceptor) {
+        this.loginMemberArgumentResolver = loginMemberArgumentResolver;
         this.roleCheckInterceptor = roleCheckInterceptor;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(handlerMethodArgumentResolver);
+        resolvers.add(loginMemberArgumentResolver);
     }
 
     @Override
