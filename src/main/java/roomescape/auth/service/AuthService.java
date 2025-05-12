@@ -24,11 +24,8 @@ public class AuthService {
     private final MemberRepository memberRepository;
 
     public String createToken(final LoginRequest loginRequest) {
-        final Member member = memberRepository.findByEmail(loginRequest.email())
-                .orElseThrow(() -> new UnauthorizedException("존재하지 않는 이메일입니다."));
-        if (!member.matchesPassword(loginRequest.password())) {
-            throw new UnauthorizedException("이메일 또는 패스워드가 올바르지 않습니다.");
-        }
+        final Member member = memberRepository.findByEmailAndPassword(loginRequest.email(), loginRequest.password())
+                .orElseThrow(() -> new UnauthorizedException("이메일 또는 패스워드가 올바르지 않습니다."));
         return jwtTokenProvider.createToken(createClaims(member));
     }
 

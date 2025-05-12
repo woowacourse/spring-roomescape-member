@@ -42,6 +42,13 @@ public class FakeMemberRepository implements MemberRepository {
     }
 
     @Override
+    public Optional<Member> findByEmailAndPassword(final String email, final String password) {
+        return data.stream()
+                .filter(m -> m.getEmail().equals(email) && m.getPassword().equals(password))
+                .findFirst();
+    }
+
+    @Override
     public void save(final Member member) {
         final Long newId = atomicLong.incrementAndGet();
         data.add(new Member(newId, member.getName(), member.getEmail(), member.getPassword(), member.getRole()));

@@ -11,6 +11,8 @@ public interface MemberRepository {
 
     Optional<Member> findByEmail(final String email);
 
+    Optional<Member> findByEmailAndPassword(final String email, final String password);
+
     void save(Member member);
 
     List<Member> findAll();

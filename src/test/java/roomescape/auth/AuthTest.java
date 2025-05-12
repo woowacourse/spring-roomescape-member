@@ -35,7 +35,7 @@ class AuthTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(Map.of("invalidMember", "InvalidMember@naver.com", "password", "1234"))
+                .body(Map.of("email", "InvalidMember@naver.com", "password", "1234"))
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(401);
