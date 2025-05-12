@@ -9,17 +9,17 @@ public class Member {
 
     public Member(final Long id, final Role role, final MemberName memberName, final String email,
                   final String password) {
+        validateNotNull(role, memberName, email, password);
+        this.id = id;
         this.role = role;
         this.email = email;
-        validateNotNull(memberName, password);
-        this.id = id;
         this.memberName = memberName;
         this.password = password;
     }
 
-    private void validateNotNull(final MemberName name, final String password) {
-        if (name == null || password == null) {
-            throw new IllegalArgumentException("유저 생성 시 이름, 비밀번호는 필수입니다.");
+    private void validateNotNull(final Role role, final MemberName name, final String email, final String password) {
+        if (name == null || password == null || role == null || email == null) {
+            throw new IllegalArgumentException("유저 생성 시 역할, 이름, 이메일, 비밀번호,는 필수입니다.");
         }
     }
 
