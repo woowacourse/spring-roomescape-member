@@ -2,9 +2,7 @@ package roomescape.member.application;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.auth.application.AuthorizationException;
 import roomescape.member.domain.Member;
-import roomescape.member.dto.LoginRequest;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.infrastructure.MemberRepository;
 

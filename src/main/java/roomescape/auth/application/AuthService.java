@@ -5,7 +5,6 @@ import roomescape.auth.domain.Payload;
 import roomescape.auth.domain.Token;
 import roomescape.auth.infrastructure.Authenticator;
 import roomescape.member.application.MemberNotFoundException;
-import roomescape.member.application.MemberService;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.LoginRequest;
 import roomescape.member.infrastructure.MemberRepository;
