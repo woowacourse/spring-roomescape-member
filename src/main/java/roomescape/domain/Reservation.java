@@ -8,36 +8,34 @@ import roomescape.exception.PastDateTimeReservationException;
 public class Reservation {
 
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
-    private Reservation(final Long id, final String name, final LocalDate date, final ReservationTime reservationTime,
+    private Reservation(final Long id, final Member member, final LocalDate date, final ReservationTime reservationTime,
                         final Theme theme) {
+        validateNull(member, date, reservationTime, theme);
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
     }
 
-    public static Reservation of(final Long id, final String name, final LocalDate date,
+    public static Reservation of(final Long id, final Member member, final LocalDate date,
                                  final ReservationTime reservationTime, final Theme theme) {
-        validateNull(name, date, reservationTime, theme);
-        return new Reservation(id, name, date, reservationTime, theme);
+        return new Reservation(id, member, date, reservationTime, theme);
     }
 
-    public static Reservation createWithoutId(final String name, final LocalDate date,
+    public static Reservation createWithoutId(final Member member, final LocalDate date,
                                               final ReservationTime reservationTime, final Theme theme) {
-        validateNull(name, date, reservationTime, theme);
-        validateDateTime(date, reservationTime);
-        return new Reservation(null, name, date, reservationTime, theme);
+        return new Reservation(null, member, date, reservationTime, theme);
     }
 
-    private static void validateNull(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
-        if (name == null || name.isBlank()) {
-            throw new ArgumentNullException("name");
+    private static void validateNull(Member member, LocalDate date, ReservationTime reservationTime, Theme theme) {
+        if (member == null) {
+            throw new ArgumentNullException("member");
         }
         if (date == null) {
             throw new ArgumentNullException("date");
@@ -50,7 +48,7 @@ public class Reservation {
         }
     }
 
-    private static void validateDateTime(LocalDate date, ReservationTime reservationTime) {
+    public void validateDateTime() {
         LocalDateTime dateTime = LocalDateTime.of(date, reservationTime.getStartAt());
         if (LocalDateTime.now().isAfter(dateTime)) {
             throw new PastDateTimeReservationException();
@@ -58,15 +56,15 @@ public class Reservation {
     }
 
     public Reservation withId(Long id) {
-        return new Reservation(id, name, date, reservationTime, theme);
+        return new Reservation(id, member, date, reservationTime, theme);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
