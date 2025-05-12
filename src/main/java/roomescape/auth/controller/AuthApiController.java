@@ -30,7 +30,7 @@ public class AuthApiController {
 
 
     @PostMapping("/members")
-    public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<SignupResponse> signup(@RequestBody @Valid SignupRequest signupRequest) {
         Member member = authService.register(
                 signupRequest.name(),
                 signupRequest.email(),
