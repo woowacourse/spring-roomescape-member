@@ -29,10 +29,10 @@ public class AuthService {
     }
 
     public Member getMember(String token) {
-        if (!tokenProvider.validateToken(token)) {
+        if (!tokenProvider.validateTokenExpiration(token)) {
             throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "로그인 정보가 유효하지 않습니다.");
         }
-        
+
         Long id = tokenProvider.resolveTokenToMemberId(token);
         return memberRepository.findById(id)
                 .orElseThrow(() -> new InvalidMemberException("존재하지 않는 유저입니다.", HttpStatus.NOT_FOUND));
