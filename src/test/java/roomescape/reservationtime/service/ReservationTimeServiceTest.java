@@ -97,7 +97,7 @@ class ReservationTimeServiceTest {
     void deleteReservationTime_shouldThrowException_WhenReservationExists() {
         ReservationTime reservationTime = reservationTimeRepository.put(
                 ReservationTime.withUnassignedId(LocalTime.now()));
-        reservationRepository.put(Reservation.withUnassignedId("danny", futureDate, reservationTime, theme));
+        reservationRepository.put(Reservation.withUnassignedId(futureDate, "danny", reservationTime, theme));
 
         assertThatThrownBy(() -> reservationTimeService.delete(reservationTime.getId()))
                 .hasMessage("해당 시간에 대한 예약이 존재하여 삭제할 수 없습니다.");
@@ -111,7 +111,7 @@ class ReservationTimeServiceTest {
 
         themeRepository.put(Theme.of(1L, "추리", "셜록 with Danny", "image.png"));
 
-        reservationService.create(new ReservationCreateRequest("mint", futureDate, 1L, 1L));
+        reservationService.create(new ReservationCreateRequest(futureDate, 1L, 1L, 1L));
         List<AvailableReservationTimeResponse> availableReservationTimes = reservationTimeService.getAvailableReservationTimes(
                 futureDate, 1L);
 

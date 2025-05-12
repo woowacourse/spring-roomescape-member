@@ -26,8 +26,8 @@ class FakeReservationRepositoryTest {
         themeRepository = new FakeThemeRepository(reservationRepository);
 
         theme = Theme.of(1L, "추리", "셜록 추리 게임 with Danny", "image.png");
-        reservation = Reservation.of(1L, "브라운", futureDate, ReservationTime.of(1L, "15:40"),
-                theme);
+        reservation = Reservation.of(1L, futureDate, ,
+                ReservationTime.of(1L, "15:40"), theme);
 
         themeRepository.put(theme);
     }
@@ -41,8 +41,8 @@ class FakeReservationRepositoryTest {
 
     @Test
     void getAll_shouldReturnAllSavedReservations() {
-        Reservation reservation2 = Reservation.of(2L, "대니", futureDate, ReservationTime.of(1L, "16:00"),
-                theme);
+        Reservation reservation2 = Reservation.of(2L, futureDate, ,
+                ReservationTime.of(1L, "16:00"), theme);
 
         reservationRepository.put(reservation);
         reservationRepository.put(reservation2);

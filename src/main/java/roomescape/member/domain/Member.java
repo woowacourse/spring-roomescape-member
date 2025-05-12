@@ -11,6 +11,7 @@ public class Member {
     private final Role role;
 
     public Member(final Id id, final String name, final String email, final String password, final Role role) {
+        validateNameLength(name);
         this.id = id;
         this.name = name;
         this.email = email;
@@ -26,6 +27,12 @@ public class Member {
     public static Member withUnassignedId(final String name, final String email, final String password,
                                           final Role role) {
         return new Member(Id.unassigned(), name, email, password, role);
+    }
+
+    private void validateNameLength(final String value) {
+        if (value.length() > 10) {
+            throw new IllegalArgumentException("이름은 10글자 이내여야 합니다.");
+        }
     }
 
     public Long getId() {

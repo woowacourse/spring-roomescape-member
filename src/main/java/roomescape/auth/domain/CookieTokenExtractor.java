@@ -14,8 +14,8 @@ public class CookieTokenExtractor {
 
         for (String cookie : cookieHeader.split(";")) {
             String trimmed = cookie.trim();
-            if (trimmed.startsWith("token=")) {
-                return trimmed.substring("token=".length());
+            if (trimmed.startsWith("accessToken=")) {
+                return trimmed.substring("accessToken=".length());
             }
         }
         return null;

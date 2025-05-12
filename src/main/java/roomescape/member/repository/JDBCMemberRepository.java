@@ -27,7 +27,7 @@ public class JDBCMemberRepository implements MemberRepository {
     @Override
     public List<Member> getAll() {
         return jdbcTemplate.query(
-                "SELECT id, name, email, password FROM member",
+                "SELECT id, name, email, password, role FROM member",
                 (resultSet, rowNum) -> {
                     MemberEntity entity = new MemberEntity(
                             resultSet.getLong("id"),

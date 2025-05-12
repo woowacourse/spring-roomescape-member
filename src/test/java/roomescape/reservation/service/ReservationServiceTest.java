@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.dto.request.ReservationCreateRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.exception.ReservationNotFoundException;
@@ -25,6 +26,7 @@ class ReservationServiceTest {
     private final LocalDate futureDate = LocalDate.now().plusDays(1);
 
     private ReservationService reservationService;
+    private MemberRepository memberRepository;
     private ReservationRepository reservationRepository;
     private ReservationTimeRepository reservationTimeRepository;
     private ThemeRepository themeRepository;
@@ -34,7 +36,10 @@ class ReservationServiceTest {
         reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
         themeRepository = new FakeThemeRepository(reservationRepository);
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+        memberRepository = new FakeMemberRepository();
+
+        reservationService = new ReservationService(reservationRepository, memberRepository, reservationTimeRepository,
+                themeRepository);
 
         ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
         reservationTimeRepository.put(time);
@@ -44,10 +49,9 @@ class ReservationServiceTest {
 
     @Test
     void createReservation_shouldReturnResponseWhenSuccessful() {
-        ReservationCreateRequest request = new ReservationCreateRequest("홍길동", futureDate, 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest(futureDate, 1L, 1L, 1L);
         ReservationResponse response = reservationService.create(request);
 
-        assertThat(response.name()).isEqualTo("홍길동");
         assertThat(response.date()).isEqualTo(futureDate);
         assertThat(response.time().startAt()).isEqualTo(LocalTime.of(10, 0));
     }
@@ -55,8 +59,8 @@ class ReservationServiceTest {
     @Test
     void getReservations_shouldReturnAllCreatedReservations() {
         reservationTimeRepository.put(ReservationTime.of(2L, LocalTime.of(10, 0)));
-        reservationService.create(new ReservationCreateRequest("A", futureDate, 1L, 1L));
-        reservationService.create(new ReservationCreateRequest("B", futureDate, 2L, 1L));
+        reservationService.create(new ReservationCreateRequest(futureDate, 1L, 1L, 1L));
+        reservationService.create(new ReservationCreateRequest(futureDate, 1L, 2L, 1L));
 
         List<ReservationResponse> result = reservationService.getReservations();
         assertThat(result).hasSize(2);
@@ -72,7 +76,7 @@ class ReservationServiceTest {
     @Test
     void deleteReservation_shouldRemoveSuccessfully() {
         ReservationResponse response = reservationService.create(
-                new ReservationCreateRequest("Test", futureDate, 1L, 1L)
+                new ReservationCreateRequest(futureDate, 1L, 1L, 1L)
         );
 
         reservationService.delete(response.id());
@@ -83,7 +87,7 @@ class ReservationServiceTest {
 
     @Test
     void createReservation_shouldThrowException_WhenTimeIdNotFound() {
-        ReservationCreateRequest request = new ReservationCreateRequest("대니", futureDate, 99L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest(futureDate, 1L, 99L, 1L);
 
         assertThatThrownBy(() -> reservationService.create(request))
                 .isInstanceOf(ReservationNotFoundException.class);
@@ -91,7 +95,7 @@ class ReservationServiceTest {
 
     @Test
     void createReservation_shouldThrowException_WhenDuplicated() {
-        ReservationCreateRequest request = new ReservationCreateRequest("밍트", futureDate, 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest(futureDate, 1L, 1L, 1L);
         reservationService.create(request);
         assertThatThrownBy(() -> reservationService.create(request));
     }

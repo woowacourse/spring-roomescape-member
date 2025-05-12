@@ -69,7 +69,7 @@ class ThemeServiceTest {
         ReservationTime time = reservationTimeRepository.put(
                 ReservationTime.withUnassignedId(LocalTime.parse("10:00")));
         reservationRepository.put(
-                Reservation.withUnassignedId("danny", LocalDate.now().plusDays(1), time,
+                Reservation.withUnassignedId(LocalDate.now().plusDays(1), "danny", time,
                         theme));
 
         assertThatThrownBy(() -> themeService.delete(theme.getId()))

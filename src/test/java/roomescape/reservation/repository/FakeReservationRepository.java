@@ -17,8 +17,8 @@ public class FakeReservationRepository implements ReservationRepository {
         return reservations.entrySet().stream()
                 .map(entry -> {
                     Reservation value = entry.getValue();
-                    return Reservation.of(entry.getKey(), value.getName(),
-                            value.getDate(), value.getTime(), value.getTheme());
+                    return Reservation.of(entry.getKey(),
+                            value.getDate(), , value.getTime(), value.getTheme());
                 })
                 .toList();
     }
@@ -27,8 +27,8 @@ public class FakeReservationRepository implements ReservationRepository {
     public Reservation put(final Reservation reservation) {
         Long id = index.getAndIncrement();
         reservations.put(id, reservation);
-        return Reservation.of(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
+        return Reservation.of(id, reservation.getDate(), ,
+                reservation.getTime(), reservation.getTheme());
     }
 
     @Override
@@ -65,8 +65,8 @@ public class FakeReservationRepository implements ReservationRepository {
                 })
                 .map(entry -> {
                     Reservation value = entry.getValue();
-                    return Reservation.of(entry.getKey(), value.getName(),
-                            value.getDate(), value.getTime(), value.getTheme());
+                    return Reservation.of(entry.getKey(),
+                            value.getDate(), , value.getTime(), value.getTheme());
                 })
                 .toList();
     }

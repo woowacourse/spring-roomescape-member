@@ -142,17 +142,12 @@ function onReservationButtonClick() {
     const selectedThemeId = document.querySelector('.theme-slot.active')?.getAttribute('data-theme-id');
     const selectedTimeId = document.querySelector('.time-slot.active')?.getAttribute('data-time-id');
 
-    if (!currentUser) {
-        alert('로그인이 필요합니다.');
-        return;
-    }
 
     if (selectedDate && selectedThemeId && selectedTimeId) {
         const reservationData = {
             date: selectedDate,
             themeId: selectedThemeId,
             timeId: selectedTimeId,
-            name: currentUser.name
         };
 
         fetch('/reservations', {
