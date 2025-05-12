@@ -18,4 +18,19 @@ public class CookieManager {
         }
         return null;
     }
+
+    public static Cookie createJwtCookie(String token) {
+        Cookie cookie = new Cookie(TOKEN_COOKIE_NAME, token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        return cookie;
+    }
+
+    public static Cookie createJwtLogoutCookie() {
+        Cookie cookie = new Cookie(TOKEN_COOKIE_NAME, null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        return cookie;
+    }
 }

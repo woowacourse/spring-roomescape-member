@@ -13,6 +13,7 @@ import roomescape.domain.Member;
 import roomescape.dto.login.LoginRequest;
 import roomescape.dto.member.MemberResponse;
 import roomescape.service.member.MemberService;
+import roomescape.util.CookieManager;
 
 @RestController
 public class LoginLogoutController {
@@ -26,9 +27,7 @@ public class LoginLogoutController {
     @PostMapping("/login")
     public void userLogin(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse) {
         String jwtToken = memberService.createToken(loginRequest);
-        Cookie cookie = new Cookie("token", jwtToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
+        Cookie cookie = CookieManager.createJwtCookie(jwtToken);
         httpServletResponse.addCookie(cookie);
         httpServletResponse.setStatus(200);
     }
@@ -43,9 +42,7 @@ public class LoginLogoutController {
 
     @PostMapping("/logout")
     public void logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", null);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
+        Cookie cookie = CookieManager.createJwtLogoutCookie();
         response.addCookie(cookie);
     }
 }
