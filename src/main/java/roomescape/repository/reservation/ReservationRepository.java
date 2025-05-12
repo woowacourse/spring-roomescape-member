@@ -3,14 +3,14 @@ package roomescape.repository.reservation;
 import java.time.LocalDate;
 import java.util.List;
 import roomescape.domain.Reservation;
-import roomescape.entity.ReservationEntity;
+import roomescape.dto.search.SearchConditions;
 
 public interface ReservationRepository {
-    ReservationEntity add(Reservation reservation);
+    Reservation addReservation(Reservation reservation);
 
-    int deleteById(Long id);
+    int deleteReservationById(Long id);
 
-    List<ReservationEntity> findAll();
+    List<Reservation> findAllReservation();
 
     boolean existsByDateAndTime(LocalDate date, Long timeId);
 
@@ -19,4 +19,6 @@ public interface ReservationRepository {
     List<Long> findTimeIdsByDateAndTheme(LocalDate date, Long themeId);
 
     List<Long> findTopThemesByReservationCountBetween(LocalDate startDate, LocalDate endDate);
+
+    List<Reservation> findReservationsByConditions(SearchConditions searchConditions);
 }

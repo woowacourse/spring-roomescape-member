@@ -1,49 +1,37 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import roomescape.exception.reservation.ReservationFieldRequiredException;
-import roomescape.exception.reservation.ReservationInPastException;
 
 public class Reservation {
     private final Long id;
-    private final String name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
+    private final Member member;
 
-    private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validate(name, date, time, theme);
+    public Reservation(Long id, LocalDate date, ReservationTime time, Theme theme, Member member) {
+        validate(date, time, theme, member);
         this.id = id;
-        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.member = member;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(LocalDate date, ReservationTime time, Theme theme, Member member) {
+        this(null, date, time, theme, member);
     }
 
-    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateName(name);
+    public Reservation withId(Long id) {
+        return new Reservation(id, date, time, theme, member);
+    }
+
+    private void validate(LocalDate date, ReservationTime time, Theme theme, Member member) {
         validateDate(date);
         validateTime(time);
-        validateInPast(date, time.getStartAt());
         validateTheme(theme);
-    }
-
-    private void validateInPast(LocalDate date, LocalTime startAt) {
-        if (LocalDateTime.now().isAfter(LocalDateTime.of(date, startAt))) {
-            throw new ReservationInPastException();
-        }
-    }
-
-    private void validateName(String name) {
-        if (name.isBlank()) {
-            throw new ReservationFieldRequiredException("이름");
-        }
+        validateMember(member);
     }
 
     private void validateDate(LocalDate date) {
@@ -64,12 +52,14 @@ public class Reservation {
         }
     }
 
-    public Long getId() {
-        return id;
+    private void validateMember(Member member) {
+        if (member == null) {
+            throw new ReservationFieldRequiredException("멤버");
+        }
     }
 
-    public String getName() {
-        return name;
+    public Long getId() {
+        return id;
     }
 
     public LocalDate getDate() {
@@ -82,5 +72,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Member getMember() {
+        return member;
     }
 }

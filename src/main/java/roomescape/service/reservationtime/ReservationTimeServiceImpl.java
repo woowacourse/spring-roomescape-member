@@ -7,7 +7,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.reservationtime.AvailableTimeResponse;
 import roomescape.dto.reservationtime.ReservationTimeRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
-import roomescape.entity.ReservationTimeEntity;
 import roomescape.exception.reservationtime.ReservationTimeAlreadyExistsException;
 import roomescape.exception.reservationtime.ReservationTimeNotFoundException;
 import roomescape.exception.reservationtime.UsingReservationTimeException;
@@ -26,6 +25,7 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
     }
 
     public ReservationTimeResponse create(ReservationTimeRequest request) {
+
         if (timeRepository.existsByStartAt(request.startAt())) {
             throw new ReservationTimeAlreadyExistsException();
         }
@@ -39,6 +39,7 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
     }
 
     public void deleteById(Long id) {
+
         if (isReservationExists(id)) {
             throw new UsingReservationTimeException();
         }
@@ -54,13 +55,14 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
     }
 
     public List<AvailableTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
-        List<Long> bookedTimeIds = reservationRepository.findTimeIdsByDateAndTheme(date, themeId);
-        List<ReservationTimeEntity> reservationTimeEntities = timeRepository.findAll();
 
-        List<AvailableTimeResponse> availableTimeResponses = reservationTimeEntities.stream()
-                .map(timeEntity -> {
-                    boolean alreadyBooked = bookedTimeIds.contains(timeEntity.id());
-                    return AvailableTimeResponse.of(timeEntity, alreadyBooked);
+        List<Long> bookedTimeIds = reservationRepository.findTimeIdsByDateAndTheme(date, themeId);
+        List<ReservationTime> reservationTimes = timeRepository.findAll();
+
+        List<AvailableTimeResponse> availableTimeResponses = reservationTimes.stream()
+                .map(reservationTime -> {
+                    boolean alreadyBooked = bookedTimeIds.contains(reservationTime.getId());
+                    return AvailableTimeResponse.from(reservationTime, alreadyBooked);
                 })
                 .toList();
 
