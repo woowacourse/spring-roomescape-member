@@ -7,14 +7,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.domain.Member;
 import roomescape.dto.LoginRequest;
 import roomescape.service.AuthService;
 import roomescape.service.MemberService;
 
 @Controller
-@RequestMapping("/login")
 public class LoginController {
 
     private static final String SESSION_KEY = "id";
@@ -26,12 +24,12 @@ public class LoginController {
         this.memberService = memberService;
     }
 
-    @GetMapping
+    @GetMapping("/login")
     public String loginPage() {
         return "login";
     }
 
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody final LoginRequest loginRequest, final HttpSession session) {
         final Member member = authService.getMemberByEmailAndPassword(loginRequest);
         session.setAttribute(SESSION_KEY, member.getId());
@@ -40,7 +38,13 @@ public class LoginController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @GetMapping("/check")
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(final HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @GetMapping("/login/check")
     public ResponseEntity<LoginResponse> loginCheck(final HttpSession session) {
         if (session.getAttribute(SESSION_KEY) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
