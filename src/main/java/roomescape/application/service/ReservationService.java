@@ -33,13 +33,14 @@ public class ReservationService {
         this.memberService = memberService;
     }
 
-    public List<ReservationResponse> findAllReservations() {
+    public List<ReservationResponse> getReservations() {
         return reservationDao.findAll().stream()
                 .map(ReservationResponse::new)
                 .toList();
     }
 
-    public List<ReservationResponse> findFilter(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+    public List<ReservationResponse> getFilteredReservations(Long themeId, Long memberId, LocalDate dateFrom,
+                                                             LocalDate dateTo) {
         List<Reservation> filteredReservations = reservationDao.findFilterByThemeIdOrMemberIdOrDate(
                 themeId,
                 memberId,
@@ -53,7 +54,7 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(LoginMember loginMember, ReservationRequest request) {
-        Member member = memberService.findById(loginMember.getId());
+        Member member = memberService.getMemberById(loginMember.getId());
 
         Reservation reservationWithoutId = toReservation(member, request);
         validateForCreation(reservationWithoutId);
@@ -63,7 +64,7 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(AdminReservationCreateRequest request) {
-        Member member = memberService.findById(request.memberId());
+        Member member = memberService.getMemberById(request.memberId());
 
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
         Theme theme = themeDao.findById(request.themeId());

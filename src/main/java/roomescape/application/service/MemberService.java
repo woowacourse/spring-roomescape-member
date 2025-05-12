@@ -15,18 +15,18 @@ public class MemberService {
         this.memberDao = memberDao;
     }
 
-    public List<MemberResponse> findAllMembers() {
+    public List<MemberResponse> getMembers() {
         return memberDao.findAll().stream()
                 .map(MemberResponse::new)
                 .toList();
     }
 
-    public Member findById(Long memberId) {
+    public Member getMemberById(Long memberId) {
         return memberDao.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 회원 정보가 없습니다."));
     }
 
-    public Member findByEmail(String email) {
+    public Member getMemberByEmail(String email) {
         return memberDao.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 회원 정보가 없습니다."));
     }

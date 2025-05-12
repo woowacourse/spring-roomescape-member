@@ -49,7 +49,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("예약 목록 전체를 반환한다")
-    void findAllReservations() {
+    void getReservations() {
         // given
         List<Reservation> reservations = List.of(
                 new Reservation(1L, LocalDate.now(), new ReservationTime(1L, LocalTime.of(10, 0)),
@@ -67,7 +67,7 @@ class ReservationServiceTest {
                 .findAll();
 
         // when
-        List<ReservationResponse> responses = reservationService.findAllReservations();
+        List<ReservationResponse> responses = reservationService.getReservations();
 
         // then
         assertThat(responses)
@@ -94,7 +94,7 @@ class ReservationServiceTest {
         Theme theme = new Theme(1L, "테마", "설명", "썸네일");
 
         doReturn(member).when(memberService)
-                .findById(1L);
+                .getMemberById(1L);
 
         doReturn(reservationTime).when(reservationTimeDao)
                 .findById(1L);
@@ -114,7 +114,7 @@ class ReservationServiceTest {
                 .containsExactly(1L, LocalDate.now());
 
         // verify
-        verify(memberService, times(1)).findById(1L);
+        verify(memberService, times(1)).getMemberById(1L);
         verify(reservationTimeDao, times(1)).findById(1L);
         verify(themeDao, times(1)).findById(1L);
         verify(reservationDao, times(1)).save(any());

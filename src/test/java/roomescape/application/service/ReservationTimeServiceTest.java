@@ -39,7 +39,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("모든 예약 시간을 조회한다")
-    void findAllReservationTimes() {
+    void getReservationTimes() {
         // given
         List<ReservationTime> reservationTimes = sampleReservationTimes();
 
@@ -47,7 +47,7 @@ class ReservationTimeServiceTest {
                 .findAll();
 
         // when
-        List<ReservationTimeResponse> responses = reservationTimeService.findAllReservationTimes();
+        List<ReservationTimeResponse> responses = reservationTimeService.getReservationTimes();
 
         // then
         assertThat(responses)
@@ -65,7 +65,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("예약 가능한 시간을 조회한다")
-    void findAvailableTimes() {
+    void getAvailableTimes() {
         // given
         LocalDate now = LocalDate.now();
         List<ReservationTime> reservationTimes = sampleReservationTimes();
@@ -77,7 +77,7 @@ class ReservationTimeServiceTest {
                 .existsByDateAndTimeIdAndThemeId(eq(now), any(Long.class), eq(1L));
 
         // when
-        List<ReservationTimeAvailableResponse> responses = reservationTimeService.findAvailableTimes(
+        List<ReservationTimeAvailableResponse> responses = reservationTimeService.getAvailableTimes(
                 now, 1L);
 
         // then

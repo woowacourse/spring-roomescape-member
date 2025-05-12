@@ -30,7 +30,7 @@ public class ReservationController {
 
     @GetMapping
     public List<ReservationResponse> readReservations() {
-        return reservationService.findAllReservations();
+        return reservationService.getReservations();
     }
 
     @GetMapping("/filter")
@@ -40,7 +40,7 @@ public class ReservationController {
             @RequestParam(required = false) LocalDate dateFrom,
             @RequestParam(required = false) LocalDate dateTo
     ) {
-        return reservationService.findFilter(themeId, memberId, dateFrom, dateTo);
+        return reservationService.getFilteredReservations(themeId, memberId, dateFrom, dateTo);
     }
 
     @PostMapping

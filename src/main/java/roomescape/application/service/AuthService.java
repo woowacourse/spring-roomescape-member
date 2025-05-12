@@ -26,7 +26,7 @@ public class AuthService {
     }
 
     public String createTokenForAuthenticatedMember(LoginRequest request) {
-        Member member = memberService.findByEmail(request.email());
+        Member member = memberService.getMemberByEmail(request.email());
         validatePassword(request, member);
 
         return Jwts.builder()

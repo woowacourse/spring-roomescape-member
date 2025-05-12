@@ -26,12 +26,12 @@ public class ThemeController {
 
     @GetMapping
     public List<ThemeResponse> readThemes() {
-        return themeService.findAllThemes();
+        return themeService.getThemes();
     }
 
     @GetMapping("rank")
     public List<ThemeResponse> readThemeRank() {
-        return themeService.findThemeRank();
+        return themeService.getThemeRank();
     }
 
     @PostMapping

@@ -36,7 +36,7 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("모든 테마를 조회한다")
-    void findAllThemes() {
+    void getThemes() {
         // given
         List<Theme> themes = List.of(
                 new Theme(1L, "테마1", "설명1", "썸네일1"),
@@ -47,7 +47,7 @@ class ThemeServiceTest {
         doReturn(themes).when(themeDao).findAll();
 
         // when
-        List<ThemeResponse> responses = themeService.findAllThemes();
+        List<ThemeResponse> responses = themeService.getThemes();
 
         // then
         assertThat(responses)
@@ -65,7 +65,7 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("테마 랭킹을 조회한다")
-    void findThemeRank() {
+    void getThemeRank() {
         // given
         List<Long> rankIds = List.of(1L, 2L, 3L);
         List<Theme> themes = List.of(
@@ -83,7 +83,7 @@ class ThemeServiceTest {
         }
 
         // when
-        List<ThemeResponse> responses = themeService.findThemeRank();
+        List<ThemeResponse> responses = themeService.getThemeRank();
 
         // then
         assertThat(responses)
