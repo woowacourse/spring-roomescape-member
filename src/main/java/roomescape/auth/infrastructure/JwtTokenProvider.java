@@ -38,7 +38,6 @@ public class JwtTokenProvider implements TokenProvider {
     @Override
     public String createToken(final Claims claims) {
         final Instant now = Instant.now();
-        log.info("JWT 토큰 생성 시작");
         try {
             return Jwts.builder()
                     .claims(claims)
