@@ -2,7 +2,6 @@ package roomescape;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
-import static roomescape.controller.ApiTestFixture.loginAndGetToken;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -18,7 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.controller.rest.ReservationController;
+import roomescape.controller.ApiTestFixture;
+import roomescape.controller.rest.AdminReservationController;
 import roomescape.model.Reservation;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -28,7 +28,8 @@ public class MissionStepTest {
 
     @BeforeEach
     void setup() {
-        token = loginAndGetToken();
+        ApiTestFixture.signUpAdmin("admin@gmail.com", "password", "vector");
+        token = ApiTestFixture.loginAndGetToken("admin@gmail.com", "password");
     }
 
     @Autowired
@@ -234,20 +235,18 @@ public class MissionStepTest {
     }
 
     @Autowired
-    private ReservationController reservationController;
+    private AdminReservationController adminReservationController;
 
     @Test
     void 구단계() {
         boolean isJdbcTemplateInjected = false;
 
-        for (Field field : reservationController.getClass().getDeclaredFields()) {
+        for (Field field : adminReservationController.getClass().getDeclaredFields()) {
             if (field.getType().equals(JdbcTemplate.class)) {
                 isJdbcTemplateInjected = true;
                 break;
             }
         }
-
         assertThat(isJdbcTemplateInjected).isFalse();
     }
-
 }

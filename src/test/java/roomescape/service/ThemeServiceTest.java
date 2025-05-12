@@ -109,7 +109,7 @@ class ThemeServiceTest {
                 new Theme(3L, "진짜공포", "되게무서움", "aaa")
         );
 
-        when(reservedThemeChecker.getBestThemesIdsInDays(now.minusDays(8), now.minusDays(1))).thenReturn(bestIds);
+        when(reservedThemeChecker.getBestThemesIdsInDays(now.minusDays(7), now)).thenReturn(bestIds);
         when(themeRepository.findAllByIdIn(bestIds)).thenReturn(bestThemes);
 
         List<Theme> result = themeService.getWeeklyBestThemes();

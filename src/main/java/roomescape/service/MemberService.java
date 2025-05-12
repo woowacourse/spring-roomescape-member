@@ -54,4 +54,11 @@ public class MemberService {
         return new MemberResponse(savedMember.getId(), savedMember.getMemberName().getName());
 
     }
+
+    public MemberResponse adminSignUp(final SignUpRequest signUpRequest) {
+        Member member = new Member(null, Role.ADMIN, new MemberName(signUpRequest.name()), signUpRequest.email(),
+                signUpRequest.password());
+        Member savedMember = memberRepository.saveMember(member);
+        return new MemberResponse(savedMember.getId(), savedMember.getMemberName().getName());
+    }
 }
