@@ -5,11 +5,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.auth.infra.JwtProvider;
 import roomescape.exception.UnAuthorizedException;
 import roomescape.member.Member;
 import roomescape.member.Role;
 import roomescape.member.dao.MemberDao;
-import roomescape.member.infra.JwtProvider;
 
 public class AdminCheckInterceptor implements HandlerInterceptor {
 

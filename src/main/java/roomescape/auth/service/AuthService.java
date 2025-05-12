@@ -3,10 +3,10 @@ package roomescape.auth.service;
 import org.springframework.stereotype.Service;
 import roomescape.auth.dto.request.TokenRequest;
 import roomescape.auth.dto.response.TokenResponse;
+import roomescape.auth.infra.JwtProvider;
 import roomescape.exception.ArgumentNullException;
 import roomescape.member.Member;
 import roomescape.member.dao.JdbcMemberDao;
-import roomescape.member.infra.JwtProvider;
 
 @Service
 public class AuthService {
