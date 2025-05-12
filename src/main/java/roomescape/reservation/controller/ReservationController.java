@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.utils.UriFactory;
+import roomescape.member.auth.RoleRequired;
 import roomescape.member.auth.dto.MemberInfo;
+import roomescape.member.domain.Role;
 import roomescape.reservation.controller.dto.AvailableReservationTimeWebResponse;
 import roomescape.reservation.controller.dto.CreateReservationByAdminWebRequest;
 import roomescape.reservation.controller.dto.CreateReservationWebRequest;
@@ -33,6 +35,7 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
+    @RoleRequired(value = Role.ADMIN)
     @GetMapping(BASE_PATH)
     public List<ReservationWebResponse> getAll() {
         return reservationService.getAll();
