@@ -1,6 +1,7 @@
 package roomescape.theme.domain;
 
 import java.util.Objects;
+import roomescape.common.exception.BusinessException;
 
 public class Theme {
 
@@ -10,16 +11,29 @@ public class Theme {
     private final String thumbnail;
 
     private Theme(final Long id, final String name, final String description, final String thumbnail) {
+        validateIsNonNull(name);
+        validateIsNonNull(description);
+        validateIsNonNull(thumbnail);
+
+        validateIsEmpty(name);
+        validateIsEmpty(description);
+        validateIsEmpty(thumbnail);
+
         this.id = id;
-        this.name = Objects.requireNonNull(name, "이름은 null 일 수 없습니다.");
-        validateNameIsBlank(name);
-        this.description = Objects.requireNonNull(description, "테마 설명은 null 일 수 없습니다.");
-        this.thumbnail = Objects.requireNonNull(thumbnail, "썸네일은 null 일 수 없습니다.");
+        this.name = name;
+        this.description = description;
+        this.thumbnail = thumbnail;
     }
 
-    private static void validateNameIsBlank(final String name) {
-        if (name.isBlank()) {
-            throw new IllegalArgumentException("이름은 비어있을 수 없습니다.");
+    private void validateIsNonNull(final Object object) {
+        if (object == null) {
+            throw new BusinessException("테마 정보는 null 일 수 없습니다.");
+        }
+    }
+
+    private void validateIsEmpty(final String something) {
+        if (something.isEmpty()) {
+            throw new BusinessException("테마 정보는 비어있을 수 없습니다.");
         }
     }
 
@@ -28,11 +42,18 @@ public class Theme {
     }
 
     public static Theme createWithId(final Long id, final String name, final String description, final String thumbnail) {
-        return new Theme(Objects.requireNonNull(id), name, description, thumbnail);
+        validateIdIsNonNull(id);
+        return new Theme(id, name, description, thumbnail);
+    }
+
+    private static void validateIdIsNonNull(final Long id) {
+        if (id == null) {
+            throw new BusinessException("테마 id는 null 일 수 없습니다.");
+        }
     }
 
     public Theme assignId(final Long id) {
-        return new Theme(Objects.requireNonNull(id), name, description, thumbnail);
+        return createWithId(id, name, description, thumbnail);
     }
 
     public Long getId() {
