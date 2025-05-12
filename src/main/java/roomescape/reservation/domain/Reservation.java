@@ -28,12 +28,6 @@ public class Reservation {
         this.member = member;
     }
 
-    private void validateNameIsBlank(final String name) {
-        if (name.isBlank()) {
-            throw new IllegalArgumentException("이름은 비어있을 수 없습니다.");
-        }
-    }
-
     public static Reservation createWithoutId(final LocalDate date,
                                               final ReservationTime time,
                                               final Theme theme,
