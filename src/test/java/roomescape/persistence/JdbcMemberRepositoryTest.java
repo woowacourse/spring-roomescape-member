@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class JdbcMemberRepositoryTest {
 
@@ -71,8 +71,14 @@ class JdbcMemberRepositoryTest {
         //given
         CreateMemberQuery createMemberQuery = new CreateMemberQuery("Eve", MemberRole.USER, "eve@example.com", "password");
 
-        //when & then
-        assertThatCode(() -> memberRepository.create(createMemberQuery))
-                .doesNotThrowAnyException();
+        //when
+        Long id = memberRepository.create(createMemberQuery);
+
+        //then
+        Optional<Member> createdMember = memberRepository.findById(id);
+        assertAll(
+                () -> assertThat(createdMember).isPresent(),
+                () -> assertThat(createdMember.get().getName()).isEqualTo("Eve")
+        );
     }
 }
