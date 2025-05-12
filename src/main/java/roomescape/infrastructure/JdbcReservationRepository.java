@@ -263,4 +263,36 @@ public class JdbcReservationRepository implements ReservationRepository {
         }
         return jdbcTemplate.query(sqlBuilder.toString(), parameter, RESERVATION_ROW_MAPPER);
     }
+
+    @Override
+    public List<Reservation> findByThemeId(Long themeId) {
+        String sql = """
+                SELECT
+                    r.id,
+                    r.date,
+                    rt.id as time_id,
+                    rt.start_at,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description,
+                    t.thumbnail,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email,
+                    m.password,
+                    m.role
+                FROM reservation AS r
+                JOIN reservation_time AS rt
+                ON r.time_id = rt.id
+                JOIN theme AS t
+                ON r.theme_id = t.id
+                JOIN member AS m
+                ON r.member_id = m.id
+                WHERE r.theme_id = :themeId
+                """;
+
+        SqlParameterSource parameter = new MapSqlParameterSource()
+                .addValue("themeId", themeId);
+        return jdbcTemplate.query(sql, parameter, RESERVATION_ROW_MAPPER);
+    }
 }

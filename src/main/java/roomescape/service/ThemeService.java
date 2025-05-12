@@ -4,19 +4,24 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
+import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ThemeRepository;
 import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
+import roomescape.exception.ExistedReservationException;
 import roomescape.exception.ExistedThemeException;
 
 @Service
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ThemeResponse create(ThemeRequest themeRequest) {
@@ -46,6 +51,10 @@ public class ThemeService {
     }
 
     public int delete(long id) {
+        List<Reservation> reservations = reservationRepository.findByThemeId(id);
+        if (reservations.size() > 0) {
+            throw new ExistedReservationException();
+        }
         return themeRepository.delete(id);
     }
 

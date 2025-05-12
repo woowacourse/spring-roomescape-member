@@ -74,4 +74,24 @@ class FakeReservationRepositoryTest {
         List<Reservation> allReservation = reservationRepository.findAll();
         assertThat(allReservation).hasSize(0);
     }
+
+    @Test
+    void 테마id로_예약을_조회한다() {
+        // given
+        Member member = new Member(1L, "name1", "email1@domain.com", "password1", Role.MEMBER);
+        ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(9, 0));
+        Theme theme = new Theme(1L, "theme1", "desc", "thumb");
+        Reservation reservation1 = Reservation.createWithoutId(
+                member, LocalDate.of(2025, 1, 1), reservationTime, theme
+        );
+        Reservation reservation2 = Reservation.createWithoutId(
+                member, LocalDate.of(2025, 1, 2), reservationTime, theme
+        );
+        reservationRepository.create(reservation1);
+        reservationRepository.create(reservation2);
+        // when
+        List<Reservation> reservations = reservationRepository.findByThemeId(theme.getId());
+        // then
+        assertThat(reservations).hasSize(2);
+    }
 }

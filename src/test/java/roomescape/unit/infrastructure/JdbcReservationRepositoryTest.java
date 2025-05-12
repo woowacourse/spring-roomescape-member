@@ -206,4 +206,24 @@ class JdbcReservationRepositoryTest {
         // then
         assertThat(foundReservation).hasSize(1);
     }
+
+    @Test
+    void 테마id로_예약을_조회한다() {
+        // given
+        ReservationTime savedReservationTime = reservationTimeRepository.create(
+                ReservationTime.createWithoutId(LocalTime.of(10, 0)));
+        Theme theme = themeRepository.create(Theme.createWithoutId("themeName", "des", "th"));
+        Member member = new Member(null, "포라", "email1@domain.com", "password1", Role.MEMBER);
+        Member savedMember = memberRepository.save(member);
+        reservationRepository.create(Reservation.createWithoutId(
+                savedMember,
+                LocalDate.now().plusDays(1),
+                savedReservationTime,
+                theme
+        ));
+        // when
+        List<Reservation> foundReservation = reservationRepository.findByThemeId(theme.getId());
+        // then
+        assertThat(foundReservation.getFirst().getMember().getName()).isEqualTo("포라");
+    }
 }

@@ -5,26 +5,36 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import roomescape.auth.Role;
+import roomescape.domain.Member;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ThemeRepository;
 import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
+import roomescape.exception.ExistedReservationException;
 import roomescape.exception.ExistedThemeException;
 import roomescape.service.ThemeService;
+import roomescape.unit.fake.FakeReservationRepository;
 import roomescape.unit.fake.FakeThemeRepository;
 
 public class ThemeServiceTest {
 
     private ThemeService themeService;
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
     public ThemeServiceTest() {
         this.themeRepository = new FakeThemeRepository();
-        this.themeService = new ThemeService(themeRepository);
+        this.reservationRepository = new FakeReservationRepository();
+        this.themeService = new ThemeService(themeRepository, reservationRepository);
     }
 
     @Test
@@ -50,6 +60,18 @@ public class ThemeServiceTest {
         assertThat(themes).hasSize(2);
         assertThat(themes.getFirst().name()).isEqualTo("name1");
         assertThat(themes.get(1).name()).isEqualTo("name2");
+    }
+
+    @Test
+    void 예약이_존재하는_테마를_삭제하면_예외가_발생한다() {
+        // given
+        Theme theme = themeRepository.create(Theme.createWithoutId("name1", "description1", "thumbnail1"));
+        Member member = new Member(1L, "name1", "email@domain.com", "password1", Role.MEMBER);
+        ReservationTime time = ReservationTime.createWithoutId(LocalTime.of(9, 0));
+        reservationRepository.create(Reservation.createWithoutId(member, LocalDate.of(2025, 1, 1), time, theme));
+        // when & then
+        assertThatThrownBy(() -> themeService.delete(theme.getId()))
+                .isInstanceOf(ExistedReservationException.class);
     }
 
     @Test
@@ -85,7 +107,7 @@ public class ThemeServiceTest {
                         LocalDate.now().minusDays(8), LocalDate.now().minusDays(1), 10
                 )
         ).thenReturn(themes);
-        themeService = new ThemeService(mockThemeRepository);
+        themeService = new ThemeService(mockThemeRepository, reservationRepository);
         // when
         List<ThemeResponse> rank = themeService.getTop10MostReservedThemesInLast7Days();
         // then
