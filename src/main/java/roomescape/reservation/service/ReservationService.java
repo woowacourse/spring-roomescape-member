@@ -113,7 +113,11 @@ public class ReservationService {
     }
 
     public void delete(final Long id) {
-        reservationDao.deleteById(id);
+        int updatedRow = reservationDao.deleteById(id);
+
+        if (updatedRow == 0) {
+            throw new EntityNotFoundException("reservation not found");
+        }
     }
 
     public List<BookedReservationTimeResponse> getAvailableTimes(final LocalDate date, final Long themeId) {

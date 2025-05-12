@@ -17,7 +17,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import roomescape.common.exception.EntityNotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
@@ -108,15 +107,11 @@ public class ReservationDao {
                 reservation.getReservationTime(), reservation.getTheme());
     }
 
-    public void deleteById(final Long id) {
+    public int deleteById(final Long id) {
         String sql = "delete from reservation where id = :id";
         Map<String, Long> params = Map.of("id", id);
 
-        int updatedRowCount = jdbcTemplate.update(sql, params);
-
-        if (updatedRowCount != 1) {
-            throw new EntityNotFoundException("Reservation with id " + id + " not found");
-        }
+        return jdbcTemplate.update(sql, params);
     }
 
     public boolean existsByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
@@ -184,7 +179,7 @@ public class ReservationDao {
                     (resultSet, rowNum) -> reservationOf(resultSet));
             return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException e) {
-            throw new EntityNotFoundException("entity not found");
+            return Optional.empty();
         }
     }
 
