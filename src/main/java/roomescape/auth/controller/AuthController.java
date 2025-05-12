@@ -12,7 +12,7 @@ import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.dto.TokenResponse;
 import roomescape.auth.service.AuthService;
-import roomescape.global.config.AuthMember;
+import roomescape.global.auth.AuthMember;
 import roomescape.member.domain.Member;
 
 @RestController

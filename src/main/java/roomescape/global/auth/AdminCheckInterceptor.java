@@ -1,11 +1,10 @@
-package roomescape.global.config;
+package roomescape.global.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.domain.JwtTokenProvider;
 import roomescape.global.exception.custom.ForbiddenException;
 import roomescape.global.exception.custom.UnauthorizedException;
 import roomescape.member.domain.Member;

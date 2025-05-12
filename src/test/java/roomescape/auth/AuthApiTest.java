@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.auth.domain.JwtTokenProvider;
 import roomescape.auth.dto.LoginRequest;
+import roomescape.global.auth.JwtTokenProvider;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @Sql({"/test-schema.sql", "/test-member-data.sql"})

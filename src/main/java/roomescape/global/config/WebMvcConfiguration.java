@@ -5,7 +5,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.auth.domain.JwtTokenProvider;
+import roomescape.global.auth.AdminCheckInterceptor;
+import roomescape.global.auth.JwtTokenProvider;
+import roomescape.global.auth.MemberArgumentResolver;
 import roomescape.member.repository.MemberRepository;
 
 @Configuration
