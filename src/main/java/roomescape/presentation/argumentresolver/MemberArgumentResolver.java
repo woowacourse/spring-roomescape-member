@@ -33,7 +33,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         }
 
         String token = extractTokenFromCookie(request.getCookies());
-        return authService.check(token);
+        return authService.loadMemberByAuthInformation(token);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {

@@ -19,7 +19,7 @@ public class MemberAuthenticationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) throws Exception {
         String token = extractTokenFromCookie(request.getCookies());
-        Member member = authService.check(token);
+        Member member = authService.loadMemberByAuthInformation(token);
         request.setAttribute("member", member);
 
         if (member == null) {

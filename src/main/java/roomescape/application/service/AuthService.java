@@ -48,12 +48,12 @@ public class AuthService {
         return new LoginResponse(token);
     }
 
-    public Member check(final String token) {
+    public Member loadMemberByAuthInformation(final String token) {
         Long memberId = Long.valueOf(JwtTokenUtil.checkByToken(token));
         return memberRepository.findById(memberId);
     }
 
-    public boolean checkAdmin(final String token) {
+    public boolean checkIfAdmin(final String token) {
         return JwtTokenUtil.checkAdminByToken(token);
     }
 }
