@@ -36,7 +36,7 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
         if (!member.hasRole(Role.ADMIN)) {
             throw new ForbiddenException("접근 권한이 없습니다.");
         }
-        return HandlerInterceptor.super.preHandle(request, response, handler);
+        return true;
     }
 
     private static String getToken(final Cookie[] cookies) {
