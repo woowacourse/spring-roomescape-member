@@ -38,7 +38,7 @@ public class JdbcMemberDao implements MemberDao {
         parameters.put("name", member.getName());
         parameters.put("email", member.getEmail());
         parameters.put("password", member.getPassword());
-        parameters.put("role", member.getRole());
+        parameters.put("role", member.getRole().getRole());
 
         return simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
     }

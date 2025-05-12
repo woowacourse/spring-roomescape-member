@@ -8,14 +8,14 @@ public class Member {
     private final String name;
     private final String email;
     private final String password;
-    private final String role;
+    private final Role role;
 
     public Member(final Long id, final String name, final String email, final String password, final String role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.role = role;
+        this.role = Role.fromName(role);
     }
 
     public Member(final String name, final String email, final String password, final String role) {
@@ -23,7 +23,7 @@ public class Member {
     }
 
     public boolean isAdmin() {
-        return role.equals("admin");
+        return role.isAdmin();
     }
 
     public Long getId() {
@@ -42,7 +42,7 @@ public class Member {
         return password;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 

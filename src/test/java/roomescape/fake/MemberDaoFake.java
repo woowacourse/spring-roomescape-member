@@ -18,7 +18,7 @@ public class MemberDaoFake implements MemberDao {
     @Override
     public Long save(final Member member) {
         long id = IDX.getAndIncrement();
-        Member savedMember = new Member(id, member.getName(), member.getEmail(), member.getEmail(), member.getRole());
+        Member savedMember = new Member(id, member.getName(), member.getEmail(), member.getEmail(), member.getRole().getRole());
         MEMBERS.put(id, savedMember);
         return id;
     }

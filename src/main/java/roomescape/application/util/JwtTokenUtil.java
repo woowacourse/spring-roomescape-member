@@ -1,6 +1,5 @@
 package roomescape.application.util;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -29,16 +28,5 @@ public class JwtTokenUtil {
         } catch (JwtException e) {
             throw new UnauthorizedException();
         }
-    }
-
-    public static boolean checkAdminByToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        String role = claims.get("role", String.class);
-        return role.equals("admin");
     }
 }

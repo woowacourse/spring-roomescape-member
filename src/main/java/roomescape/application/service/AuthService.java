@@ -52,8 +52,4 @@ public class AuthService {
         Long memberId = Long.valueOf(JwtTokenUtil.checkByToken(token));
         return memberRepository.findById(memberId);
     }
-
-    public boolean checkIfAdmin(final String token) {
-        return JwtTokenUtil.checkAdminByToken(token);
-    }
 }
