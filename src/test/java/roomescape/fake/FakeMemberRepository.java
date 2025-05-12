@@ -12,10 +12,9 @@ public class FakeMemberRepository implements MemberRepository {
     List<Member> members = new ArrayList<>();
 
     @Override
-    public Optional<Member> findByEmailAndPassword(final String email, final String password) {
+    public Optional<Member> findByEmail(final String email) {
         return members.stream()
                 .filter(member -> Objects.equals(member.getEmail(), email))
-                .filter(member -> Objects.equals(member.getPassword(), password))
                 .findFirst();
     }
 

@@ -33,10 +33,10 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findByEmailAndPassword(final String email, final String password) {
-        String sql = "SELECT id, role, name, email, password FROM member WHERE email = ? and password = ?";
+    public Optional<Member> findByEmail(final String email) {
+        String sql = "SELECT id, role, name, email, password FROM member WHERE email = ?";
         try {
-            Member member = jdbcTemplate.queryForObject(sql, userRowMapper, email, password);
+            Member member = jdbcTemplate.queryForObject(sql, userRowMapper, email);
             return Optional.of(member);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();

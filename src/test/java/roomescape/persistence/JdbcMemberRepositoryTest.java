@@ -39,12 +39,12 @@ class JdbcMemberRepositoryTest {
     }
 
     @Test
-    void 이메일과_패스워드로_멤버를_찾을_수_있다() {
+    void 이메일로_멤버를_찾을_수_있다() {
         //given
         jdbcTemplate.update("INSERT INTO member (name, role, email, password) VALUES ('Eve', 'USER', 'eve@example.com', 'password')");
 
         //when
-        Optional<Member> member = memberRepository.findByEmailAndPassword("eve@example.com", "password");
+        Optional<Member> member = memberRepository.findByEmail("eve@example.com");
 
         //then
         assertThat(member).hasValue(

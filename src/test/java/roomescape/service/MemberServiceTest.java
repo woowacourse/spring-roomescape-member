@@ -3,6 +3,7 @@ package roomescape.service;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.MemberRole;
 import roomescape.exception.NotFoundMemberException;
+import roomescape.exception.UnAuthorizedException;
 import roomescape.fake.FakeMemberRepository;
 import roomescape.persistence.query.CreateMemberQuery;
 import roomescape.service.param.LoginMemberParam;
@@ -18,14 +19,25 @@ class MemberServiceTest {
     private final MemberService memberService = new MemberService(memberRepository);
 
     @Test
-    void 존재하지_않는_email과_password로_로그인_시_예외() {
+    void 로그인_시_존재하지_않는_email로_로그인_시_예외() {
         //given
         LoginMemberParam loginMemberParam = new LoginMemberParam("email2", "password2");
 
         //when & then
         assertThatThrownBy(() -> memberService.login(loginMemberParam))
                 .isInstanceOf(NotFoundMemberException.class)
-                .hasMessageContaining(loginMemberParam.email() + " " + loginMemberParam.password() + "에 해당하는 유저가 없습니다.");
+                .hasMessageContaining(loginMemberParam.email() + "에 해당하는 유저가 없습니다.");
+    }
+
+    @Test
+    void 로그인_시_email에_대해_password가_일치하지_않으면_예외() {
+        //given
+        memberRepository.create(new CreateMemberQuery("name1", MemberRole.USER, "email1", "password1"));
+
+        //when & then
+        assertThatThrownBy(() -> memberService.login(new LoginMemberParam("email1", "password2")))
+                .isInstanceOf(UnAuthorizedException.class)
+                .hasMessage("비밀 번호가 일치하지 않습니다.");
     }
 
     @Test
