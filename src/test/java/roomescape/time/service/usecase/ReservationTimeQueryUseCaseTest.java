@@ -14,7 +14,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Transactional
 class ReservationTimeQueryUseCaseTest {
 
     private ReservationTimeQueryUseCase reservationTimeQueryUseCase;

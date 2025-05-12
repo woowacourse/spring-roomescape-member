@@ -32,7 +32,6 @@ import java.util.NoSuchElementException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@Transactional
 class ReservationTimeCommandUseCaseTest {
 
     private ReservationTimeCommandUseCase reservationTimeCommandUseCase;

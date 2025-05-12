@@ -44,7 +44,6 @@ import roomescape.time.service.usecase.ReservationTimeQueryUseCase;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@Transactional
 class ReservationCommandUseCaseTest {
 
     private ReservationCommandUseCase reservationCommandUseCase;

@@ -4,16 +4,15 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.member.domain.Account;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberEmail;
 import roomescape.member.domain.MemberName;
 import roomescape.member.domain.Password;
 import roomescape.member.domain.Role;
+import roomescape.member.repository.FakeMemberRepository;
 import roomescape.member.repository.MemberRepository;
+import roomescape.reservation.repository.FakeReservationRepository;
 import roomescape.reservation.service.dto.AvailableReservationTimeServiceRequest;
 import roomescape.reservation.service.dto.AvailableReservationTimeServiceResponse;
 import roomescape.reservation.domain.Reservation;
@@ -22,43 +21,41 @@ import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeName;
+import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.FakeReservationTimeRepository;
 import roomescape.time.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import roomescape.time.service.usecase.ReservationTimeQueryUseCase;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@SpringBootTest
-@Transactional
 class ReservationQueryUseCaseTest {
 
-    @Autowired
     private ReservationQueryUseCase reservationQueryUseCase;
-
-    @Autowired
     private ReservationRepository reservationRepository;
 
-    @Autowired
     private ReservationTimeRepository reservationTimeRepository;
-
-    @Autowired
     private ThemeRepository themeRepository;
-
-    @Autowired
     private MemberRepository memberRepository;
 
     private ReservationTime reservationTime;
 
     @BeforeEach
     void setUp() {
-        reservationTime = reservationTimeRepository.save(
-                ReservationTime.withoutId(LocalTime.of(18, 0)));
+        reservationRepository = new FakeReservationRepository();
+        reservationTimeRepository = new FakeReservationTimeRepository();
+        themeRepository = new FakeThemeRepository();
+        memberRepository = new FakeMemberRepository();
+        reservationQueryUseCase = new ReservationQueryUseCase(reservationRepository, new ReservationTimeQueryUseCase(reservationTimeRepository));
+
+        reservationTime = reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(18, 0)));
     }
 
     @Test
