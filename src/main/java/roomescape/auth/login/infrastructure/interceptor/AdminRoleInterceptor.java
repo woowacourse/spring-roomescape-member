@@ -1,18 +1,14 @@
 package roomescape.auth.login.infrastructure.interceptor;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.RequiredTypeException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.exception.ForbiddenException;
 import roomescape.auth.exception.UnauthorizedException;
-import roomescape.auth.login.infrastructure.token.JwtExtractException;
-import roomescape.auth.login.infrastructure.token.JwtTokenManager;
-import roomescape.auth.login.infrastructure.token.TokenExtractor;
+import roomescape.auth.token.exception.JwtExtractException;
+import roomescape.auth.token.JwtTokenManager;
+import roomescape.auth.token.TokenExtractor;
 
 @Component
 public class AdminRoleInterceptor implements HandlerInterceptor {

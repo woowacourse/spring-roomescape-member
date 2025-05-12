@@ -1,4 +1,4 @@
-package roomescape.auth.login.infrastructure.token;
+package roomescape.auth.token.exception;
 
 public class JwtExtractException extends RuntimeException {
 
