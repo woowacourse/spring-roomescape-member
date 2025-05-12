@@ -1,242 +1,227 @@
-//package roomescape.reservation;
-//
-//import static org.hamcrest.Matchers.containsInAnyOrder;
-//import static org.hamcrest.Matchers.is;
-//
-//import java.time.LocalDate;
-//import java.time.LocalTime;
-//import java.time.format.DateTimeFormatter;
-//import java.util.HashMap;
-//import java.util.Map;
-//
-//import org.junit.jupiter.api.AfterEach;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.jdbc.core.JdbcTemplate;
-//import org.springframework.test.annotation.DirtiesContext;
-//import org.springframework.test.context.ActiveProfiles;
-//import org.springframework.web.util.UriComponentsBuilder;
-//
-//import io.restassured.RestAssured;
-//import io.restassured.http.ContentType;
-//import roomescape.member.domain.Member;
-//import roomescape.member.repository.MemberDao;
-//import roomescape.reservation.domain.Name;
-//import roomescape.reservation.domain.Reservation;
-//import roomescape.reservation.domain.ReservationTime;
-//import roomescape.reservation.domain.Theme;
-//import roomescape.reservation.repository.ReservationDao;
-//import roomescape.reservation.repository.ReservationTimeDao;
-//import roomescape.reservation.repository.ThemeDao;
-//import roomescape.utils.JdbcTemplateUtils;
-//
-//@ActiveProfiles("test")
-//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-//class ReservationApiTest {
-//
-//    @Autowired
-//    private JdbcTemplate jdbcTemplate;
-//    @Autowired
-//    private ReservationDao reservationDao;
-//    @Autowired
-//    private ReservationTimeDao reservationTimeRepository;
-//    @Autowired
-//    private ThemeDao themeDao;
-//    @Autowired
-//    private MemberDao memberDao;
-//
-//    public static String formatDateTime(LocalDate dateTime) {
-//        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//
-//        return dateTimeFormatter.format(dateTime);
-//    }
-//
-//    @AfterEach
-//    void tearDown() {
-//        JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
-//    }
-//
-//    @DisplayName("어드민 페이지로 접근할 수 있다.")
-//    @Test
-//    void test1() {
-//        RestAssured.given().log().all()
-//                .when().get("/admin")
-//                .then().log().all()
-//                .statusCode(200);
-//    }
-//
-//    @DisplayName("어드민이 예약 관리 페이지에 접근한다.")
-//    @Test
-//    void test2() {
-//        RestAssured.given().log().all()
-//                .when().get("/admin/reservation")
-//                .then().log().all()
-//                .statusCode(200);
-//    }
-//
-//    @DisplayName("모든 예약 정보를 반환한다.")
-//    @Test
-//    void test3() {
-//        // given
-//        LocalTime time = LocalTime.of(15, 0);
-//        ReservationTime reservationTime = ReservationTime.withoutId(time);
-//        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-//        Theme theme = Theme.withoutId("공포", "우테코 공포",
-//                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-//        Theme savedTheme = themeDao.save(theme);
-//        Member member = new Member("포스티", "test@test.com", "12341234");
-//        Member savedMember = memberDao.save(member);
-//
-//        Reservation reservation = Reservation.withoutId(
-//                savedMember, LocalDate.now(), savedReservationTime, savedTheme
-//        );
-//        reservationDao.save(reservation);
-//
-//        // then
-//        RestAssured.given().log().all()
-//                .when().get("/reservations")
-//                .then().log().all()
-//                .statusCode(200)
-//                .body("size()", is(1));
-//    }
-//
-//    @DisplayName("예약 정보를 추가한다.")
-//    @Test
-//    void test4() {
-//        // given
-//        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
-//        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-//
-//        Theme theme = Theme.withoutId("공포", "우테코 공포",
-//                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-//        Theme savedTheme = themeDao.save(theme);
-//        Member member = new Member("포스티", "test@test.com", "12341234");
-//        Member savedMember = memberDao.save(member);
-//
-//        LocalDate now = LocalDate.now();
-//
-//        Map<String, Object> reservation = new HashMap<>();
-//        reservation.put("date", formatDateTime(now.plusDays(1)));
-//        reservation.put("timeId", savedReservationTime.getId());
-//        reservation.put("themeId", savedTheme.getId());
-//        reservation.put("memberId", savedMember.getId());
-//
-//        // when & then
-//        RestAssured.given().log().all()
-//                .contentType(ContentType.JSON)
-//                .body(reservation)
-//                .when().post("/reservations")
-//                .then().log().all()
-//                .statusCode(201);
-//    }
-//
-//    @DisplayName("존재하지 않는 예약 시간 ID 를 추가하면 예외를 반환한다.")
-//    @Test
-//    void test5() {
-//
-//        Theme theme = Theme.withoutId("공포", "우테코 공포",
-//                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-//        Theme savedTheme = themeDao.save(theme);
-//
-//        LocalDate now = LocalDate.now();
-//
-//        Map<String, Object> reservation = new HashMap<>();
-//        reservation.put("name", "브라운");
-//        reservation.put("date", formatDateTime(now.plusDays(1)));
-//        reservation.put("timeId", 1);
-//        reservation.put("themeId", savedTheme.getId());
-//
-//        // when & then
-//        RestAssured.given().log().all()
-//                .contentType(ContentType.JSON)
-//                .body(reservation)
-//                .when().post("/reservations")
-//                .then().log().all()
-//                .statusCode(404);
-//    }
-//
-//    @DisplayName("존재하지 않는 테마 ID 를 추가하면 예외를 반환한다.")
-//    @Test
-//    void notExistThemeId() {
-//        // given
-//        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
-//        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-//
-//        LocalDate now = LocalDate.now();
-//
-//        Map<String, Object> reservation = new HashMap<>();
-//        reservation.put("name", "브라운");
-//        reservation.put("date", formatDateTime(now.plusDays(1)));
-//        reservation.put("timeId", savedReservationTime.getId());
-//        reservation.put("themeId", 1L);
-//
-//        // when & then
-//        RestAssured.given().log().all()
-//                .contentType(ContentType.JSON)
-//                .body(reservation)
-//                .when().post("/reservations")
-//                .then().log().all()
-//                .statusCode(404);
-//    }
-//
-//    @DisplayName("예약을 삭제한다.")
-//    @Test
-//    void test6() {
-//        // given
-//        Name name = new Name("브라운");
-//        LocalDate now = LocalDate.now();
-//
-//        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
-//        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-//
-//        Theme theme = Theme.withoutId("공포", "우테코 공포",
-//                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-//        Theme savedTheme = themeDao.save(theme);
-//
-//        Reservation reservation = Reservation.withoutId(name, now, savedReservationTime, savedTheme);
-//        Reservation saved = reservationDao.save(reservation);
-//        Long id = saved.getId();
-//
-//        // when & then
-//        RestAssured.given().log().all()
-//                .when().delete("/reservations/" + id.intValue())
-//                .then().log().all()
-//                .statusCode(204);
-//    }
-//
-//    @DisplayName("존재하지 않는 예약을 삭제할 경우 NOT_FOUND 반환")
-//    @Test
-//    void test7() {
-//        RestAssured.given().log().all()
-//                .when().delete("/reservations/4")
-//                .then().log().all()
-//                .statusCode(404);
-//    }
-//
-//    @DisplayName("예약 가능한 시간을 반환한다")
-//    @Test
-//    void test9() {
-//        Theme theme = themeDao.save(Theme.withoutId("공포", "공포", "www.m.com"));
-//        ReservationTime time1 = reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(10, 0)));
-//        reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(11, 0)));
-//
-//        LocalDate date = LocalDate.now();
-//        reservationDao.save(Reservation.withoutId(new Name("꾹"), date, time1, theme));
-//
-//        String path = UriComponentsBuilder.fromUriString("/reservations/available")
-//                .queryParam("date", formatDateTime(date))
-//                .queryParam("themeId", theme.getId())
-//                .build()
-//                .toUriString();
-//
-//        RestAssured.given().log().all()
-//                .when().get(path)
-//                .then().log().all()
-//                .statusCode(200)
-//                .body("size()", is(2))
-//                .body("alreadyBooked", containsInAnyOrder(true, false));
-//    }
-//}
+package roomescape.reservation.controller;
+
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
+
+import java.time.LocalDate;
+import java.util.Map;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+
+@ActiveProfiles("test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+class ReservationApiTest {
+
+    @DisplayName("어드민 페이지로 접근할 수 있다.")
+    @Test
+    void test1() {
+        String tokenValue = getAdminLoginTokenValue();
+
+        RestAssured.given().log().all()
+                .cookie("token", tokenValue)
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("어드민이 예약 관리 페이지에 접근한다.")
+    @Test
+    void test2() {
+        String tokenValue = getAdminLoginTokenValue();
+
+        RestAssured.given().log().all()
+                .cookie("token", tokenValue)
+                .when().get("/admin/reservation")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("모든 예약 정보를 반환한다.")
+    @Test
+    void test3() {
+        addReservationTime("10:00");
+        addTheme();
+        String tokenValue = getAdminLoginTokenValue();
+
+        RestAssured.given()
+                .cookie("token", tokenValue)
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "date", LocalDate.now().plusDays(1L),
+                        "timeId", 1,
+                        "themeId", 1
+                ))
+                .when().post("/reservations")
+                .then();
+
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
+
+    }
+
+    @DisplayName("예약 정보를 추가한다.")
+    @Test
+    void test4() {
+        addReservationTime("10:00");
+        addTheme();
+        String tokenValue = getAdminLoginTokenValue();
+        Map<String, Object> reservationParams = Map.of(
+                "date", LocalDate.now().plusDays(1L),
+                "timeId", 1,
+                "themeId", 1
+        );
+
+        RestAssured.given().log().all()
+                .cookie("token", tokenValue)
+                .contentType(ContentType.JSON)
+                .body(reservationParams)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    @DisplayName("존재하지 않는 예약 시간 ID 를 추가하면 예외를 반환한다.")
+    @Test
+    void test5() {
+        String tokenValue = getAdminLoginTokenValue();
+        addTheme();
+        Map<String, Object> reservationParams = Map.of(
+                "date", LocalDate.now().plusDays(1L),
+                "timeId", 1,
+                "themeId", 1
+        );
+
+        RestAssured.given().log().all()
+                .cookie("token", tokenValue)
+                .contentType(ContentType.JSON)
+                .body(reservationParams)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @DisplayName("존재하지 않는 테마 ID 를 추가하면 예외를 반환한다.")
+    @Test
+    void notExistThemeId() {
+        String tokenValue = getAdminLoginTokenValue();
+        addReservationTime("10:00");
+        Map<String, Object> reservationParams = Map.of(
+                "date", LocalDate.now().plusDays(1L),
+                "timeId", 1,
+                "themeId", 1
+        );
+
+        RestAssured.given().log().all()
+                .cookie("token", tokenValue)
+                .contentType(ContentType.JSON)
+                .body(reservationParams)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @DisplayName("예약을 삭제한다.")
+    @Test
+    void test6() {
+        addTheme();
+        addReservationTime("10:00");
+        String tokenValue = getAdminLoginTokenValue();
+        Map<String, Object> reservationParams = Map.of(
+                "date", LocalDate.now().plusDays(1L),
+                "timeId", 1,
+                "themeId", 1
+        );
+
+        RestAssured.given()
+                .cookie("token", tokenValue)
+                .contentType(ContentType.JSON)
+                .body(reservationParams)
+                .when().post("/reservations")
+                .then();
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(204);
+    }
+
+    @DisplayName("존재하지 않는 예약을 삭제할 경우 NOT_FOUND 반환")
+    @Test
+    void test7() {
+        RestAssured.given().log().all()
+                .when().delete("/reservations/4")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @DisplayName("예약 가능한 시간을 반환한다")
+    @Test
+    void test9() {
+        addReservationTime("10:00");
+        addReservationTime("11:00");
+        addTheme();
+        String tokenValue = getAdminLoginTokenValue();
+        LocalDate day = LocalDate.now().plusDays(1L);
+        Map<String, Object> reservationParams = Map.of(
+                "date", day,
+                "timeId", 1,
+                "themeId", 1
+        );
+
+        RestAssured.given()
+                .cookie("token", tokenValue)
+                .contentType(ContentType.JSON)
+                .body(reservationParams)
+                .when().post("/reservations")
+                .then();
+
+        RestAssured.given().log().all()
+                .when().get("/reservations/available?date=" + day + "&themeId=1")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2))
+                .body("alreadyBooked", containsInAnyOrder(true, false));
+    }
+
+    private String getAdminLoginTokenValue() {
+        Map<String, String> adminLoginParams = Map.of("email", "admin@woowa.com", "password", "12341234");
+        return RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(adminLoginParams)
+                .when().post("/login")
+                .then()
+                .extract().cookie("token");
+    }
+
+    private void addReservationTime(final String timeValue) {
+        Map<String, String> timeParams = Map.of("startAt", timeValue);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(timeParams)
+                .when().post("/times")
+                .then();
+    }
+
+    private void addTheme() {
+        Map<String, String> themeParams = Map.of(
+                "name", "테마1", "description", "테마1", "thumbnail", "www.m.com"
+        );
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/themes")
+                .then();
+    }
+}

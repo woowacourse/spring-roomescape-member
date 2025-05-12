@@ -36,7 +36,7 @@ spring:
   sql:
     init:
       mode: always
-      data-locations:
+      data-locations: classpath:test-data.sql
 
 security:
   jwt:
