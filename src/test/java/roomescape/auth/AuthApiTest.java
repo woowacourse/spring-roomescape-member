@@ -16,6 +16,8 @@ import roomescape.global.auth.JwtTokenProvider;
 @Sql({"/test-schema.sql", "/test-member-data.sql"})
 public class AuthApiTest {
 
+    public static final String TOKEN_COOKIE_NAME = "token";
+
     @DisplayName("로그인 테스트")
     @Nested
     class LoginTest {
@@ -75,11 +77,11 @@ public class AuthApiTest {
                     .body(new LoginRequest("aaa@gmail.com", "1234"))
                     .when().post("/login")
                     .then().log().all()
-                    .extract().cookie("token");
+                    .extract().cookie(TOKEN_COOKIE_NAME);
             // when
             // then
             RestAssured.given().log().all()
-                    .cookie("token", token)
+                    .cookie(TOKEN_COOKIE_NAME, token)
                     .when().get("/login/check")
                     .then().log().all()
                     .statusCode(200)
@@ -94,7 +96,7 @@ public class AuthApiTest {
                     .then().log().all()
                     .statusCode(401);
             RestAssured.given().log().all()
-                    .cookie("invalidName", "token")
+                    .cookie("invalidName", TOKEN_COOKIE_NAME)
                     .when().get("/login/check")
                     .then().log().all()
                     .statusCode(401);
@@ -104,7 +106,7 @@ public class AuthApiTest {
         @Test
         void testInvalidCookie() {
             RestAssured.given().log().all()
-                    .cookie("token", "3L")
+                    .cookie(TOKEN_COOKIE_NAME, "3L")
                     .when().get("/login/check")
                     .then().log().all()
                     .statusCode(401);
@@ -119,7 +121,7 @@ public class AuthApiTest {
             // when
             // then
             RestAssured.given().log().all()
-                    .cookie("token", token)
+                    .cookie(TOKEN_COOKIE_NAME, token)
                     .when().get("/login/check")
                     .then().log().all()
                     .statusCode(401);
@@ -139,15 +141,15 @@ public class AuthApiTest {
                     .body(new LoginRequest("aaa@gmail.com", "1234"))
                     .when().post("/login")
                     .then().log().all()
-                    .extract().cookie("token");
+                    .extract().cookie(TOKEN_COOKIE_NAME);
             // when
             // then
             RestAssured.given().log().all()
-                    .cookie("token", token)
+                    .cookie(TOKEN_COOKIE_NAME, token)
                     .when().post("/logout")
                     .then().log().all()
                     .statusCode(204)
-                    .cookie("token", "");
+                    .cookie(TOKEN_COOKIE_NAME, "");
         }
 
         @DisplayName("토큰 정보가 올바르지 않을 경우 401을 반환한다.")
