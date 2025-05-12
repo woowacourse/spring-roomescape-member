@@ -5,6 +5,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import java.util.Date;
+import java.util.Objects;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -53,15 +54,23 @@ public class JwtTokenService implements TokenService {
 
     private Claims extracClaims(String token) {
         try {
-            return Jwts.parser()
+            Claims claims = Jwts.parser()
                     .verifyWith(jwtKey)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
+            checkValidIssuer(claims.getIssuer());
+            return claims;
         } catch (ExpiredJwtException e) {
             throw new InvalidTokenException("토큰이 만료되었습니다.", e);
         } catch (JwtException e) {
             throw new InvalidTokenException("유효하지 않은 토큰입니다..", e);
+        }
+    }
+
+    private void checkValidIssuer(String targetIssuer) {
+        if (!Objects.equals(jwtProperties.getIssuer(), targetIssuer)) {
+            throw new InvalidTokenException("유효한 토큰 발급자가 아닙니다.");
         }
     }
 }
