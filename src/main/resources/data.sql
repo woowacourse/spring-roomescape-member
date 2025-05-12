@@ -18,14 +18,14 @@ insert into member (name, email, password, role)
 values ('어드민', 'admin@woowa.com', '12341234', 'ADMIN');
 
 insert into reservation (date, time_id, theme_id, member_id)
-values ('2025-04-29', 1, 3, 1);
+values ('2025-05-10', 1, 3, 1);
 insert into reservation (date, time_id, theme_id, member_id)
-values ('2025-04-29', 2, 3, 1);
+values ('2025-05-10', 2, 3, 1);
 insert into reservation (date, time_id, theme_id, member_id)
-values ('2025-04-29', 3, 3, 1);
+values ('2025-05-10', 3, 3, 1);
 insert into reservation (date, time_id, theme_id, member_id)
-values ('2025-04-29', 1, 1, 1);
+values ('2025-05-10', 1, 1, 1);
 insert into reservation (date, time_id, theme_id, member_id)
-values ('2025-04-29', 2, 1, 1);
+values ('2025-05-10', 2, 1, 1);
 insert into reservation (date, time_id, theme_id, member_id)
-values ('2025-04-29', 1, 2, 1);
+values ('2025-05-10', 1, 2, 1);
