@@ -31,39 +31,44 @@ public class ReservationCommandService {
     }
 
     public ReservationPostResponse createReservationOfLoginMember(
-            ReservationPostRequestByUser reservationPostRequestByUser,
-            LoginMember loginMember) {
+            ReservationPostRequestByUser reservationPostRequest,
+            LoginMember loginMember
+    ) {
         Member member = memberDao.findById(loginMember.id());
-        ReservationTime reservationTime = reservationTimeDao.findById(reservationPostRequestByUser.timeId());
-        Theme theme = themeDao.findById(reservationPostRequestByUser.themeId());
-        Reservation reservationWithoutId = reservationPostRequestByUser.toReservationWith(member, reservationTime,
+        ReservationTime reservationTime = reservationTimeDao.findById(reservationPostRequest.timeId());
+        Theme theme = themeDao.findById(reservationPostRequest.themeId());
+        Reservation reservationWithoutId = reservationPostRequest.toReservationWith(member, reservationTime,
                 theme);
-
-        reservationWithoutId.validatePastDateTime();
-        if (reservationDao.existBySameDateTime(reservationWithoutId)) {
-            throw new IllegalArgumentException("중복된 예약은 생성이 불가능합니다.");
-        }
-
-        Reservation reservation = reservationDao.create(reservationWithoutId);
-        return new ReservationPostResponse(reservation);
+        validateReservationCreation(reservationWithoutId);
+        return getReservationPostResponse(reservationWithoutId);
     }
 
-    public ReservationPostResponse createReservationOfRequestMember(ReservationPostRequestByAdmin request) {
-        Member member = memberDao.findById(request.memberId());
-        ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
-        Theme theme = themeDao.findById(request.themeId());
-        Reservation reservationWithoutId = request.toReservationWith(member, reservationTime, theme);
-
-        reservationWithoutId.validatePastDateTime();
-        if (reservationDao.existBySameDateTime(reservationWithoutId)) {
-            throw new IllegalArgumentException("중복된 예약은 생성이 불가능합니다.");
-        }
-
-        Reservation reservation = reservationDao.create(reservationWithoutId);
-        return new ReservationPostResponse(reservation);
+    public ReservationPostResponse createReservationOfRequestMember(
+            ReservationPostRequestByAdmin reservationPostRequest
+    ) {
+        Member member = memberDao.findById(reservationPostRequest.memberId());
+        ReservationTime reservationTime = reservationTimeDao.findById(reservationPostRequest.timeId());
+        Theme theme = themeDao.findById(reservationPostRequest.themeId());
+        Reservation reservationWithoutId = reservationPostRequest.toReservationWith(member, reservationTime, theme);
+        validateReservationCreation(reservationWithoutId);
+        return getReservationPostResponse(reservationWithoutId);
     }
 
     public void deleteReservation(Long id) {
         reservationDao.deleteById(id);
+    }
+
+    private void validateReservationCreation(Reservation reservationWithoutId) {
+        reservationWithoutId.validatePastDateTime();
+        if (reservationDao.existBySameDateTime(reservationWithoutId)) {
+            throw new IllegalArgumentException("중복된 예약은 생성이 불가능합니다.");
+        }
+    }
+
+    private ReservationPostResponse getReservationPostResponse(
+            Reservation reservationWithoutId
+    ) {
+        Reservation reservation = reservationDao.create(reservationWithoutId);
+        return new ReservationPostResponse(reservation);
     }
 }
