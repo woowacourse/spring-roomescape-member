@@ -1,11 +1,14 @@
 package roomescape.auth;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.auth.domain.dto.TokenInfoDto;
@@ -14,23 +17,39 @@ import roomescape.auth.domain.dto.TokenInfoDto;
 public class JwtTokenProvider {
 
     @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
+    private String strSecretKey;
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
+    private SecretKey secretKey;
+
+    @PostConstruct
+    private void init() {
+        this.secretKey = Keys.hmacShaKeyFor(strSecretKey.getBytes());
+    }
+
     public String createToken(TokenInfoDto tokenInfoDto) {
-        Claims claims = Jwts.claims().setSubject(String.valueOf(tokenInfoDto.id()));
-        claims.put("role", tokenInfoDto.role().name());
+
+        Map<String, ?> claims = getMyClaimMap(tokenInfoDto);
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .subject(String.valueOf(tokenInfoDto.id()))
+                .claims(claims)
+                .issuedAt(now)
+                .expiration(validity)
+                .signWith(secretKey)
                 .compact();
+    }
+
+    private Map<String, ?> getMyClaimMap(TokenInfoDto tokenInfoDto) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", tokenInfoDto.id());
+        map.put("role", tokenInfoDto.role());
+
+        return new HashMap<>(map);
     }
 
     public String getPayload(String token) {
@@ -39,14 +58,22 @@ public class JwtTokenProvider {
     }
 
     public Claims getClaims(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public boolean validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            Claims claims = Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
 
-            return !claims.getBody().getExpiration().before(new Date());
+            return !claims.getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }

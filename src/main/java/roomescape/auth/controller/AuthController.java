@@ -31,12 +31,11 @@ public class AuthController {
 
         ResponseCookie cookie = ResponseCookie
                 .from(TOKEN_NAME_FIELD, tokenResponseDto.accessToken())
-                .domain("localhost")
                 .path("/")
                 .httpOnly(true)
                 .secure(false)
                 .maxAge(Duration.ofDays(30))
-                .sameSite("Strict")
+                .sameSite("Lax")
                 .build();
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();

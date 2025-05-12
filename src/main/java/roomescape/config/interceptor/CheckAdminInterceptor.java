@@ -30,8 +30,9 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
             for (Cookie cookie : cookies) {
                 if (TOKEN_NAME_FILED.equals(cookie.getName())) {
                     Claims claims = jwtTokenProvider.getClaims(cookie.getValue());
-                    String actualRoleName = claims.get("role", String.class);
-                    boolean equals = actualRoleName.equals(Role.ROLE_ADMIN.name());
+                    String roleStr = (String) claims.get("role");
+                    Role role = Role.valueOf(roleStr);
+                    boolean equals = role.equals(Role.ROLE_ADMIN);
                     if (!equals) {
                         throw new ForbiddenException();
                     }
