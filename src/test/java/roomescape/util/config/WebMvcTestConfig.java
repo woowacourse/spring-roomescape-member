@@ -1,22 +1,46 @@
 package roomescape.util.config;
 
-import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.auth.infrastructure.TokenExtractor;
+import roomescape.auth.service.AuthService;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.enums.Role;
+import roomescape.member.repository.MemberRepository;
+import roomescape.reservation.repository.fake.MemberFakeRepository;
+import roomescape.util.fixture.AuthFixture;
 
 @TestConfiguration
-public class WebMvcTestConfig {
+public class WebMvcTestConfig implements WebMvcConfigurer {
 
     @Bean
-    public TokenExtractor tokenExtractor() {
-        return Mockito.mock(TokenExtractor.class);
+    public AuthService authService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+        return new AuthService(memberRepository, jwtTokenProvider);
     }
 
     @Bean
-    public JwtTokenProvider jwtTokenProvider() {
-        return Mockito.mock(JwtTokenProvider.class);
+    public MemberRepository memberRepository() {
+        MemberFakeRepository memberRepository = new MemberFakeRepository();
+        memberRepository.save(new Member(1L, "관리자", AuthFixture.ADMIN_EMAIL, AuthFixture.ADMIN_PASSWORD, Role.ADMIN));
+        memberRepository.save(new Member(2L, "사용자", AuthFixture.USER_EMAIL, AuthFixture.USER_PASSWORD, Role.USER));
+
+        return memberRepository;
+    }
+
+    @Bean
+    public TokenExtractor tokenExtractor() {
+        return new TokenExtractor();
+    }
+
+    @Bean
+    public JwtTokenProvider jwtTokenProvider(
+            @Value("${security.jwt.token.secret.key}") String secretKey,
+            @Value("${security.jwt.token.expiration}") Long expirationInMilliseconds
+    ) {
+        return new JwtTokenProvider(secretKey, expirationInMilliseconds);
     }
 
 }

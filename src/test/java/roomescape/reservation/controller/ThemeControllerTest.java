@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -16,9 +17,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.auth.controller.LoginController;
+import roomescape.auth.service.AuthService;
 import roomescape.reservation.controller.dto.ThemeRequest;
 import roomescape.reservation.service.ThemeService;
 import roomescape.util.config.WebMvcTestConfig;
+import roomescape.util.fixture.AuthFixture;
 
 @Import(WebMvcTestConfig.class)
 @WebMvcTest(ThemeController.class)
@@ -29,6 +33,9 @@ class ThemeControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private AuthService authService;
 
     @DisplayName("테마 생성 요청이 올바르지 않으면 400을 반환한다")
     @CsvSource(
@@ -46,11 +53,13 @@ class ThemeControllerTest {
     void add_theme_validate_test(String name, String description, String thumbnail, String errorFieldName,
                                  String errorMessage) throws Exception {
         // given
+        String adminToken = AuthFixture.createAdminToken(authService);
         ThemeRequest request = new ThemeRequest(name, description, thumbnail);
 
         // when & then
         mockMvc.perform(post("/themes")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(new Cookie(LoginController.TOKEN_COOKIE_NAME, adminToken))
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$." + errorFieldName).value(errorMessage));

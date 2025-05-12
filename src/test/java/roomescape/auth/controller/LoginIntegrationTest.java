@@ -93,6 +93,18 @@ class LoginIntegrationTest {
         assertThat(response.name()).isEqualTo("사용자");
     }
 
+    @DisplayName("로그인하지 않은 상태에서 사용자의 정보를 조회하면 예외가 발생한다")
+    @Test
+    void check_member_exception_test() {
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(401)
+                .body(equalTo("인증에 실패했습니다."));
+    }
+
     @DisplayName("쿠키 내부에 토큰이 존재하지 않으면 예외가 발생한다")
     @Test
     void cookie_not_exists_exception() {

@@ -59,7 +59,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ForbiddenException.class)
     public String handleForbiddenException(ForbiddenException exception) {
         LOGGER.error(exception.getMessage());
-        return exception.getMessage();
+        return "접근 권한이 없습니다.";
     }
 
 

@@ -15,10 +15,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.auth.controller.LoginController;
+import roomescape.auth.service.AuthService;
 import roomescape.reservation.controller.dto.ThemeRankingResponse;
 import roomescape.reservation.controller.dto.ThemeResponse;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.repository.ThemeRepository;
+import roomescape.util.fixture.AuthFixture;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -26,6 +29,9 @@ class ThemeIntegrationTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private AuthService authService;
 
     @DisplayName("테마 목록의 조회 시 DB에 저장된 테마 목록을 반환한다")
     @Test
@@ -82,6 +88,7 @@ class ThemeIntegrationTest {
     @Test
     void add_theme_test() {
         //given
+        String adminToken = AuthFixture.createAdminToken(authService);
         Map<String, String> params = new HashMap<>();
         params.put("name", "레벨7 탈출");
         params.put("description", "우테코 레벨7를 탈출하는 내용입니다.");
@@ -90,6 +97,7 @@ class ThemeIntegrationTest {
         // when
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(LoginController.TOKEN_COOKIE_NAME, adminToken)
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
@@ -111,8 +119,12 @@ class ThemeIntegrationTest {
     @DisplayName("테마를 삭제하면 DB의 테마 데이터가 삭제된다")
     @Test
     void delete_theme_test() {
+        // given
+        String userToken = AuthFixture.createAdminToken(authService);
+
         // when
         RestAssured.given().log().all()
+                .cookie(LoginController.TOKEN_COOKIE_NAME, userToken)
                 .when().delete("/themes/6")
                 .then().log().all()
                 .statusCode(204);
@@ -127,8 +139,12 @@ class ThemeIntegrationTest {
     @DisplayName("테마 삭제 시 연관된 예약 데이터가 존재하여 예외가 발생한다.")
     @Test
     void delete_theme_exception() {
+        // given
+        String userToken = AuthFixture.createAdminToken(authService);
+
         // when & then
         RestAssured.given().log().all()
+                .cookie(LoginController.TOKEN_COOKIE_NAME, userToken)
                 .when().delete("/themes/3")
                 .then().log().all()
                 .statusCode(409)

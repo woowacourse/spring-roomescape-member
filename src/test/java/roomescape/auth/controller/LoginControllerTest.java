@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.auth.dto.TokenRequest;
-import roomescape.auth.service.AuthService;
 import roomescape.member.service.MemberService;
 import roomescape.util.config.WebMvcTestConfig;
 
@@ -56,10 +55,6 @@ class LoginControllerTest {
 
     @TestConfiguration
     static class MockConfig {
-        @Bean
-        public AuthService authService() {
-            return Mockito.mock(AuthService.class);
-        }
 
         @Bean
         public MemberService memberService() {

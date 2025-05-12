@@ -95,8 +95,12 @@ class ReservationIntegrationTest {
     @DisplayName("예약을 삭제하면 DB의 예약 데이터가 삭제된다")
     @Test
     void delete_reservation_test() {
+        // given
+        String userToken = AuthFixture.createUserToken(authService);
+
         // when
         RestAssured.given().log().all()
+                .cookie(LoginController.TOKEN_COOKIE_NAME, userToken)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
@@ -130,24 +134,6 @@ class ReservationIntegrationTest {
                 .toList();
 
         assertThat(bookedTimeIds).containsExactly(2L, 3L);
-    }
-
-    @DisplayName("예약 생성 시 요청 값에 공백이나 null값이 포함되면 400에러가 발생한다")
-    @MethodSource
-    @ParameterizedTest
-    void add_reservation_null_empty_exception(Map<String, String> requestBody) {
-        // given
-        String token = AuthFixture.createUserToken(authService);
-
-        // when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .cookie(LoginController.TOKEN_COOKIE_NAME, token)
-                .body(requestBody)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400)
-                .body(equalTo("요청 형식이 올바르지 않습니다."));
     }
 
     @DisplayName("예약 생성 시 요청 날짜가 형식에 맞지 않으면 400에러가 발생한다")

@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -19,9 +20,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.auth.controller.LoginController;
+import roomescape.auth.service.AuthService;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.service.ReservationService;
 import roomescape.util.config.WebMvcTestConfig;
+import roomescape.util.fixture.AuthFixture;
 
 @Import(WebMvcTestConfig.class)
 @WebMvcTest(ReservationController.class)
@@ -33,6 +37,9 @@ class ReservationControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private AuthService authService;
+
     @DisplayName("예약 생성 요청이 올바르지 않으면 400을 반환한다")
     @MethodSource
     @ParameterizedTest
@@ -40,12 +47,14 @@ class ReservationControllerTest {
                                        String errorMessage)
             throws Exception {
         // given
+        String userToken = AuthFixture.createUserToken(authService);
         Long memberId = 3L;
         ReservationRequest reservationRequest = new ReservationRequest(date, timeId, themeId, memberId);
 
         // when & then
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(new Cookie(LoginController.TOKEN_COOKIE_NAME, userToken))
                         .content(objectMapper.writeValueAsString(reservationRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$." + errorFieldName).value(errorMessage));

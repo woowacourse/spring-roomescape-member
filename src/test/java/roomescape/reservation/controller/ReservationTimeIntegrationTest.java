@@ -16,9 +16,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.auth.controller.LoginController;
+import roomescape.auth.service.AuthService;
 import roomescape.reservation.controller.dto.ReservationTimeResponse;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.repository.ReservationTimeRepository;
+import roomescape.util.fixture.AuthFixture;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -26,6 +29,9 @@ class ReservationTimeIntegrationTest {
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private AuthService authService;
 
     @DisplayName("예약 시간 목록 조회 시 DB에 저장된 예약 시간 목록을 반환한다")
     @Test
@@ -62,10 +68,12 @@ class ReservationTimeIntegrationTest {
         //given
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:20");
+        String adminToken = AuthFixture.createAdminToken(authService);
 
         // when
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(LoginController.TOKEN_COOKIE_NAME, adminToken)
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
@@ -84,8 +92,12 @@ class ReservationTimeIntegrationTest {
     @DisplayName("예약 시간을 삭제하면 DB의 예약 시간 데이터가 삭제된다")
     @Test
     void delete_time_test() {
+        // given
+        String adminToken = AuthFixture.createAdminToken(authService);
+
         // when
         RestAssured.given().log().all()
+                .cookie(LoginController.TOKEN_COOKIE_NAME, adminToken)
                 .when().delete("/times/6")
                 .then().log().all()
                 .statusCode(204);
@@ -100,8 +112,12 @@ class ReservationTimeIntegrationTest {
     @DisplayName("테마 삭제 시 연관된 예약 데이터가 존재하여 예외가 발생한다.")
     @Test
     void delete_time_exception() {
+        // given
+        String adminToken = AuthFixture.createAdminToken(authService);
+
         // when & then
         RestAssured.given().log().all()
+                .cookie(LoginController.TOKEN_COOKIE_NAME, adminToken)
                 .when().delete("/times/3")
                 .then().log().all()
                 .statusCode(409)
