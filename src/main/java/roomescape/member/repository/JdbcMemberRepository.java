@@ -30,7 +30,7 @@ public class JdbcMemberRepository implements MemberRepository {
             MemberId.from(resultSet.getLong("id")),
             MemberName.from(resultSet.getString("name")),
             MemberEmail.from(resultSet.getString("email")),
-            Role.valueOf(resultSet.getString("role"))
+            Role.from(resultSet.getString("role"))
     );
 
     private final RowMapper<Account> accountRowMapper = (resultSet, rowNum) -> Account.of(
@@ -38,7 +38,7 @@ public class JdbcMemberRepository implements MemberRepository {
                     MemberId.from(resultSet.getLong("id")),
                     MemberName.from(resultSet.getString("name")),
                     MemberEmail.from(resultSet.getString("email")),
-                    Role.valueOf(resultSet.getString("role"))
+                    Role.from(resultSet.getString("role"))
             ),
             Password.from(resultSet.getString("password"))
     );

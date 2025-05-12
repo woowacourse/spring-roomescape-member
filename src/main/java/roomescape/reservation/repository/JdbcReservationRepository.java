@@ -60,7 +60,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 MemberId.from(resultSet.getLong("member_id")),
                 MemberName.from(resultSet.getString("member_name")),
                 MemberEmail.from(resultSet.getString("email")),
-                Role.valueOf(resultSet.getString("role"))
+                Role.from(resultSet.getString("role"))
         );
 
         return Reservation.withId(
