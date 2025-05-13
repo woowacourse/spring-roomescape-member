@@ -7,7 +7,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,9 +52,7 @@ public class AuthRestController {
 
     @PostMapping("/logout")
     @RequiresRole(authRoles = {AuthRole.ADMIN, AuthRole.MEMBER})
-    public ResponseEntity<Void> logout(@CookieValue(value = "token") final String accessToken) {
-        log.info("Logout accessToken: {}", accessToken);
-
+    public ResponseEntity<Void> logout() {
         final ResponseCookie cookie = ResponseCookie.from("token", "")
                 .path("/")
                 .httpOnly(true)
