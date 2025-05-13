@@ -1,8 +1,7 @@
 package roomescape.config;
 
-import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
-import static roomescape.config.AuthenticationInterceptor.LOGIN_MEMBER_ATTRIBUTE_NAME;
-
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Objects;
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -14,6 +13,12 @@ import org.springframework.web.method.support.ModelAndViewContainer;
  * 로그인한 회원 정보를 컨트롤러 메서드의 인자로 주입하는 ArgumentResolver입니다.
  */
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+
+    private final LoginContext loginContext;
+
+    public LoginMemberArgumentResolver(LoginContext loginContext) {
+        this.loginContext = loginContext;
+    }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -28,10 +33,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   ModelAndViewContainer mavContainer,
                                   @NonNull NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) {
-        return getLoginMember(webRequest);
-    }
-
-    private LoginMember getLoginMember(NativeWebRequest webRequest) {
-        return (LoginMember) webRequest.getAttribute(LOGIN_MEMBER_ATTRIBUTE_NAME, SCOPE_REQUEST);
+        HttpServletRequest request = Objects.requireNonNull(webRequest.getNativeRequest(HttpServletRequest.class));
+        return loginContext.getLoginMember(request);
     }
 }

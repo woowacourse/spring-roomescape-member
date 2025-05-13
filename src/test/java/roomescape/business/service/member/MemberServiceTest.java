@@ -122,28 +122,6 @@ class MemberServiceTest {
         );
     }
 
-    @DisplayName("AccessToken을 통해 로그인한 사용자의 정보를 가져온다.")
-    @Test
-    void getMemberFromToken() {
-        // given
-        String email = "test@email.com";
-        String password = "password";
-        String name = "test";
-        MemberRequestDto memberRequestDto = new MemberRequestDto(email, password, name);
-        memberService.registerMember(memberRequestDto);
-        LoginRequestDto loginRequestDto = new LoginRequestDto(email, password);
-        AccessToken accessToken = memberService.login(loginRequestDto);
-
-        // when
-        LoginMember loginMember = memberService.getMemberFromToken(accessToken);
-
-        // then
-        assertAll(
-                () -> assertThat(loginMember.id()).isEqualTo(1L),
-                () -> assertThat(loginMember.name()).isEqualTo(name)
-        );
-    }
-
     @DisplayName("가입한 사용자 목록을 조회한다.")
     @Test
     void getMembers() {
@@ -162,27 +140,6 @@ class MemberServiceTest {
                 () -> assertThat(members).isNotEmpty(),
                 () -> assertThat(members.get(0).name()).isEqualTo(name)
         );
-    }
-
-    @DisplayName("로그인한 사용자의 이름을 확인한다.")
-    @Test
-    void checkLogin() {
-        // given
-        String email = "test@email.com";
-        String password = "password";
-        String name = "test";
-        MemberRequestDto memberRequestDto = new MemberRequestDto(email, password, name);
-        memberService.registerMember(memberRequestDto);
-        LoginRequestDto loginRequestDto = new LoginRequestDto(email, password);
-        AccessToken accessToken = memberService.login(loginRequestDto);
-        LoginMember loginMember = memberService.getMemberFromToken(accessToken);
-
-        // when
-        String memberName = memberService.checkLogin(loginMember);
-
-        // then
-        assertThat(memberName)
-                .isEqualTo(name);
     }
 
     @DisplayName("로그인하지 않은 경우 예외가 발생한다.")

@@ -20,7 +20,6 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    @Autowired
     public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
@@ -44,17 +43,6 @@ public class MemberService {
             throw new MemberException("이메일 또는 비밀번호가 잘못되었습니다.");
         }
         return AccessToken.create(memberCredential);
-    }
-
-    public LoginMember getMemberFromToken(AccessToken accessToken) {
-        Long memberIdFromToken = accessToken.extractMemberId();
-        Member member = memberRepository.findById(memberIdFromToken)
-                .orElseThrow(() -> new MemberException("사용자가 존재하지 않습니다."));
-        return new LoginMember(
-                member.getId(),
-                member.getName(),
-                member.getRole()
-        );
     }
 
     public List<MemberResponseDto> getMembers() {

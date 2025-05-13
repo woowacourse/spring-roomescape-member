@@ -11,40 +11,24 @@ import roomescape.business.service.member.MemberService;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    private static final List<String> EXCLUDE_PATHS = List.of(
-            "/signup",
-            "/login",
-            "/logout",
-            "/error",
-            "/css/**",
-            "/js/**"
-    );
+    private final LoginContext loginContext;
 
-    private final MemberService memberService;
-
-    public WebMvcConfiguration(MemberService memberService) {
-        this.memberService = memberService;
+    public WebMvcConfiguration(LoginContext loginContext) {
+        this.loginContext = loginContext;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberArgumentResolver());
+        resolvers.add(new LoginMemberArgumentResolver(loginContext));
     }
 
     @Override
     public void addInterceptors(@NonNull InterceptorRegistry registry) {
-        addAuthenticationInterceptor(registry);
         addCheckAdminInterceptor(registry);
     }
 
-    private void addAuthenticationInterceptor(InterceptorRegistry registry) {
-        registry.addInterceptor(new AuthenticationInterceptor(memberService))
-                .addPathPatterns("/**")
-                .excludePathPatterns(EXCLUDE_PATHS);
-    }
-
     private void addCheckAdminInterceptor(InterceptorRegistry registry) {
-        registry.addInterceptor(new CheckAdminInterceptor())
+        registry.addInterceptor(new CheckAdminInterceptor(loginContext))
                 .addPathPatterns("/admin/**");
     }
 }
