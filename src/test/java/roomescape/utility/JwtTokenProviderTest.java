@@ -31,6 +31,7 @@ class JwtTokenProviderTest {
         assertAll(
                 () -> assertThat(tokenBody.getSubject()).isEqualTo("1"),
                 () -> assertThat(tokenBody.get("name")).isEqualTo("이름"),
+                () -> assertThat(tokenBody.get("role")).isEqualTo(MemberRole.GENERAL.toString()),
                 () -> assertThat(tokenBody.getExpiration().getTime())
                         .isBetween(validity.getTime() - 60000, validity.getTime())
         );
