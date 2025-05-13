@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import roomescape.common.exception.DuplicateException;
 import roomescape.common.exception.InvalidIdException;
 import roomescape.common.exception.InvalidTimeException;
+import roomescape.common.exception.message.IdExceptionMessage;
+import roomescape.common.exception.message.ReservationExceptionMessage;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 import roomescape.reservation.dao.ReservationDao;
@@ -23,12 +25,6 @@ import roomescape.theme.domain.Theme;
 
 @Service
 public class ReservationService {
-    private static final String INVALID_TIME_EXCEPTION_MESSAGE = "당일의 과거 시간대로는 예약할 수 없습니다.";
-    private static final String DUPLICATE_RESERVATION_EXCEPTION_MESSAGE = "이미 동일한 예약이 존재합니다.";
-    private static final String INVALID_TIME_ID_EXCEPTION_MESSAGE = "해당 시간 아이디는 존재하지 않습니다.";
-    private static final String INVALID_THEME_ID_EXCEPTION_MESSAGE = "해당 테마 아이디는 존재하지 않습니다.";
-    private static final String INVALID_ID_EXCEPTION_MESSAGE = "해당 예약 아이디는 존재하지 않습니다";
-    private static final String INVALID_MEMBER_ID_EXCEPTION_MESSAGE = "해당 회원 아이디는 존재하지 않습니다";
 
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
@@ -141,7 +137,7 @@ public class ReservationService {
     private void validateTime(final LocalDate reservationDate, final ReservationTime reservationTimeResult) {
         if (reservationDate.isEqual(LocalDate.now())
                 && reservationTimeResult.getStartAt().isBefore(LocalTime.now())) {
-            throw new InvalidTimeException(INVALID_TIME_EXCEPTION_MESSAGE);
+            throw new InvalidTimeException(ReservationExceptionMessage.TIME_BEFORE_NOW.getMessage());
         }
     }
 
@@ -152,7 +148,7 @@ public class ReservationService {
         boolean isDuplicate = reservationDao.existsByDateAndTimeId(reservationDate, reservationTimeResult.getId());
 
         if (isDuplicate) {
-            throw new DuplicateException(DUPLICATE_RESERVATION_EXCEPTION_MESSAGE);
+            throw new DuplicateException(ReservationExceptionMessage.DUPLICATE_RESERVATION.getMessage());
         }
     }
 
@@ -163,21 +159,21 @@ public class ReservationService {
 
     private Reservation searchReservation(final Long id) {
         return reservationDao.findById(id)
-                .orElseThrow(() -> new InvalidIdException(INVALID_ID_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new InvalidIdException(IdExceptionMessage.INVALID_RESERVATION_ID.getMessage()));
     }
 
     private Member searchMember(Long memberId) {
         return memberDao.findById(memberId)
-                .orElseThrow(() -> new InvalidIdException(INVALID_MEMBER_ID_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new InvalidIdException(IdExceptionMessage.INVALID_MEMBER_ID.getMessage()));
     }
 
     private ReservationTime searchReservationTime(final Long timeId) {
         return reservationTimeDao.findById(timeId)
-                .orElseThrow(() -> new InvalidIdException(INVALID_TIME_ID_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new InvalidIdException(IdExceptionMessage.INVALID_TIME_ID.getMessage()));
     }
 
     private Theme searchTheme(final Long themeId) {
         return themeDao.findById(themeId)
-                .orElseThrow(() -> new InvalidIdException(INVALID_THEME_ID_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new InvalidIdException(IdExceptionMessage.INVALID_THEME_ID.getMessage()));
     }
 }

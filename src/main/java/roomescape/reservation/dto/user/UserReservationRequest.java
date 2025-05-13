@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import roomescape.common.exception.InvalidDateException;
 import roomescape.common.exception.InvalidIdException;
+import roomescape.common.exception.message.RequestExceptionMessage;
 
 public record UserReservationRequest(
         @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
@@ -12,16 +13,16 @@ public record UserReservationRequest(
 ) {
     public UserReservationRequest {
         if (date == null) {
-            throw new InvalidDateException("날짜를 입력해주세요");
+            throw new InvalidDateException(RequestExceptionMessage.INVALID_DATE.getMessage());
         }
         if (date.isBefore(LocalDate.now())) {
-            throw new InvalidDateException("이미 지난 날짜로는 예약할 수 없습니다.");
+            throw new InvalidDateException(RequestExceptionMessage.DATE_BEFORE_NOW.getMessage());
         }
         if (timeId == null) {
-            throw new InvalidIdException("시간 아이디를 입력해주세요");
+            throw new InvalidIdException(RequestExceptionMessage.INVALID_TIME_ID.getMessage());
         }
         if (themeId == null) {
-            throw new InvalidIdException("테마 아이디를 입력해주세요");
+            throw new InvalidIdException(RequestExceptionMessage.INVALID_THEME_ID.getMessage());
         }
     }
 }

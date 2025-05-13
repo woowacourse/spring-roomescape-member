@@ -12,7 +12,12 @@ import roomescape.member.login.authorization.TokenAuthorizationHandler;
 @Controller
 @RequestMapping("/logout")
 public class LogoutApiController {
-    private final AuthorizationHandler<String> authorizationHandler = new TokenAuthorizationHandler();
+
+    private final AuthorizationHandler<String> authorizationHandler;
+
+    public LogoutApiController(TokenAuthorizationHandler tokenAuthorizationHandler) {
+        this.authorizationHandler = tokenAuthorizationHandler;
+    }
 
     @PostMapping
     public ResponseEntity<Void> logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {

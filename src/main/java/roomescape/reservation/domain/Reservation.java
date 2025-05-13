@@ -8,7 +8,6 @@ import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 public class Reservation {
-    private static final String NULL_VALUE_EXCEPTION_MESSAGE = "널 값은 저장될 수 없습니다.";
 
     private final Long id;
     private final Member member;
@@ -18,18 +17,18 @@ public class Reservation {
 
     public Reservation(Member member, LocalDate date, ReservationTime time, Theme theme) {
         this.id = null;
-        this.member = Objects.requireNonNull(member, NULL_VALUE_EXCEPTION_MESSAGE);
-        this.date = Objects.requireNonNull(date, NULL_VALUE_EXCEPTION_MESSAGE);
-        this.time = Objects.requireNonNull(time, NULL_VALUE_EXCEPTION_MESSAGE);
-        this.theme = Objects.requireNonNull(theme, NULL_VALUE_EXCEPTION_MESSAGE);
+        this.member = Objects.requireNonNull(member);
+        this.date = Objects.requireNonNull(date);
+        this.time = Objects.requireNonNull(time);
+        this.theme = Objects.requireNonNull(theme);
     }
 
     public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
-        this.id = Objects.requireNonNull(id, NULL_VALUE_EXCEPTION_MESSAGE);
-        this.member = Objects.requireNonNull(member, NULL_VALUE_EXCEPTION_MESSAGE);
-        this.date = Objects.requireNonNull(date, NULL_VALUE_EXCEPTION_MESSAGE);
-        this.time = Objects.requireNonNull(time, NULL_VALUE_EXCEPTION_MESSAGE);
-        this.theme = Objects.requireNonNull(theme, NULL_VALUE_EXCEPTION_MESSAGE);
+        this.id = Objects.requireNonNull(id);
+        this.member = Objects.requireNonNull(member);
+        this.date = Objects.requireNonNull(date);
+        this.time = Objects.requireNonNull(time);
+        this.theme = Objects.requireNonNull(theme);
     }
 
     public Long getId() {

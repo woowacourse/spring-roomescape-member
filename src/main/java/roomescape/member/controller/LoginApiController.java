@@ -18,12 +18,13 @@ import roomescape.member.service.MemberService;
 @Controller
 @RequestMapping("/login")
 public class LoginApiController {
+
     private final MemberService memberService;
     private final AuthorizationHandler<String> authorizationHandler;
 
-    public LoginApiController(MemberService memberService) {
+    public LoginApiController(MemberService memberService, TokenAuthorizationHandler tokenAuthorizationHandler) {
         this.memberService = memberService;
-        this.authorizationHandler = new TokenAuthorizationHandler();
+        this.authorizationHandler = tokenAuthorizationHandler;
     }
 
     @PostMapping

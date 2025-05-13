@@ -5,11 +5,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import roomescape.common.exception.AuthorizationException;
+import roomescape.common.exception.message.LoginExceptionMessage;
 
 @Component
 public class TokenAuthorizationHandler implements AuthorizationHandler<String> {
-    private static final String INVALID_COOKIE_EXCEPTION_MESSAGE = "쿠키가 존재하지 않습니다";
-    private static final String INVALID_TOKEN_VALUE_EXCEPTION_MESSAGE = "토큰 값이 존재하지 않습니다";
+
+    private static final String AUTHORIZATION = "token";
 
     @Override
     public String extractToken(HttpServletRequest httpServletRequest) {
@@ -20,7 +21,7 @@ public class TokenAuthorizationHandler implements AuthorizationHandler<String> {
                 return cookie.getValue();
             }
         }
-        throw new AuthorizationException(INVALID_TOKEN_VALUE_EXCEPTION_MESSAGE);
+        throw new AuthorizationException(LoginExceptionMessage.INVALID_TOKEN_VALUE.getMessage());
     }
 
     @Override
@@ -46,7 +47,7 @@ public class TokenAuthorizationHandler implements AuthorizationHandler<String> {
     @Override
     public void validateCookie(Cookie[] cookies) {
         if (cookies == null) {
-            throw new AuthorizationException(INVALID_COOKIE_EXCEPTION_MESSAGE);
+            throw new AuthorizationException(LoginExceptionMessage.INVALID_COOKIE.getMessage());
         }
     }
 }

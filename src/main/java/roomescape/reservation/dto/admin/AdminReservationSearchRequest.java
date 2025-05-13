@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import roomescape.common.exception.InvalidDateException;
 import roomescape.common.exception.InvalidIdException;
+import roomescape.common.exception.message.RequestExceptionMessage;
 
 public record AdminReservationSearchRequest(
         Long memberId,
@@ -13,13 +14,13 @@ public record AdminReservationSearchRequest(
 ) {
     public AdminReservationSearchRequest {
         if (dateFrom == null || dateTo == null) {
-            throw new InvalidDateException("날짜를 선택해주세요");
+            throw new InvalidDateException(RequestExceptionMessage.INVALID_DATE.getMessage());
         }
         if (memberId == null) {
-            throw new InvalidIdException("멤버 아이디를 선택해주세요");
+            throw new InvalidIdException(RequestExceptionMessage.INVALID_MEMBER_ID.getMessage());
         }
         if (themeId == null) {
-            throw new InvalidIdException("테마 아이디를 선택해주세요");
+            throw new InvalidIdException(RequestExceptionMessage.INVALID_THEME_ID.getMessage());
         }
     }
 }
