@@ -16,6 +16,6 @@ public record ReservationRequest(
         Long themeId
 ) {
     public Reservation toEntity(LoginMember loginMember, ReservationTime timeEntity) {
-        return new Reservation(0L, loginMember.id(), date, timeEntity, themeId);
+        return new Reservation(null, loginMember.id(), date, timeEntity, themeId);
     }
 }

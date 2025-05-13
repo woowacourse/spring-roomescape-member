@@ -12,7 +12,7 @@ public class ReservationTime {
     private LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {
-        if (id == null || startAt == null) {
+        if (startAt == null) {
             throw new BadRequestException("필요한 시간 정보가 모두 입력되지 않았습니다.");
         }
         this.id = id;

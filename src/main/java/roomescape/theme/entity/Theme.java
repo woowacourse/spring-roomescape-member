@@ -13,8 +13,7 @@ public class Theme {
     private String thumbnail;
 
     public Theme(Long id, String name, String description, String thumbnail) {
-        if (id == null
-                || name == null || name.isBlank()
+        if (name == null || name.isBlank()
                 || description == null || description.isBlank()
                 || thumbnail == null || thumbnail.isBlank()
         ) {

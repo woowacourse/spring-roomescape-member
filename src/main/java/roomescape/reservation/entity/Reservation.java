@@ -15,7 +15,7 @@ public class Reservation {
     private Long themeId;
 
     public Reservation(Long id, Long memberId, LocalDate date, ReservationTime time, Long themeId) {
-        if (id == null || memberId == null || date == null || time == null || themeId == null) {
+        if (memberId == null || date == null || time == null || themeId == null) {
             throw new BadRequestException("필요한 예약 정보가 모두 입력되지 않았습니다.");
         }
         this.id = id;

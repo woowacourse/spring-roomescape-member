@@ -14,6 +14,6 @@ public record UserSignupRequest(
         String name
 ) {
         public Member toEntity() {
-                return new Member(0L, name, Role.USER.name(), email, password);
+                return new Member(null, name, Role.USER.name(), email, password);
         }
 }

@@ -34,7 +34,7 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void createTest() {
         // given
-        ReservationTime time = new ReservationTime(0L, LocalTime.of(10, 0));
+        ReservationTime time = new ReservationTime(null, LocalTime.of(10, 0));
 
         // when
         timeRepository.save(time);
