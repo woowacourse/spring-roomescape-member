@@ -8,15 +8,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.member.argumentResolver.LoginMember;
 import roomescape.common.exceptionHandler.dto.ExceptionResponse;
+import roomescape.reservation.dto.request.ReservationConditionRequest;
+import roomescape.reservation.dto.request.ReservationRequest;
+import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
-import roomescape.reservation.dto.ReservationRequest;
-import roomescape.reservation.dto.ReservationResponse;
 
 @RestController
 @RequestMapping(ReservationController.RESERVATION_BASE_URL)
@@ -32,14 +35,16 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<ReservationResponse> response = reservationService.getReservations();
+    public ResponseEntity<List<ReservationResponse>> getReservations(
+            @ModelAttribute ReservationConditionRequest request) {
+        List<ReservationResponse> response = reservationService.getReservations(request);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationRequest request) {
-        ReservationResponse response = reservationService.createReservation(request);
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationRequest request,
+                                                                 @LoginMember final roomescape.member.dto.request.LoginMember loginMember) {
+        ReservationResponse response = reservationService.createReservation(request, loginMember.id());
         URI locationUri = URI.create(RESERVATION_BASE_URL + SLASH + response.id());
         return ResponseEntity.created(locationUri).body(response);
     }
@@ -53,7 +58,7 @@ public class ReservationController {
     @ExceptionHandler(value = DateTimeParseException.class)
     public ResponseEntity<ExceptionResponse> noMatchDateType(final HttpServletRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
-                400, "[ERROR] 요청 날짜 형식이 맞지 않습니다.", request.getRequestURI()
+                "[ERROR] 요청 날짜 형식이 맞지 않습니다.", request.getRequestURI()
         );
         return ResponseEntity.badRequest().body(exceptionResponse);
     }

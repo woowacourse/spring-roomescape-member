@@ -1,10 +1,9 @@
 package roomescape.common.exceptionHandler;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +20,101 @@ class GlobalExceptionHandlerTest {
 
     @LocalServerPort
     private int port;
+
+    @BeforeEach
+    void beforeEach() {
+        RestAssured.port = this.port;
+    }
+
+    @Test
+    @DisplayName("IllegalArgumentException 처리 테스트")
+    void IllegalArgumentException_Handler_Test() {
+        // given
+        ExceptionResponse expected = new ExceptionResponse("[ERROR] IllegalArgumentException 예외 테스트",
+                "/illegalArgumentException");
+        // when
+        Response response = RestAssured.given().log().all()
+                .when().get("/illegalArgumentException")
+                .then().log().all()
+                .statusCode(400)
+                .extract()
+                .response();
+        // then
+        ExceptionResponse actual = response.as(ExceptionResponse.class);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("NullPointerException 처리 테스트")
+    void NullPointerException_Handler_Test() {
+        // given
+        ExceptionResponse expected = new ExceptionResponse("[ERROR] 서버의 오류입니다. 관리자에게 문의해주세요.",
+                "/nullPointerException");
+        // when
+        Response response = RestAssured.given().log().all()
+                .when().get("/nullPointerException")
+                .then().log().all()
+                .statusCode(500)
+                .extract()
+                .response();
+        // then
+        ExceptionResponse actual = response.as(ExceptionResponse.class);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("HttpMessageNotReadableException 처리 테스트")
+    void HttpMessageNotReadableException_Handler_Test() {
+        // given
+        ExceptionResponse expected = new ExceptionResponse("[ERROR] 요청 입력이 잘못되었습니다.",
+                "/httpMessageNotReadableException");
+        // when
+        Response response = RestAssured.given().log().all()
+                .when().get("/httpMessageNotReadableException")
+                .then().log().all()
+                .statusCode(400)
+                .extract()
+                .response();
+        // then
+        ExceptionResponse actual = response.as(ExceptionResponse.class);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("IllegalArgumentException 감싼 HttpMessageNotReadableException 처리 테스트")
+    void IllegalArgumentException_and_HttpMessageNotReadableException_Handler_Test() {
+        // given
+        ExceptionResponse expected = new ExceptionResponse("[ERROR] IllegalArgumentException 감싼 예외 테스트",
+                "/httpMessageNotReadableException2");
+        // when
+        Response response = RestAssured.given().log().all()
+                .when().get("/httpMessageNotReadableException2")
+                .then().log().all()
+                .statusCode(400)
+                .extract()
+                .response();
+        // then
+        ExceptionResponse actual = response.as(ExceptionResponse.class);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("예상치 못한 오류 처리 테스트")
+    void Exception_Handler_Test() {
+        // given
+        ExceptionResponse expected = new ExceptionResponse("[ERROR] 예상치 못한 서버 오류입니다. 서버에 문의해주세요.",
+                "/unknown");
+        // when
+        Response response = RestAssured.given().log().all()
+                .when().get("/unknown")
+                .then().log().all()
+                .statusCode(500)
+                .extract()
+                .response();
+        // then
+        ExceptionResponse actual = response.as(ExceptionResponse.class);
+        assertThat(actual).isEqualTo(expected);
+    }
 
     @TestConfiguration
     static class TestControllerConfig {
@@ -55,95 +149,5 @@ class GlobalExceptionHandlerTest {
                 throw new IllegalStateException("예상치 못한 오류");
             }
         }
-    }
-
-    @BeforeEach
-    void beforeEach() {
-        RestAssured.port = this.port;
-    }
-
-    @Test
-    @DisplayName("IllegalArgumentException 처리 테스트")
-    void IllegalArgumentException_Handler_Test() {
-        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] IllegalArgumentException 예외 테스트",
-                "/illegalArgumentException");
-
-        Response response = RestAssured.given().log().all()
-                .when().get("/illegalArgumentException")
-                .then().log().all()
-                .statusCode(400)
-                .extract()
-                .response();
-
-        ExceptionResponse actual = response.as(ExceptionResponse.class);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    @DisplayName("NullPointerException 처리 테스트")
-    void NullPointerException_Handler_Test() {
-        ExceptionResponse expected = new ExceptionResponse(500, "[ERROR] 서버의 오류입니다. 관리자에게 문의해주세요.",
-                "/nullPointerException");
-
-        Response response = RestAssured.given().log().all()
-                .when().get("/nullPointerException")
-                .then().log().all()
-                .statusCode(500)
-                .extract()
-                .response();
-
-        ExceptionResponse actual = response.as(ExceptionResponse.class);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    @DisplayName("HttpMessageNotReadableException 처리 테스트")
-    void HttpMessageNotReadableException_Handler_Test() {
-        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 요청 입력이 잘못되었습니다.",
-                "/httpMessageNotReadableException");
-
-        Response response = RestAssured.given().log().all()
-                .when().get("/httpMessageNotReadableException")
-                .then().log().all()
-                .statusCode(400)
-                .extract()
-                .response();
-
-        ExceptionResponse actual = response.as(ExceptionResponse.class);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    @DisplayName("IllegalArgumentException 감싼 HttpMessageNotReadableException 처리 테스트")
-    void IllegalArgumentException_and_HttpMessageNotReadableException_Handler_Test() {
-        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] IllegalArgumentException 감싼 예외 테스트",
-                "/httpMessageNotReadableException2");
-
-        Response response = RestAssured.given().log().all()
-                .when().get("/httpMessageNotReadableException2")
-                .then().log().all()
-                .statusCode(400)
-                .extract()
-                .response();
-
-        ExceptionResponse actual = response.as(ExceptionResponse.class);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    @DisplayName("예상치 못한 오류 처리 테스트")
-    void Exception_Handler_Test() {
-        ExceptionResponse expected = new ExceptionResponse(500, "[ERROR] 예상치 못한 서버 오류입니다. 서버에 문의해주세요.",
-                "/unknown");
-
-        Response response = RestAssured.given().log().all()
-                .when().get("/unknown")
-                .then().log().all()
-                .statusCode(500)
-                .extract()
-                .response();
-
-        ExceptionResponse actual = response.as(ExceptionResponse.class);
-        assertThat(actual).isEqualTo(expected);
     }
 }

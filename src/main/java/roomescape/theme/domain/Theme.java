@@ -21,24 +21,24 @@ public class Theme {
     }
 
     public static Theme createWithoutId(final String name, final String description, final String thumbnail) {
-        validate(name,description,thumbnail);
+        validate(name, description, thumbnail);
         return new Theme(null, name, description, thumbnail);
     }
 
     public static Theme createWithId(final Long id, final String name, final String description,
                                      final String thumbnail) {
-        validate(name,description,thumbnail);
+        validate(name, description, thumbnail);
         return new Theme(Objects.requireNonNull(id), name, description, thumbnail);
     }
 
-    private static void validate(final String name, final String description, final String thumbnail){
-        if(name == null || name.isBlank() || name.length() > MAX_NAME){
+    private static void validate(final String name, final String description, final String thumbnail) {
+        if (name == null || name.isBlank() || name.length() > MAX_NAME) {
             throw new IllegalArgumentException("이름은 1글자 이상, 255글자 이하여야합니다.");
         }
-        if(description == null || description.isBlank() || description.length() > MAX_DESCRIPTION){
+        if (description == null || description.isBlank() || description.length() > MAX_DESCRIPTION) {
             throw new IllegalArgumentException("설명은 1글자 이상, 255글자 이하여야합니다.");
         }
-        if(thumbnail == null || thumbnail.isBlank()|| thumbnail.length() > MAX_THUMBNAIL){
+        if (thumbnail == null || thumbnail.isBlank() || thumbnail.length() > MAX_THUMBNAIL) {
             throw new IllegalArgumentException("썸네일 URI는 1글자 이상, 255글자 이하여야합니다.");
         }
     }

@@ -6,10 +6,10 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.ReservationTimeRepository;
-import roomescape.reservationTime.dto.ReservationTimeRequest;
-import roomescape.reservationTime.dto.ReservationTimeResponse;
-import roomescape.reservationTime.dto.TimeConditionRequest;
-import roomescape.reservationTime.dto.TimeConditionResponse;
+import roomescape.reservationTime.dto.request.ReservationTimeRequest;
+import roomescape.reservationTime.dto.response.ReservationTimeResponse;
+import roomescape.reservationTime.dto.request.TimeConditionRequest;
+import roomescape.reservationTime.dto.response.TimeConditionResponse;
 
 @Service
 public class ReservationTimeService {
@@ -35,7 +35,7 @@ public class ReservationTimeService {
             throw new IllegalArgumentException("삭제할 수 없는 예약 시간입니다.");
         }
 
-        boolean isDeleted = reservationTimeRepository.deleteBy(id);
+        boolean isDeleted = reservationTimeRepository.deleteById(id);
         validateIsExistsReservationTimeId(isDeleted);
     }
 
@@ -52,11 +52,11 @@ public class ReservationTimeService {
     }
 
     public List<TimeConditionResponse> getTimesWithCondition(final TimeConditionRequest request) {
-        List<Reservation> reservations = reservationRepository.findBy(request.date(), request.themeId());
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(request.date(), request.themeId());
         List<ReservationTime> times = reservationTimeRepository.findAll();
 
         return times.stream()
-                .map(time -> toTimeConditionResponse(time,reservations))
+                .map(time -> toTimeConditionResponse(time, reservations))
                 .toList();
     }
 

@@ -53,7 +53,7 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme findBy(Long id) {
+    public Theme findById(Long id) {
         return themes.stream()
                 .filter(theme -> Objects.equals(theme.getId(), id))
                 .findAny()
@@ -66,7 +66,7 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public boolean deleteBy(Long id) {
+    public boolean deleteById(Long id) {
         Optional<Theme> findTheme = themes.stream()
                 .filter(theme -> Objects.equals(theme.getId(), id))
                 .findAny();

@@ -74,7 +74,7 @@ function login() {
     })
   })
       .then(response => {
-        if (200 === !response.status) {
+        if (200 !== response.status) {
           alert('Login failed'); // 로그인 실패 시 경고창 표시
           throw new Error('Login failed');
         }
@@ -105,6 +105,8 @@ function register(event) {
     return; // 필수 입력 필드가 비어있으면 여기서 함수 실행을 중단
   }
 
+
+
   // 요청 데이터 포맷팅
   const formData = {
     email: email,
@@ -121,7 +123,7 @@ function register(event) {
     body: JSON.stringify(formData)
   })
       .then(response => {
-        if (!response.ok) {
+        if (response.status !== 201) {
           alert('Signup request failed');
           throw new Error('Signup request failed');
         }
@@ -137,8 +139,8 @@ function register(event) {
         console.error('Error during signup:', error);
       });
 
-  // 폼 제출에 의한 페이지 리로드 방지
-  event.preventDefault();
+    // 폼 제출에 의한 페이지 리로드 방지
+    event.preventDefault();
 }
 
 function base64DecodeUnicode(str) {

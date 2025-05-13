@@ -7,9 +7,9 @@ import roomescape.reservation.domain.ReservationPeriod;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
-import roomescape.theme.dto.PopularThemeResponse;
-import roomescape.theme.dto.ThemeRequest;
-import roomescape.theme.dto.ThemeResponse;
+import roomescape.theme.dto.response.PopularThemeResponse;
+import roomescape.theme.dto.request.ThemeRequest;
+import roomescape.theme.dto.response.ThemeResponse;
 
 @Service
 public class ThemeService {
@@ -41,7 +41,7 @@ public class ThemeService {
         if (reservationRepository.existByThemeId(id)) {
             throw new IllegalArgumentException("예약한 기록이 존재하여 삭제할 수 없습니다.");
         }
-        boolean isDeleted = themeRepository.deleteBy(id);
+        boolean isDeleted = themeRepository.deleteById(id);
         validateIsExistsReservationTimeId(isDeleted);
     }
 

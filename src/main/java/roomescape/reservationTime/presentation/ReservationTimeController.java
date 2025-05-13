@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.exceptionHandler.dto.ExceptionResponse;
-import roomescape.reservationTime.dto.ReservationTimeRequest;
-import roomescape.reservationTime.dto.ReservationTimeResponse;
-import roomescape.reservationTime.dto.TimeConditionRequest;
-import roomescape.reservationTime.dto.TimeConditionResponse;
+import roomescape.reservationTime.dto.request.ReservationTimeRequest;
+import roomescape.reservationTime.dto.response.ReservationTimeResponse;
+import roomescape.reservationTime.dto.request.TimeConditionRequest;
+import roomescape.reservationTime.dto.response.TimeConditionResponse;
 import roomescape.reservationTime.service.ReservationTimeService;
 
 @RestController
@@ -62,7 +62,7 @@ public class ReservationTimeController {
     @ExceptionHandler(value = DateTimeParseException.class)
     public ResponseEntity<ExceptionResponse> noMatchTimeType(final HttpServletRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
-                400, "[ERROR] 요청 시간 형식이 맞지 않습니다.", request.getRequestURI()
+                "[ERROR] 요청 시간 형식이 맞지 않습니다.", request.getRequestURI()
         );
         return ResponseEntity.badRequest().body(exceptionResponse);
     }

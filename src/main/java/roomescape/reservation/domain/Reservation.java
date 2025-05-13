@@ -4,39 +4,37 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.member.domain.Member;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 public class Reservation {
 
-    private static int MAX_NAME = 255;
-
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    private Reservation(final Long id, final String name, final LocalDate date,
+    private Reservation(final Long id, final Member member, final LocalDate date,
                         final ReservationTime time, final Theme theme
     ) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public static Reservation createWithoutId(final LocalDateTime now, final String name,
+    public static Reservation createWithoutId(final LocalDateTime now, final Member member,
                                               final LocalDate reservationDate,
                                               final ReservationTime time, final Theme theme
     ) {
-        validateName(name);
         validateReservationDateTime(now, reservationDate, time);
-        return new Reservation(null, name, reservationDate, time, theme);
+        return new Reservation(null, member, reservationDate, time, theme);
     }
 
-    private static void validateReservationDateTime(final LocalDateTime now,final LocalDate reservationDate,
+    private static void validateReservationDateTime(final LocalDateTime now, final LocalDate reservationDate,
                                                     final ReservationTime time) {
         LocalDate nowDate = now.toLocalDate();
         if (reservationDate.isBefore(nowDate)) {
@@ -49,20 +47,14 @@ public class Reservation {
         }
     }
 
-    private static void validateName(final String name){
-        if(name == null || name.isBlank() || name.length() > MAX_NAME){
-            throw new IllegalArgumentException("이름은 1글자 이상, 255글자 이하여야합니다.");
-        }
-    }
-
-    public static Reservation createWithId(final Long id, final String name, final LocalDate date,
+    public static Reservation createWithId(final Long id, final Member member, final LocalDate date,
                                            final ReservationTime time, final Theme theme
     ) {
-        return new Reservation(Objects.requireNonNull(id), name, date, time, theme);
+        return new Reservation(Objects.requireNonNull(id), member, date, time, theme);
     }
 
     public Reservation assignId(final Long id) {
-        return new Reservation(Objects.requireNonNull(id), name, date, time, theme);
+        return new Reservation(Objects.requireNonNull(id), member, date, time, theme);
     }
 
     public boolean isSameTime(final ReservationTime time) {
@@ -74,7 +66,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return name;
+        return member.getName();
     }
 
     public LocalDate getDate() {
@@ -83,6 +75,10 @@ public class Reservation {
 
     public Long getTimeId() {
         return time.getId();
+    }
+
+    public Long getMemberId() {
+        return member.getId();
     }
 
     public LocalTime getReservationTime() {
