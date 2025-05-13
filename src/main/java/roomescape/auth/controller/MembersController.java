@@ -3,7 +3,7 @@ package roomescape.auth.controller;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.auth.service.MemberAuthService;
+import roomescape.auth.service.MemberService;
 import roomescape.auth.service.dto.request.UserSignupRequest;
 import roomescape.auth.service.dto.response.MemberIdAndNameResponse;
 
@@ -12,9 +12,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/members")
 public class MembersController {
-    private final MemberAuthService service;
+    private final MemberService service;
 
-    public MembersController(MemberAuthService service) {
+    public MembersController(MemberService service) {
         this.service = service;
     }
 

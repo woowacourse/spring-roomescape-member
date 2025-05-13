@@ -17,11 +17,11 @@ import java.util.List;
 
 // TODO: findByXXX - DataAccessException 핸들링
 @Service
-public class MemberAuthService {
+public class MemberService {
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberAuthService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+    public MemberService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
