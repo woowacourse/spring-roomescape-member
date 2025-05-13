@@ -102,6 +102,7 @@ class AdminReservationControllerTest {
                     .body("id", is(2));
 
             RestAssured.given().log().all()
+                    .header("Cookie", cookie)
                     .when().get("/reservations")
                     .then().log().all()
                     .statusCode(200)
