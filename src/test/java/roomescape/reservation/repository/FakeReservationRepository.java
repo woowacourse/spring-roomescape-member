@@ -13,6 +13,19 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation entity) {
+        if (entity.getId() == null) {
+            final long nextId = entities.stream()
+                    .mapToLong(Reservation::getId)
+                    .max()
+                    .orElse(0) + 1;
+            entity = new Reservation(
+                    nextId,
+                    entity.getMemberId(),
+                    entity.getDate(),
+                    entity.getTime(),
+                    entity.getThemeId()
+            );
+        }
         entities.add(entity);
         return entity;
     }

@@ -42,6 +42,19 @@ public class FakeMemberRepository implements MemberRepository {
         if (findByEmail(member.getEmail()).isPresent()) {
             throw new MemberEmailConflictException();
         }
+        if (member.getId() == null) {
+            final long nextId = members.stream()
+                    .mapToLong(Member::getId)
+                    .max()
+                    .orElse(0) + 1;
+            member = new Member(
+                    nextId,
+                    member.getName(),
+                    member.getRole().name(),
+                    member.getEmail(),
+                    member.getPassword()
+            );
+        }
         members.add(member);
         return member;
     }
