@@ -50,9 +50,6 @@ public class ReservationService {
 
     private List<Reservation> getReservations(final Long themeId, final Long memberId,
                                               final LocalDate dateFrom, final LocalDate dateTo) {
-//        if (themeId == null && memberId == null && dateFrom == null && dateTo == null) {
-//            return reservationRepository.findAll();
-//        }
         return reservationRepository.findFilteredReservations(themeId, memberId, dateFrom, dateTo);
     }
 
