@@ -41,14 +41,14 @@ public class ReservationDao {
 
     public List<Reservation> findAll() {
         String sql = """
-                select rs.id as reservation_id, rs.date,
-                       m.id as member_id, m.name, m.email, m.password, m.role,
-                       rt.id as reservation_time_id, rt.start_at,
-                       th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
-                from reservation rs
-                inner join reservation_time rt ON rs.time_id = rt.id
-                inner join theme th ON rs.theme_id = th.id
-                inner join member m ON rs.member_id = m.id
+                select reservation.id as reservation_id, reservation.date,
+                       member.id as member_id, member.name, member.email, member.password, member.role,
+                       reservation_time.id as reservation_time_id, reservation_time.start_at,
+                       theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail
+                from reservation
+                inner join reservation_time ON reservation.time_id = reservation_time.id
+                inner join theme theme ON reservation.theme_id = theme.id
+                inner join member member ON reservation.member_id = member.id
                 """;
 
         return jdbcTemplate.query(sql,
@@ -58,15 +58,15 @@ public class ReservationDao {
 
     public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
         String sql = """
-                select rs.id as reservation_id, rs.date,
-                    m.id as member_id, m.name, m.email, m.password, m.role,
-                    rt.id as reservation_time_id, rt.start_at,
-                    th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
-                from reservation rs
-                inner join reservation_time rt on rs.time_id = rt.id
-                inner join theme th on rs.theme_id = th.id
-                inner join member m on rs.member_id = m.id
-                where th.id = :theme_id and rs.date = :date
+                select reservation.id as reservation_id, reservation.date,
+                    member.id as member_id, member.name, member.email, member.password, member.role,
+                    reservation_time.id as reservation_time_id, reservation_time.start_at,
+                    theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail
+                from reservation
+                inner join reservation_time on reservation.time_id = reservation_time.id
+                inner join theme on reservation.theme_id = theme.id
+                inner join member member on reservation.member_id = member.id
+                where theme.id = :theme_id and reservation.date = :date
                 """;
 
         Map<String, Object> params = Map.of("theme_id", themeId, "date", date);
@@ -78,15 +78,15 @@ public class ReservationDao {
 
     public Optional<Reservation> findById(final Long id) {
         String sql = """
-                select rs.id as reservation_id, rs.date,
-                       m.id as member_id, m.name, m.email, m.password, m.role,
-                       rt.id as reservation_time_id, rt.start_at,
-                       th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
-                from reservation rs
-                inner join reservation_time rt ON rs.time_id = rt.id
-                inner join theme th ON rs.theme_id = th.id
-                inner join member m ON rs.member_id = m.id
-                where rs.id = :reservation_id
+                select reservation.id as reservation_id, reservation.date,
+                       member.id as member_id, member.name, member.email, member.password, member.role,
+                       reservation_time.id as reservation_time_id, reservation_time.start_at,
+                       theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail
+                from reservation
+                inner join reservation_time ON reservation.time_id = reservation_time.id
+                inner join theme ON reservation.theme_id = theme.id
+                inner join member ON reservation.member_id = member.id
+                where reservation.id = :reservation_id
                 """;
 
         Map<String, Long> params = Map.of("reservation_id", id);
@@ -149,15 +149,15 @@ public class ReservationDao {
             final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo
     ) {
         String sql = """
-                select rs.id as reservation_id, rs.date,
-                       m.id as member_id, m.name, m.email, m.password, m.role,
-                       rt.id as reservation_time_id, rt.start_at,
-                       th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
-                from reservation rs
-                inner join reservation_time rt ON rs.time_id = rt.id
-                inner join theme th ON rs.theme_id = th.id
-                inner join member m ON rs.member_id = m.id
-                where rs.theme_id = :theme_id AND rs.member_id = :member_id AND rs.date between :date_from and :date_to
+                select reservation.id as reservation_id, reservation.date,
+                       member.id as member_id, member.name, member.email, member.password, member.role,
+                       reservation_time.id as reservation_time_id, reservation_time.start_at,
+                       theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail
+                from reservation
+                inner join reservation_time ON reservation.time_id = reservation_time.id
+                inner join theme ON reservation.theme_id = theme.id
+                inner join member ON reservation.member_id = member.id
+                where reservation.theme_id = :theme_id AND reservation.member_id = :member_id AND reservation.date between :date_from and :date_to
                 """;
         Map<String, Object> params = Map.of(
                 "theme_id", themeId,
