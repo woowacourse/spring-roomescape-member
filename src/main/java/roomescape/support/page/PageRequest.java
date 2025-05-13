@@ -1,11 +1,25 @@
 package roomescape.support.page;
 
-public class PageRequest {
-    private final int pageNo;
-    private final int pageSize;
-    private final String sortBy;
-    private final String sortDir;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+public class PageRequest {
+    @Schema(description = "페이지 번호 (0부터 시작)", defaultValue = "0")
+    @JsonProperty(defaultValue = "0")
+    private final int pageNo;
+
+    @Schema(description = "페이지 크기", defaultValue = "10")
+    @JsonProperty(defaultValue = "10")
+    private final int pageSize;
+
+    @Schema(description = "정렬 기준", defaultValue = "id")
+    @JsonProperty(defaultValue = "id")
+    private final String sortBy;
+
+    @Schema(description = "정렬 방향", defaultValue = "asc")
+    @JsonProperty(defaultValue = "asc")
+    private final String sortDir;
+    
     public PageRequest() {
         this.pageNo = 0;
         this.pageSize = 10;

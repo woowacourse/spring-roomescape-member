@@ -28,7 +28,10 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public List<ReservationTime> findAll() {
-        final String sql = "SELECT id, start_at FROM reservation_time";
+        final String sql = """
+                SELECT id, start_at
+                FROM reservation_time
+                """;
         return jdbcTemplate.query(sql, reservationTimeMapper);
     }
 
@@ -46,7 +49,10 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public long countAll() {
-        final String sql = "SELECT COUNT(*) FROM reservation_time";
+        final String sql = """
+                SELECT COUNT(*)
+                FROM reservation_time
+                """;
         return jdbcTemplate.queryForObject(sql, Long.class);
     }
 
@@ -79,7 +85,11 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public Optional<ReservationTime> findById(final long id) {
-        final String sql = "SELECT * FROM reservation_time WHERE id = ?";
+        final String sql = """
+                SELECT *
+                FROM reservation_time 
+                WHERE id = ?
+                """;
         return jdbcTemplate.query(sql, reservationTimeMapper, id).stream()
                 .findFirst();
     }
@@ -100,7 +110,11 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public boolean existsById(final Long id) {
-        final String sql = "SELECT COUNT(*) FROM reservation_time WHERE id = ?";
+        final String sql = """
+                SELECT COUNT(*)
+                FROM reservation_time
+                WHERE id = ?
+                """;
         final Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
     }

@@ -1,25 +1,16 @@
 package roomescape.dto.request;
 
-import java.util.Arrays;
+import jakarta.validation.constraints.NotBlank;
 
 public record ThemeCreateRequest(
+
+        @NotBlank(message = "테마 이름은 필수 항목입니다.")
         String name,
+
+        @NotBlank(message = "테마 설명은 필수 항목입니다.")
         String description,
+
+        @NotBlank(message = "테마 썸네일은 필수 항목입니다.")
         String thumbnail
 ) {
-
-    public ThemeCreateRequest {
-        validateBlank(name, description, thumbnail);
-    }
-
-    private void validateBlank(final String name, final String description, final String thumbnail) {
-        if (isNotValidInput(name, description, thumbnail)) {
-            throw new IllegalArgumentException("빈 값으로 예약할 수 없습니다.");
-        }
-    }
-
-    private boolean isNotValidInput(final String... inputs) {
-        return Arrays.stream(inputs)
-                .anyMatch(input -> input == null || input.isBlank());
-    }
 }

@@ -5,17 +5,20 @@ import java.time.LocalDate;
 import roomescape.domain.Reservation;
 
 public record ReservationCreateResponse(
+
+        @Schema(description = "예약 ID", example = "1")
         long id,
-        String name,
+
         @Schema(type = "string")
         LocalDate date,
         ReservationTimeCreateResponse time,
-        ThemeCreateResponse theme
+        ThemeCreateResponse theme,
+        MemberResponse member
 ) {
-
     public static ReservationCreateResponse from(final Reservation reservation) {
-        return new ReservationCreateResponse(reservation.getId(), reservation.getName(), reservation.getDate(),
+        return new ReservationCreateResponse(reservation.getId(), reservation.getDate(),
                 ReservationTimeCreateResponse.from(reservation.getTime()),
-                ThemeCreateResponse.from(reservation.getTheme()));
+                ThemeCreateResponse.from(reservation.getTheme()),
+                MemberResponse.from(reservation.getMember()));
     }
 }

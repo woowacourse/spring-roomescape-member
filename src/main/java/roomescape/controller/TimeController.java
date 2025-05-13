@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
@@ -51,8 +52,8 @@ public class TimeController {
                     )
             }
     )
-    public List<ReservationTimeResponse> findAll() {
-        return reservationTimeService.findAll();
+    public ResponseEntity<List<ReservationTimeResponse>> findAll() {
+        return ResponseEntity.ok(reservationTimeService.findAll());
     }
 
     @GetMapping("/paged")
@@ -68,19 +69,15 @@ public class TimeController {
                     )
             }
     )
-    public List<ReservationTimeResponse> findAllWithPaging(
-            @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") final int pageNo,
-            @Parameter(description = "페이지 크기") @RequestParam(defaultValue = "10") final int pageSize,
-            @Parameter(description = "정렬 기준") @RequestParam(defaultValue = "id") final String sortBy,
-            @Parameter(description = "정렬 방향 (asc/desc)") @RequestParam(defaultValue = "asc") final String sortDir) {
-        final PageRequest pageRequest = new PageRequest(pageNo, pageSize, sortBy, sortDir);
-        return reservationTimeService.findAllWithPaging(pageRequest).getContent();
+    public ResponseEntity<List<ReservationTimeResponse>> findAllWithPaging(final PageRequest pageRequest) {
+        return ResponseEntity.ok(reservationTimeService.findAllWithPaging(pageRequest).getContent());
     }
 
     @GetMapping("/available")
-    public List<ReservationTimeUserResponse> findAllByDateAndTheme(@RequestParam(value = "theme-id") final long themeId,
-                                                                   @RequestParam(value = "date") final LocalDate date) {
-        return reservationTimeService.findAllByDateAndTheme(themeId, date);
+    public ResponseEntity<List<ReservationTimeUserResponse>> findAllByDateAndTheme(
+            @RequestParam(value = "theme-id") final long themeId,
+            @RequestParam(value = "date") final LocalDate date) {
+        return ResponseEntity.ok(reservationTimeService.findAllByDateAndTheme(themeId, date));
     }
 
     @PostMapping
@@ -93,22 +90,12 @@ public class TimeController {
                             description = "예약 시간 생성 성공",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ReservationTimeCreateResponse.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "잘못된 시간 형식"
                     )
             }
     )
     public ResponseEntity<ReservationTimeCreateResponse> create(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "예약 시간 생성 정보",
-                    required = true,
-                    content = @Content(schema = @Schema(implementation = ReservationTimeCreateRequest.class))
-            )
-            @RequestBody final ReservationTimeCreateRequest reservationTimeCreateRequest) {
+            @RequestBody @Valid final ReservationTimeCreateRequest reservationTimeCreateRequest) {
         final ReservationTimeCreateResponse response = reservationTimeService.create(reservationTimeCreateRequest);
-
         final URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -125,14 +112,6 @@ public class TimeController {
                     @ApiResponse(
                             responseCode = "204",
                             description = "예약 시간 삭제 성공"
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "예약 시간을 찾을 수 없음"
-                    ),
-                    @ApiResponse(
-                            responseCode = "409",
-                            description = "해당 시간에 예약이 존재함"
                     )
             }
     )

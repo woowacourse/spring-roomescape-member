@@ -28,13 +28,19 @@ public class JdbcThemeDao implements ThemeDao {
 
     @Override
     public List<Theme> findAll() {
-        final String sql = "SELECT id, name, description, thumbnail FROM theme";
+        final String sql = """
+                SELECT id, name, description, thumbnail
+                FROM theme
+                """;
         return jdbcTemplate.query(sql, themeMapper);
     }
 
     @Override
     public Optional<Theme> findById(final Long id) {
-        final String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
+        final String sql = """
+                SELECT id, name, description, thumbnail
+                FROM theme WHERE id = ?
+                """;
         return jdbcTemplate.query(sql, themeMapper, id).stream().findFirst();
     }
 
@@ -86,7 +92,11 @@ public class JdbcThemeDao implements ThemeDao {
 
     @Override
     public boolean existsById(final Long id) {
-        final String sql = "SELECT COUNT(*) FROM theme WHERE id = ?";
+        final String sql = """
+                SELECT COUNT(*)
+                FROM theme
+                WHERE id = ?
+                """;
         final Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
     }

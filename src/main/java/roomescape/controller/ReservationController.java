@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.ReservationCreateResponse;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
+import roomescape.support.auth.LoginMember;
 
 @RestController
 @RequestMapping("/reservations")
@@ -46,8 +48,8 @@ public class ReservationController {
                     )
             }
     )
-    public List<ReservationResponse> findAll() {
-        return reservationService.findAll();
+    public ResponseEntity<List<ReservationResponse>> findAll() {
+        return ResponseEntity.ok(reservationService.findAll());
     }
 
     @PostMapping
@@ -60,25 +62,14 @@ public class ReservationController {
                             description = "예약 생성 성공",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ReservationCreateResponse.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "잘못된 요청 형식 또는 유효하지 않은 데이터"
-                    ),
-                    @ApiResponse(
-                            responseCode = "409",
-                            description = "이미 해당 테마, 시간에 존재하는 예약"
                     )
             }
     )
     public ResponseEntity<ReservationCreateResponse> create(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "예약 생성 정보",
-                    required = true,
-                    content = @Content(schema = @Schema(implementation = ReservationCreateRequest.class))
-            )
-            @RequestBody final ReservationCreateRequest reservationCreateRequest) {
-        final ReservationCreateResponse reservationCreateResponse = reservationService.create(reservationCreateRequest);
+            @RequestBody @Valid final ReservationCreateRequest reservationCreateRequest,
+            final LoginMember loginMember) {
+        final ReservationCreateResponse reservationCreateResponse = reservationService.create(reservationCreateRequest,
+                loginMember);
 
         final URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -96,10 +87,6 @@ public class ReservationController {
                     @ApiResponse(
                             responseCode = "204",
                             description = "예약 삭제 성공"
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "예약 정보를 찾을 수 없음"
                     )
             }
     )

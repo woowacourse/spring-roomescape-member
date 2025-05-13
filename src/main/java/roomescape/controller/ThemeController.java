@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -46,8 +47,8 @@ public class ThemeController {
                     )
             }
     )
-    public List<ThemeResponse> findAll() {
-        return themeService.findAll();
+    public ResponseEntity<List<ThemeResponse>> findAll() {
+        return ResponseEntity.ok(themeService.findAll());
     }
 
     @PostMapping
@@ -60,20 +61,11 @@ public class ThemeController {
                             description = "테마 생성 성공",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ThemeCreateResponse.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "잘못된 요청 형식"
                     )
             }
     )
     public ResponseEntity<ThemeCreateResponse> create(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "테마 생성 정보",
-                    required = true,
-                    content = @Content(schema = @Schema(implementation = ThemeCreateRequest.class))
-            )
-            @RequestBody final ThemeCreateRequest themeCreateRequest) {
+            @RequestBody @Valid final ThemeCreateRequest themeCreateRequest) {
         final ThemeCreateResponse themeCreateResponse = themeService.create(themeCreateRequest);
 
         final URI location = ServletUriComponentsBuilder
@@ -92,14 +84,6 @@ public class ThemeController {
                     @ApiResponse(
                             responseCode = "204",
                             description = "테마 삭제 성공"
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "테마를 찾을 수 없음"
-                    ),
-                    @ApiResponse(
-                            responseCode = "409",
-                            description = "해당 테마에 예약이 존재함"
                     )
             }
     )
@@ -123,7 +107,7 @@ public class ThemeController {
                     )
             }
     )
-    public List<ThemeResponse> findPopularThemesInRecentSevenDays() {
-        return themeService.findPopularThemesInRecentSevenDays();
+    public ResponseEntity<List<ThemeResponse>> findPopularThemesInRecentSevenDays() {
+        return ResponseEntity.ok(themeService.findPopularThemesInRecentSevenDays());
     }
 }

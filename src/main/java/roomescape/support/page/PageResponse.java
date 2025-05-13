@@ -27,5 +27,29 @@ public class PageResponse<T> {
     public List<T> getContent() {
         return content;
     }
+
+    public int getPageNo() {
+        return pageNo;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public long getTotalElements() {
+        return totalElements;
+    }
+
+    public int getTotalPages() {
+        return totalPages;
+    }
+
+    public boolean isLast() {
+        return last;
+    }
+
+    public boolean isFirst() {
+        return first;
+    }
 }
 

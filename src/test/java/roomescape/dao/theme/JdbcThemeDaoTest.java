@@ -13,20 +13,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.dao.reservation.JdbcReservationDao;
 import roomescape.dao.reservationTime.JdbcReservationTimeDao;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 @JdbcTest
 @Import({JdbcReservationTimeDao.class, JdbcReservationDao.class, JdbcThemeDao.class})
+@Sql({"/schema.sql", "/theme-data.sql"})
 class JdbcThemeDaoTest {
 
     @Autowired
     private JdbcReservationTimeDao jdbcReservationTimeDao;
-    @Autowired
-    private JdbcReservationDao jdbcReservationDao;
     @Autowired
     private JdbcThemeDao jdbcThemeDao;
     @Autowired
@@ -36,17 +35,11 @@ class JdbcThemeDaoTest {
     @Test
     void findAll() {
 
-        // given
-        final Theme theme1 = new Theme("test1", "test1", "test1");
-        final Theme theme2 = new Theme("test1", "test1", "test1");
-        final Theme savedTheme1 = jdbcThemeDao.create(theme1);
-        final Theme savedTheme2 = jdbcThemeDao.create(theme2);
-
         // when
         final List<Theme> themes = jdbcThemeDao.findAll();
 
         // then
-        assertThat(themes.size()).isEqualTo(2);
+        assertThat(themes.size()).isEqualTo(3);
     }
 
     @DisplayName("데이터베이스에 테마를 저장한다.")
@@ -71,29 +64,16 @@ class JdbcThemeDaoTest {
     @Test
     void deleteTest() {
 
-        // given
-        final Theme theme = new Theme("test1", "test1", "test1");
-        final Theme savedTheme = jdbcThemeDao.create(theme);
-
-        // when & then
-        assertThat(jdbcThemeDao.deleteIfNoReservation(savedTheme.getId())).isTrue();
+        // then
+        assertThat(jdbcThemeDao.deleteIfNoReservation(3L)).isTrue();
     }
 
     @DisplayName("데이터베이스에 특정 테마가 예약에 사용되는 경우 삭제하지 않는다.")
     @Test
     void deleteIfReservationExist() {
 
-        // given
-        final LocalTime time = LocalTime.of(10, 10);
-        final LocalDate date = LocalDate.now().plusDays(1);
-        final Theme theme = new Theme("test", "test", "test");
-        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(new ReservationTime(time));
-        final Theme savedTheme = jdbcThemeDao.create(theme);
-        final Reservation reservation = Reservation.create("test", date, savedReservationTime, savedTheme);
-        final Reservation savedReservation = jdbcReservationDao.create(reservation);
-
-        // when & then
-        assertThat(jdbcThemeDao.deleteIfNoReservation(savedTheme.getId())).isFalse();
+        // then
+        assertThat(jdbcThemeDao.deleteIfNoReservation(1L)).isFalse();
     }
 
     @DisplayName("id로 테마를 찾는다.")
@@ -127,9 +107,10 @@ class JdbcThemeDaoTest {
         final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(new ReservationTime(time));
         final Theme savedPopularTheme = jdbcThemeDao.create(popularTheme);
         final Theme savedNotPopularTheme = jdbcThemeDao.create(notPopularTheme);
-        final String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('test', ?, ?, ?)";
-        jdbcTemplate.update(sql, beforeOneDay.toString(), savedReservationTime.getId(), savedPopularTheme.getId());
-        jdbcTemplate.update(sql, beforeEightDay.toString(), savedReservationTime.getId(), savedNotPopularTheme.getId());
+        final String sql = "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, beforeOneDay.toString(), savedReservationTime.getId(), savedPopularTheme.getId(), 1L);
+        jdbcTemplate.update(sql, beforeEightDay.toString(), savedReservationTime.getId(), savedNotPopularTheme.getId(),
+                1L);
 
         // when
         final List<Theme> themes = jdbcThemeDao.findPopularThemesInRecentSevenDays(
@@ -143,11 +124,8 @@ class JdbcThemeDaoTest {
     @Test
     void existsByIdReturnTrueTest() {
 
-        // given
-        final Theme savedTheme = jdbcThemeDao.create(new Theme("test", "test", "test"));
-
         // when & then
-        assertThat(jdbcThemeDao.existsById(savedTheme.getId())).isTrue();
+        assertThat(jdbcThemeDao.existsById(1L)).isTrue();
     }
 
     @DisplayName("데이터베이스에 존재하지 않을 경우 false를 반환한다.")
@@ -155,6 +133,6 @@ class JdbcThemeDaoTest {
     void nonExistsByIdReturnFalseTest() {
 
         // when & then
-        assertThat(jdbcThemeDao.existsById(1L)).isFalse();
+        assertThat(jdbcThemeDao.existsById(5L)).isFalse();
     }
 }
