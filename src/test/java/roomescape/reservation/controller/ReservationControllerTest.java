@@ -24,7 +24,7 @@ import roomescape.utils.JdbcTemplateUtils;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-class ReservationApiTest {
+class ReservationControllerTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

@@ -22,7 +22,7 @@ import roomescape.utils.JdbcTemplateUtils;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ThemeApiTest {
+class ReservationTimeControllerTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -34,96 +34,83 @@ class ThemeApiTest {
         jdbcTemplate.update(sql);
     }
 
-    @DisplayName("테마를 추가한다.")
+    @DisplayName("예약 시간을 추가한다.")
     @Test
     void test1() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "테마1");
-        params.put("description", "테마1");
-        params.put("thumbnail", "www.m.com");
+        params.put("startAt", "10:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/themes")
+                .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
     }
 
-    @DisplayName("테마를 가져온다")
+    @DisplayName("예약 시간 요청에 초가 있으면 Bad Request 반환")
     @Test
     void test2() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "테마1");
-        params.put("description", "테마1");
-        params.put("thumbnail", "www.m.com");
+        params.put("startAt", "10:00:20");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/themes")
+                .when().post("/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(400);
+    }
+
+    @DisplayName("예약 시간을 가져온다")
+    @Test
+    void test3() {
+        addReservationTime("10:00");
 
         RestAssured.given().log().all()
-                .when().get("/themes")
+                .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
     }
 
-    @DisplayName("해당 테마를 삭제한다")
+    @DisplayName("해당 예약 시간을 삭제한다")
     @Test
-    void test3() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "테마1");
-        params.put("description", "테마1");
-        params.put("thumbnail", "www.m.com");
-
-        int themeId = addTheme(params);
+    void test4() {
+        int timeId = addReservationTime("10:00");
 
         RestAssured.given().log().all()
-                .when().delete("/themes/" + themeId)
+                .when().delete("/times/" + timeId)
                 .then().log().all()
                 .statusCode(204);
     }
 
-    @DisplayName("없는 테마를 삭제하면 NOT FOUND 반환")
+    @DisplayName("없는 예약 시간을 삭제하면 NOT FOUND 반환")
     @Test
-    void test4() {
+    void test5() {
         int notFoundStatusCode = 404;
 
         RestAssured.given().log().all()
-                .when().delete("/themes/0")
+                .when().delete("/times/0")
                 .then().log().all()
                 .statusCode(notFoundStatusCode);
     }
 
-    @DisplayName("사용 중인 테마가 있다면 삭제를 하면 409 CONFLICT를 반환한다.")
+    @DisplayName("사용 중인 예약 시간이 있다면 삭제를 하면 409 CONFLICT를 반환한다.")
     @Test
-    void test5() {
-        int themeId = addTheme(Map.of("name", "테마1", "description", "테마1", "thumbnail", "www.m.com"));
-        int timeId = addReservationTime("10:00");
-        addReservation(timeId, themeId);
+    void test6() {
         int conflictStatusCode = 409;
+        int timeId = addReservationTime("10:00");
+        int themeId = addTheme();
+        addReservation(timeId, themeId);
 
         RestAssured.given().log().all()
-                .when().delete("/themes/" + themeId)
+                .when().delete("/times/" + timeId)
                 .then().log().all()
                 .statusCode(conflictStatusCode);
     }
 
-    @DisplayName("가장 인기있는 테마를 가져온다.")
-    @Test
-    void test6() {
-        RestAssured.given().log().all()
-                .when().get("/themes/popular")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
-    }
-
-    private void addReservation(int timeId, int themeId) {
+    private int addReservation(final int timeId, final int themeId) {
         String tokenValue = getAdminLoginTokenValue();
 
         Map<String, Object> reservationParams = Map.of(
@@ -132,12 +119,12 @@ class ThemeApiTest {
                 "themeId", themeId
         );
 
-        RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .cookie("token", tokenValue)
                 .contentType(ContentType.JSON)
                 .body(reservationParams)
                 .when().post("/reservations")
-                .then();
+                .then().extract().path("id");
     }
 
     private String getAdminLoginTokenValue() {
@@ -153,14 +140,17 @@ class ThemeApiTest {
     private int addReservationTime(final String timeValue) {
         Map<String, String> timeParams = Map.of("startAt", timeValue);
 
-        return RestAssured.given()
+        return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(timeParams)
                 .when().post("/times")
                 .then().extract().path("id");
     }
 
-    private int addTheme(final Map<String, Object> themeParams) {
+    private int addTheme() {
+        Map<String, String> themeParams = Map.of(
+                "name", "테마1", "description", "테마1", "thumbnail", "www.m.com"
+        );
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParams)
