@@ -51,7 +51,7 @@ public class AdminReservationControllerTest {
         body.put("timeId", null);
         body.put("themeId", 1);
 
-        ApiTestHelper.post("/admi`n/reservations", token, body)
+        ApiTestHelper.post("/admin/reservations", token, body)
                 .statusCode(400)
                 .body(containsString("[ERROR]"));
     }
