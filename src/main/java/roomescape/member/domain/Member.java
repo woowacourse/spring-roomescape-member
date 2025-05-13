@@ -18,7 +18,6 @@ public class Member {
     public Member(final Long id, final String name, final String email, final String password, final Role role) {
         validateName(name);
         validateEmail(email);
-        validateEmailFormat(email);
         validatePassword(password);
         this.id = id;
         this.name = name;
@@ -45,17 +44,15 @@ public class Member {
         if (email == null || email.isBlank()) {
             throw new MemberException("Email cannot be null or blank");
         }
+
+        if (!EMAIL_PATTERN.matcher(email).matches()) {
+            throw new MemberException("Invalid email format");
+        }
     }
 
     private void validatePassword(final String password) {
         if (password == null || password.isBlank()) {
             throw new MemberException("Password cannot be null or blank");
-        }
-    }
-
-    private void validateEmailFormat(final String email) {
-        if (!EMAIL_PATTERN.matcher(email).matches()) {
-            throw new MemberException("Invalid email format");
         }
     }
 }
