@@ -1,6 +1,7 @@
 package roomescape.global.util;
 
 import jakarta.servlet.http.Cookie;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -17,12 +18,9 @@ public class CookieUtils {
         if (cookies == null) {
             return Optional.empty();
         }
-        for (Cookie cookie : cookies) {
-            if (Objects.equals(cookie.getName(), name)) {
-                return Optional.of(cookie);
-            }
-        }
-        return Optional.empty();
+        return Arrays.stream(cookies)
+                .filter(cookie -> Objects.equals(cookie.getName(), name))
+                .findFirst();
     }
 
     public static Cookie toExpiredCookie(Cookie cookie) {
