@@ -1,5 +1,7 @@
 package roomescape.member.domain;
 
+import java.util.Objects;
+
 public class Member {
 
     private static final long EMPTY_ID = 0L;
@@ -47,5 +49,21 @@ public class Member {
 
     public String getRole() {
         return role.name();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Member member)) {
+            return false;
+        }
+        return Objects.equals(getId(), member.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getId());
     }
 }
