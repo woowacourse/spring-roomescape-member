@@ -11,8 +11,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import roomescape.business.domain.member.Member;
-import roomescape.business.domain.member.MemberRole;
 import roomescape.business.domain.member.SignUpMember;
 import roomescape.business.domain.reservation.ReservationTheme;
 import roomescape.exception.ErrorResponseDto;
@@ -20,7 +18,7 @@ import roomescape.persistence.fakerepository.FakeMemberRepository;
 import roomescape.persistence.fakerepository.FakeReservationThemeRepository;
 import roomescape.presentation.AbstractControllerTest;
 import roomescape.presentation.admin.dto.ReservationThemeResponseDto;
-import roomescape.presentation.member.dto.LoginRequestDto;
+import roomescape.presentation.auth.dto.LoginRequestDto;
 
 class AdminReservationThemeControllerTest extends AbstractControllerTest {
 

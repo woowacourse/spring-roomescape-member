@@ -1,4 +1,4 @@
-package roomescape.presentation.member.dto;
+package roomescape.presentation.auth.dto;
 
 public record LoginCheckResponseDto(
         String name

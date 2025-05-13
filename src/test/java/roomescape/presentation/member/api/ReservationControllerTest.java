@@ -24,7 +24,7 @@ import roomescape.persistence.fakerepository.FakeReservationRepository;
 import roomescape.persistence.fakerepository.FakeReservationThemeRepository;
 import roomescape.persistence.fakerepository.FakeReservationTimeRepository;
 import roomescape.presentation.AbstractControllerTest;
-import roomescape.presentation.member.dto.LoginRequestDto;
+import roomescape.presentation.auth.dto.LoginRequestDto;
 import roomescape.presentation.member.dto.ReservationRequestDto;
 import roomescape.presentation.member.dto.ReservationResponseDto;
 
