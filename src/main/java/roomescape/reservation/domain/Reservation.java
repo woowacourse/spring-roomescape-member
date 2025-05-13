@@ -1,18 +1,19 @@
 package roomescape.reservation.domain;
 
+import roomescape.member.domain.Member;
+
 public class Reservation {
 
     private final Long id;
-    private final ReservationName name;
-
+    private final Member member;
     private final Theme theme;
-
     private final ReservationDate date;
     private final ReservationTime reservationTime;
-    public Reservation(final Long id, final ReservationName name, final Theme theme, final ReservationDate date,
+
+    public Reservation(final Long id, final Member member, final Theme theme, final ReservationDate date,
                        final ReservationTime reservationTime) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.theme = theme;
         this.date = date;
         this.reservationTime = reservationTime;
@@ -20,10 +21,6 @@ public class Reservation {
 
     public Long getId() {
         return id;
-    }
-
-    public ReservationName getName() {
-        return name;
     }
 
     public ReservationDate getDate() {
@@ -36,5 +33,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Member getMember() {
+        return member;
     }
 }

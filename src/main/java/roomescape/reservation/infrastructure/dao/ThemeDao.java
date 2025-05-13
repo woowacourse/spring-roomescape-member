@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.global.exception.DeleteThemeException;
+import roomescape.reservation.application.exception.DeleteThemeException;
 import roomescape.reservation.application.repository.ThemeRepository;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.presentation.dto.ThemeRequest;
@@ -91,7 +91,7 @@ public class ThemeDao implements ThemeRepository {
                 SELECT t.id, t.name, t.description, t.thumbnail
                 FROM theme t
                 INNER JOIN reservation r ON t.id = r.theme_id
-                WHERE CAST(r.date AS DATE) BETWEEN DATEADD('DAY', -7, CURRENT_DATE()) AND DATEADD('DAY', -1, CURRENT_DATE())
+                WHERE r.date BETWEEN DATEADD('DAY', -7, CURRENT_DATE()) AND DATEADD('DAY', -1, CURRENT_DATE())
                 GROUP BY t.id, t.name, t.description, t.thumbnail
                 ORDER BY COUNT(*) DESC
                 LIMIT 10;

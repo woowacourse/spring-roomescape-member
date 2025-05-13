@@ -1,16 +1,16 @@
 package roomescape.reservation.infrastructure.dao;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.global.exception.DeleteThemeException;
+import roomescape.reservation.application.exception.DeleteThemeException;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.presentation.dto.ThemeRequest;
 
@@ -27,13 +27,13 @@ public class ThemeDaoTest {
     }
 
     @BeforeEach
-    void resetAutoIncrement(){
+    void resetAutoIncrement() {
         jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test
     @DisplayName("테마 추가 확인 테스트")
-    void insertTest(){
+    void insertTest() {
         // given
         ThemeRequest themeRequest = new ThemeRequest(
                 "레벨2 탈출",
@@ -50,7 +50,7 @@ public class ThemeDaoTest {
 
     @Test
     @DisplayName("테마 전체 조회 확인 테스트")
-    void getThemesTest(){
+    void getThemesTest() {
         // given
         ThemeRequest themeRequest = new ThemeRequest(
                 "레벨2 탈출",
@@ -69,7 +69,7 @@ public class ThemeDaoTest {
 
     @Test
     @DisplayName("테마 삭제 확인 테스트")
-    void deleteTest(){
+    void deleteTest() {
         // given
         ThemeRequest themeRequest = new ThemeRequest(
                 "레벨2 탈출",
@@ -88,7 +88,7 @@ public class ThemeDaoTest {
 
     @Test
     @DisplayName("저장되어 있지 않은 id로 요청을 보내면 예외가 발생한다.")
-    void deleteExceptionTest(){
+    void deleteExceptionTest() {
         assertThatThrownBy(() -> themeDao.delete(1L))
                 .isInstanceOf(DeleteThemeException.class)
                 .hasMessage("[ERROR] 삭제하지 못했습니다.");

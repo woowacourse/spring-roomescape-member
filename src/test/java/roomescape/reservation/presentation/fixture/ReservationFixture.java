@@ -1,30 +1,22 @@
 package roomescape.reservation.presentation.fixture;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import roomescape.reservation.presentation.dto.MemberReservationRequest;
+import roomescape.reservation.presentation.dto.ReservationTimeRequest;
+import roomescape.reservation.presentation.dto.ThemeRequest;
 
 public class ReservationFixture {
 
-    public Map<String, String> createReservation(String name, String date, String themeId, String timeId){
-        Map<String, String> reservationParams = new HashMap<>();
-        reservationParams.put("name", name);
-        reservationParams.put("date", date);
-        reservationParams.put("themeId", themeId);
-        reservationParams.put("timeId", timeId);
-        return reservationParams;
+    public MemberReservationRequest createMemberReservation(String date, String themeId, String timeId) {
+        return new MemberReservationRequest(LocalDate.parse(date), Long.valueOf(themeId), Long.valueOf(timeId));
     }
 
-    public Map<String, String> createReservationTime(String startAt){
-        Map<String, String> reservationTimeParams = new HashMap<>();
-        reservationTimeParams.put("startAt", startAt);
-        return reservationTimeParams;
+    public ReservationTimeRequest createReservationTime(String startAt) {
+        return new ReservationTimeRequest(LocalTime.parse(startAt));
     }
 
-    public Map<String, String> createTheme(String name, String description, String thumbnail){
-        Map<String, String> themeParams = new HashMap<>();
-        themeParams.put("name", name);
-        themeParams.put("description", description);
-        themeParams.put("thumbnail", thumbnail);
-        return themeParams;
+    public ThemeRequest createTheme(String name, String description, String thumbnail) {
+        return new ThemeRequest(name, description, thumbnail);
     }
 }

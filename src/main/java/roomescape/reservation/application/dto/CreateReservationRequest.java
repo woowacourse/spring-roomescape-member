@@ -1,25 +1,25 @@
 package roomescape.reservation.application.dto;
 
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.ReservationDate;
-import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 
 public class CreateReservationRequest {
-    private final ReservationName name;
+    private final Member member;
     private final Theme theme;
     private final ReservationDate date;
     private final ReservationTime time;
 
-    public CreateReservationRequest(ReservationName name, Theme theme, ReservationDate date, ReservationTime time) {
-        this.name = name;
+    public CreateReservationRequest(Member member, Theme theme, ReservationDate date, ReservationTime time) {
+        this.member = member;
         this.theme = theme;
         this.date = date;
         this.time = time;
     }
 
-    public ReservationName getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public ReservationDate getDate() {

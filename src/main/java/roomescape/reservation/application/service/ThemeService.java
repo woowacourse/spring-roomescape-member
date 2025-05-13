@@ -2,7 +2,7 @@ package roomescape.reservation.application.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.global.exception.DeleteThemeException;
+import roomescape.reservation.application.exception.DeleteThemeException;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ThemeRepository;
 import roomescape.reservation.domain.Theme;
