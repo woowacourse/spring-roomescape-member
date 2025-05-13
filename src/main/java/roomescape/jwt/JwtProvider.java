@@ -54,7 +54,7 @@ public class JwtProvider {
                     claimsJws.getPayload().get("name", String.class),
                     MemberRoleType.from(claimsJws.getPayload().get("role", String.class)),
                     claimsJws.getPayload().getIssuedAt());
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             throw new JwtException("jwt 검증에 문제가 발생했습니다");
         }
     }
