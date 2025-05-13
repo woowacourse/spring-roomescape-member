@@ -19,7 +19,6 @@ public class AuthAdminInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Cookie[] cookies = request.getCookies();
         String token = jwtTokenProvider.extractTokenFromCookie(cookies);
-        jwtTokenProvider.validateToken(token);
         Role role = jwtTokenProvider.extractRole(token);
         role.checkAdminAccess();
         return true;

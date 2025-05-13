@@ -20,7 +20,6 @@ import java.util.Objects;
 
 @Component
 public class JwtTokenProvider {
-    private static final String TOKEN_COOKIE_NAME = "token";
     private final static String ISSUER = "roomescape";
 
     @Value("${jwt.secret}")
@@ -31,7 +30,7 @@ public class JwtTokenProvider {
     public void init() {
         secretKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
     }
-    
+
     public String createToken(Member member) {
         return Jwts.builder()
                 .subject(member.getId().toString())
@@ -45,35 +44,30 @@ public class JwtTokenProvider {
     }
 
     public Long extractId(String token) {
-        String stringId = Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getPayload().getSubject();
-        return Long.parseLong(stringId);
+        try {
+            String stringId = parseClaims(token).getSubject();
+            return Long.parseLong(stringId);
+        } catch (NumberFormatException e) {
+            throw new UnAuthorizationException("[ERROR] 잘못된 사용자 ID 형식입니다.");
+        }
     }
 
     public Role extractRole(String token) {
-        String stringRole = Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get("role", String.class);
+        String stringRole = parseClaims(token).get("role", String.class);
         return Role.valueOf(stringRole);
     }
 
-    public void validateToken(String token) {
+    private Claims parseClaims(String token) {
         try {
-            Jws<Claims> claims = Jwts.parser()
+            Jws<Claims> jws = Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
-                    .parseClaimsJws(token);
-
-            if (claims.getBody().getExpiration().before(new Date())) {
+                    .parseSignedClaims(token);
+            Claims claims = jws.getPayload();
+            if (claims.getExpiration().before(new Date())) {
                 throw new UnAuthorizationException("[ERROR] 토큰이 만료되었습니다.");
             }
-
+            return claims;
         } catch (JwtException | IllegalArgumentException e) {
             throw new UnAuthorizationException("[ERROR] 유효하지 않은 토큰입니다.");
         }

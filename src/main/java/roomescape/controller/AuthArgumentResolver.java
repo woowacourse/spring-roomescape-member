@@ -32,7 +32,6 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = nativeRequest.getCookies();
         String token = jwtTokenProvider.extractTokenFromCookie(cookies);
-        jwtTokenProvider.validateToken(token);
         Long id = jwtTokenProvider.extractId(token);
         Member loginMember = memberService.findMemberById(id);
         return new LoginInfo(loginMember.getId(), loginMember.getName(), loginMember.getEmail(), loginMember.getRole());
