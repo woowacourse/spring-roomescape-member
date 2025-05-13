@@ -155,7 +155,7 @@ public class JdbcReservationDao implements ReservationDao {
                         ON r.time_id = rt.id 
                         INNER JOIN theme AS t 
                         ON r.theme_id = t.id
-                        WHERE 1=1 
+                        WHERE 1=1
                         """ + buildWhereQuery(filter);
 
         return jdbcTemplate.query(sql, ReservationEntity.getDefaultRowMapper()).stream()
@@ -167,24 +167,24 @@ public class JdbcReservationDao implements ReservationDao {
         final StringBuilder whereQuery = new StringBuilder();
 
         if (filter.themeId() != null) {
-            whereQuery.append("AND ")
+            whereQuery.append(" AND ")
                     .append("t.id = ")
                     .append(filter.themeId());
         }
         if (filter.userId() != null) {
-            whereQuery.append("AND ")
+            whereQuery.append(" AND ")
                     .append("u.id = ")
                     .append(filter.userId());
         }
         if (filter.from() != null) {
-            whereQuery.append("AND ")
+            whereQuery.append(" AND ")
                     .append("r.date >= ")
                     .append("'")
                     .append(filter.from())
                     .append("'");
         }
         if (filter.to() != null) {
-            whereQuery.append("AND ")
+            whereQuery.append(" AND ")
                     .append("r.date <= ")
                     .append("'")
                     .append(filter.to())
