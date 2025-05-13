@@ -19,7 +19,6 @@ import roomescape.member.domain.Role;
 public class JwtTokenHandler {
 
     private static final String TOKEN_NAME = "token";
-    private static final String EMPTY = "";
 
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
@@ -43,25 +42,27 @@ public class JwtTokenHandler {
 
     public String extractTokenValue(final HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            throw new AuthenticationException("쿠키가 존재하지 않습니다.");
+        }
         return Arrays.stream(cookies)
                 .filter(cookie -> TOKEN_NAME.equals(cookie.getName()))
                 .findFirst()
                 .map(Cookie::getValue)
-                .orElse(EMPTY);
+                .orElse(null);
     }
 
     public String getMemberIdFromTokenWithValidate(final String token) {
         validateToken(token);
-        return Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody()
+        return getBody(token)
                 .getSubject();
     }
 
     public void validateToken(final String token) {
         try {
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token);
         } catch (JwtException | IllegalArgumentException e) {
             throw new AuthenticationException("사용할 수 없는 토큰입니다.");
         }
@@ -72,12 +73,16 @@ public class JwtTokenHandler {
             throw new AuthenticationException("토큰이 존재하지 않습니다.");
         }
 
-        String role = Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody()
+        String role = getBody(token)
                 .get("role", String.class);
 
         return Role.from(role);
+    }
+
+    private Claims getBody(final String token) {
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
