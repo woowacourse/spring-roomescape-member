@@ -39,6 +39,8 @@ public class ReservationAdminApiTest {
 
     private static String adminToken;
     private static String userToken;
+    private String cookieKey;
+
     @Autowired
     private JwtProperties jwtProperties;
     @Autowired
@@ -53,8 +55,6 @@ public class ReservationAdminApiTest {
     private JdbcTemplate jdbcTemplate;
     @LocalServerPort
     private int port;
-
-    private String cookieKey;
 
     @BeforeAll
     static void setUp(@Autowired final JwtManager jwtManager) {

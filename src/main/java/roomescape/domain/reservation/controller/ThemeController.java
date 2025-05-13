@@ -43,13 +43,15 @@ public class ThemeController {
     public ResponseEntity<ThemeResponse> create(@Valid @RequestBody final ThemeRequest request) {
         final ThemeResponse response = themeService.create(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final Long id) {
         themeService.delete(id);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
 }

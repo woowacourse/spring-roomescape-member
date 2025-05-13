@@ -63,7 +63,6 @@ class ReservationApiTest {
     @LocalServerPort
     private int port;
 
-
     @BeforeEach
     void init() {
         RestAssured.port = port;
@@ -251,6 +250,5 @@ class ReservationApiTest {
                 .body("size()", is(2))
                 .body("alreadyBooked", containsInAnyOrder(true, false));
     }
-
 
 }
