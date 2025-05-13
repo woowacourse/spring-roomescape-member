@@ -37,7 +37,7 @@ public class ReservationAplTest {
     void canGetReservations() {
         // given
         jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES (?,?,?,?)",
-                "회원", "test@test.com", "ecxewqe!23", MemberRole.GENERAL.toString());
+                "관리자", "test@test.com", "ecxewqe!23", MemberRole.ADMIN.toString());
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)",
                 LocalTime.of(10, 0));
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)",
@@ -62,7 +62,7 @@ public class ReservationAplTest {
     void canGetReservationsByFilter() {
         // given
         jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES (?,?,?,?)",
-                "회원", "test@test.com", "ecxewqe!23", MemberRole.GENERAL.toString());
+                "관리자", "test@test.com", "ecxewqe!23", MemberRole.ADMIN.toString());
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)",
                 LocalTime.of(10, 0));
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
@@ -94,7 +94,7 @@ public class ReservationAplTest {
     void canCreateReservation() {
         // given
         jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES (?,?,?,?)",
-                "회원", "test@test.com", "ecxewqe!23", MemberRole.GENERAL.toString());
+                "관리자", "test@test.com", "ecxewqe!23", MemberRole.ADMIN.toString());
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마", "설명1", "썸네일1");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)",
@@ -125,7 +125,7 @@ public class ReservationAplTest {
     void canDeleteReservation() {
         // given
         jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES (?,?,?,?)",
-                "회원", "test@test.com", "ecxewqe!23", MemberRole.GENERAL.toString());
+                "관리자", "test@test.com", "ecxewqe!23", MemberRole.ADMIN.toString());
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마", "설명", "썸네일");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)",

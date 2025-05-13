@@ -84,7 +84,7 @@ public class ReservationTimeApiTest {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마", "설명", "썸네일");
         jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                1L, NEXT_DAY, 1, 1);
+                1L, NEXT_DAY.toString(), 1, 1);
 
         RestAssured.given().log().all()
                 .when().delete("/times/1")

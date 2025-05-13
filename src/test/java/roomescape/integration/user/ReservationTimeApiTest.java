@@ -41,7 +41,7 @@ public class ReservationTimeApiTest {
                 .body("size()", is(2));
     }
 
-    @DisplayName("예약 가능 여부와 함께 예약 가능 시간을 조회할 수 있다 - 예약이 비었는 시간 조회")
+    @DisplayName("예약 가능 여부와 함께 예약 가능 시간을 조회할 수 있다 - 예약이 비어있는 시간 조회")
     @Test
     void canGetReservationPossibleTimes() {
         // given

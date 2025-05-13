@@ -61,16 +61,23 @@ public class ReservationApiTest {
     @Test
     void cannotCreateReservationsWhenPastRequest() {
         // given
+        jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES (?,?,?,?)",
+                "회원", "test@test.com", "ecxewqe!23", MemberRole.GENERAL.toString());
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                "이름1", "설명1", "썸네일1");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
 
+        String accessToken = jwtTokenProvider.makeAccessToken(1L, "회원", MemberRole.GENERAL);
+
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", YESTERDAY.toString());
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("access", accessToken)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -88,8 +95,9 @@ public class ReservationApiTest {
         jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
                 1L, NEXT_DAY.toString(), 1, 1);
 
+        String accessToken = jwtTokenProvider.makeAccessToken(1L, "회원", MemberRole.GENERAL);
+
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", NEXT_DAY.toString());
         params.put("timeId", 1);
         params.put("themeId", 1);
@@ -97,6 +105,7 @@ public class ReservationApiTest {
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("access", accessToken)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
