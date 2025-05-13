@@ -22,4 +22,9 @@ public class MemberDbRepository implements MemberRepository {
     public List<Member> getAll() {
         return memberDao.getAll();
     }
+
+    @Override
+    public boolean existsById(Long memberId) {
+        return memberDao.existsById(memberId);
+    }
 }

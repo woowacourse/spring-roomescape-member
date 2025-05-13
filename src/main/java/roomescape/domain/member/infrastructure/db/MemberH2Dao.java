@@ -51,4 +51,17 @@ public class MemberH2Dao implements MemberDao {
                 """;
         return namedParameterJdbcTemplate.query(selectQuery, DEFAULT_ROW_MAPPER);
     }
+
+    @Override
+    public boolean existsById(Long memberId) {
+        String existsQuery = """
+                SELECT EXISTS (
+                            SELECT 1
+                            FROM member
+                            WHERE id = :memberId
+                        )
+                """;
+        Integer result = namedParameterJdbcTemplate.queryForObject(existsQuery, Map.of("memberId", memberId), Integer.class);
+        return result != null && result == 1;
+    }
 }
