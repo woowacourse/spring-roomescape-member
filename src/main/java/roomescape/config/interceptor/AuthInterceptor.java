@@ -1,7 +1,9 @@
 package roomescape.config.interceptor;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.jwt.JwtProvider;
@@ -19,11 +21,15 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(final HttpServletRequest request,
                              final HttpServletResponse response,
-                             final Object handler) {
+                             final Object handler) throws IOException {
 
         String tokenCookie = CookieParser.getTokenCookie(request, "token");
-        jwtProvider.verifyToken(tokenCookie);
-
-        return true;
+        try {
+            jwtProvider.verifyToken(tokenCookie);
+            return true;
+        } catch (JwtException e) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+            return false;
+        }
     }
 }

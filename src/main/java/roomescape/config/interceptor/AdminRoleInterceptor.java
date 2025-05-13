@@ -1,5 +1,6 @@
 package roomescape.config.interceptor;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -33,15 +34,25 @@ public class AdminRoleInterceptor implements HandlerInterceptor {
         boolean onClass = handlerMethod.getBeanType().isAnnotationPresent(AdminOnly.class);
 
         if (onMethod || onClass) {
-            String tokenCookie = CookieParser.getTokenCookie(request, "token");
-            JwtRequest jwtRequest = jwtProvider.verifyToken(tokenCookie);
-            return checkAdmin(response, jwtRequest);
+            return checkCookieToken(request, response);
         }
         return true;
     }
 
-    private static boolean checkAdmin(final HttpServletResponse response,
-                                      final JwtRequest jwtRequest) throws IOException {
+    private boolean checkCookieToken(final HttpServletRequest request,
+                                     final HttpServletResponse response) throws IOException {
+        String tokenCookie = CookieParser.getTokenCookie(request, "token");
+        try {
+            JwtRequest jwtRequest = jwtProvider.verifyToken(tokenCookie);
+            return checkAdmin(response, jwtRequest);
+        } catch (JwtException e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유저 인증에 실패했습니다.");
+            return false;
+        }
+    }
+
+    private boolean checkAdmin(final HttpServletResponse response, final JwtRequest jwtRequest)
+            throws IOException {
         if (jwtRequest == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유저 인증에 실패했습니다.");
             return false;
