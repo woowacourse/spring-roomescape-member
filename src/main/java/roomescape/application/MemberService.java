@@ -26,7 +26,7 @@ public class MemberService {
 
     public List<MemberResponse> getMembers() {
         List<Member> members = memberRepository.findAll();
-        return MemberResponse.from(members);
+        return MemberResponse.toList(members);
     }
 
     public MemberResponse createMember(MemberCreateRequest request) {

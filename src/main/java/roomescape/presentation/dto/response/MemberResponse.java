@@ -15,7 +15,7 @@ public record MemberResponse(Long id, String name, String email) {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public static List<MemberResponse> from(List<Member> members) {
+    public static List<MemberResponse> toList(List<Member> members) {
         return members.stream()
                 .map(MemberResponse::from)
                 .toList();

@@ -30,7 +30,7 @@ public class ThemeService {
 
     public List<ThemeResponse> getThemes() {
         List<Theme> themes = themeRepository.findAll();
-        return ThemeResponse.from(themes);
+        return ThemeResponse.toList(themes);
     }
 
     public ThemeResponse createTheme(ThemeCreateRequest request) {
@@ -55,6 +55,6 @@ public class ThemeService {
     public List<ThemeResponse> getPopularThemes() {
         LocalDate now = currentTimeService.now().toLocalDate();
         List<Theme> themes = themeRepository.findPopularThemeDuringAWeek(POPULAR_THEME_COUNTS, now);
-        return ThemeResponse.from(themes);
+        return ThemeResponse.toList(themes);
     }
 }

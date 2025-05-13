@@ -21,7 +21,7 @@ public record ReservationResponse(
         );
     }
 
-    public static List<ReservationResponse> from(List<Reservation> reservations) {
+    public static List<ReservationResponse> toList(List<Reservation> reservations) {
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();

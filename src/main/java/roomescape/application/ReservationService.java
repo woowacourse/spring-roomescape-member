@@ -41,7 +41,7 @@ public class ReservationService {
     public List<ReservationResponse> getReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
 
-        return ReservationResponse.from(reservations);
+        return ReservationResponse.toList(reservations);
     }
 
     public ReservationResponse createReservation(ReservationCreateRequest request, LoginMember loginMember) {
@@ -103,6 +103,6 @@ public class ReservationService {
     ) {
         List<Reservation> reservations = reservationRepository.findAllByThemeIdAndMemberIdAndDateBetween(themeId, memberId, dateFrom, dateTo);
 
-        return ReservationResponse.from(reservations);
+        return ReservationResponse.toList(reservations);
     }
 }

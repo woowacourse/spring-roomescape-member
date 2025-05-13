@@ -28,7 +28,7 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
     public List<ReservationTimeResponse> getReservationTimes() {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
-        return ReservationTimeResponse.from(reservationTimes);
+        return ReservationTimeResponse.toList(reservationTimes);
     }
 
     @Override
