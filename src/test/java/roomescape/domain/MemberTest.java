@@ -12,16 +12,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.exception.InternalServerException;
 
 class MemberTest {
-
-    @DisplayName("비어있는 ID로 멤버를 생성할 수 없다")
-    @Test
-    void cannotCreateBecauseNullId() {
-        // when & then
-        assertThatThrownBy(() -> new Member(null, "이름", "test@test.com", "비밀번호", MemberRole.GENERAL))
-                .isInstanceOf(InternalServerException.class)
-                .hasMessage("[ERROR] 비어있는 ID로 멤버를 생성할 수 없습니다.");
-    }
-
+    
     @DisplayName("비어있는 이름으로 멤버를 생성할 수 없다")
     @ParameterizedTest
     @NullAndEmptySource

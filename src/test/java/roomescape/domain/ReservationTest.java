@@ -13,21 +13,7 @@ class ReservationTest {
 
     private static final ReservationTime EXAMPLE_RESERVATION_TIME = new ReservationTime(1L, LocalTime.of(10, 0));
     private static final Theme EXAMPLE_THEME = new Theme(1L, "이름", "설명", "썸네일");
-
-    @DisplayName("비어있는 ID로는 예약을 생성할 수 없다")
-    @Test
-    void cannotCreateReservationWithNullId() {
-        // given
-        Member member = new Member(1L, "회원", "test@test.com", "qweqw123!", MemberRole.GENERAL);
-        Long nullId = null;
-
-        // when & then
-        assertThatThrownBy(
-                () -> new Reservation(nullId, member, LocalDate.now(), EXAMPLE_RESERVATION_TIME, EXAMPLE_THEME))
-                .isInstanceOf(InternalServerException.class)
-                .hasMessage("[ERROR] 비어있는 ID로 예약을 생성할 수 없습니다.");
-    }
-
+    
     @DisplayName("비어있는 멤버로는 예약을 생성할 수 없다")
     @Test
     void cannotCreateReservationWithNullMember() {

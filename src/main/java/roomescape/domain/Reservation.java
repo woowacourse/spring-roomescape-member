@@ -8,8 +8,6 @@ import roomescape.exception.InternalServerException;
 
 public final class Reservation {
 
-    private static final long DEFAULT_ID = 0L;
-
     private final Long id;
     private final Member member;
     private final LocalDate date;
@@ -17,7 +15,7 @@ public final class Reservation {
     private final Theme theme;
 
     public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
-        validateField(id, member, date, time, theme);
+        validateField(member, date, time, theme);
         this.id = id;
         this.member = member;
         this.date = date;
@@ -26,7 +24,7 @@ public final class Reservation {
     }
 
     public static Reservation createWithoutId(Member member, LocalDate date, ReservationTime time, Theme theme) {
-        return new Reservation(DEFAULT_ID, member, date, time, theme);
+        return new Reservation(null, member, date, time, theme);
     }
 
     public Long getId() {
@@ -71,8 +69,7 @@ public final class Reservation {
         }
     }
 
-    private void validateField(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
-        validateNullId(id);
+    private void validateField(Member member, LocalDate date, ReservationTime time, Theme theme) {
         validateNullMember(member);
         validateNullDate(date);
         validateNullTime(time);
@@ -82,12 +79,6 @@ public final class Reservation {
     private void validateNullMember(Member member) {
         if (member == null) {
             throw new InternalServerException("[ERROR] 비어있는 멤버로는 예약을 생성할 수 없습니다.");
-        }
-    }
-
-    private void validateNullId(Long id) {
-        if (id == null) {
-            throw new InternalServerException("[ERROR] 비어있는 ID로 예약을 생성할 수 없습니다.");
         }
     }
 

@@ -8,17 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class ReservationTimeTest {
-
-    @DisplayName("비어있는 ID값으로 예약시간을 생성할 수 없다")
-    @Test
-    void cannotCreateBecauseNullId() {
-        // given
-        Long nullId = null;
-
-        // when & then
-        assertThatThrownBy(() -> new ReservationTime(nullId, LocalTime.now()));
-    }
-
+    
     @DisplayName("비어있는 예약 시간으로 예약시간을 생성할 수 없다")
     @Test
     void cannotCreateBecauseNullStartAt() {
