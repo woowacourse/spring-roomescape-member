@@ -5,8 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.domain.repository.ReservationRepository;
-import roomescape.reservation.domain.repository.ReservationTimeRepository;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.application.repository.ReservationRepository;
+import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.presentation.dto.AvailableReservationTimeResponse;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ReservationTimeResponse;
@@ -22,6 +23,7 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
+    @Transactional
     public ReservationTimeResponse createReservationTime(final ReservationTimeRequest reservationTimeRequest) {
         validateIsDuplicatedTime(reservationTimeRequest);
 
@@ -34,6 +36,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
+    @Transactional
     public void deleteReservationTime(final Long id) {
         validateIsDuplicatedReservation(id);
 

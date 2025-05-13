@@ -9,9 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.application.dto.CreateReservationRequest;
 import roomescape.reservation.domain.ReservationDate;
-import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ThemeRequest;
 
@@ -42,7 +43,7 @@ public class ReservationDaoTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
         );
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                new ReservationName("브라운"),
+                new Member(2L, "admin@admin.com", "admin", "어드민", Role.ADMIN),
                 themeDao.insert(themeRequest),
                 new ReservationDate(LocalDate.of(2023, 8, 5)),
                 reservationTimeDao.insert(reservationTimeRequest.getStartAt())

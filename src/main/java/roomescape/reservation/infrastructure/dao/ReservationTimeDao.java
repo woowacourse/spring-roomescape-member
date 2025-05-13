@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.reservation.domain.repository.ReservationTimeRepository;
+import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.ReservationTime;
 
 @Repository
