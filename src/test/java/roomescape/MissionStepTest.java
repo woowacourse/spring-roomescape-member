@@ -47,16 +47,8 @@ public class MissionStepTest {
         // members
         jdbcTemplate.update("INSERT INTO member ( id, name, role, email, password ) VALUES ( ?, ?, ?, ?, ? )", admin.getId(), admin.getName(), admin.getRole().name(), admin.getEmail(), admin.getPassword());
         jdbcTemplate.update("INSERT INTO member ( id, name, role, email, password ) VALUES ( ?, ?, ?, ?, ? )", user.getId(), user.getName(), user.getRole().name(), user.getEmail(), user.getPassword());
-        Claims adminClaims = Jwts.claims()
-                .subject(admin.getId().toString())
-                .add("role", admin.getRole().name())
-                .build();
-        adminToken = jwtTokenProvider.createToken(adminClaims);
-        Claims userClaims = Jwts.claims()
-                .subject(user.getId().toString())
-                .add("role", user.getRole().name())
-                .build();
-        userToken = jwtTokenProvider.createToken(userClaims);
+        adminToken = jwtTokenProvider.createToken(admin);
+        userToken = jwtTokenProvider.createToken(user);
 
         // time & theme
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", timeId, LocalTime.of(10, 0));

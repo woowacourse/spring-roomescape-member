@@ -63,14 +63,4 @@ public class JwtTokenProvider {
             throw new BadRequestException("잘못된 형식의 토큰입니다.");
         }
     }
-
-    public String createToken(Claims claims) {
-        Date now = new Date();
-        Date expiration = new Date(now.getTime() + EXPIRE_LENGTH_MILLI);
-        return Jwts.builder()
-                .claims(claims)
-                .expiration(expiration)
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                .compact();
-    }
 }

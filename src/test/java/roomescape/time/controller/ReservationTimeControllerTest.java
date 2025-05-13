@@ -90,11 +90,7 @@ class ReservationTimeControllerTest {
                 "themeId", 1
         );
 
-        Claims userClaims = Jwts.claims()
-                .subject(user.getId().toString())
-                .add("role", user.getRole().name())
-                .build();
-        String userToken = jwtTokenProvider.createToken(userClaims);
+        String userToken = jwtTokenProvider.createToken(user);
         RestAssured.given().log().all()
                 .cookie("token", userToken)
                 .contentType(ContentType.JSON)
