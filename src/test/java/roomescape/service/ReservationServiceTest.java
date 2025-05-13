@@ -26,6 +26,7 @@ import roomescape.dto.request.ReservationSearchRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.InvalidReservationFilterException;
 import roomescape.exception.ReservationDuplicateException;
+import roomescape.support.auth.LoginMember;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -53,6 +54,7 @@ class ReservationServiceTest {
         final ReservationTime time = new ReservationTime(1L, LocalTime.now().plusHours(1));
         final Theme theme = new Theme(1L, "test", "테마1", "설명1");
         final ReservationCreateRequest request = new ReservationCreateRequest(LocalDate.now(), 1L, 1L);
+        final LoginMember loginMember = new LoginMember(1L, "test", "test", MemberRole.USER);
         final Member member = new Member(1L, "test", "test", "test", MemberRole.USER);
         when(reservationTimeService.findById(1L)).thenReturn(time);
         when(themeService.findById(1L)).thenReturn(theme);
@@ -60,7 +62,7 @@ class ReservationServiceTest {
                 1L, LocalDate.now(), time, theme, member)));
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(request, member))
+        assertThatThrownBy(() -> reservationService.create(request, loginMember))
                 .isInstanceOf(ReservationDuplicateException.class)
                 .hasMessage("이미 존재하는 예약입니다.");
     }

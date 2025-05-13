@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.InvalidAuthException;
+import roomescape.exception.ForbiddenAuthorityException;
 
 class MemberRoleTest {
 
@@ -14,7 +14,7 @@ class MemberRoleTest {
 
         // when & then
         assertThatThrownBy(MemberRole.USER::validateAdmin)
-                .isInstanceOf(InvalidAuthException.class)
+                .isInstanceOf(ForbiddenAuthorityException.class)
                 .hasMessage("관리자가 아닙니다.");
     }
 
