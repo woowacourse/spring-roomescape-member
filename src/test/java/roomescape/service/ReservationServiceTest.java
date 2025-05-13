@@ -5,14 +5,22 @@ import org.junit.jupiter.api.Test;
 import roomescape.application.service.ReservationService;
 import roomescape.domain.exception.ReservationDuplicatedException;
 import roomescape.domain.exception.ResourceNotExistException;
+import roomescape.domain.model.Member;
 import roomescape.domain.model.ReservationTime;
 import roomescape.domain.model.Theme;
+import roomescape.domain.repository.MemberRepository;
 import roomescape.domain.repository.ReservationRepository;
-import roomescape.domain.repository.ReservationTimeRepository;
-import roomescape.domain.repository.ThemeRepository;
-import roomescape.fake.FakeReservationRepository;
-import roomescape.fake.FakeReservationTimeRepository;
-import roomescape.fake.FakeThemeRepository;
+import roomescape.fake.MemberDaoFake;
+import roomescape.fake.ReservationDaoFake;
+import roomescape.fake.ReservationTimeDaoFake;
+import roomescape.fake.ThemeDaoFake;
+import roomescape.infrastructure.dao.ReservationDao;
+import roomescape.infrastructure.dao.ReservationTimeDao;
+import roomescape.infrastructure.dao.ThemeDao;
+import roomescape.infrastructure.repository.MemberRepositoryImpl;
+import roomescape.infrastructure.repository.ReservationRepositoryImpl;
+import roomescape.infrastructure.repository.ReservationTimeRepositoryImpl;
+import roomescape.infrastructure.repository.ThemeRepositoryImpl;
 import roomescape.presentation.dto.request.ReservationRequest;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -21,62 +29,71 @@ import static roomescape.fixture.TestFixture.*;
 
 public class ReservationServiceTest {
 
+    ReservationDao reservationDao;
+    ReservationTimeDao reservationTimeDao;
+    ThemeDao themeDao;
     ReservationRepository reservationRepository;
-    ReservationTimeRepository reservationTimeRepository;
-    ThemeRepository themeRepository;
+    MemberRepository memberRepository;
     ReservationService reservationService;
 
     public ReservationServiceTest() {
-        reservationRepository = new FakeReservationRepository();
-        reservationTimeRepository = new FakeReservationTimeRepository();
-        themeRepository = new FakeThemeRepository();
-        this.reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+        reservationDao = new ReservationDaoFake();
+        reservationTimeDao = new ReservationTimeDaoFake();
+        themeDao = new ThemeDaoFake();
+        reservationRepository = new ReservationRepositoryImpl(reservationDao);
+        memberRepository = new MemberRepositoryImpl(new MemberDaoFake());
+        reservationService = new ReservationService(reservationRepository, new ReservationTimeRepositoryImpl(reservationTimeDao), new ThemeRepositoryImpl(themeDao), memberRepository);
     }
 
     @BeforeEach
-    void setUp() {
-        ((FakeReservationRepository) reservationRepository).clear();
+    void clear() {
+        ((ThemeDaoFake) themeDao).clear();
+        ((ReservationTimeDaoFake) reservationTimeDao).clear();
+        ((ReservationDaoFake) reservationDao).clear();
     }
 
     @Test
     void 예약을_생성할_수_있다() {
         // given
-        ReservationTime time = reservationTimeRepository.save(DEFAULT_TIME);
-        Theme theme = themeRepository.save(DEFAULT_THEME);
+        ReservationTime time = reservationTimeDao.save(DEFAULT_TIME);
+        Theme theme = themeDao.save(DEFAULT_THEME);
 
         // when
-        ReservationRequest reservation = new ReservationRequest("예약", TOMORROW, time.getId(), theme.getId());
+        ReservationRequest reservation = new ReservationRequest(TOMORROW, time.getId(), theme.getId());
+        Member member = memberRepository.findById(1L);
 
-        // when & then
-        assertDoesNotThrow(() -> reservationService.save(reservation));
+        // then
+        assertDoesNotThrow(() -> reservationService.save(member, reservation));
     }
 
     @Test
     void 중복_예약을_시도하는_경우_예외를_발생시킨다() {
         // given
-        ReservationTime time = reservationTimeRepository.save(DEFAULT_TIME);
-        Theme theme = themeRepository.save(DEFAULT_THEME);
+        ReservationTime time = reservationTimeDao.save(DEFAULT_TIME);
+        Theme theme = themeDao.save(DEFAULT_THEME);
 
         // when
-        ReservationRequest reservation = new ReservationRequest("예약", TOMORROW, time.getId(), theme.getId());
-        reservationService.save(reservation);
+        ReservationRequest reservation = new ReservationRequest(TOMORROW, time.getId(), theme.getId());
+        Member member = memberRepository.findById(1L);
+        reservationService.save(member, reservation);
 
-        // when & then
-        assertThatThrownBy(() -> reservationService.save(reservation))
+        // then
+        assertThatThrownBy(() -> reservationService.save(member, reservation))
                 .isInstanceOf(ReservationDuplicatedException.class);
     }
 
     @Test
     void 과거_시간대를_예약하려는_경우_예외를_발생시킨다() {
         // given
-        ReservationTime time = reservationTimeRepository.save(DEFAULT_TIME);
-        Theme theme = themeRepository.save(DEFAULT_THEME);
+        ReservationTime time = reservationTimeDao.save(DEFAULT_TIME);
+        Theme theme = themeDao.save(DEFAULT_THEME);
 
         // when
-        ReservationRequest reservation = new ReservationRequest("예약", YESTERDAY, time.getId(), theme.getId());
+        ReservationRequest reservation = new ReservationRequest(YESTERDAY, time.getId(), theme.getId());
+        Member member = memberRepository.findById(1L);
 
-        // when & then
-        assertThatThrownBy(() -> reservationService.save(reservation))
+        // then
+        assertThatThrownBy(() -> reservationService.save(member, reservation))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 현재보다 과거 시간에는 예약이 불가능합니다.");
     }

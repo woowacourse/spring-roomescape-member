@@ -3,6 +3,7 @@ package roomescape.infrastructure.repository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
+import roomescape.application.dto.ReservationInfoResponse;
 import roomescape.domain.exception.ReservationDuplicatedException;
 import roomescape.domain.model.Reservation;
 import roomescape.domain.repository.ReservationRepository;
@@ -12,16 +13,16 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public class JdbcReservationRepository implements ReservationRepository {
+public class ReservationRepositoryImpl implements ReservationRepository {
 
     private final ReservationDao reservationDao;
 
-    public JdbcReservationRepository(final ReservationDao reservationDao) {
+    public ReservationRepositoryImpl(final ReservationDao reservationDao) {
         this.reservationDao = reservationDao;
     }
 
     @Override
-    public List<Reservation> findAll() {
+    public List<ReservationInfoResponse> findAll() {
         return reservationDao.findAll();
     }
 
@@ -42,7 +43,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByTimeIdAndThemeIdAndDate(final Long timeId, final Long themeId, final LocalDate date) {
+    public boolean existByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
         return reservationDao.existByTimeIdAndThemeIdAndDate(timeId, themeId, date);
     }
 
@@ -59,5 +60,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public boolean existByTimeId(final Long timeId) {
         return reservationDao.existByTimeId(timeId);
+    }
+
+    @Override
+    public List<ReservationInfoResponse> findByThemeIdAndMemberIdAndDate(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
+        return reservationDao.findByThemeIdAndMemberIdAndDate(themeId, memberId, dateFrom, dateTo);
     }
 }

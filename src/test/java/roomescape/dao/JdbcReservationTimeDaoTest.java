@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.model.ReservationTime;
-import roomescape.infrastructure.dao.ReservationTimeDao;
+import roomescape.infrastructure.dao.JdbcReservationTimeDao;
 
 import java.time.LocalTime;
 
@@ -16,15 +16,15 @@ import static roomescape.fixture.TestFixture.DEFAULT_TIME;
 import static roomescape.fixture.TestFixture.ONE_PM;
 
 @JdbcTest
-class ReservationTimeDaoTest {
+class JdbcReservationTimeDaoTest {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
-    ReservationTimeDao reservationTimeDao;
+    JdbcReservationTimeDao reservationTimeDao;
 
     @BeforeEach
     void setUp() {
-        reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
+        reservationTimeDao = new JdbcReservationTimeDao(jdbcTemplate);
     }
 
     @Test
