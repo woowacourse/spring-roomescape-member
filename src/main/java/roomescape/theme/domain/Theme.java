@@ -1,16 +1,15 @@
 package roomescape.theme.domain;
 
-import roomescape.global.common.domain.Id;
 import roomescape.theme.exception.InvalidThemeException;
 
 public class Theme {
 
-    private final Id id;
+    private final Long id;
     private final String name;
     private final String description;
     private final String thumbnail;
 
-    public Theme(final Id id, final String name, final String description, final String thumbnail) {
+    public Theme(final Long id, final String name, final String description, final String thumbnail) {
         validateNameLength(name);
         validateDescriptionLength(description);
         validateThumbnailLength(thumbnail);
@@ -21,11 +20,11 @@ public class Theme {
     }
 
     public static Theme of(final Long databaseId, final String name, final String description, final String thumbnail) {
-        return new Theme(Id.assignDatabaseId(databaseId), name, description, thumbnail);
+        return new Theme(databaseId, name, description, thumbnail);
     }
 
     public static Theme withUnassignedId(final String name, final String description, final String thumbnail) {
-        return new Theme(Id.unassigned(), name, description, thumbnail);
+        return new Theme(null, name, description, thumbnail);
     }
 
     private void validateNameLength(final String value) {
@@ -47,7 +46,7 @@ public class Theme {
     }
 
     public Long getId() {
-        return id.getDatabaseId();
+        return id;
     }
 
     public String getName() {

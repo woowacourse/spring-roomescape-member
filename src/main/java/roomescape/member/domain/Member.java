@@ -1,19 +1,18 @@
 package roomescape.member.domain;
 
-import roomescape.global.common.domain.Id;
 import roomescape.member.exception.InvalidMemberException;
 
 public class Member {
 
     private static final int MAX_NAME_LENGTH = 10;
 
-    private final Id id;
+    private final Long id;
     private final String name;
     private final String email;
     private final String password;
     private final MemberRole memberRole;
 
-    private Member(final Id id, final String name, final String email, final String password,
+    private Member(final Long id, final String name, final String email, final String password,
                    final MemberRole memberRole) {
         validate(name);
         this.id = id;
@@ -25,12 +24,12 @@ public class Member {
 
     public static Member of(final Long id, final String name, final String email, final String password,
                             final MemberRole memberRole) {
-        return new Member(Id.assignDatabaseId(id), name, email, password, memberRole);
+        return new Member(id, name, email, password, memberRole);
     }
 
     public static Member withUnassignedId(final String name, final String email, final String password,
                                           final MemberRole memberRole) {
-        return new Member(Id.unassigned(), name, email, password, memberRole);
+        return new Member(null, name, email, password, memberRole);
     }
 
     private void validate(final String name) {
@@ -40,7 +39,7 @@ public class Member {
     }
 
     public Long getId() {
-        return id.getDatabaseId();
+        return id;
     }
 
     public String getName() {

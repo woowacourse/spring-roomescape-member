@@ -3,6 +3,7 @@ package roomescape.reservation.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ class FakeReservationRepositoryTest {
 
     @Test
     void findAll_shouldReturnAllSavedReservations() {
-        Reservation reservation2 = Reservation.of(1L, futureDate, member, ReservationTime.of(1L, "16:00"),
+        Reservation reservation2 = Reservation.of(1L, futureDate, member, ReservationTime.of(1L, LocalTime.of(16, 0)),
                 theme);
 
         reservationRepository.save(reservation);
