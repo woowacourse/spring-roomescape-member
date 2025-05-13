@@ -16,7 +16,7 @@ import roomescape.util.CookieParser;
 
 public class LoginFilter extends OncePerRequestFilter {
 
-    private static final List<String> EXCLUDE_URL_PATH = List.of("/", "/login", "/logout",
+    private static final List<String> EXCLUDE_URL_PATH = List.of("/", "/login", "/logout", "/members",
             "/themes/popular", "/favicon.ico",
             "/image/**", "/css/**", "/js/**");
 
