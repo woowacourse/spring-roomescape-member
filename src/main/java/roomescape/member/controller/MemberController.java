@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.RoleRequired;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.dto.SignUpRequest;
 import roomescape.member.dto.SignUpResponse;
+import roomescape.member.entity.Role;
 import roomescape.member.service.MemberService;
 
 import java.net.URI;
@@ -32,6 +34,7 @@ public class MemberController {
     }
 
     @GetMapping
+    @RoleRequired(Role.ADMIN)
     public ResponseEntity<List<MemberResponse>> getAllMembers() {
         List<MemberResponse> memberResponses = memberService.findAll();
         return ResponseEntity.ok(memberResponses);
