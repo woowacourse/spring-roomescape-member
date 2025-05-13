@@ -25,7 +25,7 @@ class AdminRestControllerTest {
                 .when().post("/login").getCookie("token");
 
         Map<String, Object> params = new HashMap<>();
-        params.put("date", LocalDate.of(2025, 5, 12));
+        params.put("date", LocalDate.of(2025, 12, 12));
         params.put("themeId", 1);
         params.put("timeId", 1);
         params.put("memberId", 1);
