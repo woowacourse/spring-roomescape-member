@@ -1,8 +1,8 @@
 package roomescape.fake;
 
-import roomescape.entity.ReservationTime;
-import roomescape.exceptions.EntityNotFoundException;
-import roomescape.repository.ReservationTimeRepository;
+import roomescape.global.exception.EntityNotFoundException;
+import roomescape.time.entity.ReservationTime;
+import roomescape.time.repository.ReservationTimeRepository;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public class ReservationTimeFakeRepository implements ReservationTimeRepository 
 
         ReservationTime savedTime = new ReservationTime(
                 newId,
-                reservationTime.startAt());
+                reservationTime.getStartAt());
 
         reservationTimes.put(newId, savedTime);
 

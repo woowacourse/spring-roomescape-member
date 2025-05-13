@@ -1,8 +1,8 @@
 package roomescape.fake;
 
-import roomescape.entity.Theme;
-import roomescape.exceptions.EntityNotFoundException;
-import roomescape.repository.ThemeRepository;
+import roomescape.global.exception.EntityNotFoundException;
+import roomescape.theme.entity.Theme;
+import roomescape.theme.repository.ThemeRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class ThemeFakeRepository implements ThemeRepository {
     @Override
     public Theme save(Theme theme) {
         long newId = idGenerator.getAndIncrement();
-        Theme savedTheme = new Theme(newId, theme.name(), theme.description(), theme.thumbnail());
+        Theme savedTheme = new Theme(newId, theme.getName(), theme.getDescription(), theme.getThumbnail());
         themes.put(newId, savedTheme);
 
         return savedTheme;
