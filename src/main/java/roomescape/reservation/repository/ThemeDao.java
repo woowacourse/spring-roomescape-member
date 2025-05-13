@@ -9,93 +9,78 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import roomescape.common.template.AbstractDaoTemplate;
 import roomescape.reservation.domain.Theme;
 
 @Repository
-public class ThemeDao {
+public class ThemeDao extends AbstractDaoTemplate<Theme> {
 
     private static final String TABLE_NAME = "theme";
+    private static final String BASE_SELECT_SQL = "select id, name, description, thumbnail from theme";
 
-    private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert jdbcInsert;
-
+    @Autowired
     public ThemeDao(final NamedParameterJdbcTemplate jdbcTemplate, final DataSource dataSource) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName(TABLE_NAME)
-                .usingGeneratedKeyColumns("id");
+        super(jdbcTemplate, TABLE_NAME, dataSource);
+    }
+
+    @Override
+    protected RowMapper<Theme> rowMapper() {
+        return this::mapRowToTheme;
     }
 
     public List<Theme> findAll() {
-        String sql = "select * from theme";
-
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> themeOf(resultSet));
+        return jdbcTemplate.query(BASE_SELECT_SQL, rowMapper());
     }
 
-    public List<Theme> findThemeRankingByReservation(final LocalDate startDate, final LocalDate endDate,
-                                                     final int rowCount
+    public Optional<Theme> findById(final Long id) {
+        String sql = BASE_SELECT_SQL + " where id = :id";
+        return executeQueryForObject(sql, Map.of("id", id));
+    }
+
+    public List<Theme> findThemeRankingByReservation(
+            final LocalDate startDate,
+            final LocalDate endDate,
+            final int rowCount
     ) {
         String sql = """
-                select T.*, count(R.id) as reservation_count
-                from theme T
-                inner join reservation R
-                ON T.id = R.theme_id AND R.date between :start_date and :end_date
-                group by T.id
+                select theme.id, theme.name, theme.description, theme.thumbnail, count(reservation.id) as reservation_count
+                from theme
+                inner join reservation on theme.id = reservation.theme_id and reservation.date between :start_date and :end_date
+                group by theme.id
                 order by reservation_count desc
                 limit :row_count
                 """;
-
-        Map<String, Object> params = Map.of("start_date", startDate, "end_date", endDate, "row_count", rowCount);
-
-        return jdbcTemplate.query(sql,
-                params,
-                (resultSet, rowNum) -> themeOf(resultSet));
+        Map<String, Object> params = Map.of(
+                "start_date", startDate,
+                "end_date", endDate,
+                "row_count", rowCount
+        );
+        return jdbcTemplate.query(sql, params, rowMapper());
     }
 
     public Theme save(final Theme theme) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", theme.getName())
-                .addValue("description", theme.getDescription())
-                .addValue("thumbnail", theme.getThumbnail());
+        Map<String, Object> params = Map.of(
+                "name", theme.getName(),
+                "description", theme.getDescription(),
+                "thumbnail", theme.getThumbnail()
+        );
 
-        long id = jdbcInsert.executeAndReturnKey(params).longValue();
-
+        long themeId = jdbcInsert.executeAndReturnKey(params).longValue();
         return Theme.builder()
-                .id(id)
+                .id(themeId)
                 .name(theme.getName())
                 .description(theme.getDescription())
                 .thumbnail(theme.getThumbnail())
                 .build();
     }
 
-    public int deleteById(final Long id) {
-        String deleteSql = "delete from theme where id = :id";
-        Map<String, Long> params = Map.of("id", id);
 
-        return jdbcTemplate.update(deleteSql, params);
-    }
-
-    public Optional<Theme> findById(final Long id) {
-        String sql = "select id, name, description, thumbnail from theme where id = :id";
-
-        Map<String, Long> params = Map.of("id", id);
-        try {
-            Theme theme = jdbcTemplate.queryForObject(sql, params,
-                    (resultSet, rowNum) -> themeOf(resultSet)
-            );
-            return Optional.ofNullable(theme);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    private Theme themeOf(final ResultSet resultSet) throws SQLException {
+    protected Theme mapRowToTheme(final ResultSet resultSet, final int rowNum) throws SQLException {
         return Theme.builder()
                 .id(resultSet.getLong("id"))
                 .name(resultSet.getString("name"))

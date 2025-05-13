@@ -36,7 +36,8 @@ import roomescape.reservation.repository.ThemeDao;
 
 @ActiveProfiles("test")
 @JdbcTest
-@Import({ReservationDao.class, ReservationTimeDao.class, ThemeDao.class, MemberDao.class, ReservationService.class})
+@Import({ReservationDao.class, ReservationTimeDao.class, ThemeDao.class, MemberDao.class,
+        ReservationService.class})
 class ReservationServiceTest {
 
     private final LocalDateTime now = LocalDateTime.now();
