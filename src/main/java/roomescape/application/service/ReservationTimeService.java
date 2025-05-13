@@ -23,13 +23,13 @@ public class ReservationTimeService {
         this.reservationTimeDao = reservationTimeDao;
     }
 
-    public List<ReservationTimeResponse> findAllReservationTimes() {
+    public List<ReservationTimeResponse> getReservationTimes() {
         return reservationTimeDao.findAll().stream()
                 .map(ReservationTimeResponse::new)
                 .toList();
     }
 
-    public List<ReservationTimeAvailableResponse> findAvailableTimes(LocalDate date, Long themeId) {
+    public List<ReservationTimeAvailableResponse> getAvailableTimes(LocalDate date, Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
         return reservationTimes.stream()
                 .map(time -> {

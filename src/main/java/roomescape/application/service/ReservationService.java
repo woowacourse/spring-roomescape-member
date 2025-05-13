@@ -1,12 +1,16 @@
 package roomescape.application.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.application.dto.AdminReservationCreateRequest;
 import roomescape.application.dto.ReservationRequest;
 import roomescape.application.dto.ReservationResponse;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.AuthMember;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -19,22 +23,53 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
+    private final MemberService memberService;
 
     public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao,
-                              ThemeDao themeDao) {
+                              ThemeDao themeDao, MemberService memberService) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
+        this.memberService = memberService;
     }
 
-    public List<ReservationResponse> findAllReservations() {
+    public List<ReservationResponse> getReservations() {
         return reservationDao.findAll().stream()
                 .map(ReservationResponse::new)
                 .toList();
     }
 
-    public ReservationResponse createReservation(ReservationRequest request) {
-        Reservation reservationWithoutId = toReservation(request);
+    public List<ReservationResponse> getFilteredReservations(Long themeId, Long memberId, LocalDate dateFrom,
+                                                             LocalDate dateTo) {
+        List<Reservation> filteredReservations = reservationDao.findFilterByThemeIdOrMemberIdOrDate(
+                themeId,
+                memberId,
+                dateFrom,
+                dateTo
+        );
+
+        return filteredReservations.stream()
+                .map(ReservationResponse::new)
+                .toList();
+    }
+
+    public ReservationResponse createReservation(AuthMember authMember, ReservationRequest request) {
+        Member member = memberService.getMemberById(authMember.getId());
+
+        Reservation reservationWithoutId = toReservation(member, request);
+        validateForCreation(reservationWithoutId);
+
+        Reservation savedReservation = saveReservation(reservationWithoutId);
+        return new ReservationResponse(savedReservation);
+    }
+
+    public ReservationResponse createReservation(AdminReservationCreateRequest request) {
+        Member member = memberService.getMemberById(request.memberId());
+
+        ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
+        Theme theme = themeDao.findById(request.themeId());
+
+        Reservation reservationWithoutId = request.toReservationWith(member, reservationTime, theme);
         validateForCreation(reservationWithoutId);
 
         Reservation savedReservation = saveReservation(reservationWithoutId);
@@ -45,10 +80,10 @@ public class ReservationService {
         reservationDao.deleteById(id);
     }
 
-    private Reservation toReservation(ReservationRequest request) {
+    private Reservation toReservation(Member member, ReservationRequest request) {
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
         Theme theme = themeDao.findById(request.themeId());
-        return request.toReservationWith(reservationTime, theme);
+        return request.toReservationWith(member, reservationTime, theme);
     }
 
     private void validateForCreation(Reservation reservationWithoutId) {

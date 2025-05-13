@@ -8,6 +8,11 @@ public interface ReservationDao {
 
     List<Reservation> findAll();
 
+    List<Long> findTop10ByBetweenDates(LocalDate start, LocalDate end);
+
+    List<Reservation> findFilterByThemeIdOrMemberIdOrDate(Long themeId, Long memberId, LocalDate dateFrom,
+                                                          LocalDate dateTo);
+
     Long save(Reservation reservation);
 
     void deleteById(long id);
@@ -19,6 +24,4 @@ public interface ReservationDao {
     boolean existsByDateAndTimeId(LocalDate date, long timeId);
 
     boolean existsByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId);
-
-    List<Long> findTop10ByBetweenDates(LocalDate start, LocalDate end);
 }

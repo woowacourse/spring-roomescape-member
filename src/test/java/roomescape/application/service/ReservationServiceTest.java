@@ -22,8 +22,11 @@ import roomescape.application.dto.ReservationResponse;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.AuthMember;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,35 +42,41 @@ class ReservationServiceTest {
     private ReservationTimeDao reservationTimeDao;
 
     @Mock
+    private MemberService memberService;
+
+    @Mock
     private ThemeDao themeDao;
 
     @Test
     @DisplayName("예약 목록 전체를 반환한다")
-    void findAllReservations() {
+    void getReservations() {
         // given
         List<Reservation> reservations = List.of(
-                new Reservation(1L, "name1", LocalDate.now(), new ReservationTime(1L, LocalTime.of(10, 0)),
-                        new Theme(1L, "테마1", "설명1", "썸네일1")),
-                new Reservation(2L, "name2", LocalDate.now().plusDays(1), new ReservationTime(2L, LocalTime.of(12, 0)),
-                        new Theme(2L, "테마2", "설명2", "썸네일2")),
-                new Reservation(3L, "name3", LocalDate.now().plusDays(2), new ReservationTime(3L, LocalTime.of(14, 0)),
-                        new Theme(3L, "테마3", "설명3", "썸네일3"))
+                new Reservation(1L, LocalDate.now(), new ReservationTime(1L, LocalTime.of(10, 0)),
+                        new Theme(1L, "테마1", "설명1", "썸네일1"),
+                        new Member(1L, "이름1", "test1@email.com", "password1", Role.ADMIN)),
+                new Reservation(2L, LocalDate.now().plusDays(1), new ReservationTime(2L, LocalTime.of(12, 0)),
+                        new Theme(2L, "테마2", "설명2", "썸네일2"),
+                        new Member(2L, "이름2", "test2@email.com", "password2", Role.ADMIN)),
+                new Reservation(3L, LocalDate.now().plusDays(2), new ReservationTime(3L, LocalTime.of(14, 0)),
+                        new Theme(3L, "테마3", "설명3", "썸네일3"),
+                        new Member(3L, "이름3", "test3@email.com", "password3", Role.ADMIN))
         );
 
         doReturn(reservations).when(reservationDao)
                 .findAll();
 
         // when
-        List<ReservationResponse> responses = reservationService.findAllReservations();
+        List<ReservationResponse> responses = reservationService.getReservations();
 
         // then
         assertThat(responses)
                 .hasSize(reservations.size())
-                .extracting("id", "name", "date")
+                .extracting("id", "date")
                 .containsExactly(
-                        tuple(1L, "name1", LocalDate.now()),
-                        tuple(2L, "name2", LocalDate.now().plusDays(1)),
-                        tuple(3L, "name3", LocalDate.now().plusDays(2))
+                        tuple(1L, LocalDate.now()),
+                        tuple(2L, LocalDate.now().plusDays(1)),
+                        tuple(3L, LocalDate.now().plusDays(2))
                 );
 
         // verify
@@ -78,9 +87,14 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가한다")
     void createReservation() {
         // given
-        ReservationRequest request = new ReservationRequest("name", LocalDate.now(), 1L, 1L);
+        AuthMember authMember = new AuthMember(1L, "name", Role.ADMIN);
+        Member member = new Member("name", "test@email.com", "password", Role.ADMIN);
+        ReservationRequest request = new ReservationRequest(LocalDate.now(), 1L, 1L);
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         Theme theme = new Theme(1L, "테마", "설명", "썸네일");
+
+        doReturn(member).when(memberService)
+                .getMemberById(1L);
 
         doReturn(reservationTime).when(reservationTimeDao)
                 .findById(1L);
@@ -92,14 +106,15 @@ class ReservationServiceTest {
                 .save(any());
 
         // when
-        ReservationResponse response = reservationService.createReservation(request);
+        ReservationResponse response = reservationService.createReservation(authMember, request);
 
         // then
         assertThat(response)
-                .extracting("id", "name", "date")
-                .containsExactly(1L, "name", LocalDate.now());
+                .extracting("id", "date")
+                .containsExactly(1L, LocalDate.now());
 
         // verify
+        verify(memberService, times(1)).getMemberById(1L);
         verify(reservationTimeDao, times(1)).findById(1L);
         verify(themeDao, times(1)).findById(1L);
         verify(reservationDao, times(1)).save(any());

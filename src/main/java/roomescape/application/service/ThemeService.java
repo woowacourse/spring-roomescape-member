@@ -24,13 +24,13 @@ public class ThemeService {
         this.reservationDao = reservationDao;
     }
 
-    public List<ThemeResponse> findAllThemes() {
+    public List<ThemeResponse> getThemes() {
         return themeDao.findAll().stream()
                 .map(ThemeResponse::new)
                 .toList();
     }
 
-    public List<ThemeResponse> findThemeRank() {
+    public List<ThemeResponse> getThemeRank() {
         LocalDate now = LocalDate.now();
         LocalDate startDate = now.minusDays(RANK_PERIOD_START_DAYS);
         LocalDate endDate = now.minusDays(RANK_PERIOD_END_DAYS);

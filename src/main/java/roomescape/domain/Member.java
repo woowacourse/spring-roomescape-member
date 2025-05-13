@@ -1,0 +1,42 @@
+package roomescape.domain;
+
+public class Member {
+
+    private final Long id;
+    private final String name;
+    private final String email;
+    private final String password;
+    private final Role role;
+
+    public Member(Long id, String name, String email, String password, Role role) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
+    public Member(String name, String email, String password, Role role) {
+        this(null, name, email, password, role);
+    }
+
+    public boolean notMatchesPassword(String password) {
+        return !this.password.equals(password);
+    }
+
+    public boolean isNotAdmin() {
+        return role.isNotAdmin();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getRole() {
+        return role.name();
+    }
+}

@@ -8,53 +8,12 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 @DisplayName("예약(Reservation) 테스트")
 class ReservationTest {
-
-    @Test
-    @DisplayName("이름이 null인 경우 예외가 발생한다")
-    void validateNameThrowsExceptionWhenNull() {
-        assertThatThrownBy(() -> new Reservation(
-                null,
-                LocalDate.MIN, new ReservationTime(LocalTime.MIDNIGHT), new Theme("moda", "description", "thumbnail")))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이름은 비어있을 수 없습니다.");
-    }
-
-    @ParameterizedTest
-    @DisplayName("이름이 공백인 경우 예외가 발생한다")
-    @CsvSource({
-            "''",
-            "' '",
-            "'     '"
-    })
-    void validateNameThrowsExceptionWhenEmpty(String name) {
-        assertThatThrownBy(() -> new Reservation(
-                name,
-                LocalDate.MIN, new ReservationTime(LocalTime.MIDNIGHT), new Theme("moda", "description", "thumbnail")))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이름은 비어있을 수 없습니다.");
-    }
-
-    @Test
-    @DisplayName("이름이 255자 초과인 경우 예외가 발생한다")
-    void validateNameLengthThrowsExceptionWhenExceedsMaxLength() {
-        // given
-        String name = "a".repeat(256);
-
-        // when && then
-        assertThatThrownBy(() -> new Reservation(
-                name,
-                LocalDate.MIN, new ReservationTime(LocalTime.MIDNIGHT), new Theme("moda", "description", "thumbnail")))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이름의 최대 제한 길이를 초과했습니다.");
-    }
 
     @ParameterizedTest
     @DisplayName("날짜 또는 시간이 과거인 경우 예외가 발생한다")
@@ -101,10 +60,10 @@ class ReservationTest {
     private Reservation createTestReservationByDateAndTime(LocalDate date, LocalTime time) {
         return new Reservation(
                 1L,
-                "moda",
                 date,
                 new ReservationTime(time),
-                new Theme("moda", "description", "thumbnail")
+                new Theme("moda", "description", "thumbnail"),
+                new Member("이름", "test@email.com", "password", Role.ADMIN)
         );
     }
 }

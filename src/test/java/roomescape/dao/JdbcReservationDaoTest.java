@@ -14,8 +14,10 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 @JdbcTest
@@ -40,11 +42,58 @@ class JdbcReservationDaoTest {
 
         // then
         assertAll(
-                () -> assertThat(reservations).hasSize(1),
+                () -> assertThat(reservations).hasSize(10),
                 () -> assertThat(reservation)
-                        .extracting("id", "name", "date")
-                        .containsExactly(1L, "name", LocalDate.of(2025, 1, 1))
+                        .extracting("id", "date")
+                        .containsExactly(1L, LocalDate.of(2025, 1, 1))
         );
+    }
+
+    @Test
+    @DisplayName("특정 범위 날짜의 10위까지의 인기 테마 ID를 조회해 반환한다")
+    void findTop10ThemesByReservationCountBetweenDates() {
+        // given
+        LocalDate now = LocalDate.now();
+        setupTestData(now);
+
+        List<Long> expected = List.of(2L, 5L, 1L, 3L, 7L, 6L, 4L, 10L, 9L, 11L);
+
+        // when
+        List<Long> result = jdbcReservationDao.findTop10ByBetweenDates(now.minusDays(7), now);
+
+        // then
+        assertThat(result).hasSize(10);
+        assertThat(result).containsExactlyElementsOf(expected);
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {
+            "null, null, null, null, 10",
+            "1, null, null, null, 2",
+            "null, 1, null, null, 4",
+            "1, 2, null, null, 1",
+            "null, null, 2025-01-01, 2025-01-05, 5",
+            "null, null, 2025-02-01, null, 5",
+            "null, null, null, 2025-01-05, 5",
+            "999, null, null, null, 0",
+            "null, 999, null, null, 0",
+            "1, 2, 2025-01-02, 2025-01-02, 1",
+    }, nullValues = {"null"})
+    @DisplayName("테마, 예약자, 시간을 필터링해 반환한다.")
+    void findFilterByThemeIdOrMemberIdOrDate(
+            Long themeId,
+            Long memberId,
+            LocalDate dateFrom,
+            LocalDate dateTo,
+            int expected
+    ) {
+        // when
+        List<Reservation> result = jdbcReservationDao.findFilterByThemeIdOrMemberIdOrDate(
+                themeId, memberId, dateFrom, dateTo);
+
+        // then
+        assertThat(result)
+                .hasSize(expected);
     }
 
     @Test
@@ -53,13 +102,14 @@ class JdbcReservationDaoTest {
         // given
         Theme theme = new Theme(1L, "name", "description", "thumbnail");
         ReservationTime time = new ReservationTime(1L, LocalTime.of(11, 0));
-        Reservation reservation = new Reservation("name", LocalDate.of(2025, 1, 1), time, theme);
+        Member member = new Member(1L, "이름", "test@email.com", "password", Role.ADMIN);
+        Reservation reservation = new Reservation(LocalDate.of(2025, 1, 1), time, theme, member);
 
         // when
         Long savedId = jdbcReservationDao.save(reservation);
         boolean result = existsReservationById(savedId);
 
-        // then 
+        // then
         assertThat(savedId).isNotNull();
         assertThat(result).isTrue();
     }
@@ -96,7 +146,7 @@ class JdbcReservationDaoTest {
     @ParameterizedTest
     @CsvSource({
             "1, TRUE",
-            "2, FALSE"
+            "999, FALSE"
     })
     @DisplayName("테마 ID로 예약 존재 여부를 판단한다")
     void existsReservationByThemeId(long themeId, boolean expected) {
@@ -110,9 +160,9 @@ class JdbcReservationDaoTest {
     @ParameterizedTest
     @CsvSource({
             "2025-01-01, 1, TRUE",
-            "2025-01-01, 2, FALSE",
-            "2025-01-02, 1, FALSE",
-            "2025-01-02, 2, FALSE"
+            "2025-01-01, 999, FALSE",
+            "2999-01-02, 1, FALSE",
+            "2999-01-02, 999, FALSE"
     })
     @DisplayName("예약 날짜, 예약 시간 ID로 예약 존재 여부를 판단한다")
     void existsReservationByDateAndTimeId(LocalDate date, Long timeId, boolean expected) {
@@ -126,11 +176,11 @@ class JdbcReservationDaoTest {
     @ParameterizedTest
     @CsvSource({
             "2025-01-01, 1, 1, TRUE",
-            "2025-01-01, 1, 2, FALSE",
-            "2025-01-01, 2, 1, FALSE",
-            "2025-01-02, 1, 1, FALSE",
-            "2025-01-02, 1, 2, FALSE",
-            "2025-01-02, 2, 2, FALSE"
+            "2025-01-15, 1, 2, FALSE",
+            "2025-01-15, 2, 1, FALSE",
+            "2025-01-16, 1, 1, FALSE",
+            "2025-01-16, 1, 2, FALSE",
+            "2025-02-03, 1, 4, TRUE"
     })
     @DisplayName("예약 날짜, 시간 ID, 테마 ID로 예약 존재 여부를 판단한다")
     void existsReservationByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId, boolean expected) {
@@ -139,23 +189,6 @@ class JdbcReservationDaoTest {
 
         // then
         assertThat(result).isEqualTo(expected);
-    }
-
-    @Test
-    @DisplayName("특정 범위 날짜의 10위까지의 인기 테마 ID를 조회해 반환한다")
-    void findTop10ThemesByReservationCountBetweenDates() {
-        // given
-        LocalDate now = LocalDate.now();
-        setupTestData(now);
-
-        List<Long> expected = List.of(2L, 5L, 1L, 3L, 7L, 6L, 4L, 10L, 9L, 11L);
-
-        // when
-        List<Long> result = jdbcReservationDao.findTop10ByBetweenDates(now.minusDays(7), now);
-
-        // then
-        assertThat(result).hasSize(10);
-        assertThat(result).containsExactlyElementsOf(expected);
     }
 
     private boolean existsReservationById(Long id) {
@@ -198,8 +231,8 @@ class JdbcReservationDaoTest {
 
     private void insertReservation(LocalDate date, Long themeId) {
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "test_name", date, 1L, themeId
+                "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+                date, 1L, themeId, 1L
         );
     }
 }

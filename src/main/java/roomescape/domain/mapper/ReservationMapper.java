@@ -5,8 +5,10 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.springframework.jdbc.core.RowMapper;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 public class ReservationMapper implements RowMapper<Reservation> {
@@ -15,7 +17,6 @@ public class ReservationMapper implements RowMapper<Reservation> {
     public Reservation mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new Reservation(
                 rs.getLong("id"),
-                rs.getString("reservation_name"),
                 rs.getObject("date", LocalDate.class),
                 new ReservationTime(
                         rs.getLong("time_id"),
@@ -26,6 +27,13 @@ public class ReservationMapper implements RowMapper<Reservation> {
                         rs.getString("theme_name"),
                         rs.getString("description"),
                         rs.getString("thumbnail")
+                ),
+                new Member(
+                        rs.getLong("member_id"),
+                        rs.getString("member_name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        Role.valueOf(rs.getString("role"))
                 )
         );
     }

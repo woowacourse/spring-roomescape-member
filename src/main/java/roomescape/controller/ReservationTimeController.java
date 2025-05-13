@@ -30,7 +30,7 @@ public class ReservationTimeController {
     @GetMapping
     public List<ReservationTimeResponse> readTimes(
     ) {
-        return reservationTimeService.findAllReservationTimes();
+        return reservationTimeService.getReservationTimes();
     }
 
     @GetMapping("available")
@@ -38,7 +38,7 @@ public class ReservationTimeController {
             @RequestParam LocalDate date,
             @RequestParam Long themeId
     ) {
-        return reservationTimeService.findAvailableTimes(date, themeId);
+        return reservationTimeService.getAvailableTimes(date, themeId);
     }
 
     @PostMapping
