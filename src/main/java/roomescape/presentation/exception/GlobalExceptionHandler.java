@@ -18,7 +18,7 @@ import roomescape.presentation.dto.response.ErrorResponse;
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-    private static final String PREFIX_FOR_ERROR_MESSAGE = "알 수 없는 문제 발생, ";
+    private static final String INTERNAL_SERVER_ERROR_MESSAGE = "알 수 없는 문제가 발생했습니다.";
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<ErrorResponse> handleNoSuchElementException(NoSuchElementException e) {
@@ -63,9 +63,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAllExceptions(Exception e) {
-        String message = PREFIX_FOR_ERROR_MESSAGE + e.getMessage();
-        log.error(message, e);
-        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, message);
+        log.error(INTERNAL_SERVER_ERROR_MESSAGE, e);
+        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MESSAGE);
         return ResponseEntity.internalServerError().body(errorResponse);
     }
 }
