@@ -54,7 +54,7 @@ class ReservationServiceTest {
 
     private ReservationTime createAndSaveReservationTime(LocalTime time) {
         ReservationTime reservationTime = ReservationTimeFixture.create(time);
-        return reservationTimeRepository.add(reservationTime);
+        return reservationTimeRepository.save(reservationTime);
     }
 
     private Reservation createReservation(int plusDays, ReservationTime time) {
@@ -82,8 +82,8 @@ class ReservationServiceTest {
             ReservationTime reservationTime2 = createAndSaveReservationTime(LocalTime.of(22, 44));
             Reservation reservation2 = createReservation(2, reservationTime2);
 
-            reservationRepository.add(reservation1);
-            reservationRepository.add(reservation2);
+            reservationRepository.save(reservation1);
+            reservationRepository.save(reservation2);
 
             // when & then
             LocalDate duplicateDate = reservation1.getDate();
@@ -106,8 +106,8 @@ class ReservationServiceTest {
             ReservationTime reservationTime2 = createAndSaveReservationTime(LocalTime.of(22, 44));
             Reservation reservation2 = createReservation(2, reservationTime2);
 
-            reservationRepository.add(reservation1);
-            reservationRepository.add(reservation2);
+            reservationRepository.save(reservation1);
+            reservationRepository.save(reservation2);
 
             // when & then
             Long duplicateReservationTimeId = reservationTime1.getId();

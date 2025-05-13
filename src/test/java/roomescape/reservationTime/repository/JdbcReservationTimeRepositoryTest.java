@@ -33,7 +33,7 @@ class JdbcReservationTimeRepositoryTest {
         List<ReservationTime> reservationTimes = List.of(reservationTime1, reservationTime2);
 
         for (ReservationTime reservationTime : reservationTimes) {
-            repository.add(reservationTime);
+            repository.save(reservationTime);
         }
 
         // when & then

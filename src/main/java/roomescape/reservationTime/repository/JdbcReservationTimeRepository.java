@@ -47,7 +47,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime add(ReservationTime reservationTime) {
+    public ReservationTime save(ReservationTime reservationTime) {
         Long id = insertWithKeyHolder(reservationTime);
         return findByIdOrThrow(id);
     }
@@ -81,7 +81,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean existsByReservationTime(LocalTime startAt) {
+    public boolean existsByStartAt(LocalTime startAt) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation_time WHERE start_at = ?)";
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);

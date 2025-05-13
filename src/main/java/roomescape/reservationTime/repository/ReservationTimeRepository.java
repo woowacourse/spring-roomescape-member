@@ -13,11 +13,11 @@ public interface ReservationTimeRepository {
 
     Optional<ReservationTime> findById(Long id);
 
-    ReservationTime add(ReservationTime reservationTime);
+    ReservationTime save(ReservationTime reservationTime);
 
     void deleteById(Long id);
 
     Long insertWithKeyHolder(ReservationTime reservationTime);
 
-    boolean existsByReservationTime(LocalTime startAt);
+    boolean existsByStartAt(LocalTime startAt);
 }

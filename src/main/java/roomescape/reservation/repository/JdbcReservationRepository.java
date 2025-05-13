@@ -115,7 +115,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation add(Reservation reservation) {
+    public Reservation save(Reservation reservation) {
         Long id = insertWithKeyHolder(reservation);
         return findByIdOrThrow(id);
     }

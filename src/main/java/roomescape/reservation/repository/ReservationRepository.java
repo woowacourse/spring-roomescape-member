@@ -19,7 +19,7 @@ public interface ReservationRepository {
 
     List<Reservation> findByThemeAndDate(Theme theme, LocalDate date, User user);
 
-    Reservation add(Reservation reservation);
+    Reservation save(Reservation reservation);
 
     void deleteById(Long id);
 

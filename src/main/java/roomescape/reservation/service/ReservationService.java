@@ -44,7 +44,7 @@ public class ReservationService {
     public ReservationResponseDto add(ReservationRequestDto requestDto, User user) {
         Reservation reservation = convertReservation(requestDto, user);
         validateDuplicateDateTime(reservation);
-        Reservation savedReservation = repository.add(reservation);
+        Reservation savedReservation = repository.save(reservation);
         return convertReservationResponseDto(savedReservation);
     }
 

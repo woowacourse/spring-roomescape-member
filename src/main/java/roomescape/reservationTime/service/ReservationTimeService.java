@@ -76,12 +76,12 @@ public class ReservationTimeService {
     public ReservationTimeResponseDto add(ReservationTimeRequestDto requestDto) {
         ReservationTime reservationTime = convertToReservationTimeRequestDto(requestDto);
         validateDuplicateTime(reservationTime);
-        ReservationTime savedReservationTime = repository.add(reservationTime);
+        ReservationTime savedReservationTime = repository.save(reservationTime);
         return convertToReservationTimeResponseDto(savedReservationTime);
     }
 
     private void validateDuplicateTime(ReservationTime inputReservationTime) {
-        boolean exists = repository.existsByReservationTime(inputReservationTime.getStartAt());
+        boolean exists = repository.existsByStartAt(inputReservationTime.getStartAt());
 
         if (exists) {
             throw new DuplicateReservationException();

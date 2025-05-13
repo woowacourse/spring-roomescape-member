@@ -49,10 +49,10 @@ class JdbcReservationRepositoryTest {
     @Test
     void existsByReservationTime() {
         // given
-        ReservationTime reservationTime = reservationTimeRepository.add(new ReservationTime(LocalTime.now()));
+        ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
 
         Reservation reservation = createReservation(1, reservationTime);
-        reservationRepository.add(reservation);
+        reservationRepository.save(reservation);
 
         // when
         boolean actual = reservationRepository.existsByReservationTime(reservationTime);
