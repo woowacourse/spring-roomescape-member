@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
@@ -35,7 +36,7 @@ public class ReservationDaoImpl implements ReservationDao {
         String sql = """
                 SELECT r.id AS reservation_id, r.name, r.date, 
                        m.id AS member_id, m.name AS member_name,
-                       m.email, m.password, 
+                       m.email, m.password, m.role, 
                        t.id AS time_id, t.start_at AS time_value, 
                        e.id AS theme_id, e.name AS theme_name, 
                        e.description AS theme_description, 
@@ -57,7 +58,7 @@ public class ReservationDaoImpl implements ReservationDao {
         String sql = """
                 SELECT r.id AS reservation_id, r.name, r.date, 
                        m.id AS member_id, m.name AS member_name,
-                       m.email, m.password, 
+                       m.email, m.password, m.role, 
                        t.id AS time_id, t.start_at AS time_value, 
                        e.id AS theme_id, e.name AS theme_name, 
                        e.description AS theme_description, 
@@ -86,7 +87,7 @@ public class ReservationDaoImpl implements ReservationDao {
         String sql = """
                 SELECT r.id AS reservation_id, r.name, r.date, 
                        m.id AS member_id, m.name AS member_name,
-                       m.email, m.password, 
+                       m.email, m.password, m.role, 
                        t.id AS time_id, t.start_at AS time_value, 
                        e.id AS theme_id, e.name AS theme_name, 
                        e.description AS theme_description, 
@@ -118,7 +119,7 @@ public class ReservationDaoImpl implements ReservationDao {
                 SELECT r.id AS reservation_id, r.name, r.date, 
                        m.id AS member_id, 
                        m.name AS member_name, 
-                       m.email, m.password, 
+                       m.email, m.password, m.role, 
                        t.id AS time_id, t.start_at AS time_value, 
                        e.id AS theme_id, e.name AS theme_name, 
                        e.description AS theme_description, 
@@ -185,7 +186,8 @@ public class ReservationDaoImpl implements ReservationDao {
                         resultSet.getLong("member_id"),
                         resultSet.getString("member_name"),
                         resultSet.getString("email"),
-                        resultSet.getString("password")
+                        resultSet.getString("password"),
+                        Role.from(resultSet.getString("role"))
                 ),
                 resultSet.getDate("date").toLocalDate(),
                 new ReservationTime(

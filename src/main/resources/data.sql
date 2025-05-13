@@ -54,12 +54,12 @@ VALUES ('theme13', 'description13', 'thumbnail13');
 INSERT INTO theme(name, description, thumbnail)
 VALUES ('theme14', 'description14', 'thumbnail14');
 
-INSERT INTO member(name, email, password)
-VALUES ('admin', 'wooteco@gmail.com', '1234A');
-INSERT INTO member(name, email, password)
-VALUES ('riwon', 'riwon@gmail.com', '1235A');
-INSERT INTO member(name, email, password)
-VALUES ('mimi', 'mimi@gmail.com', '1236A');
+INSERT INTO member(name, email, password, role)
+VALUES ('admin', 'wooteco@gmail.com', '1234A', 'admin');
+INSERT INTO member(name, email, password, role)
+VALUES ('riwon', 'riwon@gmail.com', '1235A', 'user');
+INSERT INTO member(name, email, password, role)
+VALUES ('mimi', 'mimi@gmail.com', '1236A', 'user');
 
 INSERT INTO reservation(name, date, time_id, theme_id, member_id)
 VALUES ('mimi', '2025-05-20', 1, 1, 3);

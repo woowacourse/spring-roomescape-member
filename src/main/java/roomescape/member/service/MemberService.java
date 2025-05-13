@@ -1,6 +1,5 @@
 package roomescape.member.service;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.AuthenticationException;
@@ -73,22 +72,11 @@ public class MemberService {
         return new MemberTokenResponse(accessToken);
     }
 
-    public MemberResponse add(
-            final MemberSignupRequest memberSignupRequest,
-            HttpServletRequest httpServletRequest
-    ) {
+    public MemberResponse add(final MemberSignupRequest memberSignupRequest) {
         if (memberDao.existsByEmail(memberSignupRequest.email())) {
             throw new AuthorizationException(MemberExceptionMessage.DUPLICATE_MEMBER.getMessage());
         }
-        String token = authorizationHandler.extractToken(httpServletRequest);
-        String role = jwtTokenProvider.getPayloadRole(token);
-
-        Member member = new Member(
-                memberSignupRequest.name(),
-                memberSignupRequest.email(),
-                memberSignupRequest.password(),
-                Role.from(role)
-        );
+        Member member = MemberSignupRequest.from(memberSignupRequest);
         Member savedMember = memberDao.add(member);
 
         return new MemberResponse(

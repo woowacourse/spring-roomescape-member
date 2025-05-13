@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public interface AuthorizationHandler<T> {
-    String AUTHORIZATION = "token";
 
     T extractToken(HttpServletRequest request);
 

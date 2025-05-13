@@ -9,6 +9,9 @@ import roomescape.member.login.authorization.LoginAuthorizationInterceptor;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
+
+    private static final String ADMIN_PATH = "/admin/**";
+
     private final LoginAuthenticationResolver loginAuthenticationResolver;
     private final LoginAuthorizationInterceptor loginAuthorizationInterceptor;
 
@@ -27,6 +30,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loginAuthorizationInterceptor).addPathPatterns("/admin/**");
+        registry.addInterceptor(loginAuthorizationInterceptor).addPathPatterns(ADMIN_PATH);
     }
 }

@@ -5,11 +5,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.common.exception.AuthorizationException;
+import roomescape.common.exception.message.LoginExceptionMessage;
+import roomescape.member.domain.Role;
 
 @Component
 public class LoginAuthorizationInterceptor implements HandlerInterceptor {
-    private static final String ADMIN_ROLE_NAME = "admin";
-    private static final String INVALID_TOKEN_EXCEPTION_MESSAGE = "토큰이 존재하지 않습니다";
 
     private final TokenAuthorizationHandler tokenAuthorizationHandler;
     private final JwtTokenProvider jwtTokenProvider;
@@ -30,9 +30,9 @@ public class LoginAuthorizationInterceptor implements HandlerInterceptor {
     ) {
         String token = tokenAuthorizationHandler.extractToken(httpServletRequest);
         if (token == null || token.isBlank()) {
-            throw new AuthorizationException(INVALID_TOKEN_EXCEPTION_MESSAGE);
+            throw new AuthorizationException(LoginExceptionMessage.INVALID_TOKEN.getMessage());
         }
         String role = jwtTokenProvider.getPayloadRole(token);
-        return role.equals(ADMIN_ROLE_NAME);
+        return role.equals(Role.ADMIN.getRole());
     }
 }

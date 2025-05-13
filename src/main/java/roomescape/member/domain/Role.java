@@ -10,6 +10,10 @@ public enum Role {
         this.role = role;
     }
 
+    public static Role from(String role) {
+        return Role.valueOf(role.toUpperCase());
+    }
+
     public String getRole() {
         return role;
     }

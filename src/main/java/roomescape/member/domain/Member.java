@@ -10,12 +10,12 @@ public class Member {
     private final String password;
     private final Role role;
 
-    public Member(String name, String email, String password, Role role) {
+    public Member(String name, String email, String password) {
         this.id = null;
         this.name = Objects.requireNonNull(name);
         this.email = Objects.requireNonNull(email);
         this.password = Objects.requireNonNull(password);
-        this.role = role;
+        this.role = Role.USER;
     }
 
     public Member(Long id, String name, String email, String password, Role role) {
@@ -44,10 +44,6 @@ public class Member {
 
     public Role getRole() {
         return role;
-    }
-
-    public String getRoleName() {
-        return role.getRole();
     }
 
     @Override
