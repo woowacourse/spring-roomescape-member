@@ -3,6 +3,7 @@ package roomescape.controller.api;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.time.Duration;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,7 +58,8 @@ public class MemberController {
     public void login(@RequestBody @Valid final MemberLoginRequest request,
                       final HttpServletResponse servletResponse) {
         String loginToken = memberService.publishAccessToken(MemberLoginCreation.from(request));
-        addCookieToken(servletResponse, loginToken, 1000 * 60 * 60 * 24);
+        int expireTime = (int) Duration.ofDays(1).toMillis();
+        addCookieToken(servletResponse, loginToken, expireTime);
     }
 
     @PostMapping("/logout")
