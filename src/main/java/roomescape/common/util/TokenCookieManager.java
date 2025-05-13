@@ -3,6 +3,7 @@ package roomescape.common.util;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import org.springframework.stereotype.Component;
 import roomescape.common.exception.LoginException;
 
@@ -27,12 +28,11 @@ public class TokenCookieManager {
 
     public String extractTokenFromCookie(HttpServletRequest request) {
         Cookie[] cookies = getCookies(request);
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(TOKEN_FILED)) {
-                return cookie.getValue();
-            }
-        }
-        return "";
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(TOKEN_FILED))
+                .map(Cookie::getValue)
+                .findAny()
+                .orElseGet(() -> "");
     }
 
     private Cookie[] getCookies(HttpServletRequest request) {
