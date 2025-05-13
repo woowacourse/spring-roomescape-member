@@ -12,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.application.exception.AuthException;
+import roomescape.domain.exception.PastReservationException;
 import roomescape.presentation.dto.response.ErrorResponse;
 
 @RestControllerAdvice
@@ -19,6 +20,13 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     private static final String INTERNAL_SERVER_ERROR_MESSAGE = "알 수 없는 문제가 발생했습니다.";
+
+    @ExceptionHandler(PastReservationException.class)
+    public ResponseEntity<ErrorResponse> handlePastReservationException(PastReservationException e) {
+        String message = e.getMessage();
+        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.BAD_REQUEST, message);
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<ErrorResponse> handleNoSuchElementException(NoSuchElementException e) {
