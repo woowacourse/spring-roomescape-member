@@ -226,15 +226,109 @@ localhost:8080/times/available?date=2025-05-02&themeId=1
 ]
 ````
 
+### ✅ 4단계 - 사용자 로그인
 
-### 📋 ToDo
-- [ ] 테스트 코드 작성
-  - [ ] Controller 예외 테스트 코드
-  - [ ] 통합 테스트 코드
-- [ ] API 스펙 수정
-  - [ ] created Location 추가
-  - [ ] URI 규약 지키기
-  - [ ] 커스텀 예외 사용: 예외 이름, 상태 코드, 예외 메시지 세분화
-  - [ ] 예외 응답 객체 만들기
-- [ ] 클라이언트 코드
-  - [ ] 클라이언트 예외 메시지 노출 ➡️ alert 이용
+#### 1. 사용자 도메인 추가
+- [X] 이름(name), 이메일(email), 비밀번호(password)를 저장한다.
+
+#### 2. 로그인 기능
+- [X] 사용자는 로그인 페이지에 접속할 수 있다.
+- [X] 로그인 폼에 입력된 id(email), 비밀번호(password)를 기반으로 토큰을 반환한다.
+
+
+- 요청 예시
+````
+POST /login HTTP/1.1
+content-type: application/json
+host: localhost:8080
+
+{
+    "password": "password",
+    "email": "admin@email.com"
+}
+````
+
+- 응답 예시
+````
+HTTP/1.1 200 OK
+Content-Type: application/json
+Keep-Alive: timeout=60
+Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+````
+
+
+#### 3. 사용자 정보 조회 API 구현
+- [X] 요청된 쿠키 정보를 기반으로 사용자의 정보를 반환한다.
+
+- 요청 예시
+````
+GET /login/check HTTP/1.1
+cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+host: localhost:8080
+````
+
+- 응답 예시
+````
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Type: application/json
+Date: Sun, 03 Mar 2024 19:16:56 GMT
+Keep-Alive: timeout=60
+Transfer-Encoding: chunked
+
+{
+    "name": "어드민"
+}
+````
+
+### ✅ 5단계 - 로그인 리팩터링
+
+#### 1. 로그인 리팩터링
+- [X] Cookie에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 로직을 분리한다.
+
+#### 2. 예약 생성 기능 변경 - 사용자
+- [X] 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용하도록 한다.
+- [X] 관련된 클라이언트 코드를 변경한다.
+
+- 요청 예시
+````
+POST /reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
+
+{
+    "date": "2024-03-01",
+    "themeId": 1,
+    "timeId": 1
+}
+````
+
+#### 3. 예약 생성 기능 변경 - 관리자
+- [X] 관리자가 예약 생성 시, 유저를 조회한다.
+- [X] 유저를 선택하여 예약을 생성할 수 있다.
+- [X] 관련된 클라이언트 코드를 변경한다.
+
+- 요청 예시
+````
+POST /admin/reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
+
+{
+    "date": "2024-03-01",
+    "themeId": 1,
+    "timeId": 1,
+    "memberId": 1
+}
+````
+
+### ✅ 6단계 - 관리자 기능
+
+#### 1. 접근 권한 제어
+- [X] Member의 Role이 ADMIN 인 사람만 /admin 으로 시작하는 페이지에 접근할 수 있다.
+  - [X] HandlerInterceptor를 활용하여 권한을 확인하고, 권한이 없는 경우 요청에 대한 거부 응답을 한다.
+
+#### 2. 예약 목록 검색
+- [X] 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색이 가능하도록 한다.

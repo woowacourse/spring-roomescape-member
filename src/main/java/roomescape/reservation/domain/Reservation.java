@@ -1,23 +1,24 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import roomescape.member.domain.Member;
 import roomescape.time.domain.Time;
 import roomescape.theme.domain.Theme;
 
-public record Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
+public record Reservation(Long id, Member member, LocalDate date, Time time, Theme theme) {
 
     private static final Long NOT_SAVED_ID = 0L;
 
-    public static Reservation createBeforeSaved(String name, LocalDate date, Time time, Theme theme) {
-        return new Reservation(NOT_SAVED_ID, name, date, time, theme);
+    public static Reservation createBeforeSaved(Member member, LocalDate date, Time time, Theme theme) {
+        return new Reservation(NOT_SAVED_ID, member, date, time, theme);
     }
 
     public Reservation {
         if (id == null) {
             throw new IllegalArgumentException("[ERROR] id가 null이 되어서는 안 됩니다.");
         }
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 이름은 null이 되어서는 안 됩니다.");
+        if (member == null) {
+            throw new IllegalArgumentException("[ERROR] 사용자가 null이 되어서는 안 됩니다.");
         }
         if (date == null) {
             throw new IllegalArgumentException("[ERROR] 날짜가 null이 되어서는 안 됩니다.");

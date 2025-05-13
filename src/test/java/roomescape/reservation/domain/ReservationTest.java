@@ -7,6 +7,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
+import roomescape.member.dto.MemberResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
@@ -20,15 +23,15 @@ class ReservationTest {
     void test1() {
         // given
         Long id = 1L;
-        String name = "홍미미";
         LocalDate date = LocalDate.of(2025, 5, 10);
+        Member member = new Member(1L, "미미", "mimi@email.com", "password", Role.MEMBER);
 
         // when
-        Reservation reservation = new Reservation(id, name, date, validTime, validTheme);
+        Reservation reservation = new Reservation(id, member, date, validTime, validTheme);
 
         // then
         assertThat(reservation.id()).isEqualTo(id);
-        assertThat(reservation.name()).isEqualTo(name);
+        assertThat(reservation.member()).isEqualTo(member);
         assertThat(reservation.date()).isEqualTo(date);
         assertThat(reservation.time()).isEqualTo(validTime);
         assertThat(reservation.theme()).isEqualTo(validTheme);
@@ -38,15 +41,15 @@ class ReservationTest {
     @DisplayName("DB에 저장하기 이전 기본 id로 Reservation 객체를 생성할 수 있다.")
     void test2() {
         // given
-        String name = "홍미미";
         LocalDate date = LocalDate.of(2025, 6, 15);
+        Member member = new Member(1L, "미미", "mimi@email.com", "password", Role.MEMBER);
 
         // when
-        Reservation reservation = Reservation.createBeforeSaved(name, date, validTime, validTheme);
+        Reservation reservation = Reservation.createBeforeSaved(member, date, validTime, validTheme);
 
         // then
         assertThat(reservation.id()).isEqualTo(0L);
-        assertThat(reservation.name()).isEqualTo(name);
+        assertThat(reservation.member()).isEqualTo(member);
         assertThat(reservation.date()).isEqualTo(date);
         assertThat(reservation.time()).isEqualTo(validTime);
         assertThat(reservation.theme()).isEqualTo(validTheme);
@@ -56,17 +59,17 @@ class ReservationTest {
     @DisplayName("id가 null인 경우 예외가 발생한다.")
     void test3() {
         // given
-        String name = "홍미미";
         LocalDate date = LocalDate.now();
+        Member member = new Member(1L, "미미", "mimi@email.com", "password", Role.MEMBER);
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(null, name, date, validTime, validTheme))
+        assertThatThrownBy(() -> new Reservation(null, member, date, validTime, validTheme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] id가 null이 되어서는 안 됩니다.");
     }
 
     @Test
-    @DisplayName("이름이 null이거나 빈 값인 경우 예외가 발생한다.")
+    @DisplayName("member가 null인 경우 예외가 발생한다.")
     void test4() {
         // given
         Long id = 1L;
@@ -75,11 +78,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation(id, null, date, validTime, validTheme))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이름은 null이 되어서는 안 됩니다.");
-
-        assertThatThrownBy(() -> new Reservation(id, "   ", date, validTime, validTheme))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이름은 null이 되어서는 안 됩니다.");
+                .hasMessage("[ERROR] 사용자가 null이 되어서는 안 됩니다.");
     }
 
     @Test
@@ -87,10 +86,10 @@ class ReservationTest {
     void test5() {
         // given
         Long id = 1L;
-        String name = "홍미미";
+        Member member = new Member(1L, "미미", "mimi@email.com", "password", Role.MEMBER);
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(id, name, null, validTime, validTheme))
+        assertThatThrownBy(() -> new Reservation(id, member, null, validTime, validTheme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 날짜가 null이 되어서는 안 됩니다.");
     }
@@ -100,11 +99,11 @@ class ReservationTest {
     void test6() {
         // given
         Long id = 1L;
-        String name = "홍미미";
         LocalDate date = LocalDate.of(2025, 7, 1);
+        Member member = new Member(1L, "미미", "mimi@email.com", "password", Role.MEMBER);
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(id, name, date, null, validTheme))
+        assertThatThrownBy(() -> new Reservation(id, member, date, null, validTheme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 시간이 null이 되어서는 안 됩니다.");
     }
@@ -114,11 +113,11 @@ class ReservationTest {
     void test7() {
         // given
         Long id = 1L;
-        String name = "홍미미";
         LocalDate date = LocalDate.of(2025, 8, 20);
+        Member member = new Member(1L, "미미", "mimi@email.com", "password", Role.MEMBER);
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(id, name, date, validTime, null))
+        assertThatThrownBy(() -> new Reservation(id, member, date, validTime, null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 테마가 null이 되어서는 안 됩니다.");
     }
