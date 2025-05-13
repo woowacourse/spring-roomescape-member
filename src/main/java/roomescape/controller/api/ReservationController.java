@@ -2,6 +2,7 @@ package roomescape.controller.api;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.dto.auth.CurrentMember;
 import roomescape.dto.auth.LoginInfo;
 import roomescape.dto.reservation.MemberReservationCreateRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
@@ -28,7 +29,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponseDto> addReservation(LoginInfo loginInfo, @RequestBody final MemberReservationCreateRequestDto requestDto) {
+    public ResponseEntity<ReservationResponseDto> addReservation(@CurrentMember LoginInfo loginInfo, @RequestBody final MemberReservationCreateRequestDto requestDto) {
         ReservationCreateDto reservationCreateDto = new ReservationCreateDto(requestDto.date(), requestDto.timeId(), requestDto.themeId(), loginInfo.id());
         ReservationResponseDto responseDto = reservationService.createReservation(reservationCreateDto);
         return ResponseEntity.created(URI.create("reservations/" + responseDto.id())).body(responseDto);
