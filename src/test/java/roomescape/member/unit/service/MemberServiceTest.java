@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.global.error.exception.ConflictException;
 import roomescape.global.error.exception.NotFoundException;
 import roomescape.member.dto.request.MemberRequest.MemberCreateRequest;
 import roomescape.member.entity.RoleType;
@@ -81,5 +82,20 @@ class MemberServiceTest {
         assertThatThrownBy(() -> memberService.deleteMember(1L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 id 입니다.");
+    }
+
+    @Test
+    @DisplayName("중복된 이메일로 회원을 생성할 수 없다.")
+    void validateDuplicateEmail() {
+        // given
+        var request1 = new MemberCreateRequest("미소", "miso@email.com", "password");
+        memberService.createMember(request1);
+
+        var request2 = new MemberCreateRequest("브라운", "miso@email.com", "password");
+
+        // when & then
+        assertThatThrownBy(() -> memberService.createMember(request2))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("중복된 이메일입니다.");
     }
 }
