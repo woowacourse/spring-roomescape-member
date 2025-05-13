@@ -19,7 +19,7 @@ class LoginAuthenticationResolverTest {
     @Test
     void resolveArgument() {
         String token = "valid-token";
-        MemberResponse expectedMember = new MemberResponse(1L, "name", "email", "password");
+        MemberResponse expectedMember = new MemberResponse(1L, "name", "email");
 
         TokenAuthorizationHandler authorizationHandler = mock(TokenAuthorizationHandler.class);
         MemberService memberService = mock(MemberService.class);

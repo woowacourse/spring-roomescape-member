@@ -36,17 +36,19 @@ class MemberDaoImplTest {
                         name VARCHAR(255) NOT NULL,
                         email VARCHAR(255) NOT NULL,
                         password VARCHAR(255) NOT NULL,
+                        role VARCHAR(255) NOT NULL, 
                         PRIMARY KEY (id)
                     );
                 """);
 
-        String insertSql = "INSERT INTO member(name, email, password) VALUES (:name, :email, :password)";
+        String insertSql = "INSERT INTO member(name, email, password, role) VALUES (:name, :email, :password, :role)";
         namedParameterJdbcTemplate.update(
                 insertSql,
                 Map.of(
                         "name", "admin",
                         "email", "admin@email.com",
-                        "password", "password123"
+                        "password", "password123",
+                        "role", "admin"
                 )
         );
         namedParameterJdbcTemplate.update(
@@ -54,7 +56,8 @@ class MemberDaoImplTest {
                 Map.of(
                         "name", "user",
                         "email", "user@email.com",
-                        "password", "password456"
+                        "password", "password456",
+                        "role", "user"
                 )
         );
     }
@@ -86,24 +89,6 @@ class MemberDaoImplTest {
         softly.assertThat(member.getId()).isEqualTo(2L);
         softly.assertThat(member.getName()).isEqualTo("user");
         softly.assertThat(member.getEmail()).isEqualTo("user@email.com");
-        softly.assertAll();
-    }
-
-    @DisplayName("회원의 비밀번호가 일치하는지 확인하는 기능을 구현한다")
-    @Test
-    void isPasswordMatch() {
-        SoftAssertions softly = new SoftAssertions();
-        softly.assertThat(memberDaoImpl.isPasswordMatch("admin@email.com", "password123")).isTrue();
-        softly.assertThat(memberDaoImpl.isPasswordMatch("admin@email.com", "wrongpassword")).isFalse();
-        softly.assertAll();
-    }
-
-    @DisplayName("회원이 관리자인지 확인하는 기능을 구현한다")
-    @Test
-    void isAdmin() {
-        SoftAssertions softly = new SoftAssertions();
-        softly.assertThat(memberDaoImpl.isAdmin("admin@email.com", "password123")).isTrue();
-        softly.assertThat(memberDaoImpl.isAdmin("user@email.com", "password456")).isFalse();
         softly.assertAll();
     }
 

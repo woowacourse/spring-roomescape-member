@@ -48,7 +48,7 @@ class SignupApiControllerTest {
     @Test
     void signup() throws Exception {
         when(memberService.add(any(MemberSignupRequest.class)))
-                .thenReturn(new MemberResponse(1L, "test-user", "test@example.com", "1234"));
+                .thenReturn(new MemberResponse(1L, "test-user", "test@example.com"));
 
         MemberSignupRequest signupRequest = new MemberSignupRequest("test@example.com", "1234", "test-user");
         String requestBody = objectMapper.writeValueAsString(signupRequest);

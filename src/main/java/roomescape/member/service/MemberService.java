@@ -1,6 +1,7 @@
 package roomescape.member.service;
 
 import java.util.List;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.AuthenticationException;
 import roomescape.common.exception.AuthorizationException;
@@ -16,25 +17,19 @@ import roomescape.member.dto.MemberLoginRequest;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.dto.MemberSignupRequest;
 import roomescape.member.dto.MemberTokenResponse;
-import roomescape.member.login.authorization.AuthorizationHandler;
 import roomescape.member.login.authorization.JwtTokenProvider;
-import roomescape.member.login.authorization.TokenAuthorizationHandler;
 
 @Service
 public class MemberService {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final AuthorizationHandler<String> authorizationHandler;
     private final MemberDao memberDao;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public MemberService(
-            JwtTokenProvider jwtTokenProvider,
-            TokenAuthorizationHandler tokenAuthorizationHandler,
-            MemberDao memberDao
-    ) {
+    public MemberService(JwtTokenProvider jwtTokenProvider, MemberDao memberDao) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.authorizationHandler = tokenAuthorizationHandler;
         this.memberDao = memberDao;
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     public List<MemberResponse> findAll() {
@@ -65,8 +60,9 @@ public class MemberService {
     }
 
     public MemberTokenResponse createToken(final MemberLoginRequest memberLoginRequest) {
-        Member member = memberDao.findByEmail(memberLoginRequest.email()).get();
-        validatePassword(memberLoginRequest.email(), member.getPassword());
+        Member member = memberDao.findByEmail(memberLoginRequest.email())
+                .orElseThrow(() -> new AuthenticationException(LoginExceptionMessage.AUTHENTICATION_FAIL.getMessage()));
+        validatePassword(memberLoginRequest.password(), member.getPassword());
         String role = assignRole(memberLoginRequest.email()).getRole();
         String accessToken = jwtTokenProvider.createToken(memberLoginRequest.email(), role);
         return new MemberTokenResponse(accessToken);
@@ -76,7 +72,12 @@ public class MemberService {
         if (memberDao.existsByEmail(memberSignupRequest.email())) {
             throw new AuthorizationException(MemberExceptionMessage.DUPLICATE_MEMBER.getMessage());
         }
-        Member member = MemberSignupRequest.from(memberSignupRequest);
+        String hashedPassword = passwordEncoder.encode(memberSignupRequest.password());
+        Member member = new Member(
+                memberSignupRequest.name(),
+                memberSignupRequest.email(),
+                hashedPassword
+        );
         Member savedMember = memberDao.add(member);
 
         return new MemberResponse(
@@ -91,9 +92,8 @@ public class MemberService {
         return member.getRole();
     }
 
-    private void validatePassword(String email, String password) {
-        Member member = memberDao.findByEmail(email).get();
-        if (!password.equals(member.getPassword())) {
+    private void validatePassword(String plainPassword, String hashedPassword) {
+        if (!passwordEncoder.matches(plainPassword, hashedPassword)) {
             throw new AuthenticationException(LoginExceptionMessage.AUTHENTICATION_FAIL.getMessage());
         }
     }

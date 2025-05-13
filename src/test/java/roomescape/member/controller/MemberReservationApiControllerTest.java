@@ -29,6 +29,7 @@ import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservationTime.dto.admin.ReservationTimeResponse;
 import roomescape.theme.domain.Theme;
+import roomescape.member.domain.Role;
 
 @WebMvcTest(MemberReservationApiController.class)
 @Import({WebMvcConfiguration.class, GlobalExceptionHandler.class})
@@ -53,10 +54,10 @@ class MemberReservationApiControllerTest {
     @DisplayName("로그인한 회원의 예약 내역을 모두 조회한다")
     @Test
     void findAllByMemberId() throws Exception {
-        MemberResponse memberResponse = new MemberResponse(1L, "name", "email", "password");
+        MemberResponse memberResponse = new MemberResponse(1L, "name", "email");
         ReservationResponse reservationResponse = new ReservationResponse(
                 1L,
-                new Member(1L, "name", "email", "password"),
+                new Member(1L, "name", "email", "password", Role.USER),
                 new Theme(1L, "theme", "description", "thumbnail"),
                 LocalDate.now().plusDays(1),
                 new ReservationTimeResponse(1L, LocalTime.of(10, 0))

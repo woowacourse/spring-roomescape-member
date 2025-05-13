@@ -57,7 +57,7 @@ class MemberApiControllerTest {
                 """;
 
         when(memberService.add(any(MemberSignupRequest.class)))
-                .thenReturn(new MemberResponse(1L, "test-user", "test@example.com", "1234"));
+                .thenReturn(new MemberResponse(1L, "test-user", "test@example.com"));
 
         mockMvc.perform(post(URI)
                         .contentType(MediaType.APPLICATION_JSON)

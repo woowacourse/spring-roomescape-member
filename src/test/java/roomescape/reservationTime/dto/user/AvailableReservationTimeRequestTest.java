@@ -24,7 +24,7 @@ class AvailableReservationTimeRequestTest {
     void exception_date_before() {
         assertThatThrownBy(() -> new AvailableReservationTimeRequest(LocalDate.now().minusDays(1), 1L))
                 .isInstanceOf(InvalidDateException.class)
-                .hasMessage("이전 날짜 값은 입력할 수 없습니다");
+                .hasMessage("이미 지난 날짜로는 예약할 수 없습니다.");
     }
 
     @DisplayName("테마 아이디가 널 값인 경우 예외가 발생한다.")

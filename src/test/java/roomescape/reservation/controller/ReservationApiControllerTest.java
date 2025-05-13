@@ -23,6 +23,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.common.GlobalExceptionHandler;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.login.authentication.WebMvcConfiguration;
 import roomescape.member.login.authorization.JwtTokenProvider;
@@ -64,7 +65,7 @@ class ReservationApiControllerTest {
     @Test
     void findAll() throws Exception {
         Reservation reservation = new Reservation(
-                new Member(1L, "test", "test@test.com", "password"),
+                new Member(1L, "test", "test@test.com", "password", Role.USER),
                 LocalDate.now().plusDays(1),
                 new ReservationTime(1L, LocalTime.of(10, 0)),
                 new Theme(1L, "테마1", "테마1 설명", "thumbnail.jpg")

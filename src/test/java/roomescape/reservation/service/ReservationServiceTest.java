@@ -20,6 +20,7 @@ import roomescape.common.exception.InvalidTimeException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.dao.MemberDaoImpl;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dao.ReservationDaoImpl;
 import roomescape.reservation.dto.admin.AdminReservationRequest;
@@ -54,8 +55,9 @@ class ReservationServiceTest {
     @Test
     void exception_time_before() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now().minusHours(1));
+        Member member = new Member(1L, "test", "test@test.com", "password", Role.USER);
         when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(reservationTime));
-        when(memberDao.findById(1L)).thenReturn(Optional.of(new Member(1L, "test", "test@test.com", "password")));
+        when(memberDao.findById(1L)).thenReturn(Optional.of(member));
 
         UserReservationRequest userReservationRequest = new UserReservationRequest(LocalDate.now(), 1L, 1L);
         assertThatThrownBy(() -> reservationService.add(1L, userReservationRequest))
@@ -68,8 +70,9 @@ class ReservationServiceTest {
     @Test
     void exception_not_available() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now().plusHours(1));
+        Member member = new Member(1L, "test", "test@test.com", "password", Role.USER);
         when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(reservationTime));
-        when(memberDao.findById(1L)).thenReturn(Optional.of(new Member(1L, "test", "test@test.com", "password")));
+        when(memberDao.findById(1L)).thenReturn(Optional.of(member));
         when(reservationDao.existsByDateAndTimeId(LocalDate.now(), 1L)).thenReturn(true);
 
         UserReservationRequest userReservationRequest = new UserReservationRequest(LocalDate.now(), 1L, 1L);
@@ -83,8 +86,9 @@ class ReservationServiceTest {
     @DisplayName("예약 추가 시 존재하지 않는 시간 아이디를 조회하려고 할 때 예외를 발생시킨다")
     @Test
     void exception_invalid_time_id() {
+        Member member = new Member(1L, "test", "test@test.com", "password", Role.USER);
         when(reservationTimeDao.findById(2L)).thenReturn(Optional.empty());
-        when(memberDao.findById(1L)).thenReturn(Optional.of(new Member(1L, "test", "test@test.com", "password")));
+        when(memberDao.findById(1L)).thenReturn(Optional.of(member));
 
         UserReservationRequest userReservationRequest = new UserReservationRequest(LocalDate.now(), 2L, 1L);
         assertThatThrownBy(() -> reservationService.add(1L, userReservationRequest))
@@ -97,8 +101,9 @@ class ReservationServiceTest {
     @Test
     void exception_invalid_theme_id() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now().plusHours(1));
+        Member member = new Member(1L, "test", "test@test.com", "password", Role.USER);
         when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(reservationTime));
-        when(memberDao.findById(1L)).thenReturn(Optional.of(new Member(1L, "test", "test@test.com", "password")));
+        when(memberDao.findById(1L)).thenReturn(Optional.of(member));
         when(themeDao.findById(2L)).thenReturn(Optional.empty());
 
         UserReservationRequest userReservationRequest = new UserReservationRequest(LocalDate.now(), 1L, 2L);
@@ -125,8 +130,9 @@ class ReservationServiceTest {
     @Test
     void exception_admin_time_before() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now().minusHours(1));
+        Member member = new Member(1L, "test", "test@test.com", "password", Role.USER);
         when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(reservationTime));
-        when(memberDao.findById(1L)).thenReturn(Optional.of(new Member(1L, "test", "test@test.com", "password")));
+        when(memberDao.findById(1L)).thenReturn(Optional.of(member));
 
         AdminReservationRequest adminReservationRequest = new AdminReservationRequest(LocalDate.now(), 1L, 1L, 1L);
         assertThatThrownBy(() -> reservationService.addByAdmin(adminReservationRequest))
@@ -139,8 +145,9 @@ class ReservationServiceTest {
     @Test
     void exception_admin_not_available() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now().plusHours(1));
+        Member member = new Member(1L, "test", "test@test.com", "password", Role.USER);
         when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(reservationTime));
-        when(memberDao.findById(1L)).thenReturn(Optional.of(new Member(1L, "test", "test@test.com", "password")));
+        when(memberDao.findById(1L)).thenReturn(Optional.of(member));
         when(reservationDao.existsByDateAndTimeId(LocalDate.now(), 1L)).thenReturn(true);
 
         AdminReservationRequest adminReservationRequest = new AdminReservationRequest(LocalDate.now(), 1L, 1L, 1L);

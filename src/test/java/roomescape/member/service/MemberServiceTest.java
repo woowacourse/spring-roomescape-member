@@ -14,12 +14,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import roomescape.common.exception.AuthenticationException;
 import roomescape.common.exception.AuthorizationException;
 import roomescape.common.exception.InvalidIdException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.dao.MemberDaoImpl;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.dto.MemberLoginRequest;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.dto.MemberSignupRequest;
@@ -32,18 +34,21 @@ class MemberServiceTest {
     private MemberDao memberDao;
     private JwtTokenProvider jwtTokenProvider;
     private MemberService memberService;
+    private BCryptPasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUp() {
         memberDao = mock(MemberDaoImpl.class);
         jwtTokenProvider = mock(JwtTokenProvider.class);
+        passwordEncoder = new BCryptPasswordEncoder();
         memberService = new MemberService(jwtTokenProvider, memberDao);
     }
 
     @DisplayName("회원 목록을 조회하는 기능을 구현한다")
     @Test
     void findAll() {
-        Member member = new Member(1L, "admin", "admin@email.com", "password123");
+        String hashedPassword = passwordEncoder.encode("password123");
+        Member member = new Member(1L, "admin", "admin@email.com", hashedPassword, Role.ADMIN);
         when(memberDao.findAll()).thenReturn(List.of(member));
 
         List<MemberResponse> members = memberService.findAll();
@@ -55,7 +60,8 @@ class MemberServiceTest {
     @DisplayName("회원을 아이디로 조회하는 기능을 구현한다")
     @Test
     void findById() {
-        Member member = new Member(1L, "admin", "admin@email.com", "password123");
+        String hashedPassword = passwordEncoder.encode("password123");
+        Member member = new Member(1L, "admin", "admin@email.com", hashedPassword, Role.ADMIN);
         when(memberDao.findById(1L)).thenReturn(Optional.of(member));
 
         MemberResponse foundMember = memberService.findById(1L);
@@ -68,7 +74,8 @@ class MemberServiceTest {
     @DisplayName("회원을 이메일로 조회하는 기능을 구현한다")
     @Test
     void findByEmail() {
-        Member member = new Member(1L, "admin", "admin@email.com", "password123");
+        String hashedPassword = passwordEncoder.encode("password123");
+        Member member = new Member(1L, "admin", "admin@email.com", hashedPassword, Role.ADMIN);
         when(memberDao.findByEmail("admin@email.com")).thenReturn(Optional.of(member));
 
         MemberResponse foundMember = memberService.findByEmail("admin@email.com");
@@ -80,7 +87,8 @@ class MemberServiceTest {
     @DisplayName("회원을 토큰으로 조회하는 기능을 구현한다")
     @Test
     void findByToken() {
-        Member member = new Member(1L, "admin", "admin@email.com", "password123");
+        String hashedPassword = passwordEncoder.encode("password123");
+        Member member = new Member(1L, "admin", "admin@email.com", hashedPassword, Role.ADMIN);
         when(jwtTokenProvider.getPayloadEmail("valid-token")).thenReturn("admin@email.com");
         when(memberDao.findByEmail("admin@email.com")).thenReturn(Optional.of(member));
 
@@ -94,35 +102,31 @@ class MemberServiceTest {
     @DisplayName("로그인 토큰을 생성하는 기능을 구현한다")
     @Test
     void createToken() {
-        Member member = new Member(1L, "admin", "admin@email.com", "password123");
+        String hashedPassword = passwordEncoder.encode("password123");
+        Member member = new Member(1L, "admin", "admin@email.com", hashedPassword, Role.ADMIN);
         when(memberDao.findByEmail("admin@email.com")).thenReturn(Optional.of(member));
-        when(memberDao.isPasswordMatch("admin@email.com", "password123")).thenReturn(true);
-        when(memberDao.isAdmin("admin@email.com", "password123")).thenReturn(true);
         when(jwtTokenProvider.createToken("admin@email.com", "admin")).thenReturn("access-token");
 
         MemberLoginRequest loginRequest = new MemberLoginRequest("admin@email.com", "password123");
         MemberTokenResponse tokenResponse = memberService.createToken(loginRequest);
 
         assertThat(tokenResponse.accessToken()).isEqualTo("access-token");
-        verify(memberDao, times(1)).findByEmail("admin@email.com");
-        verify(memberDao, times(1)).isPasswordMatch("admin@email.com", "password123");
-        verify(memberDao, times(1)).isAdmin("admin@email.com", "password123");
+        verify(memberDao, times(2)).findByEmail("admin@email.com");
         verify(jwtTokenProvider, times(1)).createToken("admin@email.com", "admin");
     }
 
     @DisplayName("로그인 시 비밀번호가 일치하지 않는 경우 예외를 발생시킨다")
     @Test
     void exception_invalid_password() {
-        Member member = new Member(1L, "admin", "wooteco@gmail.com", "1234A");
+        String hashedPassword = passwordEncoder.encode("1234A");
+        Member member = new Member(1L, "admin", "wooteco@gmail.com", hashedPassword, Role.ADMIN);
         when(memberDao.findByEmail("wooteco@gmail.com")).thenReturn(Optional.of(member));
-        when(memberDao.isPasswordMatch("wooteco@gmail.com", "1234A")).thenReturn(false);
 
-        MemberLoginRequest loginRequest = new MemberLoginRequest("wooteco@gmail.com", "1234A");
+        MemberLoginRequest loginRequest = new MemberLoginRequest("wooteco@gmail.com", "1234");
         assertThatThrownBy(() -> memberService.createToken(loginRequest))
                 .isInstanceOf(AuthenticationException.class);
 
         verify(memberDao, times(1)).findByEmail("wooteco@gmail.com");
-        verify(memberDao, times(1)).isPasswordMatch("wooteco@gmail.com", "1234A");
     }
 
     @DisplayName("회원가입 시 이미 존재하는 이메일인 경우 예외를 발생시킨다")

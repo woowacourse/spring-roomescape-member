@@ -82,7 +82,7 @@ class LoginApiControllerTest {
     @Test
     void checkLogin() throws Exception {
         when(memberService.findByToken("test-token"))
-                .thenReturn(new MemberResponse(1L, "test-user", "test@example.com", "password123"));
+                .thenReturn(new MemberResponse(1L, "test-user", "test@example.com"));
 
         mockMvc.perform(get(URI + "/check")
                         .cookie(new Cookie("token", "test-token"))

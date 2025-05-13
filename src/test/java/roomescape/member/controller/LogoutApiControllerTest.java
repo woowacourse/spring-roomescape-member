@@ -33,6 +33,6 @@ class LogoutApiControllerTest {
     void logout() throws Exception {
         mockMvc.perform(post(URI)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk());
     }
 }

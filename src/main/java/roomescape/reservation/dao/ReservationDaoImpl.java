@@ -86,7 +86,8 @@ public class ReservationDaoImpl implements ReservationDao {
     ) {
         String sql = """
                 SELECT r.id AS reservation_id, r.name, r.date, 
-                       m.id AS member_id, m.name AS member_name,
+                       m.id AS member_id, 
+                       m.name AS member_name,
                        m.email, m.password, m.role, 
                        t.id AS time_id, t.start_at AS time_value, 
                        e.id AS theme_id, e.name AS theme_name, 
@@ -97,7 +98,7 @@ public class ReservationDaoImpl implements ReservationDao {
                 ON r.time_id = t.id 
                 INNER JOIN theme AS e 
                 ON r.theme_id = e.id 
-                INNER JOIN member AS m
+                INNER JOIN member AS m 
                 ON r.member_id = m.id 
                 WHERE m.id = :memberId AND e.id = :themeId 
                 AND r.date BETWEEN :dateFrom AND :dateTo

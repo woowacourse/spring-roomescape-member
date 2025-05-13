@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationTime.dao.ReservationTimeDaoImpl;
 import roomescape.reservationTime.domain.ReservationTime;
@@ -50,6 +51,7 @@ class ReservationDaoImplTest {
                         name VARCHAR(255) NOT NULL,
                         email VARCHAR(255) NOT NULL,
                         password VARCHAR(255) NOT NULL,
+                        role VARCHAR(255) NOT NULL, 
                         PRIMARY KEY (id)
                     );
                 """);
@@ -77,9 +79,9 @@ class ReservationDaoImplTest {
                         id BIGINT NOT NULL AUTO_INCREMENT,
                         name VARCHAR(255) NOT NULL,
                         date DATE NOT NULL,
-                        time_id BIGINT,
-                        theme_id BIGINT,
-                        member_id BIGINT,
+                        time_id BIGINT, 
+                        theme_id BIGINT, 
+                        member_id BIGINT, 
                         PRIMARY KEY (id),
                         FOREIGN KEY (time_id) REFERENCES reservation_time (id),
                         FOREIGN KEY (theme_id) REFERENCES theme (id),
@@ -87,13 +89,14 @@ class ReservationDaoImplTest {
                     );
                 """);
 
-        String insertSqlMember = "INSERT INTO member(name, email, password) VALUES (:name, :email, :password)";
+        String insertSqlMember = "INSERT INTO member(name, email, password, role) VALUES (:name, :email, :password, :role)";
         namedParameterJdbcTemplate.update(
                 insertSqlMember,
                 Map.of(
                         "name", "홍길동",
                         "email", "hong@email.com",
-                        "password", "password123"
+                        "password", "password123",
+                        "role", "user"
                 )
         );
 
@@ -204,7 +207,7 @@ class ReservationDaoImplTest {
     @DisplayName("예약 내역을 추가하는 기능을 구현한다")
     @Test
     void add() {
-        Member member = new Member(1L, "홍길동", "hong@email.com", "password123");
+        Member member = new Member(1L, "홍길동", "hong@email.com", "password123", Role.USER);
         ReservationTime time = new ReservationTime(2L, LocalTime.parse("11:00"));
         Theme theme = new Theme(1L, "방 탈출1", "공포 테마", "horror.jpg");
         Reservation reservation = new Reservation(
