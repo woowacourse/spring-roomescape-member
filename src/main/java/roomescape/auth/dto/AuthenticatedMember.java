@@ -11,3 +11,4 @@ public record AuthenticatedMember(
         Role role
 ) {
 }
+

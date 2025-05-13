@@ -25,7 +25,6 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         if (Objects.equals(authenticatedMember.role(), Role.ADMIN)) {
             return true;
         }
-
         throw new AuthorizationException("관리자 권한이 필요합니다.");
     }
 }

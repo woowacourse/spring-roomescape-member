@@ -8,4 +8,6 @@ public interface MemberRepository {
     Optional<Member> findByEmailAndPassword(String email, String password);
 
     List<Member> getAll();
+
+    boolean existsById(Long memberId);
 }

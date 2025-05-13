@@ -2,6 +2,7 @@ package roomescape.domain.reservation.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.domain.member.model.MemberRepository;
 import roomescape.domain.reservation.application.dto.request.CreateReservationServiceRequest;
 import roomescape.domain.reservation.application.dto.response.ReservationServiceResponse;
 import roomescape.domain.reservation.model.dto.ReservationDetails;
@@ -22,6 +23,7 @@ public class UserReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationThemeRepository reservationThemeRepository;
+    private final MemberRepository memberRepository;
     private final ReservationValidator reservationValidator;
 
     public ReservationServiceResponse create(CreateReservationServiceRequest request) {
@@ -39,6 +41,14 @@ public class UserReservationService {
     private ReservationDetails createReservationDetails(CreateReservationServiceRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.getById(request.timeId());
         ReservationTheme reservationTheme = reservationThemeRepository.getById(request.themeId());
+        validateExistsMember(request.memberId());
         return request.toReservationDetails(reservationTime, reservationTheme);
+    }
+
+    private void validateExistsMember(Long memberId) {
+        if (memberRepository.existsById(memberId)) {
+
+        }
+
     }
 }
