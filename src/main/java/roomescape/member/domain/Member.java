@@ -22,8 +22,8 @@ public class Member {
         return new Member(null, name, email, password, Role.USER);
     }
 
-    public static Member createWithId(Long id, String name, String email, String password) {
-        return new Member(id, name, email, password, Role.USER);
+    public static Member createWithId(Long id, String name, String email, String password, Role role) {
+        return new Member(id, name, email, password, role);
     }
 
     private void validate(String name, String email, String password, Role role) {

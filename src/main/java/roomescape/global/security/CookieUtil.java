@@ -1,25 +1,29 @@
 package roomescape.global.security;
 
 import jakarta.servlet.http.Cookie;
+import java.time.Duration;
 import java.util.Arrays;
 import org.springframework.http.ResponseCookie;
-import roomescape.auth.exception.CookieNotFoundException;
 import roomescape.auth.exception.CookieNullException;
+import roomescape.auth.exception.TokenIsEmptyException;
 
 public class CookieUtil {
     private static final String ACCESS_TOKEN = "token";
-    private static final long MAX_AGE_FOR_LOGIN = 60 * 50;
-    private static final long MAX_AGE_FOR_LOGOUT = 0;
+    private static final Duration LOGIN_DURATION = Duration.ofMinutes(50);
+    private static final Duration LOGOUT_DURATION = Duration.ZERO;
+
+    private CookieUtil() {
+    }
 
     public static ResponseCookie createCookieForLogin(String token) {
-        return createCookie(token, MAX_AGE_FOR_LOGIN);
+        return createCookie(token, LOGIN_DURATION);
     }
 
     public static ResponseCookie createCookieForLogout() {
-        return createCookie("", MAX_AGE_FOR_LOGOUT);
+        return createCookie("", LOGOUT_DURATION);
     }
 
-    private static ResponseCookie createCookie(String token, long maxAge) {
+    private static ResponseCookie createCookie(String token, Duration maxAge) {
         return ResponseCookie.from(ACCESS_TOKEN, token)
                 .httpOnly(true)
                 .path("/")
@@ -37,7 +41,6 @@ public class CookieUtil {
                 .filter(cookie -> ACCESS_TOKEN.equals(cookie.getName()))
                 .findAny()
                 .map(Cookie::getValue)
-                .orElseThrow(CookieNotFoundException::new);
+                .orElseThrow(TokenIsEmptyException::new);
     }
-
 }

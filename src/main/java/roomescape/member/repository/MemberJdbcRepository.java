@@ -31,7 +31,7 @@ public class MemberJdbcRepository implements MemberRepository {
         params.put("role", Role.USER.getName());
 
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return Member.createWithId(id, member.getName(), member.getEmail(), member.getPassword());
+        return Member.createWithId(id, member.getName(), member.getEmail(), member.getPassword(), member.getRole());
     }
 
     @Override
@@ -44,7 +44,8 @@ public class MemberJdbcRepository implements MemberRepository {
                                 resultSet.getLong("id"),
                                 resultSet.getString("name"),
                                 resultSet.getString("email"),
-                                resultSet.getString("password")),
+                                resultSet.getString("password"),
+                                Role.findBy(resultSet.getString("role"))),
                 email, password
         );
         return members.stream().findFirst();
@@ -60,7 +61,9 @@ public class MemberJdbcRepository implements MemberRepository {
                                 resultSet.getLong("id"),
                                 resultSet.getString("name"),
                                 resultSet.getString("email"),
-                                resultSet.getString("password")),
+                                resultSet.getString("password"),
+                                Role.findBy(resultSet.getString("role"))),
+
                 id
         );
         return members.stream().findFirst();
@@ -76,7 +79,9 @@ public class MemberJdbcRepository implements MemberRepository {
                                 resultSet.getLong("id"),
                                 resultSet.getString("name"),
                                 resultSet.getString("email"),
-                                resultSet.getString("password"))
+                                resultSet.getString("password"),
+                                Role.findBy(resultSet.getString("role"))
+                        )
         );
         return members;
     }
