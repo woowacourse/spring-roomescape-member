@@ -7,7 +7,7 @@ import roomescape.auth.service.dto.request.LoginRequest;
 import roomescape.auth.service.dto.request.UserSignupRequest;
 import roomescape.auth.service.dto.LoginMember;
 import roomescape.auth.service.dto.response.LoginResponse;
-import roomescape.auth.service.dto.response.MemberIdAndNameResponse;
+import roomescape.auth.service.dto.response.MemberBasicInfoResponse;
 import roomescape.global.exception.conflict.MemberEmailConflictException;
 import roomescape.global.exception.notFound.MemberNotFoundException;
 import roomescape.global.exception.unauthorized.MemberUnauthorizedException;
@@ -49,10 +49,10 @@ public class MemberService {
         return LoginMember.of(member);
     }
 
-    public List<MemberIdAndNameResponse> getAllMemberNames() {
+    public List<MemberBasicInfoResponse> getAllMemberNames() {
         return memberRepository.findAll()
                 .stream()
-                .map(member -> new MemberIdAndNameResponse(member.getId(), member.getName()))
+                .map(member -> new MemberBasicInfoResponse(member.getId(), member.getName()))
                 .toList();
     }
 }
