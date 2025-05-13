@@ -7,7 +7,8 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
-import roomescape.common.exception.BusinessException;
+import roomescape.common.exception.base.AuthException;
+import roomescape.common.exception.base.BusinessException;
 import roomescape.common.validate.InvalidInputException;
 
 import java.net.URI;
@@ -27,6 +28,15 @@ public class GlobalExceptionHandler {
                 ex.getHttpStatus(),
                 "비즈니스 로직 오류",
                 ex.getUserMessage().orElse("요청을 처리할 수 없습니다."), request);
+    }
+
+    @ExceptionHandler(AuthException.class)
+    public ProblemDetail handleAuthException(final AuthException ex, final WebRequest request) {
+        log.warn("AuthException ({}): {} at {}", ex.getClass().getSimpleName(), ex.getMessage(), getPath(request));
+        return createProblemDetail(
+                ex.getHttpStatus(),
+                "인증/인가 로직 오류",
+                ex.getUserMessage().orElse("인증/인가를 실패했습니다."), request);
     }
 
     @ExceptionHandler(DateTimeParseException.class)
@@ -52,7 +62,7 @@ public class GlobalExceptionHandler {
         log.error("IllegalStateException: {} at {}", ex.getMessage(), getPath(request), ex);
         return createProblemDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "잘못된 객체 상태",
+                "잘못된 서버 상태",
                 "서버 내부 오류가 발생했습니다.", request);
     }
 

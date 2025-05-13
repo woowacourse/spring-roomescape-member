@@ -1,7 +1,7 @@
 package roomescape.reservation.exception;
 
 import org.springframework.http.HttpStatus;
-import roomescape.common.exception.BusinessException;
+import roomescape.common.exception.base.BusinessException;
 import roomescape.reservation.domain.ReservationDate;
 
 import java.time.LocalDateTime;
@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 public class PastDateReservationException extends BusinessException {
 
     public PastDateReservationException(final ReservationDate date, final LocalDateTime now) {
-        super(buildLoggingMessage(date, now), buildUserMessage());
+        super(buildLogMessage(date, now), buildUserMessage());
     }
 
-    private static String buildLoggingMessage(final ReservationDate date, final LocalDateTime now) {
+    private static String buildLogMessage(final ReservationDate date, final LocalDateTime now) {
         return "Attempted to reserve with past date. input=" + date + ", now=" + now;
     }
 

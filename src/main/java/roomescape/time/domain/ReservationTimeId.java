@@ -2,8 +2,6 @@ package roomescape.time.domain;
 
 import roomescape.common.domain.DomainId;
 
-import java.util.UUID;
-
 public class ReservationTimeId extends DomainId {
 
     private ReservationTimeId(final Long value, final boolean assigned) {
@@ -11,7 +9,7 @@ public class ReservationTimeId extends DomainId {
     }
 
     public static ReservationTimeId unassigned() {
-        return new ReservationTimeId(UUID.randomUUID().getMostSignificantBits(), false);
+        return new ReservationTimeId(null, false);
     }
 
     public static ReservationTimeId from(final Long id) {

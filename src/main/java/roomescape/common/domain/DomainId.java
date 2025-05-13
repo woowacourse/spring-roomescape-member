@@ -1,30 +1,31 @@
 package roomescape.common.domain;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.validate.Validator;
 
-@FieldNameConstants
-@EqualsAndHashCode
-public abstract class DomainId {
+import java.util.Objects;
 
-    public static final String domainName = "식별자";
+@FieldNameConstants
+public abstract class DomainId {
 
     private final Long value;
     @Getter
     private final boolean assigned;
 
     protected DomainId(final Long value, final boolean assigned) {
-        validate(value);
+        validate(value, assigned);
 
         this.value = value;
         this.assigned = assigned;
     }
 
-    private void validate(final Long value) {
-        Validator.of(DomainId.class)
-                .validateNotNull(Fields.value, value, domainName);
+    private void validate(final Long value,
+                          final boolean assigned) {
+        if (assigned) {
+            Validator.of(DomainId.class)
+                    .validateNotNull(Fields.value, value, DomainTerm.DOMAIN_ID.label());
+        }
     }
 
     public Long getValue() {
@@ -37,6 +38,27 @@ public abstract class DomainId {
             return;
         }
         throw new IllegalStateException("식별자가 할당되지 않았습니다.");
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final DomainId other = (DomainId) o;
+
+        if (this.value == null || other.value == null) {
+            return false;
+        }
+
+        return this.assigned == other.assigned && this.value.equals(other.value);
+    }
+
+    @Override
+    public int hashCode() {
+        if (value == null) {
+            return System.identityHashCode(this);
+        }
+        return Objects.hash(value, assigned);
     }
 
     @Override

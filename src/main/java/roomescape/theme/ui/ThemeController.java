@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.uri.UriFactory;
-import roomescape.theme.application.ThemeService;
+import roomescape.theme.application.ThemeFacade;
 import roomescape.theme.ui.dto.CreateThemeWebRequest;
 import roomescape.theme.ui.dto.ThemeResponse;
 
@@ -24,21 +24,21 @@ public class ThemeController {
 
     public static final String BASE_PATH = "/themes";
 
-    private final ThemeService themeService;
+    private final ThemeFacade themeFacade;
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getAll() {
-        return ResponseEntity.ok(themeService.getAll());
+        return ResponseEntity.ok(themeFacade.getAll());
     }
 
     @GetMapping("/ranking")
     public ResponseEntity<List<ThemeResponse>> getRanking() {
-        return ResponseEntity.ok(themeService.getRanking());
+        return ResponseEntity.ok(themeFacade.getRanking());
     }
 
     @PostMapping
     public ResponseEntity<ThemeResponse> create(@RequestBody final CreateThemeWebRequest createThemeWebRequest) {
-        final ThemeResponse themeResponse = themeService.create(createThemeWebRequest);
+        final ThemeResponse themeResponse = themeFacade.create(createThemeWebRequest);
         final URI location = UriFactory.buildPath(BASE_PATH, String.valueOf(themeResponse.id()));
         return ResponseEntity.created(location)
                 .body(themeResponse);
@@ -46,7 +46,7 @@ public class ThemeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable final Long id) {
-        themeService.delete(id);
+        themeFacade.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

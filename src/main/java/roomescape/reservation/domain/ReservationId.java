@@ -2,8 +2,6 @@ package roomescape.reservation.domain;
 
 import roomescape.common.domain.DomainId;
 
-import java.util.UUID;
-
 public class ReservationId extends DomainId {
 
     private ReservationId(final Long value, final boolean assigned) {
@@ -11,7 +9,7 @@ public class ReservationId extends DomainId {
     }
 
     public static ReservationId unassigned() {
-        return new ReservationId(UUID.randomUUID().getMostSignificantBits(), false);
+        return new ReservationId(null, false);
     }
 
     public static ReservationId from(final Long id) {

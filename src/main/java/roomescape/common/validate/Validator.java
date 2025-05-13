@@ -5,9 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.net.URI;
+import java.util.regex.Pattern;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Validator {
+
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
 
     private final Class<?> clazz;
 
@@ -54,6 +57,21 @@ public class Validator {
         }
     }
 
+    public Validator validateEmailFormat(final String fieldName,
+                                         final String target,
+                                         final String fieldDescription) {
+        validateNotBlank(fieldName, target, fieldDescription);
+
+        if (EMAIL_PATTERN.matcher(target).matches()) {
+            return this;
+        }
+
+        throw buildException(
+                ValidationType.EMAIL_CHECK,
+                fieldName,
+                fieldDescription);
+    }
+
     private InvalidInputException buildException(final ValidationType type,
                                                  final String fieldName,
                                                  final String fieldDescription) {
@@ -70,7 +88,8 @@ public class Validator {
     public enum ValidationType {
         NULL_CHECK("while checking null"),
         BLANK_CHECK("while checking blank"),
-        URI_CHECK("while checking URI");
+        URI_CHECK("while checking URI"),
+        EMAIL_CHECK("while checking email");
 
         private final String description;
     }
