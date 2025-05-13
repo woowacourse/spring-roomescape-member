@@ -4,6 +4,7 @@ import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -41,9 +42,15 @@ public class AdminRoleInterceptor implements HandlerInterceptor {
 
     private boolean checkCookieToken(final HttpServletRequest request,
                                      final HttpServletResponse response) throws IOException {
-        String tokenCookie = CookieParser.getTokenCookie(request, "token");
+        Optional<String> cookieOptional = CookieParser.getCookie(request, "token");
+        if (cookieOptional.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유저 인증에 실패했습니다.");
+            return false;
+        }
+
         try {
-            JwtRequest jwtRequest = jwtProvider.verifyToken(tokenCookie);
+            String cookie = cookieOptional.get();
+            JwtRequest jwtRequest = jwtProvider.verifyToken(cookie);
             return checkAdmin(response, jwtRequest);
         } catch (JwtException e) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유저 인증에 실패했습니다.");

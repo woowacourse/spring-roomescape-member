@@ -2,6 +2,7 @@ package roomescape.config.argumentResolver;
 
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -15,6 +16,8 @@ import roomescape.util.CookieParser;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+
+    public static final String TOKEN_NAME = "token";
 
     private final JwtProvider jwtProvider;
 
@@ -33,13 +36,14 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        String tokenCookie = CookieParser.getTokenCookie(request, "token");
+        Optional<String> cookieOptional = CookieParser.getCookie(request, TOKEN_NAME);
 
-        if (tokenCookie == null) {
+        if (cookieOptional.isEmpty()) {
             throw new JwtException("인증에 실패했습니다");
         }
 
-        JwtRequest jwtRequest = jwtProvider.verifyToken(tokenCookie);
+        String cookie = cookieOptional.get();
+        JwtRequest jwtRequest = jwtProvider.verifyToken(cookie);
 
         if (jwtRequest == null) {
             throw new JwtException("인증에 실패했습니다");
