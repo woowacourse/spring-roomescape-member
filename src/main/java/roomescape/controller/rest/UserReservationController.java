@@ -21,7 +21,7 @@ public class UserReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<Reservation> addReservation(@RequestBody UserReservationRequest reservationRequestDto,
                                                       @CurrentMember LoginMember loginMember) {
         Reservation reservation = reservationService.addReservationByUser(reservationRequestDto, loginMember);

@@ -18,7 +18,7 @@ import roomescape.global.util.CookieUtils;
 import roomescape.service.MemberService;
 
 @RestController
-@RequestMapping()
+@RequestMapping
 public class LoginController {
     private final JwtProvider jwtProvider;
     private final MemberService memberService;

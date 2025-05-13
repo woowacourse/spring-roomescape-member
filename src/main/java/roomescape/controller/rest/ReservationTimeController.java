@@ -26,13 +26,13 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<ReservationTime> addTime(@RequestBody ReservationTimeRequest reservationTimeRequest) {
         ReservationTime reservationTime = reservationTimeService.addTime(reservationTimeRequest.startAt());
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationTime);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<ReservationTime>> getAllTime() {
         return ResponseEntity.ok(reservationTimeService.getAllTime());
     }

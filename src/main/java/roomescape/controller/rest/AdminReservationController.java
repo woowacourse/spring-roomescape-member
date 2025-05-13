@@ -25,7 +25,7 @@ public class AdminReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<Reservation>> getReservations(
             @RequestParam(value = "memberId", required = false) Long memberId,
             @RequestParam(value = "themeId", required = false) Long themeId,
@@ -39,7 +39,7 @@ public class AdminReservationController {
                 .body(reservationService.getFilteredReservations(memberId, themeId, fromDate, toDate));
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<Reservation> addReservation(@RequestBody ReservationRequest reservationRequest) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(reservationService.addReservationByAdmin(reservationRequest));
