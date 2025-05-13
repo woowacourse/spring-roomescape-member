@@ -68,7 +68,7 @@ public class ReservationJdbcDaoTest {
         this.member = new Member(memberId, tempMember.getName(), tempMember.getEmail(), tempMember.getPassword(),
                 tempMember.getRole());
 
-        this.savedReservation = new Reservation(date, reservationTime, theme, member);
+        this.savedReservation = new Reservation(date, reservationTime, theme, member, LocalDate.now());
         this.savedId = saveNewReservation(savedReservation);
 
     }
@@ -77,7 +77,7 @@ public class ReservationJdbcDaoTest {
     @DisplayName("예약을 저장한다")
     void test2() {
         // given
-        Reservation reservation = new Reservation(date, reservationTime, theme, member);
+        Reservation reservation = new Reservation(date, reservationTime, theme, member, LocalDate.now());
 
         // when
         Long savedId = reservationDao.saveReservation(reservation);
@@ -101,7 +101,7 @@ public class ReservationJdbcDaoTest {
     void test3() {
         // when
         Optional<Reservation> foundReservation = reservationDao.findByDateAndTime(
-                new Reservation(this.date, this.reservationTime, this.theme, member)
+                new Reservation(this.date, this.reservationTime, this.theme, member, LocalDate.now())
         );
 
         // then
@@ -135,7 +135,8 @@ public class ReservationJdbcDaoTest {
                 LocalDate.now().plusDays(1),
                 this.reservationTime,
                 this.theme,
-                this.member
+                this.member,
+                LocalDate.now()
         ));
 
         // when
@@ -159,7 +160,8 @@ public class ReservationJdbcDaoTest {
                 LocalDate.now().plusDays(1),
                 this.reservationTime,
                 theme,
-                this.member
+                this.member,
+                LocalDate.now()
         ));
 
         // when
@@ -185,14 +187,16 @@ public class ReservationJdbcDaoTest {
                 searchDate.plusDays(1),
                 this.reservationTime,
                 theme,
-                this.member
+                this.member,
+                LocalDate.now()
         ));
 
         saveNewReservation(new Reservation(
                 searchDate.minusDays(1),
                 this.reservationTime,
                 theme,
-                this.member
+                this.member,
+                LocalDate.now()
         ));
 
         // when

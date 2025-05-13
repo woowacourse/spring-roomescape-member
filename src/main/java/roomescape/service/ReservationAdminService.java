@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.NotFoundException;
 import roomescape.dao.MemberDao;
@@ -34,7 +35,7 @@ public class ReservationAdminService {
         ReservationTime reservationTime = findReservationTimeById(registerDto.timeId());
         Theme theme = findThemeById(registerDto.themeId());
 
-        Reservation reservation = new Reservation(registerDto.date(), reservationTime, theme, member);
+        Reservation reservation = new Reservation(registerDto.date(), reservationTime, theme, member, LocalDate.now());
 
         reservationDao.saveReservation(reservation);
     }

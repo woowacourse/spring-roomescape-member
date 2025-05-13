@@ -19,13 +19,13 @@ public class Reservation {
         this.member = member;
     }
 
-    public Reservation(LocalDate date, ReservationTime reservationTime, Theme theme, Member member) {
+    public Reservation(LocalDate date, ReservationTime reservationTime, Theme theme, Member member, LocalDate today) {
         this(null, date, reservationTime, theme, member);
-        validateReservationDateInFuture(date);
+        validateReservationDateInFuture(today);
     }
 
-    private void validateReservationDateInFuture(LocalDate date) {
-        if (!this.date.isAfter(date)) {
+    private void validateReservationDateInFuture(LocalDate today) {
+        if (!this.date.isAfter(today)) {
             throw new IllegalStateException("과거 및 당일 예약은 불가능합니다.");
         }
     }

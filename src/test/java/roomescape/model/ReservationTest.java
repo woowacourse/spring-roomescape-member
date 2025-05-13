@@ -1,5 +1,6 @@
 package roomescape.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
@@ -13,13 +14,11 @@ class ReservationTest {
         // given
         LocalDateTime dateTime = LocalDateTime.now().minusDays(1);
 
-        // when & then
-
-        // TODO: 추후 수정
         assertThatThrownBy(() -> new Reservation(
                 dateTime.toLocalDate(),
                 new ReservationTime(dateTime.toLocalTime()),
-                new Theme(1L, "공포", "무서워요", "image"), null))
+                new Theme(1L, "공포", "무서워요", "image")
+                , new Member(1L, "히로", "example@gmail.com", "password", Role.ADMIN), LocalDate.now().minusDays(1)))
                 .isInstanceOf(IllegalStateException.class);
     }
 }
