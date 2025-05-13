@@ -16,3 +16,6 @@ INSERT INTO reservation_time (start_at)
 VALUES ('10:00'),
        ('14:00'),
        ('18:00');
+
+INSERT INTO member (name, email, password, role)
+VALUES ('히로', 'example@gmail.com', 'password', 'ADMIN');

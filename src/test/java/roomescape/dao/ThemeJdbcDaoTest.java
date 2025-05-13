@@ -130,23 +130,23 @@ public class ThemeJdbcDaoTest {
         int dayRange = 3;
 
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "히로", date.minusDays(1), 1, savedId
+                "INSERT INTO reservation (date, time_id, theme_id) VALUES (?, ?, ?)",
+                date.minusDays(1), 1, savedId
         );
 
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "다로", date.minusDays(2), 1, savedId
+                "INSERT INTO reservation (date, time_id, theme_id) VALUES (?, ?, ?)",
+                date.minusDays(2), 1, savedId
         );
 
         Long newSavedId = saveNewTheme(new Theme("인기 테마", "인기 있는 테마", "image"));
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "히포", date.minusDays(2), 1, newSavedId
+                "INSERT INTO reservation (date, time_id, theme_id) VALUES (?, ?, ?)",
+                date.minusDays(2), 1, newSavedId
         );
 
         // when
-        List<Theme> popularThemes = themeJdbcDao.findPopularThemes(date, dayRange);
+        List<Theme> popularThemes = themeJdbcDao.getTopReservedThemesSince(date, dayRange, 10);
 
         // then
         assertAll(

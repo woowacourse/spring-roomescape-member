@@ -63,7 +63,7 @@ public class ThemeJdbcDao implements ThemeDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
-    public List<Theme> findPopularThemes(LocalDate today, int dayRange) {
+    public List<Theme> getTopReservedThemesSince(LocalDate today, int dayRange, int size) {
         LocalDate startDay = today.minusDays(dayRange);
 
         String sql = """
@@ -78,9 +78,9 @@ public class ThemeJdbcDao implements ThemeDao {
                       AND reservation.date >= ?
                     GROUP BY theme.id
                     ORDER BY reservation_count DESC
-                    LIMIT 10
+                    LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, today.toString(), startDay.toString());
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, today.toString(), startDay.toString(), size);
     }
 }

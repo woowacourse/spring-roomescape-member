@@ -29,13 +29,6 @@ class ReservationTimeDaoTest {
                     resultSet.getTime("start_at").toLocalTime()
             );
 
-    private static final RowMapper<AvailableReservationTime> AVAILABLE_TIME_ROW_MAPPER = (resultSet, rowNum) ->
-            new AvailableReservationTime(
-                    resultSet.getLong("id"),
-                    resultSet.getTime("start_at").toLocalTime(),
-                    resultSet.getBoolean("already_booked")
-            );
-
     @Autowired
     private ReservationTimeJdbcDao reservationTimeJdbcDao;
 
@@ -135,8 +128,8 @@ class ReservationTimeDaoTest {
         LocalDate date = LocalDate.now().plusDays(1);
 
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "히로", date, this.savedId, 1
+                "INSERT INTO reservation (date, time_id, theme_id) VALUES (?, ?, ?)",
+                date, this.savedId, 1
         );
 
         // when

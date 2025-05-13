@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import roomescape.common.exception.DuplicatedException;
 import roomescape.common.exception.ResourceInUseException;
 import roomescape.dao.ThemeDao;
-import roomescape.dto.request.ThemeRequestDto;
+import roomescape.dto.request.ThemeRegisterDto;
 import roomescape.dto.response.ThemeResponseDto;
 import roomescape.model.Theme;
 
@@ -16,6 +16,7 @@ import roomescape.model.Theme;
 public class ThemeService {
 
     private static final int POPULAR_DAY_RANGE = 7;
+    private static final int POPULAR_THEME_SIZE = 10;
 
     private final ThemeDao themeDao;
 
@@ -29,10 +30,10 @@ public class ThemeService {
                 .collect(Collectors.toList());
     }
 
-    public ThemeResponseDto saveTheme(final ThemeRequestDto themeRequestDto) {
-        validateTheme(themeRequestDto);
+    public ThemeResponseDto saveTheme(final ThemeRegisterDto themeRegisterDto) {
+        validateTheme(themeRegisterDto);
 
-        Theme theme = themeRequestDto.convertToTheme();
+        Theme theme = themeRegisterDto.convertToTheme();
         Long savedId = themeDao.saveTheme(theme);
 
         return new ThemeResponseDto(
@@ -43,8 +44,8 @@ public class ThemeService {
         );
     }
 
-    private void validateTheme(final ThemeRequestDto themeRequestDto) {
-        boolean duplicatedNameExisted = themeDao.isDuplicatedNameExisted(themeRequestDto.name());
+    private void validateTheme(final ThemeRegisterDto themeRegisterDto) {
+        boolean duplicatedNameExisted = themeDao.isDuplicatedNameExisted(themeRegisterDto.name());
         if (duplicatedNameExisted) {
             throw new DuplicatedException("중복된 테마명은 등록할 수 없습니다.");
         }
@@ -61,7 +62,7 @@ public class ThemeService {
     public List<ThemeResponseDto> findPopularThemes(final String date) {
         LocalDate parsedDate = LocalDate.parse(date);
 
-        return themeDao.findPopularThemes(parsedDate, POPULAR_DAY_RANGE).stream()
+        return themeDao.getTopReservedThemesSince(parsedDate, POPULAR_DAY_RANGE, POPULAR_THEME_SIZE).stream()
                 .map(ThemeResponseDto::from)
                 .toList();
     }

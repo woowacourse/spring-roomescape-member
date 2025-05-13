@@ -5,7 +5,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import roomescape.fake.FakeReservationTimeDao;
-import roomescape.dto.request.ReservationTimeRequestDto;
+import roomescape.dto.request.ReservationTimeRegisterDto;
 import roomescape.dto.response.ReservationTimeResponseDto;
 
 class ReservationTimeServiceTest {
@@ -19,7 +19,7 @@ class ReservationTimeServiceTest {
     @Test
     void 시간을_저장한다() {
         // given
-        ReservationTimeRequestDto request = new ReservationTimeRequestDto(LocalTime.of(10, 0).toString());
+        ReservationTimeRegisterDto request = new ReservationTimeRegisterDto(LocalTime.of(10, 0).toString());
 
         // when
         ReservationTimeResponseDto response = reservationTimeService.saveTime(request);
@@ -32,8 +32,8 @@ class ReservationTimeServiceTest {
     @Test
     void 모든_시간을_조회한다() {
         // given
-        reservationTimeService.saveTime(new ReservationTimeRequestDto(LocalTime.of(10, 0).toString()));
-        reservationTimeService.saveTime(new ReservationTimeRequestDto(LocalTime.of(12, 0).toString()));
+        reservationTimeService.saveTime(new ReservationTimeRegisterDto(LocalTime.of(10, 0).toString()));
+        reservationTimeService.saveTime(new ReservationTimeRegisterDto(LocalTime.of(12, 0).toString()));
 
         // when
         List<ReservationTimeResponseDto> times = reservationTimeService.getAllTimes();
@@ -48,7 +48,7 @@ class ReservationTimeServiceTest {
     void 시간을_삭제한다() {
         // given
         ReservationTimeResponseDto saved = reservationTimeService.saveTime(
-                new ReservationTimeRequestDto(LocalTime.of(10, 0).toString())
+                new ReservationTimeRegisterDto(LocalTime.of(10, 0).toString())
         );
 
         // when
