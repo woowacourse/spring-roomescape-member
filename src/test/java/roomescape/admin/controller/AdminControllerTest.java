@@ -16,14 +16,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.admin.domain.dto.AdminReservationRequestDto;
+import roomescape.admin.fixture.AdminTestDataConfig;
 import roomescape.auth.domain.dto.TokenResponseDto;
 import roomescape.auth.fixture.AuthFixture;
 import roomescape.auth.service.AuthService;
 import roomescape.reservationTime.ReservationTimeTestDataConfig;
 import roomescape.theme.ThemeTestDataConfig;
-import roomescape.user.AdminTestDataConfig;
 import roomescape.user.MemberTestDataConfig;
 import roomescape.user.domain.User;
+import roomescape.user.fixture.AbstractUserTestDataConfig;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
         classes = {
@@ -59,20 +60,19 @@ class AdminControllerTest {
 
         private static User memberStatic;
         private static User adminStatic;
-        private static TokenResponseDto memberTokenResponseDto;
         private static TokenResponseDto adminTokenResponseDto;
 
         @BeforeAll
         public static void setUp(@Autowired AuthService authService,
                                  @Autowired MemberTestDataConfig memberTestDataConfig,
-                                 @Autowired AdminTestDataConfig adminTestDataConfig
+                                 @Autowired AbstractUserTestDataConfig adminTestDataConfig
         ) {
             date = LocalDate.now().plusDays(1);
 
             memberStatic = memberTestDataConfig.getSavedMember();
-            adminStatic = adminTestDataConfig.getSavedAdmin();
+            adminStatic = adminTestDataConfig.getSavedUser();
 
-            memberTokenResponseDto = authService.login(
+            authService.login(
                     AuthFixture.createTokenRequestDto(memberStatic.getEmail(), memberStatic.getPassword()));
             adminTokenResponseDto = authService.login(
                     AuthFixture.createTokenRequestDto(adminStatic.getEmail(), adminStatic.getPassword()));

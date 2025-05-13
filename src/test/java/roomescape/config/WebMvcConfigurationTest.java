@@ -9,13 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import roomescape.admin.fixture.AdminTestDataConfig;
 import roomescape.auth.domain.dto.TokenRequestDto;
 import roomescape.auth.domain.dto.TokenResponseDto;
 import roomescape.auth.fixture.AuthFixture;
 import roomescape.auth.service.AuthService;
-import roomescape.user.AdminTestDataConfig;
 import roomescape.user.MemberTestDataConfig;
 import roomescape.user.domain.User;
+import roomescape.user.fixture.AbstractUserTestDataConfig;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = {MemberTestDataConfig.class, AdminTestDataConfig.class})
@@ -26,7 +27,7 @@ class WebMvcConfigurationTest {
     @Autowired
     private MemberTestDataConfig memberTestDataConfig;
     @Autowired
-    private AdminTestDataConfig adminTestDataConfig;
+    private AbstractUserTestDataConfig adminTestDataConfig;
     @Autowired
     private AuthService authService;
 
@@ -43,7 +44,7 @@ class WebMvcConfigurationTest {
     class addInterceptors {
 
         private final User member = memberTestDataConfig.getSavedMember();
-        private final User admin = adminTestDataConfig.getSavedAdmin();
+        private final User admin = adminTestDataConfig.getSavedUser();
 
         @DisplayName("admin 권한을 가지고 있는 관리자가 /admin/** URL로 요청 시 가로채지지 않는다.")
         @Test
