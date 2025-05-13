@@ -33,16 +33,16 @@ public class Member {
         this.password = password;
     }
 
-    public Member(final String name, final String email, final String password) {
-        this(NON_SAVED_STATUS, Role.USER, name, email, password);
-    }
-
     public Member(final long id, final Member savedMember) {
         this(id, savedMember.getRole(), savedMember.getName(), savedMember.getEmail(), savedMember.getPassword());
     }
 
     public static Member of(long id, String role, String name, String email, String password) {
         return new Member(id, Role.valueOf(role), name, email, password);
+    }
+
+    public static Member registerUser(final String name, final String email, final String password) {
+        return new Member(NON_SAVED_STATUS, Role.USER, name, email, password);
     }
 
     public void validateRightPassword(final String inputPassword) {

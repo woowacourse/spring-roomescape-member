@@ -17,7 +17,7 @@ public class MemberService {
 
     public Member addMember(final CreateMemberServiceRequest request) {
         validateEmailNotDuplicated(request.email());
-        final Member member = new Member(request.name(), request.email(), request.password());
+        final Member member = Member.registerUser(request.name(), request.email(), request.password());
 
         final long savedId = memberDao.insert(member);
         return new Member(savedId, member);

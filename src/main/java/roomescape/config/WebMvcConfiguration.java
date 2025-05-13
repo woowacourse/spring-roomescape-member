@@ -10,7 +10,6 @@ import roomescape.auth.interceptor.CheckLoginInterceptor;
 import roomescape.auth.resolver.LoginMemberArgumentResolver;
 import roomescape.auth.service.AuthService;
 
-
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 

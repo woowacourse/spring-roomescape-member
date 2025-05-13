@@ -24,7 +24,7 @@ class JdbcMemberDaoTest {
     @Test
     void insertTest() {
         // given
-        final Member member = new Member("라젤", "razel@email.com", "razelpassword");
+        final Member member = Member.registerUser("라젤", "razel@email.com", "razelpassword");
 
         // when
         final long result = memberDao.insert(member);
