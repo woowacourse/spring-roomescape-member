@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.theme;
 
 import jakarta.validation.Valid;
 import java.time.LocalDate;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.theme.ThemeRequestDto;
-import roomescape.dto.theme.ThemeResponseDto;
+import roomescape.controller.theme.dto.ThemeRequestDto;
+import roomescape.controller.theme.dto.ThemeResponseDto;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -29,7 +29,7 @@ public class ThemeController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ThemeResponseDto> themes() {
-        return themeService.getAllThemes();
+        return themeService.findAllThemes();
     }
 
     @PostMapping

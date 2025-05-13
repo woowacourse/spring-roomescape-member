@@ -1,4 +1,4 @@
-package roomescape.dto.reservationtime;
+package roomescape.controller.reservationTime.dto;
 
 import java.time.LocalTime;
 import roomescape.model.AvailableReservationTime;

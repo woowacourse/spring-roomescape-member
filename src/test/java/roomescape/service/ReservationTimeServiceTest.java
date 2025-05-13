@@ -12,9 +12,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.dto.reservationtime.ReservationTimeRequestDto;
-import roomescape.dto.reservationtime.ReservationTimeResponseDto;
+import roomescape.controller.reservationTime.dto.ReservationTimeRequestDto;
+import roomescape.controller.reservationTime.dto.ReservationTimeResponseDto;
 import roomescape.model.ReservationTime;
 
 @ExtendWith(MockitoExtension.class)
@@ -22,6 +23,9 @@ class ReservationTimeServiceTest {
 
     @Mock
     private ReservationTimeDao reservationTimeDao;
+
+    @Mock
+    private ReservationDao reservationDao;
 
     @InjectMocks
     private ReservationTimeService reservationTimeService;
@@ -71,11 +75,13 @@ class ReservationTimeServiceTest {
     void test2() {
         // given
         Long idToDelete = 1L;
+        when(reservationDao.existsByReservationTimeId(idToDelete)).thenReturn(false);
 
         // when
         reservationTimeService.deleteTime(idToDelete);
 
         // then
+        verify(reservationDao).existsByReservationTimeId(idToDelete);
         verify(reservationTimeDao).deleteTimeById(idToDelete);
     }
 }

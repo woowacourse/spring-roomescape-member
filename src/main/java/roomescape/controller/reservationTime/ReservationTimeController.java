@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.reservationTime;
 
 import jakarta.validation.Valid;
 import java.util.List;
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.reservationtime.AvailableReservationTimeResponseDto;
-import roomescape.dto.reservationtime.ReservationTimeRequestDto;
-import roomescape.dto.reservationtime.ReservationTimeResponseDto;
+import roomescape.controller.reservationTime.dto.AvailableReservationTimeResponseDto;
+import roomescape.controller.reservationTime.dto.ReservationTimeRequestDto;
+import roomescape.controller.reservationTime.dto.ReservationTimeResponseDto;
 import roomescape.service.ReservationTimeService;
 
 @RestController

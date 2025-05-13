@@ -3,6 +3,7 @@ package roomescape.dao;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -29,7 +30,7 @@ public class ThemeDao {
     }
 
     public List<Theme> findAll() {
-        String sql = "SELECT * FROM theme";
+        String sql = "SELECT id, name, description, thumbnail FROM theme";
         return jdbcTemplate.query(sql, themeRowMapper);
     }
 
@@ -45,11 +46,11 @@ public class ThemeDao {
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     public Optional<Theme> findById(Long id) {
-        String sql = "SELECT * FROM theme WHERE id = ?";
+        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         return jdbcTemplate.query(sql, themeRowMapper, id).stream().findFirst();
     }
 
@@ -59,27 +60,27 @@ public class ThemeDao {
     }
 
     public boolean isDuplicatedNameExisted(String name) {
-        String sql = "SELECT EXISTS (SELECT * FROM theme WHERE name = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+        String sql = "SELECT EXISTS (SELECT id, name, description, thumbnail FROM theme WHERE name = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
     }
 
     public List<Theme> findThemesByReservationVolumeBetweenDates(LocalDate baseDate, int dayRange, int limit) {
         LocalDate startDate = baseDate.minusDays(dayRange);
 
         String sql = """
-                SELECT theme.id AS id,
-                       theme.name AS name,
-                       theme.description AS description,
-                       theme.thumbnail AS thumbnail,
-                       COUNT(reservation.id) AS reservation_count
-                FROM theme
-                INNER JOIN reservation ON theme.id = reservation.theme_id
-                WHERE reservation.date < ?
-                  AND reservation.date >= ?
-                GROUP BY theme.id
-                ORDER BY reservation_count DESC
-                LIMIT ?
-            """;
+                    SELECT theme.id AS id,
+                           theme.name AS name,
+                           theme.description AS description,
+                           theme.thumbnail AS thumbnail,
+                           COUNT(reservation.id) AS reservation_count
+                    FROM theme
+                    INNER JOIN reservation ON theme.id = reservation.theme_id
+                    WHERE reservation.date < ?
+                      AND reservation.date >= ?
+                    GROUP BY theme.id
+                    ORDER BY reservation_count DESC
+                    LIMIT ?
+                """;
 
         return jdbcTemplate.query(sql, themeRowMapper,
                 baseDate.toString(),

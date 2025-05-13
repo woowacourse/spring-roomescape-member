@@ -10,6 +10,11 @@ public class UserViewController {
         return "/reservation";
     }
 
+    @GetMapping("/login")
+    public String userLogin() {
+        return "/login";
+    }
+
     @GetMapping
     public String home() {
         return "/index";

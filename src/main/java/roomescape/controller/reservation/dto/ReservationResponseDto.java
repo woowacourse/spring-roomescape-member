@@ -1,8 +1,9 @@
-package roomescape.dto.reservation;
+package roomescape.controller.reservation.dto;
 
 import java.time.LocalDate;
-import roomescape.dto.reservationtime.ReservationTimeResponseDto;
-import roomescape.dto.theme.ThemeResponseDto;
+import roomescape.controller.reservationTime.dto.ReservationTimeResponseDto;
+import roomescape.controller.theme.dto.ThemeResponseDto;
+import roomescape.model.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -17,10 +18,10 @@ public record ReservationResponseDto(
     public static ReservationResponseDto from(Reservation reservationInfo) {
         ReservationTime timeInfo = reservationInfo.getTime();
         Theme themeInfo = reservationInfo.getTheme();
-
+        Member member = reservationInfo.getMember();
         return new ReservationResponseDto(
                 reservationInfo.getId(),
-                reservationInfo.getName(),
+                member.getName(),
                 reservationInfo.getDate(),
                 new ReservationTimeResponseDto(timeInfo.getId(), timeInfo.getStartAt()),
                 new ThemeResponseDto(themeInfo.getId(), themeInfo.getName(), themeInfo.getDescription(),

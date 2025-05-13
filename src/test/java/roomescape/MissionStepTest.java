@@ -18,9 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.common.Role;
+import roomescape.common.auth.JwtProvider;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.dto.reservation.ReservationResponseDto;
+import roomescape.controller.reservation.dto.ReservationResponseDto;
+import roomescape.model.Member;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
@@ -37,25 +40,45 @@ public class MissionStepTest {
     @Autowired
     private ThemeDao themeDao;
 
+    @Autowired
+    private JwtProvider jwtProvider;
+
     @BeforeEach
     void beforeEachTest() {
         reservationTimeDao.saveTime(new ReservationTime(LocalTime.of(10, 10)));
-        themeDao.saveTheme(new Theme("공포", "무서워요", "image"));
+        themeDao.saveTheme(new Theme("adad", "무서워요", "image"));
     }
 
-    @DisplayName("관리자 페이지 GET 요청 시 200 OK를 반환한다")
+    @DisplayName("admin이 관리자 페이지 GET 요청 시 200 OK를 반환한다")
     @Test
-    void 일단계() {
+    void 관리자_페이지_접근_성공() {
+        String adminToken = jwtProvider.createToken(new Member(1L, "다로", "qwe", "1234",Role.ADMIN)); // 테스트용 JWT 생성
         RestAssured.given().log().all()
+                .cookie("token", adminToken)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
     }
 
-    @DisplayName("GET /admin/reservation 및 /reservations 요청 시 200 OK와 빈 목록 반환 확인")
+    @DisplayName("user가 관리자 페이지 GET 요청 시 403을 반환한다")
     @Test
-    void 이단계() {
+    void 관리자_페이지_접근_실패() {
+        String userToken = jwtProvider.createToken(
+                new Member(2L, "포로", "asd", "1234", Role.USER)
+        );
         RestAssured.given().log().all()
+                .cookie("token", userToken)
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(403);
+    }
+
+    @DisplayName("admin은 GET /admin/reservation 및 /reservations 요청 시 200 OK와 빈 목록 반환 확인")
+    @Test
+    void reservation_접근_성공() {
+        String adminToken = jwtProvider.createToken(new Member(1L, "다로", "qwe", "1234",Role.ADMIN)); // 테스트용 JWT 생성
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
@@ -64,31 +87,45 @@ public class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
+                .body("size()", is(3));
     }
+
+    @DisplayName("user GET /admin/reservation 요청 시 403 실패")
+    @Test
+    void reservation_접근_실패() {
+        String userToken = jwtProvider.createToken(new Member(2L, "다로", "mail", "pass",Role.USER)); // 테스트용 JWT 생성
+        RestAssured.given().log().all()
+                .cookie("token", userToken)
+                .when().get("/admin/reservation")
+                .then().log().all()
+                .statusCode(403);
+    }
+
 
     @DisplayName("예약 생성 후 조회 및 삭제까지의 전체 흐름 테스트")
     @Test
     void 삼단계() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", String.valueOf(LocalDate.now().plusDays(1)));
         params.put("timeId", "1");
         params.put("themeId", "1");
 
+        String adminToken = jwtProvider.createToken(new Member(1L, "다로", "qwe", "1234",Role.ADMIN)); // 테스트용 JWT 생성
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", adminToken)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1));
+                .body("id", is(4));
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(4));
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
@@ -99,7 +136,7 @@ public class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("size()", is(3));
     }
 
     @DisplayName("DB 연결 및 RESERVATION 테이블 존재 여부 확인")
@@ -118,8 +155,8 @@ public class MissionStepTest {
     @Test
     void 오단계() {
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", String.valueOf(LocalDate.now().plusDays(1)), "1", "1");
+                "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "1", String.valueOf(LocalDate.now().plusDays(1)), "1", "1");
 
         List<ReservationResponseDto> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -136,20 +173,24 @@ public class MissionStepTest {
     @Test
     void 육단계() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
+        params.put("memberId", "1");
         params.put("date", String.valueOf(LocalDate.now().plusDays(1)));
         params.put("timeId", "1");
         params.put("themeId", "1");
 
+        JwtProvider jwtProvider = new JwtProvider();
+        String token = jwtProvider.createToken(new Member(1L, "조로", "emai","1234", Role.ADMIN));
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(count).isEqualTo(1);
+        assertThat(count).isEqualTo(4);
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
@@ -157,14 +198,14 @@ public class MissionStepTest {
                 .statusCode(204);
 
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(countAfterDelete).isEqualTo(0);
+        assertThat(countAfterDelete).isEqualTo(3);
     }
 
     @DisplayName("상영시간을 등록하고 조회하면 목록에 포함되며 삭제도 가능하다")
     @Test
     void 칠단계() {
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        params.put("startAt", "10:55");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -177,10 +218,10 @@ public class MissionStepTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(5));
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/times/5")
                 .then().log().all()
                 .statusCode(204);
     }
@@ -189,13 +230,16 @@ public class MissionStepTest {
     @Test
     void 팔단계() {
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
+        reservation.put("memberId", "1");
         reservation.put("date", String.valueOf(LocalDate.now().plusDays(1)));
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
+        String adminToken = jwtProvider.createToken(new Member(1L, "다로", "qwe", "1234",Role.ADMIN)); // 테스트용 JWT 생성
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", adminToken)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -205,6 +249,6 @@ public class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(4));
     }
 }

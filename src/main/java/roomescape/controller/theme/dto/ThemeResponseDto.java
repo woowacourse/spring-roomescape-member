@@ -1,4 +1,4 @@
-package roomescape.dto.theme;
+package roomescape.controller.theme.dto;
 
 import roomescape.model.Theme;
 

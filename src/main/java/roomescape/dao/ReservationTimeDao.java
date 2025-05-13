@@ -41,7 +41,7 @@ public class ReservationTimeDao {
     }
 
     public List<ReservationTime> findAll() {
-        String sql = "SELECT * FROM reservation_time";
+        String sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(sql, actorRowMapper);
     }
 
@@ -63,13 +63,13 @@ public class ReservationTimeDao {
     }
 
     public Optional<ReservationTime> findById(final Long id) {
-        String sql = "SELECT * FROM reservation_time WHERE id = ?";
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         return jdbcTemplate.query(sql, actorRowMapper, id).stream().findFirst();
     }
 
     public boolean isDuplicatedStartAtExisted(LocalTime startAt) {
-        String sql = "SELECT EXISTS (SELECT * FROM reservation_time WHERE start_at = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
+        String sql = "SELECT EXISTS (SELECT id, start_at FROM reservation_time WHERE start_at = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
     }
 
     public List<AvailableReservationTime> findAvailableTimes(String date, Long themeId) {

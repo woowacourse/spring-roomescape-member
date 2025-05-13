@@ -6,19 +6,18 @@ import static org.mockito.Mockito.*;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.common.exception.DuplicatedException;
 import roomescape.common.exception.ResourceInUseException;
+import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
-import roomescape.dto.theme.ThemeRequestDto;
-import roomescape.dto.theme.ThemeResponseDto;
+import roomescape.controller.theme.dto.ThemeRequestDto;
+import roomescape.controller.theme.dto.ThemeResponseDto;
 import roomescape.model.Theme;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,6 +25,9 @@ class ThemeServiceTest {
 
     @Mock
     private ThemeDao themeDao;
+
+    @Mock
+    private ReservationDao reservationDao;
 
     @InjectMocks
     private ThemeService themeService;
@@ -40,7 +42,7 @@ class ThemeServiceTest {
         when(themeDao.findAll()).thenReturn(List.of(theme1, theme2));
 
         // when
-        List<ThemeResponseDto> themes = themeService.getAllThemes();
+        List<ThemeResponseDto> themes = themeService.findAllThemes();
 
         // then
         assertThat(themes).hasSize(2);
@@ -76,32 +78,37 @@ class ThemeServiceTest {
                 .hasMessage("중복된 테마는 등록할 수 없습니다.");
     }
 
-    @DisplayName("테마를 삭제한다")
+    @DisplayName("예약 정보가 없는 테마는 삭제된다")
     @Test
     void test3() {
         // given
         Long id = 1L;
+        when(reservationDao.existsByThemeId(id)).thenReturn(false);
         doNothing().when(themeDao).deleteById(id);
 
         // when
         themeService.deleteTheme(id);
 
         // then
+        verify(reservationDao).existsByThemeId(id);
         verify(themeDao).deleteById(id);
     }
 
-    @DisplayName("예약정보가 있는 테마는 삭제할 수 없다")
+    @DisplayName("예약 정보가 있는 테마는 삭제할 수 없다")
     @Test
     void test4() {
         // given
         Long id = 1L;
-        doThrow(new DataIntegrityViolationException("예약 존재"))
-                .when(themeDao).deleteById(id);
+        when(reservationDao.existsByThemeId(id)).thenReturn(true);
 
         // expect
         assertThatThrownBy(() -> themeService.deleteTheme(id))
                 .isInstanceOf(ResourceInUseException.class)
                 .hasMessage("삭제하고자 하는 테마에 예약된 정보가 있습니다.");
+
+        // then
+        verify(reservationDao).existsByThemeId(id);
+        verify(themeDao, never()).deleteById(id);
     }
 
     @DisplayName("인기 테마를 조회한다")
