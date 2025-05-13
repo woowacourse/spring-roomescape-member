@@ -25,7 +25,8 @@ public class AuthenticationInformationArgumentResolver implements HandlerMethodA
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AuthenticationPrinciple.class);
+        return parameter.hasParameterAnnotation(AuthenticationPrinciple.class)
+                && parameter.getParameterType().isAssignableFrom(roomescape.dto.other.AuthenticationInformation.class);
     }
 
     @Override
