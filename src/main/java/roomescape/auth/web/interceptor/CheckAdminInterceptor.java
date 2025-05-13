@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.dto.AuthenticatedMember;
 import roomescape.auth.infrastructure.TokenService;
+import roomescape.auth.web.support.AuthorizationExtractor;
 import roomescape.auth.web.support.CookieAuthorizationExtractor;
 import roomescape.domain.member.model.Role;
 import roomescape.global.exception.AuthorizationException;
@@ -17,10 +18,11 @@ import roomescape.global.exception.AuthorizationException;
 public class CheckAdminInterceptor implements HandlerInterceptor {
 
     private final TokenService tokenService;
+    private final AuthorizationExtractor<String> authorizationExtractor;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String token = CookieAuthorizationExtractor.extract(request);
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        String token = authorizationExtractor.extract(request);
         AuthenticatedMember authenticatedMember = tokenService.resolveAuthenticatedMember(token);
         if (Objects.equals(authenticatedMember.role(), Role.ADMIN)) {
             return true;

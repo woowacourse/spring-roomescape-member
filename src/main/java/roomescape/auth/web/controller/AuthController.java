@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.web.controller.dto.LoginRequest;
 import roomescape.auth.dto.AuthenticatedMember;
 import roomescape.auth.application.AuthService;
+import roomescape.auth.web.support.AuthorizationExtractor;
 import roomescape.auth.web.support.CookieAuthorizationExtractor;
 import roomescape.global.exception.AuthenticationException;
 import roomescape.global.util.CookieUtils;
@@ -24,6 +25,7 @@ import roomescape.global.util.CookieUtils;
 public class AuthController {
 
     private final AuthService authService;
+    private final AuthorizationExtractor<String> authorizationExtractor;
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
@@ -35,7 +37,7 @@ public class AuthController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/login/check")
     public AuthenticatedMember loginCheck(HttpServletRequest request) {
-        String token = CookieAuthorizationExtractor.extract(request);
+        String token = authorizationExtractor.extract(request);
         return authService.getAuthenticatedMember(token);
     }
 
