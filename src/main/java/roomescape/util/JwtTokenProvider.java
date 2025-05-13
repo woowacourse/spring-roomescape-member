@@ -31,8 +31,7 @@ public class JwtTokenProvider {
     public void init() {
         secretKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
     }
-
-
+    
     public String createToken(Member member) {
         return Jwts.builder()
                 .subject(member.getId().toString())
@@ -81,12 +80,14 @@ public class JwtTokenProvider {
     }
 
     public String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies == null) return "";
+        if (cookies == null) {
+            throw new UnAuthorizationException("[ERROR] 쿠키가 존재하지 않습니다.");
+        }
         for (Cookie cookie : cookies) {
             if (Objects.equals(cookie.getName(), "token")) {
                 return cookie.getValue();
             }
         }
-        return "";
+        throw new UnAuthorizationException("[ERROR] 접근 권한이 없습니다.");
     }
 }
