@@ -52,10 +52,6 @@ public class JwtTokenProvider {
     private void validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-            boolean isExpiration = claims.getBody().getExpiration().before(new Date());
-            if (isExpiration) {
-                throw new IllegalArgumentException("[ERROR] 토큰 유효기간이 지났습니다.");
-            }
         } catch (JwtException | IllegalArgumentException exception) {
             throw new UnauthorizedException("[ERROR] 유효하지 않은 인증정보입니다.");
         }
