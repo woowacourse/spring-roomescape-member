@@ -31,6 +31,6 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         final String token = memberLoginService.extractToken(request);
         final MemberResponse member = memberLoginService.findByToken(token);
-        return new Member(member.id(), member.name(), member.email(), member.memberRole());
+        return new LoginMember(member.id(), member.name(), member.email(), member.memberRole());
     }
 }

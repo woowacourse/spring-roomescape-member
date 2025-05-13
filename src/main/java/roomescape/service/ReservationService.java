@@ -16,6 +16,7 @@ import roomescape.dto.response.ReservationCreateResponse;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.InvalidReservationFilterException;
 import roomescape.exception.ReservationDuplicateException;
+import roomescape.support.auth.LoginMember;
 
 @Service
 public class ReservationService {
@@ -35,9 +36,10 @@ public class ReservationService {
 
     @Transactional
     public ReservationCreateResponse create(final ReservationCreateRequest reservationCreateRequest,
-                                            final Member member) {
+                                            final LoginMember loginMember) {
         final ReservationTime time = reservationTimeService.findById(reservationCreateRequest.timeId());
         final Theme theme = themeService.findById(reservationCreateRequest.themeId());
+        final Member member = memberService.findById(loginMember.id());
         final Reservation reservation = Reservation.create(
                 reservationCreateRequest.date(),
                 time,
