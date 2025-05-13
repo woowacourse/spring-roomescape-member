@@ -23,7 +23,7 @@ public class AdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(
             final HttpServletRequest request, final HttpServletResponse response, final Object handler
-    ) throws Exception {
+    ) {
         if (!(handler instanceof HandlerMethod handlerMethod)) {
             return true;
         }
