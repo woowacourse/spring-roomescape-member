@@ -15,8 +15,6 @@ import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -76,32 +74,6 @@ public class ReservationControllerTest {
     @BeforeEach
     void init() {
         Mockito.reset(reservationService, authService);
-    }
-
-    @DisplayName("모든 예약 정보를 가져온다.")
-    @Test
-    void test1() throws Exception {
-        // given
-        final List<String> names = List.of("꾹", "드라고", "히로");
-        final LocalDate now = LocalDate.now();
-        final LocalTime time = LocalTime.now();
-        final Long timeId = 1L;
-        final Long themeId = 1L;
-        final AtomicLong id = new AtomicLong(1L);
-        final ReservationTimeResponse timeResponse = new ReservationTimeResponse(timeId, time);
-        final ThemeResponse themeResponse = new ThemeResponse(themeId, "공포", "묘사", "url");
-
-        final List<ReservationResponse> responses = names.stream()
-                .map(name -> new ReservationResponse(id.getAndIncrement(), name, now, timeResponse, themeResponse))
-                .toList();
-
-        // when
-        when(reservationService.getAll(any(), any(), any(), any())).thenReturn(responses);
-
-        // then
-        mockMvc.perform(MockMvcRequestBuilders.get("/reservations"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(names.size()));
     }
 
     @DisplayName("예약 정보를 추가한다.")

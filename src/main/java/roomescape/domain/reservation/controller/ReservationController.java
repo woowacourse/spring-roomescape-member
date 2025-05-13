@@ -33,17 +33,6 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReservationResponse>> readAllReservations(
-            @RequestParam(value = "themeId", required = false) final Long themeId,
-            @RequestParam(value = "memberId", required = false) final Long memberId,
-            @RequestParam(value = "dateFrom", required = false) final LocalDate dateFrom,
-            @RequestParam(value = "dateTo", required = false) final LocalDate dateTo) {
-        final List<ReservationResponse> response = reservationService.getAll(themeId, memberId, dateFrom, dateTo);
-
-        return ResponseEntity.ok(response);
-    }
-
     @GetMapping("/available")
     public ResponseEntity<List<BookedReservationTimeResponse>> readAvailableReservationTimes(
             @RequestParam("date") final LocalDate date, @RequestParam("themeId") final Long themeId) {

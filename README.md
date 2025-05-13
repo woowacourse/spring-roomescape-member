@@ -12,16 +12,16 @@
 
 ## 예약
 
-### 전체 조회
+### 전체 조회 (어드민용)
 
-- [x] "/reservations" get 요청 시 모든 예약 정보를 반환한다.
+- [x] "admin/reservations" get 요청 시 모든 예약 정보를 반환한다.
 - [x] "/reservations/available" get 요청으로 날짜(date) 와 테마(themeId)를 쿼리 스트링으로 요청하면 예약 가능한 시간을 가져올 수 있다.
     - 시간 정보 (timeResponse), 예약 여부 (alreadyBooked)를 반환한다.
 
-### 조건 조회
+### 조건 조회 (어드민용)
 
 - [x] 예약자별, 테마별, 날짜별 검색 조건을 사용해 조건에 맞는 예약을 조회할 수 있다.
-    - [x] "/reservations "에 예약자명(name), 날짜(date), 시간(timeId), 테마(themeId) 를 쿼리 스트링으로 요청하면 예약 정보를 가져올 수 있다.
+    - [x] "admin/reservations "에 예약자명(name), 날짜(date), 시간(timeId), 테마(themeId) 를 쿼리 스트링으로 요청하면 예약 정보를 가져올 수 있다.
         - [x] 예약자명, 날짜, 시간에 유효하지 않은 값을 입력할 경우 400 Bad Request 상태 코드가 반환된다.
             - 아래의 경우 예외가 발생된다.
                 - 예약자명이 공백이거나, 25자 이하가 아닌 경우

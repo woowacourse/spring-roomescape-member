@@ -71,39 +71,6 @@ class ReservationApiTest {
         password = Password.encrypt("1234", passwordEncryptor);
     }
 
-    @DisplayName("모든 예약 정보를 반환한다.")
-    @Test
-    void test3() {
-        // given
-        final LocalTime time = LocalTime.of(15, 0);
-        final ReservationTime reservationTime = ReservationTime.withoutId(time);
-        final ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-        final Theme theme = Theme.withoutId("공포", "우테코 공포",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        final Theme savedTheme = themeRepository.save(theme);
-
-        final Name name = new Name("브라운");
-        final User user = User.withoutId(name, "admin@naver.com", password, Roles.USER);
-        final User savedUser = userRepository.save(user);
-
-        final Reservation reservation = Reservation.withoutId(savedUser, LocalDate.now(), savedReservationTime,
-                savedTheme);
-
-        reservationRepository.save(reservation);
-
-        // then
-        RestAssured.given()
-                .log()
-                .all()
-                .when()
-                .get("/reservations")
-                .then()
-                .log()
-                .all()
-                .statusCode(200)
-                .body("size()", is(1));
-    }
-
     @DisplayName("예약 정보를 추가한다.")
     @Test
     void test4() {
@@ -285,61 +252,5 @@ class ReservationApiTest {
                 .body("alreadyBooked", containsInAnyOrder(true, false));
     }
 
-    @DisplayName("예약 정보를 themeId, memberId, dateFrom, dateTo로 필터링하여 조회한다.")
-    @Test
-    void filterReservationsByParams() {
-        // given
-        final ReservationTime time = reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(10, 0)));
-        final Theme theme1 = themeRepository.save(Theme.withoutId("테마1", "설명1", "img1"));
-        final Theme theme2 = themeRepository.save(Theme.withoutId("테마2", "설명2", "img2"));
-        final User user1 = userRepository.save(User.withoutId(new Name("유저1"), "user1@a.com", password, Roles.USER));
-        final User user2 = userRepository.save(User.withoutId(new Name("유저2"), "user2@a.com", password, Roles.USER));
-        final LocalDate today = LocalDate.now();
 
-        // 예약 3개 생성
-        reservationRepository.save(Reservation.withoutId(user1, today, time, theme1));
-        reservationRepository.save(Reservation.withoutId(user2, today.plusDays(1), time, theme1));
-        reservationRepository.save(Reservation.withoutId(user1, today.plusDays(2), time, theme2));
-
-        // when & then
-        // themeId로 필터
-        RestAssured.given()
-                .queryParam("themeId", theme1.getId())
-                .when()
-                .get("/reservations")
-                .then()
-                .statusCode(200)
-                .body("size()", is(2));
-
-        // memberId로 필터
-        RestAssured.given()
-                .queryParam("memberId", user2.getId())
-                .when()
-                .get("/reservations")
-                .then()
-                .statusCode(200)
-                .body("size()", is(1));
-
-        // 날짜 범위로 필터
-        RestAssured.given()
-                .queryParam("dateFrom", DateFormatter.format(today))
-                .queryParam("dateTo", DateFormatter.format(today.plusDays(1)))
-                .when()
-                .get("/reservations")
-                .then()
-                .statusCode(200)
-                .body("size()", is(2));
-
-        // themeId + memberId + 날짜 범위 조합
-        RestAssured.given()
-                .queryParam("themeId", theme1.getId())
-                .queryParam("memberId", user2.getId())
-                .queryParam("dateFrom", DateFormatter.format(today))
-                .queryParam("dateTo", DateFormatter.format(today.plusDays(2)))
-                .when()
-                .get("/reservations")
-                .then()
-                .statusCode(200)
-                .body("size()", is(1));
-    }
 }

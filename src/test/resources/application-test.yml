@@ -13,3 +13,8 @@ spring:
       mode: always
       schema-locations: classpath:schema.sql
       data-locations:
+auth:
+  jwt:
+    expire-length: 3600000
+    secret-key: Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=
+    cookie-key: token
