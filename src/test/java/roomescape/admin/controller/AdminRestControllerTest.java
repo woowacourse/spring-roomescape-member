@@ -51,7 +51,7 @@ class AdminRestControllerTest {
         final String dateFrom = LocalDate.now().minusDays(1).toString();
         final String dateTo = LocalDate.now().plusDays(1).toString();
 
-        // when + then
+        // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .cookie("token", adminToken)

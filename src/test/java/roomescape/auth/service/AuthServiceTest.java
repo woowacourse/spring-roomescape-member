@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.auth.jwt.JwtTokenProvider;
 import roomescape.common.exception.DataNotFoundException;
+import roomescape.member.domain.Role;
 import roomescape.member.repository.JdbcMemberRepository;
 import roomescape.member.repository.MemberRepository;
 
@@ -25,7 +26,7 @@ public class AuthServiceTest {
     void 토큰_기준으로_이름_찾기_성공() {
         //given
         final String email = "east@email.com";
-        final String token = jwtTokenProvider.createToken(email);
+        final String token = jwtTokenProvider.createToken(email, Role.ADMIN);
 
         //when
         final String name = authService.findNameByToken(token);
@@ -37,7 +38,7 @@ public class AuthServiceTest {
     @Test
     void 토큰_기준으로_이름_찾기_실패() {
         //given
-        final String token = jwtTokenProvider.createToken("fake");
+        final String token = jwtTokenProvider.createToken("fake", Role.USER);
 
         //when & then
         Assertions.assertThatThrownBy(

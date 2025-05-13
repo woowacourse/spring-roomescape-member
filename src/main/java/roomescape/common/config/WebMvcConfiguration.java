@@ -25,7 +25,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminRoleInterceptor(memberService, jwtTokenProvider))
+        registry.addInterceptor(new AdminRoleInterceptor(jwtTokenProvider))
                 .addPathPatterns("/admin/**");
     }
 }

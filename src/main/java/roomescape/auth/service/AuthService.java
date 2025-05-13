@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.auth.jwt.JwtTokenProvider;
 import roomescape.common.exception.DataNotFoundException;
+import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
 
 @RequiredArgsConstructor
@@ -24,8 +25,10 @@ public class AuthService {
         if (!checkInvalidLogin(email, password)) {
             throw new DataNotFoundException("No member information");
         }
+        final Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("해당 회원 데이터가 존재하지 않습니다. email = " + email));
 
-        return jwtTokenProvider.createToken(email);
+        return jwtTokenProvider.createToken(email, member.getRole());
     }
 
     private boolean checkInvalidLogin(final String email, final String password) {

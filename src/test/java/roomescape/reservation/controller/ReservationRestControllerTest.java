@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.auth.jwt.JwtTokenProvider;
+import roomescape.member.domain.Role;
 import roomescape.reservation.dto.AvailableReservationTimeResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,7 +47,7 @@ class ReservationRestControllerTest {
     void 예약_정보를_저장한다() {
         //given
         final String payload = "wooga@gmail.com";
-        final String token = jwtTokenProvider.createToken(payload);
+        final String token = jwtTokenProvider.createToken(payload, Role.USER);
         final Map<String, String> params = createReservationRequestJsonMap("2025-10-15", "1", "1");
 
         //when & then
@@ -63,7 +64,7 @@ class ReservationRestControllerTest {
     void 예약_정보를_삭제한다() {
         //given
         final String payload = "wooga@gmail.com";
-        final String token = jwtTokenProvider.createToken(payload);
+        final String token = jwtTokenProvider.createToken(payload, Role.USER);
         final Map<String, String> params = createReservationRequestJsonMap("2026-10-15", "1", "1");
 
         RestAssured.given().log().all()
@@ -94,7 +95,7 @@ class ReservationRestControllerTest {
     void 예약_정보_목록을_조회한다() {
         //given
         final String payload = "wooga@gmail.com";
-        final String token = jwtTokenProvider.createToken(payload);
+        final String token = jwtTokenProvider.createToken(payload, Role.USER);
         final Map<String, String> params = createReservationRequestJsonMap("2026-10-15", "1", "1");
 
         RestAssured.given().log().all()
@@ -116,7 +117,7 @@ class ReservationRestControllerTest {
     void 예약_가능한_시간_목록을_조회한다() {
         //given
         final String payload = "wooga@gmail.com";
-        final String token = jwtTokenProvider.createToken(payload);
+        final String token = jwtTokenProvider.createToken(payload, Role.USER);
         final Map<String, String> params = createReservationRequestJsonMap("2026-04-15", "1", "1");
 
         RestAssured.given().log().all()

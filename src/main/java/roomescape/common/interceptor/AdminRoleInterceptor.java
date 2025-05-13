@@ -9,14 +9,11 @@ import roomescape.auth.jwt.JwtTokenProvider;
 import roomescape.common.exception.AccessDeniedException;
 import roomescape.common.exception.InvalidTokenException;
 import roomescape.common.exception.MissingTokenExcpetion;
-import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
-import roomescape.member.service.MemberService;
 
 @RequiredArgsConstructor
 public class AdminRoleInterceptor implements HandlerInterceptor {
 
-    private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
@@ -35,8 +32,8 @@ public class AdminRoleInterceptor implements HandlerInterceptor {
             throw new InvalidTokenException("Invalid token");
         }
 
-        final Member member = memberService.findMemberByEmail(email);
-        if (member == null || member.getRole() != Role.ADMIN) {
+        final Role role = jwtTokenProvider.getRole(token);
+        if (role != Role.ADMIN) {
             throw new AccessDeniedException("Access denied");
         }
 
