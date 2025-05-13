@@ -22,12 +22,13 @@ public class ReservationMapper {
 
     public static ReservationResDto toResDto(
         Reservation reservation,
+        Member member,
         ReservationTimeResDto reservationTimeResDto,
         ThemeResDto themeResDto
     ) {
         return new ReservationResDto(
             reservation.getId(),
-            reservation.getName(),
+            member,
             reservation.getDate(),
             reservationTimeResDto,
             themeResDto

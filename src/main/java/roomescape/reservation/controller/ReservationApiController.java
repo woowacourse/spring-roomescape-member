@@ -6,13 +6,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.admin.domain.Admin;
+import roomescape.auth.infrastructure.argument.AuthorizedAdmin;
 import roomescape.auth.infrastructure.argument.AuthorizedMember;
 import roomescape.member.domain.Member;
+import roomescape.reservation.domain.dto.ReservationFilterCondition;
 import roomescape.reservation.domain.dto.ReservationReqDto;
 import roomescape.reservation.domain.dto.ReservationResDto;
 import roomescape.reservation.service.ReservationService;
@@ -28,8 +32,11 @@ public class ReservationApiController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResDto>> findAll() {
-        List<ReservationResDto> resDtos = service.findAll();
+    public ResponseEntity<List<ReservationResDto>> findAll(
+        @AuthorizedAdmin Admin admin,
+        @ModelAttribute ReservationFilterCondition filterCondition
+    ) {
+        List<ReservationResDto> resDtos = service.findAll(filterCondition);
         return ResponseEntity.ok(resDtos);
     }
 

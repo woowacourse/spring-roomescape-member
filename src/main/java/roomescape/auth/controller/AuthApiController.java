@@ -43,4 +43,22 @@ public class AuthApiController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/members/logout")
+    public ResponseEntity<Void> userLogout(
+        HttpServletResponse httpServletResponse
+    ) {
+        jwtHandler.removeJwt(httpServletResponse);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/admins/logout")
+    public ResponseEntity<Void> adminLogout(
+        HttpServletResponse httpServletResponse
+    ) {
+        jwtHandler.removeJwt(httpServletResponse);
+
+        return ResponseEntity.ok().build();
+    }
 }

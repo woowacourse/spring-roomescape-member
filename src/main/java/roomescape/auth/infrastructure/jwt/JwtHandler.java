@@ -32,4 +32,14 @@ public class JwtHandler {
             .map(Cookie::getValue)
             .findFirst();
     }
+
+    public void removeJwt(HttpServletResponse httpServletResponse) {
+        Cookie cookie = new Cookie(TOKEN_NAME, null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+
+        httpServletResponse.addCookie(cookie);
+    }
 }
