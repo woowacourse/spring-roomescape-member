@@ -19,30 +19,6 @@ import roomescape.common.exception.handler.dto.ExceptionResponse;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationIntegrationTest {
 
-    @DisplayName("잘못된 예약자명으로 생성 요청 시 400 응답을 준다.")
-    @ParameterizedTest
-    @NullAndEmptySource
-    void when_given_wrong_name(final String name) {
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", name);
-        reservation.put("date", "2023-08-05");
-        reservation.put("timeId", 1);
-
-        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 이름은 비어있을 수 없습니다.", "/reservations");
-
-        Response response = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400)
-                .extract()
-                .response();
-
-        ExceptionResponse actual = response.as(ExceptionResponse.class);
-        Assertions.assertThat(actual).isEqualTo(expected);
-    }
-
     @DisplayName("날짜가 null인 상태로 생성 요청 시 400 응답을 준다.")
     @Test
     void when_given_null_date() {
@@ -140,7 +116,7 @@ public class ReservationIntegrationTest {
     @Test
     void when_given_wrong_id() {
         RestAssured.given().log().all()
-                .when().delete("/reservations/2")
+                .when().delete("/reservations/10")
                 .then().log().all()
                 .statusCode(400);
     }

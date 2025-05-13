@@ -1,69 +1,80 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
+import roomescape.common.exception.BusinessException;
+import roomescape.member.domain.Member;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 public class Reservation {
 
     private final Long id;
-    private final String name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
+    private final Member member;
 
     private Reservation(final Long id,
-                        final String name,
                         final LocalDate date,
                         final ReservationTime time,
-                        final Theme theme
+                        final Theme theme,
+                        final Member member
     ) {
+        validateIsNonNull(date);
+        validateIsNonNull(time);
+        validateIsNonNull(theme);
+        validateIsNonNull(member);
+
         this.id = id;
-        this.name = Objects.requireNonNull(name, "이름은 null 일 수 없습니다.");
-        validateNameIsBlank(name);
-        this.date = Objects.requireNonNull(date, "날짜는 null 일 수 없습니다.");
-        this.time = Objects.requireNonNull(time, "예약 시간은 null 일 수 없습니다.");
-        this.theme = Objects.requireNonNull(theme, "테마는 null 일 수 없습니다.");
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
+        this.member = member;
     }
 
-    private static void validateNameIsBlank(final String name) {
-        if (name.isBlank()) {
-            throw new IllegalArgumentException("이름은 비어있을 수 없습니다.");
+    private void validateIsNonNull(final Object object) {
+        if (object == null) {
+            throw new BusinessException("예약 정보는 null 일 수 없습니다.");
         }
     }
 
-    public static Reservation createWithoutId(final String name,
-                                              final LocalDate date,
+    public static Reservation createWithoutId(final LocalDate date,
                                               final ReservationTime time,
-                                              final Theme theme
+                                              final Theme theme,
+                                              final Member member
     ) {
-        return new Reservation(null, name, date, time, theme);
+        return new Reservation(null, date, time, theme, member);
     }
 
     public static Reservation createWithId(final Long id,
-                                           final String name,
                                            final LocalDate date,
                                            final ReservationTime time,
-                                           final Theme theme
+                                           final Theme theme,
+                                           final Member member
     ) {
-        return new Reservation(Objects.requireNonNull(id), name, date, time, theme);
+        return new Reservation(Objects.requireNonNull(id), date, time, theme, member);
     }
 
     public Reservation assignId(final Long id) {
-        return new Reservation(Objects.requireNonNull(id), name, date, time, theme);
+        return new Reservation(Objects.requireNonNull(id), date, time, theme, member);
+    }
+
+    public boolean isCanReserveDateTime(final LocalDateTime dateTime) {
+        if (date.isBefore(dateTime.toLocalDate())) {
+            return true;
+        }
+
+        return date.isEqual(dateTime.toLocalDate()) && time.isBefore(dateTime.toLocalTime());
     }
 
     public boolean isSameTime(final ReservationTime time) {
-        return this.time.isSameTime(time);
+        return this.time.isEqual(time.getStartAt());
     }
 
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public LocalDate getDate() {
@@ -76,6 +87,10 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     @Override

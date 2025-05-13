@@ -2,6 +2,7 @@ package roomescape.reservationTime.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.common.exception.BusinessException;
 
 public class ReservationTime {
 
@@ -9,8 +10,16 @@ public class ReservationTime {
     private final LocalTime startAt;
 
     private ReservationTime(final Long id, final LocalTime startAt) {
+        validateIsNonNull(startAt);
+
         this.id = id;
-        this.startAt = Objects.requireNonNull(startAt, "시간은 null 일 수 없습니다.");
+        this.startAt = startAt;
+    }
+
+    private void validateIsNonNull(final Object object) {
+        if (object == null) {
+            throw new BusinessException("시간 정보는 null 일 수 없습니다.");
+        }
     }
 
     public static ReservationTime createWithoutId(final LocalTime startAt) {
@@ -18,15 +27,26 @@ public class ReservationTime {
     }
 
     public static ReservationTime createWithId(final Long id, final LocalTime startAt) {
+        validateIdIsNonNull(id);
         return new ReservationTime(Objects.requireNonNull(id), startAt);
+    }
+
+    private static void validateIdIsNonNull(final Long id) {
+        if (id == null) {
+            throw new BusinessException("시간 id는 null 일 수 없습니다.");
+        }
     }
 
     public ReservationTime assignId(final Long id) {
-        return new ReservationTime(Objects.requireNonNull(id), startAt);
+        return createWithId(id, startAt);
     }
 
-    public boolean isSameTime(final ReservationTime time) {
-        return startAt.equals(time.startAt);
+    public boolean isBefore(final LocalTime time) {
+        return this.startAt.isBefore(time);
+    }
+
+    public boolean isEqual(final LocalTime time) {
+        return startAt.equals(time);
     }
 
     public Long getId() {

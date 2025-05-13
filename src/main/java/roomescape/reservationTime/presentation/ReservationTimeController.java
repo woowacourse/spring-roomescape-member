@@ -24,6 +24,8 @@ import roomescape.reservationTime.service.ReservationTimeService;
 @RequestMapping("/times")
 public class ReservationTimeController {
 
+    public static final String GET_ADMIN_TIME = "/admin/time";
+
     private final ReservationTimeService reservationTimeService;
 
     public ReservationTimeController(final ReservationTimeService reservationTimeService) {
@@ -45,7 +47,7 @@ public class ReservationTimeController {
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody final ReservationTimeRequest request) {
         ReservationTimeResponse response = reservationTimeService.createReservationTime(request);
-        return ResponseEntity.created(URI.create("/admin/time")).body(response);
+        return ResponseEntity.created(URI.create(GET_ADMIN_TIME)).body(response);
     }
 
     @DeleteMapping("/{id}")

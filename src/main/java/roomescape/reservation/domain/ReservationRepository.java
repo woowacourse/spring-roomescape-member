@@ -12,6 +12,8 @@ public interface ReservationRepository {
 
     List<Reservation> findBy(LocalDate date, Long themeId);
 
+    List<Reservation> findBy(Long memberId, Long themeId, LocalDate from, LocalDate to);
+
     List<Reservation> findAll();
 
     boolean existByReservationTimeId(Long timeId);

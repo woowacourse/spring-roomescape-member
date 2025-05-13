@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.exception.handler.dto.ExceptionResponse;
+import roomescape.auth.login.presentation.dto.annotation.LoginMember;
+import roomescape.auth.login.presentation.dto.LoginMemberInfo;
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
@@ -21,6 +23,8 @@ import roomescape.reservation.service.ReservationService;
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
+
+    public static final String GET_ADMIN_RESERVATION = "admin/reservation";
 
     private final ReservationService reservationService;
 
@@ -35,9 +39,12 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationRequest request) {
-        ReservationResponse response = reservationService.createReservation(request);
-        return ResponseEntity.created(URI.create("admin/reservation")).body(response);
+    public ResponseEntity<ReservationResponse> createReservation(
+            @RequestBody final ReservationRequest request,
+            @LoginMember final LoginMemberInfo memberInfo)
+    {
+        ReservationResponse response = reservationService.createReservation(request, memberInfo.id());
+        return ResponseEntity.created(URI.create(GET_ADMIN_RESERVATION)).body(response);
     }
 
     @DeleteMapping("/{id}")
