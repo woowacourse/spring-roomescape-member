@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.domain.member.Member;
+import roomescape.business.domain.member.MemberCredential;
+import roomescape.business.domain.member.SignUpMember;
 import roomescape.persistence.MemberRepository;
 import roomescape.persistence.entity.MemberEntity;
 
@@ -27,15 +29,20 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Member save(Member member) {
-        MemberEntity memberEntity = MemberEntity.fromDomain(member);
+    public Long save(SignUpMember signUpMember) {
+        MemberEntity memberEntity = new MemberEntity(
+                null,
+                signUpMember.getName(),
+                signUpMember.getEmail(),
+                signUpMember.getPassword(),
+                signUpMember.getRole().value()
+        );
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", memberEntity.getName());
         parameters.put("email", memberEntity.getEmail());
         parameters.put("password", memberEntity.getPassword());
         parameters.put("role", memberEntity.getRole());
-        long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
-        return memberEntity.copyWithId(id).toDomain();
+        return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
     @Override
@@ -61,25 +68,22 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findByEmail(String email) {
+    public Optional<MemberCredential> findCredentialByEmail(String email) {
         String query = """
-                SELECT id, name, email, password, role
+                SELECT id, email, password
                 FROM member
                 WHERE email = ?""";
         return jdbcTemplate.query(
                         query,
-                        (rs, rowNum) -> new MemberEntity(
+                        (rs, rowNum) -> new MemberCredential(
                                 rs.getLong("id"),
-                                rs.getString("name"),
                                 rs.getString("email"),
-                                rs.getString("password"),
-                                rs.getString("role")
+                                rs.getString("password")
                         ),
                         email
                 )
                 .stream()
-                .findFirst()
-                .map(MemberEntity::toDomain);
+                .findFirst();
     }
 
     @Override

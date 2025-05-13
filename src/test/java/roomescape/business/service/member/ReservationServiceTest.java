@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.business.domain.member.Member;
 import roomescape.business.domain.member.MemberRole;
+import roomescape.business.domain.member.SignUpMember;
 import roomescape.business.domain.reservation.ReservationTheme;
 import roomescape.business.domain.reservation.ReservationTime;
 import roomescape.config.LoginMember;
@@ -44,7 +45,7 @@ class ReservationServiceTest {
                 reservationThemeRepository,
                 memberRepository
         );
-        memberRepository.save(new Member("벨로", "bello@email.com", "1234"));
+        memberRepository.save(new SignUpMember("벨로", "bello@email.com", "1234"));
         loginMember = new LoginMember(1L, "벨로", MemberRole.MEMBER);
     }
 

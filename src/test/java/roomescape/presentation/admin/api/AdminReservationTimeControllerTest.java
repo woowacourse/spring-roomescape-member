@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.business.domain.member.Member;
 import roomescape.business.domain.member.MemberRole;
+import roomescape.business.domain.member.SignUpMember;
 import roomescape.business.domain.reservation.ReservationTime;
 import roomescape.exception.ErrorResponseDto;
 import roomescape.persistence.fakerepository.FakeMemberRepository;
@@ -39,7 +40,7 @@ class AdminReservationTimeControllerTest extends AbstractControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        memberRepository.save(new Member("벨로", "bello@email.com", "bziTlUMky2GC3ji0qgiFVA==", MemberRole.ADMIN));
+        memberRepository.save(new SignUpMember("벨로", "bello@email.com", "password"));
         token = testLoginAndReturnToken();
     }
 

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.business.domain.member.Member;
+import roomescape.business.domain.member.SignUpMember;
 import roomescape.business.domain.reservation.ReservationTheme;
 import roomescape.business.domain.reservation.ReservationTime;
 import roomescape.exception.ReservationException;
@@ -43,7 +44,7 @@ class AdminReservationServiceTest {
                 reservationThemeRepository,
                 memberRepository
         );
-        memberRepository.save(new Member("벨로", "bello@email.com", "1234"));
+        memberRepository.save(new SignUpMember("벨로", "bello@email.com", "1234"));
     }
 
     @DisplayName("예약을 생성한다.")

@@ -12,7 +12,6 @@ class MemberTest {
 
     private static final String VALID_NAME = "벨로";
     private static final String VALID_EMAIL = "bello@email.com";
-    private static final String VALID_PASSWORD = "password";
 
     @DisplayName("사용자의 이름이 null이거나 빈 문자열인 경우에 예외가 발생한다.")
     @ParameterizedTest
@@ -21,7 +20,7 @@ class MemberTest {
         // given
         // when
         // then
-        assertThatCode(() -> new Member(1L, invalidName, VALID_EMAIL, VALID_PASSWORD))
+        assertThatCode(() -> new Member(1L, invalidName, VALID_EMAIL))
                 .isInstanceOf(MemberException.class)
                 .hasMessage("사용자 이름은 null이거나 빈 문자열일 수 없습니다.");
     }
@@ -33,7 +32,7 @@ class MemberTest {
         // given
         // when
         // then
-        assertThatCode(() -> new Member(1L, invalidName, VALID_EMAIL, VALID_PASSWORD))
+        assertThatCode(() -> new Member(1L, invalidName, VALID_EMAIL))
                 .isInstanceOf(MemberException.class)
                 .hasMessage("사용자 이름은 2자 이상 8자 이하이어야 합니다.");
     }
@@ -45,7 +44,7 @@ class MemberTest {
         // given
         // when
         // then
-        assertThatCode(() -> new Member(1L, validName, VALID_EMAIL, VALID_PASSWORD))
+        assertThatCode(() -> new Member(1L, validName, VALID_EMAIL))
                 .doesNotThrowAnyException();
     }
 
@@ -56,7 +55,7 @@ class MemberTest {
         // given
         // when
         // then
-        assertThatCode(() -> new Member(1L, VALID_NAME, invalidEmail, VALID_PASSWORD))
+        assertThatCode(() -> new Member(1L, VALID_NAME, invalidEmail))
                 .isInstanceOf(MemberException.class)
                 .hasMessage("이메일은 null이거나 빈 문자열일 수 없습니다.");
     }
@@ -68,20 +67,8 @@ class MemberTest {
         // given
         // when
         // then
-        assertThatCode(() -> new Member(1L, VALID_NAME, invalidEmail, VALID_PASSWORD))
+        assertThatCode(() -> new Member(1L, VALID_NAME, invalidEmail))
                 .isInstanceOf(MemberException.class)
                 .hasMessage("이메일 형식이 올바르지 않습니다.");
-    }
-
-    @DisplayName("사용자의 비밀번호가 null이거나 빈 문자열인 경우에 예외가 발생한다.")
-    @ParameterizedTest
-    @NullAndEmptySource
-    void shouldThrowExceptionWhenPasswordIsNullOrEmpty(String invalidPassword) {
-        // given
-        // when
-        // then
-        assertThatCode(() -> new Member(1L, VALID_NAME, VALID_EMAIL, invalidPassword))
-                .isInstanceOf(MemberException.class)
-                .hasMessage("비밀번호는 null이거나 빈 문자열일 수 없습니다.");
     }
 }

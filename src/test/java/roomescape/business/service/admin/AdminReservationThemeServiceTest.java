@@ -87,7 +87,7 @@ class AdminReservationThemeServiceTest {
         ReservationTheme reservationTheme = reservationThemeRepository.add(new ReservationTheme("수양", "수양테마", "수양썸네일"));
         reservationRepository.add(
                 new Reservation(
-                        new Member(1L, "수양", "test@email.com", "1234"),
+                        new Member(1L, "수양", "test@email.com"),
                         LocalDate.now().plusDays(1),
                         new ReservationTime(1L, LocalTime.now()),
                         new ReservationTheme(reservationTheme.getId(), "수양", "수양테마", "수양썸네일")

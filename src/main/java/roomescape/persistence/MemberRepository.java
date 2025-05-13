@@ -3,14 +3,16 @@ package roomescape.persistence;
 import java.util.List;
 import java.util.Optional;
 import roomescape.business.domain.member.Member;
+import roomescape.business.domain.member.MemberCredential;
+import roomescape.business.domain.member.SignUpMember;
 
 public interface MemberRepository {
 
-    Member save(Member member);
+    Long save(SignUpMember signUpMember);
 
     Optional<Member> findById(Long id);
 
-    Optional<Member> findByEmail(String email);
+    Optional<MemberCredential> findCredentialByEmail(String email);
 
     List<Member> findAll();
 

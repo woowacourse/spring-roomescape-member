@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.business.domain.member.Member;
+import roomescape.business.domain.member.MemberCredential;
+import roomescape.business.domain.member.SignUpMember;
 import roomescape.persistence.MemberRepository;
 import roomescape.persistence.entity.MemberEntity;
 
@@ -14,11 +16,11 @@ public final class FakeMemberRepository implements MemberRepository, FakeReposit
     private final AtomicLong idGenerator = new AtomicLong(1);
 
     @Override
-    public Member save(Member member) {
-        MemberEntity newMemberEntity = MemberEntity.fromDomain(member)
+    public Long save(SignUpMember signUpMember) {
+        MemberEntity newMemberEntity = MemberEntity.fromDomain(signUpMember)
                         .copyWithId(idGenerator.getAndIncrement());
         members.add(newMemberEntity);
-        return newMemberEntity.toDomain();
+        return newMemberEntity.getId();
     }
 
     @Override
@@ -30,11 +32,11 @@ public final class FakeMemberRepository implements MemberRepository, FakeReposit
     }
 
     @Override
-    public Optional<Member> findByEmail(String email) {
+    public Optional<MemberCredential> findCredentialByEmail(String email) {
         return members.stream()
                 .filter(member -> member.getEmail().equals(email))
                 .findFirst()
-                .map(MemberEntity::toDomain);
+                .map(member -> new MemberCredential(member.getId(), member.getEmail(), member.getPassword()));
     }
 
     @Override

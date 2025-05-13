@@ -17,4 +17,8 @@ public record MemberName(
             throw new MemberException("사용자 이름은 %d자 이상 %d자 이하이어야 합니다.".formatted(MIN_LENGTH, MAX_LENGTH));
         }
     }
+
+    public String getValue() {
+        return value;
+    }
 }

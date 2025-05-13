@@ -3,6 +3,7 @@ package roomescape.persistence.entity;
 import java.util.Objects;
 import roomescape.business.domain.member.Member;
 import roomescape.business.domain.member.MemberRole;
+import roomescape.business.domain.member.SignUpMember;
 
 public final class MemberEntity {
 
@@ -28,20 +29,38 @@ public final class MemberEntity {
         this(id, name, email, null, role);
     }
 
+    public static MemberEntity fromDomain(SignUpMember signUpMember) {
+        if (signUpMember.getId() != null) {
+            return new MemberEntity(
+                    signUpMember.getId(),
+                    signUpMember.getName(),
+                    signUpMember.getEmail(),
+                    signUpMember.getPassword(),
+                    signUpMember.getRole().value()
+            );
+        }
+        return new MemberEntity(
+                signUpMember.getName(),
+                signUpMember.getEmail(),
+                signUpMember.getPassword(),
+                signUpMember.getRole().value()
+        );
+    }
+
     public static MemberEntity fromDomain(Member member) {
         if (member.getId() != null) {
             return new MemberEntity(
                     member.getId(),
                     member.getName(),
                     member.getEmail(),
-                    member.getPassword(),
+                    null,
                     member.getRole().value()
             );
         }
         return new MemberEntity(
                 member.getName(),
                 member.getEmail(),
-                member.getPassword(),
+                null,
                 member.getRole().value()
         );
     }
@@ -54,10 +73,7 @@ public final class MemberEntity {
         if (id == null) {
             throw new IllegalArgumentException("사용자 엔티티의 ID가 null이어서 도메인 객체로 변환할 수 없습니다.");
         }
-        if (password == null) {
-            return Member.createWithoutPassword(id, name, email, MemberRole.from(role));
-        }
-        return new Member(id, name, email, password, MemberRole.from(role));
+        return new Member(id, name, email, MemberRole.from(role));
     }
 
     public Long getId() {

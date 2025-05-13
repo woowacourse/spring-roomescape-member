@@ -91,7 +91,7 @@ class AdminReservationTimeServiceTest {
         LocalTime time = tomorrow.toLocalTime();
         Long timeId = reservationTimeRepository.add(new ReservationTime(time)).getId();
         reservationRepository.add(
-                new Reservation(new Member(1L, "수양", "test@email.com", "1234"), date, new ReservationTime(timeId, time),
+                new Reservation(new Member(1L, "수양", "test@email.com"), date, new ReservationTime(timeId, time),
                         new ReservationTheme(1L, "수양", "수양테마", "수양썸네일")));
 
         // when

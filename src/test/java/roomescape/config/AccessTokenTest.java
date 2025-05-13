@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.business.domain.member.Member;
+import roomescape.business.domain.member.MemberCredential;
 
 class AccessTokenTest {
 
@@ -13,10 +13,10 @@ class AccessTokenTest {
     @Test
     void create() {
         // given
-        Member member = new Member(1L, "벨로", "bello@email.com", "password");
+        MemberCredential memberCredential = new MemberCredential(1L, "bello@email.com", "password");
 
         // when
-        AccessToken accessToken = AccessToken.create(member);
+        AccessToken accessToken = AccessToken.create(memberCredential);
 
         // then
         assertAll(
@@ -45,14 +45,14 @@ class AccessTokenTest {
     @Test
     void extractMemberId() {
         // given
-        Member member = new Member(1L, "벨로", "bello@email.com", "password");
-        AccessToken accessToken = AccessToken.create(member);
+        MemberCredential memberCredential = new MemberCredential(1L, "bello@email.com", "password");
+        AccessToken accessToken = AccessToken.create(memberCredential);
 
         // when
         Long memberId = accessToken.extractMemberId();
 
         // then
         assertThat(memberId)
-                .isEqualTo(member.getId());
+                .isEqualTo(1L);
     }
 }

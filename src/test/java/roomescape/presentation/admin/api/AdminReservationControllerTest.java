@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.business.domain.member.Member;
 import roomescape.business.domain.member.MemberRole;
+import roomescape.business.domain.member.SignUpMember;
 import roomescape.business.domain.reservation.Reservation;
 import roomescape.business.domain.reservation.ReservationTheme;
 import roomescape.business.domain.reservation.ReservationTime;
@@ -52,7 +53,7 @@ class AdminReservationControllerTest extends AbstractControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        memberId = memberRepository.save(new Member("벨로", "bello@email.com", "bziTlUMky2GC3ji0qgiFVA==", MemberRole.ADMIN)).getId();
+        memberId = memberRepository.save(new SignUpMember("벨로", "bello@email.com", "password", MemberRole.ADMIN));
         token = testLoginAndReturnToken();
     }
 
@@ -143,7 +144,7 @@ class AdminReservationControllerTest extends AbstractControllerTest {
         reservationTimeRepository.add(new ReservationTime(LocalTime.of(10, 0)));
         reservationThemeRepository.add(new ReservationTheme("테마1", "설명1", "테마1.jpg"));
         reservationRepository.add(new Reservation(
-                        new Member(1L, "수양", "test@email.com", "password"),
+                        new Member(1L, "수양", "test@email.com"),
                         LocalDate.now().plusDays(1),
                         reservationTimeRepository.findById(1L).get(),
                         reservationThemeRepository.findById(1L).get()
@@ -184,7 +185,7 @@ class AdminReservationControllerTest extends AbstractControllerTest {
         reservationTimeRepository.add(new ReservationTime(LocalTime.of(10, 0)));
         reservationThemeRepository.add(new ReservationTheme("테마1", "설명1", "테마1.jpg"));
         Long id = reservationRepository.add(new Reservation(
-                        new Member(1L, "수양", "test@email.com", "password"),
+                        new Member(1L, "수양", "test@email.com"),
                         LocalDate.now().plusDays(1),
                         reservationTimeRepository.findById(1L).get(),
                         reservationThemeRepository.findById(1L).get()
