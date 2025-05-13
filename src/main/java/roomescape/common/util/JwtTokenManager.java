@@ -36,20 +36,7 @@ public class JwtTokenManager {
                 .compact();
     }
 
-    public void validateToken(String token) {
-        try {
-            Jwts.parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parseSignedClaims(token);
-        } catch (ExpiredJwtException e) {
-            throw new LoginException("만료된 토큰입니다.");
-        } catch (JwtException e) {
-            throw new LoginException("올바르지 않은 토큰 형태입니다.");
-        }
-    }
-
-    public Long getMemberId(String token) {
+    public Long validateTokenAndGetMemberId(String token) {
         try {
             String id = Jwts.parser()
                     .verifyWith(secretKey)
@@ -58,12 +45,14 @@ public class JwtTokenManager {
                     .getPayload()
                     .getSubject();
             return Long.parseLong(id);
+        } catch (ExpiredJwtException e) {
+            throw new LoginException("만료된 토큰입니다.");
         } catch (JwtException e) {
             throw new LoginException("올바르지 않은 토큰 형태입니다.");
         }
     }
 
-    public Role getMemberRole(String token) {
+    public Role validateTokenAndGetMemberRole(String token) {
         try {
             String role = Jwts.parser()
                     .verifyWith(secretKey)
@@ -72,6 +61,8 @@ public class JwtTokenManager {
                     .getPayload()
                     .get("role").toString();
             return Role.findRole(role);
+        } catch (ExpiredJwtException e) {
+            throw new LoginException("만료된 토큰입니다.");
         } catch (JwtException e) {
             throw new LoginException("올바르지 않은 토큰 형태입니다.");
         }

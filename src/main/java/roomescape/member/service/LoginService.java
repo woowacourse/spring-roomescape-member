@@ -33,8 +33,7 @@ public class LoginService {
     }
 
     public LoginMember loginCheck(String token) {
-        jwtTokenManager.validateToken(token);
-        Long memberId = jwtTokenManager.getMemberId(token);
+        Long memberId = jwtTokenManager.validateTokenAndGetMemberId(token);
         Optional<Member> member = memberRepository.findById(memberId);
         if (member.isEmpty()) {
             throw new LoginException("유효하지 않은 회원입니다.");

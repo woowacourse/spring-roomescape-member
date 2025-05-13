@@ -25,7 +25,7 @@ public class AdminInterceptor implements HandlerInterceptor {
             throws Exception {
         try {
             String token = tokenCookieManager.extractTokenFromCookie(request);
-            Role memberRole = jwtTokenManager.getMemberRole(token);
+            Role memberRole = jwtTokenManager.validateTokenAndGetMemberRole(token);
             if (memberRole.equals(Role.ADMIN)) {
                 return true;
             }
