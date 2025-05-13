@@ -83,7 +83,7 @@ function checkDateAndTheme() {
 }
 
 function fetchAvailableTimes(date, themeId) {
-  fetch('/reservations/available?date='+ date +"&themeId=" + themeId, { // TODO: input URL 추가, 예약 가능 시간 조회 API endpoint
+  fetch('/reservations/available?date='+ date +"&themeId=" + themeId, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -142,20 +142,17 @@ function onReservationButtonClick() {
   const selectedDate = document.getElementById("datepicker").value;
   const selectedThemeId = document.querySelector('.theme-slot.active')?.getAttribute('data-theme-id');
   const selectedTimeId = document.querySelector('.time-slot.active')?.getAttribute('data-time-id');
-  const name = document.getElementById('user-name').value;
 
   if (selectedDate && selectedThemeId && selectedTimeId) {
 
     /*
-    TODO:
           [5단계] 예약 생성 기능 변경 - 사용자
           request 명세에 맞게 설정
     */
     const reservationData = {
       date: selectedDate,
       themeId: selectedThemeId,
-      timeId: selectedTimeId,
-      name: name
+      timeId: selectedTimeId
     };
 
     fetch('/reservations', {
@@ -166,7 +163,7 @@ function onReservationButtonClick() {
       body: JSON.stringify(reservationData)
     })
         .then(response => {
-          if (!response.ok) throw new Error('Reservation failed');
+          if (response.status !== 201) throw new Error('Reservation failed');
           return response.json();
         })
         .then(data => {

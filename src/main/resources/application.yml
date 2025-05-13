@@ -15,6 +15,12 @@ spring:
   datasource:
     url: jdbc:h2:mem:database
 
+security:
+  jwt:
+    token:
+      secret-key: Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=
+      expire-length: 36000000 # 60 minutes
+
 ---
 
 spring:
@@ -31,3 +37,9 @@ spring:
     init:
       mode: always
       data-locations:
+
+security:
+  jwt:
+    token:
+      secret-key: Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=
+      expire-length: 36000000 # 60 minutes
