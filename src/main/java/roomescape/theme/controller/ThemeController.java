@@ -14,34 +14,34 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
-import roomescape.theme.service.ThemeService;
+import roomescape.theme.service.ThemeDefaultService;
 import roomescape.theme.service.popular.PopularThemeUseCase;
 
 @RestController
 @RequestMapping("themes")
 public class ThemeController {
-    private final ThemeService themeService;
+    private final ThemeDefaultService themeDefaultService;
     private final PopularThemeUseCase popularThemeUseCase;
 
-    public ThemeController(ThemeService themeService, PopularThemeUseCase popularThemeUseCase) {
-        this.themeService = themeService;
+    public ThemeController(ThemeDefaultService themeDefaultService, PopularThemeUseCase popularThemeUseCase) {
+        this.themeDefaultService = themeDefaultService;
         this.popularThemeUseCase = popularThemeUseCase;
     }
 
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(@Valid @RequestBody ThemeRequest request) {
-        ThemeResponse themeResponse = themeService.create(request);
+        ThemeResponse themeResponse = themeDefaultService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(themeResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getThemes() {
-        return ResponseEntity.ok(themeService.getAll());
+        return ResponseEntity.ok(themeDefaultService.getAll());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
-        themeService.deleteById(id);
+        themeDefaultService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 

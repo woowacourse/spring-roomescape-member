@@ -16,32 +16,32 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservationtime.dto.AvailableTimeResponse;
 import roomescape.reservationtime.dto.ReservationTimeRequest;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
-import roomescape.reservationtime.service.ReservationTimeService;
+import roomescape.reservationtime.service.ReservationTimeDefaultService;
 
 @RestController
 @RequestMapping("times")
 public class ReservationTimeController {
-    private final ReservationTimeService timeService;
+    private final ReservationTimeDefaultService timeDefaultService;
 
-    public ReservationTimeController(ReservationTimeService timeService) {
-        this.timeService = timeService;
+    public ReservationTimeController(ReservationTimeDefaultService timeDefaultService) {
+        this.timeDefaultService = timeDefaultService;
     }
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createReservationTime(
             @Valid @RequestBody ReservationTimeRequest request) {
-        ReservationTimeResponse response = timeService.create(request);
+        ReservationTimeResponse response = timeDefaultService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
-        return ResponseEntity.ok(timeService.getAll());
+        return ResponseEntity.ok(timeDefaultService.getAll());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
-        timeService.deleteById(id);
+        timeDefaultService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -49,6 +49,6 @@ public class ReservationTimeController {
     public ResponseEntity<List<AvailableTimeResponse>> getAvailableReservationTimes(
             @RequestParam LocalDate date,
             @RequestParam Long themeId) {
-        return ResponseEntity.ok(timeService.getAvailableTimes(date, themeId));
+        return ResponseEntity.ok(timeDefaultService.getAvailableTimes(date, themeId));
     }
 }

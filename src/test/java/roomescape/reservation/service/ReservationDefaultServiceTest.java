@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.dto.UserReservationRequest;
 import roomescape.reservation.exception.ReservationAlreadyExistsException;
@@ -55,7 +56,7 @@ class ReservationDefaultServiceTest {
 
         // when
         when(memberRepository.findById(memberId)).thenReturn(
-                Optional.of(Member.createWithId(memberId, "에드", "email", "password")));
+                Optional.of(Member.createWithId(memberId, "에드", "email", "password", Role.USER)));
         when(timeRepository.findById(timeId)).thenReturn(Optional.empty());
 
         //then
@@ -75,7 +76,7 @@ class ReservationDefaultServiceTest {
 
         // when
         when(memberRepository.findById(memberId)).thenReturn(
-                Optional.of(Member.createWithId(memberId, "에드", "email", "password")));
+                Optional.of(Member.createWithId(memberId, "에드", "email", "password", Role.USER)));
         when(timeRepository.findById(timeId)).thenReturn(
                 Optional.of(ReservationTime.createWithId(timeId, LocalTime.now().plusHours(1))));
 
@@ -97,7 +98,7 @@ class ReservationDefaultServiceTest {
 
         // when
         when(memberRepository.findById(memberId)).thenReturn(
-                Optional.of(Member.createWithId(memberId, "에드", "email", "password")));
+                Optional.of(Member.createWithId(memberId, "에드", "email", "password", Role.USER)));
         when(timeRepository.findById(timeId)).thenReturn(
                 Optional.of(ReservationTime.createWithId(timeId, LocalTime.now().plusHours(1))));
 

@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.exception.ReservationFieldRequiredException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
@@ -33,7 +34,7 @@ class ReservationTest {
         ReservationDate date = null;
         ReservationTime time = ReservationTime.createWithoutId(LocalTime.now().plusHours(1));
         Theme theme = Theme.createWithoutId("무서운 방", "무섭습니다", "/image/scary");
-        Member member = Member.createWithId(1L, "에드", "eamil", "password");
+        Member member = Member.createWithId(1L, "에드", "eamil", "password", Role.USER);
 
         // when & then
         assertThatThrownBy(() -> Reservation.createWithoutId(member, date, time, theme)).isInstanceOf(
@@ -47,7 +48,7 @@ class ReservationTest {
         ReservationDate date = new ReservationDate(LocalDate.now());
         ReservationTime time = null;
         Theme theme = Theme.createWithoutId("무서운 방", "무섭습니다", "/image/scary");
-        Member member = Member.createWithId(1L, "에드", "eamil", "password");
+        Member member = Member.createWithId(1L, "에드", "eamil", "password", Role.USER);
 
         // when & then
         assertThatThrownBy(() -> Reservation.createWithoutId(member, date, time, theme)).isInstanceOf(
@@ -61,7 +62,7 @@ class ReservationTest {
         ReservationDate date = new ReservationDate(LocalDate.now());
         ReservationTime time = ReservationTime.createWithoutId(LocalTime.now().plusHours(1));
         Theme theme = null;
-        Member member = Member.createWithId(1L, "에드", "eamil", "password");
+        Member member = Member.createWithId(1L, "에드", "eamil", "password", Role.USER);
 
         // when & then
         assertThatThrownBy(() -> Reservation.createWithoutId(member, date, time, theme)).isInstanceOf(

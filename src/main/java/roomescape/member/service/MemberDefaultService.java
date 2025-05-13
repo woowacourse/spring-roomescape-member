@@ -9,26 +9,23 @@ import roomescape.member.exception.MemberNotFoundException;
 import roomescape.member.repository.MemberRepository;
 
 @Service
-public class MemberDefaultService implements MemberService {
+public class MemberDefaultService {
     private final MemberRepository memberRepository;
 
     public MemberDefaultService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
-    @Override
     public MemberResponse create(MemberRequest request) {
         Member member = Member.createWithoutId(request.name(), request.email(), request.password());
         return MemberResponse.from(memberRepository.add(member));
     }
 
-    @Override
     public Member findById(Long id) {
         return memberRepository.findById(id)
                 .orElseThrow(MemberNotFoundException::new);
     }
 
-    @Override
     public List<MemberResponse> getAll() {
         return MemberResponse.from(memberRepository.findAll());
     }

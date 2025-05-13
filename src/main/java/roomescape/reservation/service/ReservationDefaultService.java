@@ -23,7 +23,7 @@ import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.repository.ThemeRepository;
 
 @Service
-public class ReservationDefaultService implements ReservationService {
+public class ReservationDefaultService {
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
     private final ReservationTimeRepository timeRepository;
@@ -37,12 +37,10 @@ public class ReservationDefaultService implements ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    @Override
     public ReservationResponse createForUser(UserReservationRequest request, Long memberId) {
         return create(request.date(), request.timeId(), request.themeId(), memberId);
     }
 
-    @Override
     public ReservationResponse createForAdmin(AdminReservationRequest request) {
         return create(request.date(), request.timeId(), request.themeId(), request.memberId());
     }
@@ -70,12 +68,10 @@ public class ReservationDefaultService implements ReservationService {
         return ReservationResponse.from(reservationRepository.add(newReservation));
     }
 
-    @Override
     public List<ReservationResponse> getFiltered(Long memberId, Long themeId, LocalDate from, LocalDate to) {
         return ReservationResponse.from(reservationRepository.findFiltered(memberId, themeId, from, to));
     }
 
-    @Override
     public void deleteById(Long id) {
         int affectedCount = reservationRepository.deleteById(id);
         if (affectedCount != 1) {
