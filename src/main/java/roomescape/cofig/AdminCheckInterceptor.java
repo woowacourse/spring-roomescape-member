@@ -38,8 +38,8 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
                 .orElseThrow(UnAuthorizedException::new)
                 .getValue();
 
-        String payload = jwtProvider.getPayload(token);
-        Member member = memberDao.findMember(payload)
+        String email = jwtProvider.getEmail(token);
+        Member member = memberDao.findMember(email)
                 .orElseThrow(UnAuthorizedException::new);
 
         if (member.getRole() != Role.ADMIN) {

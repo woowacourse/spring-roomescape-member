@@ -23,14 +23,14 @@ public class JdbcMemberDaoTest {
     @Test
     void 이메일로_회원을_조회할_수_있다() {
         // given
-        String payload = "forarium20@gmail.com";
+        String email = "forarium20@gmail.com";
 
         // when
-        Optional<Member> member = memberDao.findMember(payload);
+        Optional<Member> member = memberDao.findMember(email);
 
         // then
         assertThat(member.isPresent()).isTrue();
-        assertThat(member.get().getEmail()).isEqualTo(payload);
+        assertThat(member.get().getEmail()).isEqualTo(email);
         assertThat(member.get().getName()).isEqualTo("이뜽연");
     }
 

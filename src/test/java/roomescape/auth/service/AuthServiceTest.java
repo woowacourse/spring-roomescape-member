@@ -39,7 +39,7 @@ class AuthServiceTest {
         TokenResponse token = authService.createToken(loginRequest);
 
         // then
-        String email = jwtProvider.getPayload(token.accessToken());
+        String email = jwtProvider.getEmail(token.accessToken());
         assertThat(email).isEqualTo(MEMBER_EMAIL);
     }
 

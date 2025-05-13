@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 public class JwtProvider {
     private static final String secretKey = "ThisIsMySecretKeyYouCannot725AcceptMyZone!!";
 
-    public String createToken(String payload) {
+    public String createToken(String email) {
         Claims claims = Jwts.claims();
-        claims.setSubject(payload);
+        claims.setSubject(email);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -19,7 +19,7 @@ public class JwtProvider {
                 .compact();
     }
 
-    public String getPayload(String token) {
+    public String getEmail(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()

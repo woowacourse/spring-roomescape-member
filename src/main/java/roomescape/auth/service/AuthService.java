@@ -25,8 +25,8 @@ public class AuthService {
     }
 
     public Member findMemberByToken(String token) {
-        String payload = jwtProvider.getPayload(token);
-        return jdbcMemberDao.findMember(payload)
+        String email = jwtProvider.getEmail(token);
+        return jdbcMemberDao.findMember(email)
                 .orElseThrow(ArgumentNullException::new);
     }
 }

@@ -26,14 +26,14 @@ public class JdbcMemberDao implements MemberDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Optional<Member> findMember(String payload) {
+    public Optional<Member> findMember(String email) {
         String sql = """
                 SELECT *
                     FROM member as m 
                     WHERE m.email = ?
                 """;
         try {
-            Member member = jdbcTemplate.queryForObject(sql, memberRowMapper, payload);
+            Member member = jdbcTemplate.queryForObject(sql, memberRowMapper, email);
             return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();

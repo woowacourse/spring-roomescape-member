@@ -20,9 +20,9 @@ public class FakeMemberDao implements MemberDao {
     }
 
     @Override
-    public Optional<Member> findMember(String payload) {
+    public Optional<Member> findMember(String email) {
         return fakeMembers.stream()
-                .filter(member -> member.getEmail().equals(payload))
+                .filter(member -> member.getEmail().equals(email))
                 .findFirst();
     }
 

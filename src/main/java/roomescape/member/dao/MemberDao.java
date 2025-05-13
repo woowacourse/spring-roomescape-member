@@ -5,7 +5,7 @@ import java.util.Optional;
 import roomescape.member.Member;
 
 public interface MemberDao {
-    Optional<Member> findMember(String payload);
+    Optional<Member> findMember(String email);
 
     Optional<Member> findById(Long id);
 
