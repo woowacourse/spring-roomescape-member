@@ -26,7 +26,7 @@ public class AuthConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
         registry.addInterceptor(new CheckAdminLoginInterceptor(jwtManager, jwtProperties))
-                .addPathPatterns("/admin", "/admin/**");
+                .addPathPatterns( "/admin/**");
     }
 
     @Override
