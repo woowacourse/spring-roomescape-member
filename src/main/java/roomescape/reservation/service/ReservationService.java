@@ -65,9 +65,7 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
-    public List<ReservationResponse> findReservationsByThemeIdAndMemberIdBetweenDate(
-            final FilteringReservationRequest request
-    ) {
+    public List<ReservationResponse> findReservationByFiltering(final FilteringReservationRequest request) {
         Long themeId = request.themeId();
         Long memberId = request.memberId();
         LocalDate dateFrom = request.dateFrom();

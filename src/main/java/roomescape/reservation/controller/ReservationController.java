@@ -73,7 +73,7 @@ public class ReservationController {
             @ModelAttribute @Valid final FilteringReservationRequest request
     ) {
         final List<ReservationResponse> reservationResponses =
-                reservationService.findReservationsByThemeIdAndMemberIdBetweenDate(request);
+                reservationService.findReservationByFiltering(request);
 
         return ResponseEntity.ok(reservationResponses);
     }
