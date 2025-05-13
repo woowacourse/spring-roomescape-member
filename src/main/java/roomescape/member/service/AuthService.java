@@ -20,7 +20,7 @@ public class AuthService {
         Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new BadRequestException("이메일 또는 비밀번호가 일치하지 않습니다."));
 
-        if (!member.getPassword().equals(request.password())) {
+        if (!member.matchesPassword(request.password())) {
             throw new BadRequestException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
 
