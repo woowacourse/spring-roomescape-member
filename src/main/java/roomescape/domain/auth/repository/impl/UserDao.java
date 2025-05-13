@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -20,7 +19,6 @@ import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.repository.UserRepository;
 
-@Slf4j
 @Repository
 public class UserDao implements UserRepository {
 

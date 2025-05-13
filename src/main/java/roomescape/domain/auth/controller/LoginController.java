@@ -1,7 +1,6 @@
 package roomescape.domain.auth.controller;
 
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -19,7 +18,6 @@ import roomescape.domain.auth.dto.TokenResponse;
 import roomescape.domain.auth.dto.UserInfoResponse;
 import roomescape.domain.auth.service.AuthService;
 
-@Slf4j
 @RestController
 @RequestMapping("/login")
 public class LoginController {

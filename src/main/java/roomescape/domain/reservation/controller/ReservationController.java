@@ -3,7 +3,6 @@ package roomescape.domain.reservation.controller;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +22,6 @@ import roomescape.domain.reservation.dto.reservation.ReservationUserCreateReques
 import roomescape.domain.reservation.dto.reservationtime.BookedReservationTimeResponse;
 import roomescape.domain.reservation.service.ReservationService;
 
-@Slf4j
 @RequestMapping("/reservations")
 @RestController
 public class ReservationController {
@@ -57,8 +55,8 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> create(@Valid @RequestBody final ReservationUserCreateRequest request,
                                                       @AuthenticationPrincipal final LoginUserDto userDto) {
-        final ReservationCreateDto createDto = new ReservationCreateDto(userDto.id(), request.timeId(), request.themeId(),
-                request.date());
+        final ReservationCreateDto createDto = new ReservationCreateDto(userDto.id(), request.timeId(),
+                request.themeId(), request.date());
 
         final ReservationResponse response = reservationService.create(createDto);
 

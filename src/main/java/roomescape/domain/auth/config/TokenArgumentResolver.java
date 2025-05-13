@@ -2,7 +2,6 @@ package roomescape.domain.auth.config;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -12,7 +11,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.auth.exception.InvalidAuthorizationException;
 import roomescape.domain.auth.service.AuthService;
 
-@Slf4j
 @Component
 public class TokenArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -29,8 +27,7 @@ public class TokenArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public Object resolveArgument(final MethodParameter parameter, final ModelAndViewContainer mavContainer,
-                                  final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory)
-            throws Exception {
+                                  final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
 
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 

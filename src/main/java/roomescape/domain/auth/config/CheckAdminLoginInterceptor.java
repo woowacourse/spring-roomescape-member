@@ -5,13 +5,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.stream.Stream;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.service.JwtManager;
 
-@Slf4j
 public class CheckAdminLoginInterceptor implements HandlerInterceptor {
 
     private final JwtManager jwtManager;
