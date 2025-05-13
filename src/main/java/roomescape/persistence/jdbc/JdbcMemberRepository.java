@@ -48,7 +48,7 @@ public class JdbcMemberRepository implements MemberRepository {
     @Override
     public Optional<Member> findById(Long id) {
         String query = """
-                SELECT id, name, email, password, role
+                SELECT id, name, email, role
                 FROM member
                 WHERE id = ?""";
         return jdbcTemplate.query(
@@ -57,7 +57,6 @@ public class JdbcMemberRepository implements MemberRepository {
                                 rs.getLong("id"),
                                 rs.getString("name"),
                                 rs.getString("email"),
-                                rs.getString("password"),
                                 rs.getString("role")
                         ),
                         id
@@ -89,7 +88,7 @@ public class JdbcMemberRepository implements MemberRepository {
     @Override
     public List<Member> findAll() {
         String query = """
-                SELECT id, name, email, password, role
+                SELECT id, name, email, role
                 FROM member""";
         return jdbcTemplate.query(
                         query,
@@ -97,7 +96,6 @@ public class JdbcMemberRepository implements MemberRepository {
                                 rs.getLong("id"),
                                 rs.getString("name"),
                                 rs.getString("email"),
-                                rs.getString("password"),
                                 rs.getString("role")
                         )
                 )
