@@ -24,8 +24,7 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
             final HttpServletRequest request,
             final HttpServletResponse response,
             final Object handler
-    ) throws Exception {
-
+    ) {
         try {
             final String token = CookieExtractor.extractToken(request);
             final LoginUser loginUser = authService.verifyTokenAndGetLoginUser(token);
