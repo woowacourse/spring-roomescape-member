@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.entity.ReservationTheme;
+import roomescape.domain.reservation.model.entity.ReservationTheme;
 import roomescape.global.exception.ResourceNotFoundException;
-import roomescape.infrastructure.db.ReservationThemeDbRepository;
-import roomescape.infrastructure.db.dao.ReservationThemeH2Dao;
+import roomescape.domain.reservation.infrastructure.db.ReservationThemeDbRepository;
+import roomescape.domain.reservation.infrastructure.db.dao.ReservationThemeH2Dao;
 import roomescape.support.JdbcTestSupport;
 
 @Import({ReservationThemeDbRepository.class, ReservationThemeH2Dao.class})

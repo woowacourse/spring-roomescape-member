@@ -23,6 +23,8 @@ public abstract class JdbcTestSupport{
                 ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1;
                 TRUNCATE TABLE theme;
                 ALTER TABLE theme ALTER COLUMN id RESTART WITH 1;
+                TRUNCATE TABLE member;
+                ALTER TABLE member ALTER COLUMN id RESTART WITH 1;
                 SET REFERENTIAL_INTEGRITY TRUE;
                 """);
     }

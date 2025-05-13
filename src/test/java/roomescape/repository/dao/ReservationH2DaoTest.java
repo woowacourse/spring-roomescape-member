@@ -16,10 +16,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.entity.Reservation;
-import roomescape.domain.entity.ReservationTheme;
-import roomescape.domain.entity.ReservationTime;
-import roomescape.infrastructure.db.dao.ReservationH2Dao;
+import roomescape.domain.reservation.model.entity.Reservation;
+import roomescape.domain.reservation.model.entity.ReservationTheme;
+import roomescape.domain.reservation.model.entity.ReservationTime;
+import roomescape.domain.reservation.infrastructure.db.dao.ReservationH2Dao;
 import roomescape.support.JdbcTestSupport;
 
 
@@ -36,6 +36,10 @@ class ReservationH2DaoTest extends JdbcTestSupport {
     void setUp() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
+        jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)",
+                "브라운", "admin@naver.com", "1234", "ADMIN");
+        jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)",
+                "웨이드", "user@naver.com", "1234", "USER");
     }
 
     @DisplayName("저장한 모든 예약을 조회할 수 있다.")
@@ -247,5 +251,69 @@ class ReservationH2DaoTest extends JdbcTestSupport {
 
         // then
         assertThat(existsByThemeId).isFalse();
+    }
+
+    @DisplayName("조건이 없다면 전체 조회한다.")
+    @Test
+    void selectByNonFilter() {
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?, ?)",
+                "브라운", LocalDate.now().plusDays(5), "1", "1", "1");
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?, ?)",
+                "웨이드", LocalDate.now().plusDays(6), "1", "1", "2");
+        List<Reservation> result = reservationH2Dao.selectByFilter(null, null, null, null);
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getName()).isEqualTo("브라운");
+        assertThat(result.get(1).getName()).isEqualTo("웨이드");
+    }
+
+    @DisplayName("멤버 ID로 조회할 수 있다.")
+    @Test
+    void selectByFilterMemberId() {
+
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?, ?)",
+                "브라운", LocalDate.now().plusDays(5), "1", "1", "1");
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?, ?)",
+                "웨이드", LocalDate.now().plusDays(6), "1", "1", "2");
+        List<Reservation> result = reservationH2Dao.selectByFilter(null, 1L, null, null);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getName()).isEqualTo("브라운");
+    }
+
+    @DisplayName("테마 ID로 조회할 수 있다.")
+    @Test
+    void selectByFilterThemeId() {
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?, ?)",
+                "브라운", LocalDate.now().plusDays(5), "1", "1", "1");
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?, ?)",
+                "웨이드", LocalDate.now().plusDays(6), "1", "1", "2");
+        List<Reservation> result = reservationH2Dao.selectByFilter(1L, null, null, null);
+
+        assertThat(result).hasSize(2);
+    }
+
+    @DisplayName("기간 필터링으로 조회 가능하다.")
+    @Test
+    void selectByFilterDate() {
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?, ?)",
+                "브라운", LocalDate.now().plusDays(5), "1", "1", "1");
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?, ?)",
+                "웨이드", LocalDate.now().plusDays(6), "1", "1", "2");
+        List<Reservation> result = reservationH2Dao.selectByFilter(null, null,
+                LocalDate.now().plusDays(6), LocalDate.now().plusDays(6));
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getName()).isEqualTo("웨이드");
+    }
+
+    @DisplayName("조건에 맞는 값이 없다면 빈값을 반환한다.")
+    @Test
+    void selectByFilterEmpty() {
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?, ?)",
+                "브라운", LocalDate.now().plusDays(5), "1", "1", "1");
+        List<Reservation> result = reservationH2Dao.selectByFilter(null, 9999L, null, null);
+
+        assertThat(result).isEmpty();
     }
 }

@@ -10,8 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.domain.exception.ReservationException.InvalidReservationTimeException;
-import roomescape.domain.vo.ReservationDetails;
+import roomescape.domain.reservation.model.entity.Reservation;
+import roomescape.domain.reservation.model.entity.ReservationTheme;
+import roomescape.domain.reservation.model.entity.ReservationTime;
+import roomescape.domain.reservation.model.exception.ReservationException.InvalidReservationTimeException;
+import roomescape.domain.reservation.model.dto.ReservationDetails;
 
 class ReservationTest {
 
@@ -21,6 +24,7 @@ class ReservationTest {
         //given
         ReservationDetails details = new ReservationDetails(
                 "웨이드",
+                1L,
                 LocalDate.now().plusDays(10),
                 new ReservationTime(LocalTime.of(10, 0)),
                 new ReservationTheme("테마 이름", "테마 설명", "테마 url")
@@ -40,6 +44,7 @@ class ReservationTest {
         //given
         ReservationDetails details = new ReservationDetails(
                 "홍길동",
+                1L,
                 LocalDate.now().minusDays(1),
                 new ReservationTime(LocalTime.of(10, 0)),
                 new ReservationTheme("테마 이름", "테마 설명", "테마 url")

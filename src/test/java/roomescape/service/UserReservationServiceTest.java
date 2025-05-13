@@ -10,11 +10,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.application.UserReservationService;
+import roomescape.domain.reservation.application.UserReservationService;
 import roomescape.global.exception.BusinessRuleViolationException;
-import roomescape.domain.entity.Reservation;
-import roomescape.domain.repository.ReservationRepository;
-import roomescape.application.dto.request.CreateReservationServiceRequest;
+import roomescape.domain.reservation.model.entity.Reservation;
+import roomescape.domain.reservation.model.repository.ReservationRepository;
+import roomescape.domain.reservation.application.dto.request.CreateReservationServiceRequest;
 import roomescape.support.IntegrationTestSupport;
 
 class UserReservationServiceTest extends IntegrationTestSupport {
@@ -32,6 +32,8 @@ class UserReservationServiceTest extends IntegrationTestSupport {
     void setUp() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
+        jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES (?,?,?,?);",
+                "어드민", "admin@naver.com", "1234", "ADMIN");
     }
 
     @DisplayName("요청된 예약 정보로 예약을 진행할 수 있다")
@@ -42,7 +44,7 @@ class UserReservationServiceTest extends IntegrationTestSupport {
         LocalDate date = LocalDate.now().plusDays(20);
         Long timeId = 1L;
         Long themeId = 1L;
-        CreateReservationServiceRequest request = new CreateReservationServiceRequest(name, date, timeId, themeId);
+        CreateReservationServiceRequest request = new CreateReservationServiceRequest(name, 1L, date, timeId, themeId);
 
         // when
         userReservationService.create(request);
@@ -64,7 +66,7 @@ class UserReservationServiceTest extends IntegrationTestSupport {
         LocalDate date = LocalDate.now().minusDays(10);
         Long timeId = 1L;
         Long themeId = 1L;
-        CreateReservationServiceRequest request = new CreateReservationServiceRequest(name, date, timeId, themeId);
+        CreateReservationServiceRequest request = new CreateReservationServiceRequest(name, 1L, date, timeId, themeId);
 
         // when & then
         Assertions.assertThatThrownBy(() -> userReservationService.create(request))
@@ -82,7 +84,8 @@ class UserReservationServiceTest extends IntegrationTestSupport {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", name, date,
                 timeId, themeId);
         String anotherName = "검프";
-        CreateReservationServiceRequest request = new CreateReservationServiceRequest(anotherName, date, timeId, themeId);
+        Long memberId = 1L;
+        CreateReservationServiceRequest request = new CreateReservationServiceRequest(anotherName, memberId, date, timeId, themeId);
 
         // when & then
         Assertions.assertThatThrownBy(() -> userReservationService.create(request))
