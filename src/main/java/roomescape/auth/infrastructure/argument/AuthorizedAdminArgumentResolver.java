@@ -8,7 +8,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.admin.domain.Admin;
-import roomescape.admin.repository.AdminRepository;
+import roomescape.admin.service.AdminService;
 import roomescape.auth.infrastructure.Principal;
 import roomescape.auth.infrastructure.Role;
 import roomescape.globalexception.ForbiddenException;
@@ -18,10 +18,10 @@ import roomescape.globalexception.UnauthorizedException;
 @Component
 public class AuthorizedAdminArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final AdminRepository adminRepository;
+    private final AdminService adminService;
 
-    public AuthorizedAdminArgumentResolver(AdminRepository adminRepository) {
-        this.adminRepository = adminRepository;
+    public AuthorizedAdminArgumentResolver(AdminService adminService) {
+        this.adminService = adminService;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class AuthorizedAdminArgumentResolver implements HandlerMethodArgumentRes
         }
         Principal principal = (Principal) request.getAttribute("principal");
         validatePrincipal(principal);
-        return adminRepository.findByLoginId(principal.identifier())
+        return adminService.findByLoginId(principal.identifier())
             .orElseThrow(() -> new UnauthorizedException("잘못된 인증 정보입니다."));
     }
 

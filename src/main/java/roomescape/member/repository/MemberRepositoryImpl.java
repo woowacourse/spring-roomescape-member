@@ -15,27 +15,7 @@ public class MemberRepositoryImpl implements MemberRepository {
     public MemberRepositoryImpl(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
-    @Override
-    public Optional<Member> findByEmailAndPassword(String email, String password) {
-        String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(
-                sql,
-                (resultSet, rowNum) -> new Member(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("email"),
-                    resultSet.getString("password")
-                ),
-                email,
-                password
-            ));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
+    
     @Override
     public Optional<Member> findByEmail(String email) {
         String sql = "SELECT * FROM member WHERE email = ?";

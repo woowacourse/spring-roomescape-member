@@ -13,15 +13,15 @@ import roomescape.globalexception.ForbiddenException;
 import roomescape.globalexception.InternalServerException;
 import roomescape.globalexception.UnauthorizedException;
 import roomescape.member.domain.Member;
-import roomescape.member.repository.MemberRepository;
+import roomescape.member.service.MemberService;
 
 @Component
 public class AuthorizedMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
-    public AuthorizedMemberArgumentResolver(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
+    public AuthorizedMemberArgumentResolver(MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class AuthorizedMemberArgumentResolver implements HandlerMethodArgumentRe
         }
         Principal principal = (Principal) request.getAttribute("principal");
         validatePrincipal(principal);
-        return memberRepository.findByEmail(principal.identifier())
+        return memberService.findByEmail(principal.identifier())
             .orElseThrow(() -> new UnauthorizedException("잘못된 인증 정보입니다."));
     }
 

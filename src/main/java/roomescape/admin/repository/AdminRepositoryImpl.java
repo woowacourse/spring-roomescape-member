@@ -15,27 +15,6 @@ public class AdminRepositoryImpl implements AdminRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-
-    @Override
-    public Optional<Admin> findByLoginIdAndPassword(String loginId, String password) {
-        String sql = "SELECT * FROM admin WHERE login_id = ? AND password = ?";
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(
-                sql,
-                (resultSet, rowNum) -> new Admin(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("login_id"),
-                    resultSet.getString("password")
-                ),
-                loginId,
-                password
-            ));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
     @Override
     public Optional<Admin> findByLoginId(String loginId) {
         String sql = "SELECT * FROM admin WHERE login_id = ?";
