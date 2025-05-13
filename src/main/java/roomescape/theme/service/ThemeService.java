@@ -4,10 +4,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.service.ReservationRepository;
+import roomescape.reservation.service.out.ReservationRepository;
 import roomescape.theme.controller.request.ThemeCreateRequest;
 import roomescape.theme.controller.response.ThemeResponse;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.service.out.ThemeRepository;
 
 @Service
 public class ThemeService {
@@ -29,8 +30,9 @@ public class ThemeService {
     }
 
     public ThemeResponse create(ThemeCreateRequest request) {
-        Theme theme = themeRepository.save(request.name(), request.description(), request.thumbnail());
-        return ThemeResponse.from(theme);
+        Theme created = Theme.create(request.name(), request.description(), request.thumbnail());
+        Theme saved = themeRepository.save(created);
+        return ThemeResponse.from(saved);
     }
 
     public List<ThemeResponse> getAll() {
@@ -56,13 +58,5 @@ public class ThemeService {
                 .limit(limit)
                 .map(ThemeResponse::from)
                 .toList();
-    }
-
-    public List<ThemeResponse> getPopularThemesBulk() {
-        int limit = 10;
-        LocalDate now = LocalDate.now();
-        
-        List<Theme> popularThemes = themeRepository.findPopularThemeDuringAWeek(limit, now);
-        return ThemeResponse.from(popularThemes);
     }
 }

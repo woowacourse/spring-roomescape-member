@@ -2,7 +2,9 @@ const THEME_API_ENDPOINT = '/themes';
 
 document.addEventListener('DOMContentLoaded', () => {
     requestRead(THEME_API_ENDPOINT)
-        .then(renderTheme)
+        .then(res => {
+            renderTheme(res.data)
+        })
         .catch(error => console.error('Error fetching times:', error));
 
     flatpickr("#datepicker", {
@@ -35,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderTheme(themes) {
     const themeSlots = document.getElementById('theme-slots');
     themeSlots.innerHTML = '';
-    themes.forEach(theme => {
+    themes.data.forEach(theme => {
         const name = theme.name;
         const themeId = theme.id;
 
@@ -119,7 +121,7 @@ function renderAvailableTimes(times) {
         timeSlots.innerHTML = '<div class="no-times">선택할 수 있는 시간이 없습니다.</div>';
         return;
     }
-    times.forEach(time => {
+    times.data.forEach(time => {
         /*
         TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출 후 렌더링
               response 명세에 맞춰 createSlot 함수 호출 시 값 설정
@@ -157,7 +159,6 @@ function onReservationButtonClick() {
     const selectedDate = document.getElementById("datepicker").value;
     const selectedThemeId = document.querySelector('.theme-slot.active')?.getAttribute('data-theme-id');
     const selectedTimeId = document.querySelector('.time-slot.active')?.getAttribute('data-time-id');
-    const name = document.getElementById('user-name').value;
 
     if (selectedDate && selectedThemeId && selectedTimeId) {
 
@@ -169,8 +170,7 @@ function onReservationButtonClick() {
         const reservationData = {
             date: selectedDate,
             themeId: selectedThemeId,
-            timeId: selectedTimeId,
-            name: name
+            timeId: selectedTimeId
         };
 
         fetch('/reservations', {
@@ -178,6 +178,7 @@ function onReservationButtonClick() {
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: 'include',
             body: JSON.stringify(reservationData)
         })
             .then(response => {

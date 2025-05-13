@@ -18,9 +18,9 @@ class ReservationDateTimeTest {
         LocalDate today = now.toLocalDate();
         ReservationDate reservationDate = new ReservationDate(today);
         LocalTime time = now.toLocalTime().minusMinutes(1);
-        ReservationTime reservationTime = ReservationTime.create(time);
+        ReservationTime reservationTime = ReservationTime.open(time);
 
-        assertThatThrownBy(() -> new ReservationDateTime(reservationDate, reservationTime))
+        assertThatThrownBy(() -> ReservationDateTime.create(reservationDate, reservationTime))
                 .isInstanceOf(PastReservationException.class)
                 .hasMessage("[ERROR] 지난 날짜에는 예약할 수 없습니다.");
     }
@@ -30,9 +30,9 @@ class ReservationDateTimeTest {
         LocalDateTime now = LocalDateTime.now();
         LocalDate today = now.toLocalDate();
         ReservationDate reservationDate = new ReservationDate(today);
-        ReservationTime futureTime = ReservationTime.create(now.toLocalTime().plusMinutes(10));
+        ReservationTime futureTime = ReservationTime.open(now.toLocalTime().plusMinutes(10));
 
-        assertThatCode(() -> new ReservationDateTime(reservationDate, futureTime))
+        assertThatCode(() -> ReservationDateTime.create(reservationDate, futureTime))
                 .doesNotThrowAnyException();
     }
 }

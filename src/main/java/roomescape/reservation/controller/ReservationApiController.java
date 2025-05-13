@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.web.resolver.Authenticated;
 import roomescape.global.response.ApiResponse;
-import roomescape.reservation.controller.request.ReservationCreateRequest;
+import roomescape.reservation.controller.request.ReserveByUserRequest;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
+import roomescape.reservation.service.command.ReserveCommand;
 
 @RestController
 @RequestMapping("/reservations")
@@ -33,8 +35,12 @@ public class ReservationApiController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<ReservationResponse>> createReservation(
-            @RequestBody @Valid ReservationCreateRequest request) {
-        ReservationResponse response = reservationService.create(request);
+            @RequestBody @Valid ReserveByUserRequest request,
+            @Authenticated Long memberId
+    ) {
+        ReservationResponse response = reservationService.reserve(
+                ReserveCommand.byUser(request, memberId)
+        );
 
         return ResponseEntity
                 .status(CREATED)
@@ -43,7 +49,7 @@ public class ReservationApiController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<ReservationResponse>>> getReservations() {
-        List<ReservationResponse> responses = reservationService.getAll();
+        List<ReservationResponse> responses = reservationService.getAllReservations();
 
         return ResponseEntity.ok(
                 ApiResponse.success(GET_RESERVATIONS, responses)

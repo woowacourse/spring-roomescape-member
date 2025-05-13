@@ -14,3 +14,7 @@ logging:
     org:
       springframework:
         jdbc: debug
+
+jwt:
+  secret-key: secretsecretsecretsecretsecretsecret
+  expire-time: 31536000000

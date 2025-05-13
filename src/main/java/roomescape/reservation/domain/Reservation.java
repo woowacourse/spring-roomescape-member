@@ -2,56 +2,65 @@ package roomescape.reservation.domain;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import lombok.Getter;
+import roomescape.member.domain.Member;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
+@Getter
 public class Reservation {
 
     private final Long id;
-    private final ReserverName reserverName;
-    private final ReservationDate reservationDate;
-    private final ReservationTime reservationTime;
+    private final Member reserver;
+    private final ReservationDateTime reservationDatetime;
     private final Theme theme;
 
-    public Reservation(
+    private Reservation(
             Long id,
-            String reserverName,
-            LocalDate reservationDate,
-            ReservationTime reservationTime,
+            Member reserver,
+            ReservationDateTime reservationDateTime,
             Theme theme
     ) {
         this.id = id;
-        this.reserverName = new ReserverName(reserverName);
-        this.reservationDate = new ReservationDate(reservationDate);
-        this.reservationTime = reservationTime;
+        this.reserver = reserver;
+        this.reservationDatetime = reservationDateTime;
         this.theme = theme;
     }
 
-    public Long getId() {
-        return id;
+    public static Reservation reserve(
+            Member reserver,
+            ReservationDateTime reservationDateTime,
+            Theme theme
+    ) {
+        return new Reservation(null, reserver, reservationDateTime, theme);
+    }
+
+    public static Reservation load(
+            Long id,
+            Member reserver,
+            ReservationDateTime reservationDateTime,
+            Theme theme
+    ) {
+        return new Reservation(id, reserver, reservationDateTime, theme);
     }
 
     public String getReserverName() {
-        return reserverName.getName();
+        return reserver.getName();
     }
 
     public LocalDate getDate() {
-        return reservationDate.getDate();
+        return reservationDatetime.getReservationDate().getDate();
     }
 
     public LocalTime getStartAt() {
-        return reservationTime.getStartAt();
+        return reservationDatetime.getReservationTime().getStartAt();
     }
 
     public ReservationTime getReservationTime() {
-        return reservationTime;
+        return reservationDatetime.getReservationTime();
     }
 
     public Long getTimeId() {
-        return reservationTime.getId();
-    }
-
-    public Theme getTheme() {
-        return theme;
+        return reservationDatetime.getReservationTime().getId();
     }
 }

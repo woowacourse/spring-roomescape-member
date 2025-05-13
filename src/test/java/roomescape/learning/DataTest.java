@@ -39,36 +39,4 @@ class DataTest {
             throw new RuntimeException(e);
         }
     }
-
-    @Test
-    void 방탈출_예약_목록을_조회한다() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "테마1", "설명1", "썸네일1");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2025-08-05", 1, 1);
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "코니", "2025-08-05", 1, 1);
-
-        Integer reservationCount = jdbcTemplate.queryForObject("SELECT count(1) FROM reservation", Integer.class);
-        assertThat(reservationCount).isEqualTo(2);
-    }
-
-    @Test
-    void 방탈출_예약_생성_조회_삭제_테스트() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "테마1", "설명1", "썸네일1");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2025-08-05", 1, 1);
-
-        Integer createdCount = jdbcTemplate.queryForObject("SELECT count(1) FROM reservation", Integer.class);
-        assertThat(createdCount).isEqualTo(1);
-
-        int deleted = jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", 1L);
-        assertThat(deleted).isEqualTo(1);
-
-        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) FROM reservation", Integer.class);
-        assertThat(countAfterDelete).isZero();
-    }
 }

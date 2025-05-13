@@ -12,14 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.common.CleanUp;
-import roomescape.reservation.controller.request.ReservationCreateRequest;
+import roomescape.fixture.MemberDbFixture;
+import roomescape.fixture.ReservationDateFixture;
+import roomescape.fixture.ReservationDbFixture;
+import roomescape.fixture.ReservationTimeDbFixture;
+import roomescape.fixture.ThemeDbFixture;
+import roomescape.member.domain.Member;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.fixture.ReservationDateFixture;
-import roomescape.reservation.fixture.ReservationDbFixture;
-import roomescape.reservation.fixture.ReservationTimeDbFixture;
-import roomescape.reservation.fixture.ReserverNameFixture;
-import roomescape.reservation.fixture.ThemeDbFixture;
+import roomescape.reservation.service.command.ReserveCommand;
 import roomescape.theme.domain.Theme;
 import roomescape.time.controller.response.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
@@ -29,17 +30,16 @@ class ReservationServiceTest {
 
     @Autowired
     private ReservationService reservationService;
-
     @Autowired
     private ReservationTimeDbFixture reservationTimeDbFixture;
-
     @Autowired
     private ThemeDbFixture themeDbFixture;
-
-    @Autowired
-    private CleanUp cleanUp;
     @Autowired
     private ReservationDbFixture reservationDbFixture;
+    @Autowired
+    private MemberDbFixture memberDbFixture;
+    @Autowired
+    private CleanUp cleanUp;
 
     @BeforeEach
     void setUp() {
@@ -48,84 +48,68 @@ class ReservationServiceTest {
 
     @Test
     void 예약을_생성한다() {
-        ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
+        ReservationTime reservationTime = reservationTimeDbFixture.열시();
         Theme theme = themeDbFixture.공포();
+        Member reserver = memberDbFixture.유저1_생성();
+        LocalDate date = ReservationDateFixture.예약날짜_내일.getDate();
 
-        LocalDate now = LocalDate.now();
-
-        ReservationCreateRequest request = new ReservationCreateRequest(
-                ReserverNameFixture.한스.getName(),
-                now.plusDays(1),
+        ReserveCommand command = new ReserveCommand(
+                date,
+                theme.getId(),
                 reservationTime.getId(),
-                theme.getId()
+                reserver.getId()
         );
 
-        ReservationResponse response = reservationService.create(request);
-        System.out.println(response.id());
+        // when
+        ReservationResponse response = reservationService.reserve(command);
 
         assertThat(response.id()).isNotNull();
-        assertThat(response.name()).isEqualTo(ReserverNameFixture.한스.getName());
-        assertThat(response.date()).isEqualTo(now.plusDays(1));
-        assertThat(response.time()).isEqualTo(
-                new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt().toString()));
+        assertThat(response.member().name()).isEqualTo(reserver.getName());
+        assertThat(response.date()).isEqualTo(date);
+        assertThat(response.time()).isEqualTo(ReservationTimeResponse.from(reservationTime));
     }
 
     @Test
     void 예약이_존재하면_예약을_생성할_수_없다() {
-        ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
-        Theme theme = themeDbFixture.공포();
+        Reservation reservation = reservationDbFixture.예약_유저1_내일_10시_공포();
 
-        reservationService.create(new ReservationCreateRequest(
-                ReserverNameFixture.한스.getName(),
-                ReservationDateFixture.예약날짜_내일.getDate(),
-                reservationTime.getId(),
-                theme.getId()
-        ));
-
-        ReservationCreateRequest request = new ReservationCreateRequest(
-                ReserverNameFixture.한스.getName(),
-                ReservationDateFixture.예약날짜_내일.getDate(),
-                reservationTime.getId(),
-                theme.getId()
+        ReserveCommand command = new ReserveCommand(
+                reservation.getDate(),
+                reservation.getTheme().getId(),
+                reservation.getReservationTime().getId(),
+                reservation.getReserver().getId()
         );
 
-        assertThatThrownBy(() -> reservationService.create(request))
+        assertThatThrownBy(() -> reservationService.reserve(command))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이미 예약이 찼습니다.");
+                .hasMessage("[ERROR] 이미 예약이 존재하는 시간입니다.");
     }
 
     @Test
     void 예약을_모두_조회한다() {
-        ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
-        Theme theme = themeDbFixture.공포();
-        Reservation reservation = reservationDbFixture.예약_한스_내일_10시_공포(reservationTime, theme);
+        Reservation reservation = reservationDbFixture.예약_유저1_내일_10시_공포();
 
-        List<ReservationResponse> responses = reservationService.getAll();
+        List<ReservationResponse> responses = reservationService.getAllReservations();
         ReservationResponse response = responses.get(0);
 
         assertThat(response.id()).isNotNull();
-        assertThat(response.name()).isEqualTo(reservation.getReserverName());
+        assertThat(response.member().name()).isEqualTo(reservation.getReserverName());
         assertThat(response.date()).isEqualTo(reservation.getDate());
-        assertThat(response.time()).isEqualTo(
-                new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt().toString()));
+        assertThat(response.time()).isEqualTo(ReservationTimeResponse.from(reservation.getReservationTime()));
     }
 
     @Test
     void 예약을_삭제한다() {
-        ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
-        Theme theme = themeDbFixture.공포();
-        Reservation reservation = reservationDbFixture.예약_한스_내일_10시_공포(reservationTime, theme);
+        Reservation reservation = reservationDbFixture.예약_유저1_내일_10시_공포();
 
         reservationService.deleteById(reservation.getId());
 
-        List<ReservationResponse> responses = reservationService.getAll();
-
-        assertThat(responses).hasSize(0);
+        assertThat(reservationService.getAllReservations()).hasSize(0);
     }
 
     @Test
     void 존재하지_않는_예약을_삭제할_수_없다() {
-        assertThatThrownBy(() -> reservationService.deleteById(3L))
+        assertThatThrownBy(() -> reservationService.deleteById(1L))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("[ERROR] 예약을 찾을 수 없습니다.");
     }

@@ -23,15 +23,15 @@ import roomescape.time.controller.request.AvailableReservationTimeRequest;
 import roomescape.time.controller.request.ReservationTimeCreateRequest;
 import roomescape.time.controller.response.AvailableReservationTimeResponse;
 import roomescape.time.controller.response.ReservationTimeResponse;
-import roomescape.time.service.ReservationTimeServiceImpl;
+import roomescape.time.service.ReservationTimeService;
 
 @RestController
 @RequestMapping("/times")
 public class ReservationTimeApiController {
 
-    private final ReservationTimeServiceImpl reservationTimeService;
+    private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeApiController(ReservationTimeServiceImpl reservationTimeService) {
+    public ReservationTimeApiController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
@@ -39,7 +39,7 @@ public class ReservationTimeApiController {
     public ResponseEntity<ApiResponse<ReservationTimeResponse>> createTime(
             @RequestBody @Valid ReservationTimeCreateRequest request
     ) {
-        ReservationTimeResponse response = reservationTimeService.create(request);
+        ReservationTimeResponse response = reservationTimeService.open(request);
 
         return ResponseEntity
                 .status(CREATED)

@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.service.ThemeRepository;
+import roomescape.theme.service.out.ThemeRepository;
 
 @Repository
 public class ThemeJdbcRepository implements ThemeRepository {
@@ -21,19 +21,19 @@ public class ThemeJdbcRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme save(String name, String description, String thumbnail) {
+    public Theme save(Theme theme) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
 
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", name)
-                .addValue("description", description)
-                .addValue("thumbnail", thumbnail);
+                .addValue("name", theme.getName())
+                .addValue("description", theme.getDescription())
+                .addValue("thumbnail", theme.getThumbnail());
 
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new Theme(id, name, description, thumbnail);
+        return Theme.load(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     @Override
@@ -45,23 +45,25 @@ public class ThemeJdbcRepository implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         String sql = "select * from theme";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
-        ));
+        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
+                Theme.load(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail")
+                ));
     }
 
     @Override
     public Optional<Theme> findById(Long id) {
         String sql = "select * from theme where id = ?";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                ), id)
+        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
+                        Theme.load(
+                                resultSet.getLong("id"),
+                                resultSet.getString("name"),
+                                resultSet.getString("description"),
+                                resultSet.getString("thumbnail")
+                        ), id)
                 .stream()
                 .findFirst();
     }
@@ -89,11 +91,12 @@ public class ThemeJdbcRepository implements ThemeRepository {
                     reservation_count DESC
                 LIMIT ?
                 """;
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
-        ), now, now, limit);
+        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
+                Theme.load(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail")
+                ), now, now, limit);
     }
 }
