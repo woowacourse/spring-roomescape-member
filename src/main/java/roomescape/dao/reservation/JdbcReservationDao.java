@@ -2,6 +2,7 @@ package roomescape.dao.reservation;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -152,7 +153,8 @@ public class JdbcReservationDao implements ReservationDao {
             final LocalDate dateFrom,
             final LocalDate dateTo) {
 
-        final String sql = """
+        final StringBuilder sql = new StringBuilder();
+        sql.append("""
                 SELECT
                     r.id as reservation_id,
                     r.date,
@@ -173,9 +175,34 @@ public class JdbcReservationDao implements ReservationDao {
                     ON r.theme_id = th.id
                 INNER JOIN member me
                     ON r.member_id = me.id
-                WHERE r.theme_id = ? AND r.member_id = ? AND r.date BETWEEN ? AND ?
-                ORDER BY r.date, t.start_at
-                """;
-        return jdbcTemplate.query(sql, reservationMapper, themeId, memberId, dateFrom, dateTo);
+                WHERE 1=1
+                """);
+
+        // 파라미터를 담을 리스트
+        final List<Object> params = new ArrayList<>();
+
+        if (themeId != null) {
+            sql.append(" AND r.theme_id = ?");
+            params.add(themeId);
+        }
+
+        if (memberId != null) {
+            sql.append(" AND r.member_id = ?");
+            params.add(memberId);
+        }
+
+        if (dateFrom != null && dateTo != null) {
+            sql.append(" AND r.date BETWEEN ? AND ?");
+            params.add(dateFrom);
+            params.add(dateTo);
+        } else if (dateFrom != null) {
+            sql.append(" AND r.date >= ?");
+            params.add(dateFrom);
+        } else if (dateTo != null) {
+            sql.append(" AND r.date <= ?");
+            params.add(dateTo);
+        }
+        sql.append(" ORDER BY r.date, t.start_at");
+        return jdbcTemplate.query(sql.toString(), reservationMapper, params.toArray());
     }
 }

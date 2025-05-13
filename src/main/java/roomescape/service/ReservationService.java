@@ -93,20 +93,23 @@ public class ReservationService {
                 reservationSearchRequest.memberId(),
                 reservationSearchRequest.dateFrom(),
                 reservationSearchRequest.dateTo());
-
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
 
     private void validateFilter(final ReservationSearchRequest reservationSearchRequest) {
-        if (reservationSearchRequest.dateFrom().isAfter(reservationSearchRequest.dateTo())) {
+        if (reservationSearchRequest.dateFrom() != null &&
+                reservationSearchRequest.dateTo() != null &&
+                reservationSearchRequest.dateFrom().isAfter(reservationSearchRequest.dateTo())) {
             throw new InvalidReservationFilterException("시작 날짜는 종료 날짜보다 이후일 수 없습니다.");
         }
-        if (!memberService.existsById(reservationSearchRequest.memberId())) {
+        if (reservationSearchRequest.memberId() != null &&
+                !memberService.existsById(reservationSearchRequest.memberId())) {
             throw new InvalidReservationFilterException("멤버가 존재하지 않습니다.");
         }
-        if (!themeService.existsById(reservationSearchRequest.themeId())) {
+        if (reservationSearchRequest.themeId() != null &&
+                !themeService.existsById(reservationSearchRequest.themeId())) {
             throw new InvalidReservationFilterException("테마가 존재하지 않습니다.");
         }
     }

@@ -92,6 +92,78 @@ class ReservationServiceTest {
         assertThat(reservationResponses.size()).isEqualTo(1);
     }
 
+    @DisplayName("테마와 날짜로 예약 목록을 조회한다.")
+    @Test
+    void findThemeAndDateTest() {
+
+        // given
+        final Reservation reservation = Reservation.load(1L, LocalDate.of(2025, 4, 25),
+                new ReservationTime(1L, LocalTime.of(10, 10)), new Theme(1L, "test", "test", "test"),
+                new Member(1L, "test", "test@email.com", "password", MemberRole.USER));
+        final List<Reservation> reservations = List.of(reservation);
+        final ReservationSearchRequest reservationSearchRequest = new ReservationSearchRequest(1L, null,
+                LocalDate.of(2025, 4, 25), LocalDate.of(2025, 4, 28));
+
+        // when
+        when(themeService.existsById(1L)).thenReturn(true);
+        when(reservationDao.findByThemeAndMemberAndDate(1L, null, LocalDate.of(2025, 4, 25),
+                LocalDate.of(2025, 4, 28))).thenReturn(reservations);
+
+        final List<ReservationResponse> reservationResponses = reservationService.findByThemeAndMemberAndDate(
+                reservationSearchRequest);
+
+        // then
+        assertThat(reservationResponses.size()).isEqualTo(1);
+    }
+
+    @DisplayName("테마와 멤버로 예약 목록을 조회한다.")
+    @Test
+    void findThemeAndMemberTest() {
+
+        // given
+        final Reservation reservation = Reservation.load(1L, LocalDate.of(2025, 4, 25),
+                new ReservationTime(1L, LocalTime.of(10, 10)), new Theme(1L, "test", "test", "test"),
+                new Member(1L, "test", "test@email.com", "password", MemberRole.USER));
+        final List<Reservation> reservations = List.of(reservation);
+        final ReservationSearchRequest reservationSearchRequest = new ReservationSearchRequest(1L, 1L, null, null);
+
+        // when
+        when(memberService.existsById(1L)).thenReturn(true);
+        when(themeService.existsById(1L)).thenReturn(true);
+        when(reservationDao.findByThemeAndMemberAndDate(1L, 1L, null, null)).thenReturn(reservations);
+
+        final List<ReservationResponse> reservationResponses = reservationService.findByThemeAndMemberAndDate(
+                reservationSearchRequest);
+
+        // then
+        assertThat(reservationResponses.size()).isEqualTo(1);
+    }
+
+    @DisplayName("멤버, 날짜로 예약 목록을 조회한다.")
+    @Test
+    void findMemberAndDateTest() {
+
+        // given
+        final Reservation reservation = Reservation.load(1L, LocalDate.of(2025, 4, 25),
+                new ReservationTime(1L, LocalTime.of(10, 10)), new Theme(1L, "test", "test", "test"),
+                new Member(1L, "test", "test@email.com", "password", MemberRole.USER));
+        final List<Reservation> reservations = List.of(reservation);
+        final ReservationSearchRequest reservationSearchRequest = new ReservationSearchRequest(null, 1L,
+                LocalDate.of(2025, 4, 25), LocalDate.of(2025, 4, 28));
+
+        // when
+        when(memberService.existsById(1L)).thenReturn(true);
+        when(reservationDao.findByThemeAndMemberAndDate(null, 1L, LocalDate.of(2025, 4, 25),
+                LocalDate.of(2025, 4, 28))).thenReturn(reservations);
+
+        final List<ReservationResponse> reservationResponses = reservationService.findByThemeAndMemberAndDate(
+                reservationSearchRequest);
+
+        // then
+        assertThat(reservationResponses.size()).isEqualTo(1);
+    }
+
+
     @DisplayName("테마와 멤버 날짜로 예약 목록을 조회하는 경우, 시간이 잘못된 경우 예외를 발생한다.")
     @Test
     void findThemeAndMemberAndInvalidDateTest() {
