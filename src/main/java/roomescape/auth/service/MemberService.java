@@ -3,14 +3,14 @@ package roomescape.auth.service;
 import org.springframework.stereotype.Service;
 import roomescape.auth.entity.Member;
 import roomescape.auth.repository.MemberRepository;
+import roomescape.auth.service.dto.LoginMember;
 import roomescape.auth.service.dto.request.LoginRequest;
 import roomescape.auth.service.dto.request.UserSignupRequest;
-import roomescape.auth.service.dto.LoginMember;
 import roomescape.auth.service.dto.response.LoginResponse;
 import roomescape.auth.service.dto.response.MemberBasicInfoResponse;
 import roomescape.global.exception.conflict.MemberEmailConflictException;
 import roomescape.global.exception.notFound.MemberNotFoundException;
-import roomescape.global.exception.unauthorized.MemberUnauthorizedException;
+import roomescape.global.exception.notFound.NotFoundException;
 import roomescape.global.infrastructure.JwtTokenProvider;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class MemberService {
 
     public LoginResponse login(LoginRequest request) {
         Member member = memberRepository.findByEmailAndPassword(request.email(), request.password())
-                .orElseThrow(MemberUnauthorizedException::new);
+                .orElseThrow(() -> new NotFoundException("입력한 정보와 일치하는 회원 정보가 존재하지 않습니다."));
         String token = jwtTokenProvider.createToken(member);
         return new LoginResponse(token);
     }
