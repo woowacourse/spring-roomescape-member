@@ -15,13 +15,13 @@ import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 
 @Component
-public class JwtTokenContainer {
+public class JwtTokenManager {
 
     private static final int TOKEN_EXPIRATION_MINUTES = 30;
 
     private final SecretKey secretKey;
 
-    public JwtTokenContainer(@Value("${security.jwt.token.secret-key}") String key) {
+    public JwtTokenManager(@Value("${security.jwt.token.secret-key}") String key) {
         this.secretKey = Keys.hmacShaKeyFor(key.getBytes());
     }
 

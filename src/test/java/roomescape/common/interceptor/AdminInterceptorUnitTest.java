@@ -17,7 +17,7 @@ import org.springframework.web.method.HandlerMethod;
 import roomescape.admin.dto.AdminReservationRequest;
 import roomescape.admin.interceptor.AdminInterceptor;
 import roomescape.admin.presentation.AdminController;
-import roomescape.common.util.JwtTokenContainer;
+import roomescape.common.util.JwtTokenManager;
 import roomescape.common.util.TokenCookieManager;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
@@ -27,8 +27,8 @@ import roomescape.reservation.service.ReservationService;
 class AdminInterceptorUnitTest {
 
     private TokenCookieManager tokenCookieManager = new TokenCookieManager();
-    private JwtTokenContainer jwtTokenContainer = new JwtTokenContainer("sdfsdafsadfsadfsdafsadfsafsadfsldajfsdajf");
-    private AdminInterceptor adminInterceptor = new AdminInterceptor(tokenCookieManager, jwtTokenContainer);
+    private JwtTokenManager jwtTokenManager = new JwtTokenManager("sdfsdafsadfsadfsdafsadfsafsadfsldajfsdajf");
+    private AdminInterceptor adminInterceptor = new AdminInterceptor(tokenCookieManager, jwtTokenManager);
 
     @Mock
     private ReservationService reservationService;
@@ -74,7 +74,7 @@ class AdminInterceptorUnitTest {
         HandlerMethod handlerMethod = new HandlerMethod(new AdminController(reservationService), method);
         MockHttpServletResponse response = new MockHttpServletResponse();
         Member member = Member.createWithId(1L, "a", "a", "a", Role.ADMIN);
-        String jwtToken = jwtTokenContainer.createJwtToken(member, LocalDateTime.of(2000, 11, 2, 12, 34));
+        String jwtToken = jwtTokenManager.createJwtToken(member, LocalDateTime.of(2000, 11, 2, 12, 34));
         putCookieToRequest(jwtToken, request);
         // when
         boolean check = adminInterceptor.preHandle(request, response, handlerMethod);
@@ -92,7 +92,7 @@ class AdminInterceptorUnitTest {
         HandlerMethod handlerMethod = new HandlerMethod(new AdminController(reservationService), method);
         MockHttpServletResponse response = new MockHttpServletResponse();
         Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
-        String jwtToken = jwtTokenContainer.createJwtToken(member, LocalDateTime.now());
+        String jwtToken = jwtTokenManager.createJwtToken(member, LocalDateTime.now());
         putCookieToRequest(jwtToken, request);
         // when
         boolean check = adminInterceptor.preHandle(request, response, handlerMethod);
@@ -110,7 +110,7 @@ class AdminInterceptorUnitTest {
         HandlerMethod handlerMethod = new HandlerMethod(new AdminController(reservationService), method);
         MockHttpServletResponse response = new MockHttpServletResponse();
         Member member = Member.createWithId(1L, "a", "a", "a", Role.ADMIN);
-        String jwtToken = jwtTokenContainer.createJwtToken(member, LocalDateTime.now());
+        String jwtToken = jwtTokenManager.createJwtToken(member, LocalDateTime.now());
         putCookieToRequest(jwtToken, request);
         // when
         boolean check = adminInterceptor.preHandle(request, response, handlerMethod);

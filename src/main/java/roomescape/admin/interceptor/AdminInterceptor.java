@@ -6,18 +6,18 @@ import java.io.IOException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.common.exception.LoginException;
-import roomescape.common.util.JwtTokenContainer;
+import roomescape.common.util.JwtTokenManager;
 import roomescape.common.util.TokenCookieManager;
 import roomescape.member.domain.Role;
 
 public class AdminInterceptor implements HandlerInterceptor {
 
     private final TokenCookieManager tokenCookieManager;
-    private final JwtTokenContainer jwtTokenContainer;
+    private final JwtTokenManager jwtTokenManager;
 
-    public AdminInterceptor(TokenCookieManager tokenCookieManager, JwtTokenContainer jwtTokenContainer) {
+    public AdminInterceptor(TokenCookieManager tokenCookieManager, JwtTokenManager jwtTokenManager) {
         this.tokenCookieManager = tokenCookieManager;
-        this.jwtTokenContainer = jwtTokenContainer;
+        this.jwtTokenManager = jwtTokenManager;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class AdminInterceptor implements HandlerInterceptor {
             throws Exception {
         try {
             String token = tokenCookieManager.extractTokenFromCookie(request);
-            Role memberRole = jwtTokenContainer.getMemberRole(token);
+            Role memberRole = jwtTokenManager.getMemberRole(token);
             if (memberRole.equals(Role.ADMIN)) {
                 return true;
             }

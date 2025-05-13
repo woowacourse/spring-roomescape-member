@@ -7,7 +7,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.member.argumentResolver.LoginArgumentResolver;
 import roomescape.admin.interceptor.AdminInterceptor;
-import roomescape.common.util.JwtTokenContainer;
+import roomescape.common.util.JwtTokenManager;
 import roomescape.common.util.TokenCookieManager;
 import roomescape.member.service.LoginService;
 
@@ -16,13 +16,13 @@ public class ReservationConfig implements WebMvcConfigurer {
 
     private final LoginService loginService;
     private final TokenCookieManager tokenCookieManager;
-    private final JwtTokenContainer jwtTokenContainer;
+    private final JwtTokenManager jwtTokenManager;
 
     public ReservationConfig(LoginService loginService, TokenCookieManager tokenCookieManager,
-                             JwtTokenContainer jwtTokenContainer) {
+                             JwtTokenManager jwtTokenManager) {
         this.loginService = loginService;
         this.tokenCookieManager = tokenCookieManager;
-        this.jwtTokenContainer = jwtTokenContainer;
+        this.jwtTokenManager = jwtTokenManager;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class ReservationConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminInterceptor(tokenCookieManager, jwtTokenContainer))
+        registry.addInterceptor(new AdminInterceptor(tokenCookieManager, jwtTokenManager))
                 .addPathPatterns("/admin/**");
     }
 }

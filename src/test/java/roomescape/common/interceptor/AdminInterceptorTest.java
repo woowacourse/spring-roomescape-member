@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.admin.presentation.AdminPageController;
-import roomescape.common.util.JwtTokenContainer;
+import roomescape.common.util.JwtTokenManager;
 import roomescape.common.util.TokenCookieManager;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
@@ -22,11 +22,11 @@ import roomescape.member.service.LoginService;
 import roomescape.reservation.presentation.ReservationPageController;
 
 @WebMvcTest({AdminPageController.class, ReservationPageController.class})
-@Import({TokenCookieManager.class, JwtTokenContainer.class})
+@Import({TokenCookieManager.class, JwtTokenManager.class})
 class AdminInterceptorTest {
 
     @Autowired
-    private JwtTokenContainer jwtTokenContainer;
+    private JwtTokenManager jwtTokenManager;
 
     @MockitoBean
     private LoginService loginService;
@@ -53,7 +53,7 @@ class AdminInterceptorTest {
     void admin_page_when_expired_token() throws Exception {
         // given
         Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
-        String jwtToken = jwtTokenContainer.createJwtToken(member, LocalDateTime.of(2000, 11, 2, 12, 0));
+        String jwtToken = jwtTokenManager.createJwtToken(member, LocalDateTime.of(2000, 11, 2, 12, 0));
         Cookie cookie = new Cookie("token", jwtToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
@@ -67,7 +67,7 @@ class AdminInterceptorTest {
     void admin_page_when_user() throws Exception {
         // given
         Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
-        String jwtToken = jwtTokenContainer.createJwtToken(member, LocalDateTime.now());
+        String jwtToken = jwtTokenManager.createJwtToken(member, LocalDateTime.now());
         Cookie cookie = new Cookie("token", jwtToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
@@ -81,7 +81,7 @@ class AdminInterceptorTest {
     void admin_page_when_admin() throws Exception {
         // given
         Member member = Member.createWithId(1L, "a", "a", "a", Role.ADMIN);
-        String jwtToken = jwtTokenContainer.createJwtToken(member, LocalDateTime.now());
+        String jwtToken = jwtTokenManager.createJwtToken(member, LocalDateTime.now());
         Cookie cookie = new Cookie("token", jwtToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");

@@ -11,9 +11,9 @@ import roomescape.common.exception.LoginException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 
-class JwtTokenContainerTest {
+class JwtTokenManagerTest {
 
-    private final  JwtTokenContainer jwtTokenContainer = new JwtTokenContainer(
+    private final JwtTokenManager jwtTokenManager = new JwtTokenManager(
             "aasdasdasadsadasdsadsadsadsdsadasfsdf134fsgdafgdfgs");
 
     @Test
@@ -23,7 +23,7 @@ class JwtTokenContainerTest {
         Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
         LocalDateTime dateTime = LocalDateTime.now();
         // when
-        String jwtToken = jwtTokenContainer.createJwtToken(member, dateTime);
+        String jwtToken = jwtTokenManager.createJwtToken(member, dateTime);
         // then
         assertThat(jwtToken).isNotNull();
     }
@@ -34,7 +34,7 @@ class JwtTokenContainerTest {
         // given
         String strangeToken = "asdasdasdsad";
         // when & then
-        assertThatThrownBy(() -> jwtTokenContainer.validateToken(strangeToken))
+        assertThatThrownBy(() -> jwtTokenManager.validateToken(strangeToken))
                 .isInstanceOf(LoginException.class);
     }
 
@@ -44,9 +44,9 @@ class JwtTokenContainerTest {
         // given
         LocalDateTime dateTime = LocalDateTime.of(2025, 5, 10, 9, 10);
         Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
-        String jwtToken = jwtTokenContainer.createJwtToken(member, dateTime);
+        String jwtToken = jwtTokenManager.createJwtToken(member, dateTime);
         // when
-        assertThatThrownBy(() -> jwtTokenContainer.validateToken(jwtToken))
+        assertThatThrownBy(() -> jwtTokenManager.validateToken(jwtToken))
                 .isInstanceOf(LoginException.class);
     }
 
@@ -56,9 +56,9 @@ class JwtTokenContainerTest {
         // given
         LocalDateTime dateTime = LocalDateTime.now();
         Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
-        String jwtToken = jwtTokenContainer.createJwtToken(member, dateTime);
+        String jwtToken = jwtTokenManager.createJwtToken(member, dateTime);
         // when & then
-        assertDoesNotThrow(() -> jwtTokenContainer.validateToken(jwtToken));
+        assertDoesNotThrow(() -> jwtTokenManager.validateToken(jwtToken));
     }
 
     @Test
@@ -67,9 +67,9 @@ class JwtTokenContainerTest {
         // given
         LocalDateTime dateTime = LocalDateTime.now();
         Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
-        String jwtToken = jwtTokenContainer.createJwtToken(member, dateTime);
+        String jwtToken = jwtTokenManager.createJwtToken(member, dateTime);
         // when
-        Long memberId = jwtTokenContainer.getMemberId(jwtToken);
+        Long memberId = jwtTokenManager.getMemberId(jwtToken);
         // then
         assertThat(memberId).isEqualTo(1L);
     }
@@ -80,7 +80,7 @@ class JwtTokenContainerTest {
         // given
         String strangeToken = "asdasdasdsad";
         // when
-        assertThatThrownBy(() -> jwtTokenContainer.getMemberId(strangeToken))
+        assertThatThrownBy(() -> jwtTokenManager.getMemberId(strangeToken))
                 .isInstanceOf(LoginException.class);
     }
 
@@ -90,9 +90,9 @@ class JwtTokenContainerTest {
         // given
         LocalDateTime dateTime = LocalDateTime.now();
         Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
-        String jwtToken = jwtTokenContainer.createJwtToken(member, dateTime);
+        String jwtToken = jwtTokenManager.createJwtToken(member, dateTime);
         // when
-        Role memberRole = jwtTokenContainer.getMemberRole(jwtToken);
+        Role memberRole = jwtTokenManager.getMemberRole(jwtToken);
         // then
         assertThat(memberRole).isEqualTo(Role.USER);
     }
@@ -103,7 +103,7 @@ class JwtTokenContainerTest {
         // given
         String strangeToken = "asdasdasdsad";
         // when
-        assertThatThrownBy(() -> jwtTokenContainer.getMemberRole(strangeToken))
+        assertThatThrownBy(() -> jwtTokenManager.getMemberRole(strangeToken))
                 .isInstanceOf(LoginException.class);
     }
 }
