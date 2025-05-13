@@ -13,11 +13,19 @@ import roomescape.global.exception.unauthorized.MemberUnauthorizedException;
 import roomescape.global.infrastructure.JwtTokenProvider;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
 
 class MemberServiceTest {
+    private static final String token = "test";
+
+    private class StubJwtTokenProvider extends JwtTokenProvider {
+        @Override
+        public String createToken(Member member) {
+            return token;
+        }
+    }
+
     private final MemberRepository memberRepository = new FakeMemberRepository();
-    private final JwtTokenProvider tokenProvider = mock(JwtTokenProvider.class);
+    private final JwtTokenProvider tokenProvider = new StubJwtTokenProvider();
     private final MemberService service = new MemberService(memberRepository, tokenProvider);
 
     @DisplayName("존재하지 않는 유저가 로그인을 요청하는 경우 예외가 발생한다.")
