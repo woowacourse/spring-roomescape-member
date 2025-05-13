@@ -24,15 +24,15 @@ public class AuthService {
         if (member.isIncorrectPassword(loginRequest.password())) {
             throw new IllegalArgumentException("[ERROR] 올바르지 않은 비밀번호입니다.");
         }
-        return jwtTokenProvider.createToken(loginRequest.email());
+        return jwtTokenProvider.createToken(member.getEmail());
     }
 
     public LoginMember findMemberByToken(String token) {
         if (!jwtTokenProvider.validateToken(token)) {
             throw new AuthException("[ERROR] 유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED);
         }
-        String payload = jwtTokenProvider.getPayload(token);
-        Member member = memberService.findMemberByEmail(payload);
+        String email = jwtTokenProvider.getEmail(token);
+        Member member = memberService.findMemberByEmail(email);
         return new LoginMember(member.getId(), member.getName(), member.getRole(), member.getEmail());
     }
 }
