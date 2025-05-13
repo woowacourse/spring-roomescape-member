@@ -44,9 +44,10 @@ class ReservationServiceTest {
     @Test
     void canGetReservations() {
         // given
-        List<Reservation> reservations = List.of(ReservationFixture.create(1L, "예약1"),
-                ReservationFixture.create(2L, "예약2"),
-                ReservationFixture.create(3L, "예약3"));
+        List<Reservation> reservations = List.of(
+                ReservationFixture.create(1L, "회원1"),
+                ReservationFixture.create(2L, "회원2"),
+                ReservationFixture.create(3L, "회원3"));
         when(reservationRepository.findAll()).thenReturn(reservations);
 
         // when
@@ -60,7 +61,7 @@ class ReservationServiceTest {
     @Test
     void canGetReservationById() {
         // given
-        Reservation reservation = ReservationFixture.create(1L, "예약1");
+        Reservation reservation = ReservationFixture.create(1L, "회원1");
         when(reservationRepository.findById(1L)).thenReturn(Optional.of(reservation));
 
         // when
@@ -216,7 +217,7 @@ class ReservationServiceTest {
     @Test
     void canDeleteReservation() {
         // given
-        Reservation reservation = ReservationFixture.create(1L, "예약1");
+        Reservation reservation = ReservationFixture.create(1L, "회원");
         when(reservationRepository.findById(reservation.getId())).thenReturn(Optional.of(reservation));
 
         // when & then
