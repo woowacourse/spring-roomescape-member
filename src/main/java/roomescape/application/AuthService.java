@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import roomescape.application.exception.AuthException;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 import roomescape.infrastructure.jwt.JwtTokenProvider;
 import roomescape.presentation.dto.request.LoginMember;
 import roomescape.presentation.dto.request.LoginRequest;
@@ -24,7 +25,8 @@ public class AuthService {
         if (member.isIncorrectPassword(loginRequest.password())) {
             throw new IllegalArgumentException("[ERROR] 올바르지 않은 비밀번호입니다.");
         }
-        return jwtTokenProvider.createToken(member.getEmail());
+        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole(), member.getEmail());
+        return jwtTokenProvider.createToken(loginMember);
     }
 
     public LoginMember findMemberByToken(String token) {
@@ -34,5 +36,12 @@ public class AuthService {
         String email = jwtTokenProvider.getEmail(token);
         Member member = memberService.findMemberByEmail(email);
         return new LoginMember(member.getId(), member.getName(), member.getRole(), member.getEmail());
+    }
+
+    public Role findRoleByToken(String token) {
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new AuthException("[ERROR] 유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED);
+        }
+        return Role.valueOf(jwtTokenProvider.getRole(token));
     }
 }
