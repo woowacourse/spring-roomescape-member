@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.dao.ReservationDao;
 import roomescape.dto.request.ReservationSearchFilter;
+import roomescape.model.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -21,6 +22,7 @@ public class FakeReservationDao implements ReservationDao {
         Long id = nextId.getAndIncrement();
         ReservationTime time = reservation.getTime();
         Theme theme = reservation.getTheme();
+        Member member = reservation.getMember();
 
         // TODO: 추후 수정
         Reservation savedReservation = new Reservation(
@@ -29,7 +31,7 @@ public class FakeReservationDao implements ReservationDao {
                 new ReservationTime(time.getId(), time.getStartAt()),
                 new Theme(theme.getId(), theme.getName(),
                         theme.getDescription(), theme.getThumbnail()),
-                null
+                new Member(member.getId(), member.getName(), member.getEmail(), member.getPassword(), member.getRole())
         );
         database.put(id, savedReservation);
         return id;
