@@ -44,7 +44,6 @@ public class AuthController {
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         Cookie cookie = CookieUtils.findFromCookiesByName(request.getCookies(), AUTH_COOKIE_KEY)
                 .orElseThrow(() -> new AuthenticationException("인증을 위한 쿠키가 존재하지 않습니다."));
-        //TODO : 토큰 블랙리스트 구현
         response.addCookie(CookieUtils.toExpiredCookie(cookie));
     }
 }
