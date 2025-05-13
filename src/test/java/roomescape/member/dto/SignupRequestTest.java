@@ -19,14 +19,6 @@ class SignupRequestTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"a", "a.com", "aasd asd"})
-    @DisplayName("이메일 형식 예외 테스트")
-    void email_format_exception(String email) {
-        assertThatThrownBy(() -> new SignupRequest(email, "a", "a"))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @ParameterizedTest
     @NullAndEmptySource
     @DisplayName("이름 빈 값 에외 테스트")
     void name_exception(String name) {

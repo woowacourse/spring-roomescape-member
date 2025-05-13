@@ -32,7 +32,7 @@ class JdbcMemberRepositoryTest {
     @DisplayName("정상적으로 저장되어 id를 반환하는지 확인한다.")
     void save_test() {
         // given
-        Member member = Member.createWithoutId("a", "a", "a", Role.USER);
+        Member member = Member.createWithoutId("a", "a@com", "a", Role.USER);
         // when
         Long id = jdbcMemberRepository.save(member);
         // then
@@ -43,7 +43,7 @@ class JdbcMemberRepositoryTest {
     @DisplayName("아이디로 회원 조회 테스트")
     void findById_test() {
         // given
-        Member member = Member.createWithoutId("a", "a", "a", Role.USER);
+        Member member = Member.createWithoutId("a", "a@com", "a", Role.USER);
         Long id = jdbcMemberRepository.save(member);
         // when
         Optional<Member> findMember = jdbcMemberRepository.findById(id);
@@ -58,11 +58,11 @@ class JdbcMemberRepositoryTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"a,true", "b,false"})
+    @CsvSource({"a@com,true", "b@com,false"})
     @DisplayName("이메일 존재 확인 테스트")
     void existByEmail_test(String email, boolean expected) {
         // given
-        Member member = Member.createWithoutId("a", "a", "a", Role.USER);
+        Member member = Member.createWithoutId("a", "a@com", "a", Role.USER);
         jdbcMemberRepository.save(member);
         // when
         boolean existed = jdbcMemberRepository.existByEmail(email);
@@ -71,11 +71,11 @@ class JdbcMemberRepositoryTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"a,a,true", "a,b,false", "b,a,false", "c,c,false"})
+    @CsvSource({"a@com,a,true", "a@com,b,false", "b,a,false", "c,c,false"})
     @DisplayName("이메일, 비밀번호 존재 확인 테스트")
     void existByEmailAndPassword(String email, String password, boolean expected) {
         // given
-        Member member = Member.createWithoutId("a", "a", "a", Role.USER);
+        Member member = Member.createWithoutId("a", "a@com", "a", Role.USER);
         jdbcMemberRepository.save(member);
         // when
         Optional<Member> findMember = jdbcMemberRepository.findByEmailAndPassword(email, password);
@@ -87,9 +87,9 @@ class JdbcMemberRepositoryTest {
     @DisplayName("모든 회원 조회 테스트")
     void findAll_test() {
         // given
-        Member member1 = Member.createWithoutId("a", "a", "a", Role.USER);
+        Member member1 = Member.createWithoutId("a", "a@com", "a", Role.USER);
         jdbcMemberRepository.save(member1);
-        Member member2 = Member.createWithoutId("b", "b", "b", Role.USER);
+        Member member2 = Member.createWithoutId("b", "a@com", "b", Role.USER);
         jdbcMemberRepository.save(member2);
         // when
         List<Member> members = jdbcMemberRepository.findAll();

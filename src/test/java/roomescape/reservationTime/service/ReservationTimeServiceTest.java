@@ -41,7 +41,7 @@ class ReservationTimeServiceTest {
 
         reservationTime1 = reservationTimeRepository.findById(id);
         ReservationRepository reservationRepository = new FakeReservationRepository(reservations);
-        Member member = Member.createWithId(1L, "홍길동", "a", "a", Role.USER);
+        Member member = Member.createWithId(1L, "홍길동", "a@com", "a", Role.USER);
         reservationRepository.save(Reservation.createWithoutId(
                 LocalDateTime.of(1999, 11, 2, 20, 10), member, LocalDate.of(2024, 10, 6), reservationTime1, theme));
 

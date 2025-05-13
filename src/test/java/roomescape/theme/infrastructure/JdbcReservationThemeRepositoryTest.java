@@ -126,7 +126,7 @@ class JdbcReservationThemeRepositoryTest {
         Long timeId1 = reservationTimeRepository.save(reservationTime1);
         Long timeId2 = reservationTimeRepository.save(reservationTime2);
 
-        Member member = Member.createWithoutId("a", "a", "a", Role.USER);
+        Member member = Member.createWithoutId("a", "a@com", "a", Role.USER);
         Long memberId = memberRepository.save(member);
         member = member.assignId(memberId);
 
@@ -177,7 +177,7 @@ class JdbcReservationThemeRepositoryTest {
         Long themeId2 = repository.save(theme2);
         repository.save(theme3);
 
-        Member member = Member.createWithoutId("a", "a", "a", Role.USER);
+        Member member = Member.createWithoutId("a", "a@com", "a", Role.USER);
         Long memberId = memberRepository.save(member);
         member = member.assignId(memberId);
 
@@ -228,7 +228,7 @@ class JdbcReservationThemeRepositoryTest {
         Long themeId2 = repository.save(theme2);
         repository.save(theme3);
 
-        Member member = Member.createWithoutId("a", "a", "a", Role.USER);
+        Member member = Member.createWithoutId("a", "a@com", "a", Role.USER);
         Long memberId = memberRepository.save(member);
         member = member.assignId(memberId);
 

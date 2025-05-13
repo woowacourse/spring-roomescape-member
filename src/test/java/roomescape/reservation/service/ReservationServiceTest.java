@@ -92,7 +92,7 @@ class ReservationServiceTest {
         themeRepository.save(theme3);
         ReservationTime reservationTime1 = ReservationTime.createWithoutId(LocalTime.of(10, 0));
         ReservationTime reservationTime2 = ReservationTime.createWithoutId(LocalTime.of(9, 0));
-        Member member = Member.createWithId(1L, "홍길동", "a", "a", Role.USER);
+        Member member = Member.createWithId(1L, "홍길동", "a@com", "a", Role.USER);
         memberRepository.save(member);
         reservationTimeRepository.save(reservationTime1);
         reservationTimeRepository.save(reservationTime2);

@@ -52,7 +52,7 @@ class AdminInterceptorTest {
     @DisplayName("admin 관련 페이지인데 토큰이 만료된 경우 login page로 이동한다.")
     void admin_page_when_expired_token() throws Exception {
         // given
-        Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
+        Member member = Member.createWithId(1L, "a", "a@com", "a", Role.USER);
         String jwtToken = jwtTokenManager.createJwtToken(member, LocalDateTime.of(2000, 11, 2, 12, 0));
         Cookie cookie = new Cookie("token", jwtToken);
         cookie.setHttpOnly(true);
@@ -66,7 +66,7 @@ class AdminInterceptorTest {
     @DisplayName("admin 관련 페이지인데 일반 회원일 경우 403을 반환한다.")
     void admin_page_when_user() throws Exception {
         // given
-        Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
+        Member member = Member.createWithId(1L, "a", "a@com", "a", Role.USER);
         String jwtToken = jwtTokenManager.createJwtToken(member, LocalDateTime.now());
         Cookie cookie = new Cookie("token", jwtToken);
         cookie.setHttpOnly(true);
@@ -80,7 +80,7 @@ class AdminInterceptorTest {
     @DisplayName("admin 관련 페이지에서 어드민인 경우 정상적으로 반환한다.")
     void admin_page_when_admin() throws Exception {
         // given
-        Member member = Member.createWithId(1L, "a", "a", "a", Role.ADMIN);
+        Member member = Member.createWithId(1L, "a", "a@com", "a", Role.ADMIN);
         String jwtToken = jwtTokenManager.createJwtToken(member, LocalDateTime.now());
         Cookie cookie = new Cookie("token", jwtToken);
         cookie.setHttpOnly(true);

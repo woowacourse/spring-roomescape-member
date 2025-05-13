@@ -198,7 +198,7 @@ class JdbcReservationRepositoryTest {
     private Reservation createReservationForTestBy(Long themeId, LocalDate localDate, LocalTime localTime) {
         ReservationTime reservationTime = ReservationTime.createWithId(1L, localTime);
         Theme theme = Theme.createWithId(themeId, "a", "a", "a");
-        Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
+        Member member = Member.createWithId(1L, "a", "a@com", "a", Role.USER);
         return Reservation.createWithId(1L, member, localDate, reservationTime, theme);
     }
 

@@ -37,7 +37,7 @@ class ReservationTest {
         // given
         ReservationTime reservationTime1 = ReservationTime.createWithId(1L, LocalTime.of(20, 10));
         Theme theme = Theme.createWithId(1L, "a", "a", "a");
-        Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
+        Member member = Member.createWithId(1L, "a", "a@com", "a", Role.USER);
         Reservation reservation = Reservation.createWithId(1L, member, LocalDate.of(2000, 11, 2), reservationTime1,
                 theme);
         // when
@@ -52,7 +52,7 @@ class ReservationTest {
         // given
         ReservationTime reservationTime1 = ReservationTime.createWithId(1L, LocalTime.of(20, 10));
         Theme theme = Theme.createWithId(1L, "a", "a", "a");
-        Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
+        Member member = Member.createWithId(1L, "a", "a@com", "a", Role.USER);
         Reservation withoutId = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), member,
                 LocalDate.of(2000, 11, 2), reservationTime1, theme);
         // when
@@ -72,7 +72,7 @@ class ReservationTest {
         LocalDateTime now = LocalDateTime.of(2025, 5, 5, 10, 0);
         ReservationTime reservationTime = ReservationTime.createWithId(1L, time);
         Theme theme = Theme.createWithId(1L, "a", "a", "a");
-        Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
+        Member member = Member.createWithId(1L, "a", "a@com", "a", Role.USER);
         // when & then
         assertThatThrownBy(() -> Reservation.createWithoutId(now, member, date, reservationTime, theme))
                 .isInstanceOf(IllegalArgumentException.class);

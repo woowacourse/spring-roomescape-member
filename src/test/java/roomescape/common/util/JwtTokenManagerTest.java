@@ -20,7 +20,7 @@ class JwtTokenManagerTest {
     @DisplayName("정상적인 토큰을 반환한다.")
     void createJwtToken_test() {
         // given
-        Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
+        Member member = Member.createWithId(1L, "a", "a@com", "a", Role.USER);
         LocalDateTime dateTime = LocalDateTime.now();
         // when
         String jwtToken = jwtTokenManager.createJwtToken(member, dateTime);
@@ -33,7 +33,7 @@ class JwtTokenManagerTest {
     void validateTokenAndGetMemberId_test() {
         // given
         LocalDateTime dateTime = LocalDateTime.now();
-        Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
+        Member member = Member.createWithId(1L, "a", "a@com", "a", Role.USER);
         String jwtToken = jwtTokenManager.createJwtToken(member, dateTime);
         // when
         Long memberId = jwtTokenManager.validateTokenAndGetMemberId(jwtToken);
@@ -56,7 +56,7 @@ class JwtTokenManagerTest {
     void validateTokenAndGetMemberRole_test() {
         // given
         LocalDateTime dateTime = LocalDateTime.now();
-        Member member = Member.createWithId(1L, "a", "a", "a", Role.USER);
+        Member member = Member.createWithId(1L, "a", "a@com", "a", Role.USER);
         String jwtToken = jwtTokenManager.createJwtToken(member, dateTime);
         // when
         Role memberRole = jwtTokenManager.validateTokenAndGetMemberRole(jwtToken);

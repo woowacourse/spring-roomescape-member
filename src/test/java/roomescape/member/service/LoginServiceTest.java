@@ -28,7 +28,7 @@ class LoginServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        Member member = Member.createWithoutId("코기", "a", "a", Role.USER);
+        Member member = Member.createWithoutId("코기", "a@com", "a", Role.USER);
         memberRepository.save(member);
     }
 
@@ -47,7 +47,7 @@ class LoginServiceTest {
     @DisplayName("정상적인 유저이면 토큰을 반환한다.")
     void loginAndReturnToken_test() {
         // given
-        LoginRequest request = new LoginRequest("a", "a");
+        LoginRequest request = new LoginRequest("a@com", "a");
         // when
         String token = loginService.loginAndReturnToken(request);
         // then
@@ -68,7 +68,7 @@ class LoginServiceTest {
     @DisplayName("유효한 토큰이면 회원 정보를 반환한다.")
     void loginCheck_test() {
         // given
-        LoginRequest request = new LoginRequest("a", "a");
+        LoginRequest request = new LoginRequest("a@com", "a");
         String token = loginService.loginAndReturnToken(request);
         // when
         LoginMember loginMember = loginService.loginCheck(token);
