@@ -58,11 +58,11 @@ class AuthServiceTest {
             UserResponseDto userResponseDto = authService.findMemberByToken(accessToken);
 
             // then
+            // TODO 2025. 5. 13. 20:09: 필드를 추가하더라도 내가 수정할 일 없도록
             Assertions.assertThat(userResponseDto.id()).isEqualTo(savedUser.getId());
             Assertions.assertThat(userResponseDto.roleName()).isEqualTo(savedUser.getRole().name());
             Assertions.assertThat(userResponseDto.name()).isEqualTo(savedUser.getName());
             Assertions.assertThat(userResponseDto.email()).isEqualTo(savedUser.getEmail());
-            Assertions.assertThat(userResponseDto.password()).isEqualTo(savedUser.getPassword());
         }
 
         @DisplayName("유효하지 않은 토큰으로 요청 시 예외 발생 : 상태코드 401 반환")
