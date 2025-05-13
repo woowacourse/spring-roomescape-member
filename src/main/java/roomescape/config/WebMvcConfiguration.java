@@ -12,20 +12,25 @@ import roomescape.presentation.AuthenticatedUserArgumentResolver;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    private final AuthService authService;
+    private final AuthenticatedUserArgumentResolver authenticatedUserArgumentResolver;
+    private final AdminAuthorizationInterceptor adminAuthorizationInterceptor;
 
-    public WebMvcConfiguration(final AuthService authService) {
-        this.authService = authService;
+    public WebMvcConfiguration(
+            final AuthenticatedUserArgumentResolver authenticatedUserArgumentResolver,
+            final AdminAuthorizationInterceptor adminAuthorizationInterceptor
+    ) {
+        this.authenticatedUserArgumentResolver = authenticatedUserArgumentResolver;
+        this.adminAuthorizationInterceptor = adminAuthorizationInterceptor;
     }
 
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new AuthenticatedUserArgumentResolver(authService));
+        resolvers.add(authenticatedUserArgumentResolver);
     }
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminAuthorizationInterceptor(authService))
+        registry.addInterceptor(adminAuthorizationInterceptor)
                 .addPathPatterns("/admin/**");
     }
 }

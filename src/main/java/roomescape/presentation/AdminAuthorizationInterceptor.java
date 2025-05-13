@@ -3,12 +3,14 @@ package roomescape.presentation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.NoSuchElementException;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.business.domain.LoginUser;
 import roomescape.business.domain.Role;
 import roomescape.business.service.AuthService;
 import roomescape.exception.auth.UnauthorizedAccessException;
 
+@Component
 public class AdminAuthorizationInterceptor implements HandlerInterceptor {
 
     private final AuthService authService;

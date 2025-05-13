@@ -3,6 +3,7 @@ package roomescape.presentation;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.NoSuchElementException;
 import org.springframework.core.MethodParameter;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -10,6 +11,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.business.domain.LoginUser;
 import roomescape.business.service.AuthService;
 
+@Component
 public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthService authService;
