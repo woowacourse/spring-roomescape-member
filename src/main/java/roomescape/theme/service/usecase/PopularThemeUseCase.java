@@ -1,4 +1,4 @@
-package roomescape.theme.service.popular;
+package roomescape.theme.service.usecase;
 
 import java.util.List;
 import roomescape.theme.dto.PopularThemeResponse;

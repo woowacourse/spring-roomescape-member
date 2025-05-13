@@ -1,12 +1,12 @@
-package roomescape.theme.service.popular;
+package roomescape.theme.service.usecase;
 
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.exception.ThemeNotFoundException;
-import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.repository.ThemeRepository;
 
 @Service

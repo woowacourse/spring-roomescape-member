@@ -15,7 +15,7 @@ import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeDefaultService;
-import roomescape.theme.service.popular.PopularThemeUseCase;
+import roomescape.theme.service.usecase.PopularThemeUseCase;
 
 @RestController
 @RequestMapping("themes")

@@ -49,11 +49,7 @@ public class ReservationDefaultService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
 
-        ReservationDate date = new ReservationDate(dateInput);
-        ReservationTime time = timeRepository.findById(timeId)
-                .orElseThrow(ReservationTimeNotFoundException::new);
-
-        ReservationDateTime dateTime = new ReservationDateTime(date, time);
+        ReservationDateTime dateTime = createReservationDateTime(dateInput, timeId);
 
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(ThemeNotFoundException::new);
@@ -61,11 +57,23 @@ public class ReservationDefaultService {
         Reservation newReservation = Reservation.createWithoutId(member, dateTime.getDate(),
                 dateTime.getTime(), theme);
 
-        if (reservationRepository.existsByDateAndTime(date.getDate(), time.getId())) {
-            throw new ReservationAlreadyExistsException();
-        }
+        checkReservationAlreadyExists(dateInput, timeId);
 
         return ReservationResponse.from(reservationRepository.add(newReservation));
+    }
+
+    private ReservationDateTime createReservationDateTime(LocalDate dateInput, Long timeId) {
+        ReservationDate date = new ReservationDate(dateInput);
+        ReservationTime time = timeRepository.findById(timeId)
+                .orElseThrow(ReservationTimeNotFoundException::new);
+        return new ReservationDateTime(date, time);
+
+    }
+
+    private void checkReservationAlreadyExists(LocalDate dateInput, Long timeId) {
+        if (reservationRepository.existsByDateAndTime(dateInput, timeId)) {
+            throw new ReservationAlreadyExistsException();
+        }
     }
 
     public List<ReservationResponse> getFiltered(Long memberId, Long themeId, LocalDate from, LocalDate to) {
