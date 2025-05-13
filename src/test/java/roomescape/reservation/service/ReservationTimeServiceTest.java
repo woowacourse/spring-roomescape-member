@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.common.exception.DataExistException;
 import roomescape.common.exception.DataNotFoundException;
 import roomescape.reservation.domain.ReservationTime;
@@ -95,9 +96,9 @@ class ReservationTimeServiceTest {
 
         @Bean
         public ReservationRepository reservationRepository(
-                final JdbcTemplate jdbcTemplate
+                final NamedParameterJdbcTemplate namedParameterJdbcTemplate
         ) {
-            return new JdbcReservationRepository(jdbcTemplate);
+            return new JdbcReservationRepository(namedParameterJdbcTemplate);
         }
 
         @Bean

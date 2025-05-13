@@ -1,15 +1,15 @@
 package roomescape.reservation.repository;
 
 import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -48,44 +48,43 @@ public class JdbcReservationRepository implements ReservationRepository {
                     )
             );
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
     public Long save(final Reservation reservation) {
-        String sql = "INSERT INTO reservations (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO reservations (member_id, date, time_id, theme_id) VALUES (:memberId, :date, :timeId, :themeId)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        final int rowAffected = jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setLong(1, reservation.getMember().getId());
-            ps.setDate(2, Date.valueOf(reservation.getDate()));
-            ps.setLong(3, reservation.getTime().getId());
-            ps.setLong(4, reservation.getTheme().getId());
-            return ps;
-        }, keyHolder);
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("memberId", reservation.getMember().getId())
+                .addValue("date", Date.valueOf(reservation.getDate()))
+                .addValue("timeId", reservation.getTime().getId())
+                .addValue("themeId", reservation.getTheme().getId());
+
+        final int rowAffected = namedParameterJdbcTemplate.update(sql, params, keyHolder);
 
         if (rowAffected != 1) {
             throw new SaveException("예약 정보 저장에 실패했습니다.");
         }
 
         final Number key = keyHolder.getKey();
-
         return key.longValue();
     }
 
     @Override
     public void deleteById(Long id) {
-        final String sql = "DELETE FROM reservations WHERE id = ?";
+        final String sql = "DELETE FROM reservations WHERE id = :id";
         try {
-            jdbcTemplate.update(sql, id);
+            MapSqlParameterSource params = new MapSqlParameterSource()
+                    .addValue("id", id);
+            namedParameterJdbcTemplate.update(sql, params);
         } catch (final DataIntegrityViolationException e) {
             throw new DataExistException("데이터 무결성 제약으로 인해 삭제할 수 없습니다." + e);
         }
     }
 
     @Override
-    public boolean existsByDateAndStartAtAndThemeId(final LocalDate date, final LocalTime startAt,
-                                                    final Long themeId) {
+    public boolean existsByDateAndStartAtAndThemeId(final LocalDate date, final LocalTime startAt, final Long themeId) {
         final String sql = """
                 SELECT EXISTS(
                     SELECT 1
@@ -94,11 +93,16 @@ public class JdbcReservationRepository implements ReservationRepository {
                     ON r.time_id = rt.id
                     INNER JOIN themes AS th
                     ON r.theme_id = th.id
-                    WHERE r.date = ? AND rt.start_at = ? AND th.id = ?
+                    WHERE r.date = :date AND rt.start_at = :startAt AND th.id = :themeId
                 )
                 """;
 
-        return jdbcTemplate.queryForObject(sql, Boolean.class, date, startAt, themeId);
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("startAt", startAt)
+                .addValue("themeId", themeId);
+
+        return namedParameterJdbcTemplate.queryForObject(sql, params, Boolean.class);
     }
 
     @Override
@@ -107,12 +111,17 @@ public class JdbcReservationRepository implements ReservationRepository {
                 SELECT EXISTS(
                     SELECT 1
                     FROM reservations AS r
-                    WHERE r.date = ? AND r.time_id = ? AND r.theme_id = ?
+                    WHERE r.date = :date AND r.time_id = :timeId AND r.theme_id = :themeId
                     LIMIT 1
                 )
                 """;
 
-        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("timeId", timeId)
+                .addValue("themeId", themeId);
+
+        return namedParameterJdbcTemplate.queryForObject(sql, params, Boolean.class);
     }
 
     @Override
@@ -139,11 +148,15 @@ public class JdbcReservationRepository implements ReservationRepository {
                 ON r.theme_id = th.id
                 INNER JOIN members AS m
                 ON r.member_id = m.id
-                WHERE r.id = ?
+                WHERE r.id = :id
                 """;
-        final List<Reservation> reservations = jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id);
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        final List<Reservation> reservations = namedParameterJdbcTemplate.query(sql, params, RESERVATION_ROW_MAPPER);
         if (!reservations.isEmpty()) {
-            return Optional.of(reservations.getFirst());
+            return Optional.of(reservations.get(0));
         }
         return Optional.empty();
     }
@@ -173,7 +186,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 INNER JOIN members AS m
                 ON r.member_id = m.id
                 """;
-        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
+
+        return namedParameterJdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
     }
 
     @Override
@@ -201,12 +215,17 @@ public class JdbcReservationRepository implements ReservationRepository {
                 ON r.theme_id = th.id
                 INNER JOIN members AS m
                 ON r.member_id = m.id
-                WHERE ((? IS NULL OR ? IS NULL) OR (r.date BETWEEN ? AND ?))
-                AND (th.id = ? OR ? IS NULL)
-                AND (m.id = ? OR ? IS NULL)
+                WHERE ((:dateFrom IS NULL OR :dateTo IS NULL) OR (r.date BETWEEN :dateFrom AND :dateTo))
+                AND (th.id = :themeId OR :themeId IS NULL)
+                AND (m.id = :memberId OR :memberId IS NULL)
                 """;
 
-        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, dateFrom, dateTo, dateFrom, dateTo, themeId, themeId,
-                memberId, memberId);
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("dateFrom", dateFrom)
+                .addValue("dateTo", dateTo)
+                .addValue("themeId", themeId)
+                .addValue("memberId", memberId);
+
+        return namedParameterJdbcTemplate.query(sql, params, RESERVATION_ROW_MAPPER);
     }
 }
