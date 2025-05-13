@@ -1,17 +1,12 @@
 package roomescape.member.domain;
 
-import java.util.Objects;
-
-public class Password {
+public record Password(String value) {
 
     private static final int MIN_LENGTH = 8;
     private static final int MAX_LENGTH = 16;
 
-    private final String value;
-
-    public Password(final String value) {
+    public Password {
         validate(value);
-        this.value = value;
     }
 
     private void validate(final String value) {
@@ -31,25 +26,5 @@ public class Password {
                     MIN_LENGTH, MAX_LENGTH
             ));
         }
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Password password)) {
-            return false;
-        }
-        return Objects.equals(getValue(), password.getValue());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getValue());
     }
 }

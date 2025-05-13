@@ -1,17 +1,12 @@
 package roomescape.member.domain;
 
-import java.util.Objects;
-
-public class MemberName {
+public record MemberName(String value) {
 
     private static final int MIN_LENGTH = 2;
     private static final int MAX_LENGTH = 10;
 
-    private final String value;
-
-    public MemberName(final String value) {
+    public MemberName {
         validate(value);
-        this.value = value;
     }
 
     private void validate(final String value) {
@@ -32,25 +27,5 @@ public class MemberName {
                     MIN_LENGTH, MAX_LENGTH
             ));
         }
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof MemberName that)) {
-            return false;
-        }
-        return Objects.equals(value, that.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(value);
     }
 }
