@@ -39,7 +39,6 @@ public class AdminInterceptor implements HandlerInterceptor {
 
     private boolean hasAdminRole(final HttpServletRequest request) {
         String token = jwtTokenHandler.extractTokenValue(request);
-        jwtTokenHandler.validateToken(token);
         Role role = jwtTokenHandler.getRole(token);
 
         if (role == Role.ADMIN) {

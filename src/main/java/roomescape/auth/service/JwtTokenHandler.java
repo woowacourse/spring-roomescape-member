@@ -8,8 +8,10 @@ import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import roomescape.common.exception.AuthenticationException;
@@ -19,11 +21,20 @@ import roomescape.member.domain.Role;
 public class JwtTokenHandler {
 
     private static final String TOKEN_NAME = "token";
+    private static final String CLAIM_ROLE = "role";
 
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
+
+    private JwtParser parser;
+
+    @PostConstruct
+    public void init() {
+        this.parser = Jwts.parser()
+                .setSigningKey(secretKey);
+    }
 
     public String createToken(final String payload, final String role) {
         Claims claims = Jwts.claims()
@@ -35,7 +46,7 @@ public class JwtTokenHandler {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .claim("role", role)
+                .claim(CLAIM_ROLE, role)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
@@ -46,43 +57,28 @@ public class JwtTokenHandler {
             throw new AuthenticationException("쿠키가 존재하지 않습니다.");
         }
         return Arrays.stream(cookies)
-                .filter(cookie -> TOKEN_NAME.equals(cookie.getName()))
-                .findFirst()
+                .filter(c -> TOKEN_NAME.equals(c.getName()))
                 .map(Cookie::getValue)
-                .orElse(null);
+                .findFirst()
+                .orElseThrow(() -> new AuthenticationException("토큰이 존재하지 않습니다."));
     }
 
-    public String getMemberIdFromTokenWithValidate(final String token) {
-        validateToken(token);
-        return getBody(token)
-                .getSubject();
+    public String getMemberIdFromToken(final String token) {
+        return getBodyWithValidation(token).getSubject();
     }
 
-    public void validateToken(final String token) {
+    public Role getRole(final String token) {
+        String role = getBodyWithValidation(token)
+                .get(CLAIM_ROLE, String.class);
+        return Role.from(role);
+    }
+
+    private Claims getBodyWithValidation(final String token) {
         try {
-            Jwts.parser()
-                    .setSigningKey(secretKey)
-                    .parseClaimsJws(token);
+            return parser.parseClaimsJws(token).getBody();
         } catch (JwtException | IllegalArgumentException e) {
             throw new AuthenticationException("사용할 수 없는 토큰입니다.");
         }
     }
-
-    public Role getRole(final String token) {
-        if (token == null || token.isEmpty()) {
-            throw new AuthenticationException("토큰이 존재하지 않습니다.");
-        }
-
-        String role = getBody(token)
-                .get("role", String.class);
-
-        return Role.from(role);
-    }
-
-    private Claims getBody(final String token) {
-        return Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody();
-    }
 }
+
