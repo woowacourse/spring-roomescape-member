@@ -27,18 +27,24 @@ public class AdminInterceptor implements HandlerInterceptor {
         if (!(handler instanceof HandlerMethod handlerMethod)) {
             return true;
         }
-
-        RequiredAdmin requiredAdmin = handlerMethod.getMethodAnnotation(RequiredAdmin.class);
-        if (requiredAdmin == null) {
+        if (canAccessAnyone(handlerMethod)) {
             return true;
         }
+        return hasAdminRole(request);
+    }
+
+    private boolean canAccessAnyone(final HandlerMethod handlerMethod) {
+        return handlerMethod.getMethodAnnotation(RequiredAdmin.class) == null;
+    }
+
+    private boolean hasAdminRole(final HttpServletRequest request) {
         String token = jwtTokenHandler.extractTokenValue(request);
         jwtTokenHandler.validateToken(token);
         Role role = jwtTokenHandler.getRole(token);
 
-        if (role != Role.ADMIN) {
-            throw new AuthenticationException("권한이 존재하지 않습니다.");
+        if (role == Role.ADMIN) {
+            return true;
         }
-        return true;
+        throw new AuthenticationException("권한이 존재하지 않습니다.");
     }
 }
