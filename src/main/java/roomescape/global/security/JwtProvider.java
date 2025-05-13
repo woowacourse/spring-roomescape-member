@@ -17,10 +17,15 @@ import roomescape.member.domain.Member;
 
 @Component
 public class JwtProvider {
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
+    private final String secretKey;
     @Value("${security.jwt.token.expire-length}")
-    private long validityInMilliseconds;
+    private final long validityInMilliseconds;
+
+    public JwtProvider(@Value("${security.jwt.token.secret-key}") String secretKey,
+                       @Value("${security.jwt.token.expire-length}") long validityInMilliseconds) {
+        this.secretKey = secretKey;
+        this.validityInMilliseconds = validityInMilliseconds;
+    }
 
     public String createToken(Member member) {
         Date now = new Date();
