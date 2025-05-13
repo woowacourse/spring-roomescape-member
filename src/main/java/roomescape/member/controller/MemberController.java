@@ -13,15 +13,15 @@ import roomescape.user.service.UserService;
 @RequestMapping("/members")
 public class MemberController {
 
-    private final UserService memberService;
+    private final UserService userService;
 
-    public MemberController(UserService memberService) {
-        this.memberService = memberService;
+    public MemberController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
     public ResponseEntity<List<UserResponseDto>> findAll() {
-        List<UserResponseDto> userResponseDtos = memberService.findAll();
+        List<UserResponseDto> userResponseDtos = userService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(userResponseDtos);
     }
 }
