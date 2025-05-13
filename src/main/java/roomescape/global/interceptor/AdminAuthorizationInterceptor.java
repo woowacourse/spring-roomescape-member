@@ -4,10 +4,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.auth.exception.UnauthorizedAccessException;
 import roomescape.global.security.CookieUtil;
 import roomescape.global.security.JwtProvider;
 import roomescape.member.domain.Role;
-import roomescape.member.exception.MemberRoleNotExistsException;
 import roomescape.member.repository.MemberRepository;
 
 @Component
@@ -25,14 +25,9 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
             throws Exception {
         String token = CookieUtil.extractTokenFromCookie(request.getCookies());
 
-        Long memberId = jwtProvider.getMemberId(token);
-
-        Role role = memberRepository.findRoleById(memberId)
-                .orElseThrow(MemberRoleNotExistsException::new);
-
+        Role role = Role.findBy(jwtProvider.getRoleName(token));
         if (role != Role.ADMIN) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            return false;
+            throw new UnauthorizedAccessException();
         }
 
         return true;
