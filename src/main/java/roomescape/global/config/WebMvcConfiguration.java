@@ -7,27 +7,26 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.global.interceptor.AdminAuthorizationInterceptor;
 import roomescape.global.resolver.LoginMemberIdArgumentResolver;
-import roomescape.global.security.JwtProvider;
-import roomescape.member.repository.MemberRepository;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
-    private final MemberRepository memberRepository;
-    private final JwtProvider jwtProvider;
+    private final LoginMemberIdArgumentResolver loginMemberIdArgumentResolver;
+    private final AdminAuthorizationInterceptor adminAuthorizationInterceptor;
 
-    public WebMvcConfiguration(MemberRepository memberRepository, JwtProvider jwtProvider) {
-        this.memberRepository = memberRepository;
-        this.jwtProvider = jwtProvider;
+    public WebMvcConfiguration(LoginMemberIdArgumentResolver loginMemberIdArgumentResolver,
+                               AdminAuthorizationInterceptor adminAuthorizationInterceptor) {
+        this.loginMemberIdArgumentResolver = loginMemberIdArgumentResolver;
+        this.adminAuthorizationInterceptor = adminAuthorizationInterceptor;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberIdArgumentResolver(jwtProvider));
+        resolvers.add(loginMemberIdArgumentResolver);
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminAuthorizationInterceptor(memberRepository, jwtProvider))
+        registry.addInterceptor(adminAuthorizationInterceptor)
                 .addPathPatterns("/admin/**");
     }
 }
