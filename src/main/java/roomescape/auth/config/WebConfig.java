@@ -6,28 +6,27 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.domain.AdminAuthorizationInterceptor;
-import roomescape.auth.domain.CookieTokenExtractor;
 import roomescape.auth.domain.LoginMemberArgumentResolver;
-import roomescape.auth.service.AuthService;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    private final AuthService authService;
-    private final CookieTokenExtractor extractor;
+    private final AdminAuthorizationInterceptor adminAuthorizationInterceptor;
+    private final LoginMemberArgumentResolver loginMemberArgumentResolver;
 
-    public WebConfig(AuthService authService, CookieTokenExtractor extractor) {
-        this.authService = authService;
-        this.extractor = extractor;
+    public WebConfig(final AdminAuthorizationInterceptor adminAuthorizationInterceptor,
+                     final LoginMemberArgumentResolver loginMemberArgumentResolver) {
+        this.adminAuthorizationInterceptor = adminAuthorizationInterceptor;
+        this.loginMemberArgumentResolver = loginMemberArgumentResolver;
     }
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminAuthorizationInterceptor(authService, extractor))
+        registry.addInterceptor(adminAuthorizationInterceptor)
                 .addPathPatterns("/admin");
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberArgumentResolver(authService, extractor));
+        resolvers.add(loginMemberArgumentResolver);
     }
 }

@@ -3,10 +3,12 @@ package roomescape.auth.domain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.service.AuthService;
 import roomescape.member.domain.Member;
 
+@Component
 public class AdminAuthorizationInterceptor implements HandlerInterceptor {
     private final AuthService authService;
     private final CookieTokenExtractor extractor;
