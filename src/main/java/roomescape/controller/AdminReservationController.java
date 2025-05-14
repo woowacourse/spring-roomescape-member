@@ -10,11 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.LoginMember;
-import roomescape.domain.Role;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
-import roomescape.exception.UnauthorizedAccessException;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -27,11 +24,7 @@ public class AdminReservationController {
     }
 
     @PostMapping("/admin/reservations")
-    public ResponseEntity<ReservationResponse> addReservation(@Valid @RequestBody ReservationRequest request, LoginMember member) {
-        if (member.getRole() == Role.USER) {
-            throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
-        }
-
+    public ResponseEntity<ReservationResponse> addReservation(@Valid @RequestBody ReservationRequest request) {
         ReservationResponse responseDto = reservationService.createAdminReservation(request);
         return ResponseEntity.created(URI.create("reservations/" + responseDto.id())).body(responseDto);
     }
@@ -41,12 +34,8 @@ public class AdminReservationController {
             @RequestParam(value = "theme", required = false) Long theme,
             @RequestParam(value = "member", required = false) Long member,
             @RequestParam(value = "from", required = false) LocalDate from,
-            @RequestParam(value = "to", required = false) LocalDate to,
-            LoginMember loginMember) {
-        if (loginMember.getRole() == Role.USER) {
-            throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
-        }
-
+            @RequestParam(value = "to", required = false) LocalDate to
+    ) {
         return ResponseEntity.ok(reservationService.searchReservations(theme, member, from, to));
     }
 }
