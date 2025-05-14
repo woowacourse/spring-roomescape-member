@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import roomescape.dao.ReservationDao;
-import roomescape.domain_entity.Reservation;
-import roomescape.domain_entity.ReservationTime;
+import roomescape.entity.Reservation;
+import roomescape.entity.ReservationTime;
 
 public class FakeReservationDao implements ReservationDao {
 
@@ -20,10 +20,17 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public Long create(Reservation reservation) {
+    public List<Reservation> findByThemeAndMemberAndDate(Long themeId, Long memberId, LocalDate dateFrom,
+                                                         LocalDate dateTo) {
+        return List.of();
+    }
+
+    @Override
+    public Reservation create(Reservation reservation) {
         long reservationId = id++;
-        fakeMemory.add(reservation.copyWithId(reservationId));
-        return reservationId;
+        Reservation createdReservation = reservation.copyWithId(reservationId);
+        fakeMemory.add(createdReservation);
+        return createdReservation;
     }
 
     @Override

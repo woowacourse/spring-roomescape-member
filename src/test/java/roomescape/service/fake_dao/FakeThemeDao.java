@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import roomescape.dao.ThemeDao;
-import roomescape.domain_entity.Theme;
+import roomescape.entity.Theme;
 
 public class FakeThemeDao implements ThemeDao {
 
@@ -31,14 +31,20 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public Long create(Theme theme) {
+    public Theme create(Theme theme) {
         Long timeId = id++;
-        fakeMemory.add(theme.copyWithId(timeId));
-        return timeId;
+        Theme createdTheme = theme.copyWithId(timeId);
+        fakeMemory.add(createdTheme);
+        return createdTheme;
     }
 
     @Override
     public void deleteById(Long idRequest) {
         fakeMemory.removeIf(theme -> Objects.equals(theme.getId(), idRequest));
+    }
+
+    @Override
+    public boolean existsByName(Theme theme) {
+        return false;
     }
 }

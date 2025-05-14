@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import roomescape.domain_entity.ReservationTime;
+import roomescape.entity.ReservationTime;
 import roomescape.mapper.ReservationTimeMapper;
 
 @Component
@@ -40,7 +40,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         }
     }
 
-    public Long create(ReservationTime time) {
+    public ReservationTime create(ReservationTime time) {
         String sql = "insert into reservation_time (start_at) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
@@ -53,7 +53,8 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
                     return ps;
                 }, keyHolder
         );
-        return keyHolder.getKey().longValue();
+        long reservationTimeId = keyHolder.getKey().longValue();
+        return time.copyWithId(reservationTimeId);
     }
 
     public void deleteById(Long id) {
@@ -65,5 +66,15 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         if (deletedCount == 0) {
             throw new IllegalArgumentException("존재하지 않는 시간 id입니다.");
         }
+    }
+
+    @Override
+    public boolean existsByStartAt(ReservationTime reservationTime) {
+        String sql = "select exists (select 1 from reservation_time where start_at = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                sql,
+                Boolean.class,
+                reservationTime.getStartAt()
+        ));
     }
 }

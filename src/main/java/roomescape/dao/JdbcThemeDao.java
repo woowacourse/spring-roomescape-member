@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import roomescape.domain_entity.Theme;
+import roomescape.entity.Theme;
 import roomescape.mapper.ThemeMapper;
 
 @Component
@@ -71,7 +71,7 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public Long create(Theme theme) {
+    public Theme create(Theme theme) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into theme (name, description, thumbnail) values (?, ?, ?)";
         jdbcTemplate.update(
@@ -87,7 +87,8 @@ public class JdbcThemeDao implements ThemeDao {
                 },
                 keyHolder
         );
-        return keyHolder.getKey().longValue();
+        long themeId = keyHolder.getKey().longValue();
+        return theme.copyWithId(themeId);
     }
 
     @Override
@@ -100,5 +101,15 @@ public class JdbcThemeDao implements ThemeDao {
         if (deletedCount == 0) {
             throw new IllegalArgumentException("존재하지 않는 테마 id입니다.");
         }
+    }
+
+    @Override
+    public boolean existsByName(Theme theme) {
+        String sql = "select exists (select 1 from theme where name = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                sql,
+                Boolean.class,
+                theme.getName()
+        ));
     }
 }

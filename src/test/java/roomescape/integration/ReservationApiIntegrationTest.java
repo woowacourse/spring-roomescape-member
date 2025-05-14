@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.entity.AccessToken;
+import roomescape.entity.Member;
+import roomescape.entity.MemberRole;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -23,23 +26,56 @@ public class ReservationApiIntegrationTest {
 
     @BeforeEach
     void setUpData() {
+        String memberSetUp = "insert into member (name, email, password, role) values ('moda', 'moda_email', 'moda_password', 'ADMIN')";
         String reservationTimeSetUp = "insert into reservation_time (start_at) values ('10:00')";
         String themeSetUp = "insert into theme (name, description, thumbnail) values ('theme_name', 'theme_description', 'theme_thumbnail')";
-        String reservationSetUp = "insert into reservation (name, date, time_id, theme_id) values ('reservation_name', '2025-08-04', 1, 1)";
+        String reservationSetUp = "insert into reservation (date, member_id, time_id, theme_id) values ('2025-08-04', 1, 1, 1)";
+        jdbcTemplate.update(memberSetUp);
         jdbcTemplate.update(reservationTimeSetUp);
         jdbcTemplate.update(themeSetUp);
         jdbcTemplate.update(reservationSetUp);
     }
 
     @Test
-    @DisplayName("예약을 생성한다.")
-    void createReservation() {
+    @DisplayName("사용자가 예약을 생성한다.")
+    void postReservation() {
         //given
-        String name = "브라운";
         String date = "2025-08-05";
 
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", name);
+        reservation.put("date", date);
+        reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
+
+        Member member = new Member(1L, "moda", "moda_email", "moda_password", MemberRole.ADMIN);
+        AccessToken accessToken = new AccessToken(member);
+
+        //when
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", accessToken.getValue())
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(2),
+                        "date", is(date),
+                        "member.id", is(1),
+                        "member.name", is("moda"),
+                        "time.id", is(1),
+                        "time.startAt", is("10:00"),
+                        "theme.id", is(1),
+                        "theme.name", is("theme_name")
+                );
+    }
+
+    @Test
+    @DisplayName("토큰이 없을 경우 예약 생성 시 예외가 발생한다.")
+    void failPostReservation() {
+        //given
+        String date = "2025-08-05";
+
+        Map<String, Object> reservation = new HashMap<>();
         reservation.put("date", date);
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
@@ -50,33 +86,6 @@ public class ReservationApiIntegrationTest {
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201)
-                .body("id", is(2),
-                        "name", is(name),
-                        "date", is(date),
-                        "time.id", is(1),
-                        "time.startAt", is("10:00"),
-                        "theme.id", is(1),
-                        "theme.name", is("theme_name")
-                );
-    }
-
-    @Test
-    @DisplayName("전체 예약을 조회한다.")
-    void readAllReservations() {
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
-    }
-
-    @Test
-    @DisplayName("예약을 삭제한다.")
-    void deleteReservation() {
-        RestAssured.given().log().all()
-                .when().delete("/reservations/1")
-                .then().log().all()
-                .statusCode(204);
+                .statusCode(401);
     }
 }

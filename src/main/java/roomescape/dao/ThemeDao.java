@@ -1,7 +1,7 @@
 package roomescape.dao;
 
 import java.util.List;
-import roomescape.domain_entity.Theme;
+import roomescape.entity.Theme;
 
 public interface ThemeDao {
 
@@ -11,7 +11,9 @@ public interface ThemeDao {
 
     List<Theme> findAllById(List<Long> themeIds);
 
-    Long create(Theme theme);
+    Theme create(Theme theme);
 
     void deleteById(Long idRequest);
+
+    boolean existsByName(Theme theme);
 }

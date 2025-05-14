@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.domain_entity.ReservationTime;
+import roomescape.entity.ReservationTime;
 
 public class FakeReservationTimeDao implements ReservationTimeDao {
 
@@ -25,14 +25,20 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public Long create(ReservationTime time) {
+    public ReservationTime create(ReservationTime time) {
         Long timeId = id++;
-        fakeMemory.add(time.copyWithId(timeId));
-        return timeId;
+        ReservationTime createdReservationTime = time.copyWithId(timeId);
+        fakeMemory.add(createdReservationTime);
+        return createdReservationTime;
     }
 
     @Override
     public void deleteById(Long id) {
         fakeMemory.removeIf(reservationTime -> reservationTime.getId() == id);
+    }
+
+    @Override
+    public boolean existsByStartAt(ReservationTime reservationTime) {
+        return false;
     }
 }

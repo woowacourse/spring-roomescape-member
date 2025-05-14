@@ -66,11 +66,15 @@
 
 ### 예약 관련 API
 
-| Method | URL                | Description | HTTP Status    |
-|--------|--------------------|-------------|----------------|
-| GET    | /reservations      | 예약 전체 조회    | 200 OK         |
-| POST   | /reservations      | 예약 추가       | 201 CREATED    |
-| DELETE | /reservations/{id} | 예약 삭제       | 204 NO CONTENT |
+| Method | URL                 | Description | HTTP Status    |
+|--------|---------------------|-------------|----------------|
+| GET    | /reservations       | 예약 전체 조회    | 200 OK         |
+| POST   | /reservations       | 사용자 예약 추가   | 201 CREATED    |
+| POST   | /admin/reservations | 관리자 예약 추가   | 201 CREATED    |
+| DELETE | /reservations/{id}  | 예약 삭제       | 204 NO CONTENT |
+
+-[x] 예약 생성 시 관리자면 리퀘스트바디로 전달한 memberId에 맞는 회원의 예약을 생성한다.
+-[x] 예약 생성 시 사용자면 자신의 토큰으로 전달한 로그인 정보로 예약을 생성한다.
 
 ### 예약 시간 관련 API
 
@@ -89,3 +93,14 @@
 | GET    | /themes/rank | 테마 순위 조회    | 200 OK         |
 | POST   | /themes      | 테마 추가       | 201 CREATED    |
 | DELETE | /themes/{id} | 테마 삭제       | 204 NO CONTENT |
+
+### 회원 관련 API
+
+| Method | URL          | Description   | HTTP Status |
+|--------|--------------|---------------|-------------|
+| GET    | /members     | 전체 회원 조회      | 200 OK      |
+| GET    | /login/check | 로그인 상태 확인     | 200 OK      |
+| GET    | /signup      | 회원가입 및 로그인 처리 | 200 OK      |
+| POST   | /login       | 사용자 로그인 처리    | 200 OK      |
+| POST   | /logout      | 사용자 로그아웃 처리   | 200 OK      |
+| POST   | /members     | 회원가입 처리       | 201 CREATED |

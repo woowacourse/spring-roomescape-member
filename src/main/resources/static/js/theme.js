@@ -1,5 +1,5 @@
 let isEditing = false;
-const API_ENDPOINT = '/themes';
+const API_ENDPOINT = '/admin/themes';
 const cellFields = ['id', 'name', 'description', 'thumbnail'];
 const createCellFields = ['', createInput(), createInput(), createInput()];
 

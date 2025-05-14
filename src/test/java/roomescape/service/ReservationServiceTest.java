@@ -5,26 +5,34 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.domain_entity.ReservationTime;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.request.ReservationPostRequestByUser;
+import roomescape.dto.response.ReservationPostResponse;
+import roomescape.dto.response.ReservationTimePostResponse;
+import roomescape.entity.MemberRole;
+import roomescape.entity.ReservationTime;
+import roomescape.service.fake_dao.FakeMemberDao;
 import roomescape.service.fake_dao.FakeReservationDao;
 import roomescape.service.fake_dao.FakeReservationTimeDao;
 import roomescape.service.fake_dao.FakeThemeDao;
+import roomescape.web.LoginMember;
 
 class ReservationServiceTest {
 
     private final ReservationDao reservationDao = new FakeReservationDao();
+    private final MemberDao memberDao = new FakeMemberDao();
     private final ReservationTimeDao timeDao = new FakeReservationTimeDao();
     private final ThemeDao themeDao = new FakeThemeDao();
-    private final ReservationService reservationService = new ReservationService(reservationDao, timeDao, themeDao);
+    private final ReservationQueryService reservationQueryService = new ReservationQueryService(reservationDao);
+    private final ReservationCommandService reservationCommandService = new ReservationCommandService(reservationDao,
+            memberDao,
+            timeDao,
+            themeDao);
 
     @Test
     @Disabled
@@ -32,26 +40,16 @@ class ReservationServiceTest {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0, 0));
         timeDao.create(time);
 
-        ReservationResponse reservation = reservationService.createReservation(new ReservationRequest(
-                "moda", LocalDate.of(2025, 4, 27), 1L, 1L
-        ));
+        ReservationPostResponse reservation = reservationCommandService.createReservationOfLoginMember(
+                new ReservationPostRequestByUser(
+                        LocalDate.of(2025, 4, 27), 1L, 1L
+                ), new LoginMember(1L, "moda", MemberRole.ADMIN));
 
         assertAll(
                 () -> assertThat(reservation.id()).isEqualTo(1),
-                () -> assertThat(reservation.name()).isEqualTo("moda"),
                 () -> assertThat(reservation.date()).isEqualTo(LocalDate.of(2025, 4, 27)),
-                () -> assertThat(reservation.time()).isEqualTo(ReservationTimeResponse.from(time))
+                () -> assertThat(reservation.time()).isEqualTo(new ReservationTimePostResponse(time))
         );
-    }
-
-    @Test
-    @Disabled
-    void findAllReservations() {
-        createReservation();
-
-        List<ReservationResponse> reservations = reservationService.findAllReservations();
-
-        assertThat(reservations).hasSize(1);
     }
 
     @Test
@@ -59,7 +57,7 @@ class ReservationServiceTest {
     void deleteReservation() {
         createReservation();
 
-        reservationService.deleteReservation(1L);
+        reservationCommandService.deleteReservation(1L);
 
         assertThat(reservationDao.findAll()).hasSize(0);
     }

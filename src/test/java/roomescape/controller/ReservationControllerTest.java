@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.controller.user.ReservationController;
 
 public class ReservationControllerTest {
 

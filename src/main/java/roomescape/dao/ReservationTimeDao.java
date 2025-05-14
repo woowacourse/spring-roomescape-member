@@ -1,7 +1,7 @@
 package roomescape.dao;
 
 import java.util.List;
-import roomescape.domain_entity.ReservationTime;
+import roomescape.entity.ReservationTime;
 
 public interface ReservationTimeDao {
 
@@ -9,7 +9,9 @@ public interface ReservationTimeDao {
 
     ReservationTime findById(Long id);
 
-    Long create(ReservationTime time);
+    ReservationTime create(ReservationTime time);
 
     void deleteById(Long id);
+
+    boolean existsByStartAt(ReservationTime reservationTime);
 }
