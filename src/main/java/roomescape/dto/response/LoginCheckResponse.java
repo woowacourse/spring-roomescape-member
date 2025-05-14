@@ -6,7 +6,7 @@ public record LoginCheckResponse(
         String name
 ) {
 
-    public static final String NOT_LOGGED_IN_USER = "비로그인 사용자";
+    private static final String NOT_LOGGED_IN_USER = "비로그인 사용자";
 
     public static LoginCheckResponse from(Member member) {
         if (member == null) {
