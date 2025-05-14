@@ -25,15 +25,15 @@ INSERT INTO theme (name, description, thumbnail)
 VALUES ('레벨6 탈출', '우테코 레벨6를 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
 INSERT INTO member (name, email, password, role)
-VALUES ('루키', 'rookie@woowa.com', 'rookie123', 'USER');
+VALUES ('루키', 'rookie@woowa.com', '$2a$10$gUl.BwXPlmTJ3atyx1GIJeN725yqEu.WXlAL9HTub6GKGCl14yiS.', 'USER');
 INSERT INTO member (name, email, password, role)
-VALUES ('하루', 'haru@woowa.com', 'haru123', 'USER');
+VALUES ('하루', 'haru@woowa.com', '$2a$10$XqqZ2oRlZn/VkOq5U2TKDedp.fe.uM.HiHF9G9oqxV7P9HDlSlPQ2', 'USER');
 INSERT INTO member (name, email, password, role)
-VALUES ('베루스', 'verus@woowa.com', 'verus123', 'ADMIN');
+VALUES ('베루스', 'verus@woowa.com', '$2a$10$ysmXXi.Eoez4lMARiwG25.XCJM9qQl4k7O.aRP.K1/Ax9edEY2zVa', 'ADMIN');
 INSERT INTO member (name, email, password, role)
-VALUES ('사용자', 'user@user.com', 'user123', 'USER');
+VALUES ('사용자', 'user@user.com', '$2a$10$hCNTGzfIFwlVySRa0cv0buTCl9camwNX4k179h7sy32EJycXisJzm', 'USER');
 INSERT INTO member (name, email, password, role)
-VALUES ('관리자', 'admin@admin.com', 'admin123', 'ADMIN');
+VALUES ('관리자', 'admin@admin.com', '$2a$10$/tUyrkwviznsJbm3p/LHQ.qgksOmR0Fz0rbMk5wQLmakZt84ucNJq', 'ADMIN');
 
 INSERT INTO reservation (date, time_id, theme_id, member_id)
 VALUES (DATEADD('DAY', -6, CURRENT_DATE), 1, 1, 1);

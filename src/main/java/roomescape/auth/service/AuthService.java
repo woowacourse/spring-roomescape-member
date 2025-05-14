@@ -1,5 +1,6 @@
 package roomescape.auth.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.infrastructure.JwtTokenProvider;
@@ -13,10 +14,13 @@ public class AuthService {
 
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+    public AuthService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider,
+                       PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public String createToken(TokenRequest request) {
@@ -30,10 +34,9 @@ public class AuthService {
     }
 
     private void validatePassword(Member member, String requestPassword) {
-        if (member.getPassword().equals(requestPassword)) {
+        if (passwordEncoder.matches(requestPassword, member.getPassword())) {
             return;
         }
-
         throw new InvalidRequestException("비밀번호가 일치하지 않습니다.");
     }
 

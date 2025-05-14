@@ -3,6 +3,8 @@ package roomescape.util.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.auth.infrastructure.TokenExtractor;
@@ -17,15 +19,28 @@ import roomescape.util.fixture.AuthFixture;
 public class WebMvcTestConfig implements WebMvcConfigurer {
 
     @Bean
-    public AuthService authService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
-        return new AuthService(memberRepository, jwtTokenProvider);
+    public AuthService authService(
+            MemberRepository memberRepository,
+            JwtTokenProvider jwtTokenProvider,
+            PasswordEncoder passwordEncoder
+    ) {
+        return new AuthService(memberRepository, jwtTokenProvider, passwordEncoder);
     }
 
     @Bean
-    public MemberRepository memberRepository() {
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public MemberRepository memberRepository(PasswordEncoder passwordEncoder) {
         MemberFakeRepository memberRepository = new MemberFakeRepository();
-        memberRepository.save(new Member(1L, "관리자", AuthFixture.ADMIN_EMAIL, AuthFixture.ADMIN_PASSWORD, Role.ADMIN));
-        memberRepository.save(new Member(2L, "사용자", AuthFixture.USER_EMAIL, AuthFixture.USER_PASSWORD, Role.USER));
+        memberRepository.save(
+                new Member(1L, "관리자", AuthFixture.ADMIN_EMAIL, passwordEncoder.encode(AuthFixture.ADMIN_PASSWORD),
+                        Role.ADMIN));
+        memberRepository.save(
+                new Member(2L, "사용자", AuthFixture.USER_EMAIL, passwordEncoder.encode(AuthFixture.USER_PASSWORD),
+                        Role.USER));
 
         return memberRepository;
     }
