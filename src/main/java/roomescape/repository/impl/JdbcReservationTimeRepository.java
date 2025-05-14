@@ -43,7 +43,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return reservationTimes;
     }
 
-    public Optional<ReservationTime> read(Long timeId) {
+    public Optional<ReservationTime> findById(Long timeId) {
         final String query = "SELECT id, start_at FROM reservation_time WHERE id = ?";
 
         try {

@@ -41,10 +41,6 @@ public class LoginController {
 
     @GetMapping("/check")
     public ResponseEntity<Member> checkToken(@Auth Member member) {
-        if (member == null) {
-            return ResponseEntity.status(401).build();
-        }
-
         return ResponseEntity.ok(member);
     }
 }

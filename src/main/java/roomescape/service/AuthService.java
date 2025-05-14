@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
+import roomescape.common.exception.UnauthorizedException;
 import roomescape.domain.member.Member;
 
 @Service
@@ -51,7 +52,7 @@ public class AuthService {
 
     private String extractTokenFromCookie(Cookie[] cookies) {
         if (cookies == null) {
-            return "";
+            throw new UnauthorizedException("토큰을 찾을 수 없습니다: 올바른 쿠키가 아닙니다.");
         }
 
         for (Cookie cookie : cookies) {
@@ -59,6 +60,7 @@ public class AuthService {
                 return cookie.getValue();
             }
         }
-        return "";
+
+        throw new UnauthorizedException("쿠키에서 토큰 정보를 찾을 수 없습니다");
     }
 }

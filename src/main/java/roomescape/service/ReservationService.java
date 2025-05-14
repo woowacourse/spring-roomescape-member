@@ -43,11 +43,11 @@ public class ReservationService {
         Member member = memberRepository.findById(request.memberId())
                 .orElseThrow(() -> new NotFoundMemberException("올바른 멤버가 아닙니다."));
 
-        ReservationTime reservationTime = reservationTimeRepository.read(request.timeId())
-                .orElseThrow(() -> new NotFoundReservationTimeException("올바른 예약 시간을 찾을 수 없습니다. 나중에 다시 시도해주세요."));
-
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new NotFoundThemeException("올바른 방탈출 테마가 없습니다."));
+
+        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
+                .orElseThrow(() -> new NotFoundReservationTimeException("올바른 예약 시간을 찾을 수 없습니다. 나중에 다시 시도해주세요."));
 
         if (LocalDateTime.of(request.date(), reservationTime.getStartAt()).isBefore(LocalDateTime.now())) {
             throw new NotAbleReservationException("과거 시점의 예약을 할 수 없습니다.");
