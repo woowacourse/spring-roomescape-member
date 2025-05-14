@@ -24,7 +24,6 @@ public class JwtProvider {
     ) {
         this.validityInMilliseconds = validityInMilliseconds;
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-
     }
 
     public String createToken(JwtPayload jwtPayload) {
