@@ -104,7 +104,7 @@ public class MissionStepTest {
         void step4_applyDatabase() {
             try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
                 assertThat(connection).isNotNull();
-                assertThat(connection.getCatalog()).isEqualTo("DATABASE");
+                assertThat(connection.getCatalog()).isEqualTo("TEST");
                 assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null).next()).isTrue();
             } catch (SQLException e) {
                 throw new RuntimeException(e);

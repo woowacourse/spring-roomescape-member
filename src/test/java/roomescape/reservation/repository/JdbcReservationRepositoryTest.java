@@ -2,7 +2,6 @@ package roomescape.reservation.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDate;
 import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
