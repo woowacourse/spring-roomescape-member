@@ -57,12 +57,12 @@ class ReservationServiceTest {
 
         when(reservationTimeService.findById(any(Long.class))).thenReturn(time);
         when(themeService.findById(any(Long.class))).thenReturn(theme);
-        when(memberService.findByToken(any(String.class))).thenReturn(member);
+        when(memberService.findById(any(Long.class))).thenReturn(member);
         when(reservationDao.findByThemeAndDateAndTime(any(Reservation.class))).thenReturn(Optional.of(Reservation.load(
                 1L, LocalDate.now(), member, time, theme)));
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create("1234", request))
+        assertThatThrownBy(() -> reservationService.create(1L, request))
                 .isInstanceOf(ConflictException.class)
                 .hasMessage(ExceptionCause.RESERVATION_DUPLICATE.getMessage());
     }

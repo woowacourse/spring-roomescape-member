@@ -19,7 +19,7 @@ public class Reservation {
 
     private Reservation(final Long id, final LocalDate date, Member member, final ReservationTime time,
                         final Theme theme) {
-        validateFields(date);
+        validateFields(date, member, time, theme);
         this.id = id;
         this.date = date;
         this.member = member;
@@ -45,7 +45,7 @@ public class Reservation {
         }
     }
 
-    public void validateFields(LocalDate date) {
+    public void validateFields(LocalDate date, Member member, ReservationTime time, Theme theme) {
         if (date == null) {
             throw new BadRequestException(ExceptionCause.EMPTY_VALUE_RESERVATION_DATE);
         }
