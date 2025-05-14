@@ -10,51 +10,64 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.member.repository.FakeMemberRepository;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
+import roomescape.config.TestConfig;
+import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.exception.ReservationAlreadyExistsException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.fixture.TestFixture;
-import roomescape.reservation.repository.FakeReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.repository.FakeReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
-import roomescape.theme.repository.FakeThemeRepository;
+import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
+@JdbcTest
+@Import(TestConfig.class)
+@TestPropertySource(properties = {
+        "spring.sql.init.schema-locations=classpath:schema.sql",
+        "spring.sql.init.data-locations="
+})
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class ReservationServiceTest {
 
     private static final LocalDate futureDate = TestFixture.makeFutureDate();
     private static final LocalDateTime afterOneHour = TestFixture.makeTimeAfterOneHour();
-    private static final Long themeId = 1L;
-    private static final Long memberId = 1L;
+
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     private ReservationService reservationService;
-    private ReservationTimeRepository reservationTimeRepository;
 
     @BeforeEach
     void setUp() {
-        ReservationRepository reservationRepository = new FakeReservationRepository();
-        reservationTimeRepository = new FakeReservationTimeRepository();
-        ThemeRepository themeRepository = new FakeThemeRepository();
-        MemberRepository memberRepository = new FakeMemberRepository();
-
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
                 memberRepository);
-
-        ReservationTime time1 = ReservationTime.of(1L, LocalTime.of(10, 0));
-        reservationTimeRepository.save(time1);
-        ReservationTime time2 = ReservationTime.of(2L, LocalTime.of(10, 0));
-        reservationTimeRepository.save(time2);
-        themeRepository.save(TestFixture.makeTheme(1L));
-        memberRepository.save(TestFixture.makeMember());
     }
 
     @Test
     void createReservation_shouldReturnResponseWhenSuccessful() {
-        ReservationResponse response = reservationService.create(futureDate, 1L, 1L, memberId, afterOneHour);
+        ReservationTime time1 = reservationTimeRepository.save(ReservationTime.of(1L, LocalTime.of(10, 0)));
+        Theme savedTheme = themeRepository.save(TestFixture.makeTheme(1L));
+        Member savedMember = memberRepository.save(TestFixture.makeMember());
+
+        ReservationResponse response = reservationService.create(futureDate, time1.getId(), savedTheme.getId(),
+                savedMember.getId(), afterOneHour);
 
         Assertions.assertAll(
                 () -> assertThat(response.member().name()).isEqualTo("Mint"),
@@ -65,9 +78,14 @@ class ReservationServiceTest {
 
     @Test
     void getReservations_shouldReturnAllCreatedReservations() {
-        reservationTimeRepository.save(ReservationTime.of(2L, LocalTime.of(10, 0)));
-        reservationService.create(futureDate, 1L, 1L, memberId, afterOneHour);
-        reservationService.create(futureDate, 2L, 1L, memberId, afterOneHour);
+        ReservationTime time1 = reservationTimeRepository.save(ReservationTime.of(1L, LocalTime.of(10, 0)));
+        ReservationTime time2 = reservationTimeRepository.save(ReservationTime.of(2L, LocalTime.of(11, 0)));
+        Theme savedTheme = themeRepository.save(TestFixture.makeTheme(1L));
+        Member savedMember = memberRepository.save(TestFixture.makeMember());
+
+        reservationTimeRepository.save(time1);
+        reservationService.create(futureDate, time1.getId(), savedTheme.getId(), savedMember.getId(), afterOneHour);
+        reservationService.create(futureDate, time2.getId(), savedTheme.getId(), savedMember.getId(), afterOneHour);
 
         List<ReservationResponse> result = reservationService.findReservations(null, null, null, null);
         assertThat(result).hasSize(2);
@@ -82,26 +100,43 @@ class ReservationServiceTest {
 
     @Test
     void deleteReservation_shouldRemoveSuccessfully() {
-        ReservationResponse response = reservationService.create(futureDate, 1L, 1L, memberId, afterOneHour);
+        ReservationTime time1 = reservationTimeRepository.save(ReservationTime.of(1L, LocalTime.of(10, 0)));
+        Theme savedTheme = themeRepository.save(TestFixture.makeTheme(1L));
+        Member savedMember = memberRepository.save(TestFixture.makeMember());
+
+        ReservationResponse response = reservationService.create(futureDate, time1.getId(), savedTheme.getId(),
+                savedMember.getId(), afterOneHour);
         reservationService.delete(response.id());
 
-        List<ReservationResponse> result = reservationService.findReservations(themeId, memberId, futureDate,
+        List<ReservationResponse> result = reservationService.findReservations(savedTheme.getId(), savedMember.getId(),
+                futureDate,
                 futureDate.plusDays(1));
         assertThat(result).isEmpty();
     }
 
     @Test
     void createReservation_shouldThrowException_WhenDuplicated() {
-        reservationService.create(futureDate, 1L, 1L, 1L, afterOneHour);
+        ReservationTime time1 = reservationTimeRepository.save(ReservationTime.of(1L, LocalTime.of(10, 0)));
+        Theme savedTheme = themeRepository.save(TestFixture.makeTheme(1L));
+        Member savedMember = memberRepository.save(TestFixture.makeMember());
 
-        assertThatThrownBy(() -> reservationService.create(futureDate, 1L, 1L, memberId, afterOneHour))
+        reservationService.create(futureDate, time1.getId(),
+                savedTheme.getId(), savedMember.getId(), afterOneHour);
+
+        assertThatThrownBy(
+                () -> reservationService.create(futureDate, time1.getId(), savedTheme.getId(), savedMember.getId(),
+                        afterOneHour))
                 .isInstanceOf(ReservationAlreadyExistsException.class)
                 .hasMessageContaining("해당 시간에 이미 예약이 존재합니다.");
     }
 
     @Test
     void createReservation_shouldThrowException_WhenTimeIdNotFound() {
-        assertThatThrownBy(() -> reservationService.create(futureDate, 3L, 1L, memberId, afterOneHour))
+        Theme savedTheme = themeRepository.save(TestFixture.makeTheme(1L));
+        Member savedMember = memberRepository.save(TestFixture.makeMember());
+
+        assertThatThrownBy(() -> reservationService.create(futureDate, 999L, savedTheme.getId(), savedMember.getId(),
+                afterOneHour))
                 .isInstanceOf(ReservationNotFoundException.class)
                 .hasMessageContaining("요청한 id와 일치하는 예약 시간 정보가 없습니다.");
     }
