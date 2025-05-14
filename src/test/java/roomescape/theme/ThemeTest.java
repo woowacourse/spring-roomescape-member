@@ -25,14 +25,14 @@ class ThemeTest {
     void 설명이_5글자_미만이면_예외가_발생한다() {
         // when & then
         Assertions.assertThatThrownBy(() -> Theme.createWithoutId("name", "hi", "thumb.jpg"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ArgumentException.class);
     }
 
     @Test
     void 설명이_100글자_초과이면_예외가_발생한다() {
         // when & then
         Assertions.assertThatThrownBy(() -> Theme.createWithoutId("name", "hi nice to meet you hi nice to meet you hi nice to meet you hi nice to meet you hi nice to meet you hi nice to meet you hi nice to meet you hi nice to meet you hi nice to meet you hi nice to meet you hi nice to meet you hi nice to meet you hi nice to meet you hi nice to meet you ", "thumb.jpg"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ArgumentException.class);
     }
 
     @Test
@@ -46,6 +46,6 @@ class ThemeTest {
     void 썸네일이_유효한_링크가_아니면_예외가_발생한다() {
         // when & then
         Assertions.assertThatThrownBy(() -> Theme.createWithoutId("name", "description", "thumb"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ArgumentException.class);
     }
 }
