@@ -19,7 +19,7 @@ import roomescape.global.exception.error.InvalidRequestException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.enums.Role;
 import roomescape.reservation.controller.dto.AvailableTimeResponse;
-import roomescape.reservation.controller.dto.ReservationRequest;
+import roomescape.reservation.controller.dto.ReservationCreate;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
@@ -98,7 +98,7 @@ class ReservationServiceTest {
     @Test
     void add_test() {
         // given
-        ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(2), 4L, 3L, 1L);
+        ReservationCreate request = new ReservationCreate(LocalDate.now().plusDays(2), 4L, 3L, 1L);
 
         // when
         ReservationResponse response = reservationService.add(request);
@@ -129,7 +129,7 @@ class ReservationServiceTest {
     @Test
     void past_day_exception_test() {
         // given
-        ReservationRequest request = new ReservationRequest(LocalDate.now().minusDays(1), 4L, 3L, 1L);
+        ReservationCreate request = new ReservationCreate(LocalDate.now().minusDays(1), 4L, 3L, 1L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.add(request))
@@ -141,7 +141,7 @@ class ReservationServiceTest {
     @Test
     void past_time_exception_test() {
         // given
-        ReservationRequest request = new ReservationRequest(LocalDate.now(), 1L, 3L, 1L);
+        ReservationCreate request = new ReservationCreate(LocalDate.now(), 1L, 3L, 1L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.add(request))
@@ -153,7 +153,7 @@ class ReservationServiceTest {
     @Test
     void future_test() {
         // given
-        ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(3), 1L, 1L, 1L);
+        ReservationCreate request = new ReservationCreate(LocalDate.now().plusDays(3), 1L, 1L, 1L);
 
         // when
         ReservationResponse response = reservationService.add(request);
@@ -172,7 +172,7 @@ class ReservationServiceTest {
     @Test
     void reservation_duplicate_exception() {
         // given
-        ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(3), 3L, 3L, 1L);
+        ReservationCreate request = new ReservationCreate(LocalDate.now().plusDays(3), 3L, 3L, 1L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.add(request))

@@ -11,7 +11,7 @@ import roomescape.global.exception.error.NotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.controller.dto.AvailableTimeResponse;
-import roomescape.reservation.controller.dto.ReservationRequest;
+import roomescape.reservation.controller.dto.ReservationCreate;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
@@ -67,7 +67,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse add(ReservationRequest request) {
+    public ReservationResponse add(ReservationCreate request) {
         Reservation reservation = createReservationWithoutId(request);
         Long id = reservationRepository.saveAndReturnId(reservation);
         return ReservationResponse.from(reservation.withId(id));
@@ -95,7 +95,7 @@ public class ReservationService {
                 .toList();
     }
 
-    private Reservation createReservationWithoutId(ReservationRequest request) {
+    private Reservation createReservationWithoutId(ReservationCreate request) {
         ReservationTime findTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new NotFoundException("해당하는 시간 정보가 존재하지 않습니다."));
 

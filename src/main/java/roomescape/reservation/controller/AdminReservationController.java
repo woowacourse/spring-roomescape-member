@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.controller.annotation.Admin;
-import roomescape.global.exception.error.InvalidRequestException;
-import roomescape.reservation.controller.dto.ReservationRequest;
+import roomescape.reservation.controller.dto.AdminReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 
@@ -40,15 +39,8 @@ public class AdminReservationController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ReservationResponse addReservation(@Valid @RequestBody ReservationRequest request) {
-        validateRequest(request);
-        return reservationService.add(request);
-    }
-
-    private void validateRequest(ReservationRequest request) {
-        if (request.memberId() == null) {
-            throw new InvalidRequestException("사용자가 선택되지 않았습니다.");
-        }
+    public ReservationResponse addReservation(@Valid @RequestBody AdminReservationRequest request) {
+        return reservationService.add(request.toReservationCreate());
     }
 
 }

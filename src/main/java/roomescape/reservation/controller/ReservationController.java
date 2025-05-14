@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.controller.annotation.LoginMemberId;
 import roomescape.auth.controller.annotation.LoginRequired;
 import roomescape.reservation.controller.dto.AvailableTimeResponse;
-import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
+import roomescape.reservation.controller.dto.UserReservationRequest;
 import roomescape.reservation.service.ReservationService;
 
 @RequestMapping("/reservations")
@@ -44,9 +44,9 @@ public class ReservationController {
     @LoginRequired
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ReservationResponse addReservation(@Valid @RequestBody ReservationRequest request,
+    public ReservationResponse addReservation(@Valid @RequestBody UserReservationRequest request,
                                               @LoginMemberId Long memberId) {
-        return reservationService.add(request.withMemberId(memberId));
+        return reservationService.add(request.toReservationCreate(memberId));
     }
 
     @LoginRequired

@@ -22,7 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.auth.controller.LoginController;
 import roomescape.auth.service.AuthService;
-import roomescape.reservation.controller.dto.ReservationRequest;
+import roomescape.reservation.controller.dto.ReservationCreate;
 import roomescape.reservation.service.ReservationService;
 import roomescape.util.config.WebMvcTestConfig;
 import roomescape.util.fixture.AuthFixture;
@@ -49,13 +49,13 @@ class ReservationControllerTest {
         // given
         String userToken = AuthFixture.createUserToken(authService);
         Long memberId = 3L;
-        ReservationRequest reservationRequest = new ReservationRequest(date, timeId, themeId, memberId);
+        ReservationCreate reservationCreate = new ReservationCreate(date, timeId, themeId, memberId);
 
         // when & then
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .cookie(new Cookie(LoginController.TOKEN_COOKIE_NAME, userToken))
-                        .content(objectMapper.writeValueAsString(reservationRequest)))
+                        .content(objectMapper.writeValueAsString(reservationCreate)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$." + errorFieldName).value(errorMessage));
     }
