@@ -22,8 +22,9 @@ import roomescape.global.exception.RoomEscapeException.ResourceNotFoundException
 import roomescape.reservation.dto.response.AvailableReservationResponse;
 import roomescape.reservation.repository.ReservationDao;
 import roomescape.reservationtime.repository.ReservationTimeDao;
+import roomescape.theme.dto.request.AdminThemePageResponse;
 import roomescape.theme.dto.request.ThemeRequest;
-import roomescape.theme.dto.request.ThemesWithTotalPageRequest;
+import roomescape.theme.dto.response.CreateThemeResponse;
 import roomescape.theme.dto.response.ThemeResponse;
 import roomescape.theme.repository.ThemeDao;
 
@@ -55,7 +56,7 @@ public class ThemeServiceTest {
         ThemeRequest request = new ThemeRequest("name", "description", "thumbnail");
 
         // when
-        ThemeResponse response = service.addTheme(request);
+        CreateThemeResponse response = service.addTheme(request);
 
         // then
         assertThat(response.id()).isEqualTo(17);
@@ -140,7 +141,7 @@ public class ThemeServiceTest {
         int page = 2;
 
         // when
-        ThemesWithTotalPageRequest themesByPage = service.getThemesByPage(page);
+        AdminThemePageResponse themesByPage = service.getThemesByPage(page);
 
         // then
         assertThat(themesByPage.totalPages()).isEqualTo(2);

@@ -25,8 +25,7 @@ public class AdminRoleCheckInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String token = extractValue(request.getCookies(), "token");
         String email = jwtTokenProvider.getPayload(token);
         User user = userDao.findByEmail(email)

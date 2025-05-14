@@ -5,10 +5,12 @@ import org.springframework.stereotype.Service;
 import roomescape.global.exception.RoomEscapeException.BadRequestException;
 import roomescape.global.exception.RoomEscapeException.ResourceNotFoundException;
 import roomescape.reservation.repository.ReservationDao;
+import roomescape.reservationtime.controller.ReservationTimeResponse;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.dto.request.ReservationTimeRequest;
-import roomescape.reservationtime.dto.response.ReservationTimeResponse;
-import roomescape.reservationtime.dto.response.ReservationTimesWithTotalPageResponse;
+import roomescape.reservationtime.dto.response.AdminReservationTimePageResponse;
+import roomescape.reservationtime.dto.response.AdminReservationTimePageResponse.AdminReservationTimePageElementResponse;
+import roomescape.reservationtime.dto.response.CreateReservationTimeResponse;
 import roomescape.reservationtime.repository.ReservationTimeDao;
 
 @Service
@@ -21,13 +23,13 @@ public class ReservationTimeService {
         this.reservationTimeDao = reservationTimeDao;
     }
 
-    public ReservationTimeResponse addTime(ReservationTimeRequest reservationTimeRequest) {
+    public CreateReservationTimeResponse addTime(ReservationTimeRequest reservationTimeRequest) {
         if (reservationTimeDao.isExistTime(reservationTimeRequest.startAt())) {
             throw new BadRequestException("이미 존재하는 시간입니다.");
         }
         ReservationTime time = reservationTimeRequest.toEntity();
         ReservationTime savedTime = reservationTimeDao.save(time);
-        return ReservationTimeResponse.fromEntity(savedTime);
+        return CreateReservationTimeResponse.fromEntity(savedTime);
     }
 
     public void deleteTime(Long id) {
@@ -46,7 +48,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public ReservationTimesWithTotalPageResponse getReservationTimesByPage(int page) {
+    public AdminReservationTimePageResponse getReservationTimesByPage(int page) {
         int totalThemes = reservationTimeDao.countTotalReservationTimes();
         int totalPage = (totalThemes % 10 == 0) ?
                 totalThemes / 10 : (totalThemes / 10) + 1;
@@ -55,10 +57,11 @@ public class ReservationTimeService {
         }
         int start = (page - 1) * 10 + 1;
         int end = start + 10 - 1;
-        List<ReservationTimeResponse> reservationTimeResponses = reservationTimeDao.findReservationTimesWithPage(start,
-                        end).stream()
-                .map(ReservationTimeResponse::fromEntity)
-                .toList();
-        return new ReservationTimesWithTotalPageResponse(totalPage, reservationTimeResponses);
+        List<AdminReservationTimePageElementResponse> adminReservationTimePageElementResponses =
+                reservationTimeDao.findReservationTimesWithPage(start, end)
+                        .stream()
+                        .map(AdminReservationTimePageElementResponse::fromEntity)
+                        .toList();
+        return new AdminReservationTimePageResponse(totalPage, adminReservationTimePageElementResponses);
     }
 }

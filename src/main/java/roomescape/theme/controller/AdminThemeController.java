@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.theme.dto.request.AdminThemePageResponse;
 import roomescape.theme.dto.request.ThemeRequest;
-import roomescape.theme.dto.request.ThemesWithTotalPageRequest;
-import roomescape.theme.dto.response.ThemeResponse;
+import roomescape.theme.dto.response.CreateThemeResponse;
 import roomescape.theme.service.ThemeService;
 
 @RequestMapping("/admin/themes")
@@ -27,13 +27,13 @@ public class AdminThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> addTheme(@RequestBody @Valid ThemeRequest request) {
-        ThemeResponse themeResponse = themeService.addTheme(request);
+    public ResponseEntity<CreateThemeResponse> addTheme(@RequestBody @Valid ThemeRequest request) {
+        CreateThemeResponse themeResponse = themeService.addTheme(request);
         return ResponseEntity.created(URI.create("/themes/" + themeResponse.id())).body(themeResponse);
     }
 
     @GetMapping
-    public ResponseEntity<ThemesWithTotalPageRequest> getThemesWithPage(
+    public ResponseEntity<AdminThemePageResponse> getThemesWithPage(
             @RequestParam(required = false, defaultValue = "1") int page) {
         return ResponseEntity.ok(themeService.getThemesByPage(page));
     }

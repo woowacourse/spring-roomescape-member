@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservationtime.dto.request.ReservationTimeRequest;
-import roomescape.reservationtime.dto.response.ReservationTimeResponse;
-import roomescape.reservationtime.dto.response.ReservationTimesWithTotalPageResponse;
+import roomescape.reservationtime.dto.response.AdminReservationTimePageResponse;
+import roomescape.reservationtime.dto.response.CreateReservationTimeResponse;
 import roomescape.reservationtime.service.ReservationTimeService;
 
 @RequestMapping("/admin/times")
@@ -27,17 +27,17 @@ public class AdminReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<ReservationTimesWithTotalPageResponse> getReservationTimesByPage(
+    public ResponseEntity<AdminReservationTimePageResponse> getReservationTimesByPage(
             @RequestParam(required = false, defaultValue = "1") int page) {
-        ReservationTimesWithTotalPageResponse reservationTimesByPage = reservationTimeService.getReservationTimesByPage(
+        AdminReservationTimePageResponse reservationTimesByPage = reservationTimeService.getReservationTimesByPage(
                 page);
         return ResponseEntity.ok(reservationTimesByPage);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> addTime(
+    public ResponseEntity<CreateReservationTimeResponse> addTime(
             @RequestBody @Valid ReservationTimeRequest reservationTimeRequest) {
-        ReservationTimeResponse newReservation = reservationTimeService.addTime(reservationTimeRequest);
+        CreateReservationTimeResponse newReservation = reservationTimeService.addTime(reservationTimeRequest);
         Long id = newReservation.id();
         return ResponseEntity.created(URI.create("/time/" + id)).body(newReservation);
     }

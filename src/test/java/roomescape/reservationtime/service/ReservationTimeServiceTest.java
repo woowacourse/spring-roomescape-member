@@ -16,9 +16,10 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.global.exception.RoomEscapeException.BadRequestException;
 import roomescape.global.exception.RoomEscapeException.ResourceNotFoundException;
 import roomescape.reservation.repository.ReservationDao;
+import roomescape.reservationtime.controller.ReservationTimeResponse;
 import roomescape.reservationtime.dto.request.ReservationTimeRequest;
-import roomescape.reservationtime.dto.response.ReservationTimeResponse;
-import roomescape.reservationtime.dto.response.ReservationTimesWithTotalPageResponse;
+import roomescape.reservationtime.dto.response.AdminReservationTimePageResponse;
+import roomescape.reservationtime.dto.response.CreateReservationTimeResponse;
 import roomescape.reservationtime.repository.ReservationTimeDao;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
@@ -41,7 +42,7 @@ class ReservationTimeServiceTest {
     @Test
     void 예약시간을_정상적으로_추가() {
         ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(10, 0));
-        ReservationTimeResponse response = reservationTimeService.addTime(request);
+        CreateReservationTimeResponse response = reservationTimeService.addTime(request);
 
         assertThat(response.id()).isNotNull();
         assertThat(response.startAt()).isEqualTo(LocalTime.of(10, 0).toString());
@@ -96,7 +97,7 @@ class ReservationTimeServiceTest {
         int page = 2;
 
         // when
-        ReservationTimesWithTotalPageResponse reservationTimesByPage = reservationTimeService.getReservationTimesByPage(
+        AdminReservationTimePageResponse reservationTimesByPage = reservationTimeService.getReservationTimesByPage(
                 page);
 
         // then

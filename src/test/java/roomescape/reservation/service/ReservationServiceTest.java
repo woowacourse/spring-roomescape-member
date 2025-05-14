@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,15 +13,12 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.global.exception.RoomEscapeException.BadRequestException;
 import roomescape.global.exception.RoomEscapeException.ResourceNotFoundException;
-import roomescape.reservation.dto.request.ReservationRequest;
-import roomescape.reservation.dto.response.ReservationResponse;
-import roomescape.reservation.dto.response.ReservationsWithTotalPageResponse;
+import roomescape.reservation.dto.request.CreateReservationRequest;
+import roomescape.reservation.dto.response.AdminReservationPageResponse;
+import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.repository.ReservationDao;
-import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeDao;
-import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeDao;
-import roomescape.user.domain.UserPrinciple;
 import roomescape.user.repository.UserDao;
 
 class ReservationServiceTest {
@@ -50,63 +45,78 @@ class ReservationServiceTest {
 
     @Test
     void 예약을_정상적으로_추가() {
-        ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(null, LocalTime.of(10, 0)));
-        Theme savedTheme = themeDao.save(new Theme(null, "제목", "de", "th"));
-        UserPrinciple userPrinciple = new UserPrinciple(1L, "test", "test", List.of());
-        ReservationRequest request = new ReservationRequest(LocalDate.of(2025, 12, 16), savedTime.getId(),
-                savedTheme.getId());
+        LocalDate date = LocalDate.now().plusDays(1);
+        Long nonExistThemeId = 1L;
+        Long timeId = 1L;
+        Long userId = 1L;
+        CreateReservationRequest createReservationRequest = new CreateReservationRequest(
+                date,
+                nonExistThemeId,
+                timeId,
+                userId
+        );
 
-        ReservationResponse response = reservationService.addReservation(request, userPrinciple);
+        CreateReservationResponse response = reservationService.addReservation(createReservationRequest);
 
         assertThat(response.id()).isNotNull();
-        assertThat(response.name()).isEqualTo("test");
-        assertThat(response.date()).isEqualTo(LocalDate.of(2025, 12, 16).toString());
+        assertThat(response.name()).isEqualTo("어드민1");
+        assertThat(response.date()).isEqualTo(LocalDate.now().plusDays(1).toString());
     }
 
     @Test
     void 등록되지_않은_시간으로_예약_생성_시_예외_발생() {
         // given
-        UserPrinciple userPrinciple = new UserPrinciple(1L, "test", "test", List.of());
-        Long nonExistTimeId = 999L;
-        ReservationRequest request = new ReservationRequest(
-                LocalDate.of(2026, 12, 12),
-                nonExistTimeId,
-                1L
+        LocalDate date = LocalDate.now();
+        Long themeId = 1L;
+        Long timeId = 999L;
+        Long userId = 1L;
+        CreateReservationRequest createReservationRequest = new CreateReservationRequest(
+                date,
+                themeId,
+                timeId,
+                userId
         );
 
         // when, then
-        assertThatThrownBy(() -> reservationService.addReservation(request, userPrinciple))
+        assertThatThrownBy(() -> reservationService.addReservation(createReservationRequest))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
     void 등록되지_않는_테마로_예약_생성_시_예외_발생() {
         // given
-        UserPrinciple userPrinciple = new UserPrinciple(1L, "test", "test", List.of());
-        Long nonExistThemeId = 999L;
-        ReservationRequest request = new ReservationRequest(
-                LocalDate.of(2026, 12, 12),
-                1L,
-                nonExistThemeId
+        LocalDate date = LocalDate.of(2026, 12, 12);
+        Long themeId = 999L;
+        Long timeId = 1L;
+        Long userId = 1L;
+        CreateReservationRequest createReservationRequest = new CreateReservationRequest(
+                date,
+                themeId,
+                timeId,
+                userId
         );
 
         // when, then
-        assertThatThrownBy(() -> reservationService.addReservation(request, userPrinciple))
+        assertThatThrownBy(() -> reservationService.addReservation(createReservationRequest))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
     void 과거_날짜로_예약_생성_시_예외_발생() {
         // given
-        UserPrinciple userPrinciple = new UserPrinciple(1L, "test", "test", List.of());
-        ReservationRequest request = new ReservationRequest(
-                LocalDate.of(2023, 2, 25),
-                1L,
-                1L
+        LocalDate date = LocalDate.of(2023, 2, 25);
+        Long themeId = 1L;
+        Long timeId = 1L;
+        Long userId = 1L;
+        CreateReservationRequest createReservationRequest = new CreateReservationRequest(
+                date,
+                themeId,
+                timeId,
+                userId
         );
 
         // when, then
-        assertThatThrownBy(() -> reservationService.addReservation(request, userPrinciple))
+        assertThatThrownBy(() -> reservationService.addReservation(createReservationRequest))
                 .isInstanceOf(BadRequestException.class);
 
     }
@@ -114,26 +124,35 @@ class ReservationServiceTest {
     @Test
     void 날짜와_테마와_시간이_동시에_중복된_예약에_대해서_예외처리() {
         // given
-        UserPrinciple userPrinciple = new UserPrinciple(1L, "test", "test", List.of());
-        ReservationRequest request = new ReservationRequest(
-                LocalDate.of(2023, 3, 1),
-                1L,
-                1L
+        LocalDate date = LocalDate.of(2023, 3, 1);
+        Long themeId = 1L;
+        Long timeId = 1L;
+        Long userId = 1L;
+        CreateReservationRequest createReservationRequest = new CreateReservationRequest(
+                date,
+                themeId,
+                timeId,
+                userId
         );
 
         // when, then
-        assertThatThrownBy(() -> reservationService.addReservation(request, userPrinciple))
+        assertThatThrownBy(() -> reservationService.addReservation(createReservationRequest))
                 .isInstanceOf(BadRequestException.class);
     }
 
     @Test
     void 예약을_정상적으로_삭제() {
-        ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(null, LocalTime.of(10, 0)));
-        Theme savedTheme = themeDao.save(new Theme(null, "제목", "de", "th"));
-        UserPrinciple userPrinciple = new UserPrinciple(1L, "test", "test", List.of());
-        ReservationRequest request = new ReservationRequest(LocalDate.of(2025, 12, 16), savedTime.getId(),
-                savedTheme.getId());
-        ReservationResponse response = reservationService.addReservation(request, userPrinciple);
+        LocalDate date = LocalDate.now().plusDays(1);
+        Long themeId = 1L;
+        Long timeId = 1L;
+        Long userId = 1L;
+        CreateReservationRequest createReservationRequest = new CreateReservationRequest(
+                date,
+                themeId,
+                timeId,
+                userId
+        );
+        CreateReservationResponse response = reservationService.addReservation(createReservationRequest);
 
         assertThatCode(() -> reservationService.deleteReservation(response.id()))
                 .doesNotThrowAnyException();
@@ -151,7 +170,7 @@ class ReservationServiceTest {
         int page = 2;
 
         // when
-        ReservationsWithTotalPageResponse reservationsWithTotalPage = reservationService.getReservationsByPage(page,
+        AdminReservationPageResponse reservationsWithTotalPage = reservationService.getReservationsByPage(page,
                 null, null, null, null);
 
         // then

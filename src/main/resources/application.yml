@@ -10,7 +10,7 @@ spring:
     url: jdbc:h2:mem:database
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret: d29vd2Fjb3Vyc2UtZG9uZ2NoYW4tand0
   expiration:
     access-token: 3600000
 

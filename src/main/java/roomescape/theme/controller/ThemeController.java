@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.dto.response.AvailableReservationResponse;
-import roomescape.theme.dto.response.BriefThemeResponse;
 import roomescape.theme.dto.response.ThemeResponse;
+import roomescape.theme.dto.response.ThemeSelectElementResponse;
 import roomescape.theme.service.ThemeService;
 
 @RestController
@@ -30,8 +30,8 @@ public class ThemeController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<BriefThemeResponse>> getAllThemes() {
-        List<BriefThemeResponse> themes = themeService.getAllThemes();
+    public ResponseEntity<List<ThemeSelectElementResponse>> getAllThemeSelectElements() {
+        List<ThemeSelectElementResponse> themes = themeService.getAllThemes();
         return ResponseEntity.ok(themes);
     }
 

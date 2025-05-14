@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservation.dto.request.AdminReservationCreateRequest;
-import roomescape.reservation.dto.response.ReservationResponse;
-import roomescape.reservation.dto.response.ReservationsWithTotalPageResponse;
+import roomescape.reservation.dto.request.CreateReservationRequest;
+import roomescape.reservation.dto.response.AdminReservationPageResponse;
+import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.service.ReservationService;
 
 @RequestMapping("/admin/reservations")
@@ -27,20 +27,20 @@ public class AdminReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservationByAdmin(
-            @RequestBody AdminReservationCreateRequest adminReservationCreateRequest) {
-        ReservationResponse newReservation = reservationService.addReservation(adminReservationCreateRequest);
+    public ResponseEntity<CreateReservationResponse> createReservationByAdmin(
+            @RequestBody CreateReservationRequest createReservationRequest) {
+        CreateReservationResponse newReservation = reservationService.addReservation(createReservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + newReservation.id())).body(newReservation);
     }
 
     @GetMapping
-    public ResponseEntity<ReservationsWithTotalPageResponse> getReservationsByPage(
+    public ResponseEntity<AdminReservationPageResponse> getReservationsByPage(
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long themeId,
             @RequestParam(required = false) LocalDate dateFrom,
             @RequestParam(required = false) LocalDate dateTo) {
-        ReservationsWithTotalPageResponse reservationsWithTotalPage = reservationService.getReservationsByPage(
+        AdminReservationPageResponse reservationsWithTotalPage = reservationService.getReservationsByPage(
                 page,
                 userId,
                 themeId,

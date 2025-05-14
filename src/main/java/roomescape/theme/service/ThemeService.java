@@ -13,10 +13,12 @@ import roomescape.reservation.repository.ReservationDao;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeDao;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.dto.request.AdminThemePageResponse;
+import roomescape.theme.dto.request.AdminThemePageResponse.AdminThemePageElementResponse;
 import roomescape.theme.dto.request.ThemeRequest;
-import roomescape.theme.dto.request.ThemesWithTotalPageRequest;
-import roomescape.theme.dto.response.BriefThemeResponse;
+import roomescape.theme.dto.response.CreateThemeResponse;
 import roomescape.theme.dto.response.ThemeResponse;
+import roomescape.theme.dto.response.ThemeSelectElementResponse;
 import roomescape.theme.repository.ThemeDao;
 
 @Service
@@ -33,15 +35,15 @@ public class ThemeService {
         this.themeDao = themeDao;
     }
 
-    public ThemeResponse addTheme(ThemeRequest themeRequest) {
+    public CreateThemeResponse addTheme(ThemeRequest themeRequest) {
         if (themeDao.isExistThemeName(themeRequest.name())) {
             throw new BadRequestException("이미 존재하는 테마입니다.");
         }
         Theme saved = themeDao.save(themeRequest.toEntity());
-        return ThemeResponse.from(saved);
+        return CreateThemeResponse.from(saved);
     }
 
-    public ThemesWithTotalPageRequest getThemesByPage(int page) {
+    public AdminThemePageResponse getThemesByPage(int page) {
         int totalThemes = themeDao.countTotalTheme();
         int totalPage = (totalThemes % 10 == 0) ?
                 totalThemes / 10 : (totalThemes / 10) + 1;
@@ -50,16 +52,16 @@ public class ThemeService {
         }
         int start = (page - 1) * 10 + 1;
         int end = start + 10 - 1;
-        List<ThemeResponse> themes = themeDao.findThemesWithPage(start, end).stream()
-                .map(ThemeResponse::from)
+        List<AdminThemePageElementResponse> themes = themeDao.findThemesWithPage(start, end).stream()
+                .map(AdminThemePageElementResponse::from)
                 .toList();
-        return new ThemesWithTotalPageRequest(totalPage, themes);
+        return new AdminThemePageResponse(totalPage, themes);
     }
 
-    public List<BriefThemeResponse> getAllThemes() {
+    public List<ThemeSelectElementResponse> getAllThemes() {
         return themeDao.findAll()
                 .stream()
-                .map(BriefThemeResponse::from)
+                .map(ThemeSelectElementResponse::from)
                 .toList();
     }
 

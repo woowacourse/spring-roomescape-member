@@ -13,7 +13,7 @@ import roomescape.global.exception.RoomEscapeException.AuthenticationException;
 import roomescape.infra.JwtTokenProvider;
 import roomescape.user.domain.Role;
 import roomescape.user.domain.User;
-import roomescape.user.domain.UserPrinciple;
+import roomescape.user.domain.UserPrincipal;
 import roomescape.user.repository.UserDao;
 
 @Component
@@ -29,7 +29,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(UserPrinciple.class);
+        return parameter.getParameterType().equals(UserPrincipal.class);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         String token = extractValue(request.getCookies(), "token");
         String email = jwtTokenProvider.getPayload(token);
         User user = userDao.findByEmail(email).orElseThrow();
-        return new UserPrinciple(user.getId(), user.getName(), user.getEmail(), List.of(Role.NORMAL));
+        return new UserPrincipal(user.getId(), user.getName(), user.getEmail(), List.of(Role.NORMAL));
     }
 
     private String extractValue(Cookie[] cookies, String key) {

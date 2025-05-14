@@ -8,8 +8,8 @@ import roomescape.global.exception.RoomEscapeException.ResourceNotFoundException
 import roomescape.infra.JwtTokenProvider;
 import roomescape.user.domain.User;
 import roomescape.user.dto.request.LoginRequest;
-import roomescape.user.dto.response.BriefUserResponse;
 import roomescape.user.dto.response.LoginCheckResponse;
+import roomescape.user.dto.response.UserSelectElementResponse;
 import roomescape.user.repository.UserDao;
 
 @Service
@@ -46,10 +46,10 @@ public class UserService {
         return new LoginCheckResponse(user.getName());
     }
 
-    public List<BriefUserResponse> getAllUsers() {
+    public List<UserSelectElementResponse> getAllUsers() {
         return userDao.findAll()
                 .stream()
-                .map(BriefUserResponse::from)
+                .map(UserSelectElementResponse::from)
                 .toList();
     }
 }

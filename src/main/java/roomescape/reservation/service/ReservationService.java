@@ -6,21 +6,19 @@ import org.springframework.stereotype.Service;
 import roomescape.global.exception.RoomEscapeException.BadRequestException;
 import roomescape.global.exception.RoomEscapeException.ResourceNotFoundException;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.request.AdminReservationCreateRequest;
-import roomescape.reservation.dto.request.ReservationRequest;
-import roomescape.reservation.dto.response.ReservationResponse;
-import roomescape.reservation.dto.response.ReservationsWithTotalPageResponse;
-import roomescape.reservation.dto.response.ReservationsWithTotalPageResponse.BriefReservationElement;
-import roomescape.reservation.dto.response.ReservationsWithTotalPageResponse.BriefReservationElement.BriefMemberElement;
-import roomescape.reservation.dto.response.ReservationsWithTotalPageResponse.BriefReservationElement.BriefThemeElement;
-import roomescape.reservation.dto.response.ReservationsWithTotalPageResponse.BriefReservationElement.BriefTimeElement;
+import roomescape.reservation.dto.request.CreateReservationRequest;
+import roomescape.reservation.dto.response.AdminReservationPageResponse;
+import roomescape.reservation.dto.response.AdminReservationPageResponse.AdminReservationPageElementResponse;
+import roomescape.reservation.dto.response.AdminReservationPageResponse.AdminReservationPageElementResponse.AdminReservationPageMemberElementResponse;
+import roomescape.reservation.dto.response.AdminReservationPageResponse.AdminReservationPageElementResponse.AdminReservationPageThemeElementResponse;
+import roomescape.reservation.dto.response.AdminReservationPageResponse.AdminReservationPageElementResponse.AdminReservationPageTimeElementResponse;
+import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.repository.ReservationDao;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeDao;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeDao;
 import roomescape.user.domain.User;
-import roomescape.user.domain.UserPrinciple;
 import roomescape.user.repository.UserDao;
 
 @Service
@@ -40,55 +38,33 @@ public class ReservationService {
         this.userDao = userDao;
     }
 
-    public ReservationResponse addReservation(ReservationRequest reservationRequest, UserPrinciple userPrinciple) {
-        ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId())
+    public CreateReservationResponse addReservation(CreateReservationRequest createReservationRequest) {
+        ReservationTime reservationTime = reservationTimeDao.findById(createReservationRequest.timeId())
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 시간입니다."));
-        Theme theme = themeDao.findById(reservationRequest.themeId())
+        Theme theme = themeDao.findById(createReservationRequest.themeId())
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 테마입니다."));
-        User user = userPrinciple.toEntity();
-        Reservation reservation = reservationRequest.toEntityWithReservationTime(reservationTime, theme, user);
-        LocalDate reservationDate = reservation.getDate();
-        if (!reservationDate.isAfter(LocalDate.now())) {
-            throw new BadRequestException("하루 전 까지 예약 가능합니다.");
-        }
-        if (reservationDao.isExistByThemeIdAndTimeIdAndDate(
-                reservationRequest.themeId(),
-                reservationRequest.timeId(),
-                reservationRequest.date())
-        ) {
-            throw new BadRequestException("이미 해당 시간에 예약이 존재합니다.");
-        }
-        Reservation savedReservation = reservationDao.save(reservation);
-        return ReservationResponse.fromEntity(savedReservation);
-    }
-
-    public ReservationResponse addReservation(AdminReservationCreateRequest adminReservationCreateRequest) {
-        ReservationTime reservationTime = reservationTimeDao.findById(adminReservationCreateRequest.timeId())
-                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 시간입니다."));
-        Theme theme = themeDao.findById(adminReservationCreateRequest.themeId())
-                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 테마입니다."));
-        User user = userDao.findById(adminReservationCreateRequest.memberId())
+        User user = userDao.findById(createReservationRequest.memberId())
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 사용자입니다."));
-        LocalDate reservationDate = adminReservationCreateRequest.date();
+        LocalDate reservationDate = createReservationRequest.date();
         if (!reservationDate.isAfter(LocalDate.now())) {
             throw new BadRequestException("하루 전 까지 예약 가능합니다.");
         }
         if (reservationDao.isExistByThemeIdAndTimeIdAndDate(
-                adminReservationCreateRequest.themeId(),
-                adminReservationCreateRequest.timeId(),
-                adminReservationCreateRequest.date())
+                createReservationRequest.themeId(),
+                createReservationRequest.timeId(),
+                createReservationRequest.date())
         ) {
             throw new BadRequestException("이미 해당 시간에 예약이 존재합니다.");
         }
         Reservation reservation = new Reservation(
                 null,
                 user,
-                adminReservationCreateRequest.date(),
+                createReservationRequest.date(),
                 reservationTime,
                 theme
         );
         Reservation savedReservation = reservationDao.save(reservation);
-        return ReservationResponse.fromEntity(savedReservation);
+        return CreateReservationResponse.fromEntity(savedReservation);
     }
 
     public void deleteReservation(Long id) {
@@ -98,11 +74,11 @@ public class ReservationService {
         }
     }
 
-    public ReservationsWithTotalPageResponse getReservationsByPage(int page,
-                                                                   Long userId,
-                                                                   Long themeId,
-                                                                   LocalDate dateFrom,
-                                                                   LocalDate dateTo) {
+    public AdminReservationPageResponse getReservationsByPage(int page,
+                                                              Long userId,
+                                                              Long themeId,
+                                                              LocalDate dateFrom,
+                                                              LocalDate dateTo) {
         if (dateFrom != null && dateTo != null && dateTo.isBefore(dateFrom)) {
             throw new BadRequestException();
         }
@@ -114,7 +90,7 @@ public class ReservationService {
         }
         int start = (page - 1) * 10 + 1;
         int end = start + 10 - 1;
-        List<BriefReservationElement> briefReservations = reservationDao.findReservationsWithPage(
+        List<AdminReservationPageElementResponse> briefReservations = reservationDao.findReservationsWithPage(
                         start,
                         end,
                         userId,
@@ -123,17 +99,17 @@ public class ReservationService {
                         dateTo
                 )
                 .stream()
-                .map(reservation -> new BriefReservationElement(
+                .map(reservation -> new AdminReservationPageElementResponse(
                         reservation.getId(),
-                        new BriefMemberElement(
+                        new AdminReservationPageMemberElementResponse(
                                 reservation.getUser().getId(),
                                 reservation.getUser().getName()
                         ),
-                        new BriefThemeElement(
+                        new AdminReservationPageThemeElementResponse(
                                 reservation.getTheme().getId(),
                                 reservation.getTheme().getName()
                         ),
-                        new BriefTimeElement(
+                        new AdminReservationPageTimeElementResponse(
                                 reservation.getReservationTime().getId(),
                                 reservation.getReservationTime().getStartAt()
                         ),
@@ -141,6 +117,6 @@ public class ReservationService {
                 ))
                 .toList();
 
-        return new ReservationsWithTotalPageResponse(totalPage, briefReservations);
+        return new AdminReservationPageResponse(totalPage, briefReservations);
     }
 }
