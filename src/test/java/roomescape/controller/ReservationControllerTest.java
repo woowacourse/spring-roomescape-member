@@ -16,6 +16,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import roomescape.infra.JwtTokenProvider;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -26,22 +27,26 @@ class ReservationControllerTest {
     @LocalServerPort
     int port;
 
+    private String adminToken;
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        adminToken = new JwtTokenProvider().createToken(1L, "admin", "ADMIN");
     }
 
-    private void 예약_생성(String name, String date, String timeId, String themeId) {
+    private void 예약_생성(String date, String userId, String timeId, String themeId) {
         Map<String, String> params = new HashMap<>();
-        params.put("name", name);
         params.put("date", date);
+        params.put("memberId", userId);
         params.put("timeId", timeId);
         params.put("themeId", themeId);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/reservations")
+                .cookie("token", adminToken)
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
     }
@@ -49,6 +54,7 @@ class ReservationControllerTest {
     @Test
     void 예약_리스트를_정상적으로_반환() {
         RestAssured.given().log().all()
+                .cookie("token", adminToken)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value());
@@ -62,7 +68,7 @@ class ReservationControllerTest {
 
     @Test
     void 예약을_생성하면_목록에_포함() {
-        예약_생성("브라운", String.valueOf(LocalDate.now().plusDays(1)), "1", "1");
+        예약_생성(String.valueOf(LocalDate.now().plusDays(1)), "1", "1", "1");
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -73,7 +79,7 @@ class ReservationControllerTest {
 
     @Test
     void 예약을_생성하고_삭제_후_모든_예약_확인() {
-        예약_생성("브라운", String.valueOf(LocalDate.now().plusDays(1)), "1", "1");
+        예약_생성(String.valueOf(LocalDate.now().plusDays(1)), "1", "1", "1");
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
