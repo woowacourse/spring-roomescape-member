@@ -46,7 +46,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
 
     private String extractTokenFromCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
+        if (cookies == null) {
             return null;
         }
         for (Cookie cookie : cookies) {
