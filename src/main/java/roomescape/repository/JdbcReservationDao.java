@@ -18,8 +18,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationName;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.util.WhereClauseParamSet;
-import roomescape.util.WhereClauseParamSetBuilder;
 
 @Repository
 public class JdbcReservationDao implements ReservationRepository {
