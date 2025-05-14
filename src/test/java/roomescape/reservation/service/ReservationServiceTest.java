@@ -111,7 +111,6 @@ class ReservationServiceTest {
 
         // when
         ReservationResponse result = service.saveReservation(req, loginMember);
-        System.out.println(result);
 
         // then
         SoftAssertions.assertSoftly(soft -> {
