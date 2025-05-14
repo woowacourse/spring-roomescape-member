@@ -1,7 +1,7 @@
-package roomescape.reservationTime.service;
+package roomescape.reservationtime.service;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static roomescape.reservationTime.ReservationTimeTestDataConfig.TIME_FIELD;
+import static roomescape.reservationtime.ReservationTimeTestDataConfig.TIME_FIELD;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -19,13 +19,13 @@ import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.domain.dto.ReservationRequestDto;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.service.ReservationService;
-import roomescape.reservationTime.ReservationTimeTestDataConfig;
-import roomescape.reservationTime.domain.ReservationTime;
-import roomescape.reservationTime.domain.dto.ReservationTimeResponseDto;
-import roomescape.reservationTime.exception.AlreadyReservedTimeException;
-import roomescape.reservationTime.exception.DuplicateReservationException;
-import roomescape.reservationTime.fixture.ReservationTimeFixture;
-import roomescape.reservationTime.repository.JdbcReservationTimeRepository;
+import roomescape.reservationtime.ReservationTimeTestDataConfig;
+import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.domain.dto.ReservationTimeResponseDto;
+import roomescape.reservationtime.exception.AlreadyReservedTimeException;
+import roomescape.reservationtime.exception.DuplicateReservationException;
+import roomescape.reservationtime.fixture.ReservationTimeFixture;
+import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.theme.repository.ThemeRepository;

@@ -1,4 +1,4 @@
-package roomescape.reservationTime.service;
+package roomescape.reservationtime.service;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -7,13 +7,13 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservationTime.domain.ReservationTime;
-import roomescape.reservationTime.domain.dto.AvailableReservationTimeResponseDto;
-import roomescape.reservationTime.domain.dto.ReservationTimeRequestDto;
-import roomescape.reservationTime.domain.dto.ReservationTimeResponseDto;
-import roomescape.reservationTime.exception.AlreadyReservedTimeException;
-import roomescape.reservationTime.exception.DuplicateReservationException;
-import roomescape.reservationTime.repository.ReservationTimeRepository;
+import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.domain.dto.AvailableReservationTimeResponseDto;
+import roomescape.reservationtime.domain.dto.ReservationTimeRequestDto;
+import roomescape.reservationtime.domain.dto.ReservationTimeResponseDto;
+import roomescape.reservationtime.exception.AlreadyReservedTimeException;
+import roomescape.reservationtime.exception.DuplicateReservationException;
+import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.InvalidThemeException;
 import roomescape.theme.repository.ThemeRepository;

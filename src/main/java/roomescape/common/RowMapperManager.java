@@ -4,7 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 import roomescape.user.domain.Role;
 import roomescape.user.domain.User;

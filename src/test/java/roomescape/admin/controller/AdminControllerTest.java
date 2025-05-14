@@ -20,7 +20,7 @@ import roomescape.admin.fixture.AdminTestDataConfig;
 import roomescape.auth.domain.dto.TokenResponseDto;
 import roomescape.auth.fixture.AuthFixture;
 import roomescape.auth.service.AuthService;
-import roomescape.reservationTime.ReservationTimeTestDataConfig;
+import roomescape.reservationtime.ReservationTimeTestDataConfig;
 import roomescape.theme.ThemeTestDataConfig;
 import roomescape.user.MemberTestDataConfig;
 import roomescape.user.domain.User;

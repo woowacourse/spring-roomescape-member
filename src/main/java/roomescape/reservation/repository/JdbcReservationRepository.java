@@ -14,7 +14,7 @@ import roomescape.admin.domain.dto.SearchReservationRequestDto;
 import roomescape.common.RowMapperManager;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.NotFoundReservationException;
-import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 import roomescape.user.domain.User;
 
