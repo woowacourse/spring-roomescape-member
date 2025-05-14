@@ -1,4 +1,4 @@
-package roomescape.infra;
+package roomescape.infra.auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -9,6 +9,7 @@ import jakarta.servlet.http.Cookie;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.model.user.Role;
 
 @Component
 public class JwtTokenProcessor {
@@ -17,8 +18,9 @@ public class JwtTokenProcessor {
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
-    public String createToken(String payload) {
+    public String createToken(String payload, Role role) {
         Claims claims = Jwts.claims().setSubject(payload);
+        claims.put("role", role);
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 

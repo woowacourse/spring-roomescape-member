@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.infra.auth;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
