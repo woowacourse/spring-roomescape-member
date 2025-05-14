@@ -8,7 +8,7 @@ import roomescape.dto.ErrorResponse;
 import roomescape.exception.AccessDeniedException;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
-import roomescape.exception.UnAuthorizationException;
+import roomescape.exception.UnauthorizationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -31,8 +31,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(UnAuthorizationException.class)
-    public ResponseEntity<ErrorResponse> handleAuthorizationException(UnAuthorizationException ex) {
+    @ExceptionHandler(UnauthorizationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthorizationException(UnauthorizationException ex) {
         ErrorResponse errorResponse = new ErrorResponse(
                 ex.getMessage(),
                 HttpStatus.UNAUTHORIZED

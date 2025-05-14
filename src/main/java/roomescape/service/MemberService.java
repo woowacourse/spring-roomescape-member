@@ -7,7 +7,7 @@ import roomescape.dto.auth.SignUpRequestDto;
 import roomescape.dto.member.MemberResponseDto;
 import roomescape.dto.member.MemberSignupResponseDto;
 import roomescape.exception.DuplicateContentException;
-import roomescape.exception.UnAuthorizationException;
+import roomescape.exception.UnauthorizationException;
 import roomescape.repository.MemberRepository;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class MemberService {
     }
 
     public Member findMemberById(long id) {
-        return memberRepository.findById(id).orElseThrow(() -> new UnAuthorizationException("[ERROR] 유저를 찾을 수 없습니다. ID : " + id));
+        return memberRepository.findById(id).orElseThrow(() -> new UnauthorizationException("[ERROR] 유저를 찾을 수 없습니다. ID : " + id));
     }
 
     public List<MemberResponseDto> findAllMembers() {

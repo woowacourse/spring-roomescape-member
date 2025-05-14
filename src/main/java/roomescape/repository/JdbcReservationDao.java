@@ -123,7 +123,6 @@ public class JdbcReservationDao implements ReservationRepository {
                 m.email,
                 m.auth_role,
                 m.password
-                FROM reservati
                 FROM reservation as r
                 inner join reservation_time as t on r.time_id = t.id 
                 inner join member as m on r.member_id = m.id
