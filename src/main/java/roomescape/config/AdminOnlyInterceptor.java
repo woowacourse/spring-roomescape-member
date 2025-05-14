@@ -6,14 +6,17 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.member.domain.Member;
+import roomescape.member.service.JwtUtil;
 import roomescape.member.service.MemberService;
 
 public class AdminOnlyInterceptor implements HandlerInterceptor {
 
     private final MemberService memberService;
+    private final JwtUtil jwtUtil;
 
-    public AdminOnlyInterceptor(MemberService memberService) {
+    public AdminOnlyInterceptor(MemberService memberService, JwtUtil jwtUtil) {
         this.memberService = memberService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -32,7 +35,8 @@ public class AdminOnlyInterceptor implements HandlerInterceptor {
         for (Cookie cookie : cookies) {
             if ("token".equals(cookie.getName())) {
                 String token = cookie.getValue();
-                Member member = memberService.findByToken(token);
+                Long memberId = jwtUtil.getMemberIdFromToken(token);
+                Member member = memberService.findById(memberId);
                 return member.isAdmin();
             }
         }

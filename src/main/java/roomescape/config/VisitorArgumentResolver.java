@@ -9,14 +9,17 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Visitor;
+import roomescape.member.service.JwtUtil;
 import roomescape.member.service.MemberService;
 
 public class VisitorArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberService memberService;
+    private final JwtUtil jwtUtil;
 
-    public VisitorArgumentResolver(MemberService memberService) {
+    public VisitorArgumentResolver(MemberService memberService, JwtUtil jwtUtil) {
         this.memberService = memberService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -35,7 +38,8 @@ public class VisitorArgumentResolver implements HandlerMethodArgumentResolver {
         for (Cookie cookie : cookies) {
             if ("token".equals(cookie.getName())) {
                 String token = cookie.getValue();
-                Member member = memberService.findByToken(token);
+                Long memberId = jwtUtil.getMemberIdFromToken(token);
+                Member member = memberService.findById(memberId);
                 return new Visitor(member.getId(), member.getName(), member.getEmail(), member.getRole());
             }
         }

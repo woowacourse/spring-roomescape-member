@@ -6,6 +6,7 @@ import roomescape.exception.ConflictException;
 import roomescape.exception.ExceptionCause;
 import roomescape.exception.NotFoundException;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Visitor;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.service.MemberService;
 import roomescape.reservation.dao.ReservationDao;
@@ -38,8 +39,8 @@ public class ReservationService {
         this.memberService = memberService;
     }
 
-    public ReservationCreateResponse create(String token, ReservationCreateRequest reservationCreateRequest) {
-        Reservation reservation = createReservationWithoutId(token, reservationCreateRequest);
+    public ReservationCreateResponse create(Long memberId, ReservationCreateRequest reservationCreateRequest) {
+        Reservation reservation = createReservationWithoutId(memberId, reservationCreateRequest);
         if (reservationDao.findByThemeAndDateAndTime(reservation).isPresent()) {
             throw new ConflictException(ExceptionCause.RESERVATION_DUPLICATE);
         }
@@ -59,10 +60,10 @@ public class ReservationService {
                 .toList();
     }
 
-    private Reservation createReservationWithoutId(String token, ReservationCreateRequest reservationCreateRequest) {
+    private Reservation createReservationWithoutId(Long memberId, ReservationCreateRequest reservationCreateRequest) {
         ReservationTime time = reservationTimeService.findById(reservationCreateRequest.timeId());
         Theme theme = themeService.findById(reservationCreateRequest.themeId());
-        Member member = memberService.findByToken(token);
+        Member member = memberService.findById(memberId);
         return Reservation.create(
                 reservationCreateRequest.date(),
                 member,

@@ -161,7 +161,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Optional<Reservation> findByThemeId(Long themeId) {
+    public Optional<Reservation> findByThemeId(final Long themeId) {
         final String sql = """
                 SELECT
                     r.id as reservation_id,
@@ -189,7 +189,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean existById(Long id) {
+    public boolean existById(final Long id) {
         final String sql = """
                 SELECT EXISTS (
                   SELECT 1

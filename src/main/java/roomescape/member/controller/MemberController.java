@@ -30,7 +30,7 @@ public class MemberController {
     @PostMapping("/members")
     public ResponseEntity<MemberSignUpResponse> signup(@Valid @RequestBody MemberSignupRequest memberSignupRequest) {
         memberService.signup(memberSignupRequest);
-        return ResponseEntity.created(URI.create("/login")).body(new MemberSignUpResponse("회원가입에 성공하였습니다."));
+        return ResponseEntity.created(URI.create("/login")).body(MemberSignUpResponse.ofSuccess());
     }
 
     @GetMapping("/members")
@@ -42,7 +42,7 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody MemberLoginRequest memberLoginRequest) {
         String jwtToken = memberService.login(memberLoginRequest);
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, setCookieByToken(jwtToken).toString()).build();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, setCookie("token", jwtToken).toString()).build();
     }
 
     @GetMapping("/login/check")
@@ -56,8 +56,8 @@ public class MemberController {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, removeCookie("token").toString()).build();
     }
 
-    private ResponseCookie setCookieByToken(String jwtToken) {
-        return ResponseCookie.from("token", jwtToken)
+    private ResponseCookie setCookie(String name, String value) {
+        return ResponseCookie.from(name, value)
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
