@@ -121,7 +121,7 @@ class ReservationTimeServiceTest {
         //given
         when(reservationTimeRepository.deleteById(any(Long.class)))
                 .thenReturn(false);
-        
+
         // when //then
         assertThatThrownBy(() -> reservationTimeService.deleteById(1000L))
                 .isInstanceOf(NotFoundValueException.class)
@@ -131,7 +131,11 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("사용중인 예약 시간을 삭제하려는 경우 예외를 던진다")
     void deleteUsedTimeById() {
-        //given //when //then
+        //given
+        when(reservationRepository.existsByTimeId(any(Long.class)))
+                .thenReturn(true);
+
+        // when //then
         assertThatThrownBy(() -> reservationTimeService.deleteById(1L))
                 .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessageContaining("사용 중인 예약 시간입니다");
