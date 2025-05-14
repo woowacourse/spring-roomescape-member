@@ -2,23 +2,31 @@
 
 ### 뷰
 
+#### 관리자 페이지
+
 - [x] /admin 요청 시 접속시 어드민 메인 페이지가 응답한다.
 - [x] /admin/reservation 요청 시 예약 관리 페이지가 응답한다.
 - [x] /admin/theme 요청 시 테마 관리 페이지가 응답한다.
+
+#### 사용자 페이지
+
 - [x] / 요청 시 인기 테마 페이지가 응답한다.
 - [x] /reservation 요청 시 사용자 예약 페이지가 응답한다.
+- [x] /login 요청 시 사용자 로그인 페이지가 응답한다.
+- [x] /signup 요청 시 사용자 회원가입 페이지가 응답한다.
 
 ### 예약
 
-- [x] 예약에는 사용자의 이름, 예약 날짜, 예약 시간, 테마가 있다.
-- [x] 예약을 모두 조회할 수 있다.
 - [x] 예약을 추가할 수 있다.
-    - [x] 예약 시간은 정해진 예약 시간만 추가할 수 있다.
-    - [x] 예약자명, 날짜, 시간에 유효하지 않은 값이 입력될 경우, 예외가 발생한다.
-        - [x] 지나간 날짜 및 시간
-        - [x] 예약자명 10자 초과
-    - [x] 테마, 날짜, 시간이 중복될 경우 예외가 발생한다.
-    - [x] 같은 날짜와 테마에 예약된 시간은 예약할 수 없다.
+  - [x] 사용자는 예약 시 예약 날짜, 예약 시간, 테마를 선택한다.
+  - [x] 관리자는 예약 시 예약자, 예약 날짜, 예약 시간, 테마를 선택한다.
+  - [x] 예약 시간은 정해진 예약 시간만 추가할 수 있다.
+  - [x] 날짜, 시간에 유효하지 않은 값이 입력될 경우, 예외가 발생한다.
+      - [x] 지나간 날짜 및 시간
+  - [x] 테마, 날짜, 시간이 중복될 경우 예외가 발생한다.
+  - [x] 같은 날짜와 테마에 예약된 시간은 예약할 수 없다.
+- [x] 예약을 모두 조회할 수 있다.
+  - [x] 관리자는 예약 조회 시 멤버 이름, 테마 종류, 날짜로 검색할 수 있다.
 - [x] 예약을 취소할 수 있다.
 
 ### 예약 시간
@@ -37,386 +45,22 @@
 - [x] 인기 테마를 조회할 수 있다
     - [x] 인기 테마 : 최근 일주일을 기준으로 해당 기간내에 예약이 많은 테마 10개
 
-# API 명세
-
-### 예약 목록 조회
-
-```
-Request
-GET /reservations HTTP/1.1
-
-Response
-HTTP/1.1 200 
-Content-Type: application/json
-[
-    {
-        "id": 1, 
-        "name": "브라운",
-        "date": "2023-01-01",
-        "time": "10:00"
-    },
-    {
-        "id": 2,
-        "name": "브라운",
-        "date": "2023-01-02",
-        "time": "11:00"
-    }
-]
-
-id: number
-name: string
-date: string
-time: string 
-```
-
-### 예약 추가
-
-```
-Request
-Content-Type: application/json
-POST /reservations
-
-{
-    "date": "2026-08-05",
-    "name": "브라운",
-    "timeId": 1
-}
-
-name: string
-date: string
-timeId: number 
-
-Response
-Location: http://url/reservations/{id}
-HTTP/1.1 201
-Content-Type: application/json
-
-{
-    "id": 1,
-    "name": "브라운",
-    "date": "2026-08-05",
-    "time": {
-        "id": 1,
-        "startAt": "10:00:00"
-    }
-}
-
-id: number
-name: string
-date: string
-time
-  id: number
-  startAt: string
-  
-```
-
-#### 예약 추가 시 예외
-
-```
-Request
-Content-Type: application/json
-POST /reservations
-
-{
-    "date": "2023-08-05",
-    "name": "1234567891011",
-    "timeId": 1
-}
-
-name: string
-date: string
-timeId: number
-
-1. 예약자명이 10자 초과인 경우
-Response
-HTTP/1.1 400
-
-{
-    "error": "BAD_REQUEST",
-    "message": "예약자명은 10자 이하여야합니다."
-}
-
-
-2. 예약 날짜 및 시간이 과거인 경우
-Response
-HTTP/1.1 400
-
-{
-    "error": "BAD_REQUEST",
-    "message": "예약은 미래만 가능합니다."
-}
-
-3. 예약이 중복될 경우(날짜와 시간이 동일한 경우)
-Response
-HTTP/1.1 400
-
-{
-    "error": "BAD_REQUEST",
-    "message": "이미 존재하는 예약입니다."
-}
-
-error: string
-message: string
-
-```
-
-### 예약 취소
-
-```
-Request
-DELETE /reservations/{id} HTTP/1.1
-
-Response
-HTTP/1.1 204
-```
-
-### 예약 시간 추가
-
-```
-Request
-POST /times HTTP/1.1
-content-type: application/json
-
-{
-    "startAt": "10:00"
-}
-
-startAt: string
-
-Response
-HTTP/1.1 200
-Location: http://url/times/{id}
-Content-Type: application/json
-
-{
-    "id": 1,
-    "startAt": "10:00"
-}
-
-id: number
-startAt: string
-```
-
-#### 예약 시간 추가 예외
-
-```
-
-Request
-POST /times HTTP/1.1
-content-type: application/json
-
-{
-    "startAt": "10:00:30"
-}
-
-1. 예약 시간이 HH:mm 형식에 안맞는 경우 
-Response
-HTTP/1.1 400
-Content-Type: application/json
-
-{
-    "error": "BAD_REQUEST",
-    "message": "예약 시간 형식은 HH:mm 입니다."
-}
-
-error: string
-message: string
-
-```
-
-### 예약 시간 목록 조회
-
-```
-Request
-GET /times HTTP/1.1
-
-Response
-HTTP/1.1 200 
-Content-Type: application/json
-[
-   {
-        "id": 1,
-        "startAt": "10:00"
-    }
-]
-
-id: number
-startAt: string
-```
-
-### 가능한 예약 시간 목록 조회
-
-```
-Request
-GET /times/available?theme-id=?&date=? HTTP/1.1
-
-Response
-HTTP/1.1 200 
-Content-Type: application/json
-[
-   {
-        "id": 1,
-        "startAt": "10:00"
-        "alreadyBooked": true
-    }
-]
-
-id: number
-startAt: string
-alreadyBooked: boolean
-```
-
-### 예약 시간 삭제
-
-```
-Request
-DELETE /times/{id} HTTP/1.1
-
-Response
-HTTP/1.1 200
-```
-
-#### 예약 시간 삭제 예외
-
-```
-Request
-DELETE /times/{id} HTTP/1.1
-
-1. 삭제하려는 시간에 대한 예약이 존재할 경우
-Response
-HTTP/1.1 400
-
-{
-    "error": "BAD_REQUEST",
-    "message": "이 시간에 대한 예약이 존재합니다."
-}
-
-error: string
-message: string
-
-```
-
-### 테마 목록 조회
-
-```
-Request
-GET /themes HTTP/1.1
-
-Response
-HTTP/1.1 200 
-Content-Type: application/json
-
-[
-   {
-        "id": 1,
-        "name": "레벨2 탈출",
-        "description": "우테코 레벨2를 탈출하는 내용입니다.",
-        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-    }
-]
-
-id: number
-name: string
-description: string
-thumbnail: string
-
-```
-
-### 테마 추가
-
-```
-
-Request
-POST /themes HTTP/1.1
-content-type: application/json
-
-{
-    "name": "레벨2 탈출",
-    "description": "우테코 레벨2를 탈출하는 내용입니다.",
-    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-}
-
-name: string
-description: string
-thumbnail: string
-
-Response
-HTTP/1.1 201
-Location: /themes/1
-Content-Type: application/json
-
-{
-    "id": 1,
-    "name": "레벨2 탈출",
-    "description": "우테코 레벨2를 탈출하는 내용입니다.",
-    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-}
-
-id: number
-name: string
-description: string
-thumbnail: string
-
-```
-
-#### 테마 추가 예외
-
-```
-Request
-POST /themes HTTP/1.1
-content-type: application/json
-
-{
-    "name": "레벨2 탈출",
-    "description": "우테코 레벨2를 탈출하는 내용입니다.",
-    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-}
-
-name: string
-description: string
-thumbnail: string
-
-1. 테마 이름이 중복될 경우
-Response
-HTTP/1.1 400
-
-{
-    "error": "BAD_REQUEST",
-    "message": "테마가 이미 존재합니다."
-}
-
-error: string
-message: string
-
-```
-
-### 테마 삭제
-
-### 예약 시간 삭제
-
-```
-Request
-DELETE /themes/{id} HTTP/1.1
-
-Response
-HTTP/1.1 204
-```
-
-### 인기테마
-
-```
-Reqeust
-GET /themes/rank HTTP/1.1
-
-Response
-HTTP/1.1 200
-{
-    "name": "hi",
-    "thumbnail": "http:/abc.jpg",
-    "description": "설명"
-}
-
-name: string
-thumbnail: string
-description: string
-```
+### 사용자 관리
+
+- [x] 사용자는 로그인을 할 수 있다.
+  - [x] 이메일과 비밀번호로 로그인을 한다. (200 OK)
+  - [x] 이메일, 비밀번호에 유효하지 않은 값이 입력된 경우, 예외가 발생한다. (400 BAD REQUEST)
+    - [x] 이메일 형식이 맞지 않은 경우 (abc@def.qwe)
+    - [x] 비밀번호 형식이 맞지 않은 경우 (10자 이상, 대문자 소문자 숫자 특수문자 중 3개 이상 사용)
+    - [x] 이메일, 비밀번호가 비어있는 경우
+  - [x] 회원가입하지 않은 사용자인 경우, 예외가 발생한다. (401 UNAUTHORIZED)
+
+- [x] 사용자는 로그아웃을 할 수 있다.
+
+- [x] 사용자는 회원가입을 할 수 있다.
+  - [x] 이메일, 비밀번호, 이름으로 회원가입을 한다 (200 OK)
+  - [x] 이메일, 비밀번호, 이름의 형식이 맞지 않은 경우 예외가 발생한다 (400 BAD REQUEST)
+    - [x] 이메일, 비밀번호, 이름이 비어있는 경우
+    - [x] 이메일 형식이 맞지 않은 경우 (abc@def.qwe)
+    - [x] 비밀번호 형식이 맞지 않은 경우 (10자 이상, 대문자 소문자 숫자 특수문자 중 3개 이상 사용)
+  - [x] 이미 회원가입한 이메일로 회원가입 시 예외가 발생한다. (400 BAD REQUEST)
