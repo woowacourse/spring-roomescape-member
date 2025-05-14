@@ -22,7 +22,10 @@ public enum ExceptionCause {
 
     THEME_NOTFOUND("테마가 존재하지 않습니다."),
 
-    EMPTY_VALUE_RESERVATION_NAME("예약자 명이 비어있습니다."),
+    EMPTY_VALUE_MEMBER_NAME("이름이 비어있습니다."),
+    EMPTY_VALUE_MEMBER_EMAIL("이메일이 비어있습니다."),
+    EMPTY_VALUE_MEMBER_PASSWORD("비밀번호가 비어있습니다."),
+    EMPTY_VALUE_MEMBER_ROLE("권한이 비어있습니다."),
     EMPTY_VALUE_RESERVATION_MEMBER("예약자가 비어있습니다."),
     EMPTY_VALUE_RESERVATION_TIME("예약 시간이 비어있습니다."),
     EMPTY_VALUE_RESERVATION_DATE("예약 날짜가 비어있습니다."),

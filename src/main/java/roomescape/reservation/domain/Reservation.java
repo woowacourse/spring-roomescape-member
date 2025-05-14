@@ -49,6 +49,15 @@ public class Reservation {
         if (date == null) {
             throw new BadRequestException(ExceptionCause.EMPTY_VALUE_RESERVATION_DATE);
         }
+        if (member == null) {
+            throw new BadRequestException(ExceptionCause.EMPTY_VALUE_RESERVATION_MEMBER);
+        }
+        if (theme == null) {
+            throw new BadRequestException(ExceptionCause.EMPTY_VALUE_THEME);
+        }
+        if (time == null) {
+            throw new BadRequestException(ExceptionCause.EMPTY_VALUE_RESERVATION_TIME);
+        }
     }
 
     public Long getId() {
