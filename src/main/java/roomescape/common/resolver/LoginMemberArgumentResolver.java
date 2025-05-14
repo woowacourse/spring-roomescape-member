@@ -8,7 +8,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.service.AuthService;
-import roomescape.auth.service.CookieService;
+import roomescape.common.util.CookieUtil;
 import roomescape.entity.Member;
 import roomescape.exception.impl.TokenNotFoundException;
 
@@ -16,14 +16,9 @@ import roomescape.exception.impl.TokenNotFoundException;
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthService authService;
-    private final CookieService cookieService;
 
-    public LoginMemberArgumentResolver(
-            final AuthService authService,
-            final CookieService cookieService
-    ) {
+    public LoginMemberArgumentResolver(final AuthService authService) {
         this.authService = authService;
-        this.cookieService = cookieService;
     }
 
     @Override
@@ -40,7 +35,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     ) throws Exception {
 
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        String token = cookieService.extractTokenFromCookie(request.getCookies());
+        String token = CookieUtil.extractTokenFromCookie(request.getCookies());
 
         if (token == null || token.isBlank()) {
             throw new TokenNotFoundException();

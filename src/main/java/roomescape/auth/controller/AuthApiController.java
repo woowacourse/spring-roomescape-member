@@ -14,7 +14,7 @@ import roomescape.auth.controller.dto.SignupRequest;
 import roomescape.auth.controller.dto.SignupResponse;
 import roomescape.auth.controller.dto.TokenRequest;
 import roomescape.auth.service.AuthService;
-import roomescape.auth.service.CookieService;
+import roomescape.common.util.CookieUtil;
 import roomescape.controller.dto.member.MemberResponse;
 import roomescape.entity.Member;
 
@@ -22,11 +22,9 @@ import roomescape.entity.Member;
 public class AuthApiController {
 
     private final AuthService authService;
-    private final CookieService cookieService;
 
-    public AuthApiController(final AuthService authService, final CookieService cookieService) {
+    public AuthApiController(final AuthService authService) {
         this.authService = authService;
-        this.cookieService = cookieService;
     }
 
     @PostMapping("/members")
@@ -42,21 +40,21 @@ public class AuthApiController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody @Valid TokenRequest tokenRequest, HttpServletResponse response) {
         String jwtToken = authService.login(tokenRequest.email(), tokenRequest.password());
-        Cookie cookie = cookieService.addTokenCookie(jwtToken);
+        Cookie cookie = CookieUtil.addTokenCookie(jwtToken);
         response.addCookie(cookie);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
-        String token = cookieService.extractTokenFromCookie(request.getCookies());
+        String token = CookieUtil.extractTokenFromCookie(request.getCookies());
         Member member = authService.findMemberByToken(token);
         return ResponseEntity.ok(MemberResponse.from(member));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        Cookie deleteCookie = cookieService.deleteTokenCookie();
+        Cookie deleteCookie = CookieUtil.deleteTokenCookie();
         response.addCookie(deleteCookie);
         return ResponseEntity.ok().build();
     }

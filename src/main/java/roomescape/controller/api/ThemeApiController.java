@@ -41,7 +41,7 @@ public class ThemeApiController {
     }
 
     @DeleteMapping("/themes/{id}")
-    public ResponseEntity<Void> delete(@PathVariable long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

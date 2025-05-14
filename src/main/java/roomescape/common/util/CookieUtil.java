@@ -1,12 +1,10 @@
-package roomescape.auth.service;
+package roomescape.common.util;
 
 import jakarta.servlet.http.Cookie;
-import org.springframework.stereotype.Service;
 
-@Service
-public class CookieService {
+public class CookieUtil {
 
-    public String extractTokenFromCookie(Cookie[] cookies) {
+    public static String extractTokenFromCookie(Cookie[] cookies) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();
@@ -15,14 +13,14 @@ public class CookieService {
         return "";
     }
 
-    public Cookie addTokenCookie(String token) {
+    public static Cookie addTokenCookie(String token) {
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
     }
 
-    public Cookie deleteTokenCookie() {
+    public static Cookie deleteTokenCookie() {
         Cookie cookie = new Cookie("token", "");
         cookie.setPath("/");
         cookie.setMaxAge(0);

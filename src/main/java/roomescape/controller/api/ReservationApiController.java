@@ -59,10 +59,10 @@ public class ReservationApiController {
 
     @GetMapping("/admin/reservation/search")
     public ResponseEntity<List<ReservationResponse>> getSearchReservations(
-            @RequestParam(required = false) Long memberId,
-            @RequestParam(required = false) Long themeId,
-            @RequestParam LocalDate dateFrom,
-            @RequestParam LocalDate dateTo
+            @RequestParam(name = "memberId") Long memberId,
+            @RequestParam(name = "themeId") Long themeId,
+            @RequestParam(name = "dateFrom") LocalDate dateFrom,
+            @RequestParam(name = "dateTo") LocalDate dateTo
     ) {
         List<Reservation> reservations = reservationService.searchReservationsByDateRange(
                 memberId,
@@ -70,12 +70,13 @@ public class ReservationApiController {
                 dateFrom,
                 dateTo
         );
+
         List<ReservationResponse> responses = ReservationResponse.from(reservations);
         return ResponseEntity.ok(responses);
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable("id") long id) {
         reservationService.delete(id);
         return ResponseEntity.noContent().build();
     }

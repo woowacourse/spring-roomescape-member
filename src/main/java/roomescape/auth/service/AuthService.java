@@ -1,7 +1,6 @@
 package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.auth.repository.AuthRepository;
 import roomescape.entity.Member;
@@ -19,7 +18,6 @@ public class AuthService {
         this.authRepository = authRepository;
     }
 
-    @Transactional
     public Member register(
             final String name,
             final String email,
