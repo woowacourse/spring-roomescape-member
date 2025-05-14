@@ -3,8 +3,7 @@ package roomescape.time.service.usecase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.transaction.annotation.Transactional;
-import roomescape.common.exception.ConflictException;
+import roomescape.common.exception.DataConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberEmail;
@@ -27,7 +26,6 @@ import roomescape.time.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -121,7 +119,7 @@ class ReservationTimeCommandUseCaseTest {
         // when
         // then
         assertThatThrownBy(() -> reservationTimeCommandUseCase.delete(reservation.getTime().getId()))
-                .isInstanceOf(ConflictException.class)
+                .isInstanceOf(DataConflictException.class)
                 .hasMessage("예약에서 참조 중인 시간은 삭제할 수 없습니다.");
     }
 
@@ -134,7 +132,7 @@ class ReservationTimeCommandUseCaseTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeCommandUseCase.create(sameTimeRequest))
-                .isInstanceOf(ConflictException.class)
+                .isInstanceOf(DataConflictException.class)
                 .hasMessage("추가하려는 시간이 이미 존재합니다.");
     }
 

@@ -3,22 +3,16 @@ package roomescape.member.repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.common.exception.ConflictException;
+import roomescape.common.exception.DataConflictException;
 import roomescape.member.domain.Account;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberEmail;
 import roomescape.member.domain.MemberId;
 import roomescape.member.domain.Password;
-import roomescape.member.repository.MemberRepository;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.ThemeId;
-import roomescape.theme.repository.ThemeRepository;
 
 public class FakeMemberRepository implements MemberRepository {
 
@@ -34,7 +28,7 @@ public class FakeMemberRepository implements MemberRepository {
     @Override
     public Member save(Account account) {
         if (existsByEmail(account.getMember().getEmail())) {
-            throw new ConflictException("이미 존재하는 이메일입니다.");
+            throw new DataConflictException("이미 존재하는 이메일입니다.");
         }
 
         Member saved = Member.withId(

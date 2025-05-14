@@ -2,7 +2,7 @@ package roomescape.member.service.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.common.exception.ConflictException;
+import roomescape.common.exception.DataConflictException;
 import roomescape.member.auth.vo.MemberInfo;
 import roomescape.member.domain.Account;
 import roomescape.member.repository.MemberRepository;
@@ -16,7 +16,7 @@ public class MemberCommandUseCase {
 
     public MemberInfo create(Account account) {
         if (memberRepository.existsByEmail(account.getMember().getEmail())) {
-            throw new ConflictException("이미 존재하는 이메일입니다.");
+            throw new DataConflictException("이미 존재하는 이메일입니다.");
         }
 
         return MemberConverter.toDto(memberRepository.save(account));

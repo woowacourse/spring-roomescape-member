@@ -2,7 +2,7 @@ package roomescape.reservation.service.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.common.exception.ConflictException;
+import roomescape.common.exception.DataConflictException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberId;
 import roomescape.member.service.usecase.MemberQueryUseCase;
@@ -35,7 +35,7 @@ public class ReservationCommandUseCase {
                 ReservationTimeId.from(createReservationServiceRequest.timeId()),
                 ThemeId.from(createReservationServiceRequest.themeId()))) {
 
-            throw new ConflictException("추가하려는 예약이 이미 존재합니다.");
+            throw new DataConflictException("추가하려는 예약이 이미 존재합니다.");
         }
 
         final ReservationTime reservationTime = reservationTimeQueryUseCase.get(

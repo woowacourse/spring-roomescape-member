@@ -4,8 +4,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.transaction.annotation.Transactional;
-import roomescape.common.exception.ConflictException;
+import roomescape.common.exception.DataConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.member.domain.Account;
 import roomescape.member.domain.Member;
@@ -149,7 +148,7 @@ class ReservationCommandUseCaseTest {
                         LocalDate.of(2025, 8, 10),
                         reservationTime.getId().getValue(),
                         theme.getId().getValue())))
-                .isInstanceOf(ConflictException.class)
+                .isInstanceOf(DataConflictException.class)
                 .hasMessage("추가하려는 예약이 이미 존재합니다.");
     }
 
