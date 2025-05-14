@@ -25,7 +25,8 @@ public class ReservationService {
     }
 
     public ReservationResponse createUserReservation(UserReservationRequest dto, LoginMember member) {
-        Reservation reservation = reservationChecker.createReservationWithoutId(dto, member);
+        ReservationRequest reservationRequest = new ReservationRequest(dto.date(), dto.timeId(), dto.themeId(), member.getId());
+        Reservation reservation = reservationChecker.createReservationWithoutId(reservationRequest);
         return createReservation(reservation);
     }
 

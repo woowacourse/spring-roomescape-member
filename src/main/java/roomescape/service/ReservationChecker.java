@@ -8,7 +8,6 @@ import roomescape.domain.ReservationName;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.reservation.ReservationRequest;
-import roomescape.dto.reservation.UserReservationRequest;
 import roomescape.exception.InvalidRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.MemberRepository;
@@ -26,11 +25,6 @@ public class ReservationChecker {
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
         this.memberRepository = memberRepository;
-    }
-
-    public Reservation createReservationWithoutId(UserReservationRequest dto, LoginMember member) {
-        ReservationRequest request = new ReservationRequest(dto.date(), dto.timeId(), dto.themeId(), member.getId());
-        return createReservationWithoutId(request);
     }
 
     public Reservation createReservationWithoutId(ReservationRequest dto) {
