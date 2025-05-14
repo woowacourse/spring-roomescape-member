@@ -9,6 +9,8 @@ import roomescape.auth.repository.MemberRepository;
 import roomescape.auth.service.dto.request.LoginRequest;
 import roomescape.auth.service.dto.request.UserSignupRequest;
 import roomescape.global.exception.conflict.MemberEmailConflictException;
+import roomescape.global.exception.notFound.MemberNotFoundException;
+import roomescape.global.exception.notFound.NotFoundException;
 import roomescape.global.exception.unauthorized.MemberUnauthorizedException;
 import roomescape.global.infrastructure.JwtTokenProvider;
 
@@ -37,7 +39,7 @@ class MemberServiceTest {
         // when & then
         assertThatThrownBy(() -> {
             service.login(request);
-        }).isInstanceOf(MemberUnauthorizedException.class);
+        }).isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("중복되는 이메일의 유저는 생성할 수 없다")
