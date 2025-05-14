@@ -26,12 +26,12 @@ public class AdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws
             Exception {
-        String token = LoginTokenParser.getLoginToken(request);
-        if (token == null) {
-            throw new IllegalArgumentException();
-        }
-
         try {
+            String token = LoginTokenParser.getLoginToken(request);
+            if (token == null) {
+                throw new IllegalArgumentException();
+            }
+
             Long memberId = Long.valueOf(jwtProvider.getPayload(token));
             Optional<Member> member = memberRepository.findById(memberId);
             if (member.isEmpty() || !member.get().role().equals("admin")) {
