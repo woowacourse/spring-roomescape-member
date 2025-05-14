@@ -164,7 +164,7 @@ class AdminControllerTest {
                 .queryParam("dateFrom", "2025-05-01")
                 .queryParam("dateTo", "2025-05-05")
                 .when()
-                .get("/admin/reservations/search/")
+                .get("/admin/reservations/search")
                 .then()
                 .log().all()
                 .statusCode(200)
