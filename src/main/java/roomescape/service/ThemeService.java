@@ -48,6 +48,18 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getTopTheme(int count, int startDaysAgo, int endDaysAgo) {
+        if (count <= 0 || count > 100) {
+            throw new IllegalArgumentException("조회 개수는 1 이상 100 이하만 허용됩니다.");
+        }
+
+        if (startDaysAgo < 0 || endDaysAgo < 0) {
+            throw new IllegalArgumentException("날짜는 음수가 될 수 없습니다.");
+        }
+
+        if (startDaysAgo < endDaysAgo) {
+            throw new IllegalArgumentException("시작일이 종료일보다 과거일 수 없습니다.");
+        }
+
         List<Theme> topTenTheme = themeDao.getPopularThemeByRankAndDuration(
                 count   ,
                 LocalDate.now(clock).minusDays(startDaysAgo),
