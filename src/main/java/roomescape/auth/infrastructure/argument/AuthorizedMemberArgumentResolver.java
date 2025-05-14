@@ -40,7 +40,7 @@ public class AuthorizedMemberArgumentResolver implements HandlerMethodArgumentRe
         if (request == null) {
             throw new InternalServerException("NativeWebRequest 를 HttpServletRequest 로 변환하는 데에 실패했습니다.");
         }
-        Principal principal = (Principal) request.getAttribute("principal");
+        Principal principal = (Principal) request.getAttribute(Principal.ATTRIBUTE_NAME);
         validatePrincipal(principal);
         return memberService.findByEmail(principal.identifier())
             .orElseThrow(() -> new UnauthorizedException("잘못된 인증 정보입니다."));

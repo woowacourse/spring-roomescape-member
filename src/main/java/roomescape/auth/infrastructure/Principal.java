@@ -7,6 +7,8 @@ public record Principal(
     Role role
 ) {
 
+    public static final String ATTRIBUTE_NAME = "principal";
+
     public static Principal fromJwtPayload(JwtPayload jwtPayload) {
         return new Principal(
             jwtPayload.identifier(),
