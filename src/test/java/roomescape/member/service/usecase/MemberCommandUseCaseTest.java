@@ -2,7 +2,7 @@ package roomescape.member.service.usecase;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.common.exception.DataConflictException;
+import roomescape.common.exception.AlreadyExistException;
 import roomescape.member.domain.Account;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberEmail;
@@ -67,7 +67,7 @@ class MemberCommandUseCaseTest {
 
         // when & then
         assertThatThrownBy(() -> memberCommandUseCase.create(account))
-                .isInstanceOf(DataConflictException.class);
+                .isInstanceOf(AlreadyExistException.class);
     }
 
 }

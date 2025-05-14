@@ -3,7 +3,8 @@ package roomescape.time.service.usecase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.common.exception.DataConflictException;
+import roomescape.common.exception.AlreadyExistException;
+import roomescape.common.exception.ReferencedByOtherException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberEmail;
@@ -119,7 +120,7 @@ class ReservationTimeCommandUseCaseTest {
         // when
         // then
         assertThatThrownBy(() -> reservationTimeCommandUseCase.delete(reservation.getTime().getId()))
-                .isInstanceOf(DataConflictException.class)
+                .isInstanceOf(ReferencedByOtherException.class)
                 .hasMessage("예약에서 참조 중인 시간은 삭제할 수 없습니다.");
     }
 
@@ -132,7 +133,7 @@ class ReservationTimeCommandUseCaseTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeCommandUseCase.create(sameTimeRequest))
-                .isInstanceOf(DataConflictException.class)
+                .isInstanceOf(AlreadyExistException.class)
                 .hasMessage("추가하려는 시간이 이미 존재합니다.");
     }
 

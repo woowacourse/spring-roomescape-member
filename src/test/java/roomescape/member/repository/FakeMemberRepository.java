@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.common.exception.DataConflictException;
+import roomescape.common.exception.AlreadyExistException;
 import roomescape.member.domain.Account;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberEmail;
@@ -28,7 +28,7 @@ public class FakeMemberRepository implements MemberRepository {
     @Override
     public Member save(Account account) {
         if (existsByEmail(account.getMember().getEmail())) {
-            throw new DataConflictException("이미 존재하는 이메일입니다.");
+            throw new AlreadyExistException("이미 존재하는 이메일입니다.");
         }
 
         Member saved = Member.withId(
