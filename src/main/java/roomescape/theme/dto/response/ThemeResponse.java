@@ -2,19 +2,37 @@ package roomescape.theme.dto.response;
 
 import roomescape.theme.entity.Theme;
 
-public record ThemeResponse(
-        Long id,
-        String name,
-        String description,
-        String thumbnail
-) {
+public class ThemeResponse {
 
-    public static ThemeResponse from(Theme entity) {
-        return new ThemeResponse(
-                entity.getId(),
-                entity.getName(),
-                entity.getDescription(),
-                entity.getThumbnail()
-        );
+    public record ThemeCreateResponse(
+            Long id,
+            String name,
+            String description,
+            String thumbnail
+    ) {
+        public static ThemeCreateResponse from(Theme theme) {
+            return new ThemeCreateResponse(
+                    theme.getId(),
+                    theme.getName(),
+                    theme.getDescription(),
+                    theme.getThumbnail()
+            );
+        }
+    }
+
+    public record ThemeReadResponse(
+            Long id,
+            String name,
+            String description,
+            String thumbnail
+    ) {
+        public static ThemeReadResponse from(Theme theme) {
+            return new ThemeReadResponse(
+                    theme.getId(),
+                    theme.getName(),
+                    theme.getDescription(),
+                    theme.getThumbnail()
+            );
+        }
     }
 }

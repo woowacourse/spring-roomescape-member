@@ -1,23 +1,30 @@
 package roomescape.reservation.dto.request;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import roomescape.reservation.entity.Reservation;
-import roomescape.reservation.entity.ReservationTime;
 
-public record ReservationRequest(
-        LocalDate date,
-        String name,
-        Long timeId,
-        Long themeId
-) {
+public class ReservationRequest {
 
-    public ReservationRequest {
-        if (date == null || name == null || name.isBlank() || timeId == null || themeId == null) {
-            throw new IllegalArgumentException("값이 모두 입력되지 않았습니다.");
-        }
+    public record ReservationCreateRequest(
+            @NotNull LocalDate date,
+            @NotNull Long timeId,
+            @NotNull Long themeId
+    ) {
     }
 
-    public Reservation toEntity(ReservationTime timeEntity) {
-        return new Reservation(0L, name, date, timeEntity, themeId);
+    public record ReservationAdminCreateRequest(
+            @NotNull LocalDate date,
+            @NotNull Long themeId,
+            @NotNull Long timeId,
+            @NotNull Long memberId
+    ) {
+    }
+
+    public record ReservationReadFilteredRequest(
+            @NotNull Long themeId,
+            @NotNull Long memberId,
+            @NotNull LocalDate dateFrom,
+            @NotNull LocalDate dateTo
+    ) {
     }
 }

@@ -1,19 +1,16 @@
 package roomescape.reservation.dto.request;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
 import roomescape.reservation.entity.ReservationTime;
 
-public record ReservationTimeRequest(
-        LocalTime startAt
-) {
+public class ReservationTimeRequest {
 
-    public ReservationTimeRequest {
-        if (startAt == null) {
-            throw new IllegalArgumentException("값이 입력되지 않았습니다.");
+    public record ReservationTimeCreateRequest(
+            @NotNull LocalTime startAt
+    ) {
+        public ReservationTime toEntity() {
+            return new ReservationTime(0L, startAt);
         }
-    }
-
-    public ReservationTime toEntity() {
-        return new ReservationTime(0L, startAt);
     }
 }

@@ -1,7 +1,11 @@
 package roomescape.reservation.entity;
 
 import java.time.LocalTime;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
+@AllArgsConstructor
 public class ReservationTime {
 
     private static final LocalTime RUNNING_TIME = LocalTime.of(2, 0);
@@ -11,14 +15,9 @@ public class ReservationTime {
     private final Long id;
     private LocalTime startAt;
 
-    public ReservationTime(Long id, LocalTime startAt) {
-        this.id = id;
-        this.startAt = startAt;
-    }
-
     public boolean isDuplicatedWith(ReservationTime other) {
         LocalTime otherStartAt = other.startAt;
-        final int interval = Math.abs(otherStartAt.toSecondOfDay() - startAt.toSecondOfDay());
+        int interval = Math.abs(otherStartAt.toSecondOfDay() - startAt.toSecondOfDay());
         return interval < RUNNING_TIME.toSecondOfDay();
     }
 
@@ -28,13 +27,5 @@ public class ReservationTime {
 
     public String getFormattedTime() {
         return startAt.toString();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public LocalTime getStartAt() {
-        return startAt;
     }
 }
