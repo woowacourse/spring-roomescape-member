@@ -36,10 +36,10 @@ class MemberControllerTest {
     @Test
     void register() {
         //given
-        MemberRegisterRequest request = new MemberRegisterRequest("testName", "testEmail", "1234");
+        final MemberRegisterRequest request = new MemberRegisterRequest("testName", "testEmail@example.com", "1234");
 
         //when
-        ExtractableResponse<Response> response = RestAssured
+        final ExtractableResponse<Response> response = RestAssured
                 .given()
                 .log().all()
                 .contentType(ContentType.JSON)
@@ -51,12 +51,36 @@ class MemberControllerTest {
                 .statusCode(201)
                 .extract();
 
-        String locationHeader = response.header("Location");
+        final String locationHeader = response.header("Location");
 
         //then
         assertThat(locationHeader).isNotNull();
         assertThat(locationHeader).isEqualTo("/members/1");
     }
 
+    @DisplayName("요청에서 잘못된 이메일 형식이라면 예외 메세지와 상태코드 400 bad_request 를 담은 응답이 반환된다.")
+    @Test
+    void invalidEmailPattern() {
+        //given
+        final MemberRegisterRequest request = new MemberRegisterRequest("testName", "testEmail", "1234");
+
+        //when
+        final ExtractableResponse<Response> response = RestAssured
+                .given()
+                .log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/members")
+                .then()
+                .log().all()
+                .statusCode(400)
+                .extract();
+
+        final String actual = response.asString();
+
+        //then
+        assertThat(actual).contains("유효한 이메일 형식이 아닙니다.");
+    }
 
 }

@@ -76,22 +76,22 @@ class AdminControllerTest {
     @Test
     void createAdminReservation() {
         //given
-        Member member = Member.from(1L, "user", "userEmail", "1234", MemberRole.USER);
+        final Member member = Member.from(1L, "user", "userEmail@example.com", "1234", MemberRole.USER);
         memberDao.save(member);
 
-        Member memberAdmin = Member.from(2L, "user", "userEmail", "1234", MemberRole.ADMIN);
+        final Member memberAdmin = Member.from(2L, "admin", "admin@example.com", "1234", MemberRole.ADMIN);
         memberDao.save(memberAdmin);
 
         themeDao.saveTheme(new Theme(1L, "name", "des", "thumb"));
         reservationTimeDao.saveReservationTime(new ReservationTime(1L, LocalTime.of(10, 0)));
 
-        String token = tokenProvider.createToken(memberAdmin);
-        Cookie cookie = cookieProvider.createCookie("token", token);
+        final String token = tokenProvider.createToken(memberAdmin);
+        final Cookie cookie = cookieProvider.createCookie("token", token);
 
-        AdminReservationRequest request = new AdminReservationRequest(NOW_DATE, 1L, 1L, 1L);
+        final AdminReservationRequest request = new AdminReservationRequest(NOW_DATE, 1L, 1L, 1L);
 
         //when
-        ReservationResponseDto actual = RestAssured
+        final ReservationResponseDto actual = RestAssured
                 .given()
                 .log().all()
                 .contentType(ContentType.JSON)
@@ -113,16 +113,16 @@ class AdminControllerTest {
     @Test
     void getReservationsByCondition() {
         //given
-        Member member = Member.from(1L, "user", "userEmail", "1234", MemberRole.USER);
+        final Member member = Member.from(1L, "user", "userEmail@example.com", "1234", MemberRole.USER);
         memberDao.save(member);
 
-        Member memberAdmin = Member.from(2L, "user", "userEmail1", "1234", MemberRole.ADMIN);
+        final Member memberAdmin = Member.from(2L, "admin", "adminEmail1@example.com", "1234", MemberRole.ADMIN);
         memberDao.save(memberAdmin);
 
-        Theme theme = new Theme(1L, "name", "des", "thumb");
+        final Theme theme = new Theme(1L, "name", "des", "thumb");
         themeDao.saveTheme(theme);
 
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         reservationTimeDao.saveReservationTime(reservationTime);
 
         reservationDao.saveReservation(
@@ -150,11 +150,11 @@ class AdminControllerTest {
                         theme
                 ));
 
-        String token = tokenProvider.createToken(memberAdmin);
-        Cookie cookie = cookieProvider.createCookie("token", token);
+        final String token = tokenProvider.createToken(memberAdmin);
+        final Cookie cookie = cookieProvider.createCookie("token", token);
 
         //when
-        List<ReservationResponseDto> actual = RestAssured
+        final List<ReservationResponseDto> actual = RestAssured
                 .given()
                 .log().all()
                 .contentType(ContentType.JSON)
@@ -173,7 +173,7 @@ class AdminControllerTest {
                 });
 
         //then
-        List<ReservationResponseDto> compareList = List.of(
+        final List<ReservationResponseDto> compareList = List.of(
                 new ReservationResponseDto(
                         1L,
                         MemberResponse.from(member),
