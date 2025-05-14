@@ -11,7 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.admin.domain.dto.SearchReservationRequestDto;
-import roomescape.common.RowMapperManager;
+import roomescape.global.common.RowMapperManager;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.NotFoundReservationException;
 import roomescape.reservationtime.domain.ReservationTime;

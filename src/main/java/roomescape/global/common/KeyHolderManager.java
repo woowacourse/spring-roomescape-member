@@ -1,4 +1,4 @@
-package roomescape.common;
+package roomescape.global.common;
 
 import java.sql.PreparedStatement;
 import org.springframework.jdbc.core.JdbcTemplate;

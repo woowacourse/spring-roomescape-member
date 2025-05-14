@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import roomescape.common.KeyHolderManager;
+import roomescape.global.common.KeyHolderManager;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.exception.NotFoundReservationTimeException;
 import roomescape.reservationtime.fixture.ReservationTimeFixture;

@@ -6,8 +6,8 @@ import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import roomescape.common.KeyHolderManager;
-import roomescape.common.RowMapperManager;
+import roomescape.global.common.KeyHolderManager;
+import roomescape.global.common.RowMapperManager;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.exception.NotFoundReservationTimeException;
 
