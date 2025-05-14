@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import roomescape.exception.BadRequestException;
-import roomescape.exception.InternalServerException;
 
 public final class Reservation {
 
@@ -78,25 +77,25 @@ public final class Reservation {
 
     private void validateNullMember(Member member) {
         if (member == null) {
-            throw new InternalServerException("[ERROR] 비어있는 멤버로는 예약을 생성할 수 없습니다.");
+            throw new IllegalArgumentException("[ERROR] 비어있는 멤버로는 예약을 생성할 수 없습니다.");
         }
     }
 
     private void validateNullDate(LocalDate date) {
         if (date == null) {
-            throw new InternalServerException("[ERROR] 비어있는 예약날짜로 예약을 생성할 수 없습니다.");
+            throw new IllegalArgumentException("[ERROR] 비어있는 예약날짜로 예약을 생성할 수 없습니다.");
         }
     }
 
     private void validateNullTime(ReservationTime reservationTime) {
         if (reservationTime == null) {
-            throw new InternalServerException("[ERROR] 비어있는 예약시간으로는 예약을 생성할 수 없습니다.");
+            throw new IllegalArgumentException("[ERROR] 비어있는 예약시간으로는 예약을 생성할 수 없습니다.");
         }
     }
 
     private void validateNullTheme(Theme theme) {
         if (theme == null) {
-            throw new InternalServerException("[ERROR] 비어있는 테마로는 예약을 생성할 수 없습니다.");
+            throw new IllegalArgumentException("[ERROR] 비어있는 테마로는 예약을 생성할 수 없습니다.");
         }
     }
 }

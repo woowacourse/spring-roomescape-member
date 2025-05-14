@@ -7,20 +7,19 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.BadRequestException;
-import roomescape.exception.InternalServerException;
 
 class ReservationTest {
 
     private static final ReservationTime EXAMPLE_RESERVATION_TIME = new ReservationTime(1L, LocalTime.of(10, 0));
     private static final Theme EXAMPLE_THEME = new Theme(1L, "이름", "설명", "썸네일");
-    
+
     @DisplayName("비어있는 멤버로는 예약을 생성할 수 없다")
     @Test
     void cannotCreateReservationWithNullMember() {
         // when & then
         assertThatThrownBy(
                 () -> new Reservation(1L, null, LocalDate.now(), EXAMPLE_RESERVATION_TIME, EXAMPLE_THEME))
-                .isInstanceOf(InternalServerException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 비어있는 멤버로는 예약을 생성할 수 없습니다.");
     }
 
@@ -33,7 +32,7 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> new Reservation(1L, member, nullDate, EXAMPLE_RESERVATION_TIME, EXAMPLE_THEME))
-                .isInstanceOf(InternalServerException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 비어있는 예약날짜로 예약을 생성할 수 없습니다.");
     }
 
@@ -46,7 +45,7 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> new Reservation(1L, member, LocalDate.now(), nullTime, EXAMPLE_THEME))
-                .isInstanceOf(InternalServerException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 비어있는 예약시간으로는 예약을 생성할 수 없습니다.");
     }
 
@@ -60,7 +59,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(
                 () -> new Reservation(1L, member, LocalDate.now(), EXAMPLE_RESERVATION_TIME, nullTheme))
-                .isInstanceOf(InternalServerException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 비어있는 테마로는 예약을 생성할 수 없습니다.");
     }
 

@@ -90,11 +90,19 @@ public class GlobalAdvice {
         return ResponseEntity.badRequest().body(problemDetail);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ProblemDetail> illegalArgumentExceptionHandler(IllegalArgumentException exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        problemDetail.setTitle("올바르지 않은 입력입니다.");
+        problemDetail.setDetail(exception.getMessage());
+        return ResponseEntity.internalServerError().body(problemDetail);
+    }
+
     @ExceptionHandler(InternalServerException.class)
     public ResponseEntity<ProblemDetail> InternalServerExceptionHandler(InternalServerException exception) {
         System.out.println("exception = " + exception);
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        problemDetail.setTitle("올바르지 않은 입력입니다.");
+        problemDetail.setTitle("서버 내부 에러입니다.");
         problemDetail.setDetail(String.join("서버 내부에서 로직 예외 발생헸습니다."));
         return ResponseEntity.internalServerError().body(problemDetail);
     }
@@ -103,7 +111,7 @@ public class GlobalAdvice {
     public ResponseEntity<ProblemDetail> runtimeExceptionHandler(RuntimeException exception) {
         System.out.println("exception = " + exception);
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        problemDetail.setTitle("올바르지 않은 입력입니다.");
+        problemDetail.setTitle("예상치 못한 에러입니다.");
         problemDetail.setDetail(String.join("예상치 못한 예외 발생헸습니다."));
         return ResponseEntity.internalServerError().body(problemDetail);
     }

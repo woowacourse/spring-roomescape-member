@@ -2,7 +2,6 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
-import roomescape.exception.InternalServerException;
 
 public class ReservationTime {
 
@@ -43,7 +42,7 @@ public class ReservationTime {
 
     private void validateNullStartAt(LocalTime startAt) {
         if (startAt == null) {
-            throw new InternalServerException("[ERROR] 비어있는 시작시간으로 예약 시간을 생성할 수 없습니다.");
+            throw new IllegalArgumentException("[ERROR] 비어있는 시작시간으로 예약 시간을 생성할 수 없습니다.");
         }
     }
 

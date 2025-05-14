@@ -1,7 +1,6 @@
 package roomescape.domain;
 
 import java.util.Objects;
-import roomescape.exception.InternalServerException;
 
 public class Theme {
 
@@ -61,19 +60,19 @@ public class Theme {
 
     private void validateNullName(String name) {
         if (name == null || name.isBlank()) {
-            throw new InternalServerException("[ERROR] 비어있는 이름으로 테마를 생성할 수 없습니다.");
+            throw new IllegalArgumentException("[ERROR] 비어있는 이름으로 테마를 생성할 수 없습니다.");
         }
     }
 
     private void validateNullDescription(String description) {
         if (description == null || description.isBlank()) {
-            throw new InternalServerException("[ERROR] 비어있는 설명으로 테마를 생성할 수 없습니다.");
+            throw new IllegalArgumentException("[ERROR] 비어있는 설명으로 테마를 생성할 수 없습니다.");
         }
     }
 
     private void validateNullThumbnail(String thumbnail) {
         if (thumbnail == null || thumbnail.isBlank()) {
-            throw new InternalServerException("[ERROR] 비어있는 썸네일으로 테마를 생성할 수 없습니다.");
+            throw new IllegalArgumentException("[ERROR] 비어있는 썸네일으로 테마를 생성할 수 없습니다.");
         }
     }
 }
