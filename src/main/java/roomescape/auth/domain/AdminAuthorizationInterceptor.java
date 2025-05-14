@@ -20,18 +20,30 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response,
                              final Object handler) {
 
-        if (!request.getRequestURI().startsWith("/admin")) {
+        if (!isAdminRequest(request)) {
             return true;
         }
 
         String token = extractor.extract(request);
-        Member member = authService.findMemberByToken(token);
+        if (token == null) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return false;
+        }
 
-        if (member.getRole().equals(Role.ADMIN)) {
+        if (isAdmin(token)) {
             return true;
         }
 
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setStatus(HttpStatus.FORBIDDEN.value());
         return false;
+    }
+
+    private boolean isAdminRequest(HttpServletRequest request) {
+        return request.getRequestURI().startsWith("/admin");
+    }
+
+    private boolean isAdmin(String token) {
+        Member member = authService.findMemberByToken(token);
+        return member.getRole().equals(Role.ADMIN);
     }
 }
