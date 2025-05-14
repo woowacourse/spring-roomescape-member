@@ -30,7 +30,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
             ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory
-    ) throws Exception {
+    ) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = request.getCookies();
         String token = authService.extractTokenFromCookies(cookies);
