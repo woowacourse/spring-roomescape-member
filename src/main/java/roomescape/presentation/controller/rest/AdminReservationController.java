@@ -44,7 +44,6 @@ public class AdminReservationController {
             @RequestParam(name = "from", required = false) LocalDate from,
             @RequestParam(name = "to", required = false) LocalDate to
     ) {
-        System.out.println("requested!");
         final ReservationFilterDto filter = new ReservationFilterDto(themeId, userId, from, to);
         final List<ReservationResponse> responses = reservationService.findByFilter(filter);
 
