@@ -1,7 +1,7 @@
 INSERT INTO users(name, email, password, role)
-VALUES ('name1', 'email1', '1234', 'USER'),
-       ('name2', 'email2', '1234', 'USER'),
-       ('name3', 'email3', '1234', 'ADMIN')
+VALUES ('name1', 'email1@email.com', '1234', 'USER'),
+       ('name2', 'email2@email.com', '1234', 'USER'),
+       ('name3', 'email3@email.com', '1234', 'ADMIN')
 ;
 
 INSERT INTO RESERVATION_TIME(start_at)
