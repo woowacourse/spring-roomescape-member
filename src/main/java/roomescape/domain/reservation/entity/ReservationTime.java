@@ -13,17 +13,17 @@ public class ReservationTime {
     private final LocalTime startAt;
 
     @Builder
-    public ReservationTime(Long id, LocalTime startAt) {
+    public ReservationTime(final Long id, final LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
         validateReservationTime();
     }
 
-    public static ReservationTime withoutId(LocalTime startAt) {
+    public static ReservationTime withoutId(final LocalTime startAt) {
         return new ReservationTime(null, startAt);
     }
 
-    public void validateReservationTime() {
+    private void validateReservationTime() {
         if (startAt == null) {
             throw new InvalidArgumentException("startAt cannot be null");
         }
@@ -39,11 +39,11 @@ public class ReservationTime {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ReservationTime that = (ReservationTime) o;
+        final ReservationTime that = (ReservationTime) o;
         return Objects.equals(id, that.id);
     }
 }

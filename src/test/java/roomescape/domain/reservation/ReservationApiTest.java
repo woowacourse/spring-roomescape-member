@@ -7,7 +7,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,17 +15,26 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Password;
+import roomescape.domain.auth.entity.Roles;
+import roomescape.domain.auth.entity.User;
+import roomescape.domain.auth.repository.UserRepository;
+import roomescape.domain.auth.service.JwtManager;
+import roomescape.domain.auth.service.PasswordEncryptor;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.repository.ThemeRepository;
-import roomescape.domain.reservation.utils.JdbcTemplateUtils;
+import roomescape.utils.DateFormatter;
+import roomescape.utils.JdbcTemplateUtils;
 
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ReservationApiTest {
 
     @Autowired
@@ -41,82 +49,59 @@ class ReservationApiTest {
     @Autowired
     private ThemeRepository themeRepository;
 
-    public static String formatDateTime(LocalDate dateTime) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    @Autowired
+    private UserRepository userRepository;
 
-        return dateTimeFormatter.format(dateTime);
-    }
+    @Autowired
+    private JwtManager jwtManager;
+
+    @Autowired
+    private PasswordEncryptor passwordEncryptor;
+
+    private Password password;
+
+    @LocalServerPort
+    private int port;
 
     @BeforeEach
     void init() {
+        RestAssured.port = port;
         JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
-    }
-
-    @DisplayName("어드민 페이지로 접근할 수 있다.")
-    @Test
-    void test1() {
-        RestAssured.given().log().all()
-                .when().get("/admin")
-                .then().log().all()
-                .statusCode(200);
-    }
-
-    @DisplayName("어드민이 예약 관리 페이지에 접근한다.")
-    @Test
-    void test2() {
-        RestAssured.given().log().all()
-                .when().get("/admin/reservation")
-                .then().log().all()
-                .statusCode(200);
-    }
-
-    @DisplayName("모든 예약 정보를 반환한다.")
-    @Test
-    void test3() {
-        // given
-        LocalTime time = LocalTime.of(15, 0);
-        ReservationTime reservationTime = ReservationTime.withoutId(time);
-        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-        Theme theme = Theme.withoutId("공포", "우테코 공포",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Theme savedTheme = themeRepository.save(theme);
-
-        Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), savedReservationTime, savedTheme);
-        reservationRepository.save(reservation);
-
-        // then
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
+        password = Password.encrypt("1234", passwordEncryptor);
     }
 
     @DisplayName("예약 정보를 추가한다.")
     @Test
     void test4() {
         // given
-        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
-        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+        final ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
+        final ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 
-        Theme theme = Theme.withoutId("공포", "우테코 공포",
+        final Theme theme = Theme.withoutId("공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Theme savedTheme = themeRepository.save(theme);
+        final Theme savedTheme = themeRepository.save(theme);
+        final LocalDate now = LocalDate.now();
 
-        LocalDate now = LocalDate.now();
+        final User user = userRepository.save(User.withoutId(new Name("브라운"), "dsa@naver.com", password, Roles.USER));
+        final String token = jwtManager.createToken(user);
 
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", formatDateTime(now.plusDays(1)));
+        final Map<String, Object> reservation = new HashMap<>();
+        reservation.put("date", DateFormatter.format(now.plusDays(1)));
         reservation.put("timeId", savedReservationTime.getId());
         reservation.put("themeId", savedTheme.getId());
 
         // when & then
-        RestAssured.given().log().all()
+        RestAssured.given()
+                .cookie("token", token)
+                .log()
+                .all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
+                .when()
+                .post("/reservations")
+                .then()
+                .log()
+                .all()
                 .statusCode(201);
     }
 
@@ -124,24 +109,32 @@ class ReservationApiTest {
     @Test
     void test5() {
 
-        Theme theme = Theme.withoutId("공포", "우테코 공포",
+        final Theme theme = Theme.withoutId("공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Theme savedTheme = themeRepository.save(theme);
+        final Theme savedTheme = themeRepository.save(theme);
 
-        LocalDate now = LocalDate.now();
+        final LocalDate now = LocalDate.now();
 
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", formatDateTime(now.plusDays(1)));
+        final Map<String, Object> reservation = new HashMap<>();
+        reservation.put("date", DateFormatter.format(now.plusDays(1)));
         reservation.put("timeId", 1);
         reservation.put("themeId", savedTheme.getId());
 
+        final User user = userRepository.save(User.withoutId(new Name("브라운"), "dsa@naver.com", password, Roles.USER));
+        final String token = jwtManager.createToken(user);
+
         // when & then
-        RestAssured.given().log().all()
+        RestAssured.given()
+                .cookie("token", token)
+                .log()
+                .all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
+                .when()
+                .post("/reservations")
+                .then()
+                .log()
+                .all()
                 .statusCode(404);
     }
 
@@ -149,23 +142,31 @@ class ReservationApiTest {
     @Test
     void notExistThemeId() {
         // given
-        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
-        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+        final ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
+        final ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 
-        LocalDate now = LocalDate.now();
+        final LocalDate now = LocalDate.now();
 
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", formatDateTime(now.plusDays(1)));
+        final Map<String, Object> reservation = new HashMap<>();
+        reservation.put("date", DateFormatter.format(now.plusDays(1)));
         reservation.put("timeId", savedReservationTime.getId());
         reservation.put("themeId", 1L);
 
+        final User user = userRepository.save(User.withoutId(new Name("브라운"), "dsa@naver.com", password, Roles.USER));
+        final String token = jwtManager.createToken(user);
+
         // when & then
-        RestAssured.given().log().all()
+        RestAssured.given()
+                .cookie("token", token)
+                .log()
+                .all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
+                .when()
+                .post("/reservations")
+                .then()
+                .log()
+                .all()
                 .statusCode(404);
     }
 
@@ -173,57 +174,81 @@ class ReservationApiTest {
     @Test
     void test6() {
         // given
-        String name = "브라운";
-        LocalDate now = LocalDate.now();
+        final LocalDate now = LocalDate.now();
 
-        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
-        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+        final ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
+        final ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 
-        Theme theme = Theme.withoutId("공포", "우테코 공포",
+        final Theme theme = Theme.withoutId("공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Theme savedTheme = themeRepository.save(theme);
+        final Theme savedTheme = themeRepository.save(theme);
 
-        Reservation reservation = Reservation.withoutId(name, now, savedReservationTime, savedTheme);
-        Reservation saved = reservationRepository.save(reservation);
-        Long id = saved.getId();
+        final Name name = new Name("브라운");
+        final User user = User.withoutId(name, "admin@naver.com", password, Roles.USER);
+        final User savedUser = userRepository.save(user);
+
+        final Reservation reservation = Reservation.withoutId(savedUser, now, savedReservationTime, savedTheme);
+        final Reservation saved = reservationRepository.save(reservation);
+        final Long id = saved.getId();
 
         // when & then
-        RestAssured.given().log().all()
-                .when().delete("/reservations/" + id.intValue())
-                .then().log().all()
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .delete("/reservations/" + id)
+                .then()
+                .log()
+                .all()
                 .statusCode(204);
     }
 
     @DisplayName("존재하지 않는 예약을 삭제할 경우 NOT_FOUND 반환")
     @Test
     void test7() {
-        RestAssured.given().log().all()
-                .when().delete("/reservations/4")
-                .then().log().all()
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .delete("/reservations/4")
+                .then()
+                .log()
+                .all()
                 .statusCode(404);
     }
 
     @DisplayName("예약 가능한 시간을 반환한다")
     @Test
     void test9() {
-        Theme theme = themeRepository.save(Theme.withoutId("공포", "공포", "www.m.com"));
-        ReservationTime time1 = reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(10, 0)));
+        final Theme theme = themeRepository.save(Theme.withoutId("공포", "공포", "www.m.com"));
+        final ReservationTime time1 = reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(10, 0)));
         reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(11, 0)));
 
-        LocalDate date = LocalDate.now();
-        reservationRepository.save(Reservation.withoutId("꾹", date, time1, theme));
+        final LocalDate date = LocalDate.now();
 
-        String path = UriComponentsBuilder.fromUriString("/reservations/available")
-                .queryParam("date", formatDateTime(date))
+        final Name name = new Name("브라운");
+        final User user = User.withoutId(name, "admin@naver.com", password, Roles.USER);
+        final User savedUser = userRepository.save(user);
+
+        reservationRepository.save(Reservation.withoutId(savedUser, date, time1, theme));
+
+        final String path = UriComponentsBuilder.fromUriString("/reservations/available")
+                .queryParam("date", DateFormatter.format(date))
                 .queryParam("themeId", theme.getId())
                 .build()
                 .toUriString();
 
-        RestAssured.given().log().all()
-                .when().get(path)
-                .then().log().all()
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .get(path)
+                .then()
+                .log()
+                .all()
                 .statusCode(200)
                 .body("size()", is(2))
                 .body("alreadyBooked", containsInAnyOrder(true, false));
     }
+
 }

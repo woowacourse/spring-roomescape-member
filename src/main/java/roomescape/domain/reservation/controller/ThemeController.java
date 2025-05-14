@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.reservation.dto.ThemeRequest;
-import roomescape.domain.reservation.dto.ThemeResponse;
+import roomescape.domain.reservation.dto.theme.ThemeRequest;
+import roomescape.domain.reservation.dto.theme.ThemeResponse;
 import roomescape.domain.reservation.service.ThemeService;
 
 @RequestMapping("/themes")
@@ -21,36 +21,37 @@ public class ThemeController {
 
     private final ThemeService themeService;
 
-    public ThemeController(ThemeService themeService) {
+    public ThemeController(final ThemeService themeService) {
         this.themeService = themeService;
     }
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> readAllTheme() {
-        List<ThemeResponse> responses = themeService.getAll();
+        final List<ThemeResponse> responses = themeService.getAll();
 
         return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> readPopularThemes() {
-        List<ThemeResponse> responses = themeService.getPopularThemes();
+        final List<ThemeResponse> responses = themeService.getPopularThemes();
 
         return ResponseEntity.ok(responses);
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> create(@Valid @RequestBody ThemeRequest request) {
-        ThemeResponse response = themeService.create(request);
+    public ResponseEntity<ThemeResponse> create(@Valid @RequestBody final ThemeRequest request) {
+        final ThemeResponse response = themeService.create(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") final Long id) {
         themeService.delete(id);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
-
 }

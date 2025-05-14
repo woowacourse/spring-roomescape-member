@@ -4,7 +4,7 @@ import java.util.NoSuchElementException;
 
 public class EntityNotFoundException extends NoSuchElementException {
 
-    public EntityNotFoundException(String message) {
+    public EntityNotFoundException(final String message) {
         super(message);
     }
 }

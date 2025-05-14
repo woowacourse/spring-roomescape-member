@@ -7,54 +7,60 @@ import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
 import roomescape.common.exception.InvalidArgumentException;
+import roomescape.domain.auth.entity.User;
 
 @Getter
 public class Reservation {
 
-    private static final int MAX_NAME_LENGTH = 25;
     private final Long id;
-    private final String name;
+    private final User user;
     private final LocalDate reservationDate;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
     @Builder
-    public Reservation(Long id, String name, LocalDate reservationDate, ReservationTime reservationTime, Theme theme) {
+    public Reservation(final Long id, final User user, final LocalDate reservationDate,
+                       final ReservationTime reservationTime, final Theme theme) {
         this.id = id;
-        this.name = name;
+        this.user = user;
         this.reservationDate = reservationDate;
         this.reservationTime = reservationTime;
         this.theme = theme;
         validateReservation();
     }
 
-    public static Reservation withoutId(String name, LocalDate reservationDate, ReservationTime reservationTime,
-                                        Theme theme) {
-        return new Reservation(null, name, reservationDate, reservationTime, theme);
+    public static Reservation withoutId(final User user, final LocalDate reservationDate,
+                                        final ReservationTime reservationTime, final Theme theme) {
+        return new Reservation(null, user, reservationDate, reservationTime, theme);
     }
 
     private void validateReservation() {
-        if (name == null || reservationDate == null || reservationTime == null || theme == null) {
+        if (user == null || theme == null) {
             throw new InvalidArgumentException("Reservation field cannot be null");
         }
-        validateName();
+
+        validateReservationDateTime();
     }
 
-    private void validateName() {
-        if (name.isBlank() || name.length() > MAX_NAME_LENGTH) {
-            throw new InvalidArgumentException("invalid reservation name");
+    private void validateReservationDateTime() {
+        if (reservationDate == null || reservationTime == null) {
+            throw new InvalidArgumentException("예약 날짜와 시간이 null일 수 없습니다.");
         }
     }
 
-    public void validateNotPastReservation(LocalDateTime now) {
+    public void validateNotPastReservation(final LocalDateTime now) {
         if (isPast(now)) {
             throw new InvalidArgumentException("이미 지난 예약 시간입니다.");
         }
     }
 
-    private boolean isPast(LocalDateTime now) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(reservationDate, getReservationStartTime());
+    private boolean isPast(final LocalDateTime now) {
+        final LocalDateTime reservationDateTime = LocalDateTime.of(reservationDate, getReservationStartTime());
         return reservationDateTime.isBefore(now);
+    }
+
+    public LocalTime getReservationStartTime() {
+        return reservationTime.getStartAt();
     }
 
     public boolean existId() {
@@ -65,12 +71,12 @@ public class Reservation {
         return reservationTime.getId();
     }
 
-    public LocalTime getReservationStartTime() {
-        return reservationTime.getStartAt();
-    }
-
     public Long getThemeId() {
         return theme.getId();
+    }
+
+    public String getName() {
+        return user.getName();
     }
 
     @Override
@@ -79,11 +85,11 @@ public class Reservation {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Reservation that = (Reservation) o;
+        final Reservation that = (Reservation) o;
         return Objects.equals(id, that.id);
     }
 }

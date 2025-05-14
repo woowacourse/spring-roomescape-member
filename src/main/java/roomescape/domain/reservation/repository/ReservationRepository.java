@@ -9,6 +9,8 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
+    List<Reservation> findReservations(Long themeId, Long userId, LocalDate dateFrom, LocalDate dateTo);
+
     List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
 
     Optional<Reservation> findById(Long id);

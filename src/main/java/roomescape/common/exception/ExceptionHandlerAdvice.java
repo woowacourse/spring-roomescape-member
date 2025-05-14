@@ -10,16 +10,19 @@ public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(InvalidArgumentException.class)
     public ResponseEntity<Void> handleIllegalArgumentException() {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest()
+                .build();
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Void> handleEntityNotFoundException() {
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.notFound()
+                .build();
     }
 
     @ExceptionHandler(AlreadyInUseException.class)
-    public ResponseEntity<Void> handleAlreadyUseException() {
-        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    public ResponseEntity<String> handleAlreadyUseException(final AlreadyInUseException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(e.getMessage());
     }
 }
