@@ -34,13 +34,7 @@ public class AdminReservationService {
     }
 
     public ReservationResponse addReservation(AdminReservationRequest reservationRequest) {
-        ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new IllegalStateException("존재하지 않는 시간입니다."));
-        Theme theme = themeDao.findById(reservationRequest.themeId())
-                .orElseThrow(() -> new IllegalStateException("존재하지 않는 테마입니다."));
-        User user = userDao.findById(reservationRequest.memberId())
-                .orElseThrow(() -> new IllegalStateException("존재하지 않는 사용자입니다."));
-        Reservation reservation = reservationRequest.toEntityWith(user, reservationTime, theme);
+        Reservation reservation = reservationOf(reservationRequest);
         if (reservation.isPast(LocalDate.now(clock))) {
             throw new IllegalStateException("하루 전 까지 예약 가능합니다.");
         }
@@ -53,5 +47,16 @@ public class AdminReservationService {
         }
         Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.fromEntity(savedReservation);
+    }
+
+    private Reservation reservationOf(AdminReservationRequest reservationRequest) {
+        ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId())
+                .orElseThrow(() -> new IllegalStateException("존재하지 않는 시간입니다."));
+        Theme theme = themeDao.findById(reservationRequest.themeId())
+                .orElseThrow(() -> new IllegalStateException("존재하지 않는 테마입니다."));
+        User user = userDao.findById(reservationRequest.memberId())
+                .orElseThrow(() -> new IllegalStateException("존재하지 않는 사용자입니다."));
+        Reservation reservation = reservationRequest.toEntityWith(user, reservationTime, theme);
+        return reservation;
     }
 }
