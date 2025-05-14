@@ -50,7 +50,7 @@ public class LoginFilter extends OncePerRequestFilter {
             jwtProvider.verifyToken(token);
             filterChain.doFilter(request, response);
         } catch (JwtException e) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
         }
     }
 }

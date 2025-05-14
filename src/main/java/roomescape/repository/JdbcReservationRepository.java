@@ -91,7 +91,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 SELECT
                     reservation_id,
                     m.member_id, name, email, role,
-                    date,
+                    r.date,
                     rt.time_id, start_at AS time_value,
                     t.theme_id, theme_name, description, thumbnail
                 FROM reservation AS r
@@ -114,13 +114,15 @@ public class JdbcReservationRepository implements ReservationRepository {
             params.add(criteria.themeId());
         }
         if (criteria.from() != null) {
-            query.append(" AND date >= ?");
+            query.append(" AND r.date >= ?");
             params.add(criteria.from());
         }
         if (criteria.to() != null) {
-            query.append(" AND date <= ?");
+            query.append(" AND r.date <= ?");
             params.add(criteria.to());
         }
+        System.out.println(criteria);
+        System.out.println(query);
         return jdbcTemplate.query(query.toString(), RESERVATION_ROW_MAPPER, params.toArray());
     }
 
@@ -130,15 +132,15 @@ public class JdbcReservationRepository implements ReservationRepository {
                 SELECT
                     reservation_id,
                     m.member_id, name, email, role,
-                    date,
+                    r.date,
                     rt.time_id, start_at AS time_value,
                     t.theme_id, theme_name, description, thumbnail
                 FROM reservation AS r
                 JOIN reservation_time AS rt
                 ON r.time_id = rt.time_id
-                JOIN theme AS t 
+                JOIN theme AS t
                 ON r.theme_id = t.theme_id
-                JOIN member AS m 
+                JOIN member AS m
                 ON r.member_id = m.member_id
                 WHERE r.reservation_id = ?
                 """;

@@ -3,16 +3,19 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.domain.ReservationTime;
 import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotFoundValueException;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.request.ReservationTimeCreation;
 import roomescape.service.dto.response.AvailableReservationTimeResult;
 import roomescape.service.dto.response.ReservationTimeResult;
@@ -20,32 +23,43 @@ import roomescape.service.dto.response.ReservationTimeResult;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("test")
-@Sql(scripts = "/schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "/reservation-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
 
-    @Autowired
+    @Mock
+    ReservationRepository reservationRepository;
+
+    @Mock
+    ReservationTimeRepository reservationTimeRepository;
+
+    @InjectMocks
     ReservationTimeService reservationTimeService;
 
     @Test
     @DisplayName("시간 데이터를 추가할 수 있어야 한다")
     void addReservationTime() {
         //given //when
+        when(reservationTimeRepository.existsByStartAt(any(LocalTime.class)))
+                .thenReturn(false);
+        when(reservationTimeRepository.findById(any(Long.class)))
+                .thenReturn(Optional.of(new ReservationTime(1L, LocalTime.of(15, 0))));
+
         ReservationTimeCreation creation = new ReservationTimeCreation(LocalTime.of(15, 0));
-        reservationTimeService.addReservationTime(creation);
+        ReservationTimeResult actual = reservationTimeService.addReservationTime(creation);
 
         //then
-        assertThat(reservationTimeService.findAllReservationTimes()).hasSize(3);
+        assertThat(actual.id()).isEqualTo(1L);
     }
 
     @Test
     @DisplayName("이미 존재하는 시간 데이터일 경우 예외를 던진다")
     void cannotAddReservationTime() {
         //given
+        when(reservationTimeRepository.existsByStartAt(any(LocalTime.class)))
+                .thenReturn(true);
         ReservationTimeCreation creation = new ReservationTimeCreation(LocalTime.of(10, 0));
 
         //when & then
@@ -57,17 +71,27 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("시간 데이터를 조회할 수 있어야 한다")
     void findAllReservationTimes() {
-        //given //when
+        //given
+        when(reservationTimeRepository.findAll())
+                .thenReturn(List.of(new ReservationTime(1L, LocalTime.of(10, 0))));
+
+        // when
         List<ReservationTimeResult> actual = reservationTimeService.findAllReservationTimes();
 
         //then
-        assertThat(actual).hasSize(2);
+        assertThat(actual).hasSize(1);
     }
 
     @Test
     @DisplayName("이용가능한 예약 시간을 조회한다")
     void findAvailableTime() {
         //given
+        when(reservationTimeRepository.findAll())
+                .thenReturn(List.of(new ReservationTime(1L, LocalTime.of(10, 0)),
+                        new ReservationTime(2L, LocalTime.of(11, 0))));
+        when(reservationTimeRepository.findAllBookedTime(any(LocalDate.class), any(Long.class)))
+                .thenReturn(List.of(new ReservationTime(1L, LocalTime.of(10, 0))));
+
         LocalDate date = LocalDate.of(2025, 1, 1);
         long themeId = 1L;
 
@@ -82,7 +106,11 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("id를 기반으로 시간 데이터를 삭제할 수 있다")
     void deleteById() {
-        //given //when // then
+        //given
+        when(reservationTimeRepository.deleteById(any(Long.class)))
+                .thenReturn(true);
+
+        //when //then
         assertThatCode(() -> reservationTimeService.deleteById(2L))
                 .doesNotThrowAnyException();
     }
@@ -90,7 +118,11 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("존재하지 않는 시간을 삭제하는 경우 예외를 던진다")
     void deleteNotExistTimeById() {
-        //given //when //then
+        //given
+        when(reservationTimeRepository.deleteById(any(Long.class)))
+                .thenReturn(false);
+        
+        // when //then
         assertThatThrownBy(() -> reservationTimeService.deleteById(1000L))
                 .isInstanceOf(NotFoundValueException.class)
                 .hasMessageContaining("존재하지 않는 예약 시간입니다");

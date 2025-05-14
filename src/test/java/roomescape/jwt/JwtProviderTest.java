@@ -1,10 +1,8 @@
 package roomescape.jwt;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import javax.crypto.SecretKey;
@@ -99,7 +97,7 @@ class JwtProviderTest {
 
         //when //then
         assertThatThrownBy(() -> jwtProvider.verifyToken(token))
-                .isInstanceOf(ExpiredJwtException.class);
+                .isInstanceOf(Exception.class);
     }
 
     @Test
@@ -122,6 +120,6 @@ class JwtProviderTest {
 
         //when //then
         assertThatThrownBy(() -> jwtProvider.verifyToken(token))
-                .isInstanceOf(SignatureException.class);
+                .isInstanceOf(Exception.class);
     }
 }

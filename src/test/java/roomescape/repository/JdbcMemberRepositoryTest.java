@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -30,8 +29,6 @@ class JdbcMemberRepositoryTest {
 
     @Autowired
     MemberRepository memberRepository;
-    @Autowired
-    private ResourcePatternResolver resourcePatternResolver;
 
     @Test
     @DisplayName("멤버 데이터를 저장한다")
@@ -43,11 +40,11 @@ class JdbcMemberRepositoryTest {
         long actual = memberRepository.insert(member);
 
         //then
-        assertThat(actual).isEqualTo(2L);
+        assertThat(actual).isEqualTo(3L);
     }
 
     @ParameterizedTest
-    @CsvSource(value = {"MEMBER,1", "ADMIN,0"})
+    @CsvSource(value = {"MEMBER,1", "ADMIN,1"})
     @DisplayName("권한을 기반으로 멤버 데이터를 조회한다")
     void findAllByRole(MemberRoleType role, int expectedSize) {
         //when
@@ -87,7 +84,7 @@ class JdbcMemberRepositoryTest {
     @DisplayName("email 과 password를 기반으로 멤버 데이터를 조회한다")
     void findByEmailAndPassword() {
         //given
-        String email = "test@email.com";
+        String email = "member@email.com";
         String password = "1234";
 
         //when
@@ -109,7 +106,7 @@ class JdbcMemberRepositoryTest {
     }
 
     @ParameterizedTest
-    @CsvSource(value = {"test@email.com,true", "testtest@email.com,false"})
+    @CsvSource(value = {"member@email.com,true", "testtest@email.com,false"})
     @DisplayName("email 을 기반으로 멤버 데이터가 존재하는지 확인한다")
     void existsByEmail(String email, boolean expected) {
         //when

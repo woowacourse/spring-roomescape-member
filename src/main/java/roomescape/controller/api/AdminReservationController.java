@@ -42,15 +42,15 @@ public class AdminReservationController {
             @RequestParam(required = false) Long memberId,
             @RequestParam(required = false) Long themeId,
 
-            @RequestParam(required = false, value = "dateFrom")
+            @RequestParam(required = false)
             @DateTimeFormat(pattern = "yyyy-MM-dd")
-            LocalDate from,
+            LocalDate dateFrom,
 
-            @RequestParam(required = false, value = "dateTo")
+            @RequestParam(required = false)
             @DateTimeFormat(pattern = "yyyy-MM-dd")
-            LocalDate to) {
+            LocalDate dateTo) {
 
-        ReservationCriteriaCreation creation = new ReservationCriteriaCreation(memberId, themeId, from, to);
+        ReservationCriteriaCreation creation = new ReservationCriteriaCreation(memberId, themeId, dateFrom, dateTo);
         return reservationService.getAllReservationByCriteria(creation)
                 .stream()
                 .map(ReservationResponse::from)

@@ -1,17 +1,21 @@
 package roomescape.service;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.domain.Member;
 import roomescape.domain.MemberRoleType;
 import roomescape.exception.custom.ExistedDuplicateValueException;
+import roomescape.jwt.JwtProvider;
+import roomescape.jwt.JwtRequest;
+import roomescape.repository.MemberRepository;
 import roomescape.service.dto.request.MemberLoginCreation;
 import roomescape.service.dto.request.MemberSignUpCreation;
 import roomescape.service.dto.response.MemberResult;
@@ -19,15 +23,20 @@ import roomescape.service.dto.response.MemberSignUpResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("test")
-@Sql(scripts = "/schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "/reservation-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
 
-    @Autowired
+    @Mock
+    JwtProvider jwtProvider;
+
+    @Mock
+    MemberRepository memberRepository;
+
+    @InjectMocks
     MemberService memberService;
 
     @Test
@@ -35,6 +44,11 @@ class MemberServiceTest {
     void register() {
         //given
         MemberSignUpCreation creation = new MemberSignUpCreation("new", "new@email.com", "1234");
+
+        when(memberRepository.existsByEmail(any(String.class))).thenReturn(false);
+        when(memberRepository.findById(any(Long.class)))
+                .thenReturn(Optional.of(new Member(1L, "new", "new@email.com", "1234", MemberRoleType.MEMBER)));
+        when(memberRepository.insert(any(Member.class))).thenReturn(1L);
 
         //when
         MemberSignUpResult actual = memberService.register(creation);
@@ -47,7 +61,8 @@ class MemberServiceTest {
     @DisplayName("이미 사용 중인 이메일은 회원 가입 할 수 없다")
     void cannotRegisterWhenExistedEmail() {
         //given
-        MemberSignUpCreation creation = new MemberSignUpCreation("duplicate", "test@email.com", "1234");
+        MemberSignUpCreation creation = new MemberSignUpCreation("duplicate", "member@email.com", "1234");
+        when(memberRepository.existsByEmail(any(String.class))).thenReturn(true);
 
         //when //then
         assertThatThrownBy(() -> memberService.register(creation))
@@ -59,7 +74,11 @@ class MemberServiceTest {
     @DisplayName("사용자의 정보를 기반으로 jwt 토큰을 발행한다")
     void publishAccessToken() {
         //given
-        MemberLoginCreation creation = new MemberLoginCreation("test@email.com", "1234");
+        MemberLoginCreation creation = new MemberLoginCreation("member@email.com", "1234");
+
+        when(jwtProvider.generateToken(any(JwtRequest.class))).thenReturn("aaa");
+        when(memberRepository.findByEmailAndPassword(anyString(), anyString()))
+                .thenReturn(Optional.of(new Member(1L, "member", "member@email.com", "1234", MemberRoleType.MEMBER)));
 
         //when
         String actual = memberService.publishAccessToken(creation);
@@ -69,10 +88,13 @@ class MemberServiceTest {
     }
 
     @ParameterizedTest
-    @CsvSource(value = {"MEMBER,1", "ADMIN,0"})
+    @CsvSource(value = {"MEMBER,1", "ADMIN,1"})
     @DisplayName("권한을 기준으로 전체 유저를 조회한다")
     void getAllMemberByRole(MemberRoleType role, int expectedSize) {
         //when
+        when(memberRepository.findAllByRole(role)).thenReturn(
+                List.of(new Member(1L, "test", "test@email.com", "1234", role)));
+
         List<MemberResult> actual = memberService.getAllMemberByRole(role);
 
         //then
