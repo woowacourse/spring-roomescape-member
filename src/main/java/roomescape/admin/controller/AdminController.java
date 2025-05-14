@@ -13,13 +13,12 @@ import roomescape.admin.domain.dto.AdminReservationRequestDto;
 import roomescape.admin.domain.dto.SearchReservationRequestDto;
 import roomescape.admin.service.AdminService;
 import roomescape.reservation.domain.dto.ReservationResponseDto;
-import roomescape.user.domain.User;
 
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
 
-    private AdminService adminService;
+    private final AdminService adminService;
 
     public AdminController(AdminService adminService) {
         this.adminService = adminService;
@@ -27,20 +26,15 @@ public class AdminController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponseDto> createReservation(
-            @RequestBody AdminReservationRequestDto adminReservationRequestDto,
-            User admin) {
-        ReservationResponseDto reservationResponseDto = adminService.createReservation(
-                adminReservationRequestDto, admin);
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponseDto);
+            @RequestBody AdminReservationRequestDto requestDto) {
+        ReservationResponseDto responseDto = adminService.createReservation(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @GetMapping("/search")
     public ResponseEntity<List<ReservationResponseDto>> searchReservations(
-            @ModelAttribute SearchReservationRequestDto searchReservationRequestDto,
-            User admin) {
-        List<ReservationResponseDto> reservationResponseDtos = adminService.searchReservations(
-                searchReservationRequestDto,
-                admin);
+            @ModelAttribute SearchReservationRequestDto requestDto) {
+        List<ReservationResponseDto> reservationResponseDtos = adminService.searchReservations(requestDto);
         return ResponseEntity.status(HttpStatus.OK).body(reservationResponseDtos);
     }
 }

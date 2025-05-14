@@ -22,9 +22,8 @@ public class AdminService {
         this.userService = userService;
     }
 
-    public ReservationResponseDto createReservation(AdminReservationRequestDto adminReservationRequestDto,
-                                                    User admin) {
-        User member = getUser(adminReservationRequestDto.memberId());
+    public ReservationResponseDto createReservation(AdminReservationRequestDto requestDto) {
+        User member = getUser(requestDto.memberId());
         ReservationRequestDto reservationRequestDto = convertAdminReservationRequestDtoToReservationRequestDto(
                 adminReservationRequestDto);
         return reservationService.add(reservationRequestDto, member);
