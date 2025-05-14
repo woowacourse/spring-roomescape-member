@@ -12,6 +12,12 @@ import roomescape.auth.controller.resolver.LoginMemberIdArgumentResolver;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
+    private static final String ALL_PATH_PATTERN = "/**";
+    private static final String CSS_PATH_PATTERN = "/css/**";
+    private static final String IMAGE_PATH_PATTERN = "/image/**";
+    private static final String JS_PATH_PATTERN = "/js/**";
+
+
     private final LoginMemberIdArgumentResolver loginMemberIdArgumentResolver;
     private final AdminAuthInterceptor adminAuthInterceptor;
     private final LoginRequiredInterceptor loginRequiredInterceptor;
@@ -31,9 +37,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginRequiredInterceptor)
-                .addPathPatterns("/**");
+                .addPathPatterns(ALL_PATH_PATTERN)
+                .excludePathPatterns(CSS_PATH_PATTERN, IMAGE_PATH_PATTERN, JS_PATH_PATTERN);
+
         registry.addInterceptor(adminAuthInterceptor)
-                .addPathPatterns("/**");
+                .addPathPatterns(ALL_PATH_PATTERN)
+                .excludePathPatterns(CSS_PATH_PATTERN, IMAGE_PATH_PATTERN, JS_PATH_PATTERN);
     }
 
 }
