@@ -9,7 +9,7 @@ import roomescape.member.dto.response.MemberResponse;
 import roomescape.member.service.MemberService;
 
 @RestController
-@RequestMapping("members")
+@RequestMapping("/members")
 public class MemberController {
 
     private final MemberService memberService;
