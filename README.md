@@ -75,18 +75,43 @@
 - / 요청 시 인기 테마 페이지를 응답합니다.
 - [x] 페이지는 templates/index.html 파일을 이용하세요.
 
-## 리팩터링
-
-- contains 인자 복잡함. -> 수정 고려
-- Reservation add 굉장히 더러움 -> 수정 고려
-- ReservationService 인자 필드 너무 많음 -> 수정 고려
-- DTO들 이름 뒤에 DTO 뺄까? - 고려
-- controller에서 서비스로 dto 넘길때도 있고 아닐때도 있음 -> 일관성 맞추자
-
 ### 고민해볼 내용
 
 - 인기 테마를 불러올 때 ReservationService 에서 해야되는가? ReservationThemeService에서 해야하는가?
     - 두 개의 테이블 모두 접근해야된다
     - Reservation 테이블에서 검색하는 것은 중간로직이기 때문에 ReservationTimeService에서 수행하자
 - 인기 테마 id를 반환할때 List or Map? 순서가 중요하기 때문
-- 리포지토리는 컬렉션 처럼 동작해야 한다던데 메서드 명이 점점 이상함. 일반적인 컬렉션 같지가 않음 
+- 리포지토리는 컬렉션 처럼 동작해야 한다던데 메서드 명이 점점 이상함. 일반적인 컬렉션 같지가 않음
+
+## 4단계
+
+- [x] 사용자 도메인을 추가.
+    - 사용자는 다음의 정보를 가진다. name: 사용자 이름,email: 이메일, password: 비밀번호,
+    - email을 로그인의 id로, password를 비밀번호로 사용.
+- [x] 로그인 기능을 구현.
+    - templates/login.html 파일을 이용해 GET /login 요청 시 로그인 폼이 있는 페이지를 응답.
+    - POST /login 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함하세요.
+    - 응답 Cookie에 "token"값으로 토큰이 포함.
+- [x] 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API를 구현.
+
+## 5단계
+
+- [x] 사용자의 정보를 조회하는 로직을 리팩터링
+    - Cookie에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 로직을 분리
+    - HandlerMethodArgumentResolver 활용
+- [x] 예약 생성 API 및 기능을 리팩터링
+    - 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용하도록
+    - reservation.html, user-reservation.js 파일의 TODO 주석을 참고하여 변경된 명세에 맞게 클라이언트가 동작하도록 변경
+
+### 고민해본 내용
+
+- resolver에서 멤버로 만드려면 인증 과정을 거쳐야 한다 -> 나중에 인터셉터에서 admin 검사(인증함) ->인증의 책임을
+  인터셉터고 정하자
+- 사용자 예약 시 LoginResolver를 통해 LoginMember를 만들고 쓰는 게 맞나 - 어차피 예약할 때는 id만 필요한다 - 따라서 굳이 db 조회할 것 없이 그냥 멤버 이걸 쓰면 미리 멤버서비스에서
+  찾아주기에
+
+## 6단계
+
+- [x] 어드민 페이지 진입은 admin권한이 있는 사람만 할 수 있도록 제한
+- [x] 관리자가 조건에 따라 예약을 검색할 수 있도록 기능을 추가
+

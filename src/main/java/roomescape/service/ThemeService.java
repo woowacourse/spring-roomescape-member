@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dto.ThemeRequestDto;
+import roomescape.dto.request.ThemeRequest;
 import roomescape.model.Theme;
 import roomescape.repository.ReservedThemeChecker;
 import roomescape.repository.ThemeRepository;
@@ -20,9 +20,9 @@ public class ThemeService {
         this.reservedThemeChecker = reservedThemeChecker;
     }
 
-    public Theme addTheme(ThemeRequestDto themeRequestDto) {
-        Theme theme = new Theme(null, themeRequestDto.name(), themeRequestDto.description(),
-                themeRequestDto.thumbnail());
+    public Theme addTheme(ThemeRequest themeRequest) {
+        Theme theme = new Theme(null, themeRequest.name(), themeRequest.description(),
+                themeRequest.thumbnail());
         return themeRepository.addTheme(theme);
     }
 
@@ -48,7 +48,7 @@ public class ThemeService {
 
     public List<Theme> getWeeklyBestThemes() {
         LocalDate now = LocalDate.now(ZoneId.of("Asia/Seoul"));
-        List<Long> bestThemesIds = reservedThemeChecker.getBestThemesIdsInDays(now.minusDays(8), now.minusDays(1));
+        List<Long> bestThemesIds = reservedThemeChecker.getBestThemesIdsInDays(now.minusDays(7), now);
         return themeRepository.findAllByIdIn(bestThemesIds);
     }
 }
