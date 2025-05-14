@@ -4,12 +4,14 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.infra.JwtProvider;
 import roomescape.exception.UnAuthorizedException;
 import roomescape.member.Member;
 import roomescape.member.dao.MemberDao;
 
+@Component
 public class AdminCheckInterceptor implements HandlerInterceptor {
 
     private final MemberDao memberDao;

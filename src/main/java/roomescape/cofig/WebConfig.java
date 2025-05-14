@@ -14,11 +14,13 @@ public class WebConfig implements WebMvcConfigurer {
     private final LoginMemberArgumentReslover loginMemberArgumentReslover;
     private final MemberDao memberDao;
     private final JwtProvider jwtProvider;
+    private final AdminCheckInterceptor adminCheckInterceptor;
 
-    public WebConfig(LoginMemberArgumentReslover loginMemberArgumentReslover, MemberDao memberDao, JwtProvider jwtProvider) {
+    public WebConfig(LoginMemberArgumentReslover loginMemberArgumentReslover, MemberDao memberDao, JwtProvider jwtProvider, AdminCheckInterceptor adminCheckInterceptor) {
         this.loginMemberArgumentReslover = loginMemberArgumentReslover;
         this.memberDao = memberDao;
         this.jwtProvider = jwtProvider;
+        this.adminCheckInterceptor = adminCheckInterceptor;
     }
 
     @Override
@@ -28,7 +30,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminCheckInterceptor(memberDao, jwtProvider))
+        registry.addInterceptor(adminCheckInterceptor)
                 .addPathPatterns("/admin/**");
     }
 }
