@@ -1,5 +1,6 @@
 package roomescape.auth.domain;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 import roomescape.auth.exception.AuthorizationException;
@@ -8,21 +9,21 @@ import roomescape.auth.exception.AuthorizationException;
 public class CookieTokenExtractor {
 
     public String extract(HttpServletRequest request) {
-        String cookieHeader = request.getHeader("Cookie");
-        if (cookieHeader == null) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
             throw new AuthorizationException();
         }
 
-        for (String cookie : cookieHeader.split(";")) {
-            String trimmed = cookie.trim();
-            if (trimmed.startsWith("accessToken=")) {
-                String token = trimmed.substring("accessToken=".length());
-                if (token.isBlank()) {
+        for (Cookie cookie : cookies) {
+            if ("accessToken".equals(cookie.getName())) {
+                String token = cookie.getValue();
+                if (token == null || token.isBlank()) {
                     throw new AuthorizationException();
                 }
                 return token;
             }
         }
+
         throw new AuthorizationException();
     }
 }
