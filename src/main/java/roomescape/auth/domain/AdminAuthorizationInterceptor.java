@@ -19,12 +19,8 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response,
                              final Object handler) {
-
-        if (!isAdminRequest(request)) {
-            return true;
-        }
-
         String token = extractor.extract(request);
+
         if (token == null) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return false;
@@ -36,10 +32,6 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
 
         response.setStatus(HttpStatus.FORBIDDEN.value());
         return false;
-    }
-
-    private boolean isAdminRequest(HttpServletRequest request) {
-        return request.getRequestURI().startsWith("/admin");
     }
 
     private boolean isAdmin(String token) {
