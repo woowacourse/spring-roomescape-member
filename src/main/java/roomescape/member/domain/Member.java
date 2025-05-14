@@ -18,16 +18,6 @@ public class Member {
         this.password = password;
     }
 
-    public Member(String name, String email, String password) {
-        validateName(name);
-        validateEmail(email);
-        validatePassword(password);
-        this.id = null;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-    }
-
     private void validateId(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("회원 ID가 없습니다.");
