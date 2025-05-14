@@ -7,11 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.auth.dto.LoginMember;
 import roomescape.auth.service.AuthService;
 import roomescape.error.ForbiddenException;
 import roomescape.error.NotFoundException;
 import roomescape.error.UnauthorizedException;
-import roomescape.member.domain.Member;
 
 @Component
 @RequiredArgsConstructor
@@ -31,8 +31,8 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         try {
-            final Member member = authService.extractMemberByRequest(request);
-            if (!member.isAdmin()) {
+            final LoginMember loginMember = authService.extractMemberByRequest(request);
+            if (loginMember.isAdmin()) {
                 throw new ForbiddenException("관리자 권한이 필요합니다.");
             }
         } catch (IllegalArgumentException | NotFoundException e) {

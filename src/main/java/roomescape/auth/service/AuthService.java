@@ -7,6 +7,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.auth.dto.LoginCheckResponse;
+import roomescape.auth.dto.LoginMember;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.infrastructure.TokenProvider;
 import roomescape.error.NotFoundException;
@@ -54,7 +55,7 @@ public class AuthService {
      * @throws IllegalArgumentException 유효하지 않은 memberId 형식이거나 요청 속성에 memberId가 없을 경우
      * @throws NotFoundException        해당 memberId의 회원을 찾지 못한 경우
      */
-    public Member extractMemberByRequest(final HttpServletRequest request) {
+    public LoginMember extractMemberByRequest(final HttpServletRequest request) {
         return findMemberByMemberId(extractMemberId(request));
     }
 
@@ -66,8 +67,9 @@ public class AuthService {
                 .orElseThrow(() -> new IllegalArgumentException("memberId 형식이 올바르지 않습니다. memberId =" + raw));
     }
 
-    private Member findMemberByMemberId(final Long memberId) {
-        return memberRepository.findById(memberId)
+    private LoginMember findMemberByMemberId(final Long memberId) {
+        final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다. memberId =" + memberId));
+        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 }
