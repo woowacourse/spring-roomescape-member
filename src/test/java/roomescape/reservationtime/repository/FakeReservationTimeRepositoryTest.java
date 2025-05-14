@@ -19,14 +19,14 @@ class FakeReservationTimeRepositoryTest {
     }
 
     @Test
-    void getAll_shouldReturnAllSavedReservationTimes() {
+    void findAll_shouldReturnAllSavedReservationTimes() {
         ReservationTime t1 = ReservationTime.of(1L, LocalTime.of(10, 0));
         ReservationTime t2 = ReservationTime.of(1L, LocalTime.of(14, 30));
 
-        repository.put(t1);
-        repository.put(t2);
+        repository.save(t1);
+        repository.save(t2);
 
-        List<ReservationTime> all = repository.getAll();
+        List<ReservationTime> all = repository.findAll();
         assertThat(all).hasSize(2);
         assertThat(all).extracting(ReservationTime::getStartAt)
                 .containsExactlyInAnyOrder(t1.getStartAt(), t2.getStartAt());
@@ -35,7 +35,7 @@ class FakeReservationTimeRepositoryTest {
     @Test
     void findById_shouldReturnCorrectTime() {
         ReservationTime time = ReservationTime.of(1L, LocalTime.of(11, 0));
-        repository.put(time);
+        repository.save(time);
 
         Optional<ReservationTime> found = repository.findById(1L);
         assertThat(found).isPresent();
@@ -45,7 +45,7 @@ class FakeReservationTimeRepositoryTest {
     @Test
     void deleteById_shouldRemoveEntry() {
         ReservationTime time = ReservationTime.of(1L, LocalTime.of(12, 0));
-        repository.put(time);
+        repository.save(time);
 
         repository.deleteById(1L);
 
@@ -56,7 +56,7 @@ class FakeReservationTimeRepositoryTest {
     @Test
     void checkExistsByStartAt_shouldReturnTrueIfExists() {
         LocalTime time = LocalTime.of(13, 0);
-        repository.put(ReservationTime.of(1L, time));
+        repository.save(ReservationTime.of(1L, time));
 
         boolean exists = repository.checkExistsByStartAt(time);
         assertThat(exists).isTrue();

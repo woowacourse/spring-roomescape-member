@@ -1,51 +1,36 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Objects;
 import roomescape.common.domain.Id;
+import roomescape.member.domain.Member;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 public class Reservation {
     private final Id id;
-    private final String name;
     private final LocalDate date;
+    private final Member member;
     private final ReservationTime time;
     private final Theme theme;
 
-    private Reservation(final Id id, final String name, final LocalDate date, final ReservationTime time,
+    private Reservation(final Id id, final LocalDate date, final Member member, final ReservationTime time,
                         final Theme theme) {
-        validateNameLength(name);
-        validateDateTime(date, time.getStartAt());
         this.id = id;
-        this.name = name;
         this.date = date;
+        this.member = member;
         this.time = time;
         this.theme = theme;
     }
 
-    public static Reservation of(final Long id, final String name, final LocalDate date, final ReservationTime time,
+    public static Reservation of(final Long id, final LocalDate date, final Member member, final ReservationTime time,
                                  final Theme theme) {
-        return new Reservation(Id.from(id), name, date, time, theme);
+        return new Reservation(Id.from(id), date, member, time, theme);
     }
 
-    public static Reservation withUnassignedId(final String name, final LocalDate date, final ReservationTime time,
+    public static Reservation withUnassignedId(final LocalDate date, final Member member, final ReservationTime time,
                                                final Theme theme) {
-        return new Reservation(Id.unassigned(), name, date, time, theme);
-    }
-
-    private void validateNameLength(final String value) {
-        if (value.length() > 10) {
-            throw new IllegalArgumentException("이름은 10글자 이내여야 합니다.");
-        }
-    }
-
-    private void validateDateTime(LocalDate date, LocalTime time) {
-        if (LocalDateTime.of(date, time).isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("예약 시간이 현재 시간보다 이전일 수 없습니다.");
-        }
+        return new Reservation(Id.unassigned(), date, member, time, theme);
     }
 
     public Long getId() {
@@ -56,8 +41,8 @@ public class Reservation {
         id.setValue(value);
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
@@ -78,13 +63,11 @@ public class Reservation {
             return false;
         }
         Reservation that = (Reservation) o;
-        return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName())
-                && Objects.equals(getDate(), that.getDate()) && Objects.equals(getTime(),
-                that.getTime());
+        return Objects.equals(getId(), that.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDate(), getTime());
+        return Objects.hashCode(getId());
     }
 }

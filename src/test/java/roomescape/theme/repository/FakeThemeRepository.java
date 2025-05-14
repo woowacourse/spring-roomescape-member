@@ -19,7 +19,7 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> getAll() {
+    public List<Theme> findAll() {
         return themes.entrySet().stream()
                 .map(entry -> {
                     Theme value = entry.getValue();
@@ -29,7 +29,7 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme put(final Theme theme) {
+    public Theme save(final Theme theme) {
         long id = index.getAndIncrement();
         themes.put(id, theme);
         return Theme.of(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
@@ -50,7 +50,7 @@ public class FakeThemeRepository implements ThemeRepository {
         LocalDate from = nowDate.minusDays(7);
         LocalDate to = nowDate.minusDays(1);
 
-        Map<Long, Long> themeCount = reservationRepository.getAll().stream()
+        Map<Long, Long> themeCount = reservationRepository.findAll().stream()
                 .filter(r -> {
                     LocalDate d = r.getDate();
                     return !d.isBefore(from) && !d.isAfter(to);

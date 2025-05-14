@@ -11,6 +11,11 @@ public class CommonController {
         return "reservation";
     }
 
+    @GetMapping("/login")
+    public String getLoginPage() {
+        return "login";
+    }
+
     @GetMapping
     public String getPopularThemePage() {
         return "index";

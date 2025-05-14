@@ -2,15 +2,23 @@ package roomescape.reservationtime.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyLong;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.auth.domain.Role;
+import roomescape.member.domain.Member;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.request.ReservationCreateRequest;
-import roomescape.reservation.repository.FakeReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -25,23 +33,29 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 
+@ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
     private final LocalDate futureDate = LocalDate.now().plusDays(1);
     private final Theme theme = Theme.of(1L, "추리", "셜록 추리 게임 with Danny", "image.png");
+    private final Member member = Member.of(1L, "Danny", "danny@example.com", "password", Role.MEMBER);
 
     private ReservationService reservationService;
     private ReservationTimeService reservationTimeService;
+
+    @Mock
     private ReservationRepository reservationRepository;
+    @Mock
+    private MemberRepository memberRepository;
     private ReservationTimeRepository reservationTimeRepository;
     private ThemeRepository themeRepository;
 
     @BeforeEach
     void setUp() {
         reservationTimeRepository = new FakeReservationTimeRepository();
-        reservationRepository = new FakeReservationRepository();
         themeRepository = new FakeThemeRepository(reservationRepository);
         reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+        reservationService = new ReservationService(reservationRepository, memberRepository, reservationTimeRepository,
+                themeRepository);
     }
 
     @Test
@@ -95,9 +109,9 @@ class ReservationTimeServiceTest {
 
     @Test
     void deleteReservationTime_shouldThrowException_WhenReservationExists() {
-        ReservationTime reservationTime = reservationTimeRepository.put(
+        ReservationTime reservationTime = reservationTimeRepository.save(
                 ReservationTime.withUnassignedId(LocalTime.now()));
-        reservationRepository.put(Reservation.withUnassignedId("danny", futureDate, reservationTime, theme));
+        Mockito.when(reservationRepository.existsByTimeId(anyLong())).thenReturn(true);
 
         assertThatThrownBy(() -> reservationTimeService.delete(reservationTime.getId()))
                 .hasMessage("해당 시간에 대한 예약이 존재하여 삭제할 수 없습니다.");
@@ -105,18 +119,31 @@ class ReservationTimeServiceTest {
 
     @Test
     void getAvailableReservationTimes_shouldReturnAllAvailableReservationTimes() {
+        // given
         reservationTimeService.create(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
         reservationTimeService.create(new ReservationTimeCreateRequest(LocalTime.of(11, 0)));
         reservationTimeService.create(new ReservationTimeCreateRequest(LocalTime.of(12, 0)));
 
-        themeRepository.put(Theme.of(1L, "추리", "셜록 with Danny", "image.png"));
+        themeRepository.save(Theme.of(1L, "추리", "셜록 with Danny", "image.png"));
+        Mockito.when(memberRepository.findById(anyLong())).thenReturn(Optional.of(member));
 
-        reservationService.create(new ReservationCreateRequest("mint", futureDate, 1L, 1L));
-        List<AvailableReservationTimeResponse> availableReservationTimes = reservationTimeService.getAvailableReservationTimes(
-                futureDate, 1L);
+        Reservation reserved = Reservation.of(1L, futureDate, member,
+                ReservationTime.of(1L, LocalTime.of(10, 0)), theme);
+        Mockito.when(reservationRepository.save(Mockito.any())).thenReturn(reserved);
+        Mockito.when(reservationRepository.findByDateAndThemeId(futureDate, 1L))
+                .thenReturn(List.of(reserved));
 
-        assertThat(
-                availableReservationTimes.stream().filter(reservationTime -> !reservationTime.alreadyBooked()).count())
-                .isEqualTo(2);
+        reservationService.create(1L, new ReservationCreateRequest(futureDate, 1L, 1L));
+
+        // when
+        List<AvailableReservationTimeResponse> availableReservationTimes =
+                reservationTimeService.getAvailableReservationTimes(futureDate, 1L);
+
+        // then
+        long availableCount = availableReservationTimes.stream()
+                .filter(time -> !time.alreadyBooked())
+                .count();
+
+        assertThat(availableCount).isEqualTo(2);
     }
 }

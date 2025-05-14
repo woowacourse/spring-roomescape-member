@@ -6,9 +6,9 @@ import java.util.Optional;
 import roomescape.theme.domain.Theme;
 
 public interface ThemeRepository {
-    List<Theme> getAll();
+    List<Theme> findAll();
 
-    Theme put(Theme theme);
+    Theme save(Theme theme);
 
     boolean deleteById(long id);
 
