@@ -1,3 +1,6 @@
+INSERT INTO member(name, email, password, role) VALUES('일반', 'a', 'a', 'NORMAL');
+INSERT INTO member(name, email, password, role) VALUES('관리자', 'ad', 'ad', 'ADMIN');
+
 INSERT INTO reservation_time (start_at) VALUES ('10:00');
 INSERT INTO reservation_time (start_at) VALUES ('14:00');
 INSERT INTO reservation_time (start_at) VALUES ('16:00');
