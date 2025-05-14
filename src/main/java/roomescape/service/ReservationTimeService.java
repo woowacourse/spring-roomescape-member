@@ -2,7 +2,9 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.custom.BusinessRuleViolationException;
@@ -52,15 +54,12 @@ public class ReservationTimeService {
 
     public List<AvailableReservationTimeResult> findAllAvailableTime(final LocalDate date, final long themeId) {
         List<ReservationTime> totalReservationTime = reservationTimeRepository.findAll();
-        List<ReservationTime> bookedTime = reservationTimeRepository.findAllBookedTime(date, themeId);
+        Set<ReservationTime> bookedTime = new HashSet<>(reservationTimeRepository.findAllBookedTime(date, themeId));
         List<AvailableReservationTimeResult> responses = new ArrayList<>();
 
         for (ReservationTime reservationTime : totalReservationTime) {
-            if (bookedTime.contains(reservationTime)) {
-                responses.add(AvailableReservationTimeResult.of(reservationTime, true));
-                continue;
-            }
-            responses.add(AvailableReservationTimeResult.of(reservationTime, false));
+            boolean isBooked = bookedTime.contains(reservationTime);
+            responses.add(AvailableReservationTimeResult.of(reservationTime, isBooked));
         }
         return responses;
     }

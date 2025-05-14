@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.Reservation;
+import roomescape.repository.criteria.ReservationCriteria;
 
 public interface ReservationRepository {
 
@@ -12,6 +13,8 @@ public interface ReservationRepository {
     boolean existSameReservation(LocalDate date, long timeId, long themeId);
 
     List<Reservation> findAll();
+
+    List<Reservation> findAllByCriteria(ReservationCriteria criteria);
 
     Optional<Reservation> findById(long id);
 

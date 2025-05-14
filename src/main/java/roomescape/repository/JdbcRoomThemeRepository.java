@@ -16,7 +16,7 @@ import roomescape.domain.RoomTheme;
 public class JdbcRoomThemeRepository implements RoomThemeRepository {
 
     private static final RowMapper<RoomTheme> THEME_ROW_MAPPER = (resultSet, rowNumber) ->
-            new RoomTheme(resultSet.getLong("id"),
+            new RoomTheme(resultSet.getLong("theme_id"),
                     resultSet.getString("theme_name"),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail"));
@@ -28,7 +28,7 @@ public class JdbcRoomThemeRepository implements RoomThemeRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
+                .usingGeneratedKeyColumns("theme_id");
     }
 
     @Override
@@ -55,7 +55,7 @@ public class JdbcRoomThemeRepository implements RoomThemeRepository {
 
     @Override
     public Optional<RoomTheme> findById(final long id) {
-        final String query = "SELECT * FROM theme WHERE id = ?";
+        final String query = "SELECT * FROM theme WHERE theme_id = ?";
         return jdbcTemplate.query(query, THEME_ROW_MAPPER, id)
                 .stream()
                 .findFirst();
@@ -66,16 +66,16 @@ public class JdbcRoomThemeRepository implements RoomThemeRepository {
 
         final String query = """
                         SELECT
-                            t.id,
-                            t.theme_name,
-                            t.description,
-                            t.thumbnail
+                            t.theme_id,
+                            theme_name,
+                            description,
+                            thumbnail
                         FROM theme AS t
                         JOIN reservation AS r
-                        ON r.theme_id = t.id
+                        ON r.theme_id = t.theme_id
                         WHERE r.date BETWEEN ? AND ?
-                        GROUP BY t.id
-                        ORDER BY COUNT(r.id) DESC
+                        GROUP BY t.theme_id
+                        ORDER BY COUNT(r.reservation_id) DESC
                         LIMIT ?
                 """;
         return jdbcTemplate.query(query, THEME_ROW_MAPPER, start, end, topLimit);
@@ -83,7 +83,7 @@ public class JdbcRoomThemeRepository implements RoomThemeRepository {
 
     @Override
     public boolean deleteById(long id) {
-        final String query = "DELETE FROM theme WHERE id = ?";
+        final String query = "DELETE FROM theme WHERE theme_id = ?";
         return jdbcTemplate.update(query, id) > 0;
     }
 }

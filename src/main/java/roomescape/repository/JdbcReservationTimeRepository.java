@@ -17,7 +17,7 @@ import roomescape.domain.ReservationTime;
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
     private static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (resultSet, rowNumber) ->
-            new ReservationTime(resultSet.getLong("id"),
+            new ReservationTime(resultSet.getLong("time_id"),
                     resultSet.getTime("start_at").toLocalTime());
 
     private final JdbcTemplate jdbcTemplate;
@@ -27,7 +27,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
+                .usingGeneratedKeyColumns("time_id");
     }
 
     @Override
@@ -52,7 +52,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public Optional<ReservationTime> findById(final long id) {
-        final String query = "SELECT * FROM reservation_time WHERE id = ?";
+        final String query = "SELECT * FROM reservation_time WHERE time_id = ?";
         final List<ReservationTime> reservationTimes = jdbcTemplate.query(query, RESERVATION_TIME_ROW_MAPPER, id);
         return reservationTimes.stream()
                 .findFirst();
@@ -61,11 +61,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<ReservationTime> findAllBookedTime(final LocalDate date, final long themeId) {
         final String query = """
-                SELECT rt.id,
+                SELECT rt.time_id,
                 rt.start_at
                 FROM reservation_time as rt
                 JOIN reservation AS r
-                ON r.time_id = rt.id
+                ON r.time_id = rt.time_id
                 WHERE r.date = ? AND r.theme_id = ?
                 """;
         return jdbcTemplate.query(query, RESERVATION_TIME_ROW_MAPPER, date, themeId);
@@ -73,7 +73,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public boolean deleteById(final long id) {
-        final String query = "DELETE FROM reservation_time where id = ?";
+        final String query = "DELETE FROM reservation_time where time_id = ?";
         final int deleted = jdbcTemplate.update(query, id);
         return deleted > 0;
     }

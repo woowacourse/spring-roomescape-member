@@ -1,0 +1,56 @@
+### 회원 가입 API request
+
+POST /members HTTP/1.1
+content-type: application/json
+host: localhost:8080
+
+{
+  "password": "password",
+  "email": "admin@email.com",
+  "name": "어드민"
+}
+
+### 회원 가입 API response
+#HTTP/1.1 201
+#Content-Type: application/json
+#Transfer-Encoding: chunked
+#Date: Fri, 09 May 2025 08:13:54 GMT
+#
+#{
+#  "name": "어드민"
+#}
+
+### 로그인 API request
+
+POST /login HTTP/1.1
+content-type: application/json
+host: localhost:8080
+
+{
+  "password": "password",
+  "email": "admin@email.com"
+}
+
+### 로그인 API response
+#HTTP/1.1 200
+#Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzIiwibmFtZSI6IuyWtOuTnOuvvCIsImVtYWlsIjoiYWRtaW5AZW1haWwuY29tIiwicm9sZSI6Ik1FTUJFUiIsImlzcyI6InJvb21lc2NhcGUiLCJpYXQiOjE3NDY3Nzg0NjYsImV4cCI6MTc0Njg2NDg2Nn0.xA4C8ngZJthXQhiJKiIjl7g8tIsdz7iuTdDzEF7JqrY; Max-Age=86400000; Expires=Thu, 03 Feb 2028 08:14:26 GMT; Path=/; HttpOnly
+#Content-Length: 0
+#Date: Fri, 09 May 2025 08:14:26 GMT
+#
+#<Response body is empty>
+
+### 인증 정보 조회 API request
+GET /login/check HTTP/1.1
+cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzIiwibmFtZSI6IuyWtOuTnOuvvCIsImVtYWlsIjoiYWRtaW5AZW1haWwuY29tIiwicm9sZSI6Ik1FTUJFUiIsImlzcyI6InJvb21lc2NhcGUiLCJpYXQiOjE3NDY3Nzg0NjYsImV4cCI6MTc0Njg2NDg2Nn0.xA4C8ngZJthXQhiJKiIjl7g8tIsdz7iuTdDzEF7JqrY; Max-Age=86400000; Expires=Thu, 03 Feb 2028 08:14:26 GMT; Path=/; HttpOnly
+host: localhost:8080
+
+### 인증 정보 조회 API response
+#HTTP/1.1 200
+#Content-Type: application/json
+#Transfer-Encoding: chunked
+#Date: Fri, 09 May 2025 08:15:35 GMT
+#
+#{
+#  "name": "어드민"
+#}
+
