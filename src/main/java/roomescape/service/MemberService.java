@@ -16,7 +16,7 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public SignUpResponse addMember(final SignUpRequest request) {
+    public SignUpResponse signUpMember(final SignUpRequest request) {
         Member member = new Member(request.name(), request.email(), request.password(), "USER");
         Member saved = memberRepository.save(member);
         return SignUpResponse.of(saved);

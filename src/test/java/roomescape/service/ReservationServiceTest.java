@@ -36,7 +36,7 @@ class ReservationServiceTest {
     void addReservationWithNotExistedTimeId() {
         // given
         long notExistedTimeId = 999L;
-        memberService.addMember(new SignUpRequest("제프리", "jeffrey@gmail.com", "1234!@#$"));
+        memberService.signUpMember(new SignUpRequest("제프리", "jeffrey@gmail.com", "1234!@#$"));
         timeService.addReservationTime(new ReservationTimeRequest(LocalTime.parse("10:10")));
         themeService.addReservationTheme(new ReservationThemeRequest("이름", "설명", "썸네일"));
         LocalDate date = LocalDate.now();
@@ -52,7 +52,7 @@ class ReservationServiceTest {
     void addReservationWithNotExistedThemeId() {
         // given
         long notExistedThemeId = 999L;
-        memberService.addMember(new SignUpRequest("제프리", "jeffrey@gmail.com", "1234!@#$"));
+        memberService.signUpMember(new SignUpRequest("제프리", "jeffrey@gmail.com", "1234!@#$"));
         timeService.addReservationTime(new ReservationTimeRequest(LocalTime.parse("10:10")));
         themeService.addReservationTheme(new ReservationThemeRequest("이름", "설명", "썸네일"));
         LocalDate date = LocalDate.now();
@@ -68,7 +68,7 @@ class ReservationServiceTest {
     void addReservationWithNotExistedMemberId() {
         // given
         long notExistedMemberId = 999L;
-        memberService.addMember(new SignUpRequest("제프리", "jeffrey@gmail.com", "1234!@#$"));
+        memberService.signUpMember(new SignUpRequest("제프리", "jeffrey@gmail.com", "1234!@#$"));
         timeService.addReservationTime(new ReservationTimeRequest(LocalTime.parse("10:10")));
         themeService.addReservationTheme(new ReservationThemeRequest("이름", "설명", "썸네일"));
         LocalDate date = LocalDate.now();
@@ -84,7 +84,7 @@ class ReservationServiceTest {
     @Test
     void addReservationBeforeCurrentDateTime() {
         // given
-        memberService.addMember(new SignUpRequest("제프리", "jeffrey@gmail.com", "1234!@#$"));
+        memberService.signUpMember(new SignUpRequest("제프리", "jeffrey@gmail.com", "1234!@#$"));
         timeService.addReservationTime(new ReservationTimeRequest(LocalTime.parse("10:10")));
         themeService.addReservationTheme(new ReservationThemeRequest("이름", "설명", "썸네일"));
         LocalDate date = LocalDate.now().minusDays(1);
@@ -100,7 +100,7 @@ class ReservationServiceTest {
     @Test
     void addReservationWithDuplicatedReservation() {
         //given
-        memberService.addMember(new SignUpRequest("제프리", "jeffrey@gmail.com", "1234!@#$"));
+        memberService.signUpMember(new SignUpRequest("제프리", "jeffrey@gmail.com", "1234!@#$"));
         timeService.addReservationTime(new ReservationTimeRequest(LocalTime.parse("10:10")));
         themeService.addReservationTheme(new ReservationThemeRequest("이름", "설명", "썸네일"));
         LocalDate date = LocalDate.now().plusDays(1);

@@ -35,7 +35,7 @@ public class ReservationThemeServiceTest {
     @Test
     void removeReservationThemeWithExistsReservation() {
         // given
-        memberService.addMember(new SignUpRequest("제프리", "jeffrey@gmail.com", "1234!@#$"));
+        memberService.signUpMember(new SignUpRequest("제프리", "jeffrey@gmail.com", "1234!@#$"));
         themeService.addReservationTheme(new ReservationThemeRequest("테마1", "설명1", "썸네일1"));
         timeService.addReservationTime(new ReservationTimeRequest(LocalTime.parse("10:40")));
 

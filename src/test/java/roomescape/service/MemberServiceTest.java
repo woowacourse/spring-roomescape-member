@@ -23,7 +23,7 @@ class MemberServiceTest {
     @Test
     void removeReservationTime() {
         //given
-        memberService.addMember(new SignUpRequest("제프리", "jeffrey@gmail.com", "1234!@#$"));
+        memberService.signUpMember(new SignUpRequest("제프리", "jeffrey@gmail.com", "1234!@#$"));
         long notExistId = 999;
 
         //when & then
