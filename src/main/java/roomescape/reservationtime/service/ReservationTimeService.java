@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import roomescape.exception.ExistedReservationException;
-import roomescape.exception.ReservationTimeNotFoundException;
+import roomescape.exception.ExistedException;
+import roomescape.exception.ReservationNotFoundException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.reservationtime.dao.ReservationTimeDao;
@@ -43,10 +43,10 @@ public class ReservationTimeService {
 
     public void delete(@PathVariable Long id) {
         if (reservationTimeDao.findById(id).isEmpty()) {
-            throw new ReservationTimeNotFoundException();
+            throw new ReservationNotFoundException("예약 시간이 존재하지 않습니다.");
         }
         if (reservationDao.findByTimeId(id).isPresent()) {
-            throw new ExistedReservationException();
+            throw new ExistedException("예약이 이미 존재합니다.");
         }
         reservationTimeDao.delete(id);
     }

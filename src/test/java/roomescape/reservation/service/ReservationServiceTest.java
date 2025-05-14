@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.assertj.core.api.Assertions;
-import roomescape.exception.ExistedReservationException;
+import roomescape.exception.ExistedException;
 import roomescape.exception.ReservationNotFoundException;
 import roomescape.member.Member;
 import roomescape.member.dao.FakeMemberDao;
@@ -104,7 +104,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(request, member))
-                .isInstanceOf(ExistedReservationException.class);
+                .isInstanceOf(ExistedException.class);
         assertThat(reservationService.findAll().size()).isEqualTo(2);
     }
 }

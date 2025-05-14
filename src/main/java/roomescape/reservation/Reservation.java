@@ -2,8 +2,8 @@ package roomescape.reservation;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import roomescape.exception.ArgumentNullException;
-import roomescape.exception.PastDateTimeReservationException;
+import roomescape.exception.ArgumentException;
+import roomescape.exception.BadRequestException;
 import roomescape.member.Member;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.theme.Theme;
@@ -27,16 +27,16 @@ public class Reservation {
 
     private static void validateNull(Member member, LocalDate date, ReservationTime reservationTime, Theme theme) {
         if (member.getName() == null || member.getName().isBlank()) {
-            throw new ArgumentNullException();
+            throw new ArgumentException("회원 정보가 존재하지 않습니다.");
         }
         if (date == null) {
-            throw new ArgumentNullException();
+            throw new ArgumentException("날짜 정보가 존재하지 않습니다.");
         }
         if (reservationTime == null) {
-            throw new ArgumentNullException();
+            throw new ArgumentException("예약 시간이 존재하지 않습니다.");
         }
         if (theme == null) {
-            throw new ArgumentNullException();
+            throw new ArgumentException("테마가 존재하지 않습니다.");
         }
     }
 
@@ -56,7 +56,7 @@ public class Reservation {
     private static void validateDateTime(LocalDate date, ReservationTime reservationTime) {
         LocalDateTime dateTime = LocalDateTime.of(date, reservationTime.getStartAt());
         if (LocalDateTime.now().isAfter(dateTime)) {
-            throw new PastDateTimeReservationException();
+            throw new BadRequestException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
         }
     }
 

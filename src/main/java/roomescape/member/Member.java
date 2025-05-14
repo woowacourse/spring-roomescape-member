@@ -1,5 +1,7 @@
 package roomescape.member;
 
+import roomescape.exception.UnAuthorizedException;
+
 public class Member {
     private final Long id;
     private final String name;
@@ -41,5 +43,11 @@ public class Member {
 
     public Role getRole() {
         return role;
+    }
+
+    public void validateMemberRole() {
+        if (this.role != Role.ADMIN) {
+            throw new UnAuthorizedException("관리자 권한이 필요한 요청입니다.");
+        }
     }
 }

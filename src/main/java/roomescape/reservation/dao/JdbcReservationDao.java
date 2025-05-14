@@ -256,13 +256,21 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public Optional<Reservation> findByDateTime(LocalDate date, LocalTime time) {
         String sql = """
-                SELECT r.id as reservation_id, r.member_id, r.date,
-                      rt.id as time_id, rt.start_at,
-                      t.id as theme_id, t.name as theme_name, t.description as theme_des, t.thumbnail as theme_thumb
-                FROM reservation as r 
-                INNER JOIN reservation_time as rt ON rt.id = r.time_id 
-                INNER JOIN theme as t ON r.theme_id = t.id
-                WHERE r.date = ? and rt.start_at = ?""";
+                    SELECT
+                        r.id as reservation_id,
+                        r.member_id,
+                        r.date,
+                        rt.id as time_id,
+                        rt.start_at,
+                        t.id as theme_id,
+                        t.name as theme_name,
+                        t.description as theme_des,
+                        t.thumbnail as theme_thumb
+                    FROM reservation as r
+                    INNER JOIN reservation_time as rt ON rt.id = r.time_id 
+                    INNER JOIN theme as t ON r.theme_id = t.id
+                    WHERE r.date = ? and rt.start_at = ?
+                """;
         try {
             Reservation reservation = jdbcTemplate.queryForObject(
                     sql,
@@ -276,7 +284,7 @@ public class JdbcReservationDao implements ReservationDao {
 
                         Long memberId = rs.getLong("member_id");
                         Member member = memberDao.findById(memberId)
-                                .orElseThrow(() -> new NoSuchElementException("회원 정보 없음"));
+                                .orElseThrow(() -> new NoSuchElementException("회원 정보를 불러올 수 없습니다."));
 
                         return Reservation.of(
                                 rs.getLong("reservation_id"),

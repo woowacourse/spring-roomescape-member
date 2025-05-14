@@ -7,7 +7,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
-import roomescape.exception.ExistedReservationException;
+import roomescape.exception.ExistedException;
 import roomescape.exception.ReservationNotFoundException;
 import roomescape.member.Member;
 import roomescape.member.dao.MemberDao;
@@ -59,18 +59,18 @@ public class ReservationService {
 
     private void validateDuplicate(@NotNull LocalDate date, LocalTime startAt) {
         if (reservationDao.findByDateTime(date, startAt).isPresent()) {
-            throw new ExistedReservationException();
+            throw new ExistedException("예약이 이미 존재합니다.");
         }
     }
 
     public void delete(Long id) {
-        reservationDao.findById(id).orElseThrow(ReservationNotFoundException::new);
+        reservationDao.findById(id).orElseThrow(() -> new ReservationNotFoundException("예약이 존재하지 않습니다."));
         reservationDao.delete(id);
     }
 
     public ReservationResponse createReservation(@Valid ReservationCreateRequest request, Member member) {
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId())
-                .orElseThrow(ReservationNotFoundException::new);
+                .orElseThrow(() -> new ReservationNotFoundException("예약시간이 존재하지 않습니다."));
         validateDuplicate(request.date(), reservationTime.getStartAt());
         return reservationCreation(
                 request.date(),
@@ -82,7 +82,7 @@ public class ReservationService {
 
     public ReservationResponse createReservation(@Valid ReservationRequest request) {
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId())
-                .orElseThrow(ReservationNotFoundException::new);
+                .orElseThrow(() -> new ReservationNotFoundException("예약시간이 존재하지 않습니다."));
         validateDuplicate(request.date(), reservationTime.getStartAt());
 
         final Member member = memberDao.findById(request.memberId())

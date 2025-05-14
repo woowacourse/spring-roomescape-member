@@ -1,6 +1,7 @@
 package roomescape.member;
 
 import java.util.Arrays;
+import roomescape.exception.UnAuthorizedException;
 
 public enum Role {
     ADMIN, USER;
@@ -9,6 +10,6 @@ public enum Role {
         return Arrays.stream(Role.values())
                 .filter(role -> role.name().equals(name))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("권한을 찾을 수 없습니다."));
+                .orElseThrow(() -> new UnAuthorizedException("권한을 찾을 수 없습니다."));
     }
 }

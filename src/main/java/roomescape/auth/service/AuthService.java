@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.dto.request.LoginRequest;
 import roomescape.auth.dto.response.TokenResponse;
 import roomescape.auth.infra.JwtProvider;
-import roomescape.exception.ArgumentNullException;
+import roomescape.exception.ArgumentException;
 import roomescape.member.Member;
 import roomescape.member.dao.MemberDao;
 
@@ -27,6 +27,6 @@ public class AuthService {
     public Member findMemberByToken(String token) {
         String email = jwtProvider.getEmail(token);
         return jdbcMemberDao.findMember(email)
-                .orElseThrow(ArgumentNullException::new);
+                .orElseThrow(() -> new ArgumentException("회원 정보가 존재하지 않습니다."));
     }
 }

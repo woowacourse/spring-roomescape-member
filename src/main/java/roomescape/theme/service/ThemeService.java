@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-import roomescape.exception.ExistedThemeException;
+import roomescape.exception.ExistedException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.theme.Theme;
 import roomescape.theme.dao.ThemeDao;
@@ -25,7 +25,7 @@ public class ThemeService {
     public Long create(ThemeRequest themeRequest) {
         Optional<Theme> optionalTheme = themeDao.findByName(themeRequest.name());
         if (optionalTheme.isPresent()) {
-            throw new ExistedThemeException();
+            throw new ExistedException("테마가 이미 존재합니다.");
         }
 
         Theme theme = Theme.createWithoutId(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());

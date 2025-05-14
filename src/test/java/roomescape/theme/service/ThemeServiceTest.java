@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import roomescape.exception.ExistedThemeException;
+import roomescape.exception.ExistedException;
 import roomescape.member.Member;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.dao.FakeReservationDao;
@@ -73,7 +73,7 @@ public class ThemeServiceTest {
         ThemeRequest themeRequest = new ThemeRequest(theme3.getName(), theme3.getDescription(), theme3.getThumbnail());
         // when & then
         assertThatThrownBy(() -> themeService.create(themeRequest))
-                .isInstanceOf(ExistedThemeException.class);
+                .isInstanceOf(ExistedException.class);
     }
 
     @Test

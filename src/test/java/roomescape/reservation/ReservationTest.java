@@ -3,8 +3,8 @@ package roomescape.reservation;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
-import roomescape.exception.ArgumentNullException;
-import roomescape.exception.PastDateTimeReservationException;
+import roomescape.exception.ArgumentException;
+import roomescape.exception.BadRequestException;
 import roomescape.member.Member;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.theme.Theme;
@@ -37,7 +37,7 @@ class ReservationTest {
                                 ReservationTime.createWithoutId(LocalTime.of(9, 0)),
                                 Theme.createWithoutId("themeName", "description", "thumb.jpg")
                         ))
-                .isInstanceOf(ArgumentNullException.class);
+                .isInstanceOf(ArgumentException.class);
     }
 
     @Test
@@ -50,7 +50,7 @@ class ReservationTest {
                                 null,
                                 Theme.createWithoutId("themeName", "description", "thumb.jpg")
                         ))
-                .isInstanceOf(ArgumentNullException.class);
+                .isInstanceOf(ArgumentException.class);
     }
 
     @Test
@@ -63,7 +63,7 @@ class ReservationTest {
                                 new ReservationTime(1L, LocalTime.of(9, 0)),
                                 Theme.createWithoutId("themeName", "description", "thumb.jpg")
                         ))
-                .isInstanceOf(PastDateTimeReservationException.class);
+                .isInstanceOf(BadRequestException.class);
     }
 
     @Test
@@ -76,7 +76,7 @@ class ReservationTest {
                                 ReservationTime.createWithoutId(LocalTime.of(9, 0)),
                                 null
                         ))
-                .isInstanceOf(ArgumentNullException.class);
+                .isInstanceOf(ArgumentException.class);
 
     }
 }

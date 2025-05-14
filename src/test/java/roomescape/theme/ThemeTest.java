@@ -1,7 +1,7 @@
 package roomescape.theme;
 
 import org.assertj.core.api.Assertions;
-import roomescape.exception.ArgumentNullException;
+import roomescape.exception.ArgumentException;
 
 import org.junit.jupiter.api.Test;
 
@@ -11,14 +11,14 @@ class ThemeTest {
     void 이름이_빈_값이면_예외가_발생한다() {
         // when & then
         Assertions.assertThatThrownBy(() -> Theme.createWithoutId(null, "description", "thumb.jpg"))
-                .isInstanceOf(ArgumentNullException.class);
+                .isInstanceOf(ArgumentException.class);
     }
 
     @Test
     void 설명이_빈_값이면_예외가_발생한다() {
         // when & then
         Assertions.assertThatThrownBy(() -> Theme.createWithoutId("name", null, "thumb.jpg"))
-                .isInstanceOf(ArgumentNullException.class);
+                .isInstanceOf(ArgumentException.class);
     }
 
     @Test
@@ -39,7 +39,7 @@ class ThemeTest {
     void 썸네일이_빈_값이면_예외가_발생한다() {
         // when & then
         Assertions.assertThatThrownBy(() -> Theme.createWithoutId("name", "description", null))
-                .isInstanceOf(ArgumentNullException.class);
+                .isInstanceOf(ArgumentException.class);
     }
 
     @Test

@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.exception.ExistedReservationException;
+import roomescape.exception.ExistedException;
 import roomescape.member.Member;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.dao.FakeReservationDao;
@@ -87,7 +87,7 @@ class ReservationTimeServiceTest {
     void 특정_시간에_대한_예약이_존재하면_예약시간을_삭제할_수_없다() {
         // when & then
         assertThatThrownBy(() -> reservationTimeService.delete(1L))
-                .isInstanceOf(ExistedReservationException.class);
+                .isInstanceOf(ExistedException.class);
     }
 
     @Test

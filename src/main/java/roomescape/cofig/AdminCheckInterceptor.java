@@ -8,7 +8,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.infra.JwtProvider;
 import roomescape.exception.UnAuthorizedException;
 import roomescape.member.Member;
-import roomescape.member.Role;
 import roomescape.member.dao.MemberDao;
 
 public class AdminCheckInterceptor implements HandlerInterceptor {
@@ -29,23 +28,20 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
     ) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            throw new UnAuthorizedException();
+            throw new UnAuthorizedException("인증 정보가 포함된 쿠키가 없습니다.");
         }
 
         String token = Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals("token"))
                 .findFirst()
-                .orElseThrow(UnAuthorizedException::new)
+                .orElseThrow(() -> new UnAuthorizedException("토큰이 쿠키에 존재하지 않습니다."))
                 .getValue();
 
         String email = jwtProvider.getEmail(token);
         Member member = memberDao.findMember(email)
-                .orElseThrow(UnAuthorizedException::new);
+                .orElseThrow(() -> new UnAuthorizedException("해당 토큰에 해당하는 사용자를 찾을 수 없습니다."));
 
-        if (member.getRole() != Role.ADMIN) {
-            throw new UnAuthorizedException();
-        }
-
+        member.validateMemberRole();
         return true;
     }
 }
