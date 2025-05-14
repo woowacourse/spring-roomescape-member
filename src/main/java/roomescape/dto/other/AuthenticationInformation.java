@@ -9,6 +9,6 @@ public record AuthenticationInformation(
 ) {
 
     public boolean isAdmin() {
-        return role.equals(MemberRole.ADMIN);
+        return role == MemberRole.ADMIN;
     }
 }
