@@ -38,14 +38,8 @@ public class AdminReservationController {
             @RequestParam(required = false) LocalDate dateFrom,
             @RequestParam(required = false) LocalDate dateTo
     ) {
-        if (themeId != null
-                || memberId != null
-                || dateFrom != null
-                || dateTo != null
-        ) {
-            return reservationQueryService.searchReservations(themeId, memberId, dateFrom, dateTo);
-        }
-        return reservationQueryService.findAllReservations();
+
+        return reservationQueryService.searchReservations(themeId, memberId, dateFrom, dateTo);
     }
 
     @PostMapping

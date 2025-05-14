@@ -16,17 +16,24 @@ public class ReservationQueryService {
         this.reservationDao = reservationDao;
     }
 
-    public List<ReservationPostResponse> findAllReservations() {
-        return reservationDao.findAll().stream()
+    public List<ReservationPostResponse> searchReservations(Long themeId, Long memberId, LocalDate dateFrom,
+                                                            LocalDate dateTo) {
+        if (themeId == null
+                || memberId == null
+                || dateFrom == null
+                || dateTo == null
+        ) {
+            return findAllReservations();
+        }
+        List<Reservation> reservations = reservationDao.findByThemeAndMemberAndDate(themeId, memberId,
+                dateFrom, dateTo);
+        return reservations.stream()
                 .map(ReservationPostResponse::new)
                 .toList();
     }
 
-    public List<ReservationPostResponse> searchReservations(Long themeId, Long memberId, LocalDate dateFrom,
-                                                            LocalDate dateTo) {
-        List<Reservation> reservations = reservationDao.findByThemeAndMemberAndDate(themeId, memberId,
-                dateFrom, dateTo);
-        return reservations.stream()
+    private List<ReservationPostResponse> findAllReservations() {
+        return reservationDao.findAll().stream()
                 .map(ReservationPostResponse::new)
                 .toList();
     }

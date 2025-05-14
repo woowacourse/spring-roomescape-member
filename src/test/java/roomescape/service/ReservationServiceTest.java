@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import roomescape.dao.MemberDao;
@@ -51,16 +50,6 @@ class ReservationServiceTest {
                 () -> assertThat(reservation.date()).isEqualTo(LocalDate.of(2025, 4, 27)),
                 () -> assertThat(reservation.time()).isEqualTo(new ReservationTimePostResponse(time))
         );
-    }
-
-    @Test
-    @Disabled
-    void findAllReservations() {
-        createReservation();
-
-        List<ReservationPostResponse> reservations = reservationQueryService.findAllReservations();
-
-        assertThat(reservations).hasSize(1);
     }
 
     @Test
