@@ -31,6 +31,6 @@ public class AuthenticationPrincipalResolver implements HandlerMethodArgumentRes
     ) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = JwtTokenExtractor.extract(request);
-        return authService.findMemberByToken(token);
+        return authService.findLoginMemberByToken(token);
     }
 }

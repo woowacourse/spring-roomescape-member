@@ -29,19 +29,21 @@ public class AuthService {
         return jwtTokenProvider.createToken(loginMember);
     }
 
-    public LoginMember findMemberByToken(String token) {
+    public LoginMember findLoginMemberByToken(String token) {
         if (!jwtTokenProvider.validateToken(token)) {
             throw new AuthException("[ERROR] 유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED);
         }
+        Long id = jwtTokenProvider.getId(token);
+        String name = jwtTokenProvider.getName(token);
+        Role role = jwtTokenProvider.getRole(token);
         String email = jwtTokenProvider.getEmail(token);
-        Member member = memberService.findMemberByEmail(email);
-        return new LoginMember(member.getId(), member.getName(), member.getRole(), member.getEmail());
+        return new LoginMember(id, name, role, email);
     }
 
     public Role findRoleByToken(String token) {
         if (!jwtTokenProvider.validateToken(token)) {
             throw new AuthException("[ERROR] 유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED);
         }
-        return Role.valueOf(jwtTokenProvider.getRole(token));
+        return jwtTokenProvider.getRole(token);
     }
 }
