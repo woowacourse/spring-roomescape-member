@@ -1,28 +1,29 @@
 package roomescape.admin;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/admin")
-public class AdminController {
+public class AdminViewController {
     @GetMapping
-    public String showWelcome() {
+    public String displayMain() {
         return "admin/index";
     }
 
     @GetMapping("/reservation")
-    public String showAllReservation() {
+    public String displayReservationStatus() {
         return "admin/reservation-new";
     }
 
     @GetMapping("/time")
-    public String showAllTime() {
+    public String displayTimeSlot() {
         return "admin/time";
     }
 
     @GetMapping("/theme")
-    public String showTheme() {
+    public String displayThemeSlot() {
         return "admin/theme";
     }
 }

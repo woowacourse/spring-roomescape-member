@@ -3,7 +3,6 @@ package roomescape.theme.domain;
 import java.util.Objects;
 
 public class Theme {
-    private static final String NULL_VALUE_EXCEPTION_MESSAGE = "널 값은 저장될 수 없습니다.";
 
     private final Long id;
     private final String name;
@@ -12,16 +11,16 @@ public class Theme {
 
     public Theme(String name, String description, String thumbnail) {
         this.id = null;
-        this.name = Objects.requireNonNull(name, NULL_VALUE_EXCEPTION_MESSAGE);
-        this.description = Objects.requireNonNull(description, NULL_VALUE_EXCEPTION_MESSAGE);
-        this.thumbnail = Objects.requireNonNull(thumbnail, NULL_VALUE_EXCEPTION_MESSAGE);
+        this.name = Objects.requireNonNull(name);
+        this.description = Objects.requireNonNull(description);
+        this.thumbnail = Objects.requireNonNull(thumbnail);
     }
 
     public Theme(Long id, String name, String description, String thumbnail) {
-        this.id = Objects.requireNonNull(id, NULL_VALUE_EXCEPTION_MESSAGE);
-        this.name = Objects.requireNonNull(name, NULL_VALUE_EXCEPTION_MESSAGE);
-        this.description = Objects.requireNonNull(description, NULL_VALUE_EXCEPTION_MESSAGE);
-        this.thumbnail = Objects.requireNonNull(thumbnail, NULL_VALUE_EXCEPTION_MESSAGE);
+        this.id = Objects.requireNonNull(id);
+        this.name = Objects.requireNonNull(name);
+        this.description = Objects.requireNonNull(description);
+        this.thumbnail = Objects.requireNonNull(thumbnail);
     }
 
     public Long getId() {

@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.member.login.authorization.LoginAuthorizationInterceptor;
+import roomescape.member.login.authorization.TokenAuthorizationHandler;
+import roomescape.member.service.MemberService;
 import roomescape.reservationTime.service.ReservationTimeService;
 
 @WebMvcTest(ReservationTimeApiController.class)
@@ -22,6 +26,12 @@ class ReservationTimeApiControllerTest {
 
     @MockitoBean
     private ReservationTimeService reservationTimeService;
+    @MockitoBean
+    private MemberService memberService;
+    @MockitoBean
+    private TokenAuthorizationHandler tokenAuthorizationHandler;
+    @MockitoBean
+    private LoginAuthorizationInterceptor loginAuthorizationInterceptor;
 
     private static final String URI = "/times";
 
@@ -37,7 +47,7 @@ class ReservationTimeApiControllerTest {
     @Test
     void findByDateAndTheme() throws Exception {
         mockMvc.perform(get(URI + "/available")
-                        .param("date", "2025-05-05")
+                        .param("date", LocalDate.now().toString())
                         .param("themeId", "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());

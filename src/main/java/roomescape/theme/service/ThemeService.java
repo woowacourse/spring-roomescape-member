@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import roomescape.common.exception.DuplicateException;
 import roomescape.common.exception.ForeignKeyException;
 import roomescape.common.exception.InvalidIdException;
+import roomescape.common.exception.message.IdExceptionMessage;
+import roomescape.common.exception.message.ThemeExceptionMessage;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
@@ -15,9 +17,6 @@ import roomescape.theme.dto.ThemeResponse;
 
 @Service
 public class ThemeService {
-    private static final String DUPLICATE_THEME_EXCEPTION_MESSAGE = "이미 테마가 존재합니다.";
-    private static final String INVALID_THEME_ID_EXCEPTION_MESSAGE = "해당 테마 아이디는 존재하지 않습니다";
-    private static final String RESERVED_THEME_ID_EXCEPTION_MESSAGE = "이미 예약된 테마는 삭제할 수 없습니다.";
 
     private final ReservationDao reservationDao;
     private final ThemeDao themeDao;
@@ -68,7 +67,7 @@ public class ThemeService {
         boolean isDuplicate = themeDao.existsByName(themeRequest.name());
 
         if (isDuplicate) {
-            throw new DuplicateException(DUPLICATE_THEME_EXCEPTION_MESSAGE);
+            throw new DuplicateException(ThemeExceptionMessage.DUPLICATE_THEME.getMessage());
         }
     }
 
@@ -79,14 +78,15 @@ public class ThemeService {
     }
 
     private void validateThemeId(final Long id) {
-        themeDao.findById(id).orElseThrow(() -> new InvalidIdException(INVALID_THEME_ID_EXCEPTION_MESSAGE));
+        themeDao.findById(id)
+                .orElseThrow(() -> new InvalidIdException(IdExceptionMessage.INVALID_THEME_ID.getMessage()));
     }
 
     private void validateUnoccupiedThemeId(final Long id) {
         boolean isOccupiedThemeId = themeDao.existsByReservationThemeId(id);
 
         if (isOccupiedThemeId) {
-            throw new ForeignKeyException(RESERVED_THEME_ID_EXCEPTION_MESSAGE);
+            throw new ForeignKeyException(ThemeExceptionMessage.RESERVED_THEME.getMessage());
         }
     }
 }
