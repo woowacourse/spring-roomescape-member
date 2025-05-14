@@ -33,9 +33,7 @@ public class AdminOnlyInterceptor implements HandlerInterceptor {
             if ("token".equals(cookie.getName())) {
                 String token = cookie.getValue();
                 Member member = memberService.findByToken(token);
-                if (member.getRole().getId() == 2L) {
-                    return true;
-                }
+                return member.isAdmin();
             }
         }
         response.sendRedirect("/login");

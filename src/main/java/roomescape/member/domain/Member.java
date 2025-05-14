@@ -55,6 +55,10 @@ public class Member {
         return count >= 3;
     }
 
+    public boolean isAdmin() {
+        return role == Role.ADMIN;
+    }
+
     public Long getId() {
         return id;
     }
