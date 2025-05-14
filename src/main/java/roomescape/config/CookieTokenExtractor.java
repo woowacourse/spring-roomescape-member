@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CookieTokenExtractor implements AuthorizationExtractor{
+public class CookieTokenExtractor implements AuthorizationExtractor {
 
     private static final String COOKIE_NAME = "token";
 

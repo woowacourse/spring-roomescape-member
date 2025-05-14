@@ -1,6 +1,7 @@
 package roomescape.infrastructure;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
 import java.nio.charset.StandardCharsets;
@@ -9,6 +10,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.dto.TokenInfo;
+import roomescape.exception.exception.UnauthorizedException;
 
 @Component
 public class JwtTokenProvider {
@@ -34,19 +37,20 @@ public class JwtTokenProvider {
                 .signWith(secretKey).compact();
     }
 
-    public Claims parseToken(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
+    public TokenInfo getTokenInfo(final String token) {
+        Claims claims = parseToken(token);
+        return TokenInfo.from(claims);
     }
 
-    public Long getMemberId(String token) {
-        return parseToken(token).get("memberId", Long.class);
-    }
-
-    public String getName(String token) {
-        return parseToken(token).get("name", String.class);
-    }
-
-    public String getRole(String token) {
-        return parseToken(token).get("role", String.class);
+    private Claims parseToken(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (JwtException e) {
+            throw new UnauthorizedException(e.getMessage());
+        }
     }
 }

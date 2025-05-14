@@ -31,6 +31,6 @@ public class AuthService {
     }
 
     public String extractName(final String token) {
-        return jwtTokenProvider.getName(token);
+        return jwtTokenProvider.getTokenInfo(token).name();
     }
 }

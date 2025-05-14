@@ -35,6 +35,6 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
         String token = authorizationExtractor.extract(request)
                 .orElseThrow(UnauthenticatedException::new);
 
-        return jwtTokenProvider.getMemberId(token);
+        return jwtTokenProvider.getTokenInfo(token).id();
     }
 }
