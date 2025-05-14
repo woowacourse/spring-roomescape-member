@@ -25,8 +25,12 @@ public class AdminService {
     public ReservationResponseDto createReservation(AdminReservationRequestDto requestDto) {
         User member = getUser(requestDto.memberId());
         ReservationRequestDto reservationRequestDto = convertAdminReservationRequestDtoToReservationRequestDto(
-                adminReservationRequestDto);
+                requestDto);
         return reservationService.add(reservationRequestDto, member);
+    }
+
+    public List<ReservationResponseDto> searchReservations(SearchReservationRequestDto requestDto) {
+        return reservationService.findReservationsByUserAndThemeAndFromAndTo(requestDto);
     }
 
     private User getUser(Long memberId) {
@@ -35,11 +39,6 @@ public class AdminService {
             throw new UnauthorizedUserRoleException();
         }
         return member;
-    }
-
-    public List<ReservationResponseDto> searchReservations(SearchReservationRequestDto searchReservationRequestDto,
-                                                           User admin) {
-        return reservationService.findReservationsByUserAndThemeAndFromAndTo(searchReservationRequestDto);
     }
 
     private static ReservationRequestDto convertAdminReservationRequestDtoToReservationRequestDto(

@@ -24,7 +24,6 @@ import roomescape.reservationTime.ReservationTimeTestDataConfig;
 import roomescape.theme.ThemeTestDataConfig;
 import roomescape.user.MemberTestDataConfig;
 import roomescape.user.domain.User;
-import roomescape.user.fixture.AbstractUserTestDataConfig;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
         classes = {
@@ -60,19 +59,20 @@ class AdminControllerTest {
 
         private static User memberStatic;
         private static User adminStatic;
+        private static TokenResponseDto memberTokenResponseDto;
         private static TokenResponseDto adminTokenResponseDto;
 
         @BeforeAll
         public static void setUp(@Autowired AuthService authService,
                                  @Autowired MemberTestDataConfig memberTestDataConfig,
-                                 @Autowired AbstractUserTestDataConfig adminTestDataConfig
+                                 @Autowired AdminTestDataConfig adminTestDataConfig
         ) {
             date = LocalDate.now().plusDays(1);
 
-            memberStatic = memberTestDataConfig.getSavedMember();
+            memberStatic = memberTestDataConfig.getSavedUser();
             adminStatic = adminTestDataConfig.getSavedUser();
 
-            authService.login(
+            memberTokenResponseDto = authService.login(
                     AuthFixture.createTokenRequestDto(memberStatic.getEmail(), memberStatic.getPassword()));
             adminTokenResponseDto = authService.login(
                     AuthFixture.createTokenRequestDto(adminStatic.getEmail(), adminStatic.getPassword()));
@@ -114,7 +114,7 @@ class AdminControllerTest {
             // when
             // then
             RestAssured.given().log().all()
-                    .cookies("token", token)
+                    .header("Cookie", "token=" + token)
                     .contentType(ContentType.JSON)
                     .body(dto)
                     .when().post("/admin/reservations")

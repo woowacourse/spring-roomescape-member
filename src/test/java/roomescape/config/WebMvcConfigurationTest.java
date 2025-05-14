@@ -43,7 +43,7 @@ class WebMvcConfigurationTest {
     @DisplayName("/admin/** URL 요청 시 인터셉터 발동")
     class addInterceptors {
 
-        private final User member = memberTestDataConfig.getSavedMember();
+        private final User member = memberTestDataConfig.getSavedUser();
         private final User admin = adminTestDataConfig.getSavedUser();
 
         @DisplayName("admin 권한을 가지고 있는 관리자가 /admin/** URL로 요청 시 가로채지지 않는다.")

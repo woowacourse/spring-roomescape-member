@@ -42,7 +42,7 @@ class JdbcReservationRepositoryTest {
     private Reservation createReservation(int plusDays, ReservationTime time) {
         LocalDate date = LocalDate.now().plusDays(plusDays);
         return ReservationFixture.create(date, time, themeTestDataConfig.getSavedTheme(),
-                memberTestDataConfig.getSavedMember());
+                memberTestDataConfig.getSavedUser());
     }
 
     @DisplayName("예약 시간에 해당하는 예약의 존재 여부를 알 수 있다.")

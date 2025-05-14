@@ -38,7 +38,7 @@ class ReservationTest {
 
     private Reservation createReservation(LocalDate date, ReservationTime time) {
         return ReservationFixture.create(date, time, themeTestDataConfig.getSavedTheme(),
-                memberTestDataConfig.getSavedMember());
+                memberTestDataConfig.getSavedUser());
     }
 
     @Nested
