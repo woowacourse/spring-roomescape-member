@@ -15,7 +15,7 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.ThemeName;
 
 @Repository
-public class H2ThemeDao implements ThemeDao {
+public class JdbcThemeDao implements ThemeDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final RowMapper<Theme> themeMapper = (resultSet, rowNum) ->
@@ -26,7 +26,7 @@ public class H2ThemeDao implements ThemeDao {
                     resultSet.getString("thumbnail")
             );
 
-    public H2ThemeDao(final NamedParameterJdbcTemplate jdbcTemplate) {
+    public JdbcThemeDao(final NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -75,12 +75,6 @@ public class H2ThemeDao implements ThemeDao {
         jdbcTemplate.update(sql, parameters);
     }
 
-    /**
-     * TODO
-     * Dao가 인기 테마라는 것을 알아야할까?
-     * Dao가 예약이 없는 테마는 인기 테마가 될 수 없다는 규칙을 알아야할까?
-     * Dao는 그냥 주어진 데이터로 db와 통신하는 책임이 아닌가?
-     */
     @Override
     public List<Theme> findPopularThemes(final LocalDate from, final LocalDate to, final int count) {
         final String sql = """

@@ -17,8 +17,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.CurrentDateTime;
 import roomescape.fake.TestCurrentDateTime;
-import roomescape.reservation.controller.dto.ThemeRequest;
-import roomescape.reservation.controller.dto.ThemeResponse;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
+import roomescape.reservation.service.dto.ThemeCreateCommand;
+import roomescape.reservation.service.dto.ThemeInfo;
 import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeReservationTimeDao;
 import roomescape.fake.FakeThemeDao;
@@ -42,8 +44,8 @@ class ThemeServiceTest {
     @Test
     void testValidateNameDuplication() {
         // given
-        ThemeRequest request1 = new ThemeRequest("woooteco", "우테코를 탈출하라", "https://www.woowacourse.io/");
-        ThemeRequest request2 = new ThemeRequest("woooteco", "우테코에서 살아남기", "https://www.woowacourse2.io/");
+        ThemeCreateCommand request1 = new ThemeCreateCommand("woooteco", "우테코를 탈출하라", "https://www.woowacourse.io/");
+        ThemeCreateCommand request2 = new ThemeCreateCommand("woooteco", "우테코에서 살아남기", "https://www.woowacourse2.io/");
         themeService.createTheme(request1);
         // when
         // then
@@ -56,9 +58,9 @@ class ThemeServiceTest {
     @Test
     void testCreate() {
         // given
-        ThemeRequest request = new ThemeRequest("woooteco", "우테코를 탈출하라", "https://www.woowacourse.io/");
+        ThemeCreateCommand request = new ThemeCreateCommand("woooteco", "우테코를 탈출하라", "https://www.woowacourse.io/");
         // when
-        ThemeResponse result = themeService.createTheme(request);
+        ThemeInfo result = themeService.createTheme(request);
         // then
         Theme saved = fakeThemeDao.findById(result.id()).get();
         assertAll(
@@ -76,12 +78,12 @@ class ThemeServiceTest {
     @Test
     void testFindAll() {
         // given
-        ThemeRequest request1 = new ThemeRequest("woooteco1", "우테코를 탈출하라", "https://www.woowacourse.io/");
-        ThemeRequest request2 = new ThemeRequest("woooteco2", "우테코에 합격하라", "https://www.woowacourse.io/");
+        ThemeCreateCommand request1 = new ThemeCreateCommand("woooteco1", "우테코를 탈출하라", "https://www.woowacourse.io/");
+        ThemeCreateCommand request2 = new ThemeCreateCommand("woooteco2", "우테코에 합격하라", "https://www.woowacourse.io/");
         themeService.createTheme(request1);
         themeService.createTheme(request2);
         // when
-        List<ThemeResponse> result = themeService.findAll();
+        List<ThemeInfo> result = themeService.findAll();
         // then
         assertThat(result).hasSize(2);
     }
@@ -93,8 +95,9 @@ class ThemeServiceTest {
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(11, 0));
         ReservationTime saveTime = fakeReservationTimeDao.save(reservationTime);
         Theme theme = new Theme(null, "우테코방탈출", "탈출탈출탈출", "포비솔라브라운");
+        Member member = new Member(null, "레오", "admin@gmail.com", "qwer!", MemberRole.ADMIN);
         Theme savedTheme = fakeThemeDao.save(theme);
-        fakeReservationDao.save(new Reservation(null, "노랑", LocalDate.now().plusDays(1), saveTime, savedTheme));
+        fakeReservationDao.save(new Reservation(null, member, LocalDate.now().plusDays(1), saveTime, savedTheme));
 
         // when
         // then
@@ -127,7 +130,7 @@ class ThemeServiceTest {
         when(themeDao.findPopularThemes(from, to, 10)).thenReturn(List.of(theme1, theme2));
         ThemeService themeService = new ThemeService(themeDao, fakeReservationDao, currentDateTime);
         // when
-        List<ThemeResponse> result = themeService.findPopularThemes();
+        List<ThemeInfo> result = themeService.findPopularThemes();
         // then
         assertAll(
                 () -> verify(themeDao).findPopularThemes(from, to, 10),

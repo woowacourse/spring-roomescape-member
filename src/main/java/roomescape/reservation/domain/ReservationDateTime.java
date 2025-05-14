@@ -42,6 +42,11 @@ public final class ReservationDateTime {
         return time.equals(other);
     }
 
+    public boolean isBetween(final LocalDate from, final LocalDate to) {
+        return (date.isAfter(from) || date.isEqual(from)) &&
+                (date.isBefore(to) || date.isEqual(to));
+    }
+
     public LocalDate getDate() {
         return date;
     }

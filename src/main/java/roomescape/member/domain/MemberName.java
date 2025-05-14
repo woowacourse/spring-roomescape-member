@@ -1,4 +1,4 @@
-package roomescape.reservation.domain;
+package roomescape.member.domain;
 
 public final class MemberName {
 

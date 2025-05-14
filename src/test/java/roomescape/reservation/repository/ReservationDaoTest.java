@@ -2,6 +2,7 @@ package roomescape.reservation.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.member.domain.MemberRole.ADMIN;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -15,6 +16,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.member.domain.Member;
+import roomescape.member.repository.JdbcMemberDao;
+import roomescape.member.repository.MemberDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -26,8 +30,10 @@ class ReservationDaoTest {
     private ReservationDao reservationDao;
     private ReservationTimeDao reservationTimeDao;
     private ThemeDao themeDao;
+    private MemberDao memberDao;
     private ReservationTime reservationTime;
     private Theme theme;
+    private Member member;
     private final LocalDate date = LocalDate.of(2025, 9, 24);
 
     @Autowired
@@ -36,30 +42,30 @@ class ReservationDaoTest {
     @BeforeEach
     void setUp() {
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
-        reservationDao = new H2ReservationDao(namedParameterJdbcTemplate);
-        reservationTimeDao = new H2ReservationTimeDao(namedParameterJdbcTemplate);
-        themeDao = new H2ThemeDao(namedParameterJdbcTemplate);
+        reservationDao = new JdbcReservationDao(namedParameterJdbcTemplate);
+        reservationTimeDao = new JdbcReservationTimeDao(namedParameterJdbcTemplate);
+        themeDao = new JdbcThemeDao(namedParameterJdbcTemplate);
+        memberDao = new JdbcMemberDao(namedParameterJdbcTemplate);
         reservationTime = reservationTimeDao.save(new ReservationTime(LocalTime.of(10, 0)));
         theme = themeDao.save(new Theme(null, "우테코방탈출", "탈출탈출탈출", "abcdefg"));
+        member = memberDao.save(new Member(null, "레오", "admin@gmail.com", "qwer!", ADMIN));
     }
 
     @DisplayName("새로운 예약을 저장할 수 있다")
     @Test
     void save() {
         // given
-        Reservation newReservation = new Reservation(null, "leo", date, reservationTime, theme);
+        Reservation newReservation = new Reservation(null, member, date, reservationTime, theme);
         // when
         Reservation result = reservationDao.save(newReservation);
         // then
         Reservation savedReservation = reservationDao.findAll().getFirst();
         assertAll(
-                () -> assertThat(result.getId()).isEqualTo(1L),
-                () -> assertThat(result.getName()).isEqualTo("leo"),
+                () -> assertThat(result.getName()).isEqualTo("레오"),
                 () -> assertThat(result.getDate()).isEqualTo(date),
                 () -> assertThat(result.getTime()).isEqualTo(reservationTime),
                 () -> assertThat(result.getTheme()).isEqualTo(theme),
-                () -> assertThat(savedReservation.getId()).isEqualTo(1L),
-                () -> assertThat(savedReservation.getName()).isEqualTo("leo"),
+                () -> assertThat(savedReservation.getName()).isEqualTo("레오"),
                 () -> assertThat(savedReservation.getDate()).isEqualTo(date),
                 () -> assertThat(savedReservation.getTime()).isEqualTo(reservationTime),
                 () -> assertThat(savedReservation.getTheme()).isEqualTo(theme)
@@ -70,7 +76,7 @@ class ReservationDaoTest {
     @Test
     void deleteById() {
         // given
-        Reservation savedReservation = reservationDao.save(new Reservation(null, "leo", date, reservationTime, theme));
+        Reservation savedReservation = reservationDao.save(new Reservation(null, member, date, reservationTime, theme));
         // when
         reservationDao.deleteById(savedReservation.getId());
         // then
@@ -81,8 +87,8 @@ class ReservationDaoTest {
     @Test
     void findAll() {
         // given
-        reservationDao.save(new Reservation(null, "leo", date, reservationTime, theme));
-        reservationDao.save(new Reservation(null, "ken", date.plusDays(1), reservationTime, theme));
+        reservationDao.save(new Reservation(null, member, date, reservationTime, theme));
+        reservationDao.save(new Reservation(null, member, date.plusDays(1), reservationTime, theme));
         // when
         List<Reservation> result = reservationDao.findAll();
         // then
@@ -93,7 +99,7 @@ class ReservationDaoTest {
     @Test
     void isExistsByDateAndTimeIdAndThemeId() {
         // given
-        reservationDao.save(new Reservation(null, "leo", date, reservationTime, theme));
+        reservationDao.save(new Reservation(null, member, date, reservationTime, theme));
         // when
         boolean result = reservationDao.isExistsByDateAndTimeIdAndThemeId(date, reservationTime.getId(), theme.getId());
         // then
@@ -104,7 +110,7 @@ class ReservationDaoTest {
     @Test
     void isExistsByTimeId() {
         // given
-        reservationDao.save(new Reservation(null, "leo", date, reservationTime, theme));
+        reservationDao.save(new Reservation(null, member, date, reservationTime, theme));
         // when
         boolean result = reservationDao.isExistsByTimeId(reservationTime.getId());
         // then
@@ -115,7 +121,7 @@ class ReservationDaoTest {
     @Test
     void isExistsByThemeId() {
         // given
-        reservationDao.save(new Reservation(null, "leo", date, reservationTime, theme));
+        reservationDao.save(new Reservation(null, member, date, reservationTime, theme));
         // when
         boolean result = reservationDao.isExistsByThemeId(theme.getId());
         // then
@@ -127,8 +133,8 @@ class ReservationDaoTest {
     void findAllByDateAndThemeId() {
         // given
         String name = "leo";
-        reservationDao.save(new Reservation(null, name, date, reservationTime, theme));
-        reservationDao.save(new Reservation(null, name, date.plusDays(1), reservationTime, theme));
+        reservationDao.save(new Reservation(null, member, date, reservationTime, theme));
+        reservationDao.save(new Reservation(null, member, date.plusDays(1), reservationTime, theme));
         // when
         List<Reservation> result = reservationDao.findAllByDateAndThemeId(date, theme.getId());
         // then

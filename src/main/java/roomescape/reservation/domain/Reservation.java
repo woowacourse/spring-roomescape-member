@@ -3,21 +3,29 @@ package roomescape.reservation.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import roomescape.member.domain.Member;
 
 public final class Reservation {
 
     private final Long id;
-    private final MemberName name;
+    private final Member member;
     private final ReservationDateTime dateTime;
     private final Theme theme;
 
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time,
+    public Reservation(final Long id, final Member member, final LocalDate date, final ReservationTime time,
                        final Theme theme) {
+        validateMember(member);
         validateTheme(theme);
         this.id = id;
-        this.name = new MemberName(name);
+        this.member = member;
         this.dateTime = new ReservationDateTime(date, time);
         this.theme = theme;
+    }
+
+    private void validateMember(final Member member) {
+        if (member == null) {
+            throw new IllegalArgumentException("사용자를 입력해야 합니다.");
+        }
     }
 
     private void validateTheme(final Theme theme) {
@@ -34,12 +42,20 @@ public final class Reservation {
         return dateTime.isSameTime(reservationTime);
     }
 
-    public Long getTimeId() {
-        return dateTime.getTimeId();
+    public boolean isMemberHasSameId(final long other) {
+        return member.hasSameId(other);
     }
 
-    public long getThemeId() {
-        return theme.getId();
+    public boolean isThemeHasSameId(final long other) {
+        return theme.hasSameId(other);
+    }
+
+    public boolean isBetween(final LocalDate from, final LocalDate to) {
+        return dateTime.isBetween(from, to);
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     public Long getId() {
@@ -47,7 +63,7 @@ public final class Reservation {
     }
 
     public String getName() {
-        return name.getName();
+        return member.getName();
     }
 
     public LocalDate getDate() {

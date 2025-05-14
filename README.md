@@ -30,15 +30,16 @@
 
 ### 어드민 페이지
 
-- `http://localhost:8080/admin`: 어드민 메인 페이지
-- `http://localhost:8080/admin/reservation`: 예약 관리 페이지
-- `http://localhost:8080/admin/time`: 시간 관리 페이지
-- `http://localhost:8080/admin/theme` : 테마 관리 페이지
+- `/admin`: 어드민 메인 페이지
+- `/admin/reservation`: 예약 관리 페이지
+- `/admin/time`: 시간 관리 페이지
+- `/admin/theme` : 테마 관리 페이지
 
 ### 사용자 페이지
 
-- `http://localhost:8080/` : 인기 테마 페이지
-- `http://localhost:8080/reservation` : 사용자 예약 페이지
+- `/login` : 로그인 페이지
+- `/` : 인기 테마 페이지
+- `/reservation` : 사용자 예약 페이지
 
 ---
 
@@ -46,19 +47,20 @@
 
 ### 예약 API
 
-#### 예약 추가 API
+#### 사용자 예약 추가 API
 
 **Request**
 
 ```
 POST /reservations HTTP/1.1
 content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
 
 {
-    "date": "2023-08-05",
-    "name": "브라운",
-    "timeId": 1,
-    "themeId": 1
+    "date": "2024-03-01",
+    "themeId": 1,
+    "timeId": 1
 }
 
 ```
@@ -73,7 +75,51 @@ Content-Type: application/json
 {
     "id": 1,
     "name": "브라운",
-    "date": "2023-08-05",
+    "date": "2024-03-01",
+    "time" : {
+        "id": 1,
+        "startAt" : "10:00"
+    },
+    "theme" : {
+        "id": 1,
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
+}
+
+```
+
+#### 관리자 예약 추가 API
+
+**Request**
+
+```
+POST /admin/reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
+
+{
+    "date": "2024-03-01",
+    "themeId": 1,
+    "timeId": 1,
+    "memberId": 1
+}
+
+```
+
+**Response**
+
+```
+HTTP/1.1 201
+Location: /reservations/1
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "브라운",
+    "date": "2024-03-01",
     "time" : {
         "id": 1,
         "startAt" : "10:00"
@@ -318,4 +364,52 @@ Content-Type: application/json
         "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
    }
 ]
+```
+
+### 사용자 API
+#### 로그인 API
+
+**Request**
+
+```
+POST /login HTTP/1.1
+content-type: application/json
+host: localhost:8080
+
+{
+    "password": "password",
+    "email": "admin@email.com"
+}
+```
+
+**Response**
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+Keep-Alive: timeout=60
+Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+```
+
+#### 인증 정보 조회 API
+**Request**
+
+```
+GET /login/check HTTP/1.1
+cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+host: localhost:8080
+```
+
+**Response**
+
+```
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Type: application/json
+Date: Sun, 03 Mar 2024 19:16:56 GMT
+Keep-Alive: timeout=60
+Transfer-Encoding: chunked
+{
+    "name": "어드민"
+}
 ```

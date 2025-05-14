@@ -10,18 +10,26 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 
 @Repository
-public class H2ReservationDao implements ReservationDao {
+public class JdbcReservationDao implements ReservationDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) ->
             new Reservation(
                     resultSet.getLong("reservation_id"),
-                    resultSet.getString("name"),
+                    new Member(
+                            resultSet.getLong("member_id"),
+                            resultSet.getString("member_name"),
+                            resultSet.getString("member_email"),
+                            resultSet.getString("member_password"),
+                            MemberRole.valueOf(resultSet.getString("member_role"))
+                    ),
                     resultSet.getDate("date").toLocalDate(),
                     new ReservationTime(
                             resultSet.getLong("time_id"),
@@ -35,7 +43,7 @@ public class H2ReservationDao implements ReservationDao {
                     )
             );
 
-    public H2ReservationDao(final NamedParameterJdbcTemplate jdbcTemplate) {
+    public JdbcReservationDao(final NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -44,15 +52,20 @@ public class H2ReservationDao implements ReservationDao {
         final String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
                     r.date,
                     t.id AS time_id,
                     t.start_at AS time_value,
                     th.id AS theme_id,
                     th.name AS theme_name,
                     th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
+                    th.thumbnail AS theme_thumbnail,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.password AS member_password,
+                    m.role AS member_role
                 FROM reservation AS r 
+                INNER JOIN member AS m ON r.member_id = m.id
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
                 """;
@@ -61,15 +74,15 @@ public class H2ReservationDao implements ReservationDao {
 
     @Override
     public Reservation save(final Reservation reservation) {
-        final String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES(:name, :date, :timeId, :themeId)";
+        final String sql = "INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES(:date, :memberId, :timeId, :themeId)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         final SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
                 .addValue("date", Date.valueOf(reservation.getDate()))
-                .addValue("timeId", reservation.getTimeId())
+                .addValue("memberId", reservation.getMember().getId())
+                .addValue("timeId", reservation.getTime().getId())
                 .addValue("themeId", reservation.getTheme().getId());
         jdbcTemplate.update(sql, parameters, keyHolder, new String[]{"id"});
-        return new Reservation(keyHolder.getKeyAs(Long.class), reservation.getName(), reservation.getDate(),
+        return new Reservation(keyHolder.getKeyAs(Long.class), reservation.getMember(), reservation.getDate(),
                 reservation.getTime(), reservation.getTheme());
     }
 
@@ -112,15 +125,20 @@ public class H2ReservationDao implements ReservationDao {
         final String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
                     r.date,
                     t.id AS time_id,
                     t.start_at AS time_value,
                     th.id AS theme_id,
                     th.name AS theme_name,
                     th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
+                    th.thumbnail AS theme_thumbnail,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.password AS member_password,
+                    m.role AS member_role
                 FROM reservation AS r 
+                INNER JOIN member AS m ON r.member_id = m.id
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
                 WHERE r.date = :date AND r.theme_id = :themeId

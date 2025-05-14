@@ -15,8 +15,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.fake.TestCurrentDateTime;
-import roomescape.reservation.controller.dto.ThemeRequest;
-import roomescape.reservation.controller.dto.ThemeResponse;
+import roomescape.reservation.service.dto.ThemeCreateCommand;
+import roomescape.reservation.service.dto.ThemeInfo;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.repository.ReservationDao;
 import roomescape.reservation.repository.ThemeDao;
@@ -46,9 +46,9 @@ public class ThemeServiceIntegrationTest {
     @Test
     void createTheme() {
         // given
-        ThemeRequest request = new ThemeRequest("우테코방탈출", "우테코를 탈출해라", "www.naver.com");
+        ThemeCreateCommand request = new ThemeCreateCommand("우테코방탈출", "우테코를 탈출해라", "www.naver.com");
         // when
-        ThemeResponse result = themeService.createTheme(request);
+        ThemeInfo result = themeService.createTheme(request);
         // then
         Theme savedTheme = themeDao.findById(result.id()).get();
         assertAll(
@@ -67,7 +67,7 @@ public class ThemeServiceIntegrationTest {
     @Test
     void should_ThrowException_WhenDuplicateThemeName() {
         // given
-        ThemeRequest request = new ThemeRequest("테마1", "우테코를 탈출해라", "www.naver.com");
+        ThemeCreateCommand request = new ThemeCreateCommand("테마1", "우테코를 탈출해라", "www.naver.com");
         // when
         // then
         assertThatThrownBy(() -> themeService.createTheme(request))
@@ -79,7 +79,7 @@ public class ThemeServiceIntegrationTest {
     @Test
     void findAll() {
         // when
-        List<ThemeResponse> result = themeService.findAll();
+        List<ThemeInfo> result = themeService.findAll();
         // then
         assertThat(result).hasSize(11);
     }
@@ -90,7 +90,7 @@ public class ThemeServiceIntegrationTest {
         // when
         themeService.deleteThemeById(10L);
         // then
-        List<ThemeResponse> responses = themeService.findAll();
+        List<ThemeInfo> responses = themeService.findAll();
         assertThat(responses).hasSize(10);
     }
 
@@ -108,7 +108,7 @@ public class ThemeServiceIntegrationTest {
     @Test
     void findPopularThemes() {
         // when
-        List<ThemeResponse> result = themeService.findPopularThemes();
+        List<ThemeInfo> result = themeService.findPopularThemes();
         // then
         assertThat(result).hasSize(10);
         assertThat(result.getFirst().name()).isEqualTo("테마11");
@@ -121,7 +121,7 @@ public class ThemeServiceIntegrationTest {
         // given
         currentDateTime.changeDateTime(LocalDateTime.of(2025, 4, 12, 10, 0));
         // when
-        List<ThemeResponse> result = themeService.findPopularThemes();
+        List<ThemeInfo> result = themeService.findPopularThemes();
         // then
         assertThat(result).isEmpty();
     }

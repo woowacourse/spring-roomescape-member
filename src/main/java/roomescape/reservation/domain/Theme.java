@@ -23,6 +23,10 @@ public final class Theme {
         }
     }
 
+    public boolean hasSameId(final long other) {
+        return id == other;
+    }
+
     public Long getId() {
         return id;
     }

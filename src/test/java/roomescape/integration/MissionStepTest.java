@@ -25,7 +25,10 @@ import roomescape.reservation.controller.ReservationController;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Sql("/schema.sql")
+@Sql(
+        value = "/schema.sql",
+        statements = "insert into member(name, email, password, role) values('레오', 'admin@gmail.com', 'qwer!', 'ADMIN')"
+)
 public class MissionStepTest {
 
     @Autowired
@@ -37,7 +40,8 @@ public class MissionStepTest {
     @DisplayName("1단계: 홈페이지에 접근할 수 있다.")
     @Test
     void testHomePage() {
-        RestAssured.given().log().all()
+        String token = getAdminToken();
+        RestAssured.given().log().all().header("Cookie", "token=" + token)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(OK.value());
@@ -46,7 +50,8 @@ public class MissionStepTest {
     @DisplayName("2단계: 예약을 조회할 수 있다.")
     @Test
     void testGetReservationPage() {
-        RestAssured.given().log().all()
+        String token = getAdminToken();
+        RestAssured.given().log().all().header("Cookie", "token=" + token)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(OK.value());
@@ -98,6 +103,8 @@ public class MissionStepTest {
     @DisplayName("8단계: 예약을 추가하고 취소할 수 있다.")
     @Test
     void testCreateDeleteReservation() {
+        String token = getAdminToken();
+
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
@@ -121,7 +128,6 @@ public class MissionStepTest {
                 .statusCode(CREATED.value());
 
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         String date = LocalDate.now().plusDays(1).toString();
         reservation.put("date", date);
         reservation.put("timeId", 1);
@@ -129,7 +135,7 @@ public class MissionStepTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservation)
+                .body(reservation).header("Cookie", "token=" + token)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(CREATED.value());
@@ -165,5 +171,18 @@ public class MissionStepTest {
         }
 
         assertThat(isJdbcTemplateInjected).isFalse();
+    }
+
+    private String getAdminToken() {
+        Map<String, String> loginParams = new HashMap<>();
+        loginParams.put("email", "admin@gmail.com");
+        loginParams.put("password", "qwer!");
+        String token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all()
+                .extract().cookie("token");
+        return token;
     }
 }

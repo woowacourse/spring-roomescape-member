@@ -14,12 +14,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.reservation.controller.dto.AvailableTimeResponse;
-import roomescape.reservation.controller.dto.ReservationTimeRequest;
-import roomescape.reservation.controller.dto.ReservationTimeResponse;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.repository.ReservationTimeDao;
 import roomescape.reservation.service.ReservationTimeService;
+import roomescape.reservation.service.dto.AvailableTimeInfo;
+import roomescape.reservation.service.dto.ReservationTimeCreateCommand;
+import roomescape.reservation.service.dto.ReservationTimeInfo;
 
 @SpringBootTest
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -36,7 +36,7 @@ public class TimeServiceIntegrationTest {
     @Test
     void should_ThrowException_WhenCreateDuplicatedTime() {
         // given
-        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(10, 0));
+        ReservationTimeCreateCommand request = new ReservationTimeCreateCommand(LocalTime.of(10, 0));
         // when
         // then
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(request))
@@ -49,9 +49,9 @@ public class TimeServiceIntegrationTest {
     void createReservationTime() {
         // given
         LocalTime time = LocalTime.of(17, 0);
-        ReservationTimeRequest request = new ReservationTimeRequest(time);
+        ReservationTimeCreateCommand request = new ReservationTimeCreateCommand(time);
         // when
-        ReservationTimeResponse result = reservationTimeService.createReservationTime(request);
+        ReservationTimeInfo result = reservationTimeService.createReservationTime(request);
         // then
         ReservationTime savedTime = reservationTimeDao.findById(result.id()).get();
         assertAll(
@@ -66,7 +66,7 @@ public class TimeServiceIntegrationTest {
     @Test
     void getReservationTimes() {
         // when
-        List<ReservationTimeResponse> result = reservationTimeService.getReservationTimes();
+        List<ReservationTimeInfo> result = reservationTimeService.getReservationTimes();
         // then
         assertThat(result).hasSize(3);
     }
@@ -96,14 +96,14 @@ public class TimeServiceIntegrationTest {
     void findAvailableTimes() {
         // when
         LocalDate date = LocalDate.of(2025, 4, 24);
-        List<AvailableTimeResponse> result = reservationTimeService.findAvailableTimes(date, 7L);
+        List<AvailableTimeInfo> result = reservationTimeService.findAvailableTimes(date, 7L);
         // then
         assertAll(
                 () -> assertThat(result).hasSize(3),
                 () -> assertThat(result).contains(
-                        new AvailableTimeResponse(1L, LocalTime.of(10, 0), true),
-                        new AvailableTimeResponse(2L, LocalTime.of(15, 0), false),
-                        new AvailableTimeResponse(3L, LocalTime.of(16, 0), false)
+                        new AvailableTimeInfo(1L, LocalTime.of(10, 0), true),
+                        new AvailableTimeInfo(2L, LocalTime.of(15, 0), false),
+                        new AvailableTimeInfo(3L, LocalTime.of(16, 0), false)
                 )
         );
     }
