@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.LoginMember;
+import roomescape.domain.Role;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.exception.UnauthorizedAccessException;
@@ -27,7 +28,7 @@ public class AdminReservationController {
 
     @PostMapping("/admin/reservations")
     public ResponseEntity<ReservationResponse> addReservation(@Valid @RequestBody ReservationRequest request, LoginMember member) {
-        if (member.getRole().equalsIgnoreCase("USER")) {
+        if (member.getRole() == Role.USER) {
             throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
         }
 
@@ -42,7 +43,7 @@ public class AdminReservationController {
             @RequestParam(value = "from", required = false) LocalDate from,
             @RequestParam(value = "to", required = false) LocalDate to,
             LoginMember loginMember) {
-        if (loginMember.getRole().equalsIgnoreCase("USER")) {
+        if (loginMember.getRole() == Role.USER) {
             throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
         }
 

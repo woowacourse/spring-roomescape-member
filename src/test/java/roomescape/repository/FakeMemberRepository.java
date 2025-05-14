@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.dao.DuplicateKeyException;
 import roomescape.domain.LoginMember;
 import roomescape.domain.RegistrationDetails;
+import roomescape.domain.Role;
 
 public class FakeMemberRepository implements MemberRepository {
 
@@ -29,7 +30,7 @@ public class FakeMemberRepository implements MemberRepository {
 
         long id = memberId.getAndIncrement();
         LoginMember newMember = new LoginMember(id, registrationDetails.name(), registrationDetails.email(),
-                registrationDetails.password(), "USER");
+                registrationDetails.password(), Role.USER);
         members.add(newMember);
     }
 

@@ -6,9 +6,9 @@ public class LoginMember {
     private final String name;
     private final String email;
     private final String password;
-    private final String role;
+    private final Role role;
 
-    public LoginMember(Long id, String name, String email, String password, String role) {
+    public LoginMember(Long id, String name, String email, String password, Role role) {
         validateName(name);
 
         this.id = id;
@@ -40,7 +40,7 @@ public class LoginMember {
         return password;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 }

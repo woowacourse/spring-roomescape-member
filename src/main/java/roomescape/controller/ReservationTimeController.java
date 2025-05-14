@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.LoginMember;
+import roomescape.domain.Role;
 import roomescape.dto.time.AvailableReservationTimeResponse;
 import roomescape.dto.time.ReservationTimeCreateRequest;
 import roomescape.dto.time.ReservationTimeResponse;
@@ -44,7 +45,7 @@ public class ReservationTimeController {
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> addReservationTime(@Valid @RequestBody final ReservationTimeCreateRequest requestDto, LoginMember member) {
-        if (member.getRole().equalsIgnoreCase("USER")) {
+        if (member.getRole() == Role.USER) {
             throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
         }
 
@@ -54,7 +55,7 @@ public class ReservationTimeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id, LoginMember member) {
-        if (member.getRole().equalsIgnoreCase("USER")) {
+        if (member.getRole() == Role.USER) {
             throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
         }
 

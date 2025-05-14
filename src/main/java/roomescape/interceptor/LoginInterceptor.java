@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.LoginMember;
+import roomescape.domain.Role;
 import roomescape.exception.InvalidAuthorizationException;
 import roomescape.service.MemberService;
 import roomescape.util.CookieTokenExtractor;
@@ -31,7 +32,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         jwtTokenProvider.validateToken(token);
         LoginMember member = memberService.findMemberByToken(token);
 
-        if (!member.getRole().equalsIgnoreCase("ADMIN")) {
+        if (member.getRole() != Role.ADMIN) {
             response.setStatus(403);
             return false;
         }

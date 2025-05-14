@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.LoginMember;
 import roomescape.domain.RegistrationDetails;
+import roomescape.domain.Role;
 
 @Repository
 public class JdbcMemberDao implements MemberRepository {
@@ -21,7 +22,8 @@ public class JdbcMemberDao implements MemberRepository {
         String name = rs.getString("name");
         String email = rs.getString("email");
         String password = rs.getString("password");
-        String role = rs.getString("role");
+        String roleValue = rs.getString("role");
+        Role role = Role.valueOf(roleValue.toUpperCase());
         return new LoginMember(id, name, email, password, role);
     });
 
