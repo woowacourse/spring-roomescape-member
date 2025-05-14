@@ -38,7 +38,7 @@ public class Member {
     }
 
     /**
-     * 사장님 로그인 페이지가 추가된다면, 사용할 정적 팩토리 메서드 코드
+     * 사장님 회원가입 페이지가 추가된다면, 사용할 정적 팩토리 메서드 코드
      */
     public static Member createAdminWithId(Long id, String name, String email, String password) {
         return new Member(id, Role.ADMIN, name, email, password);
