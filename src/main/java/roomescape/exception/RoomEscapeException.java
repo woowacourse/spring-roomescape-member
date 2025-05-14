@@ -2,11 +2,11 @@ package roomescape.exception;
 
 import org.springframework.http.HttpStatus;
 
-public abstract class CustomException extends RuntimeException {
+public abstract class RoomEscapeException extends RuntimeException {
 
     private final HttpStatus httpStatus;
 
-    protected CustomException(HttpStatus httpStatus, ExceptionCause exceptionCause) {
+    protected RoomEscapeException(HttpStatus httpStatus, ExceptionCause exceptionCause) {
         super(exceptionCause.getMessage());
         this.httpStatus = httpStatus;
     }

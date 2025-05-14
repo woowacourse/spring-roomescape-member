@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(new FailureResponse(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 
-    private FailureResponse getFailureResponse(CustomException ex) {
+    private FailureResponse getFailureResponse(RoomEscapeException ex) {
         return new FailureResponse(ex.getHttpStatus(), ex.getMessage());
     }
 }
