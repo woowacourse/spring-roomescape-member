@@ -1,5 +1,6 @@
 package roomescape.infra;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
@@ -39,22 +40,22 @@ public class JwtTokenProvider {
     }
 
     public Long getUserId(String token) {
-        return Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
+        return Long.valueOf(parseClaims(token)
                 .getSubject()
         );
     }
 
     public Role getRole(String token) {
-        return Role.valueOf((String) Jwts.parserBuilder()
+        return Role.valueOf((String) parseClaims(token)
+                .get("role"));
+    }
+
+    private static Claims parseClaims(String token) {
+        return Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .get("role"));
+                .getBody();
     }
 
 }
