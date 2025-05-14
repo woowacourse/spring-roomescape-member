@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.MemberRole;
 import roomescape.domain.Theme;
 
 @JdbcTest
@@ -97,18 +98,20 @@ class H2ThemeRepositoryTest {
     @Test
     void canGetTopThemes() {
         // given
+        template.update("INSERT INTO member (name, email, password, role) VALUES (?,?,?,?)",
+                "회원", "test@test.com", "ecxewqe!23", MemberRole.GENERAL.toString());
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
         for (int i = 0; i < 15; i++) {
             template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                     "테마" + i, "설명", "썸네일");
         }
 
-        template.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "이름1", YESTERDAY.toString(), 1L, 1L);
-        template.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "이름1", YESTERDAY.toString(), 1L, 1L);
-        template.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "이름1", YESTERDAY.toString(), 1L, 2L);
+        template.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, YESTERDAY.toString(), 1L, 1L);
+        template.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, YESTERDAY.toString(), 1L, 1L);
+        template.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L, YESTERDAY.toString(), 1L, 2L);
 
         // when
         List<Theme> topThemes = themeRepository.getTopThemes(YESTERDAY, TODAY, 10);

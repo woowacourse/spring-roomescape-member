@@ -5,20 +5,17 @@ import java.util.Objects;
 
 public class ReservationTime {
 
-    private static final long DEFAULT_ID = 0L;
-
     private final Long id;
     private final LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {
-        validateNullId(id);
         validateNullStartAt(startAt);
         this.id = id;
         this.startAt = removeNanoSecond(startAt);
     }
 
     public static ReservationTime createWithoutId(LocalTime time) {
-        return new ReservationTime(DEFAULT_ID, time);
+        return new ReservationTime(null, time);
     }
 
     public Long getId() {
@@ -41,12 +38,6 @@ public class ReservationTime {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
-    }
-
-    private void validateNullId(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("[ERROR] 비어있는 ID로 예약 시간을 생성할 수 없습니다.");
-        }
     }
 
     private void validateNullStartAt(LocalTime startAt) {

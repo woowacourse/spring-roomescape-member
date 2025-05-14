@@ -4,14 +4,13 @@ import java.util.Objects;
 
 public class Theme {
 
-    private static final long DEFAULT_ID = 0L;
     private final Long id;
     private final String name;
     private final String description;
     private final String thumbnail;
 
     public Theme(Long id, String name, String description, String thumbnail) {
-        validate(id, name, description, thumbnail);
+        validate(name, description, thumbnail);
         this.id = id;
         this.name = name;
         this.description = description;
@@ -19,7 +18,7 @@ public class Theme {
     }
 
     public static Theme createWithoutId(String name, String description, String thumbnail) {
-        return new Theme(DEFAULT_ID, name, description, thumbnail);
+        return new Theme(null, name, description, thumbnail);
     }
 
     public Long getId() {
@@ -52,18 +51,11 @@ public class Theme {
         return Objects.hashCode(id);
     }
 
-    private void validate(Long id, String name, String description, String thumbnail) {
-        validateNullId(id);
+    private void validate(String name, String description, String thumbnail) {
         validateNullName(name);
         validateNullDescription(description);
         validateNullThumbnail(thumbnail);
 
-    }
-
-    private void validateNullId(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("[ERROR] 비어있는 ID로 테마를 생성할 수 없습니다.");
-        }
     }
 
     private void validateNullName(String name) {

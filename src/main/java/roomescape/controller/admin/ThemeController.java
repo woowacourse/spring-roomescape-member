@@ -1,12 +1,9 @@
-package roomescape.controller;
+package roomescape.controller.admin;
 
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.time.LocalDate;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,8 +14,8 @@ import roomescape.dto.request.ThemeCreationRequest;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ThemeService;
 
-@RestController
-@RequestMapping
+@RestController(value = "AdminThemeController")
+@RequestMapping("/themes")
 public class ThemeController {
 
     private final ThemeService themeService;
@@ -27,25 +24,7 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping("/themes")
-    public List<ThemeResponse> getThemes() {
-        List<Theme> themes = themeService.findAllTheme();
-        return themes.stream()
-                .map(ThemeResponse::new)
-                .toList();
-    }
-
-    @GetMapping("/themes/top")
-    public List<ThemeResponse> getTopThemes() {
-        LocalDate endDate = LocalDate.now();
-        LocalDate startDate = endDate.minusDays(7);
-        List<Theme> themes = themeService.findTopThemes(startDate, endDate, 10);
-        return themes.stream()
-                .map(ThemeResponse::new)
-                .toList();
-    }
-
-    @PostMapping("/themes")
+    @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(
             @Valid @RequestBody ThemeCreationRequest request
     ) {
@@ -56,7 +35,7 @@ public class ThemeController {
                 .body(new ThemeResponse(theme));
     }
 
-    @DeleteMapping("/themes/{themeId}")
+    @DeleteMapping("/{themeId}")
     public ResponseEntity<Void> deleteById(
             @PathVariable("themeId") Long id
     ) {

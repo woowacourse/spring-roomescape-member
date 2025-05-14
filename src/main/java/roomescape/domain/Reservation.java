@@ -7,34 +7,31 @@ import roomescape.exception.BadRequestException;
 
 public final class Reservation {
 
-    private static final long DEFAULT_ID = 0L;
-    private static final int MAX_NAME_LENGTH = 255;
-
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateField(id, name, date, time, theme);
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
+        validateField(member, date, time, theme);
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public static Reservation createWithoutId(String name, LocalDate date, ReservationTime time, Theme theme) {
-        return new Reservation(DEFAULT_ID, name, date, time, theme);
+    public static Reservation createWithoutId(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        return new Reservation(null, member, date, time, theme);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
@@ -71,31 +68,16 @@ public final class Reservation {
         }
     }
 
-    private void validateField(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateNullId(id);
-        validateBlankName(name);
-        validateNameLength(name);
+    private void validateField(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        validateNullMember(member);
         validateNullDate(date);
         validateNullTime(time);
         validateNullTheme(theme);
     }
 
-    private void validateBlankName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 비어있는 이름으로 예약을 생성할 수 없습니다.");
-        }
-    }
-
-    private void validateNameLength(String name) {
-        if (name.length() > MAX_NAME_LENGTH) {
-            String message = String.format("[ERROR] 이름으로 입력된 문자열의 길이가 최대값(%s자)을 초과했습니다.", MAX_NAME_LENGTH);
-            throw new IllegalArgumentException(message);
-        }
-    }
-
-    private void validateNullId(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("[ERROR] 비어있는 ID로 예약을 생성할 수 없습니다.");
+    private void validateNullMember(Member member) {
+        if (member == null) {
+            throw new IllegalArgumentException("[ERROR] 비어있는 멤버로는 예약을 생성할 수 없습니다.");
         }
     }
 

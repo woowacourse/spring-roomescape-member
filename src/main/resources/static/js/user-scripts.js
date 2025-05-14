@@ -74,7 +74,7 @@ function login() {
     })
   })
       .then(response => {
-        if (200 === !response.status) {
+        if (!(response.status===200)) {
           alert('Login failed'); // 로그인 실패 시 경고창 표시
           throw new Error('Login failed');
         }
@@ -94,6 +94,9 @@ function signup() {
 }
 
 function register(event) {
+  // 폼 제출에 의한 페이지 리로드 방지
+  event.preventDefault();
+
   // 폼 데이터 수집
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
@@ -120,25 +123,19 @@ function register(event) {
     },
     body: JSON.stringify(formData)
   })
-      .then(response => {
-        if (!response.ok) {
-          alert('Signup request failed');
-          throw new Error('Signup request failed');
-        }
-        return response.json(); // 여기서 응답을 JSON 형태로 변환
-      })
-      .then(data => {
-        // 성공적인 응답 처리
-        console.log('Signup successful:', data);
-        window.location.href = '/login';
-      })
-      .catch(error => {
-        // 에러 처리
-        console.error('Error during signup:', error);
-      });
-
-  // 폼 제출에 의한 페이지 리로드 방지
-  event.preventDefault();
+  .then(response => {
+    if (response.status === 201 || response.status === 200) {
+      alert('Signup request success');
+      window.location.href = '/login';
+      return
+    }
+    alert('Signup request failed');
+    throw new Error('Signup request failed');
+  })
+  .catch(error => {
+    // 에러 처리
+    console.error('Error during signup:', error);
+  });
 }
 
 function base64DecodeUnicode(str) {

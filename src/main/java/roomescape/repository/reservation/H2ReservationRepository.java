@@ -11,9 +11,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.dto.other.ReservationSearchCondition;
 
 @Repository
 public class H2ReservationRepository implements ReservationRepository {
@@ -25,7 +28,13 @@ public class H2ReservationRepository implements ReservationRepository {
     static {
         mapper = (resultSet, resultNumber) -> new Reservation(
                 resultSet.getLong("reservation_id"),
-                resultSet.getString("name"),
+                new Member(
+                        resultSet.getLong("member_id"),
+                        resultSet.getString("member_name"),
+                        resultSet.getString("member_email"),
+                        resultSet.getString("member_password"),
+                        MemberRole.valueOf(resultSet.getString("member_role"))
+                ),
                 resultSet.getDate("date").toLocalDate(),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
@@ -50,26 +59,51 @@ public class H2ReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         String sql = """
-                SELECT r.id as reservation_id, r.name, r.date, 
-                       rt.id as time_id, rt.start_at, 
-                       t.id as theme_id, t.name as theme_name, t.description, t.thumbnail
+                SELECT r.id AS reservation_id, r.date,
+                       m.id AS member_id, m.name AS member_name, m.email AS member_email, m.password AS member_password, m.role As member_role,
+                       rt.id AS time_id, rt.start_at,
+                       t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail
                 FROM reservation AS r
+                INNER JOIN member AS m ON r.member_id = m.id
                 INNER JOIN reservation_time AS rt ON r.time_id = rt.id
-                INNER JOIN theme AS t ON r.theme_id = t.id 
+                INNER JOIN theme AS t ON r.theme_id = t.id
                 ORDER BY r.id DESC
                 """;
         return template.query(sql, mapper);
     }
 
     @Override
+    public List<Reservation> findAllByFilter(ReservationSearchCondition condition) {
+        String sql = """
+                SELECT r.id AS reservation_id, r.date,
+                       m.id AS member_id, m.name AS member_name, m.email AS member_email, m.password AS member_password, m.role As member_role,
+                       rt.id AS time_id, rt.start_at,
+                       t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail
+                FROM reservation AS r
+                INNER JOIN member AS m ON r.member_id = m.id
+                INNER JOIN reservation_time AS rt ON r.time_id = rt.id
+                INNER JOIN theme AS t ON r.theme_id = t.id
+                WHERE r.theme_id = ?
+                AND r.member_id = ?
+                AND r.date >= ?
+                AND r.date <= ?
+                ORDER BY r.id DESC
+                """;
+        return template.query(sql, mapper,
+                condition.themeId(), condition.memberId(), condition.dateFrom(), condition.dateTo());
+    }
+
+    @Override
     public Optional<Reservation> findById(long id) {
         String sql = """
-                SELECT r.id as reservation_id, r.name, r.date,
-                       rt.id as time_id, rt.start_at,
-                       t.id as theme_id, t.name as theme_name, t.description, t.thumbnail
-                FROM reservation AS r 
-                INNER JOIN reservation_time AS rt ON r.time_id = rt.id 
-                INNER JOIN theme AS t ON r.theme_id = t.id 
+                SELECT r.id AS reservation_id, r.date,
+                       m.id AS member_id, m.name AS member_name, m.email AS member_email, m.password AS member_password, m.role As member_role,
+                       rt.id AS time_id, rt.start_at,
+                       t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail
+                FROM reservation AS r
+                INNER JOIN member AS m ON r.member_id = m.id
+                INNER JOIN reservation_time AS rt ON r.time_id = rt.id
+                INNER JOIN theme AS t ON r.theme_id = t.id
                 WHERE r.id = ?
                 """;
         try {
@@ -119,7 +153,7 @@ public class H2ReservationRepository implements ReservationRepository {
     @Override
     public long add(Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", reservation.getName());
+        parameters.put("member_id", reservation.getMember().getId());
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTime().getId());
         parameters.put("theme_id", reservation.getTheme().getId());
