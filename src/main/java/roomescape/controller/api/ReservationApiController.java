@@ -70,7 +70,6 @@ public class ReservationApiController {
                 dateFrom,
                 dateTo
         );
-
         List<ReservationResponse> responses = ReservationResponse.from(reservations);
         return ResponseEntity.ok(responses);
     }

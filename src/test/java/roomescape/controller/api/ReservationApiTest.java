@@ -19,7 +19,7 @@ import roomescape.entity.Role;
 import java.time.LocalDate;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ReservationApiTest {
 
     @Autowired
@@ -68,9 +68,20 @@ public class ReservationApiTest {
     @Test
     @DisplayName("예약 생성 테스트")
     void createReservationsWithStatus201Test() {
+        SignupRequest signupRequest = new SignupRequest(
+                "레몬",
+                "suwon@naver.com",
+                "123"
+        );
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(signupRequest)
+                .when().post("/members")
+                .then().statusCode(201)
+                .extract().response();
+
         ReservationMemberRequest reservationMemberRequest = new ReservationMemberRequest(LocalDate.now(), timeId, themeId);
-        // JWT 토큰 생성 (회원 정보 사용)
-        String token = jwtTokenProvider.createToken(Member.afterSave(2, "koi", "ywc@com", "123", Role.USER));
+        String token = jwtTokenProvider.createToken(Member.afterSave(2, "레몬", "suwon@naver.com", "123", Role.USER));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
