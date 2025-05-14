@@ -62,7 +62,7 @@ class AdminPageControllerTest {
         RestAssured.given().cookie("token", userToken).log().all()
                 .when().get("/admin/reservation")
                 .then().log().all()
-                .statusCode(401);
+                .statusCode(403);
     }
 
     @DisplayName("Time Page 유저토큰인 경우 테스트")
@@ -71,7 +71,7 @@ class AdminPageControllerTest {
         RestAssured.given().cookie("token", userToken).log().all()
                 .when().get("/admin/time")
                 .then().log().all()
-                .statusCode(401);
+                .statusCode(403);
     }
 
     @DisplayName("admin 토큰 테스트")
