@@ -12,6 +12,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import roomescape.user.controller.AuthController;
 import roomescape.user.dto.request.LoginRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -23,47 +24,43 @@ class AdminViewControllerTest {
     @LocalServerPort
     int port;
 
+    private String token;
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+
+        token = getAdminToken();
     }
 
     @Test
     void 관리_페이지_접근시_정상응답() {
-        String token = getAdminToken();
-
         RestAssured.given().log().all()
-                .when().cookie("token", token).get("/admin")
+                .when().cookie(AuthController.TOKEN_KEY, token).get("/admin")
                 .then().log().all()
                 .statusCode(200);
     }
 
     @Test
     void 관리_예약_페이지_접근시_정상응답() {
-        String token = getAdminToken();
-
         RestAssured.given().log().all()
-                .when().cookie("token", token).get("/admin/reservation")
+                .when().cookie(AuthController.TOKEN_KEY, token).get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
     }
 
     @Test
     void 관리_시간_페이지_접근시_정상응답() {
-        String token = getAdminToken();
-
         RestAssured.given().log().all()
-                .when().cookie("token", token).get("/admin/time")
+                .when().cookie(AuthController.TOKEN_KEY, token).get("/admin/time")
                 .then().log().all()
                 .statusCode(200);
     }
 
     @Test
     void 관리_테마_페이지_접근시_정상응답() {
-        String token = getAdminToken();
-
         RestAssured.given().log().all()
-                .when().cookie("token", token).get("/admin/theme")
+                .when().cookie(AuthController.TOKEN_KEY, token).get("/admin/theme")
                 .then().log().all()
                 .statusCode(200);
     }
@@ -82,6 +79,6 @@ class AdminViewControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
-                .then().log().cookies().extract().cookie("token");
+                .then().log().cookies().extract().cookie(AuthController.TOKEN_KEY);
     }
 }

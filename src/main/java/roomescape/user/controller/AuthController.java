@@ -16,6 +16,8 @@ import roomescape.user.service.UserService;
 @RestController
 public class AuthController {
 
+    public static final String TOKEN_KEY = "token";
+
     private final UserService userService;
 
     public AuthController(UserService userService) {
@@ -25,7 +27,7 @@ public class AuthController {
     @PostMapping("/login")
     public void login(@RequestBody @Valid LoginRequest loginRequest, HttpServletResponse response) {
         String accessToken = userService.login(loginRequest);
-        Cookie cookie = new Cookie("token", accessToken);
+        Cookie cookie = new Cookie(TOKEN_KEY, accessToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
@@ -33,13 +35,13 @@ public class AuthController {
 
     @PostMapping("/logout")
     public void logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", null);
+        Cookie cookie = new Cookie(TOKEN_KEY, null);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> checkLogin(@CookieValue(name = "token") String token) {
+    public ResponseEntity<LoginCheckResponse> checkLogin(@CookieValue(name = TOKEN_KEY) String token) {
         return ResponseEntity.ok(userService.checkUserByToken(token));
     }
 }
