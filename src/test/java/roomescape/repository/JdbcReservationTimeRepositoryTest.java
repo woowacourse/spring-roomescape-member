@@ -15,7 +15,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.ReservationTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 @Sql(scripts = "/schema.sql")
 @Sql(scripts = "/reservation-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "/clean-test.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class JdbcReservationTimeRepositoryTest {
 
