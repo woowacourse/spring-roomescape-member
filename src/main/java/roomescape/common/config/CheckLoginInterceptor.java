@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.common.auth.JwtExtractor;
-import roomescape.common.exception.auth.InvalidAuthException;
+import roomescape.common.exception.auth.InvalidAuthorizationException;
 import roomescape.domain.member.LoginMember;
 import roomescape.service.auth.AuthService;
 
@@ -34,7 +34,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
 
     private void validateAuthorization(final LoginMember loginMember) {
         if (isNotAdmin(loginMember)) {
-            throw new InvalidAuthException("접근 권한이 없습니다.");
+            throw new InvalidAuthorizationException("접근 권한이 없습니다.");
         }
     }
 
