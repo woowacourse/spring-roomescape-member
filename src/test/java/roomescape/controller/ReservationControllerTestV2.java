@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.dto.MemberResponse;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationThemeResponse;
@@ -62,11 +63,13 @@ public class ReservationControllerTestV2 {
         @Test
         void reservationAddFormatTest() {
             //given
-            final ReservationResponse response = new ReservationResponse(1L, "제프리", LocalDate.now(),
+            final ReservationResponse response = new ReservationResponse(1L, LocalDate.now(),
+                    new MemberResponse(1L, "제프리"),
                     new ReservationTimeResponse(1L, LocalTime.now()),
                     new ReservationThemeResponse(1L, "테마", "설명", "썸네일"));
-            given(reservationService.addReservation(any(ReservationRequest.class))).willReturn(response);
-            final Map<String, String> request = Map.of("name", "제프리", "date", "2023-08-05", "timeId", "1", "themeId", "1");
+            given(reservationService.addReservation(any(ReservationRequest.class), 1L)).willReturn(response);
+            final Map<String, String> request = Map.of("name", "제프리", "date", "2023-08-05", "timeId", "1", "themeId",
+                    "1");
 
             RestAssuredMockMvc.given().log().all()
                     .contentType(ContentType.JSON)

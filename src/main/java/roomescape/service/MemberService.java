@@ -2,6 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.dto.SignUpRequest;
 import roomescape.dto.SignUpResponse;
 import roomescape.exception.exception.DataNotFoundException;
@@ -17,7 +18,7 @@ public class MemberService {
     }
 
     public SignUpResponse signUpMember(final SignUpRequest request) {
-        Member member = new Member(request.name(), request.email(), request.password(), "USER");
+        Member member = new Member(request.name(), request.email(), request.password(), MemberRole.USER);
         Member saved = memberRepository.save(member);
         return SignUpResponse.of(saved);
     }

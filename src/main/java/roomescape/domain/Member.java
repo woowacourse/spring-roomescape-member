@@ -12,9 +12,9 @@ public class Member {
     private final String name;
     private final String email;
     private final String password;
-    private final String role;
+    private final MemberRole role;
 
-    public Member(final Long id, final String name, final String email, final String password, final String role) {
+    public Member(final Long id, final String name, final String email, final String password, final MemberRole role) {
         validateNameKoreanWords(name);
         validateNameSize(name);
         this.id = id;
@@ -24,7 +24,7 @@ public class Member {
         this.role = role;
     }
 
-    public Member(final String name, final String email, final String password, final String role) {
+    public Member(final String name, final String email, final String password, final MemberRole role) {
         this(null, name, email, password, role);
     }
 

@@ -10,6 +10,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.domain.MemberRole;
 import roomescape.dto.TokenInfo;
 import roomescape.exception.exception.UnauthorizedException;
 
@@ -25,14 +26,14 @@ public class JwtTokenProvider {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), SIG.HS256.key().build().getAlgorithm());
     }
 
-    public String createToken(final Long memberId, final String name, final String role) {
+    public String createToken(final Long memberId, final String name, final MemberRole role) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
                 .claim("memberId", memberId)
                 .claim("name", name)
-                .claim("role", role)
+                .claim("role", role.toString())
                 .issuedAt(now).expiration(validity)
                 .signWith(secretKey).compact();
     }

@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.dto.LoginRequest;
 import roomescape.exception.exception.DataNotFoundException;
 import roomescape.exception.exception.InvalidPasswordException;
@@ -26,7 +27,7 @@ class AuthServiceTest {
     @Test
     void loginWithNotFoundMember() {
         // given
-        Member member = new Member("제프리", "jeffrey@gmail.com", "1234!@#$", "USER");
+        Member member = new Member("제프리", "jeffrey@gmail.com", "1234!@#$", MemberRole.USER);
         memberRepository.save(member);
         LoginRequest loginRequest = new LoginRequest("wilson@gmail.com", "1234!@#$");
 
@@ -39,7 +40,7 @@ class AuthServiceTest {
     @Test
     void loginFailedByIncorrectPassword() {
         // given
-        Member member = new Member("제프리", "jeffrey@gmail.com", "1234!@#$", "USER");
+        Member member = new Member("제프리", "jeffrey@gmail.com", "1234!@#$", MemberRole.USER);
         memberRepository.save(member);
         LoginRequest loginRequest = new LoginRequest("jeffrey@gmail.com", "1234!@");
 

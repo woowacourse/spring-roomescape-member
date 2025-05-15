@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 
 @JdbcTest
 @ActiveProfiles("test")
@@ -42,7 +43,7 @@ class MemberRepositoryTest {
         Member member = memberRepository.findById(1L).get();
 
         //then
-        assertEqualMember(member, 1L, "제프리", "jeffrey@gamil.com", "1234!@#$", "USER");
+        assertEqualMember(member, 1L, "제프리", "jeffrey@gamil.com", "1234!@#$", MemberRole.USER);
     }
 
     @Test
@@ -53,13 +54,13 @@ class MemberRepositoryTest {
         //then
         Member member = members.getFirst();
         assertThat(members).hasSize(1);
-        assertEqualMember(member, 1L, "제프리", "jeffrey@gamil.com", "1234!@#$", "USER");
+        assertEqualMember(member, 1L, "제프리", "jeffrey@gamil.com", "1234!@#$", MemberRole.USER);
     }
 
     @Test
     void save() {
         //given
-        Member member = new Member("윌슨", "wilson@gamil.com", "1234!@#$", "USER");
+        Member member = new Member("윌슨", "wilson@gamil.com", "1234!@#$", MemberRole.USER);
 
         //when
         Member saved = memberRepository.save(member);
@@ -68,8 +69,8 @@ class MemberRepositoryTest {
 
         //then
         assertThat(saved.getId()).isEqualTo(2L);
-        assertEqualMember(firstMember, 1L, "제프리", "jeffrey@gamil.com", "1234!@#$", "USER");
-        assertEqualMember(secondMember, 2L, "윌슨", "wilson@gamil.com", "1234!@#$", "USER");
+        assertEqualMember(firstMember, 1L, "제프리", "jeffrey@gamil.com", "1234!@#$", MemberRole.USER);
+        assertEqualMember(secondMember, 2L, "윌슨", "wilson@gamil.com", "1234!@#$", MemberRole.USER);
     }
 
     @Test
@@ -87,7 +88,7 @@ class MemberRepositoryTest {
                                    final String name,
                                    final String email,
                                    final String password,
-                                   final String role) {
+                                   final MemberRole role) {
 
         assertThat(member.getId()).isEqualTo(id);
         assertThat(member.getName()).isEqualTo(name);

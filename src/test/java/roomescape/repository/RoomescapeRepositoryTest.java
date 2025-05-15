@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
@@ -104,7 +105,7 @@ class RoomescapeRepositoryTest {
         int beforeSize = repository.findAll(null, null, null, null).size();
         template.execute(
                 "INSERT INTO member (name, email, password, role) VALUES ('윌슨', 'wilson@gmail.com', '1234!@#$', 'USER')");
-        Member member = new Member(2L, "윌슨", "wilson@gmail.com", "1234!@#$", "USER");
+        Member member = new Member(2L, "윌슨", "wilson@gmail.com", "1234!@#$", MemberRole.USER);
         ReservationTheme theme = new ReservationTheme(1L, "레벨 1탈출", "설명1", "썸네일1");
         ReservationTime time = new ReservationTime(1L, LocalTime.parse("15:40"));
         Reservation reservation = new Reservation(LocalDate.parse("2023-08-05"), member, time, theme);

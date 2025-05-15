@@ -13,8 +13,8 @@ class ReservationTest {
     void isDuplicateReservation() {
         // given
         LocalDate date = LocalDate.of(2025, 4, 18);
-        Member member1 = new Member(1L, "제프리", "jeffrey@gmail.com", "1234!@#$", "USER");
-        Member member2 = new Member(2L, "플린트", "jeffrey@gmail.com", "1234!@#$", "USER");
+        Member member1 = new Member(1L, "제프리", "jeffrey@gmail.com", "1234!@#$", MemberRole.USER);
+        Member member2 = new Member(2L, "플린트", "jeffrey@gmail.com", "1234!@#$", MemberRole.USER);
         ReservationTime time = new ReservationTime("08:30");
         ReservationTheme theme = new ReservationTheme("제목", "설명", "썸네일");
         Reservation reservation = new Reservation(date, member1, time, theme);
@@ -33,8 +33,8 @@ class ReservationTest {
         //given
         LocalDate date1 = LocalDate.of(2025, 4, 18);
         LocalDate date2 = LocalDate.of(2025, 4, 19);
-        Member member1 = new Member(1L, "제프리", "jeffrey@gmail.com", "1234!@#$", "USER");
-        Member member2 = new Member(2L, "플린트", "jeffrey@gmail.com", "1234!@#$", "USER");
+        Member member1 = new Member(1L, "제프리", "jeffrey@gmail.com", "1234!@#$", MemberRole.USER);
+        Member member2 = new Member(2L, "플린트", "jeffrey@gmail.com", "1234!@#$", MemberRole.USER);
         ReservationTime time = new ReservationTime("08:30");
         ReservationTheme theme = new ReservationTheme("제목", "설명", "썸네일");
         Reservation reservation1 = new Reservation(date1, member1, time, theme);
@@ -52,8 +52,8 @@ class ReservationTest {
     void isNotDuplicate_whenTimeIsDifferent() {
         //given
         LocalDate date = LocalDate.of(2025, 4, 18);
-        Member member1 = new Member(1L, "제프리", "jeffrey@gmail.com", "1234!@#$", "USER");
-        Member member2 = new Member(2L, "플린트", "jeffrey@gmail.com", "1234!@#$", "USER");
+        Member member1 = new Member(1L, "제프리", "jeffrey@gmail.com", "1234!@#$", MemberRole.USER);
+        Member member2 = new Member(2L, "플린트", "jeffrey@gmail.com", "1234!@#$", MemberRole.USER);
         ReservationTheme theme = new ReservationTheme("제목", "설명", "썸네일");
         ReservationTime time1 = new ReservationTime("08:30");
         ReservationTime time2 = new ReservationTime("09:00");

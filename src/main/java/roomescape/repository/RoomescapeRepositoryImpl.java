@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
@@ -37,7 +38,7 @@ public class RoomescapeRepositoryImpl implements RoomescapeRepository {
                     rs.getString("member_name"),
                     rs.getString("email"),
                     rs.getString("password"),
-                    rs.getString("role"));
+                    MemberRole.valueOf(rs.getString("role")));
             ReservationTime reservationTime = new ReservationTime(
                     rs.getLong("time_id"),
                     rs.getTime("time_value").toLocalTime());

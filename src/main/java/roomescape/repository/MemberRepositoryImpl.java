@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 
 @Repository
 public class MemberRepositoryImpl implements MemberRepository {
@@ -29,7 +30,7 @@ public class MemberRepositoryImpl implements MemberRepository {
                 rs.getString("name"),
                 rs.getString("email"),
                 rs.getString("password"),
-                rs.getString("role"));
+                MemberRole.valueOf(rs.getString("role")));
     }
 
     @Override
