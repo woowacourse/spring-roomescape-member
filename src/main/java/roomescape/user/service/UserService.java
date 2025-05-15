@@ -16,7 +16,7 @@ public class UserService {
         this.userDao = userDao;
     }
 
-    public User findUserByEmail(String email) {
+    public User getUserByEmail(String email) {
         return userDao.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 이메일입니다."));
     }

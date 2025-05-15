@@ -24,7 +24,7 @@ public class AuthService {
     }
 
     public String login(LoginRequest loginRequest) {
-        User user = userService.findUserByEmail(loginRequest.email());
+        User user = userService.getUserByEmail(loginRequest.email());
         if (!user.getPassword().equals(loginRequest.password())) {
             throw new BadRequestException("로그인에 실패하였습니다.");
         }
