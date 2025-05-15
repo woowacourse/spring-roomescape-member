@@ -47,6 +47,12 @@ public final class GlobalExceptionHandler {
                 .body(new ErrorResponseDto(exception.getMessage()));
     }
 
+    @ExceptionHandler(value = ForbiddenException.class)
+    public ResponseEntity<ErrorResponseDto> handleForbiddenException(ForbiddenException exception) {
+        return ResponseEntity.status(403)
+                .body(new ErrorResponseDto(exception.getMessage()));
+    }
+
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDto> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException exception) {
