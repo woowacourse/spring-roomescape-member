@@ -29,6 +29,7 @@ class PasswordEncryptorTest {
     @CsvSource({
             "password, bziTlUMky2GC3ji0qgiFVA==, true",
             "password, wrongPassword, false",
+            "password, password, false",
     })
     void matches(String rawPassword, String encryptedPassword, boolean expected) {
         // given
