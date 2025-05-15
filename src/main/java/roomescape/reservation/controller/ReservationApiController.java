@@ -32,7 +32,7 @@ public class ReservationApiController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResDto>> findAll(
+    public ResponseEntity<List<ReservationResDto>> findAllByCondition(
         @AuthorizedAdmin Admin admin,
         @ModelAttribute ReservationFilterCondition filterCondition
     ) {
