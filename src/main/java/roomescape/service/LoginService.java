@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.LoginMember;
 import roomescape.dto.member.LoginMemberResponse;
 import roomescape.dto.member.LoginRequest;
-import roomescape.exception.InvalidAuthorizationException;
+import roomescape.exception.InvalidCredentialsException;
 import roomescape.repository.MemberRepository;
 import roomescape.util.TokenProvider;
 
@@ -25,7 +25,7 @@ public class LoginService {
 
     public Cookie createLoginCookie(LoginRequest loginRequest) {
         if (isInvalidLogin(loginRequest.email(), loginRequest.password())) {
-            throw new InvalidAuthorizationException("[ERROR] 로그인 정보를 다시 확인해 주세요.");
+            throw new InvalidCredentialsException("[ERROR] 로그인 정보를 다시 확인해 주세요.");
         }
 
         String token = jwtTokenProvider.createToken(loginRequest.email());

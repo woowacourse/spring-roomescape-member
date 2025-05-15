@@ -8,6 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.exception.InvalidTokenException;
 
 @Component
 public class JwtTokenProvider implements TokenProvider {
@@ -33,11 +34,16 @@ public class JwtTokenProvider implements TokenProvider {
 
     @Override
     public String getPayload(String token) {
+        if (!validateToken(token)) throw new InvalidTokenException("[ERROR] 로그인 상태가 만료되었습니다. 다시 로그인해 주세요.");
+
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
     @Override
     public boolean validateToken(String token) {
+        if (token == null || token.isBlank())
+            throw new InvalidTokenException("[ERROR] 로그인 상태가 올바르지 않습니다. 다시 로그인해 주세요.");
+
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
 

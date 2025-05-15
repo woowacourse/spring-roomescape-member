@@ -4,7 +4,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.LoginMember;
-import roomescape.exception.InvalidAuthorizationException;
+import roomescape.exception.InvalidCredentialsException;
 import roomescape.fixture.FakeMemberRepositoryFixture;
 import roomescape.repository.FakeTokenProvider;
 import roomescape.repository.MemberRepository;
@@ -43,7 +43,7 @@ class MemberServiceTest {
         String token = "invalid";
 
         // when & then
-        assertThatThrownBy(() -> memberService.findMemberByToken(token)).isInstanceOf(InvalidAuthorizationException.class);
+        assertThatThrownBy(() -> memberService.findMemberByToken(token)).isInstanceOf(InvalidCredentialsException.class);
     }
 
     @DisplayName("모든 사용자 정보를 추출할 수 있다")

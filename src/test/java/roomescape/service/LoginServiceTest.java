@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.dto.member.LoginMemberResponse;
 import roomescape.dto.member.LoginRequest;
-import roomescape.exception.InvalidAuthorizationException;
+import roomescape.exception.InvalidCredentialsException;
 import roomescape.fixture.FakeMemberRepositoryFixture;
 import roomescape.repository.FakeTokenProvider;
 import roomescape.repository.MemberRepository;
@@ -60,7 +60,7 @@ class LoginServiceTest {
         LoginRequest request = new LoginRequest("", "admin@gmail.com");
 
         // when & then
-        assertThatThrownBy(() -> loginService.createLoginCookie(request)).isInstanceOf(InvalidAuthorizationException.class);
+        assertThatThrownBy(() -> loginService.createLoginCookie(request)).isInstanceOf(InvalidCredentialsException.class);
     }
 
     @DisplayName("로그아웃을 요청하면 쿠키의 max age 값을 0으로 설정한다")

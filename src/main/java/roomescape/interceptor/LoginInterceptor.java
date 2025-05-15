@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.LoginMember;
 import roomescape.domain.Role;
-import roomescape.exception.InvalidAuthorizationException;
+import roomescape.exception.InvalidCredentialsException;
 import roomescape.service.MemberService;
 import roomescape.util.CookieTokenExtractor;
 import roomescape.util.JwtTokenProvider;
@@ -26,7 +26,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String token = authorizationExtractor.extract(request);
         if (token == null || token.isBlank()) {
-            throw new InvalidAuthorizationException("[ERROR] 로그인이 필요합니다.");
+            throw new InvalidCredentialsException("[ERROR] 로그인이 필요합니다.");
         }
 
         jwtTokenProvider.validateToken(token);
