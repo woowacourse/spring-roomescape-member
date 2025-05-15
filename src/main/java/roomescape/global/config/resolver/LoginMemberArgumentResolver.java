@@ -34,7 +34,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public User resolveArgument(MethodParameter methodParameter,
                                 ModelAndViewContainer mavContainer,
                                 NativeWebRequest nativeWebRequest,
-                                WebDataBinderFactory binderFactory) throws Exception {
+                                WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) nativeWebRequest.getNativeRequest();
 
         String token = extractTokenFromCookie(request);
