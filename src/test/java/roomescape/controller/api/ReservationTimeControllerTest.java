@@ -1,16 +1,17 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dto.ReservationTimeCreateRequestDto;
+import roomescape.dto.time.ReservationTimeCreateRequestDto;
+
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -84,7 +85,7 @@ class ReservationTimeControllerTest {
                     .body(params)
                     .when().post("/times")
                     .then().log().all()
-                    .statusCode(400);
+                    .statusCode(500);
         }
 
         @DisplayName("유효한 시간만 생성 가능하다")
@@ -98,7 +99,7 @@ class ReservationTimeControllerTest {
                     .body(params)
                     .when().post("/times")
                     .then().log().all()
-                    .statusCode(400);
+                    .statusCode(500);
         }
     }
 

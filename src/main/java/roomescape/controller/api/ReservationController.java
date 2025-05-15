@@ -1,10 +1,13 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.dto.ReservationCreateRequestDto;
-import roomescape.dto.ReservationResponseDto;
+import roomescape.dto.auth.CurrentMember;
+import roomescape.dto.auth.LoginInfo;
+import roomescape.dto.reservation.MemberReservationCreateRequestDto;
+import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.service.ReservationService;
+import roomescape.service.dto.ReservationCreateDto;
 
 import java.net.URI;
 import java.util.List;
@@ -26,8 +29,9 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponseDto> postReservation(@RequestBody final ReservationCreateRequestDto requestDto) {
-        ReservationResponseDto responseDto = reservationService.createReservation(requestDto);
+    public ResponseEntity<ReservationResponseDto> addReservation(@CurrentMember LoginInfo loginInfo, @RequestBody final MemberReservationCreateRequestDto requestDto) {
+        ReservationCreateDto reservationCreateDto = new ReservationCreateDto(requestDto.date(), requestDto.timeId(), requestDto.themeId(), loginInfo.id());
+        ReservationResponseDto responseDto = reservationService.createReservation(reservationCreateDto);
         return ResponseEntity.created(URI.create("reservations/" + responseDto.id())).body(responseDto);
     }
 

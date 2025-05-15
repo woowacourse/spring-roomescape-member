@@ -1,9 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -12,14 +8,21 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeCreateRequestDto;
-import roomescape.dto.ThemeResponseDto;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
+import roomescape.dto.theme.ThemeCreateRequestDto;
+import roomescape.dto.theme.ThemeResponseDto;
 import roomescape.exception.DuplicateContentException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeThemeRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -77,7 +80,7 @@ class ThemeServiceTest {
             ThemeCreateRequestDto invalidRequestDto = new ThemeCreateRequestDto("테마 가이온", "가이온이 코딩을 합니다", "가이온_코딩중.png");
             themeService.createTheme(requestDto);
 
-            Assertions.assertDoesNotThrow(()-> themeService.createTheme(invalidRequestDto));
+            Assertions.assertDoesNotThrow(() -> themeService.createTheme(invalidRequestDto));
         }
     }
 
@@ -106,13 +109,14 @@ class ThemeServiceTest {
         @Test
         void findPopularThemesTest() {
             themeService = new ThemeService(reservationRepository, themeRepository);
+            Member member = new Member(1L, "가이온", "hello@woowa.com", Role.USER, "password");
 
             ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
             Theme theme1 = themeRepository.findById(1L).get();
             Theme theme2 = themeRepository.findById(2L).get();
-            themeRepository.addReservation(new Reservation(1L, "a", LocalDate.now().minusDays(2), reservationTime, theme1));
-            themeRepository.addReservation(new Reservation(2L, "a", LocalDate.now().minusDays(3), reservationTime, theme2));
-            themeRepository.addReservation(new Reservation(3L, "a", LocalDate.now().minusDays(4), reservationTime, theme2));
+            themeRepository.addReservation(new Reservation(1L, member, LocalDate.now().minusDays(2), reservationTime, theme1));
+            themeRepository.addReservation(new Reservation(2L, member, LocalDate.now().minusDays(3), reservationTime, theme2));
+            themeRepository.addReservation(new Reservation(3L, member, LocalDate.now().minusDays(4), reservationTime, theme2));
 
             List<ThemeResponseDto> responses = themeService.findPopularThemes();
 

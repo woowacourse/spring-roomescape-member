@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.AvailableReservationTimeResponseDto;
-import roomescape.dto.ReservationTimeCreateRequestDto;
-import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.dto.time.AvailableReservationTimeResponseDto;
+import roomescape.dto.time.ReservationTimeCreateRequestDto;
+import roomescape.dto.time.ReservationTimeResponseDto;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -40,7 +40,7 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponseDto> postReservationTime(@RequestBody final ReservationTimeCreateRequestDto requestDto) {
+    public ResponseEntity<ReservationTimeResponseDto> addReservationTime(@RequestBody final ReservationTimeCreateRequestDto requestDto) {
         ReservationTimeResponseDto responseDto = reservationTimeService.createReservationTime(requestDto);
         return ResponseEntity.created(URI.create("times/" + responseDto.id())).body(responseDto);
     }

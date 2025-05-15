@@ -1,16 +1,14 @@
 package roomescape.repository;
 
+import roomescape.domain.Reservation;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 
 public class FakeReservationRepository implements ReservationRepository {
 
@@ -23,7 +21,7 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(final Reservation reservation) {
-        Reservation newReservation = new Reservation(reservationId.getAndIncrement(), reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+        Reservation newReservation = new Reservation(reservationId.getAndIncrement(), reservation.getMember(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
         reservations.add(newReservation);
         return findById(newReservation.getId()).get();
     }
@@ -62,6 +60,11 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public boolean existsByTimeId(long timeId) {
         return reservations.stream().anyMatch(reservation -> Objects.equals(reservation.getTime().id(), timeId));
+    }
+
+    @Override
+    public List<Reservation> findReservationsByPeriodAndMemberAndTheme(long themeId, long memberId, LocalDate from, LocalDate to) {
+        return List.of();
     }
 
     @Override

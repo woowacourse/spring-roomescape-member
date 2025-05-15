@@ -1,18 +1,21 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dto.ReservationTimeCreateRequestDto;
-import roomescape.dto.ThemeCreateRequestDto;
+import roomescape.dto.auth.LoginRequestDto;
+import roomescape.dto.auth.SignUpRequestDto;
+import roomescape.dto.theme.ThemeCreateRequestDto;
+import roomescape.dto.time.ReservationTimeCreateRequestDto;
+
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -35,8 +38,29 @@ class ReservationControllerTest {
     @DisplayName("예약 생성")
     class ReservationPostTest {
 
+        String loginToken;
+
         @BeforeEach
         void setUp() {
+            SignUpRequestDto signUpRequestDto = new SignUpRequestDto("가이온", "hello@woowa.com", "password");
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(signUpRequestDto)
+                    .when().post("/members")
+                    .then().log().all()
+                    .statusCode(200);
+
+            LoginRequestDto loginRequestDto = new LoginRequestDto("hello@woowa.com", "password");
+
+            Map<String, String> cookies = RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(loginRequestDto)
+                    .when().post("/login")
+                    .getCookies();
+
+            loginToken = cookies.get("token");
+
             ReservationTimeCreateRequestDto reservationTime = new ReservationTimeCreateRequestDto(LocalTime.of(10, 0));
 
             RestAssured.given().log().all()
@@ -66,7 +90,7 @@ class ReservationControllerTest {
             params.put("timeId", 1);
             params.put("themeId", 1);
 
-            RestAssured.given().log().all()
+            RestAssured.given().cookie("token", loginToken).log().all()
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/reservations")
@@ -74,7 +98,7 @@ class ReservationControllerTest {
                     .statusCode(201)
                     .body("id", is(1));
 
-            RestAssured.given().log().all()
+            RestAssured.given().cookie("token", loginToken).log().all()
                     .when().get("/reservations")
                     .then().log().all()
                     .statusCode(200)
@@ -90,14 +114,14 @@ class ReservationControllerTest {
             params.put("timeId", 1);
             params.put("themeId", 1);
 
-            RestAssured.given().log().all()
+            RestAssured.given().cookie("token", loginToken).log().all()
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/reservations")
                     .then().log().all()
                     .statusCode(201);
 
-            RestAssured.given().log().all()
+            RestAssured.given().cookie("token", loginToken).log().all()
                     .when().get("/reservations")
                     .then().log().all()
                     .body("[0].time.startAt", equalTo("10:00"));
@@ -108,12 +132,36 @@ class ReservationControllerTest {
     @DisplayName("예약 삭제")
     class ReservationDeleteTest {
 
-        @DisplayName("존재하는 예약을 삭제할 수 있다")
+        String loginToken;
+
+        @BeforeEach
+        void setUp() {
+            SignUpRequestDto signUpRequestDto = new SignUpRequestDto("가이온", "hello@woowa.com", "password");
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(signUpRequestDto)
+                    .when().post("/members")
+                    .then().log().all()
+                    .statusCode(200);
+
+            LoginRequestDto loginRequestDto = new LoginRequestDto("hello@woowa.com", "password");
+
+            Map<String, String> cookies = RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(loginRequestDto)
+                    .when().post("/login")
+                    .getCookies();
+
+            loginToken = cookies.get("token");
+        }
+
+        @DisplayName("예약이 존재하면 삭제할 수 있다")
         @Test
         void deleteReservationTest() {
             ReservationTimeCreateRequestDto reservationTime = new ReservationTimeCreateRequestDto(LocalTime.of(10, 0));
 
-            RestAssured.given().log().all()
+            RestAssured.given().cookie("token", loginToken).log().all()
                     .contentType(ContentType.JSON)
                     .body(reservationTime)
                     .when().post("/times")
@@ -122,7 +170,7 @@ class ReservationControllerTest {
 
             ThemeCreateRequestDto theme = new ThemeCreateRequestDto("a", "b", "c");
 
-            RestAssured.given().log().all()
+            RestAssured.given().cookie("token", loginToken).log().all()
                     .contentType(ContentType.JSON)
                     .body(theme)
                     .when().post("/themes")
@@ -135,19 +183,19 @@ class ReservationControllerTest {
             params.put("timeId", 1);
             params.put("themeId", 1);
 
-            RestAssured.given().log().all()
+            RestAssured.given().cookie("token", loginToken).log().all()
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/reservations")
                     .then().log().all()
                     .statusCode(201);
 
-            RestAssured.given().log().all()
+            RestAssured.given().cookie("token", loginToken).log().all()
                     .when().delete("/reservations/1")
                     .then().log().all()
                     .statusCode(204);
 
-            RestAssured.given().log().all()
+            RestAssured.given().cookie("token", loginToken).log().all()
                     .when().get("/reservations")
                     .then().log().all()
                     .statusCode(200)
@@ -157,7 +205,7 @@ class ReservationControllerTest {
         @DisplayName("존재하지 않는 예약을 삭제할 수 없다")
         @Test
         void invalidReservationIdDeleteTest() {
-            RestAssured.given().log().all()
+            RestAssured.given().cookie("token", loginToken).log().all()
                     .when().delete("/reservations/5")
                     .then().log().all()
                     .statusCode(404);
