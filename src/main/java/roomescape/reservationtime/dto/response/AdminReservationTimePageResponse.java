@@ -11,7 +11,7 @@ public record AdminReservationTimePageResponse(
 
     public record AdminReservationTimePageElementResponse(Long id, LocalTime startAt) {
 
-        public static AdminReservationTimePageElementResponse fromEntity(ReservationTime reservationTime) {
+        public static AdminReservationTimePageElementResponse from(ReservationTime reservationTime) {
             return new AdminReservationTimePageElementResponse(reservationTime.getId(), reservationTime.getStartAt());
         }
     }

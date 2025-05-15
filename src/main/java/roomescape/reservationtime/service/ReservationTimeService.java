@@ -4,6 +4,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.global.exception.RoomEscapeException.BadRequestException;
 import roomescape.global.exception.RoomEscapeException.ResourceNotFoundException;
+import roomescape.global.pagination.PaginationUtil;
+import roomescape.global.pagination.PaginationUtil.PageInfo;
 import roomescape.reservation.repository.ReservationDao;
 import roomescape.reservationtime.controller.ReservationTimeResponse;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -29,7 +31,7 @@ public class ReservationTimeService {
         }
         ReservationTime time = reservationTimeRequest.toEntity();
         ReservationTime savedTime = reservationTimeDao.save(time);
-        return CreateReservationTimeResponse.fromEntity(savedTime);
+        return CreateReservationTimeResponse.from(savedTime);
     }
 
     public void deleteTime(Long id) {
@@ -44,24 +46,19 @@ public class ReservationTimeService {
 
     public List<ReservationTimeResponse> getReservationTimes() {
         return reservationTimeDao.findAll().stream()
-                .map(ReservationTimeResponse::fromEntity)
+                .map(ReservationTimeResponse::from)
                 .toList();
     }
 
     public AdminReservationTimePageResponse getReservationTimesByPage(int page) {
         int totalThemes = reservationTimeDao.countTotalReservationTimes();
-        int totalPage = (totalThemes % 10 == 0) ?
-                totalThemes / 10 : (totalThemes / 10) + 1;
-        if (page < 1 || page > totalPage) {
-            throw new ResourceNotFoundException("해당하는 페이지가 없습니다");
-        }
-        int start = (page - 1) * 10 + 1;
-        int end = start + 10 - 1;
+        PageInfo pageInfo = PaginationUtil.calculatePageInfo(page, totalThemes);
+
         List<AdminReservationTimePageElementResponse> adminReservationTimePageElementResponses =
-                reservationTimeDao.findReservationTimesWithPage(start, end)
+                reservationTimeDao.findReservationTimesWithPage(pageInfo.startIdx(), pageInfo.endIdx())
                         .stream()
-                        .map(AdminReservationTimePageElementResponse::fromEntity)
+                        .map(AdminReservationTimePageElementResponse::from)
                         .toList();
-        return new AdminReservationTimePageResponse(totalPage, adminReservationTimePageElementResponses);
+        return new AdminReservationTimePageResponse(pageInfo.totalPage(), adminReservationTimePageElementResponses);
     }
 }

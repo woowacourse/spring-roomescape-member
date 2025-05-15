@@ -11,13 +11,13 @@ public record CreateReservationResponse(
         ThemeResponse theme,
         CreateReservationTimeResponse time
 ) {
-    public static CreateReservationResponse fromEntity(Reservation reservation) {
+    public static CreateReservationResponse from(Reservation reservation) {
         return new CreateReservationResponse(
                 reservation.getId(),
                 reservation.getUser().getName(),
                 reservation.getDate().toString(),
                 ThemeResponse.from(reservation.getTheme()),
-                CreateReservationTimeResponse.fromEntity(reservation.getReservationTime())
+                CreateReservationTimeResponse.from(reservation.getReservationTime())
         );
     }
 }

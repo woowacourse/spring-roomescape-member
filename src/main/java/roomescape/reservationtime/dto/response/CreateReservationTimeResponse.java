@@ -7,7 +7,7 @@ public record CreateReservationTimeResponse(
         Long id,
         LocalTime startAt
 ) {
-    public static CreateReservationTimeResponse fromEntity(ReservationTime time) {
+    public static CreateReservationTimeResponse from(ReservationTime time) {
         return new CreateReservationTimeResponse(
                 time.getId(),
                 time.getStartAt()

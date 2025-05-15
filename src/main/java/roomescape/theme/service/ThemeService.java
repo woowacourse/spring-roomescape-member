@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.global.exception.RoomEscapeException.BadRequestException;
 import roomescape.global.exception.RoomEscapeException.ResourceNotFoundException;
+import roomescape.global.pagination.PaginationUtil;
+import roomescape.global.pagination.PaginationUtil.PageInfo;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.response.AvailableReservationResponse;
 import roomescape.reservation.repository.ReservationDao;
@@ -45,17 +47,13 @@ public class ThemeService {
 
     public AdminThemePageResponse getThemesByPage(int page) {
         int totalThemes = themeDao.countTotalTheme();
-        int totalPage = (totalThemes % 10 == 0) ?
-                totalThemes / 10 : (totalThemes / 10) + 1;
-        if (page < 1 || page > totalPage) {
-            throw new ResourceNotFoundException("해당하는 페이지가 없습니다");
-        }
-        int start = (page - 1) * 10 + 1;
-        int end = start + 10 - 1;
-        List<AdminThemePageElementResponse> themes = themeDao.findThemesWithPage(start, end).stream()
+        PageInfo pageInfo = PaginationUtil.calculatePageInfo(page, totalThemes);
+
+        List<AdminThemePageElementResponse> themes = themeDao.findThemesWithPage(pageInfo.startIdx(), pageInfo.endIdx())
+                .stream()
                 .map(AdminThemePageElementResponse::from)
                 .toList();
-        return new AdminThemePageResponse(totalPage, themes);
+        return new AdminThemePageResponse(pageInfo.totalPage(), themes);
     }
 
     public List<ThemeSelectElementResponse> getAllThemes() {

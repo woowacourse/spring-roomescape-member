@@ -5,13 +5,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.global.exception.RoomEscapeException.BadRequestException;
 import roomescape.global.exception.RoomEscapeException.ResourceNotFoundException;
+import roomescape.global.pagination.PaginationUtil;
+import roomescape.global.pagination.PaginationUtil.PageInfo;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.request.CreateReservationRequest;
 import roomescape.reservation.dto.response.AdminReservationPageResponse;
 import roomescape.reservation.dto.response.AdminReservationPageResponse.AdminReservationPageElementResponse;
-import roomescape.reservation.dto.response.AdminReservationPageResponse.AdminReservationPageElementResponse.AdminReservationPageMemberElementResponse;
-import roomescape.reservation.dto.response.AdminReservationPageResponse.AdminReservationPageElementResponse.AdminReservationPageThemeElementResponse;
-import roomescape.reservation.dto.response.AdminReservationPageResponse.AdminReservationPageElementResponse.AdminReservationPageTimeElementResponse;
 import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.repository.ReservationDao;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -64,7 +63,7 @@ public class ReservationService {
                 theme
         );
         Reservation savedReservation = reservationDao.save(reservation);
-        return CreateReservationResponse.fromEntity(savedReservation);
+        return CreateReservationResponse.from(savedReservation);
     }
 
     public void deleteReservation(Long id) {
@@ -82,41 +81,21 @@ public class ReservationService {
         if (dateFrom != null && dateTo != null && dateTo.isBefore(dateFrom)) {
             throw new BadRequestException();
         }
+
         int totalReservations = reservationDao.countTotalReservation(userId, themeId, dateFrom, dateTo);
-        int totalPage = totalReservations % 10 == 0 ?
-                totalReservations / 10 : (totalReservations / 10) + 1;
-        if (totalReservations != 0 && (page < 1 || page > totalPage)) {
-            throw new ResourceNotFoundException("해당하는 페이지가 없습니다");
-        }
-        int start = (page - 1) * 10 + 1;
-        int end = start + 10 - 1;
-        List<AdminReservationPageElementResponse> briefReservations = reservationDao.findReservationsWithPage(
-                        start,
-                        end,
+        PageInfo pageInfo = PaginationUtil.calculatePageInfo(page, totalReservations);
+
+        List<AdminReservationPageElementResponse> reservationResponses = reservationDao.findReservationsWithPage(
+                        pageInfo.startIdx(),
+                        pageInfo.endIdx(),
                         userId,
                         themeId,
                         dateFrom,
                         dateTo
-                )
-                .stream()
-                .map(reservation -> new AdminReservationPageElementResponse(
-                        reservation.getId(),
-                        new AdminReservationPageMemberElementResponse(
-                                reservation.getUser().getId(),
-                                reservation.getUser().getName()
-                        ),
-                        new AdminReservationPageThemeElementResponse(
-                                reservation.getTheme().getId(),
-                                reservation.getTheme().getName()
-                        ),
-                        new AdminReservationPageTimeElementResponse(
-                                reservation.getReservationTime().getId(),
-                                reservation.getReservationTime().getStartAt()
-                        ),
-                        reservation.getDate()
-                ))
+                ).stream()
+                .map(AdminReservationPageElementResponse::from)
                 .toList();
 
-        return new AdminReservationPageResponse(totalPage, briefReservations);
+        return new AdminReservationPageResponse(pageInfo.totalPage(), reservationResponses);
     }
 }
