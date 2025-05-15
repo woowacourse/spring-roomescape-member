@@ -59,6 +59,18 @@ class ReservationIntegrationTest {
                 );
     }
 
+    @DisplayName("예약 생성 시 사용자의 요청 쿠키 내부에 토큰이 존재하지 않으면 예외가 발생한다")
+    @Test
+    void extract_token_exception_test() {
+        // when & then
+        RestAssured.given().log().all()
+                .cookie("empty", "")
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(401)
+                .body(equalTo("인증에 실패했습니다."));
+    }
+
     @DisplayName("예약을 생성하면 DB에 예약 데이터가 저장된다")
     @Test
     void add_reservation_test() {
