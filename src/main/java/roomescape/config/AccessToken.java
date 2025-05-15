@@ -4,7 +4,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.time.Instant;
 import java.util.Date;
-import roomescape.business.domain.member.MemberCredential;
+import roomescape.business.domain.member.MemberRole;
 
 public final class AccessToken {
 
@@ -17,18 +17,20 @@ public final class AccessToken {
         this.value = value;
     }
 
-    public static AccessToken create(MemberCredential memberCredential) {
-        return new AccessToken(buildTokenByMember(memberCredential));
+    public static AccessToken create(JwtPayload jwtPayload) {
+        return new AccessToken(buildTokenByMember(jwtPayload));
     }
 
     public static AccessToken of(String tokenValue) {
         return new AccessToken(tokenValue);
     }
 
-    private static String buildTokenByMember(MemberCredential memberCredential) {
+    private static String buildTokenByMember(JwtPayload jwtPayload) {
         Date expiration = Date.from(Instant.now().plusSeconds(ACCESS_TOKEN_VALIDITY_SECONDS));
         return Jwts.builder()
-                .subject(memberCredential.getId().toString())
+                .subject(jwtPayload.id().toString())
+                .claim("role", jwtPayload.role())
+                .issuedAt(new Date())
                 .expiration(expiration)
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
@@ -41,6 +43,17 @@ public final class AccessToken {
                 .parseSignedClaims(value)
                 .getPayload()
                 .getSubject());
+    }
+
+    public MemberRole extractRole() {
+        return MemberRole.from(
+                Jwts.parser()
+                        .verifyWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                        .build()
+                        .parseSignedClaims(value)
+                        .getPayload()
+                        .get("role", String.class)
+        );
     }
 
     public String getValue() {

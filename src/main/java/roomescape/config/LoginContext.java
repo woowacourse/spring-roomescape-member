@@ -28,6 +28,14 @@ public class LoginContext {
         return getMemberFromToken(accessToken);
     }
 
+    public AccessToken getAccessToken(HttpServletRequest request) {
+        String token = extractTokenFrom(request.getCookies());
+        if (token == null) {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
+        }
+        return AccessToken.of(token);
+    }
+
     private String extractTokenFrom(Cookie[] cookies) {
         if (cookies == null) {
             return null;
@@ -39,7 +47,7 @@ public class LoginContext {
                 .orElse(null);
     }
 
-    public LoginMember getMemberFromToken(AccessToken accessToken) {
+    private LoginMember getMemberFromToken(AccessToken accessToken) {
         Long memberIdFromToken = accessToken.extractMemberId();
         Member member = memberRepository.findById(memberIdFromToken)
                 .orElseThrow(() -> new MemberException("사용자가 존재하지 않습니다."));

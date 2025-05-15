@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.business.domain.member.MemberCredential;
+import roomescape.business.domain.member.MemberRole;
 
 class AccessTokenTest {
 
@@ -13,10 +13,10 @@ class AccessTokenTest {
     @Test
     void create() {
         // given
-        MemberCredential memberCredential = new MemberCredential(1L, "bello@email.com", "password");
+        JwtPayload payload = new JwtPayload(1L, MemberRole.MEMBER.value());
 
         // when
-        AccessToken accessToken = AccessToken.create(memberCredential);
+        AccessToken accessToken = AccessToken.create(payload);
 
         // then
         assertAll(
@@ -45,8 +45,8 @@ class AccessTokenTest {
     @Test
     void extractMemberId() {
         // given
-        MemberCredential memberCredential = new MemberCredential(1L, "bello@email.com", "password");
-        AccessToken accessToken = AccessToken.create(memberCredential);
+        JwtPayload payload = new JwtPayload(1L, MemberRole.MEMBER.value());
+        AccessToken accessToken = AccessToken.create(payload);
 
         // when
         Long memberId = accessToken.extractMemberId();

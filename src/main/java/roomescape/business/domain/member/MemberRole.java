@@ -23,4 +23,8 @@ public enum MemberRole {
     public String value() {
         return value;
     }
+
+    public boolean isAdmin() {
+        return this == ADMIN;
+    }
 }

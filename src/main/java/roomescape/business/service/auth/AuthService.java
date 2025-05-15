@@ -1,9 +1,12 @@
 package roomescape.business.service.auth;
 
+import javax.management.relation.Role;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.member.MemberCredential;
+import roomescape.business.domain.member.MemberRole;
 import roomescape.business.domain.member.SignUpMember;
 import roomescape.config.AccessToken;
+import roomescape.config.JwtPayload;
 import roomescape.config.LoginMember;
 import roomescape.exception.MemberException;
 import roomescape.exception.UnAuthorizedException;
@@ -38,7 +41,18 @@ public class AuthService {
         if (!memberCredential.matchesPassword(loginRequestDto.password())) {
             throw new MemberException("이메일 또는 비밀번호가 잘못되었습니다.");
         }
-        return AccessToken.create(memberCredential);
+        return createAccessToken(memberCredential);
+    }
+
+    private AccessToken createAccessToken(MemberCredential memberCredential) {
+        MemberRole memberRole = getMemberRole(memberCredential);
+        return AccessToken.create(new JwtPayload(memberCredential.getId(), memberRole.value()));
+    }
+
+    private MemberRole getMemberRole(MemberCredential memberCredential) {
+        return memberRepository.findById(memberCredential.getId())
+                .orElseThrow(() -> new MemberException("회원 정보가 존재하지 않습니다."))
+                .getRole();
     }
 
     public String checkLogin(LoginMember loginMember) {

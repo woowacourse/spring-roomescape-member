@@ -23,8 +23,8 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
                              @NonNull HttpServletResponse response,
                              @NonNull Object handler) {
         try {
-            LoginMember loginMember = loginContext.getLoginMember(request);
-            if (!loginMember.isAdmin()) {
+            AccessToken accessToken = loginContext.getAccessToken(request);
+            if (!accessToken.extractRole().isAdmin()) {
                 throw new ForbiddenException("관리자 권한이 없습니다.");
             }
             return true;

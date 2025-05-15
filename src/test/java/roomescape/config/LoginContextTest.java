@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-import roomescape.business.domain.member.MemberCredential;
 import roomescape.business.domain.member.MemberRole;
 import roomescape.business.domain.member.SignUpMember;
 import roomescape.persistence.fakerepository.FakeMemberRepository;
@@ -27,7 +26,7 @@ class LoginContextTest {
     @Test
     void getLoginMember() {
         // given
-        String rawToken = AccessToken.create(new MemberCredential(1L, "bello@email.com", "password")).getValue();
+        String rawToken = AccessToken.create(new JwtPayload(1L, MemberRole.ADMIN.value())).getValue();
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setCookies(new Cookie("token", rawToken));
         LoginContext loginContext = new LoginContext(memberRepository);
