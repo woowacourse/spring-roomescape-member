@@ -11,7 +11,7 @@ import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
 import roomescape.dto.LoginRequest;
 import roomescape.exception.exception.DataNotFoundException;
-import roomescape.exception.exception.InvalidPasswordException;
+import roomescape.exception.exception.InvalidLoginInfoException;
 import roomescape.repository.MemberRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -46,7 +46,7 @@ class AuthServiceTest {
 
         // when & then
         assertThatThrownBy(() -> authService.login(loginRequest))
-                .isInstanceOf(InvalidPasswordException.class)
+                .isInstanceOf(InvalidLoginInfoException.class)
                 .hasMessage("[ERROR] 비밀번호가 일치하지 않습니다.");
     }
 

@@ -10,7 +10,7 @@ import roomescape.dto.ErrorResponse;
 import roomescape.exception.exception.DataNotFoundException;
 import roomescape.exception.exception.DeletionNotAllowedException;
 import roomescape.exception.exception.DuplicateReservationException;
-import roomescape.exception.exception.InvalidPasswordException;
+import roomescape.exception.exception.InvalidLoginInfoException;
 import roomescape.exception.exception.PastReservationTimeException;
 import roomescape.exception.exception.UnauthenticatedException;
 import roomescape.exception.exception.UnauthorizedException;
@@ -36,9 +36,9 @@ public class ControllerExceptionHandler {
                 .body(new ErrorResponse("관리자만 접근할 수 있습니다: " + ex.getMessage()));
     }
 
-    @ExceptionHandler(InvalidPasswordException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidPasswordException(InvalidPasswordException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ex.getMessage()));
+    @ExceptionHandler(InvalidLoginInfoException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidPasswordException(InvalidLoginInfoException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
