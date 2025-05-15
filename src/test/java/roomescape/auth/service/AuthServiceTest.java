@@ -2,6 +2,7 @@ package roomescape.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,8 +63,10 @@ class AuthServiceTest {
         Member result = authService.findMemberByToken(token);
 
         // then
-        assertThat(result.getId()).isEqualTo(1L);
-        assertThat(result.getEmail()).isEqualTo("admin@email.com");
+        assertAll(
+                () -> assertThat(result.getId()).isEqualTo(1L),
+                () -> assertThat(result.getEmail()).isEqualTo("admin@email.com")
+        );
     }
 
     @DisplayName("토큰 없이 회원 조회 시 예외를 던진다")
@@ -89,4 +92,18 @@ class AuthServiceTest {
         assertThat(result).isTrue();
     }
 
+    @DisplayName("토큰이 USER 역할을 가진 경우 false를 반환한다")
+    @Test
+    void isAdminTest_WhenTokenHasUserRole() {
+        // given
+        String token = authTokenProvider.createTokenFromMember(
+                new Member(2L, Role.USER, "사용자", "user@email.com", "password")
+        );
+
+        // when
+        boolean result = authService.isAdmin(token);
+
+        // then
+        assertThat(result).isFalse();
+    }
 }
