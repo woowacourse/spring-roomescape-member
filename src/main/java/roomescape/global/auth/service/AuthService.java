@@ -6,6 +6,7 @@ import roomescape.global.auth.dto.LoginResponse;
 import roomescape.global.auth.dto.UserInfo;
 import roomescape.global.auth.exception.UnAuthorizedException;
 import roomescape.global.auth.infrastructure.JwtProvider;
+import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
 
 @Component
@@ -28,7 +29,11 @@ public class AuthService {
     public UserInfo makeUserInfo(final String token) {
         validateToken(token);
         Long memberId = jwtProvider.getMemberId(token);
-        return new UserInfo(memberId, jwtProvider.getName(token), jwtProvider.getRole(token));
+        return new UserInfo(memberId, jwtProvider.getRole(token));
+    }
+
+    public Member findMember(final UserInfo userInfo) {
+        return memberRepository.findById(userInfo.id());
     }
 
     private void validateToken(final String token) {

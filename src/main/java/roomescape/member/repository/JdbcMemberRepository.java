@@ -25,7 +25,6 @@ public class JdbcMemberRepository implements MemberRepository {
     );
     private static final RowMapper<UserInfo> USER_INFO_ROW_MAPPER = (resultSet, rowNum) -> new UserInfo(
             resultSet.getLong("id"),
-            resultSet.getString("name"),
             MemberRole.from(resultSet.getString("role"))
     );
 
@@ -65,33 +64,6 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public boolean existsByIdAndMemberRole(final Long id, final MemberRole memberRole) {
-        try {
-            return Boolean.TRUE.equals(
-                    jdbcTemplate.queryForObject("SELECT EXISTS (SELECT 1 FROM member WHERE (id, role) = (?, ?))",
-                            Boolean.class,
-                            id,
-                            memberRole.name()
-                    ));
-        } catch (EmptyResultDataAccessException e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean existsById(final Long id) {
-        try {
-            return Boolean.TRUE.equals(
-                    jdbcTemplate.queryForObject("SELECT EXISTS (SELECT 1 FROM member WHERE id = ?)",
-                            Boolean.class,
-                            id
-                    ));
-        } catch (EmptyResultDataAccessException e) {
-            return false;
-        }
-    }
-
-    @Override
     public Optional<Member> findUserById(final Long id) {
         try {
             MemberEntity memberEntity = jdbcTemplate.queryForObject(
@@ -115,9 +87,18 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public List<UserInfo> findAllUsers() {
-        final String sql = "SELECT id, name, role FROM member WHERE role = ?";
-        return jdbcTemplate.query(sql, USER_INFO_ROW_MAPPER,
-                MemberRole.USER.name());
+    public List<Member> findAllUsers() {
+        final String sql = "SELECT id, name, email, role FROM member WHERE role = ?";
+        return jdbcTemplate.query(sql, MEMBER_ENTITY_ROW_MAPPER,
+                MemberRole.USER.name()).stream()
+                .map(MemberEntity::toMember)
+                .toList();
+    }
+
+    @Override
+    public Member findById(final Long id) {
+        final String sql = "SELECT id, name, email, role FROM member WHERE id = ?";
+        MemberEntity memberEntity = jdbcTemplate.queryForObject(sql, MEMBER_ENTITY_ROW_MAPPER, id);
+        return memberEntity.toMember();
     }
 }

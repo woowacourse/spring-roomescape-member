@@ -24,13 +24,18 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler)
             throws Exception {
-        HandlerMethod handlerMethod = (HandlerMethod) handler;
+        if (!(handler instanceof final HandlerMethod handlerMethod)) {
+            return true;
+        }
         Class<?> declaringClass = handlerMethod.getMethod().getDeclaringClass();
         if (!declaringClass.isAnnotationPresent(RequireRole.class)) {
             return true;
         }
-
         MemberRole memberRole = declaringClass.getAnnotation(RequireRole.class).value();
+        return validateToken(request, memberRole);
+    }
+
+    private boolean validateToken(final HttpServletRequest request, final MemberRole memberRole) {
         String token = authorizationExtractor.extract(request);
         if (token == null) {
             throw new UnAuthorizedException("토큰이 존재하지 않습니다.");

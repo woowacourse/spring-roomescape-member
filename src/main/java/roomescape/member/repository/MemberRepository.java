@@ -12,13 +12,11 @@ public interface MemberRepository {
 
     Optional<UserInfo> findMemberByEmailAndPassword(final String email, final String password);
 
-    boolean existsByIdAndMemberRole(final Long id, final MemberRole memberRole);
-
-    boolean existsById(final Long id);
-
     Optional<Member> findUserById(final Long id);
 
     Member save(Member member);
 
-    List<UserInfo> findAllUsers();
+    List<Member> findAllUsers();
+
+    Member findById(Long id);
 }
