@@ -9,7 +9,6 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.business.domain.member.Member;
 import roomescape.business.domain.member.MemberRole;
 import roomescape.business.domain.member.SignUpMember;
 import roomescape.business.domain.reservation.ReservationTheme;

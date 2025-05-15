@@ -18,7 +18,7 @@ public final class FakeMemberRepository implements MemberRepository, FakeReposit
     @Override
     public Long save(SignUpMember signUpMember) {
         MemberEntity newMemberEntity = MemberEntity.fromDomain(signUpMember)
-                        .copyWithId(idGenerator.getAndIncrement());
+                .copyWithId(idGenerator.getAndIncrement());
         members.add(newMemberEntity);
         return newMemberEntity.getId();
     }

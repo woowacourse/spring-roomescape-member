@@ -1,6 +1,5 @@
 package roomescape.business.service.auth;
 
-import javax.management.relation.Role;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.member.MemberCredential;
 import roomescape.business.domain.member.MemberRole;

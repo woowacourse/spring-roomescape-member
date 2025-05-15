@@ -1,7 +1,6 @@
 package roomescape.presentation.member.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.persistence.fakerepository.FakeMemberRepository;
 import roomescape.presentation.AbstractControllerTest;
-import roomescape.presentation.auth.dto.LoginRequestDto;
 import roomescape.presentation.auth.dto.MemberRequestDto;
 import roomescape.presentation.member.dto.MemberResponseDto;
 

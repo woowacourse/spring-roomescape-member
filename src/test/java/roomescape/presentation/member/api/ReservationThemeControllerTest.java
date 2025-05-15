@@ -17,7 +17,7 @@ import roomescape.persistence.fakerepository.FakeReservationThemeRepository;
 import roomescape.presentation.AbstractControllerTest;
 import roomescape.presentation.admin.dto.ReservationThemeResponseDto;
 
-class ReservationThemeControllerTest  extends AbstractControllerTest {
+class ReservationThemeControllerTest extends AbstractControllerTest {
 
     @LocalServerPort
     private int port;
