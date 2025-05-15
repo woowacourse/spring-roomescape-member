@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,11 @@ import roomescape.reservationtime.ReservationTime;
 public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<ReservationTime> reservationTimeRowMapper = (rs, rowNum) ->
+            new ReservationTime(
+                    rs.getLong("id"),
+                    rs.getObject("start_at", LocalTime.class)
+            );
 
     public JdbcReservationTimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -63,15 +69,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         String sql = "select * from reservation_time where id = ?";
 
         try {
-            ReservationTime foundReservationTime = this.jdbcTemplate.queryForObject(sql,
-                    (resultSet, rowNum) -> {
-                        ReservationTime reservationTime = new ReservationTime(
-                                resultSet.getLong("id"),
-                                resultSet.getObject("start_at", LocalTime.class)
-                        );
-                        return reservationTime;
-                    }, id
-            );
+            ReservationTime foundReservationTime = this.jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id);
             return Optional.ofNullable(foundReservationTime);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();

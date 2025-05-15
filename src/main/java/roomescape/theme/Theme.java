@@ -1,7 +1,7 @@
 package roomescape.theme;
 
 import java.util.Objects;
-import roomescape.exception.ArgumentNullException;
+import roomescape.exception.ArgumentException;
 
 public class Theme {
     private final Long id;
@@ -18,13 +18,13 @@ public class Theme {
 
     private static void validateNull(String name, String description, String thumbnail) {
         if (name == null || name.isBlank()) {
-            throw new ArgumentNullException();
+            throw new ArgumentException("테마 이름이 존재하지 않습니다.");
         }
         if (description == null || description.isBlank()) {
-            throw new ArgumentNullException();
+            throw new ArgumentException("테마 설명이 존재하지 않습니다.");
         }
         if (thumbnail == null || thumbnail.isBlank()) {
-            throw new ArgumentNullException();
+            throw new ArgumentException("테마 썸네일이 존재하지 않습니다.");
         }
     }
 
@@ -42,13 +42,13 @@ public class Theme {
 
     private static void validateDescriptionLength(String description) {
         if (description.length() < 5 || description.length() > 100) {
-            throw new IllegalArgumentException("테마 소개는 최소 5글자, 최대 100글자여야 합니다.");
+            throw new ArgumentException("테마 소개는 최소 5글자, 최대 100글자여야 합니다.");
         }
     }
 
     private static void validateImageType(String thumbnail) {
         if (!thumbnail.matches("(?i)^.+\\.(jpg|jpeg|png|gif|bmp|webp)$")) {
-            throw new IllegalArgumentException("썸네일은 이미지 형식이어야 합니다.");
+            throw new ArgumentException("썸네일은 이미지 형식이어야 합니다.");
         }
     }
 

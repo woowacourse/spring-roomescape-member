@@ -6,7 +6,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import roomescape.exception.ExistedThemeException;
+import roomescape.exception.ExistedException;
+import roomescape.member.Member;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.ReservationDao;
@@ -24,8 +25,14 @@ public class ThemeServiceTest {
     private final ThemeService themeService;
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
-    Theme theme1 = Theme.of(1L, "테마1", "description1", "thumbnail1");
-    Theme theme2 = Theme.of(2L, "테마2", "description2", "thumbnail2");
+
+    private final Theme theme1 = Theme.of(1L, "테마1", "description1", "thumbnail1");
+    private final Theme theme2 = Theme.of(2L, "테마2", "description2", "thumbnail2");
+
+    private final Member member1 = Member.of(1L, "포라", "sy@gmail.com", "1234", "USER");
+    private final Member member2 = Member.of(2L, "짱구", "Wkdrn@gmail.com", "1234", "USER");
+    private final Member member3 = Member.of(3L, "라리사", "lalisa@gmail.com", "1234", "USER");
+
 
     public ThemeServiceTest() {
         this.themeDao = new FakeThemeDao(theme1, theme2);
@@ -66,17 +73,17 @@ public class ThemeServiceTest {
         ThemeRequest themeRequest = new ThemeRequest(theme3.getName(), theme3.getDescription(), theme3.getThumbnail());
         // when & then
         assertThatThrownBy(() -> themeService.create(themeRequest))
-                .isInstanceOf(ExistedThemeException.class);
+                .isInstanceOf(ExistedException.class);
     }
 
     @Test
     void 최근_일주일_기준으로_인기테마_10개를_가져올_수_있다() {
         // given
-        Reservation reservation1 = Reservation.of(1L, "포라", LocalDate.now().minusDays(1),
+        Reservation reservation1 = Reservation.of(1L, member1, LocalDate.now().minusDays(1),
                 new ReservationTime(1L, LocalTime.of(9, 0)), theme1);
-        Reservation reservation2 = Reservation.of(2L, "짱구", LocalDate.now().minusDays(3),
+        Reservation reservation2 = Reservation.of(2L, member2, LocalDate.now().minusDays(3),
                 new ReservationTime(1L, LocalTime.of(9, 0)), theme2);
-        Reservation reservation3 = Reservation.of(3L, "포비", LocalDate.now().minusDays(5),
+        Reservation reservation3 = Reservation.of(3L, member3, LocalDate.now().minusDays(5),
                 new ReservationTime(1L, LocalTime.of(9, 0)), theme1);
         reservationDao.create(reservation1);
         reservationDao.create(reservation2);

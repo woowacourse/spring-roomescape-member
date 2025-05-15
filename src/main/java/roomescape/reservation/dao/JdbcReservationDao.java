@@ -3,13 +3,18 @@ package roomescape.reservation.dao;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.member.Member;
+import roomescape.member.dao.MemberDao;
 import roomescape.reservation.Reservation;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.theme.Theme;
@@ -18,9 +23,84 @@ import roomescape.theme.Theme;
 public class JdbcReservationDao implements ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final MemberDao memberDao;
+    private final RowMapper<Reservation> reservationRowMapper = (rs, rowNum) ->
+            Reservation.of(
+                    rs.getLong("reservation_id"),
+                    Member.of(
+                            rs.getLong("member_id"),
+                            rs.getString("member_name"),
+                            rs.getString("member_email"),
+                            rs.getString("member_password"),
+                            rs.getString("member_role")
+                    ),
+                    rs.getObject("date", LocalDate.class),
+                    new ReservationTime(
+                            rs.getLong("time_id"),
+                            rs.getObject("time_start_at", LocalTime.class)
+                    ),
+                    Theme.of(
+                            rs.getLong("theme_id"),
+                            rs.getString("theme_name"),
+                            rs.getString("theme_des"),
+                            rs.getString("theme_thumb")
+                    )
+            );
 
-    public JdbcReservationDao(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationDao(JdbcTemplate jdbcTemplate, MemberDao memberDao) {
         this.jdbcTemplate = jdbcTemplate;
+        this.memberDao = memberDao;
+    }
+
+    @Override
+    public List<Reservation> findAll(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        StringBuilder sql = new StringBuilder("""
+                    SELECT 
+                        r.id as reservation_id, 
+                        r.date, 
+                        rt.id as time_id, 
+                        rt.start_at as time_start_at, 
+                        t.id as theme_id,
+                        t.name as theme_name,
+                        t.description as theme_des,
+                        t.thumbnail as theme_thumb,
+                        m.id as member_id,
+                        m.name as member_name,
+                        m.email as member_email,
+                        m.password as member_password,
+                        m.role as member_role
+                    FROM reservation as r 
+                    inner join reservation_time as rt on r.time_id = rt.id
+                    inner join theme as t on t.id = r.theme_id
+                    INNER JOIN member as m ON m.id = r.member_id
+                    WHERE 1=1
+                """);
+
+        List<Object> params = getParams(themeId, memberId, dateFrom, dateTo, sql);
+
+        return this.jdbcTemplate.query(sql.toString(), params.toArray(), reservationRowMapper);
+    }
+
+    private static List<Object> getParams(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo, StringBuilder sql) {
+        List<Object> params = new ArrayList<>();
+
+        if (themeId != null) {
+            sql.append(" AND r.theme_id = ?");
+            params.add(themeId);
+        }
+        if (memberId != null) {
+            sql.append(" AND r.member_id = ?");
+            params.add(memberId);
+        }
+        if (dateFrom != null) {
+            sql.append(" AND r.date >= ?");
+            params.add(dateFrom);
+        }
+        if (dateTo != null) {
+            sql.append(" AND r.date <= ?");
+            params.add(dateTo);
+        }
+        return params;
     }
 
     @Override
@@ -28,48 +108,30 @@ public class JdbcReservationDao implements ReservationDao {
         String sql = """
                     SELECT 
                         r.id as reservation_id, 
-                        r.name, 
                         r.date, 
                         rt.id as time_id, 
-                        rt.start_at as time_value, 
+                        rt.start_at as time_start_at, 
                         t.id as theme_id,
                         t.name as theme_name,
                         t.description as theme_des,
-                        t.thumbnail as theme_thumb
+                        t.thumbnail as theme_thumb,
+                        m.id as member_id,
+                        m.name as member_name,
+                        m.email as member_email,
+                        m.password as member_password,
+                        m.role as member_role
                     FROM reservation as r 
-                    inner join reservation_time as rt 
-                    on r.time_id = rt.id
-                    inner join theme as t
-                    on t.id = r.theme_id
+                    inner join reservation_time as rt on r.time_id = rt.id
+                    inner join theme as t on t.id = r.theme_id
+                    INNER JOIN member as m ON m.id = r.member_id
                 """;
 
-        return this.jdbcTemplate.query(sql,
-                (resultSet, rowNum) -> {
-                    ReservationTime reservationTime = new ReservationTime(
-                            resultSet.getLong("time_id"),
-                            resultSet.getObject("time_value", LocalTime.class)
-                    );
-
-                    Theme theme = Theme.of(
-                            resultSet.getLong("theme_id"),
-                            resultSet.getString("theme_name"),
-                            resultSet.getString("theme_des"),
-                            resultSet.getString("theme_thumb")
-                    );
-
-                    return Reservation.of(
-                            resultSet.getLong("reservation_id"),
-                            resultSet.getString("name"),
-                            resultSet.getObject("date", LocalDate.class),
-                            reservationTime,
-                            theme
-                    );
-                });
+        return this.jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     @Override
     public Long create(Reservation reservation) {
-        String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
+        String sql = "insert into reservation (date, member_id, time_id, theme_id) values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         this.jdbcTemplate.update(con -> {
@@ -77,8 +139,8 @@ public class JdbcReservationDao implements ReservationDao {
                     sql,
                     new String[]{"id"}
             );
-            ps.setString(1, reservation.getName());
-            ps.setString(2, reservation.getDate().toString());
+            ps.setString(1, reservation.getDate().toString());
+            ps.setLong(2, reservation.getMember().getId());
             ps.setLong(3, reservation.getReservationTime().getId());
             ps.setLong(4, reservation.getTheme().getId());
             return ps;
@@ -97,7 +159,7 @@ public class JdbcReservationDao implements ReservationDao {
     public Optional<Reservation> findByTimeId(Long id) {
         String sql = """
                 SELECT r.id as reservation_id,
-                       r.name as reservation_name,
+                       r.member_id as member_id,
                        r.date as reservation_date,
                        rt.start_at as time_start_at,
                        rt.id as time_id,
@@ -121,9 +183,13 @@ public class JdbcReservationDao implements ReservationDao {
                                 rs.getString("theme_thumb")
                         );
 
+                        Long memberId = rs.getLong("member_id");
+                        Member member = memberDao.findById(memberId)
+                                .orElseThrow(() -> new NoSuchElementException());
+
                         return Reservation.of(
                                 rs.getLong("reservation_id"),
-                                rs.getString("reservation_name"),
+                                member,
                                 rs.getDate("reservation_date").toLocalDate(),
                                 new ReservationTime(rs.getLong("time_id"), rs.getTime("time_start_at").toLocalTime()),
                                 theme
@@ -141,9 +207,9 @@ public class JdbcReservationDao implements ReservationDao {
     public Optional<Reservation> findById(Long id) {
         String sql = """
                 SELECT r.id as reservation_id,
-                       r.name,
+                       r.member_id as member_id,
                        r.date,                                       
-                       rt.start_at,
+                       rt.start_at as time_start_at,
                        rt.id as time_id,
                        t.id as theme_id,
                        t.name as theme_name,
@@ -165,9 +231,13 @@ public class JdbcReservationDao implements ReservationDao {
                                 rs.getString("theme_thumb")
                         );
 
+                        Long memberId = rs.getLong("member_id");
+                        Member member = memberDao.findById(memberId)
+                                .orElseThrow(() -> new NoSuchElementException("회원 정보 없음"));
+
                         return Reservation.of(
                                 rs.getLong("reservation_id"),
-                                rs.getString("name"),
+                                member,
                                 rs.getDate("date").toLocalDate(),
                                 new ReservationTime(
                                         rs.getLong("time_id"),
@@ -186,13 +256,21 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public Optional<Reservation> findByDateTime(LocalDate date, LocalTime time) {
         String sql = """
-                SELECT r.id as reservation_id, r.name, r.date,
-                      rt.id as time_id, rt.start_at,
-                      t.id as theme_id, t.name as theme_name, t.description as theme_des, t.thumbnail as theme_thumb
-                FROM reservation as r 
-                INNER JOIN reservation_time as rt ON rt.id = r.time_id 
-                INNER JOIN theme as t ON r.theme_id = t.id
-                WHERE r.date = ? and rt.start_at = ?""";
+                    SELECT
+                        r.id as reservation_id,
+                        r.member_id,
+                        r.date,
+                        rt.id as time_id,
+                        rt.start_at,
+                        t.id as theme_id,
+                        t.name as theme_name,
+                        t.description as theme_des,
+                        t.thumbnail as theme_thumb
+                    FROM reservation as r
+                    INNER JOIN reservation_time as rt ON rt.id = r.time_id 
+                    INNER JOIN theme as t ON r.theme_id = t.id
+                    WHERE r.date = ? and rt.start_at = ?
+                """;
         try {
             Reservation reservation = jdbcTemplate.queryForObject(
                     sql,
@@ -204,9 +282,13 @@ public class JdbcReservationDao implements ReservationDao {
                                 rs.getString("theme_thumb")
                         );
 
+                        Long memberId = rs.getLong("member_id");
+                        Member member = memberDao.findById(memberId)
+                                .orElseThrow(() -> new NoSuchElementException("회원 정보를 불러올 수 없습니다."));
+
                         return Reservation.of(
                                 rs.getLong("reservation_id"),
-                                rs.getString("name"),
+                                member,
                                 rs.getDate("date").toLocalDate(),
                                 new ReservationTime(rs.getLong("time_id"), rs.getTime("start_at").toLocalTime()),
                                 theme

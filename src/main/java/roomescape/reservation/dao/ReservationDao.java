@@ -11,6 +11,8 @@ import roomescape.theme.Theme;
 public interface ReservationDao {
     List<Reservation> findAll();
 
+    List<Reservation> findAll(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo);
+
     Long create(Reservation reservation);
 
     void delete(Long id);

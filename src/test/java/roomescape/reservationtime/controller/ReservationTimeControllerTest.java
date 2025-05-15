@@ -9,13 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.jdbc.Sql;
 
 import org.junit.jupiter.api.Test;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Sql("/sql/test-data.sql")
 public class ReservationTimeControllerTest {
     @Test
     void 예약시간_추가_테스트() {
@@ -30,7 +28,7 @@ public class ReservationTimeControllerTest {
                 .statusCode(201)
                 .extract().as(Long.class);
 
-        assertThat(id).isEqualTo(5L);
+        assertThat(id).isEqualTo(9L);
     }
 
     @Test
@@ -39,7 +37,7 @@ public class ReservationTimeControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(4));
+                .body("size()", is(8));
     }
 
     @Test
@@ -53,7 +51,7 @@ public class ReservationTimeControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(3));
+                .body("size()", is(7));
     }
 
     @Test
@@ -62,6 +60,6 @@ public class ReservationTimeControllerTest {
                 .when().get("/times/1?date=2025-01-01")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(4));
+                .body("size()", is(8));
     }
 }

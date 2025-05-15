@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.member.Member;
+import roomescape.member.dao.JdbcMemberDao;
 import roomescape.reservation.Reservation;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.reservationtime.dao.JdbcReservationTimeDao;
@@ -20,7 +22,7 @@ import roomescape.theme.dao.ThemeDao;
 
 import org.junit.jupiter.api.Test;
 
-@Import({JdbcThemeDao.class, JdbcReservationDao.class, JdbcReservationTimeDao.class})
+@Import({JdbcThemeDao.class, JdbcReservationDao.class, JdbcReservationTimeDao.class, JdbcMemberDao.class})
 @JdbcTest
 @Sql({"/sql/test-schema.sql", "/sql/test-data.sql"})
 class JdbcReservationDaoTest {
@@ -39,20 +41,20 @@ class JdbcReservationDaoTest {
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
         Long id = reservationTimeDao.create(reservationTime);
         Theme theme = Theme.of(1L, "themeName", "description", "thumb.jpg");
+        Member member = Member.of(1L, "이승연", "sy@gmail.com", "1234", "USER");
         themeDao.create(theme);
         Reservation reservation = Reservation.createWithoutId(
-                "포라",
+                member,
                 LocalDate.now().plusDays(1),
                 new ReservationTime(id, reservationTime.getStartAt()),
                 theme
         );
 
         // when
-        reservationDao.create(reservation);
-        List<Reservation> reservationDaoAll = reservationDao.findAll();
+        Long savedId = reservationDao.create(reservation);
 
         // then
-        assertThat(reservationDaoAll.size()).isEqualTo(6);
+        assertThat(savedId).isEqualTo(6);
     }
 
     @Test
@@ -61,7 +63,7 @@ class JdbcReservationDaoTest {
         List<Reservation> reservationDaoAll = reservationDao.findAll();
 
         // then
-        assertThat(reservationDaoAll.getFirst().getName()).isEqualTo("포비");
+        assertThat(reservationDaoAll.getFirst().getMember().getName()).isEqualTo("이뜽연");
     }
 
     @Test
@@ -80,9 +82,10 @@ class JdbcReservationDaoTest {
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
         Long id = reservationTimeDao.create(reservationTime);
         Theme theme = Theme.of(1L, "themeName", "description", "thumb.jpg");
+        Member member = Member.of(1L, "이승연", "sy@gmail.com", "1234", "USER");
         Long themeId = themeDao.create(theme);
         Reservation reservation = Reservation.createWithoutId(
-                "포라",
+                member,
                 LocalDate.now().plusDays(1),
                 new ReservationTime(id, reservationTime.getStartAt()),
                 Theme.of(themeId, theme.getName(), theme.getDescription(), theme.getThumbnail()));
@@ -91,7 +94,7 @@ class JdbcReservationDaoTest {
         Optional<Reservation> foundReservation = reservationDao.findByTimeId(id);
         // then
         assertThat(foundReservation.isPresent()).isTrue();
-        assertThat(foundReservation.get().getName()).isEqualTo("포라");
+        assertThat(foundReservation.get().getMember().getName()).isEqualTo("이뜽연");
     }
 
     @Test
@@ -100,7 +103,7 @@ class JdbcReservationDaoTest {
         Optional<Reservation> foundReservation = reservationDao.findById(1L);
         // then
         assertThat(foundReservation.isPresent()).isTrue();
-        assertThat(foundReservation.get().getName()).isEqualTo("포비");
+        assertThat(foundReservation.get().getMember().getName()).isEqualTo("이뜽연");
     }
 
     @Test

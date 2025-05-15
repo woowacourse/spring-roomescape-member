@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,13 @@ import roomescape.theme.Theme;
 public class JdbcThemeDao implements ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Theme> themeRowMapper = (rs, rowNum) ->
+            Theme.of(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("description"),
+                    rs.getString("thumbnail")
+            );
 
     public JdbcThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -39,14 +47,7 @@ public class JdbcThemeDao implements ThemeDao {
     @Override
     public List<Theme> findAll() {
         String sql = "select * from theme";
-        return jdbcTemplate.query(
-                sql,
-                (resultSet, rowNum) -> Theme.of(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail"))
-        );
+        return jdbcTemplate.query(sql, themeRowMapper);
     }
 
     @Override
@@ -60,17 +61,7 @@ public class JdbcThemeDao implements ThemeDao {
         String sql = "select name from theme where name = ?";
 
         try {
-            Theme theme = this.jdbcTemplate.queryForObject(sql,
-                    (resultSet, rowNum) -> {
-                        Theme foundTheme = Theme.of(
-                                resultSet.getLong("id"),
-                                resultSet.getString("name"),
-                                resultSet.getString("description"),
-                                resultSet.getString("thumbnail")
-                        );
-                        return foundTheme;
-                    }, name
-            );
+            Theme theme = this.jdbcTemplate.queryForObject(sql, themeRowMapper, name);
             return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -82,17 +73,7 @@ public class JdbcThemeDao implements ThemeDao {
         String sql = "select * from theme where id = ?";
 
         try {
-            Theme theme = this.jdbcTemplate.queryForObject(sql,
-                    (resultSet, rowNum) -> {
-                        Theme foundTheme = Theme.of(
-                                resultSet.getLong("id"),
-                                resultSet.getString("name"),
-                                resultSet.getString("description"),
-                                resultSet.getString("thumbnail")
-                        );
-                        return foundTheme;
-                    }, id
-            );
+            Theme theme = this.jdbcTemplate.queryForObject(sql, themeRowMapper, id);
             return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
