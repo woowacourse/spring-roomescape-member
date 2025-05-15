@@ -33,8 +33,8 @@ class AuthServiceTest {
 
         // when & then
         assertThatThrownBy(() -> authService.login(loginRequest))
-                .isInstanceOf(DataNotFoundException.class)
-                .hasMessage("[ERROR] 이메일에 해당하는 회원을 찾을 수 없습니다.");
+                .isInstanceOf(InvalidLoginInfoException.class)
+                .hasMessage("아이디 또는 비밀번호가 올바르지 않습니다.");
     }
 
     @Test
@@ -47,7 +47,7 @@ class AuthServiceTest {
         // when & then
         assertThatThrownBy(() -> authService.login(loginRequest))
                 .isInstanceOf(InvalidLoginInfoException.class)
-                .hasMessage("[ERROR] 비밀번호가 일치하지 않습니다.");
+                .hasMessage("아이디 또는 비밀번호가 올바르지 않습니다.");
     }
 
 }
