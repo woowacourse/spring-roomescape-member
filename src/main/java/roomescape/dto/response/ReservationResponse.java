@@ -2,11 +2,12 @@ package roomescape.dto.response;
 
 import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import roomescape.domain.member.Member;
 import roomescape.domain.Reservation;
 
 public record ReservationResponse(
         Long id,
-        String name,
+        Member member,
         LocalDate date,
         @JsonProperty("time") ReservationTimeResponse reservationTimeResponse,
         @JsonProperty("theme") ThemeResponse themeResponse
@@ -16,7 +17,7 @@ public record ReservationResponse(
                                          ThemeResponse themeResponse) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getName(),
+                reservation.getMember(),
                 reservation.getDate(),
                 reservationTimeResponse,
                 themeResponse
@@ -24,8 +25,9 @@ public record ReservationResponse(
     }
 
     public static ReservationResponse from(Reservation reservation) {
-        return new ReservationResponse(reservation.getId(),
-                reservation.getName(),
+        return new ReservationResponse(
+                reservation.getId(),
+                reservation.getMember(),
                 reservation.getDate(),
                 ReservationTimeResponse.from(reservation.getTime()),
                 ThemeResponse.from(reservation.getTheme())

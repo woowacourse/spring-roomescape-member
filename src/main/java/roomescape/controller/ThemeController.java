@@ -27,20 +27,20 @@ public class ThemeController {
 
     @PostMapping
     public ResponseEntity<Theme> create(@RequestBody Theme theme) {
-        Theme createdTheme = themeService.save(theme);
+        Theme createdTheme = themeService.saveTheme(theme);
         URI location = URI.create("/themes/" + createdTheme.getId());
         return ResponseEntity.created(location).body(createdTheme);
     }
 
     @GetMapping
-    public ResponseEntity<List<Theme>> read() {
-        List<Theme> themes = themeService.read();
+    public ResponseEntity<List<Theme>> readAll() {
+        List<Theme> themes = themeService.readTheme();
         return ResponseEntity.ok(themes);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        themeService.delete(id);
+        themeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }
 

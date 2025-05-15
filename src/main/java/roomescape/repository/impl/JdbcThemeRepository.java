@@ -8,6 +8,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.common.mapper.ThemeMapper;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
 
@@ -37,11 +38,9 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     public List<Theme> read() {
         final String query = "SELECT id, name, description, thumbnail FROM theme";
-        return jdbcTemplate.query(query, (resultSet, rowNum) ->
-                new Theme(resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail"))
+        return jdbcTemplate.query(
+                query,
+                new ThemeMapper()
         );
     }
 
@@ -61,12 +60,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
         List<Theme> listedTheme = jdbcTemplate.query(
                 query,
-                (resultSet, rowNum) -> new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                ),
+                new ThemeMapper(),
                 listNum
         );
 
@@ -89,12 +83,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
         List<Theme> listedTheme = jdbcTemplate.query(
                 query,
-                (resultSet, rowNum) -> new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                ),
+                new ThemeMapper(),
                 listNum
         );
 
@@ -104,12 +93,12 @@ public class JdbcThemeRepository implements ThemeRepository {
     public Optional<Theme> findById(Long id) {
         final String query = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(query, (resultSet, rowNum) ->
-                            new Theme(resultSet.getLong("id"),
-                                    resultSet.getString("name"),
-                                    resultSet.getString("description"),
-                                    resultSet.getString("thumbnail"))
-                    , id));
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(
+                            query,
+                            new ThemeMapper(),
+                            id
+                    ));
         } catch (DataAccessException exception) {
             return Optional.empty();
         }

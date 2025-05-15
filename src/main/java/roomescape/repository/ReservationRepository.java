@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.util.List;
+import java.util.Map;
 import roomescape.domain.Reservation;
 
 public interface ReservationRepository {
@@ -11,4 +12,6 @@ public interface ReservationRepository {
     void delete(Long id);
 
     boolean existsByTimeId(Long id);
+
+    List<Reservation> readAllWithFilter(Map<String, Object> filter);
 }

@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.common.exception.NotAbleDeleteException;
+import roomescape.common.mapper.ReservationTimeMapper;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -34,21 +35,24 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     public List<ReservationTime> readAll() {
         final String query = "SELECT id, start_at FROM reservation_time";
-        List<ReservationTime> reservationTimes = jdbcTemplate.query(query,
-                (resultSet, rowNum) -> new ReservationTime(resultSet.getLong("id"),
-                        resultSet.getTime("start_at").toLocalTime()));
+        List<ReservationTime> reservationTimes = jdbcTemplate.query(
+                query,
+                new ReservationTimeMapper()
+        );
 
         return reservationTimes;
     }
 
-    public Optional<ReservationTime> read(Long timeId) {
+    public Optional<ReservationTime> findById(Long timeId) {
         final String query = "SELECT id, start_at FROM reservation_time WHERE id = ?";
 
         try {
             return Optional.ofNullable(
-                    jdbcTemplate.queryForObject(query,
-                            (resultSet, rowNum) -> new ReservationTime(resultSet.getLong("id"),
-                                    resultSet.getTime("start_at").toLocalTime()), timeId));
+                    jdbcTemplate.queryForObject(
+                            query,
+                            new ReservationTimeMapper(),
+                            timeId
+                    ));
         } catch (DataAccessException exception) {
             return Optional.empty();
         }
@@ -76,10 +80,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
         List<ReservationTime> reservationTimes = jdbcTemplate.query(
                 query,
-                (resultSet, rowNum) -> new ReservationTime(
-                        resultSet.getLong("id"),
-                        resultSet.getTime("start_at").toLocalTime()
-                ),
+                new ReservationTimeMapper(),
                 localDate, themeId
         );
 
