@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.Member;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.repository.MemberRepository;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -25,6 +34,18 @@ public class ThemeApiTest {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    ThemeRepository themeRepository;
+
+    @Autowired
+    MemberRepository memberRepository;
+
+    @Autowired
+    ReservationRepository reservationRepository;
+
+    @Autowired
+    ReservationTimeRepository reservationTimeRepository;
 
     @BeforeEach
     void setUp() {
@@ -75,12 +96,9 @@ public class ThemeApiTest {
     @DisplayName("모든 테마를 조회할 수 있다")
     @Test
     void canResponseAllTheme() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명",
-                "썸네일");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명",
-                "썸네일");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명",
-                "썸네일");
+        themeRepository.add(Theme.createWithoutId("인기테마1", "설명1", "썸네일1"));
+        themeRepository.add(Theme.createWithoutId("인기테마2", "설명1", "썸네일1"));
+        themeRepository.add(Theme.createWithoutId("인기테마3", "설명1", "썸네일1"));
 
         RestAssured.given().log().all()
                 .when().get("/themes")
@@ -89,53 +107,43 @@ public class ThemeApiTest {
                 .body("size()", is(3));
     }
 
-    @DisplayName("모든 테마를 조회할 수 있다")
+    @DisplayName("인기 테마를 조회할 수 있다.")
     @Test
     void canResponseTopThemes() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "인기테마", "설명1",
-                "썸네일1");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "평범테마", "설명2",
-                "썸네일2");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "인기없는테마", "설명3",
-                "썸네일3");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마1", "설명1",
-                "썸네일1");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마2", "설명2",
-                "썸네일2");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마3", "설명3",
-                "썸네일3");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마4", "설명1",
-                "썸네일1");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마5", "설명2",
-                "썸네일2");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마6", "설명3",
-                "썸네일3");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마7", "설명1",
-                "썸네일1");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마8", "설명2",
-                "썸네일2");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마9", "설명3",
-                "썸네일3");
+        themeRepository.add(Theme.createWithoutId("인기테마", "설명1", "썸네일1"));
+        themeRepository.add(Theme.createWithoutId("평범테마", "설명2", "썸네일2"));
+        themeRepository.add(Theme.createWithoutId("인기없는테마", "설명3", "썸네일3"));
 
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
+        themeRepository.add(Theme.createWithoutId("테마1", "설명1", "썸네일1"));
+        themeRepository.add(Theme.createWithoutId("테마2", "설명1", "썸네일1"));
+        themeRepository.add(Theme.createWithoutId("테마3", "설명1", "썸네일1"));
+        themeRepository.add(Theme.createWithoutId("테마4", "설명1", "썸네일1"));
+        themeRepository.add(Theme.createWithoutId("테마5", "설명1", "썸네일1"));
+        themeRepository.add(Theme.createWithoutId("테마6", "설명1", "썸네일1"));
+        themeRepository.add(Theme.createWithoutId("테마7", "설명1", "썸네일1"));
 
-        jdbcTemplate.update("insert into member (name, email, password, role) values (?, ?, ?, ?)", "아마", "이메일",
-                "비밀번호", "ADMIN");
+        reservationTimeRepository.add(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
+        reservationTimeRepository.add(ReservationTime.createWithoutId(LocalTime.of(11, 0)));
+        reservationTimeRepository.add(ReservationTime.createWithoutId(LocalTime.of(12, 0)));
 
-        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
-                PAST_DATE_TEXT, 1, 1, 1);
-        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
-                PAST_DATE_TEXT, 2, 1, 1);
-        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
-                PAST_DATE_TEXT, 3, 1, 1);
-        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
-                PAST_DATE_TEXT, 1, 2, 1);
-        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
-                PAST_DATE_TEXT, 2, 2, 1);
-        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
-                PAST_DATE_TEXT, 1, 3, 1);
+        Member admin = Member.createMemberWithoutId("아마", "이메일", "비밀번호", "ADMIN");
+        memberRepository.add(admin);
+
+        Member member = memberRepository.findMemberById(1L).orElseThrow();
+        Theme theme1 = themeRepository.findById(1L).orElseThrow();
+        Theme theme2 = themeRepository.findById(2L).orElseThrow();
+        Theme theme3 = themeRepository.findById(3L).orElseThrow();
+
+        ReservationTime time1 = reservationTimeRepository.findById(1L).orElseThrow();
+        ReservationTime time2 = reservationTimeRepository.findById(2L).orElseThrow();
+        ReservationTime time3 = reservationTimeRepository.findById(3L).orElseThrow();
+
+        reservationRepository.add(Reservation.createWithoutId(member, LocalDate.now().plusDays(1), time1, theme1));
+        reservationRepository.add(Reservation.createWithoutId(member, LocalDate.now().plusDays(1), time2, theme1));
+        reservationRepository.add(Reservation.createWithoutId(member, LocalDate.now().plusDays(1), time3, theme1));
+        reservationRepository.add(Reservation.createWithoutId(member, LocalDate.now().plusDays(1), time1, theme2));
+        reservationRepository.add(Reservation.createWithoutId(member, LocalDate.now().plusDays(1), time2, theme2));
+        reservationRepository.add(Reservation.createWithoutId(member, LocalDate.now().plusDays(1), time1, theme3));
 
         RestAssured.given().log().all()
                 .when().get("/themes/top")
@@ -150,8 +158,7 @@ public class ThemeApiTest {
     @DisplayName("ID를 통해 테마를 삭제할 수 있다")
     @Test
     void canDeleteThemeById() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명",
-                "썸네일");
+        themeRepository.add(Theme.createWithoutId("테마1", "설명1", "썸네일1"));
 
         RestAssured.given().log().all()
                 .when().delete("/themes/1")
@@ -162,8 +169,7 @@ public class ThemeApiTest {
     @DisplayName("존재하지 않는 테마를 삭제할 수 없다")
     @Test
     void cannotDeleteThemeByIdWhenNotExist() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명",
-                "썸네일");
+        themeRepository.add(Theme.createWithoutId("테마1", "설명1", "썸네일1"));
 
         RestAssured.given().log().all()
                 .when().delete("/themes/2")
@@ -174,13 +180,15 @@ public class ThemeApiTest {
     @DisplayName("이미 테마에 대한 예약이 존재한다면 해당 테마의 삭제가 불가능하다.")
     @Test
     void cannotDeleteThemeByIdWhenReservationExist() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)", "이름1", "설명1",
-                "썸네일1");
-        jdbcTemplate.update("insert into member (name, email, password, role) values (?, ?, ?, ?)", "아마", "이메일",
-                "비밀번호", "ADMIN");
-        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
-                FUTURE_DATE_TEXT, 1, 1, 1);
+        Member member = new Member(1L, "아마", "이메일", "비밀번호", "ADMIN");
+        Theme theme = new Theme(1L, "이름1", "설명1", "썸네일1");
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+
+        themeRepository.add(theme);
+        reservationTimeRepository.add(reservationTime);
+        memberRepository.add(member);
+        reservationRepository.add(
+                Reservation.createWithoutId(member, LocalDate.now().plusDays(1), reservationTime, theme));
 
         RestAssured.given().log().all()
                 .when().delete("/themes/1")

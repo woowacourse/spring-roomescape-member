@@ -16,6 +16,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Member;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.repository.MemberRepository;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.service.AuthService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -30,6 +37,18 @@ public class ReservationApiTest {
 
     @Autowired
     AuthService authService;
+
+    @Autowired
+    ThemeRepository themeRepository;
+
+    @Autowired
+    MemberRepository memberRepository;
+
+    @Autowired
+    ReservationRepository reservationRepository;
+
+    @Autowired
+    ReservationTimeRepository reservationTimeRepository;
 
     @BeforeEach
     void setUp() {
@@ -47,23 +66,28 @@ public class ReservationApiTest {
     @DisplayName("저장된 모든 예약을 응답한다.")
     @Test
     void canResponseAllReservations() {
-        jdbcTemplate.update("insert into reservation_time (start_at) values (?)", LocalTime.of(10, 0));
-        jdbcTemplate.update("insert into reservation_time (start_at) values (?)", LocalTime.of(11, 0));
+        ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
+        ReservationTime reservationTime2 = new ReservationTime(2L, LocalTime.of(11, 0));
 
-        jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)", "이름1", "설명1",
-                "썸네일1");
-        jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)", "이름2", "설명2",
-                "썸네일2");
+        reservationTimeRepository.add(reservationTime1);
+        reservationTimeRepository.add(reservationTime2);
 
-        jdbcTemplate.update("insert into member (name, email, password, role) values (?, ?, ?, ?)", "랜디", "이메일",
-                "비밀번호", "ADMIN");
-        jdbcTemplate.update("insert into member (name, email, password, role) values (?, ?, ?, ?)", "아마", "이메일",
-                "비밀번호", "ADMIN");
+        Theme theme1 = new Theme(1L, "이름1", "설명1", "썸네일1");
+        Theme theme2 = new Theme(2L, "이름2", "설명2", "썸네일2");
 
-        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
-                "2025-5-5", 1, 1, 1);
-        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
-                "2025-5-5", 2, 2, 2);
+        themeRepository.add(theme1);
+        themeRepository.add(theme2);
+
+        Member member1 = new Member(1L, "랜디", "이메일", "비밀번호", "ADMIN");
+        Member member2 = new Member(2L, "아마", "이메일", "비밀번호", "ADMIN");
+
+        memberRepository.add(member1);
+        memberRepository.add(member2);
+
+        reservationRepository.add(
+                Reservation.createWithoutId(member1, LocalDate.of(2025, 5, 5), reservationTime1, theme1));
+        reservationRepository.add(
+                Reservation.createWithoutId(member2, LocalDate.of(2025, 5, 5), reservationTime2, theme2));
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -75,13 +99,13 @@ public class ReservationApiTest {
     @DisplayName("예약을 추가할 수 있다.")
     @Test
     void canCreateReservation() {
-        jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)", "이름1", "설명1",
-                "썸네일1");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("insert into member (name, email, password, role) values (?, ?, ?, ?)", "아마", "이메일",
-                "비밀번호", "ADMIN");
-
         Member member = new Member(1L, "아마", "이메일", "비밀번호", "ADMIN");
+        Theme theme = new Theme(1L, "이름1", "설명1", "썸네일1");
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+
+        themeRepository.add(theme);
+        reservationTimeRepository.add(reservationTime);
+        memberRepository.add(member);
 
         Map<String, Object> params = new HashMap<>();
         params.put("date", FUTURE_DATE_TEXT);
@@ -101,13 +125,13 @@ public class ReservationApiTest {
     @DisplayName("유효하지 않은 입력값으로 예약 추가가 불가능하다.")
     @Test
     void cannotCreateReservationsWhenInvalidRequest() {
-        jdbcTemplate.update("insert into reservation_time (start_at) values (?)", LocalTime.of(10, 0));
-        jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)", "이름1", "설명1",
-                "썸네일1");
-        jdbcTemplate.update("insert into member (name, email, password, role) values (?, ?, ?, ?)", "아마", "이메일",
-                "비밀번호", "ADMIN");
-
         Member member = new Member(1L, "아마", "이메일", "비밀번호", "ADMIN");
+        Theme theme = new Theme(1L, "이름1", "설명1", "썸네일1");
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+
+        themeRepository.add(theme);
+        reservationTimeRepository.add(reservationTime);
+        memberRepository.add(member);
 
         Map<String, Object> params = new HashMap<>();
         params.put("date", "");
@@ -126,13 +150,13 @@ public class ReservationApiTest {
     @DisplayName("과거의 날짜와 시간으로는 예약이 불가능하다")
     @Test
     void cannotCreateReservationsWhenPastRequest() {
-        jdbcTemplate.update("insert into reservation_time (start_at) values (?)", LocalTime.of(10, 0));
-        jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)", "이름", "설명",
-                "썸네일");
-        jdbcTemplate.update("insert into member (name, email, password, role) values (?, ?, ?, ?)", "아마", "이메일",
-                "비밀번호", "ADMIN");
-
         Member member = new Member(1L, "아마", "이메일", "비밀번호", "ADMIN");
+        Theme theme = new Theme(1L, "이름1", "설명1", "썸네일1");
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+
+        themeRepository.add(theme);
+        reservationTimeRepository.add(reservationTime);
+        memberRepository.add(member);
 
         Map<String, Object> params = new HashMap<>();
         params.put("date", PAST_DATE_TEXT);
@@ -152,15 +176,19 @@ public class ReservationApiTest {
     @DisplayName("중복 예약을 추가할 수 없다.")
     @Test
     void cannotCreateReservationsWhenDuplicatedTime() {
-        jdbcTemplate.update("insert into reservation_time (start_at) values (?)", LocalTime.of(10, 0));
-        jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)", "이름", "설명",
-                "썸네일");
-        jdbcTemplate.update("insert into member (name, email, password, role) values (?, ?, ?, ?)", "아마", "이메일",
-                "비밀번호", "ADMIN");
+        Member member = new Member(1L, "아마", "이메일", "비밀번호", "ADMIN");
+        Theme theme = new Theme(1L, "이름1", "설명1", "썸네일1");
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+
+        themeRepository.add(theme);
+        reservationTimeRepository.add(reservationTime);
+        memberRepository.add(member);
+
         jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
                 FUTURE_DATE_TEXT, 1, 1, 1);
 
-        Member member = new Member(1L, "아마", "이메일", "비밀번호", "ADMIN");
+        reservationRepository.add(
+                Reservation.createWithoutId(member, LocalDate.now().plusDays(1), reservationTime, theme));
 
         Map<String, Object> params = new HashMap<>();
         params.put("date", FUTURE_DATE_TEXT);
@@ -180,13 +208,15 @@ public class ReservationApiTest {
     @DisplayName("Id를 통해 예약을 삭제할 수 있다.")
     @Test
     void canDeleteReservationById() {
-        jdbcTemplate.update("insert into reservation_time (start_at) values (?)", LocalTime.of(10, 0));
-        jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)", "이름", "설명",
-                "썸네일");
-        jdbcTemplate.update("insert into member (name, email, password, role) values (?, ?, ?, ?)", "아마", "이메일",
-                "비밀번호", "ADMIN");
-        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
-                FUTURE_DATE_TEXT, 1, 1, 1);
+        Member member = new Member(1L, "아마", "이메일", "비밀번호", "ADMIN");
+        Theme theme = new Theme(1L, "이름1", "설명1", "썸네일1");
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+
+        themeRepository.add(theme);
+        reservationTimeRepository.add(reservationTime);
+        memberRepository.add(member);
+        reservationRepository.add(
+                Reservation.createWithoutId(member, LocalDate.now().plusDays(1), reservationTime, theme));
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
@@ -197,14 +227,16 @@ public class ReservationApiTest {
     @DisplayName("존재하지 않는 예약을 삭제할 수 없다.")
     @Test
     void cannotDeleteReservationByIdWhenNotExist() {
-        jdbcTemplate.update("insert into reservation_time (start_at) values (?)", LocalTime.of(10, 0));
-        jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)", "이름", "설명",
-                "썸네일");
-        jdbcTemplate.update("insert into member (name, email, password, role) values (?, ?, ?, ?)", "아마", "이메일",
-                "비밀번호", "ADMIN");
-        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
-                FUTURE_DATE_TEXT, 1, 1, 1);
+        Member member = new Member(1L, "아마", "이메일", "비밀번호", "ADMIN");
+        Theme theme = new Theme(1L, "이름1", "설명1", "썸네일1");
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
 
+        themeRepository.add(theme);
+        reservationTimeRepository.add(reservationTime);
+        memberRepository.add(member);
+        reservationRepository.add(
+                Reservation.createWithoutId(member, LocalDate.now().plusDays(1), reservationTime, theme));
+        
         RestAssured.given().log().all()
                 .when().delete("/reservations/2")
                 .then().log().all()

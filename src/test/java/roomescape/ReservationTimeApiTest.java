@@ -15,6 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.Member;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.repository.MemberRepository;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -24,6 +32,18 @@ public class ReservationTimeApiTest {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    ThemeRepository themeRepository;
+
+    @Autowired
+    MemberRepository memberRepository;
+
+    @Autowired
+    ReservationRepository reservationRepository;
+
+    @Autowired
+    ReservationTimeRepository reservationTimeRepository;
 
     @BeforeEach
     void setUp() {
@@ -56,7 +76,7 @@ public class ReservationTimeApiTest {
     @DisplayName("이미 존재하는 예약 가능 시간은 추가할 수 없다.")
     @Test
     void cannotCreateReservationTimeWhenExist() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        reservationTimeRepository.add(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
 
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
@@ -86,8 +106,8 @@ public class ReservationTimeApiTest {
     @DisplayName("예약 가능 시간을 조회할 수 있다")
     @Test
     void canResponseAllReservationTimes() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00");
+        reservationTimeRepository.add(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
+        reservationTimeRepository.add(ReservationTime.createWithoutId(LocalTime.of(11, 0)));
 
         RestAssured.given().log().all()
                 .when().get("/times")
@@ -99,13 +119,16 @@ public class ReservationTimeApiTest {
     @DisplayName("예약 여부와 함께 예약 가능 시간을 조회할 수 있다")
     @Test
     void canResponseAvailableReservationTime() {
-        jdbcTemplate.update("insert into reservation_time (start_at) values (?)", LocalTime.of(10, 0));
-        jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)", "이름", "설명",
-                "썸네일");
-        jdbcTemplate.update("insert into member (name, email, password, role) values (?, ?, ?, ?)", "아마", "이메일",
-                "비밀번호", "ADMIN");
-        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
-                FUTURE_DATE_TEXT, 1, 1, 1);
+        Member member = new Member(1L, "아마", "이메일", "비밀번호", "ADMIN");
+        Theme theme = new Theme(1L, "이름1", "설명1", "썸네일1");
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+
+        themeRepository.add(theme);
+        reservationTimeRepository.add(reservationTime);
+        memberRepository.add(member);
+
+        reservationRepository.add(
+                Reservation.createWithoutId(member, LocalDate.now().plusDays(1), reservationTime, theme));
 
         RestAssured.given().log().all()
                 .when().get("/" + FUTURE_DATE_TEXT + "/1" + "/times")
@@ -125,7 +148,7 @@ public class ReservationTimeApiTest {
     @DisplayName("예약 가능한 시간을 삭제할 수 있다")
     @Test
     void canDeleteReservationTime() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        reservationTimeRepository.add(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
 
         RestAssured.given().log().all()
                 .when().delete("/times/1")
@@ -136,7 +159,7 @@ public class ReservationTimeApiTest {
     @DisplayName("존재하지 않는 시간을 삭제할 수 없다.")
     @Test
     void cannotDeleteReservationTimeWhenNotExist() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        reservationTimeRepository.add(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
 
         RestAssured.given().log().all()
                 .when().delete("/times/2")
@@ -147,13 +170,16 @@ public class ReservationTimeApiTest {
     @DisplayName("이미 해당 시간에 대해 예약 데이터가 존재한다면 삭제가 불가능하다")
     @Test
     void cannotDeleteReservationTimeWhenExistReservation() {
-        jdbcTemplate.update("insert into reservation_time (start_at) values (?)", LocalTime.of(10, 0));
-        jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)", "이름", "설명",
-                "썸네일");
-        jdbcTemplate.update("insert into member (name, email, password, role) values (?, ?, ?, ?)", "아마", "이메일",
-                "비밀번호", "ADMIN");
-        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values (?, ?, ?, ?)",
-                FUTURE_DATE_TEXT, 1, 1, 1);
+        Member member = new Member(1L, "아마", "이메일", "비밀번호", "ADMIN");
+        Theme theme = new Theme(1L, "이름1", "설명1", "썸네일1");
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+
+        themeRepository.add(theme);
+        reservationTimeRepository.add(reservationTime);
+        memberRepository.add(member);
+
+        reservationRepository.add(
+                Reservation.createWithoutId(member, LocalDate.now().plusDays(1), reservationTime, theme));
 
         RestAssured.given().log().all()
                 .when().delete("/times/1")
