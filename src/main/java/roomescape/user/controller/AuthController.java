@@ -11,22 +11,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.user.dto.request.LoginRequest;
 import roomescape.user.dto.response.LoginCheckResponse;
-import roomescape.user.service.UserService;
+import roomescape.user.service.AuthService;
 
 @RestController
 public class AuthController {
 
     public static final String TOKEN_KEY = "token";
 
-    private final UserService userService;
+    private final AuthService authService;
 
-    public AuthController(UserService userService) {
-        this.userService = userService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/login")
     public void login(@RequestBody @Valid LoginRequest loginRequest, HttpServletResponse response) {
-        String accessToken = userService.login(loginRequest);
+        String accessToken = authService.login(loginRequest);
         Cookie cookie = new Cookie(TOKEN_KEY, accessToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
@@ -42,6 +42,6 @@ public class AuthController {
 
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> checkLogin(@CookieValue(name = TOKEN_KEY) String token) {
-        return ResponseEntity.ok(userService.checkUserByToken(token));
+        return ResponseEntity.ok(authService.checkUserByToken(token));
     }
 }

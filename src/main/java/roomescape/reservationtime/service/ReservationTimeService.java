@@ -44,6 +44,11 @@ public class ReservationTimeService {
         }
     }
 
+    public ReservationTime getReservationTimeById(Long id) {
+        return reservationTimeDao.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 시간입니다."));
+    }
+
     public List<ReservationTimeResponse> getReservationTimes() {
         return reservationTimeDao.findAll().stream()
                 .map(ReservationTimeResponse::from)

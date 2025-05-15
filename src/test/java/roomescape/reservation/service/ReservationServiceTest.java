@@ -18,14 +18,15 @@ import roomescape.reservation.dto.response.AdminReservationPageResponse;
 import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.repository.ReservationDao;
 import roomescape.reservationtime.repository.ReservationTimeDao;
+import roomescape.reservationtime.service.ReservationTimeService;
 import roomescape.theme.repository.ThemeDao;
+import roomescape.theme.service.ThemeService;
 import roomescape.user.repository.UserDao;
+import roomescape.user.service.UserService;
 
 class ReservationServiceTest {
 
     private ReservationService reservationService;
-    private ReservationTimeDao reservationTimeDao;
-    private ThemeDao themeDao;
     private JdbcTemplate jdbcTemplate;
 
 
@@ -36,11 +37,16 @@ class ReservationServiceTest {
                 .addScript("data.sql")
                 .build();
         jdbcTemplate = new JdbcTemplate(dataSource);
+
         ReservationDao reservationDao = new ReservationDao(jdbcTemplate);
-        reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
-        themeDao = new ThemeDao(jdbcTemplate);
+        ReservationTimeDao reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
+        ThemeDao themeDao = new ThemeDao(jdbcTemplate);
         UserDao userDao = new UserDao(dataSource);
-        reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao, userDao);
+
+        ReservationTimeService reservationTimeService = new ReservationTimeService(reservationDao, reservationTimeDao);
+        ThemeService themeService = new ThemeService(reservationDao, reservationTimeDao, themeDao);
+        UserService userService = new UserService(userDao);
+        reservationService = new ReservationService(reservationDao, userService, reservationTimeService, themeService);
     }
 
     @Test

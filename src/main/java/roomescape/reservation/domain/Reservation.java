@@ -20,6 +20,10 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public Reservation(User user, LocalDate date, ReservationTime reservationTime, Theme theme) {
+        this(null, user, date, reservationTime, theme);
+    }
+
     public Long getId() {
         return id;
     }

@@ -45,6 +45,11 @@ public class ThemeService {
         return CreateThemeResponse.from(saved);
     }
 
+    public Theme getThemeById(Long id) {
+        return themeDao.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 테마입니다."));
+    }
+
     public AdminThemePageResponse getThemesByPage(int page) {
         int totalThemes = themeDao.countTotalTheme();
         PageInfo pageInfo = PaginationUtil.calculatePageInfo(page, totalThemes);
