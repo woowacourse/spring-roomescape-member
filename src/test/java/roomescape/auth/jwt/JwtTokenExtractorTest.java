@@ -9,22 +9,16 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.custom.AuthorizationException;
 
 class JwtTokenExtractorTest {
 
-    private JwtTokenExtractor jwtTokenExtractor;
-    private Key key;
-
-    @BeforeEach
-    void setUp() {
-        key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-        String base64SecretKey = Base64.getEncoder().encodeToString(key.getEncoded());
-        jwtTokenExtractor = new JwtTokenExtractor(base64SecretKey);
-    }
+    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final JwtTokenExtractor jwtTokenExtractor = new JwtTokenExtractor(
+            Base64.getEncoder().encodeToString(key.getEncoded())
+    );
 
     private String createToken(String name, String role, Date expiration) {
         return Jwts.builder()

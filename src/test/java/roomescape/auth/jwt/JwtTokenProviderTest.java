@@ -9,7 +9,6 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.member.domain.Member;
@@ -17,16 +16,11 @@ import roomescape.member.domain.Role;
 
 class JwtTokenProviderTest {
 
-    private JwtTokenProvider jwtTokenProvider;
-    private Key key;
-
-    @BeforeEach
-    void setUp() {
-        key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-        String base64SecretKey = Base64.getEncoder().encodeToString(key.getEncoded());
-        final long expirationMillis = 3600000; // 1시간
-        jwtTokenProvider = new JwtTokenProvider(base64SecretKey, expirationMillis);
-    }
+    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final String base64SecretKey = Base64.getEncoder().encodeToString(key.getEncoded());
+    private final long expirationMillis = 3600000; // 1시간
+    private final JwtTokenProvider jwtTokenProvider
+            = new JwtTokenProvider(base64SecretKey, expirationMillis);
 
     @DisplayName("Member 정보로 JWT 토큰을 생성한다")
     @Test
