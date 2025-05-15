@@ -1,23 +1,24 @@
-package roomescape.global.auth;
+package roomescape.domain.login;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.model.Member;
 import roomescape.domain.member.service.MemberService;
-import roomescape.global.dto.TokenRequest;
+import roomescape.global.auth.JwtProvider;
+import roomescape.global.auth.JwtRequest;
 
 @Service
-public class AuthService {
+public class LoginService {
 
     private final JwtProvider jwtProvider;
     private final MemberService memberService;
 
-    public AuthService(JwtProvider jwtProvider, MemberService memberService) {
+    public LoginService(JwtProvider jwtProvider, MemberService memberService) {
         this.jwtProvider = jwtProvider;
         this.memberService = memberService;
     }
 
-    public String requestLogin(TokenRequest tokenRequest) {
-        Member member = memberService.getMemberOf(tokenRequest.email(), tokenRequest.password());
+    public String requestLogin(LoginRequest loginRequest) {
+        Member member = memberService.getMemberOf(loginRequest.email(), loginRequest.password());
         return jwtProvider.createToken(JwtRequest.from(member));
     }
 }

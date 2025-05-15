@@ -7,9 +7,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.model.Role;
-import roomescape.global.auth.Cookies;
 import roomescape.global.auth.JwtProvider;
 import roomescape.global.exception.AuthorizedException;
+import roomescape.global.utils.Cookies;
 
 @Component
 public class CheckLoginInterceptor implements HandlerInterceptor {

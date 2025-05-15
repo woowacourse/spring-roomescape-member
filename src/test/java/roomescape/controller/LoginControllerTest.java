@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.login.LoginRequest;
 import roomescape.domain.member.dto.request.MemberRequestDto;
 import roomescape.domain.member.dto.response.MemberResponseDto;
 import roomescape.domain.member.service.MemberService;
-import roomescape.global.dto.TokenRequest;
 
 @Sql(scripts = {"/test-schema.sql"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -43,11 +43,11 @@ public class LoginControllerTest {
     @Test
     @DisplayName("로그인에 성공하면 토큰이 담긴 쿠키를 받는다")
     void login_success_returns_token_cookie() {
-        TokenRequest tokenRequest = new TokenRequest(TEST_EMAIL, TEST_PASSWORD);
+        LoginRequest loginRequest = new LoginRequest(TEST_EMAIL, TEST_PASSWORD);
 
         Response response = given().log().all()
             .contentType(ContentType.JSON)
-            .body(tokenRequest)
+            .body(loginRequest)
             .when().post("/login")
             .then().log().all()
             .statusCode(200)
@@ -61,11 +61,11 @@ public class LoginControllerTest {
     @Test
     @DisplayName("잘못된 이메일이나 비밀번호로 로그인하면 실패한다")
     void login_with_invalid_credentials_fails() {
-        TokenRequest tokenRequest = new TokenRequest("wrong@example.com", "wrongpassword");
+        LoginRequest loginRequest = new LoginRequest("wrong@example.com", "wrongpassword");
 
         given().log().all()
             .contentType(ContentType.JSON)
-            .body(tokenRequest)
+            .body(loginRequest)
             .when().post("/login")
             .then().log().all()
             .statusCode(400); // 잘못된 요청으로 400 Bad Request 반환
@@ -75,10 +75,10 @@ public class LoginControllerTest {
     @DisplayName("로그인 상태 확인 API는 로그인된 사용자의 이름을 반환한다")
     void check_login_returns_user_name() {
         // 먼저 로그인하여 토큰 쿠키 획득
-        TokenRequest tokenRequest = new TokenRequest(TEST_EMAIL, TEST_PASSWORD);
+        LoginRequest loginRequest = new LoginRequest(TEST_EMAIL, TEST_PASSWORD);
         Response loginResponse = given()
             .contentType(ContentType.JSON)
-            .body(tokenRequest)
+            .body(loginRequest)
             .when().post("/login")
             .then().extract().response();
 
@@ -97,10 +97,10 @@ public class LoginControllerTest {
     @DisplayName("로그아웃하면 토큰 쿠키가 만료된다")
     void logout_expires_token_cookie() {
         // 먼저 로그인하여 토큰 쿠키 획득
-        TokenRequest tokenRequest = new TokenRequest(TEST_EMAIL, TEST_PASSWORD);
+        LoginRequest loginRequest = new LoginRequest(TEST_EMAIL, TEST_PASSWORD);
         Response loginResponse = given()
             .contentType(ContentType.JSON)
-            .body(tokenRequest)
+            .body(loginRequest)
             .when().post("/login")
             .then().extract().response();
 

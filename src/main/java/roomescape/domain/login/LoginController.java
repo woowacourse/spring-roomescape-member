@@ -1,4 +1,4 @@
-package roomescape.global.controller;
+package roomescape.domain.login;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -8,30 +8,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.member.model.Member;
 import roomescape.global.annotation.LoginMember;
-import roomescape.global.auth.AuthService;
-import roomescape.global.auth.Cookies;
-import roomescape.global.dto.CheckResponseDto;
-import roomescape.global.dto.TokenRequest;
+import roomescape.global.utils.Cookies;
 
 @RestController
 public class LoginController {
 
-    private final AuthService authService;
+    private final LoginService loginService;
 
-    public LoginController(AuthService authService) {
-        this.authService = authService;
+    public LoginController(LoginService loginService) {
+        this.loginService = loginService;
     }
 
     @PostMapping("/login")
-    public void login(@RequestBody TokenRequest tokenRequest,
+    public void login(@RequestBody LoginRequest loginRequest,
         HttpServletResponse httpServletResponse) {
-        String token = authService.requestLogin(tokenRequest);
+        String token = loginService.requestLogin(loginRequest);
         httpServletResponse.addCookie(Cookies.generate(token));
     }
 
     @GetMapping("/login/check")
-    public CheckResponseDto checkLogin(@LoginMember Member member) {
-        return new CheckResponseDto(member.getName());
+    public LoginResponseDto checkLogin(@LoginMember Member member) {
+        return new LoginResponseDto(member.getName());
     }
 
     @PostMapping("/logout")
