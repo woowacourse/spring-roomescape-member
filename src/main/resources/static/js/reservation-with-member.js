@@ -208,7 +208,7 @@ function applyFilter(event) {
           요청 포맷에 맞게 설정
     */
 
-    fetch(`/admin/reservations/search/?${params.toString()}`, { // 예약 검색 API 호출
+    fetch(`/admin/reservations/search?${params.toString()}`, { // 예약 검색 API 호출
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'

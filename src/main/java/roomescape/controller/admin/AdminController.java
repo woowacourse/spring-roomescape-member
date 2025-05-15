@@ -36,6 +36,7 @@ public class AdminController {
     public ResponseEntity<List<ReservationResponseDto>> getReservationsByCondition(
             @ModelAttribute @Valid final SearchConditionRequest request) {
         final List<ReservationResponseDto> response = reservationService.findByCondition(request);
+
         return ResponseEntity.ok(response);
     }
 }

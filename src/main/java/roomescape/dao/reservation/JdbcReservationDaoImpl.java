@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
 
     public JdbcReservationDaoImpl(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.insertActor = new SimpleJdbcInsert(jdbcTemplate)
+        insertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
     }
@@ -63,35 +64,58 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public List<Reservation> findByDate(final LocalDate dateFrom, final LocalDate dateTo) {
-        final String query = """
-                   select r.id as reservation_id, 
-                
-                          m.id as member_id, 
-                          m.name as member_name,
-                          m.email as member_email,
-                          m.password as member_password,
-                          m.role as member_role,
-                
-                          r.date,
-                
-                          rt.id as time_id,
-                          rt.start_at as time_value,
-                
-                          t.id as theme_id,
-                          t.name as theme_name,
-                          t.description as theme_description,
-                          t.thumbnail as theme_thumbnail
-                   from reservation as r
-                
-                   inner join member as m on r.member_id = m.id
-                   inner join reservation_time as rt on r.time_id = rt.id
-                   inner join theme as t on r.theme_id = t.id
-                
-                   where date >= ? and date <= ?
-                """;
+    public List<Reservation> findByThemeIdAndMemberIDAndDateFromAndDateTo(
+            final LocalDate dateFrom,
+            final LocalDate dateTo,
+            final Long themeId,
+            final Long memberId
+    ) {
+        final StringBuilder query = new StringBuilder("""
+                SELECT
+                                r.id AS reservation_id,
+                                m.id AS member_id,
+                                m.name AS member_name,
+                                m.email AS member_email,
+                                m.password AS member_password,
+                                m.role AS member_role,
+                                r.date,
+                                t.id AS time_id,
+                                t.start_at AS time_value,
+                                th.id AS theme_id,
+                                th.name AS theme_name,
+                                th.description AS theme_description,
+                                th.thumbnail AS theme_thumbnail
+                            FROM reservation AS r
+                            JOIN reservation_time AS t ON r.time_id = t.id
+                            JOIN theme AS th ON r.theme_id = th.id
+                            JOIN member AS m ON r.member_id = m.id
+                            WHERE 1=1
+                """);
+        final List<Object> params = getDynamicQueryCondition(themeId, memberId, dateFrom, dateTo, query);
 
-        return jdbcTemplate.query(query, getReservationRowMapper(), dateFrom, dateTo);
+        return jdbcTemplate.query(query.toString(), params.toArray(), getReservationRowMapper());
+    }
+
+    private List<Object> getDynamicQueryCondition(final Long themeId, final Long memberId, final LocalDate dateFrom,
+                                                  final LocalDate dateTo, final StringBuilder query) {
+        final List<Object> params = new ArrayList<>();
+        if (themeId != null) {
+            query.append(" AND th.id = ?");
+            params.add(themeId);
+        }
+        if (memberId != null) {
+            query.append(" AND m.id = ?");
+            params.add(memberId);
+        }
+        if (dateFrom != null) {
+            query.append(" AND r.date >= ?");
+            params.add(dateFrom);
+        }
+        if (dateTo != null) {
+            query.append(" AND r.date <= ?");
+            params.add(dateTo);
+        }
+        return params;
     }
 
     private RowMapper<Reservation> getReservationRowMapper() {
@@ -135,7 +159,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public void saveReservation(Reservation reservation) {
+    public void saveReservation(final Reservation reservation) {
         final Map<String, Object> parameters = new HashMap<>(4);
         parameters.put("member_id", reservation.getMemberId());
         parameters.put("date", reservation.getDate());
@@ -145,7 +169,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
         try {
             final Number newId = insertActor.executeAndReturnKey(parameters);
             reservation.setId(newId.longValue());
-        } catch (DataIntegrityViolationException e) {
+        } catch (final DataIntegrityViolationException e) {
             throw new InvalidReservationException("존재하지 않는 회원, 테마, 시간이 존재합니다.");
         }
     }

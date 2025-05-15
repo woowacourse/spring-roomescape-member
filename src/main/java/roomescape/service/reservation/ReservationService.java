@@ -143,13 +143,10 @@ public class ReservationService {
         final LocalDate dateFrom = request.dateFrom();
         final LocalDate dateTo = request.dateTo();
 
-        final List<Reservation> reservations = reservationDao.findByDate(dateFrom, dateTo);
-        final List<Reservation> filterReservations = reservations.stream()
-                .filter(reservation -> reservation.getMemberId().equals(memberId))
-                .filter(reservation -> reservation.getThemeId().equals(themeId))
-                .toList();
+        final List<Reservation> reservations = reservationDao.findByThemeIdAndMemberIDAndDateFromAndDateTo(
+                dateFrom, dateTo, themeId, memberId);
 
-        return filterReservations.stream()
+        return reservations.stream()
                 .map(ReservationResponseDto::from)
                 .toList();
     }

@@ -8,7 +8,10 @@ public interface ReservationDao {
 
     List<Reservation> findAllReservation();
 
-    List<Reservation> findByDate(LocalDate dateFrom, LocalDate dateTo);
+    List<Reservation> findByThemeIdAndMemberIDAndDateFromAndDateTo(LocalDate dateFrom,
+                                                                   LocalDate dateTo,
+                                                                   Long themeId,
+                                                                   Long memberId);
 
     void saveReservation(Reservation reservation);
 

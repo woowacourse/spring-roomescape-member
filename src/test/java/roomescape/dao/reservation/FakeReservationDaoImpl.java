@@ -19,26 +19,33 @@ public class FakeReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public List<Reservation> findByDate(final LocalDate dateFrom, final LocalDate dateTo) {
+    public List<Reservation> findByThemeIdAndMemberIDAndDateFromAndDateTo(
+            final LocalDate dateFrom,
+            final LocalDate dateTo,
+            final Long themeId,
+            final Long memberId
+    ) {
         return reservations.stream()
                 .filter(reservation -> !reservation.getDate().isBefore(dateFrom))
                 .filter(reservation -> !reservation.getDate().isAfter(dateTo))
+                .filter(reservation -> reservation.getThemeId().equals(themeId))
+                .filter(reservation -> reservation.getMemberId().equals(memberId))
                 .toList();
     }
 
     @Override
-    public void saveReservation(Reservation reservation) {
+    public void saveReservation(final Reservation reservation) {
         reservation.setId(index.getAndIncrement());
         reservations.add(reservation);
     }
 
     @Override
-    public void deleteReservation(Long id) {
-        Reservation reservation = findById(id);
+    public void deleteReservation(final Long id) {
+        final Reservation reservation = findById(id);
         reservations.remove(reservation);
     }
 
-    private Reservation findById(long id) {
+    private Reservation findById(final long id) {
         return reservations.stream()
                 .filter(reservation -> reservation.getId() == id)
                 .findFirst()
@@ -46,11 +53,11 @@ public class FakeReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public Boolean existsReservationBy(LocalDate date, Long timeId, Long themeId) {
+    public Boolean existsReservationBy(final LocalDate date, final Long timeId, final Long themeId) {
         return reservations.stream()
                 .anyMatch(reservation ->
                         reservation.getDate().equals(date)
-                                && reservation.getTimeId().equals(timeId)
-                                && reservation.getThemeId().equals(themeId));
+                        && reservation.getTimeId().equals(timeId)
+                        && reservation.getThemeId().equals(themeId));
     }
 }
