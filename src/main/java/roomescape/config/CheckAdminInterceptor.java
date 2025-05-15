@@ -5,17 +5,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.Member;
+import roomescape.service.AuthService;
 import roomescape.service.MemberService;
-import roomescape.util.CookieUtil;
 
 public class CheckAdminInterceptor implements HandlerInterceptor {
 
     private final MemberService memberService;
-    private final CookieUtil cookieUtil;
+    private final AuthService authService;
 
-    public CheckAdminInterceptor(final MemberService memberService, final CookieUtil cookieUtil) {
+    public CheckAdminInterceptor(final MemberService memberService, final AuthService authService) {
         this.memberService = memberService;
-        this.cookieUtil = cookieUtil;
+        this.authService = authService;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
             throw new IllegalAccessException("[ERROR] 유효한 사용자가 아닙니다.");
         }
 
-        Long memberId = cookieUtil.getSubjectFromCookie(cookies);
+        Long memberId = authService.getSubjectFromCookie(cookies);
         Member member = memberService.findMemberById(memberId);
 
         if (isInvalidMember(member)) {

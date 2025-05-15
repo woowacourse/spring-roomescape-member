@@ -1,4 +1,4 @@
-package roomescape.util;
+package roomescape.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -8,9 +8,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.domain.Member;
 
 @Component
-public class CookieUtil {
+public class AuthService {
 
     @Value("${jwt.secret}")
     private String SECRET_KEY;
@@ -59,5 +60,15 @@ public class CookieUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public String makeToken(Member member) {
+
+        return Jwts.builder()
+                .setSubject(member.getId().toString())
+                .claim("name", member.getName())
+                .claim("role", member.getRole())
+                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .compact();
     }
 }

@@ -8,17 +8,17 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.Member;
+import roomescape.service.AuthService;
 import roomescape.service.MemberService;
-import roomescape.util.CookieUtil;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberService memberService;
-    private final CookieUtil cookieUtil;
+    private final AuthService authService;
 
-    public LoginMemberArgumentResolver(final MemberService memberService, final CookieUtil cookieUtil) {
+    public LoginMemberArgumentResolver(final MemberService memberService, final AuthService authService) {
         this.memberService = memberService;
-        this.cookieUtil = cookieUtil;
+        this.authService = authService;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
-        Long id = cookieUtil.getSubjectFromCookie(cookies);
+        Long id = authService.getSubjectFromCookie(cookies);
 
         return memberService.findMemberById(id);
     }

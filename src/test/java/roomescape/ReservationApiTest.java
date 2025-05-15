@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Member;
-import roomescape.util.TokenUtil;
+import roomescape.service.AuthService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -29,7 +29,7 @@ public class ReservationApiTest {
     JdbcTemplate jdbcTemplate;
 
     @Autowired
-    TokenUtil tokenUtil;
+    AuthService authService;
 
     @BeforeEach
     void setUp() {
@@ -90,7 +90,7 @@ public class ReservationApiTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", tokenUtil.makeToken(member))
+                .cookie("token", authService.makeToken(member))
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -116,7 +116,7 @@ public class ReservationApiTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", tokenUtil.makeToken(member))
+                .cookie("token", authService.makeToken(member))
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -142,7 +142,7 @@ public class ReservationApiTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", tokenUtil.makeToken(member))
+                .cookie("token", authService.makeToken(member))
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -170,7 +170,7 @@ public class ReservationApiTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", tokenUtil.makeToken(member))
+                .cookie("token", authService.makeToken(member))
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()

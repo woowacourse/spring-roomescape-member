@@ -5,6 +5,7 @@ import java.util.Objects;
 public class Member {
 
     private static final int MAX_LENGTH = 255;
+    private static final Long DEFAULT_ID = 1L;
 
     private Long id;
     private String name;
@@ -19,6 +20,13 @@ public class Member {
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+    public static Member createMemberWithoutId(final String name,
+                                               final String email,
+                                               final String password,
+                                               final String role) {
+        return new Member(DEFAULT_ID, name, email, password, role);
     }
 
     public String getName() {

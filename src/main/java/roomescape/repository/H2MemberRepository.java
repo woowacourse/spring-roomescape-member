@@ -1,10 +1,13 @@
 package roomescape.repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 
@@ -24,9 +27,22 @@ public class H2MemberRepository implements MemberRepository {
     }
 
     private final JdbcTemplate template;
+    private SimpleJdbcInsert insertMember;
 
     public H2MemberRepository(final JdbcTemplate template) {
         this.template = template;
+    }
+
+    @Override
+    public long add(final Member member) {
+        insertMember = initializeSimpleJdbcInsert();
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("name", member.getName());
+        parameters.put("email", member.getEmail());
+        parameters.put("password", member.getPassword());
+        parameters.put("role", member.getRole());
+
+        return insertMember.executeAndReturnKey(parameters).longValue();
     }
 
     @Override
@@ -65,5 +81,14 @@ public class H2MemberRepository implements MemberRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    private SimpleJdbcInsert initializeSimpleJdbcInsert() {
+        if (insertMember == null) {
+            this.insertMember = new SimpleJdbcInsert(template)
+                    .withTableName("member")
+                    .usingGeneratedKeyColumns("id");
+        }
+        return insertMember;
     }
 }

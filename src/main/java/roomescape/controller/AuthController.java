@@ -11,34 +11,31 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Member;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.LoginCheckResponse;
+import roomescape.service.AuthService;
 import roomescape.service.MemberService;
-import roomescape.util.CookieUtil;
-import roomescape.util.TokenUtil;
 
 @RestController
 public class AuthController {
     private final MemberService memberService;
-    private final TokenUtil tokenUtil;
-    private final CookieUtil cookieUtil;
+    private final AuthService authService;
 
-    public AuthController(final MemberService memberService, final TokenUtil tokenUtil, final CookieUtil cookieUtil) {
+    public AuthController(final MemberService memberService, final AuthService authService) {
         this.memberService = memberService;
-        this.tokenUtil = tokenUtil;
-        this.cookieUtil = cookieUtil;
+        this.authService = authService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
         Member member = memberService.findMemberWithEmailAndPassword(request);
-        String token = tokenUtil.makeToken(member);
-        CookieUtil.add(response, token);
+        String token = authService.makeToken(member);
+        AuthService.add(response, token);
 
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-        cookieUtil.addExpiredCookie(request, response);
+        authService.addExpiredCookie(request, response);
 
         return ResponseEntity.ok().build();
     }
