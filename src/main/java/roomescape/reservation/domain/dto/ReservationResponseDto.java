@@ -2,25 +2,27 @@ package roomescape.reservation.domain.dto;
 
 import java.time.LocalDate;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservationTime.domain.dto.ReservationTimeResponseDto;
+import roomescape.reservationtime.domain.dto.ReservationTimeResponseDto;
 import roomescape.theme.domain.dto.ThemeResponseDto;
+import roomescape.user.domain.dto.UserResponseDto;
 
 public record ReservationResponseDto(
         Long id,
-        String name,
         LocalDate date,
         ReservationTimeResponseDto time,
-        ThemeResponseDto theme
+        ThemeResponseDto theme,
+        UserResponseDto user
 ) {
     public static ReservationResponseDto from(Reservation reservation,
                                               ReservationTimeResponseDto reservationTimeResponseDto,
-                                              ThemeResponseDto themeResponseDto) {
+                                              ThemeResponseDto themeResponseDto,
+                                              UserResponseDto userResponseDto) {
         return new ReservationResponseDto(
                 reservation.getId(),
-                reservation.getName(),
                 reservation.getDate(),
                 reservationTimeResponseDto,
-                themeResponseDto
+                themeResponseDto,
+                userResponseDto
         );
     }
 }

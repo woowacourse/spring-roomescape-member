@@ -3,19 +3,22 @@ package roomescape.reservation.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import roomescape.admin.domain.dto.SearchReservationRequestDto;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.dto.ReservationRequestDto;
 import roomescape.reservation.domain.dto.ReservationResponseDto;
 import roomescape.reservation.exception.InvalidReservationTimeException;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservationTime.domain.ReservationTime;
-import roomescape.reservationTime.domain.dto.ReservationTimeResponseDto;
-import roomescape.reservationTime.exception.DuplicateReservationException;
-import roomescape.reservationTime.repository.ReservationTimeRepository;
+import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.domain.dto.ReservationTimeResponseDto;
+import roomescape.reservationtime.exception.DuplicateReservationException;
+import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.dto.ThemeResponseDto;
 import roomescape.theme.exception.InvalidThemeException;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.user.domain.User;
+import roomescape.user.domain.dto.UserResponseDto;
 
 @Service
 public class ReservationService {
@@ -38,16 +41,16 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-    public ReservationResponseDto add(ReservationRequestDto requestDto) {
-        Reservation reservation = convertReservation(requestDto);
+    public ReservationResponseDto add(ReservationRequestDto requestDto, User user) {
+        Reservation reservation = convertReservation(requestDto, user);
         validateDuplicateDateTime(reservation);
-        Reservation savedReservation = repository.add(reservation);
+        Reservation savedReservation = repository.save(reservation);
         return convertReservationResponseDto(savedReservation);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         repository.findByIdOrThrow(id);
-        repository.delete(id);
+        repository.deleteById(id);
     }
 
     private void validateDuplicateDateTime(Reservation inputReservation) {
@@ -56,23 +59,34 @@ public class ReservationService {
                 inputReservation.getReservationTime()
         );
         if (exists) {
-            throw new DuplicateReservationException("이미 예약되어 있는 시간입니다.");
+            throw new DuplicateReservationException();
         }
     }
 
-    private Reservation convertReservation(ReservationRequestDto dto) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
-                .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간입니다."));
-        Theme theme = themeRepository.findById(dto.themeId())
-                .orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마입니다."));
+    public List<ReservationResponseDto> findReservationsByUserAndThemeAndFromAndTo(
+            SearchReservationRequestDto searchReservationRequestDto) {
+        List<Reservation> reservations = repository.findReservationsByUserAndThemeAndFromAndTo(
+                searchReservationRequestDto);
 
-        return dto.toEntity(reservationTime, theme);
+        return reservations.stream()
+                .map(this::convertReservationResponseDto)
+                .toList();
+    }
+
+    private Reservation convertReservation(ReservationRequestDto dto, User user) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
+                .orElseThrow(InvalidReservationTimeException::new);
+        Theme theme = themeRepository.findById(dto.themeId())
+                .orElseThrow(InvalidThemeException::new);
+
+        return dto.toEntity(reservationTime, theme, user);
     }
 
     private ReservationResponseDto convertReservationResponseDto(Reservation reservation) {
         ReservationTimeResponseDto reservationTimeResponseDto = ReservationTimeResponseDto.of(
                 reservation.getReservationTime());
         ThemeResponseDto themeResponseDto = ThemeResponseDto.of(reservation.getTheme());
-        return ReservationResponseDto.from(reservation, reservationTimeResponseDto, themeResponseDto);
+        UserResponseDto userResponseDto = UserResponseDto.of(reservation.getUser());
+        return ReservationResponseDto.from(reservation, reservationTimeResponseDto, themeResponseDto, userResponseDto);
     }
 }

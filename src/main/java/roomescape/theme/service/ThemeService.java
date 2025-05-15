@@ -33,11 +33,11 @@ public class ThemeService {
 
     public ThemeResponseDto add(ThemeRequestDto dto) {
         Theme notSavedTheme = dto.toEntity();
-        Theme savedTheme = repository.add(notSavedTheme);
+        Theme savedTheme = repository.save(notSavedTheme);
         return ThemeResponseDto.of(savedTheme);
     }
 
     public void deleteById(Long id) {
-        repository.delete(id);
+        repository.deleteById(id);
     }
 }

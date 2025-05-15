@@ -9,15 +9,25 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.global.common.KeyHolderManager;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.fixture.ReservationFixture;
-import roomescape.reservationTime.domain.ReservationTime;
-import roomescape.reservationTime.repository.JdbcReservationTimeRepository;
-import roomescape.theme.domain.Theme;
+import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
+import roomescape.theme.ThemeTestDataConfig;
 import roomescape.theme.repository.JdbcThemeRepository;
+import roomescape.user.MemberTestDataConfig;
+import roomescape.user.repository.JdbcUserRepository;
 
 @JdbcTest
-@Import({JdbcReservationRepository.class, JdbcReservationTimeRepository.class, JdbcThemeRepository.class})
+@Import({JdbcReservationRepository.class,
+        JdbcReservationTimeRepository.class,
+        JdbcThemeRepository.class,
+        ThemeTestDataConfig.class,
+        MemberTestDataConfig.class,
+        KeyHolderManager.class,
+        JdbcUserRepository.class
+})
 class JdbcReservationRepositoryTest {
 
     @Autowired
@@ -25,23 +35,28 @@ class JdbcReservationRepositoryTest {
     @Autowired
     private JdbcReservationTimeRepository reservationTimeRepository;
     @Autowired
-    private JdbcThemeRepository themeRepository;
+    private ThemeTestDataConfig themeTestDataConfig;
+    @Autowired
+    private MemberTestDataConfig memberTestDataConfig;
+
+    private Reservation createReservation(int plusDays, ReservationTime time) {
+        LocalDate date = LocalDate.now().plusDays(plusDays);
+        return ReservationFixture.create(date, time, themeTestDataConfig.getSavedTheme(),
+                memberTestDataConfig.getSavedUser());
+    }
 
     @DisplayName("예약 시간에 해당하는 예약의 존재 여부를 알 수 있다.")
     @Test
     void existsByReservationTime() {
         // given
-        ReservationTime reservationTime = reservationTimeRepository.add(new ReservationTime(LocalTime.now()));
+        reservationTimeRepository.save(new ReservationTime(LocalTime.now().minusHours(2)));
+        ReservationTime reservationTime2 = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
 
-        Theme theme = new Theme("name1", "dd", "tt");
-        Theme savedTheme = themeRepository.add(theme);
-
-        Reservation reservation = ReservationFixture.create("r1", LocalDate.now().plusMonths(2), reservationTime,
-                savedTheme);
-        reservationRepository.add(reservation);
+        Reservation reservation = createReservation(1, reservationTime2);
+        reservationRepository.save(reservation);
 
         // when
-        boolean actual = reservationRepository.existsByReservationTime(reservationTime);
+        boolean actual = reservationRepository.existsByReservationTime(reservationTime2);
 
         // then
         assertThat(actual).isTrue();

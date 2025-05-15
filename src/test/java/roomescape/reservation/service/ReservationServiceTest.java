@@ -1,27 +1,35 @@
 package roomescape.reservation.service;
 
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.globalException.ConflictException;
+import roomescape.global.exception.ConflictException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.dto.ReservationRequestDto;
 import roomescape.reservation.fixture.ReservationFixture;
 import roomescape.reservation.repository.JdbcReservationRepository;
-import roomescape.reservationTime.domain.ReservationTime;
-import roomescape.reservationTime.fixture.ReservationTimeFixture;
-import roomescape.reservationTime.repository.JdbcReservationTimeRepository;
+import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.fixture.ReservationTimeFixture;
+import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.user.domain.Role;
+import roomescape.user.domain.User;
+import roomescape.user.fixture.UserFixture;
+import roomescape.user.repository.UserRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@DirtiesContext(classMode = AFTER_CLASS)
 class ReservationServiceTest {
 
     @Autowired
@@ -32,21 +40,32 @@ class ReservationServiceTest {
     private JdbcReservationTimeRepository reservationTimeRepository;
     @Autowired
     private ThemeRepository themeRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    private Theme savedTheme;
+    private User savedUser;
+
+    @BeforeEach
+    void beforeEach() {
+        savedTheme = themeRepository.save(new Theme("name1", "dd", "tt"));
+        savedUser = userRepository.save(UserFixture.create(Role.ROLE_MEMBER, "n1", "e1", "p1"));
+    }
 
     private ReservationTime createAndSaveReservationTime(LocalTime time) {
         ReservationTime reservationTime = ReservationTimeFixture.create(time);
-        return reservationTimeRepository.add(reservationTime);
+        return reservationTimeRepository.save(reservationTime);
     }
 
-    private Reservation createReservation(String name, int plusDays, ReservationTime time, Theme theme) {
+    private Reservation createReservation(int plusDays, ReservationTime time) {
         LocalDate date = LocalDate.now().plusDays(plusDays);
-        return Reservation.of(name, date, time, theme);
+        return Reservation.of(date, time, savedTheme, savedUser);
     }
 
-    private ReservationRequestDto createRequestDto(String name, int plusDays, Long timeId, Long themeId) {
+    private ReservationRequestDto createRequestDto(int plusDays, Long timeId, Long themeId) {
         LocalDate date = LocalDate.now().plusDays(plusDays);
 
-        return ReservationFixture.createRequestDto(name, date, timeId, themeId);
+        return ReservationFixture.createRequestDto(date, timeId, themeId);
     }
 
     @Nested
@@ -58,25 +77,22 @@ class ReservationServiceTest {
         void add_failure_byDuplicateDateTime() {
             // given
             ReservationTime reservationTime1 = createAndSaveReservationTime(LocalTime.of(11, 33));
-
-            Theme savedTheme = themeRepository.add(new Theme("name1", "dd", "tt"));
-
-            Reservation reservation1 = createReservation("kali", 1, reservationTime1, savedTheme);
+            Reservation reservation1 = createReservation(1, reservationTime1);
 
             ReservationTime reservationTime2 = createAndSaveReservationTime(LocalTime.of(22, 44));
-            Reservation reservation2 = createReservation("pobi", 2, reservationTime2, savedTheme);
+            Reservation reservation2 = createReservation(2, reservationTime2);
 
-            reservationRepository.add(reservation1);
-            reservationRepository.add(reservation2);
+            reservationRepository.save(reservation1);
+            reservationRepository.save(reservation2);
 
             // when & then
             LocalDate duplicateDate = reservation1.getDate();
             Long duplicateReservationTimeId = reservationTime1.getId();
-            ReservationRequestDto requestDto = ReservationFixture.createRequestDto("jason", duplicateDate,
+            ReservationRequestDto requestDto = ReservationFixture.createRequestDto(duplicateDate,
                     duplicateReservationTimeId, savedTheme.getId());
 
             Assertions.assertThatThrownBy(
-                    () -> service.add(requestDto)
+                    () -> service.add(requestDto, savedUser)
             ).isInstanceOf(ConflictException.class);
         }
 
@@ -85,24 +101,21 @@ class ReservationServiceTest {
         void add_success_withDifferenceDateAndSameTime() {
             // given
             ReservationTime reservationTime1 = createAndSaveReservationTime(LocalTime.of(11, 33));
-
-            Theme savedTheme = themeRepository.add(new Theme("name1", "dd", "tt"));
-
-            Reservation reservation1 = createReservation("kali", 1, reservationTime1, savedTheme);
+            Reservation reservation1 = createReservation(1, reservationTime1);
 
             ReservationTime reservationTime2 = createAndSaveReservationTime(LocalTime.of(22, 44));
-            Reservation reservation2 = createReservation("pobi", 2, reservationTime2, savedTheme);
+            Reservation reservation2 = createReservation(2, reservationTime2);
 
-            reservationRepository.add(reservation1);
-            reservationRepository.add(reservation2);
+            reservationRepository.save(reservation1);
+            reservationRepository.save(reservation2);
 
             // when & then
             Long duplicateReservationTimeId = reservationTime1.getId();
-            ReservationRequestDto requestDto = createRequestDto("jason", 3, duplicateReservationTimeId,
+            ReservationRequestDto requestDto = createRequestDto(3, duplicateReservationTimeId,
                     savedTheme.getId());
 
             Assertions.assertThatCode(
-                    () -> service.add(requestDto)
+                    () -> service.add(requestDto, savedUser)
             ).doesNotThrowAnyException();
         }
     }
