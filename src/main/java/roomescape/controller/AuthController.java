@@ -15,7 +15,6 @@ import roomescape.domain.Role;
 import roomescape.dto.member.LoginMemberResponse;
 import roomescape.dto.member.LoginRequest;
 import roomescape.dto.member.RegistrationRequest;
-import roomescape.dto.member.TokenResponse;
 import roomescape.exception.UnauthorizedAccessException;
 import roomescape.service.LoginService;
 import roomescape.service.MemberService;
@@ -55,11 +54,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> processLogin(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        TokenResponse tokenResponse = loginService.createToken(loginRequest);
+        Cookie cookie = loginService.createLoginCookie(loginRequest);
 
-        Cookie cookie = new Cookie("token", tokenResponse.accessToken());
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
         response.addCookie(cookie);
 
         return ResponseEntity.ok().build();
@@ -73,8 +69,8 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> processLogout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", null);
-        cookie.setMaxAge(0);
+        Cookie cookie = loginService.setLogoutCookie();
+
         response.addCookie(cookie);
 
         return ResponseEntity.ok().build();

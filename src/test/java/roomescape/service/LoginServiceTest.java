@@ -1,10 +1,10 @@
 package roomescape.service;
 
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.dto.member.LoginMemberResponse;
 import roomescape.dto.member.LoginRequest;
-import roomescape.dto.member.TokenResponse;
 import roomescape.exception.InvalidAuthorizationException;
 import roomescape.fixture.FakeMemberRepositoryFixture;
 import roomescape.repository.FakeTokenProvider;
@@ -22,18 +22,19 @@ class LoginServiceTest {
     private final TokenProvider tokenProvider = new FakeTokenProvider();
     private final LoginService loginService = new LoginService(memberRepository, new MemberService(memberRepository, tokenProvider), tokenProvider);
 
-    @DisplayName("올바른 사용자 정보를 전달하면 로그인 토큰을 생성한다")
+    @DisplayName("올바른 사용자 정보를 전달하면 JWT 토큰을 생성하여 쿠키에 저장한다")
     @Test
-    void createTokenTest() {
+    void createLoginCookieTest() {
         // given
         LoginRequest request = new LoginRequest("wooteco7", "admin@gmail.com");
 
         // when
-        TokenResponse token = loginService.createToken(request);
-        String expected = "admin@gmail.com";
+        Cookie cookie = loginService.createLoginCookie(request);
+        String actual = cookie.getName();
+        String expected = "token";
 
         // then
-        assertThat(token.accessToken()).isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("토큰 정보로 사용자 응답 DTO를 추출할 수 있다")
@@ -54,11 +55,21 @@ class LoginServiceTest {
 
     @DisplayName("토큰 생성 시 사용자 정보가 잘못되면 예외가 발생한다")
     @Test
-    void createTokenExceptionTest() {
+    void createLoginCookieExceptionTest() {
         // given
         LoginRequest request = new LoginRequest("", "admin@gmail.com");
 
         // when & then
-        assertThatThrownBy(() -> loginService.createToken(request)).isInstanceOf(InvalidAuthorizationException.class);
+        assertThatThrownBy(() -> loginService.createLoginCookie(request)).isInstanceOf(InvalidAuthorizationException.class);
+    }
+
+    @DisplayName("로그아웃을 요청하면 쿠키의 max age 값을 0으로 설정한다")
+    @Test
+    void setLogoutCookieTest() {
+        // when
+        Cookie cookie = loginService.setLogoutCookie();
+
+        // then
+        assertThat(cookie.getAttribute("Max-Age")).isEqualTo("0");
     }
 }
