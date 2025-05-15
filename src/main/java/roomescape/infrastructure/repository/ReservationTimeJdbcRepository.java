@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.infrastructure.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -21,18 +21,18 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public ReservationTimeJdbcRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
-    }
-
     private static final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
-            new ReservationTime(
+            ReservationTime.create(
                     resultSet.getLong("id"),
                     LocalTime.parse(resultSet.getString("start_at"))
             );
+
+    public ReservationTimeJdbcRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
+    }
 
     public List<ReservationTime> findAll() {
         String sql = "select * from reservation_time";
@@ -44,7 +44,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
                 .addValue("start_at", reservationTime.getStartAt());
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new ReservationTime(id, reservationTime.getStartAt());
+        return ReservationTime.create(id, reservationTime.getStartAt());
     }
 
     public void deleteById(Long id) {

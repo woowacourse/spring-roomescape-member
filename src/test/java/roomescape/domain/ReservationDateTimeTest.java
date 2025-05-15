@@ -6,14 +6,19 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.exception.PastReservationException;
+import roomescape.fake.FixedCurrentTimeService;
 
-public class ReservationDateTimeTest {
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+class ReservationDateTimeTest {
 
     @Test
     void 현재_이전_시간에는_예약할_수_없다() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = new FixedCurrentTimeService().now();
         LocalDate today = now.toLocalDate();
         ReservationDate reservationDate = new ReservationDate(today);
         LocalTime time = now.toLocalTime().minusMinutes(1);
@@ -25,7 +30,7 @@ public class ReservationDateTimeTest {
 
     @Test
     void 현재_이후_시간에는_예약이_성공한다() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = new FixedCurrentTimeService().now();
         LocalDate today = now.toLocalDate();
         ReservationDate reservationDate = new ReservationDate(today);
         ReservationTime futureTime = ReservationTime.create(now.toLocalTime().plusMinutes(10));

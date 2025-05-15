@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.infrastructure.repository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,19 +17,19 @@ public class ThemeJdbcRepository implements ThemeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public ThemeJdbcRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
-    }
-
-    private static final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
+    private static final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> Theme.create(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("description"),
             resultSet.getString("thumbnail")
     );
+
+    public ThemeJdbcRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
+    }
 
     @Override
     public List<Theme> findAll() {
@@ -38,7 +38,11 @@ public class ThemeJdbcRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme save(String name, String description, String thumbnail) {
+    public Theme save(Theme theme) {
+        String name = theme.getName();
+        String description = theme.getDescription();
+        String thumbnail = theme.getThumbnail();
+
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", name)
                 .addValue("description", description)
@@ -46,7 +50,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
 
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new Theme(id, name, description, thumbnail);
+        return Theme.create(id, name, description, thumbnail);
     }
 
     @Override

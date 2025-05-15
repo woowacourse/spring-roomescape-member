@@ -10,23 +10,22 @@ import roomescape.domain.ReservationTime;
 @Component
 public class ReservationTimeDbFixture {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
     public ReservationTimeDbFixture(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    public ReservationTime 예약시간_10시() {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
 
+    }
+
+    public ReservationTime 예약시간_10시() {
         LocalTime startAt = LocalTime.of(10, 0);
 
         Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
                 .addValue("start_at", startAt)
         ).longValue();
 
-        return new ReservationTime(id, startAt);
+        return ReservationTime.create(id, startAt);
     }
 }

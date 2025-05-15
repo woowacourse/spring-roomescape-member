@@ -6,40 +6,50 @@ import java.time.LocalTime;
 public class Reservation {
 
     private final Long id;
-    private final ReserverName reserverName;
+    private final Member member;
     private final ReservationDate reservationDate;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
-    public Reservation(
+    private Reservation(
             Long id,
-            String reserverName,
+            Member member,
             LocalDate reservationDate,
             ReservationTime reservationTime,
             Theme theme
     ) {
         this.id = id;
-        this.reserverName = new ReserverName(reserverName);
+        this.member = member;
         this.reservationDate = new ReservationDate(reservationDate);
         this.reservationTime = reservationTime;
         this.theme = theme;
     }
 
     public static Reservation create(
-            String reserverName,
+            Member member,
             LocalDate reservationDate,
             ReservationTime reservationTime,
             Theme theme
     ) {
-        return new Reservation(null, reserverName, reservationDate, reservationTime, theme);
+        return new Reservation(null, member, reservationDate, reservationTime, theme);
+    }
+
+    public static Reservation create(
+            Long id,
+            Member member,
+            LocalDate reservationDate,
+            ReservationTime reservationTime,
+            Theme theme
+    ) {
+        return new Reservation(id, member, reservationDate, reservationTime, theme);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getReserverName() {
-        return reserverName.getName();
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {

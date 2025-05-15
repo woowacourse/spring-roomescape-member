@@ -1,7 +1,5 @@
 package roomescape.presentation.api;
 
-import java.util.List;
-
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.application.ReservationService;
+import roomescape.presentation.AuthenticationPrincipal;
+import roomescape.presentation.dto.request.LoginMember;
 import roomescape.presentation.dto.request.ReservationCreateRequest;
 import roomescape.presentation.dto.response.ReservationResponse;
-import roomescape.application.ReservationService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/reservations")
@@ -34,8 +36,11 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid ReservationCreateRequest request) {
-        ReservationResponse response = reservationService.createReservation(request);
+    public ResponseEntity<ReservationResponse> createReservation(
+            @RequestBody @Valid ReservationCreateRequest request,
+            @AuthenticationPrincipal LoginMember loginMember
+    ) {
+        ReservationResponse response = reservationService.createReservation(request, loginMember);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

@@ -4,8 +4,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
-import roomescape.infrastructure.ReservationRepository;
-import roomescape.infrastructure.ReservationTimeRepository;
+import roomescape.infrastructure.repository.ReservationRepository;
+import roomescape.infrastructure.repository.ReservationTimeRepository;
 import roomescape.presentation.dto.request.AvailableReservationTimeRequest;
 import roomescape.presentation.dto.request.ReservationTimeCreateRequest;
 import roomescape.presentation.dto.response.AvailableReservationTimeResponse;
@@ -28,7 +28,7 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
     public List<ReservationTimeResponse> getReservationTimes() {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
-        return ReservationTimeResponse.from(reservationTimes);
+        return ReservationTimeResponse.toList(reservationTimes);
     }
 
     @Override

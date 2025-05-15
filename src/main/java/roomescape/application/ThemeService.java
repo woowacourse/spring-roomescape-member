@@ -2,8 +2,8 @@ package roomescape.application;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.infrastructure.ReservationRepository;
-import roomescape.infrastructure.ThemeRepository;
+import roomescape.infrastructure.repository.ReservationRepository;
+import roomescape.infrastructure.repository.ThemeRepository;
 import roomescape.presentation.dto.request.ThemeCreateRequest;
 import roomescape.presentation.dto.response.ThemeResponse;
 
@@ -30,12 +30,13 @@ public class ThemeService {
 
     public List<ThemeResponse> getThemes() {
         List<Theme> themes = themeRepository.findAll();
-        return ThemeResponse.from(themes);
+        return ThemeResponse.toList(themes);
     }
 
     public ThemeResponse createTheme(ThemeCreateRequest request) {
-        Theme theme = themeRepository.save(request.name(), request.description(), request.thumbnail());
-        return ThemeResponse.from(theme);
+        Theme theme = Theme.create(request.name(), request.description(), request.thumbnail());
+        Theme created = themeRepository.save(theme);
+        return ThemeResponse.from(created);
     }
 
     public void deleteThemeById(Long id) {
@@ -54,6 +55,6 @@ public class ThemeService {
     public List<ThemeResponse> getPopularThemes() {
         LocalDate now = currentTimeService.now().toLocalDate();
         List<Theme> themes = themeRepository.findPopularThemeDuringAWeek(POPULAR_THEME_COUNTS, now);
-        return ThemeResponse.from(themes);
+        return ThemeResponse.toList(themes);
     }
 }

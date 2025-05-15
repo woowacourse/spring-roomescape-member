@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.infrastructure.repository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,7 +9,7 @@ public interface ThemeRepository {
 
     List<Theme> findAll();
 
-    Theme save(String name, String description, String thumbnail);
+    Theme save(Theme theme);
 
     void deleteById(Long id);
 

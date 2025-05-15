@@ -1,6 +1,6 @@
 # 방탈출 사용자 예약
 
-## 1단계
+## 예외 처리와 응답
 - 예외 처리 후 적절한 응답 반환 (404, 403.. 등)
 - 예외 처리
     - 예약
@@ -15,7 +15,7 @@
         - 이미 있는 시간인 경우 생성 불가
         - 특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때
 
-## 2단계
+## 테마 추가
 - 클라이언트 코드를 수정해야 한다.
 - 테마 entity가 추가된다.
     - 테마 table추가 및 reservation테이블 수정(제공되는 sql이용)
@@ -27,7 +27,7 @@
 - 클라이언트 코드를 수정해야 한다.
     - `/reservations`의 명세가 바뀌게 될텐데 테마와 관련된 필드와 프론트의 맵핑을 해야함
 
-## 3단계
+## 사용자 기능
 - 클라이언트 코드를 수정해야 한다.
 - 예약 조회
     - `/reservation`요청하면 `reservation.html`반환
@@ -48,6 +48,7 @@
       ```
       HTTP/1.1 200
       Content-Type: application/json
+      
       [
           {
             "id": 1,
@@ -58,16 +59,29 @@
       ```
 
   - 예약 하기
-    - request
+    - request (관리자)
       ```
       POST /reservations HTTP/1.1
+      cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
       content-type: application/json
       
       {
-          "name": "예약자명",
           "reservation_date": "2025-04-29",
-          "theme_id": "1",
-          "time_id": "1"
+          "theme_id": 1,
+          "time_id": 1,
+          "memberId": 1
+      }
+      ```
+    - request (사용자)
+      ```
+      POST /reservations HTTP/1.1
+      cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+      content-type: application/json
+      
+      {
+          "reservation_date": "2025-04-29",
+          "theme_id": 1,
+          "time_id": 1
       }
       ```
     - response
@@ -86,6 +100,7 @@
       ```
       HTTP/1.1 200
       Content-Type: application/json
+      
       [
           {
               "id": 1,
@@ -95,3 +110,58 @@
           }
       ]
       ```
+      
+## 사용자 로그인
+- 클라이언트 코드를 수정해야 한다.
+- 사용자 도메인 추가
+  - `name`, `email`, `password` 포함
+- 로그인 기능
+  - `/login` 요청 시 `templates/login.html` 응답
+- API 명세
+  - 로그인
+    - request
+      ```
+      POST /login HTTP/1.1
+      content-type: application/json
+      host: localhost:8080
+      
+      {
+          "password": "password",
+          "email": "admin@email.com"
+      }
+      ```
+    - response
+      ```
+      HTTP/1.1 200 OK
+      Content-Type: application/json
+      Keep-Alive: timeout=60
+      Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+      ```
+  - 인증 정보 조회    
+    - request
+      ```
+      GET /login/check HTTP/1.1
+      cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+      host: localhost:8080
+      ```
+    - response
+      ```
+      HTTP/1.1 200 OK
+      Connection: keep-alive
+      Content-Type: application/json
+      Date: Sun, 03 Mar 2024 19:16:56 GMT
+      Keep-Alive: timeout=60
+      Transfer-Encoding: chunked
+      
+      {
+          "name": "어드민"
+      }
+      ```
+      
+## 관리자 기능
+- 클라이언트 코드를 수정해야 한다.
+- 접근 권한 제어
+  - 어드민 페이지는 `Member`의 `Role`이 `ADMIN`인 사람만 접근 가능
+  - 권한이 없다면 요청에 대한 거부 응답
+- 예약 목록 검색
+  - 예약자별, 테마별, 날짜별 검색 조건을 이용해 예약 검색

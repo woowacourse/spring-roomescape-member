@@ -8,7 +8,7 @@ public record ErrorResponse(
         LocalDateTime timestamp,
         int status,
         String message
-    ) {
+) {
 
     public static ErrorResponse of(HttpStatus status, String message) {
         LocalDateTime timestamp = LocalDateTime.now();
