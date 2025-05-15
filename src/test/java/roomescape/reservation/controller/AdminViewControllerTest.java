@@ -78,7 +78,7 @@ class AdminViewControllerTest {
                 .body(new LoginRequest("admin1@test.com", "test"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/login")
+                .when().post("/api/login")
                 .then().log().cookies().extract().cookie(AuthController.TOKEN_KEY);
     }
 }

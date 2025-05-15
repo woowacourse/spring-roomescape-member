@@ -9,13 +9,13 @@ import roomescape.global.auth.interceptor.AdminRoleCheckInterceptor;
 import roomescape.global.auth.resolver.LoginMemberArgumentResolver;
 
 @Configuration
-public class WebConfig implements WebMvcConfigurer {
+public class WebSecurityConfig implements WebMvcConfigurer {
 
     private final LoginMemberArgumentResolver loginMemberArgumentResolver;
     private final AdminRoleCheckInterceptor adminRoleCheckInterceptor;
 
-    public WebConfig(LoginMemberArgumentResolver loginMemberArgumentResolver,
-                     AdminRoleCheckInterceptor adminRoleCheckInterceptor) {
+    public WebSecurityConfig(LoginMemberArgumentResolver loginMemberArgumentResolver,
+                             AdminRoleCheckInterceptor adminRoleCheckInterceptor) {
         this.loginMemberArgumentResolver = loginMemberArgumentResolver;
         this.adminRoleCheckInterceptor = adminRoleCheckInterceptor;
     }

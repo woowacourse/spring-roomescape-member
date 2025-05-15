@@ -7,12 +7,12 @@ import roomescape.global.exception.RoomEscapeException.ResourceNotFoundException
 import roomescape.global.pagination.PaginationUtil;
 import roomescape.global.pagination.PaginationUtil.PageInfo;
 import roomescape.reservation.repository.ReservationDao;
-import roomescape.reservationtime.controller.ReservationTimeResponse;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.dto.request.ReservationTimeRequest;
 import roomescape.reservationtime.dto.response.AdminReservationTimePageResponse;
 import roomescape.reservationtime.dto.response.AdminReservationTimePageResponse.AdminReservationTimePageElementResponse;
 import roomescape.reservationtime.dto.response.CreateReservationTimeResponse;
+import roomescape.reservationtime.dto.response.ReservationTimeResponse;
 import roomescape.reservationtime.repository.ReservationTimeDao;
 
 @Service

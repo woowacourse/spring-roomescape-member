@@ -24,7 +24,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/api/login")
     public void login(@RequestBody @Valid LoginRequest loginRequest, HttpServletResponse response) {
         String accessToken = authService.login(loginRequest);
         Cookie cookie = new Cookie(TOKEN_KEY, accessToken);
@@ -33,14 +33,15 @@ public class AuthController {
         response.addCookie(cookie);
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/api/logout")
     public void logout(HttpServletResponse response) {
         Cookie cookie = new Cookie(TOKEN_KEY, null);
+        cookie.setPath("/");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
     }
 
-    @GetMapping("/login/check")
+    @GetMapping("/api/login/check")
     public ResponseEntity<LoginCheckResponse> checkLogin(@CookieValue(name = TOKEN_KEY) String token) {
         return ResponseEntity.ok(authService.checkUserByToken(token));
     }

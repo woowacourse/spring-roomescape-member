@@ -15,10 +15,10 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.global.exception.RoomEscapeException.BadRequestException;
 import roomescape.global.exception.RoomEscapeException.ResourceNotFoundException;
 import roomescape.reservation.repository.ReservationDao;
-import roomescape.reservationtime.controller.ReservationTimeResponse;
 import roomescape.reservationtime.dto.request.ReservationTimeRequest;
 import roomescape.reservationtime.dto.response.AdminReservationTimePageResponse;
 import roomescape.reservationtime.dto.response.CreateReservationTimeResponse;
+import roomescape.reservationtime.dto.response.ReservationTimeResponse;
 import roomescape.reservationtime.repository.ReservationTimeDao;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
