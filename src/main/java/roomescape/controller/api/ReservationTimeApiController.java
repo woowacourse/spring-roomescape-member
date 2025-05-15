@@ -4,8 +4,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.controller.dto.ReservationTimeRequest;
-import roomescape.controller.dto.ReservationTimeResponse;
+import roomescape.controller.dto.reservationTime.ReservationTimeRequest;
+import roomescape.controller.dto.reservationTime.ReservationTimeResponse;
 import roomescape.entity.ReservationTime;
 import roomescape.service.ReservationTimeService;
 
@@ -46,7 +46,7 @@ public class ReservationTimeApiController {
     }
 
     @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> deleteReservationTime(@PathVariable long id) {
+    public ResponseEntity<Void> deleteReservationTime(@PathVariable("id") long id) {
         reservationTimeService.delete(id);
         return ResponseEntity.noContent().build();
     }

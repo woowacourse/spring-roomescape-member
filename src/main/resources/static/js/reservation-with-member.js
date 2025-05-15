@@ -32,7 +32,7 @@ function render(data) {
           예약 목록 조회 API 응답에 맞게 적용
     */
     row.insertCell(0).textContent = item.id;              // 예약 id
-    row.insertCell(1).textContent = item.member.name;     // 사용자 name
+    row.insertCell(1).textContent = item.name;     // 사용자 name
     row.insertCell(2).textContent = item.theme.name;      // 테마 name
     row.insertCell(3).textContent = item.date;            // date
     row.insertCell(4).textContent = item.time.startAt;    // 예약 시간 startAt
@@ -85,6 +85,7 @@ function createSelect(options, defaultText, selectId, textProperty) {
 
   // 기본 옵션 추가
   const defaultOption = document.createElement('option');
+   defaultOption.value = '';
   defaultOption.textContent = defaultText;
   select.appendChild(defaultOption);
 
@@ -162,7 +163,11 @@ function saveRow(event) {
   const memberSelect = row.querySelector('#member-select');
   const themeSelect = row.querySelector('#theme-select');
   const timeSelect = row.querySelector('#time-select');
-
+ // 유효성 검사
+  if (!dateInput.value || !memberSelect.value || !themeSelect.value || !timeSelect.value) {
+    alert('모든 값을 선택해야 합니다.');
+    return;
+  }
   const reservation = {
     date: dateInput.value,
     themeId: themeSelect.value,
@@ -200,7 +205,14 @@ function applyFilter(event) {
   TODO: [6단계] 예약 검색 - 조건에 따른 예약 조회 API 호출
         요청 포맷에 맞게 설정
   */
-  fetch('/', { // 예약 검색 API 호출
+   const params = new URLSearchParams();
+
+    if (themeId) params.append('themeId', themeId);
+    if (memberId) params.append('memberId', memberId);
+    if (dateFrom) params.append('dateFrom', dateFrom);
+    if (dateTo) params.append('dateTo', dateTo);
+
+    fetch(`/admin/reservation/search?${params.toString()}`, { // 예약 검색 API 호출
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

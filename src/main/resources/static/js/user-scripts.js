@@ -74,7 +74,7 @@ function login() {
     })
   })
       .then(response => {
-        if (200 === !response.status) {
+        if (!response.ok) {
           alert('Login failed'); // 로그인 실패 시 경고창 표시
           throw new Error('Login failed');
         }
@@ -122,8 +122,8 @@ function register(event) {
   })
       .then(response => {
         if (!response.ok) {
-          alert('Signup request failed');
-          throw new Error('Signup request failed');
+         alert('Signup failed: ' + text);
+         throw new Error(text || 'Signup failed');
         }
         return response.json(); // 여기서 응답을 JSON 형태로 변환
       })
