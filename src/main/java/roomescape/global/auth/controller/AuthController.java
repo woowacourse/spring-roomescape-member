@@ -31,14 +31,14 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(final @RequestBody LoginRequest loginRequest,
                                       final HttpServletResponse httpServletResponse) {
-        LoginResponse loginResponse = authService.createToken(loginRequest);
+        LoginResponse loginResponse = authService.login(loginRequest);
         cookieManager.addCookieToResponse(httpServletResponse, TOKEN, loginResponse.accessToken());
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
     public ResponseEntity<CheckLoginResponse> checkLogin(final UserInfo userInfo) {
-        return ResponseEntity.ok(CheckLoginResponse.from(authService.findMember(userInfo)));
+        return ResponseEntity.ok(CheckLoginResponse.from(authService.existsMemberById(userInfo)));
     }
 
     @RequireRole(MemberRole.USER)

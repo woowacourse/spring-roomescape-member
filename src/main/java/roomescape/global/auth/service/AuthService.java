@@ -8,21 +8,25 @@ import roomescape.global.auth.exception.UnAuthorizedException;
 import roomescape.global.auth.infrastructure.JwtProvider;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
+import roomescape.member.service.PasswordEncoder;
 
 @Component
 public class AuthService {
 
     private final JwtProvider jwtProvider;
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthService(final JwtProvider jwtProvider, final MemberRepository memberRepository) {
+    public AuthService(final JwtProvider jwtProvider, final MemberRepository memberRepository,
+                       final PasswordEncoder passwordEncoder) {
         this.jwtProvider = jwtProvider;
         this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public LoginResponse createToken(final LoginRequest loginRequest) {
-        UserInfo userInfo = getUserInfoByEmailAndPassword(loginRequest.email(), loginRequest.password());
-        String accessToken = jwtProvider.createToken(userInfo);
+    public LoginResponse login(final LoginRequest loginRequest) {
+        Member member = checkEmailAndPassword(loginRequest.email(), loginRequest.password());
+        String accessToken = jwtProvider.createToken(member);
         return new LoginResponse(accessToken);
     }
 
@@ -32,8 +36,14 @@ public class AuthService {
         return new UserInfo(memberId, jwtProvider.getRole(token));
     }
 
-    public Member findMember(final UserInfo userInfo) {
+    public Member existsMemberById(final UserInfo userInfo) {
         return memberRepository.findById(userInfo.id());
+    }
+
+    public Member checkEmailAndPassword(final String email, final String password) {
+        Member member = findMemberByEmail(email);
+        checkPassword(password, member);
+        return member;
     }
 
     private void validateToken(final String token) {
@@ -42,8 +52,17 @@ public class AuthService {
         }
     }
 
-    private UserInfo getUserInfoByEmailAndPassword(final String email, final String password) {
-        return memberRepository.findMemberByEmailAndPassword(email, password)
+    private Member findMemberByEmail(final String email) {
+        return memberRepository.findMemberByEmail(email)
                 .orElseThrow(() -> new UnAuthorizedException("존재하지 않은 사용자입니다."));
+    }
+
+    private void checkPassword(final String password, final Member member) {
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            System.out.println(password);
+            System.out.println(passwordEncoder.encode(password));
+            System.out.println(member.getPassword());
+            throw new UnAuthorizedException("로그인에 실패하였습니다.");
+        }
     }
 }

@@ -21,13 +21,13 @@ public class JwtProvider {
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
-    public String createToken(final UserInfo userInfo) {
+    public String createToken(final Member member) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .setSubject(userInfo.id().toString())
-                .claim(ROLE, userInfo.memberRole().name())
+                .setSubject(member.getId().toString())
+                .claim(ROLE, member.getMemberRole().name())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)

@@ -12,16 +12,19 @@ import roomescape.member.repository.MemberRepository;
 @Service
 public class MemberService {
 
+    private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
 
-    public MemberService(final MemberRepository memberRepository) {
+    public MemberService(final PasswordEncoder passwordEncoder, final MemberRepository memberRepository) {
+        this.passwordEncoder = passwordEncoder;
         this.memberRepository = memberRepository;
     }
 
     public Member signup(final SignupRequest signupRequest) {
-        Member member = Member.withUnassignedId(signupRequest.name(), signupRequest.email(), signupRequest.password(),
+        String encodedPassword = passwordEncoder.encode(signupRequest.password());
+        Member member = Member.withUnassignedId(signupRequest.name(), signupRequest.email(), encodedPassword,
                 MemberRole.USER);
-        if (memberRepository.existsByEmailAndPassword(signupRequest.email(), signupRequest.password())) {
+        if (memberRepository.existsByEmail(signupRequest.email())) {
             throw new MemberDuplicatedException("이미 존재하는 회원입니다.");
         }
         return memberRepository.save(member);

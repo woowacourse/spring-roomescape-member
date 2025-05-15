@@ -20,12 +20,15 @@ public class JdbcMemberRepository implements MemberRepository {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
-            null,
+            resultSet.getString("password"),
             resultSet.getString("role")
     );
-    private static final RowMapper<UserInfo> USER_INFO_ROW_MAPPER = (resultSet, rowNum) -> new UserInfo(
+    private static final RowMapper<MemberEntity> MEMBER_ENTITY_WITHOUT_PASSWORD_ROW_MAPPER = (resultSet, rowNum) -> new MemberEntity(
             resultSet.getLong("id"),
-            MemberRole.from(resultSet.getString("role"))
+            resultSet.getString("name"),
+            resultSet.getString("email"),
+            null,
+            resultSet.getString("role")
     );
 
     private final JdbcTemplate jdbcTemplate;
@@ -39,13 +42,12 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public boolean existsByEmailAndPassword(final String email, final String password) {
+    public boolean existsByEmail(final String email) {
         try {
             return Boolean.TRUE.equals(
-                    jdbcTemplate.queryForObject("SELECT EXISTS (SELECT 1 FROM member WHERE (email, password) = (?, ?))",
+                    jdbcTemplate.queryForObject("SELECT EXISTS (SELECT 1 FROM member WHERE email = ?)",
                             Boolean.class,
-                            email,
-                            password
+                            email
                     ));
         } catch (EmptyResultDataAccessException e) {
             return false;
@@ -53,11 +55,11 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Optional<UserInfo> findMemberByEmailAndPassword(final String email, final String password) {
+    public Optional<Member> findMemberByEmail(final String email) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(
-                    "SELECT id, name, role FROM member WHERE (email, password) = (?, ?)",
-                    USER_INFO_ROW_MAPPER, email, password));
+            return Optional.of(jdbcTemplate.queryForObject(
+                    "SELECT id, name, email, password, role FROM member WHERE email = ?",
+                    MEMBER_ENTITY_ROW_MAPPER, email).toMember());
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -67,8 +69,8 @@ public class JdbcMemberRepository implements MemberRepository {
     public Optional<Member> findUserById(final Long id) {
         try {
             MemberEntity memberEntity = jdbcTemplate.queryForObject(
-                    "SELECT id, name, email, password, role FROM member WHERE (id, role) = (?, ?)",
-                    MEMBER_ENTITY_ROW_MAPPER, id, MemberRole.USER.name());
+                    "SELECT id, name, email, role FROM member WHERE (id, role) = (?, ?)",
+                    MEMBER_ENTITY_WITHOUT_PASSWORD_ROW_MAPPER, id, MemberRole.USER.name());
             return Optional.ofNullable(memberEntity)
                     .map(MemberEntity::toMember);
         } catch (EmptyResultDataAccessException e) {
@@ -89,7 +91,7 @@ public class JdbcMemberRepository implements MemberRepository {
     @Override
     public List<Member> findAllUsers() {
         final String sql = "SELECT id, name, email, role FROM member WHERE role = ?";
-        return jdbcTemplate.query(sql, MEMBER_ENTITY_ROW_MAPPER,
+        return jdbcTemplate.query(sql, MEMBER_ENTITY_WITHOUT_PASSWORD_ROW_MAPPER,
                 MemberRole.USER.name()).stream()
                 .map(MemberEntity::toMember)
                 .toList();
@@ -98,7 +100,7 @@ public class JdbcMemberRepository implements MemberRepository {
     @Override
     public Member findById(final Long id) {
         final String sql = "SELECT id, name, email, role FROM member WHERE id = ?";
-        MemberEntity memberEntity = jdbcTemplate.queryForObject(sql, MEMBER_ENTITY_ROW_MAPPER, id);
+        MemberEntity memberEntity = jdbcTemplate.queryForObject(sql, MEMBER_ENTITY_WITHOUT_PASSWORD_ROW_MAPPER, id);
         return memberEntity.toMember();
     }
 }
