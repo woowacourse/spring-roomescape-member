@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // 시간 데이터 로드 함수
 function loadTimes(page) {
     // URL 쿼리 파라미터를 통해 페이지 정보 전달
-    fetch(`${API_ENDPOINT}?page=${page}`)
+    fetch(`/admin${API_ENDPOINT}?page=${page}`)
         .then(response => {
             if (response.status === 200) return response.json();
             throw new Error('Read failed');
