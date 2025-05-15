@@ -22,6 +22,15 @@ public class MemberService {
         this.memberDao = memberDao;
     }
 
+    public MemberResponseDto saveAdmin(MemberRequestDto memberRequestDto) {
+        validateAlreadyExist(memberRequestDto);
+        Member member = Member.createAdmin(
+            memberRequestDto.name(), memberRequestDto.email(), memberRequestDto.password());
+        long savedId = memberDao.save(member);
+        member.setId(savedId);
+        return MemberResponseDto.from(member);
+    }
+
     public MemberResponseDto saveMember(MemberRequestDto memberRequestDto) {
         validateAlreadyExist(memberRequestDto);
         Member member = Member.createUser(

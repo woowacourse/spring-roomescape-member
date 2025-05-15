@@ -41,9 +41,13 @@ public class ViewMappingController {
         return "signup";
     }
 
-
     @GetMapping("/login")
     public String login() {
         return "login";
+    }
+
+    @GetMapping("/admin/signup")
+    public String adminSignup() {
+        return "admin/signup";
     }
 }

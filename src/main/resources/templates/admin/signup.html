@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
+  <title>Signup</title>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet"
         href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -48,19 +48,22 @@
   </div>
 </nav>
 
-<div class="content-container" style="width: 300px;">
-  <h2 class="content-container-title">Login</h2>
-  <form id="login-form">
+<div class="content-container" style="width: 400px;">
+  <h2 class="content-container-title">관리자 회원가입</h2>
+  <form id="signup-form">
     <div class="form-group">
-      <input type="email" class="form-control" id="email" placeholder="Email" required>
+      <label for="email">Email address</label>
+      <input type="email" class="form-control" id="email" placeholder="Enter email">
     </div>
     <div class="form-group">
-      <input type="password" class="form-control" id="password" placeholder="Password" required>
+      <label for="password">Password</label>
+      <input type="password" class="form-control" id="password" placeholder="Enter password">
     </div>
-    <div class="d-flex justify-content-between">
-      <button type="button" class="btn btn-outline-custom" onclick="signup()">Sign Up</button>
-      <button type="button" class="btn btn-custom" onclick="login()">Login</button>
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="name" class="form-control" id="name" placeholder="Enter name">
     </div>
+    <button type="submit" class="btn btn-custom" onclick="register()">Register</button>
   </form>
 </div>
 

@@ -31,4 +31,10 @@ public class MemberController {
     public List<MemberResponseDtoOfNames> getMembers() {
         return memberService.getAllMembers();
     }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/admin/members")
+    public MemberResponseDto saveAdmin(@RequestBody MemberRequestDto memberRequestDto) {
+        return memberService.saveAdmin(memberRequestDto);
+    }
 }
