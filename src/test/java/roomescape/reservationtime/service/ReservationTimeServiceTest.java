@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.global.exception.RoomEscapeException.BadRequestException;
@@ -25,7 +24,6 @@ import roomescape.reservationtime.repository.ReservationTimeDao;
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class ReservationTimeServiceTest {
     private ReservationTimeService reservationTimeService;
-    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
@@ -33,9 +31,9 @@ class ReservationTimeServiceTest {
                 .addScript("schema.sql")
                 .addScript("data.sql")
                 .build();
-        jdbcTemplate = new JdbcTemplate(dataSource);
-        ReservationTimeDao reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
-        ReservationDao reservationDao = new ReservationDao(jdbcTemplate);
+
+        ReservationTimeDao reservationTimeDao = new ReservationTimeDao(dataSource);
+        ReservationDao reservationDao = new ReservationDao(dataSource);
         reservationTimeService = new ReservationTimeService(reservationDao, reservationTimeDao);
     }
 

@@ -12,7 +12,6 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.test.annotation.DirtiesContext;
@@ -34,7 +33,7 @@ import roomescape.theme.repository.ThemeDao;
 @ActiveProfiles(value = "test")
 public class ThemeServiceTest {
 
-    private ThemeService service;
+    private ThemeService themeService;
 
     @BeforeEach
     void setUp() {
@@ -42,11 +41,11 @@ public class ThemeServiceTest {
                 .addScript("schema.sql")
                 .addScript("data.sql")
                 .build();
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        service = new ThemeService(
-                new ReservationDao(jdbcTemplate),
-                new ReservationTimeDao(jdbcTemplate),
-                new ThemeDao(jdbcTemplate)
+
+        themeService = new ThemeService(
+                new ReservationDao(dataSource),
+                new ReservationTimeDao(dataSource),
+                new ThemeDao(dataSource)
         );
     }
 
@@ -56,7 +55,7 @@ public class ThemeServiceTest {
         ThemeRequest request = new ThemeRequest("name", "description", "thumbnail");
 
         // when
-        CreateThemeResponse response = service.addTheme(request);
+        CreateThemeResponse response = themeService.addTheme(request);
 
         // then
         assertThat(response.id()).isEqualTo(17);
@@ -71,17 +70,17 @@ public class ThemeServiceTest {
         ThemeRequest request = new ThemeRequest("name", "description", "thumbnail");
 
         // when
-        service.addTheme(request);
+        themeService.addTheme(request);
 
         // then
-        assertThatThrownBy(() -> service.addTheme(request))
+        assertThatThrownBy(() -> themeService.addTheme(request))
                 .isInstanceOf(BadRequestException.class);
     }
 
     @Test
     void 일주일동안_가장_인기있는_테마_10개_조회() {
         // when
-        List<ThemeResponse> topTenResponses = service.getTopTenTheme();
+        List<ThemeResponse> topTenResponses = themeService.getTopTenTheme();
 
         // then
         assertThat(topTenResponses).hasSize(6);
@@ -93,7 +92,7 @@ public class ThemeServiceTest {
         Long id = 16L;
 
         // when, then
-        assertThatCode(() -> service.deleteTheme(id))
+        assertThatCode(() -> themeService.deleteTheme(id))
                 .doesNotThrowAnyException();
     }
 
@@ -103,7 +102,7 @@ public class ThemeServiceTest {
         Long id = 999L;
 
         // when, then
-        assertThatThrownBy(() -> service.deleteTheme(id))
+        assertThatThrownBy(() -> themeService.deleteTheme(id))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
@@ -113,7 +112,7 @@ public class ThemeServiceTest {
         Long id = 1L;
 
         // when, then
-        assertThatThrownBy(() -> service.deleteTheme(id))
+        assertThatThrownBy(() -> themeService.deleteTheme(id))
                 .isInstanceOf(BadRequestException.class);
     }
 
@@ -124,7 +123,7 @@ public class ThemeServiceTest {
         Long themeId = 11L;
 
         // when
-        List<AvailableReservationResponse> responses = service.getThemesTimesWithStatus(themeId,
+        List<AvailableReservationResponse> responses = themeService.getThemesTimesWithStatus(themeId,
                 date);
         List<Boolean> list = responses.stream()
                 .map(AvailableReservationResponse::isBooked).toList();
@@ -141,7 +140,7 @@ public class ThemeServiceTest {
         int page = 2;
 
         // when
-        AdminThemePageResponse themesByPage = service.getThemesByPage(page);
+        AdminThemePageResponse themesByPage = themeService.getThemesByPage(page);
 
         // then
         assertThat(themesByPage.totalPages()).isEqualTo(2);

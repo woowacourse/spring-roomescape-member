@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.global.exception.RoomEscapeException.BadRequestException;
@@ -27,8 +26,6 @@ import roomescape.user.service.UserService;
 class ReservationServiceTest {
 
     private ReservationService reservationService;
-    private JdbcTemplate jdbcTemplate;
-
 
     @BeforeEach
     void setUp() {
@@ -36,11 +33,10 @@ class ReservationServiceTest {
                 .addScript("schema.sql")
                 .addScript("data.sql")
                 .build();
-        jdbcTemplate = new JdbcTemplate(dataSource);
 
-        ReservationDao reservationDao = new ReservationDao(jdbcTemplate);
-        ReservationTimeDao reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
-        ThemeDao themeDao = new ThemeDao(jdbcTemplate);
+        ReservationDao reservationDao = new ReservationDao(dataSource);
+        ReservationTimeDao reservationTimeDao = new ReservationTimeDao(dataSource);
+        ThemeDao themeDao = new ThemeDao(dataSource);
         UserDao userDao = new UserDao(dataSource);
 
         ReservationTimeService reservationTimeService = new ReservationTimeService(reservationDao, reservationTimeDao);

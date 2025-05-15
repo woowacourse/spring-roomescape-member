@@ -8,7 +8,6 @@ import java.util.Optional;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -16,8 +15,7 @@ import roomescape.reservationtime.repository.ReservationTimeDao;
 
 class ReservationTimeDaoTest {
 
-    private static ReservationTimeDao dao;
-    private static JdbcTemplate jdbcTemplate;
+    private static ReservationTimeDao reservationTimeDao;
 
     @BeforeEach
     void setUp() {
@@ -25,15 +23,14 @@ class ReservationTimeDaoTest {
                 .addScript("schema.sql")
                 .addScript("data.sql")
                 .build();
-        jdbcTemplate = new JdbcTemplate(dataSource);
-        dao = new ReservationTimeDao(jdbcTemplate);
+        reservationTimeDao = new ReservationTimeDao(dataSource);
     }
 
     @Test
     void 예약시간_저장() {
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(23, 59));
-        ReservationTime saved = dao.save(reservationTime);
-        List<ReservationTime> all = dao.findAll();
+        ReservationTime saved = reservationTimeDao.save(reservationTime);
+        List<ReservationTime> all = reservationTimeDao.findAll();
 
         assertThat(all).hasSize(13);
         assertThat(all.getLast().getId()).isEqualTo(saved.getId());
@@ -42,9 +39,9 @@ class ReservationTimeDaoTest {
 
     @Test
     void 예약시간_삭제() {
-        boolean isDeleted = dao.deleteById(4L);
+        boolean isDeleted = reservationTimeDao.deleteById(4L);
 
-        List<ReservationTime> all = dao.findAll();
+        List<ReservationTime> all = reservationTimeDao.findAll();
         assertThat(isDeleted).isTrue();
         assertThat(all).hasSize(11);
     }
@@ -55,10 +52,10 @@ class ReservationTimeDaoTest {
         Long id = 999L;
 
         // when
-        boolean isDeleted = dao.deleteById(id);
+        boolean isDeleted = reservationTimeDao.deleteById(id);
 
         // then
-        List<ReservationTime> all = dao.findAll();
+        List<ReservationTime> all = reservationTimeDao.findAll();
         assertThat(isDeleted).isFalse();
         assertThat(all).hasSize(12);
     }
@@ -66,9 +63,9 @@ class ReservationTimeDaoTest {
     @Test
     void id로_예약시간_조회() {
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(10, 0));
-        ReservationTime saved = dao.save(reservationTime);
+        ReservationTime saved = reservationTimeDao.save(reservationTime);
 
-        Optional<ReservationTime> foundReservationTime = dao.findById(saved.getId());
+        Optional<ReservationTime> foundReservationTime = reservationTimeDao.findById(saved.getId());
         assertThat(foundReservationTime).isPresent();
         assertThat(foundReservationTime.get().getId()).isEqualTo(saved.getId());
         assertThat(foundReservationTime.get().getStartAt()).isEqualTo(saved.getStartAt());
@@ -80,7 +77,7 @@ class ReservationTimeDaoTest {
         Long id = 99L;
 
         // when
-        Optional<ReservationTime> reservationTime = dao.findById(id);
+        Optional<ReservationTime> reservationTime = reservationTimeDao.findById(id);
 
         // then
         assertThat(reservationTime).isEmpty();
@@ -89,7 +86,7 @@ class ReservationTimeDaoTest {
     @Test
     void 모든_예약_시간_반환() {
         // when
-        List<ReservationTime> all = dao.findAll();
+        List<ReservationTime> all = reservationTimeDao.findAll();
 
         // then
         assertThat(all).hasSize(12);
@@ -102,8 +99,8 @@ class ReservationTimeDaoTest {
         LocalTime nonExistTime = LocalTime.of(0, 1);
 
         // when
-        boolean exist = dao.isExistTime(existTime);
-        boolean nonExist = dao.isExistTime(nonExistTime);
+        boolean exist = reservationTimeDao.isExistTime(existTime);
+        boolean nonExist = reservationTimeDao.isExistTime(nonExistTime);
 
         // then
         assertThat(exist).isTrue();
@@ -113,7 +110,7 @@ class ReservationTimeDaoTest {
     @Test
     void 존재하는_모든_시간을_카운팅() {
         // when
-        int count = dao.countTotalReservationTimes();
+        int count = reservationTimeDao.countTotalReservationTimes();
 
         // then
         assertThat(count).isEqualTo(12);
@@ -126,7 +123,7 @@ class ReservationTimeDaoTest {
         int end = 10;
 
         // when
-        List<ReservationTime> reservationTimesWithPage = dao.findReservationTimesWithPage(start, end);
+        List<ReservationTime> reservationTimesWithPage = reservationTimeDao.findReservationTimesWithPage(start, end);
 
         // then
         assertThat(reservationTimesWithPage).hasSize(8);

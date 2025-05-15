@@ -18,8 +18,8 @@ import roomescape.user.domain.Role;
 import roomescape.user.domain.User;
 
 class ReservationDaoTest {
-    private static ReservationDao reservationDao;
-    private static JdbcTemplate jdbcTemplate;
+    private ReservationDao reservationDao;
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
@@ -27,8 +27,9 @@ class ReservationDaoTest {
                 .addScript("schema.sql")
                 .addScript("data.sql")
                 .build();
+
         jdbcTemplate = new JdbcTemplate(dataSource);
-        reservationDao = new ReservationDao(jdbcTemplate);
+        reservationDao = new ReservationDao(dataSource);
     }
 
     @Test

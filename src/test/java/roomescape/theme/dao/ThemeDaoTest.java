@@ -16,7 +16,7 @@ import roomescape.theme.repository.ThemeDao;
 
 class ThemeDaoTest {
 
-    private static ThemeDao dao;
+    private static ThemeDao themeDao;
     private static JdbcTemplate jdbcTemplate;
 
     @BeforeEach
@@ -25,8 +25,9 @@ class ThemeDaoTest {
                 .addScript("schema.sql")
                 .addScript("data.sql")
                 .build();
+
         jdbcTemplate = new JdbcTemplate(dataSource);
-        dao = new ThemeDao(jdbcTemplate);
+        themeDao = new ThemeDao(dataSource);
     }
 
     @Test
@@ -35,7 +36,7 @@ class ThemeDaoTest {
         Theme theme = new Theme(null, "test", "testDescript", "testThumb");
 
         // when
-        Theme saved = dao.save(theme);
+        Theme saved = ThemeDaoTest.themeDao.save(theme);
 
         // then
         List<Theme> themes = findByJdbc();
@@ -49,7 +50,7 @@ class ThemeDaoTest {
         Long id = 16L;
 
         // when
-        boolean deleted = dao.deleteById(id);
+        boolean deleted = themeDao.deleteById(id);
 
         // then
         assertThat(deleted).isTrue();
@@ -63,7 +64,7 @@ class ThemeDaoTest {
         Long id = 999L;
 
         // when
-        boolean deleted = dao.deleteById(id);
+        boolean deleted = themeDao.deleteById(id);
 
         // then
         assertThat(deleted).isFalse();
@@ -77,7 +78,7 @@ class ThemeDaoTest {
         Long id = 1L;
 
         // when
-        Optional<Theme> found = dao.findById(id);
+        Optional<Theme> found = themeDao.findById(id);
 
         // then
         assertThat(found).isPresent();
@@ -90,7 +91,7 @@ class ThemeDaoTest {
         Long id = 999L;
 
         // when
-        Optional<Theme> found = dao.findById(id);
+        Optional<Theme> found = themeDao.findById(id);
 
         // then
         assertThat(found).isEmpty();
@@ -99,7 +100,7 @@ class ThemeDaoTest {
     @Test
     void 예약_건_수가_많은_순서대로_10개의_테마_조회() {
         // when
-        List<Theme> topFiveTheme = dao.getPopularThemeByRankAndDuration(
+        List<Theme> topFiveTheme = themeDao.getPopularThemeByRankAndDuration(
                 5,
                 LocalDate.now().minusDays(15),
                 LocalDate.now()
@@ -118,8 +119,8 @@ class ThemeDaoTest {
         String nonExistName = "test";
 
         // when
-        boolean exist = dao.isExistThemeName(existName);
-        boolean nonExist = dao.isExistThemeName(nonExistName);
+        boolean exist = themeDao.isExistThemeName(existName);
+        boolean nonExist = themeDao.isExistThemeName(nonExistName);
 
         // then
         assertThat(exist).isTrue();
@@ -129,7 +130,7 @@ class ThemeDaoTest {
     @Test
     void 존재하는_모든_테마의_개수를_카운팅한다() {
         // when
-        int count = dao.countTotalTheme();
+        int count = themeDao.countTotalTheme();
 
         // then
         assertThat(count).isEqualTo(16);
@@ -142,7 +143,7 @@ class ThemeDaoTest {
         int end = 10;
 
         // when
-        List<Theme> themesWithPage = dao.findThemesWithPage(start, end);
+        List<Theme> themesWithPage = themeDao.findThemesWithPage(start, end);
 
         // then
         assertThat(themesWithPage).hasSize(8);
