@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import roomescape.exception.custom.AuthenticationException;
 import roomescape.exception.custom.AuthorizationException;
 import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
@@ -43,6 +44,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<String> handleAuthorizationException(AuthorizationException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ERROR_PREFIX + e.getMessage());
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleAuthenticationException(AuthenticationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ERROR_PREFIX + e.getMessage());
     }
 

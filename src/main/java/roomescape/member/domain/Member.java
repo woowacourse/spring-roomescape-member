@@ -1,7 +1,7 @@
 package roomescape.member.domain;
 
 import java.util.regex.Pattern;
-import roomescape.exception.custom.AuthorizationException;
+import roomescape.exception.custom.AuthenticationException;
 import roomescape.exception.custom.InvalidInputException;
 
 public class Member {
@@ -47,7 +47,7 @@ public class Member {
 
     public void validateRightPassword(final String inputPassword) {
         if (!password.equals(inputPassword)) {
-            throw new AuthorizationException("비밀 번호가 옳지 않습니다");
+            throw new AuthenticationException("비밀 번호가 옳지 않습니다");
         }
     }
 

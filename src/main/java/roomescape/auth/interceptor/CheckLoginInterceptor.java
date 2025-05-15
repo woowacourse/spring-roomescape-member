@@ -3,6 +3,7 @@ package roomescape.auth.interceptor;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.service.AuthService;
@@ -24,7 +25,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
         final String token = CookieHandler.extractTokenFromCookies(cookies);
 
         if (!authService.isAdmin(token)) {
-            response.setStatus(401);
+            response.setStatus(HttpStatus.FORBIDDEN.value());
             return false;
         }
 

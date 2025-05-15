@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.auth.jwt.AuthTokenProvider;
 import roomescape.auth.service.dto.CreateTokenServiceRequest;
+import roomescape.exception.custom.AuthenticationException;
 import roomescape.exception.custom.AuthorizationException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
@@ -48,7 +49,7 @@ class AuthServiceTest {
 
         // when // then
         assertThatThrownBy(() -> authService.createToken(request))
-                .isInstanceOf(AuthorizationException.class)
+                .isInstanceOf(AuthenticationException.class)
                 .hasMessage("존재하지 않는 이메일 입니다");
     }
 

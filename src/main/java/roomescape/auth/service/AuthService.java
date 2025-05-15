@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.jwt.AuthTokenExtractor;
 import roomescape.auth.jwt.AuthTokenProvider;
 import roomescape.auth.service.dto.CreateTokenServiceRequest;
+import roomescape.exception.custom.AuthenticationException;
 import roomescape.exception.custom.AuthorizationException;
 import roomescape.exception.custom.NotExistedValueException;
 import roomescape.member.dao.MemberDao;
@@ -33,7 +34,7 @@ public class AuthService {
 
     private Member findMemberByEmail(final String email) {
         return memberDao.findByEmail(email)
-                .orElseThrow(() -> new AuthorizationException("존재하지 않는 이메일 입니다"));
+                .orElseThrow(() -> new AuthenticationException("존재하지 않는 이메일 입니다"));
     }
 
     public Member findMemberByToken(final String token) {
