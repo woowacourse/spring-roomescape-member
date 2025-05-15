@@ -24,7 +24,7 @@ public class LoginService {
     }
 
     public TokenResponse createToken(LoginRequest loginRequest) {
-        if (checkInvalidLogin(loginRequest.email(), loginRequest.password())) {
+        if (isInvalidLogin(loginRequest.email(), loginRequest.password())) {
             throw new InvalidAuthorizationException("[ERROR] 로그인 정보를 다시 확인해 주세요.");
         }
 
@@ -32,10 +32,9 @@ public class LoginService {
         return new TokenResponse(token);
     }
 
-    private boolean checkInvalidLogin(String email, String password) {
+    private boolean isInvalidLogin(String email, String password) {
         Optional<LoginMember> member = memberRepository.findByEmailAndPassword(email, password);
-        return member.map(value -> !email.equals(value.getEmail()) || !password.equals(value.getPassword()))
-                .orElse(true);
+        return member.isEmpty();
     }
 
     public LoginMemberResponse findMemberByToken(String token) {
