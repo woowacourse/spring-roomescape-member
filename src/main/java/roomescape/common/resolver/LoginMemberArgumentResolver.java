@@ -2,6 +2,7 @@ package roomescape.common.resolver;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -49,12 +50,10 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             throw new MissingTokenExcpetion("Token is missing");
         }
 
-        for (Cookie cookie : cookies) {
-            if (TOKEN_COOKIE_NAME.equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-
-        throw new MissingTokenExcpetion("Token is missing");
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie != null && TOKEN_COOKIE_NAME.equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElseThrow(() -> new MissingTokenExcpetion("Token is missing"));
     }
 }
