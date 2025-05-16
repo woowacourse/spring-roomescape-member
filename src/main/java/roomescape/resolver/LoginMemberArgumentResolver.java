@@ -2,8 +2,6 @@ package roomescape.resolver;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.Optional;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -13,6 +11,9 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.member.controller.dto.LoginMember;
 import roomescape.member.domain.Member;
 import roomescape.member.service.MemberService;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -36,7 +37,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         String token = extractTokenFromCookie(cookies)
                 .orElseThrow(() -> new IllegalArgumentException("token 쿠키가 없습니다."));
         Member member = memberService.searchLoginMember(token);
-        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole().name());
     }
 
     private Optional<String> extractTokenFromCookie(Cookie[] cookies) {

@@ -1,15 +1,16 @@
 package roomescape.member.repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JdbcMemberDao implements MemberRepository {
@@ -59,7 +60,7 @@ public class JdbcMemberDao implements MemberRepository {
                     preparedStatement.setString(1, member.getEmail());
                     preparedStatement.setString(2, member.getPassword());
                     preparedStatement.setString(3, member.getName());
-                    preparedStatement.setString(4, member.getRole());
+                    preparedStatement.setString(4, member.getRole().name());
                     return preparedStatement;
                 },
                 keyHolder

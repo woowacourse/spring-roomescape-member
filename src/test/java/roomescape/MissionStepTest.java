@@ -1,24 +1,26 @@
 package roomescape;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.core.Is.is;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.member.domain.Role;
 import roomescape.reservation.controller.ReservationController;
 import roomescape.reservation.controller.dto.ReservationResponse;
+
+import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.core.Is.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -41,7 +43,7 @@ class MissionStepTest {
     @DisplayName("어드민 경로 페이지 요청에 성공하면 200 코드를 반환한다")
     @Test
     void admin_request_test() {
-        String token = getToken("admin@gmail.com", "a", "어드민", "ADMIN");
+        String token = getToken("admin@gmail.com", "a", "어드민", Role.ADMIN);
 
         RestAssured.given().log().all()
                 .cookie("token", token)
@@ -53,7 +55,7 @@ class MissionStepTest {
     @DisplayName("예약 경로 페이지 요청에 성공하면 200 코드를 반환한다")
     @Test
     void reservation_request_test() {
-        String token = getToken("admin@gmail.com", "a", "어드민", "ADMIN");
+        String token = getToken("admin@gmail.com", "a", "어드민", Role.ADMIN);
 
         RestAssured.given().log().all()
                 .cookie("token", token)
@@ -71,7 +73,7 @@ class MissionStepTest {
     @DisplayName("예약 및 삭제 요청이 200 코드를 반환한다")
     @Test
     void reservation_delete_test() {
-        String token = getToken("a@gmail.com", "a", "하루", "MEMBER");
+        String token = getToken("a@gmail.com", "a", "하루", Role.USER);
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2026-08-05");
@@ -215,10 +217,10 @@ class MissionStepTest {
                 .statusCode(204);
     }
 
-    private String getToken(String email, String password, String name, String role) {
+    private String getToken(String email, String password, String name, Role role) {
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(Map.of("email", email, "password", password, "name", name, "role", role))
+                .body(Map.of("email", email, "password", password, "name", name, "role", role.name()))
                 .when().post("/login")
                 .then().log().all()
                 .extract()

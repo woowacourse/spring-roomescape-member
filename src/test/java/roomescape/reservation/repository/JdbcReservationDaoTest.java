@@ -1,21 +1,23 @@
 package roomescape.reservation.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 import roomescape.util.TestDataSourceFactory;
+
+import javax.sql.DataSource;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class JdbcReservationDaoTest {
 
@@ -43,7 +45,7 @@ class JdbcReservationDaoTest {
         ReservationTime time = new ReservationTime(6L, LocalTime.of(13, 15));
         Theme theme = new Theme(3L, "레벨1 탈출", "우테코 레벨1를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Member member = new Member(1L, "a", "a", "하루", "member");
+        Member member = new Member(1L, "a", "a", "하루", Role.USER);
         Reservation reservation = new Reservation(null, member, date, time, theme);
 
         // when

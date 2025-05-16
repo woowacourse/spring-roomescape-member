@@ -1,18 +1,12 @@
 package roomescape.reservation.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.member.controller.dto.MemberResponse;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
@@ -29,6 +23,12 @@ import roomescape.util.repository.MemberFakeRepository;
 import roomescape.util.repository.ReservationFakeRepository;
 import roomescape.util.repository.ReservationTimeFakeRepository;
 import roomescape.util.repository.ThemeFakeRepository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.*;
 
 class ReservationServiceTest {
 
@@ -64,7 +64,7 @@ class ReservationServiceTest {
             reservationTimeRepository.saveAndReturnId(time);
         }
 
-        Member member = new Member(1L, "a", "a", "하루", "member");
+        Member member = new Member(1L, "a", "a", "하루", Role.USER);
         memberRepository.saveAndReturnId(member);
 
         List<Reservation> reservations = List.of(

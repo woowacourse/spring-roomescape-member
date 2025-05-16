@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.service.MemberService;
 
 @Component
@@ -27,7 +28,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
                 .orElseThrow(() -> new IllegalArgumentException("token 쿠키가 없습니다."));
         Member member = memberService.searchLoginMember(token);
 
-        if (member == null || !member.isSameRole("ADMIN")) {
+        if (member == null || !member.isSameRole(Role.ADMIN)) {
             response.setStatus(401);
             return false;
         }
