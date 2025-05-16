@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import roomescape.auth.util.LoginTokenParser;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.exception.InvalidTokenException;
 import roomescape.repository.MemberRepository;
 
@@ -34,7 +35,7 @@ public class AdminInterceptor implements HandlerInterceptor {
 
             Long memberId = Long.valueOf(jwtProvider.getPayload(token));
             Optional<Member> member = memberRepository.findById(memberId);
-            if (member.isEmpty() || !member.get().role().equals("admin")) {
+            if (member.isEmpty() || !member.get().role().equals(MemberRole.admin)) {
                 throw new AuthenticationException("일반 사용자는 접근할 수 없습니다.");
             }
 

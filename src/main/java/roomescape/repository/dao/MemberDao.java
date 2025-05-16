@@ -37,7 +37,7 @@ public class MemberDao {
             ps.setString(1, member.name());
             ps.setString(2, member.email());
             ps.setString(3, member.password());
-            ps.setString(4, member.role());
+            ps.setString(4, member.role().name());
             return ps;
         }, keyHolder);
         Long id = keyHolder.getKey().longValue();

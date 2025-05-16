@@ -21,7 +21,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import roomescape.auth.JwtProvider;
-import roomescape.controller.api.ReservationController;
+import roomescape.controller.ReservationController;
 import roomescape.domain.Member;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.repository.MemberRepository;
