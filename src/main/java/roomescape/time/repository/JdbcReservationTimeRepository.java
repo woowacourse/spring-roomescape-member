@@ -17,11 +17,11 @@ import java.util.Optional;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
-    private final RowMapper<ReservationTime> ROW_MAPPER = (resultSet, rowNum) -> {
-        Long id = resultSet.getLong("id");
-        LocalTime time = resultSet.getObject("start_at", LocalTime.class);
-        return ReservationTime.of(id, time);
-    };
+    private final RowMapper<ReservationTime> ROW_MAPPER = (resultSet, rowNum) ->
+        new ReservationTime(
+                resultSet.getLong("id"),
+                resultSet.getObject("start_at", LocalTime.class)
+        );
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
@@ -36,7 +36,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
         final long id = keyHolder.getKey().longValue();
-        return ReservationTime.of(id, entity.getStartAt());
+        return new ReservationTime(id, entity.getStartAt());
     }
 
     @Override
@@ -93,6 +93,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         });
     }
 
+    
     @Override
     public Optional<ReservationTime> findByStartAt(LocalTime startAt) {
         String query = """

@@ -9,7 +9,7 @@ public record ThemeResponse(
         String thumbnail
 ) {
 
-    public static ThemeResponse from(Theme entity) {
+    public static ThemeResponse of(Theme entity) {
         return new ThemeResponse(
                 entity.getId(),
                 entity.getName(),

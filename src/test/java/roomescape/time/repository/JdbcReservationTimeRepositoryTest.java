@@ -22,17 +22,19 @@ class JdbcReservationTimeRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private ReservationTimeRepository timeRepository;
+    private final Long memberId = 1L;
 
     @BeforeEach
     void setup() {
         timeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
+        jdbcTemplate.update("INSERT INTO member (id, name, email, password, role) VALUES ( ?, ?, ?, ?, ? )", memberId, "test", "test@example.com", "password", "USER");
     }
 
     @DisplayName("생성 테스트")
     @Test
     void createTest() {
         // given
-        ReservationTime time = ReservationTime.create(LocalTime.of(10, 0));
+        ReservationTime time = new ReservationTime(null, LocalTime.of(10, 0));
 
         // when
         timeRepository.save(time);
@@ -75,7 +77,7 @@ class JdbcReservationTimeRepositoryTest {
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", 1, "10:00");
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", 2, "12:00");
         jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) VALUES (?, ?, ?, ?)", 1, "hello", "hi", "thumbnail");
-        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (?, ?, ?, ?, ?)", 1, "test", "2025-01-01", 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation (id, member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?, ?)", 1, memberId, "2025-01-01", 1, 1);
         List<ReservationTimeWithBookedDataResponse> expected = List.of(
                 new ReservationTimeWithBookedDataResponse(
                         1L,

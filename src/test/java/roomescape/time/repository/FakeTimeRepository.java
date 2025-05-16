@@ -15,6 +15,16 @@ public class FakeTimeRepository implements ReservationTimeRepository {
 
     @Override
     public ReservationTime save(ReservationTime entity) {
+        if (entity.getId() == null) {
+            final long nextId = entities.stream()
+                    .mapToLong(ReservationTime::getId)
+                    .max()
+                    .orElse(0) + 1;
+            entity = new ReservationTime(
+                    nextId,
+                    entity.getStartAt()
+            );
+        }
         entities.add(entity);
         return entity;
     }

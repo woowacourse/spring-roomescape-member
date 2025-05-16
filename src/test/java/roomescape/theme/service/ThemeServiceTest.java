@@ -4,9 +4,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.exception.badRequest.BadRequestException;
-import roomescape.exception.conflict.ThemeNameConflictException;
-import roomescape.exception.notFound.ThemeNotFoundException;
+import roomescape.global.exception.badRequest.BadRequestException;
+import roomescape.global.exception.conflict.ThemeNameConflictException;
+import roomescape.global.exception.notFound.ThemeNotFoundException;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.FakeReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
@@ -106,15 +106,15 @@ class ThemeServiceTest {
     void popularThemes() {
         // given
         LocalDate now = LocalDate.now();
-        ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
 
         themeRepository.save(new Theme(1L, "theme1", "t", "t"));
         themeRepository.save(new Theme(2L, "theme2", "t", "t"));
         themeRepository.save(new Theme(3L, "theme3", "t", "t"));
 
-        reservationRepository.save(Reservation.of(1L, "reservation1", now.minusDays(1), time, 1L));
-        reservationRepository.save(Reservation.of(2L, "reservation2", now.minusDays(2), time, 1L));
-        reservationRepository.save(Reservation.of(3L, "reservation3", now.minusDays(2), time, 2L));
+        reservationRepository.save(new Reservation(1L, 1L, now.minusDays(1), time, 1L));
+        reservationRepository.save(new Reservation(2L, 1L, now.minusDays(2), time, 1L));
+        reservationRepository.save(new Reservation(3L, 1L, now.minusDays(2), time, 2L));
 
         List<ThemeResponse> expect = List.of(
                 new ThemeResponse(1L, "theme1", "t", "t"),

@@ -7,7 +7,7 @@ public record ReservationTimeWithBookedResponse(
         String startAt,
         boolean alreadyBooked
 ) {
-    public static ReservationTimeWithBookedResponse from(ReservationTimeWithBookedDataResponse response) {
+    public static ReservationTimeWithBookedResponse of(ReservationTimeWithBookedDataResponse response) {
         return new ReservationTimeWithBookedResponse(
                 response.id(),
                 response.startAt().toString(),

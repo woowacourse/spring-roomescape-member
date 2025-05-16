@@ -1,6 +1,7 @@
 package roomescape.reservation.repository;
 
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.repository.dto.ReservationWithFilterRequest;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +13,19 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation entity) {
+        if (entity.getId() == null) {
+            final long nextId = entities.stream()
+                    .mapToLong(Reservation::getId)
+                    .max()
+                    .orElse(0) + 1;
+            entity = new Reservation(
+                    nextId,
+                    entity.getMemberId(),
+                    entity.getDate(),
+                    entity.getTime(),
+                    entity.getThemeId()
+            );
+        }
         entities.add(entity);
         return entity;
     }
@@ -24,6 +38,34 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         return Collections.unmodifiableList(entities);
+    }
+
+    @Override
+    public List<Reservation> findAllByFilter(ReservationWithFilterRequest filterRequest) {
+        List<Reservation> result = new ArrayList<>(entities);
+        if (filterRequest.from() != null) {
+             result = result.stream()
+                     .filter(reservation -> reservation.getDate().isAfter(filterRequest.from())
+                             || reservation.getDate().isEqual(filterRequest.from()))
+                     .toList();
+        }
+        if (filterRequest.to() != null) {
+            result = result.stream()
+                    .filter(reservation -> reservation.getDate().isBefore(filterRequest.to())
+                            || reservation.getDate().isEqual(filterRequest.to()))
+                    .toList();
+        }
+        if (filterRequest.themeId() != null) {
+            result = result.stream()
+                    .filter(reservation -> reservation.getThemeId().equals(filterRequest.themeId()))
+                    .toList();
+        }
+        if (filterRequest.memberId() != null) {
+            result = result.stream()
+                    .filter(reservation -> reservation.getMemberId().equals(filterRequest.memberId()))
+                    .toList();
+        }
+        return Collections.unmodifiableList(result);
     }
 
     @Override

@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import roomescape.exception.badRequest.BadRequestException;
-import roomescape.exception.conflict.ReservationTimeConflictException;
-import roomescape.exception.notFound.ReservationTimeNotFoundException;
+import roomescape.global.exception.badRequest.BadRequestException;
+import roomescape.global.exception.conflict.ReservationTimeConflictException;
+import roomescape.global.exception.notFound.ReservationTimeNotFoundException;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.FakeReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
@@ -33,7 +33,7 @@ class ReservationTimeServiceTest {
     void createDuplicateTime() {
         // given
         LocalTime duplicatedTime = LocalTime.of(10, 0);
-        timeRepository.save(ReservationTime.create(duplicatedTime));
+        timeRepository.save(new ReservationTime(1L, duplicatedTime));
 
         ReservationTimeRequest request = new ReservationTimeRequest(duplicatedTime);
 
@@ -87,10 +87,10 @@ class ReservationTimeServiceTest {
     void deleteExistReservationTime() {
         // given
         LocalTime time = LocalTime.of(12, 0);
-        ReservationTime timeEntity = ReservationTime.of(1L, time);
+        ReservationTime timeEntity = new ReservationTime(1L, time);
         timeRepository.save(timeEntity);
         LocalDate date = LocalDate.of(2025, 1, 2);
-        reservationRepository.save(Reservation.of(1L, "test1", date, timeEntity, 1L));
+        reservationRepository.save(new Reservation(1L, 1L, date, timeEntity, 1L));
 
         // when & then
         assertThatThrownBy(() -> {
@@ -101,8 +101,6 @@ class ReservationTimeServiceTest {
     @DisplayName("존재하지 않는 시간은 삭제할 수 없다.")
     @Test
     void deleteNotExistReservationTime() {
-        // given
-
         // when & then
         assertThatThrownBy(() -> {
             service.delete(1L);

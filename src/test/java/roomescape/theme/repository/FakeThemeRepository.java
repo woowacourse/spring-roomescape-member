@@ -19,6 +19,18 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public Theme save(Theme entity) {
+        if (entity.getId() == null) {
+            final long nextId = entities.stream()
+                    .mapToLong(Theme::getId)
+                    .max()
+                    .orElse(0) + 1;
+            entity = new Theme(
+                    nextId,
+                    entity.getName(),
+                    entity.getDescription(),
+                    entity.getThumbnail()
+            );
+        }
         entities.add(entity);
         return entity;
     }

@@ -20,10 +20,12 @@ class JdbcThemeRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private ThemeRepository themeRepository;
+    private final Long memberId = 1L;
 
     @BeforeEach
     void setup() {
         themeRepository = new JdbcThemeRepository(jdbcTemplate);
+        jdbcTemplate.update("INSERT INTO member (id, name, email, password, role) VALUES ( ?, ?, ?, ?, ? )", memberId, "test", "test@example.com", "password", "USER");
     }
 
     @DisplayName("생성 테스트")
@@ -85,10 +87,10 @@ class JdbcThemeRepositoryTest {
         // time
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES ( ?, ? )", 1, "10:00");
         // reservation
-        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES ( ?, ?, ?, ?, ? )", 1, "first", "2025-01-01", 1, 1);
-        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES ( ?, ?, ?, ?, ? )", 2, "second", "2025-01-02", 1, 1);
-        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES ( ?, ?, ?, ?, ? )", 3, "third", "2025-01-03", 1, 2);
-        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES ( ?, ?, ?, ?, ? )", 4, "fourth", "2025-01-04", 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation (id, member_id, date, time_id, theme_id) VALUES ( ?, ?, ?, ?, ? )", 1, memberId, "2025-01-01", 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation (id, member_id, date, time_id, theme_id) VALUES ( ?, ?, ?, ?, ? )", 2, memberId, "2025-01-02", 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation (id, member_id, date, time_id, theme_id) VALUES ( ?, ?, ?, ?, ? )", 3, memberId, "2025-01-03", 1, 2);
+        jdbcTemplate.update("INSERT INTO reservation (id, member_id, date, time_id, theme_id) VALUES ( ?, ?, ?, ?, ? )", 4, memberId, "2025-01-04", 1, 1);
 
         List<Theme> expected = List.of(
                 new Theme(1L, "test", "hello", "hi"),

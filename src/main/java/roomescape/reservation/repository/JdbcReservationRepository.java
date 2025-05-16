@@ -9,29 +9,27 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.repository.dto.ReservationWithFilterRequest;
 import roomescape.time.entity.ReservationTime;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
     private final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> {
-        final long id = resultSet.getLong("id");
-        String name = resultSet.getString("name");
-        LocalDate date = resultSet.getObject("date", LocalDate.class);
         final long timeId = resultSet.getLong("time_id");
         LocalTime timeValue = resultSet.getObject("start_at", LocalTime.class);
-        ReservationTime timeEntity = ReservationTime.of(timeId, timeValue);
-        final long themeId = resultSet.getLong("theme_id");
-        return Reservation.of(
-                id,
-                name,
-                date,
+        ReservationTime timeEntity = new ReservationTime(timeId, timeValue);
+        return new Reservation(
+                resultSet.getLong("id"),
+                resultSet.getLong("member_id"),
+                resultSet.getObject("date", LocalDate.class),
                 timeEntity,
-                themeId
+                resultSet.getLong("theme_id")
         );
     };
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -41,18 +39,18 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     public Reservation save(Reservation newReservation) {
-        String query = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (:name, :date, :time_id, :theme_id)";
+        String query = "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (:memberId, :date, :time_id, :theme_id)";
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", newReservation.getName())
+                .addValue("memberId", newReservation.getMemberId())
                 .addValue("date", newReservation.getDate())
                 .addValue("time_id", newReservation.getTimeId())
                 .addValue("theme_id", newReservation.getThemeId());
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(query, params, keyHolder);
         final long id = keyHolder.getKey().longValue();
-        return Reservation.of(
+        return new Reservation(
                 id,
-                newReservation.getName(),
+                newReservation.getMemberId(),
                 newReservation.getDate(),
                 newReservation.getTime(),
                 newReservation.getThemeId()
@@ -71,7 +69,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         String query = """
                 SELECT 
                     r.id, 
-                    r.name, 
+                    r.member_id, 
                     r.date, 
                     t.id as time_id, 
                     t.start_at, 
@@ -84,11 +82,53 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAllByFilter(ReservationWithFilterRequest filterRequest) {
+        String selectQuery =
+                """
+                SELECT
+                    r.id,
+                    r.member_id,
+                    r.date,
+                    rt.start_at,
+                    r.theme_id,
+                    rt.id as time_id
+                FROM reservation as r
+                INNER JOIN reservation_time as rt
+                ON r.time_id = rt.id
+                """;
+        List<String> filters = new ArrayList<>();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        if (filterRequest.memberId() != null) {
+            filters.add("member_id = :member_id");
+            params.addValue("member_id", filterRequest.memberId());
+        }
+        if (filterRequest.themeId() != null) {
+            filters.add("theme_id = :theme_id");
+            params.addValue("theme_id", filterRequest.themeId());
+        }
+        if (filterRequest.from() != null) {
+            filters.add("date >= :from");
+            params.addValue("from", filterRequest.from());
+        }
+        if (filterRequest.to() != null) {
+            filters.add("date <= :to");
+            params.addValue("to", filterRequest.to());
+        }
+
+        if (filters.isEmpty()) {
+            return jdbcTemplate.query(selectQuery, ROW_MAPPER);
+        }
+        String filterQuery = String.join(" AND ", filters);
+        String query = selectQuery + " WHERE " + filterQuery;
+        return jdbcTemplate.query(query, params, ROW_MAPPER);
+    }
+
+    @Override
     public List<Reservation> findAllByTimeId(Long id) {
         String query = """
                 SELECT 
                     r.id, 
-                    r.name, 
+                    r.member_id, 
                     r.date, 
                     rt.start_at, 
                     r.theme_id, 
@@ -108,7 +148,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         String query = """
                 SELECT
                     r.id,
-                    r.name,
+                    r.member_id,
                     r.date,
                     rt.start_at,
                     r.theme_id,

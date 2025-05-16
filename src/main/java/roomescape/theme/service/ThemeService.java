@@ -1,9 +1,9 @@
 package roomescape.theme.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.exception.badRequest.BadRequestException;
-import roomescape.exception.conflict.ThemeNameConflictException;
-import roomescape.exception.notFound.ThemeNotFoundException;
+import roomescape.global.exception.badRequest.BadRequestException;
+import roomescape.global.exception.conflict.ThemeNameConflictException;
+import roomescape.global.exception.notFound.ThemeNotFoundException;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.request.ThemeRequest;
@@ -27,13 +27,13 @@ public class ThemeService {
                     throw new ThemeNameConflictException();
                 });
         Theme saved = themeRepository.save(newTheme);
-        return ThemeResponse.from(saved);
+        return ThemeResponse.of(saved);
     }
 
     public List<ThemeResponse> getAllThemes() {
         return themeRepository.findAll()
                 .stream()
-                .map(ThemeResponse::from)
+                .map(ThemeResponse::of)
                 .toList();
     }
 
@@ -55,7 +55,7 @@ public class ThemeService {
         LocalDate startDate = yesterday.minusWeeks(1);
         return themeRepository.findPopularThemesByDateRangeAndLimit(startDate, yesterday, limit)
                 .stream()
-                .map(ThemeResponse::from)
+                .map(ThemeResponse::of)
                 .toList();
     }
 }

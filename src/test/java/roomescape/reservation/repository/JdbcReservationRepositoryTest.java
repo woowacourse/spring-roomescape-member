@@ -25,6 +25,7 @@ class JdbcReservationRepositoryTest {
     @BeforeEach
     void setup() {
         reservationRepository = new JdbcReservationRepository(jdbcTemplate);
+        jdbcTemplate.update("INSERT INTO member(id, name, email, password, role) VALUES ( ?, ?, ?, ?, ? )", 1L, "test", "email", "password", "USER");
     }
 
     @DisplayName("생성 테스트")
@@ -34,8 +35,8 @@ class JdbcReservationRepositoryTest {
         jdbcTemplate.update("INSERT INTO reservation_time(id, start_at) VALUES (?, ?)", 1, "10:00");
         jdbcTemplate.update("INSERT INTO theme(id, name, description, thumbnail) VALUES (?, ?, ?, ?)", 1, "hello", "hi", "thumbnail");
 
-        ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
-        Reservation reservation = Reservation.of(1L, "test", LocalDate.of(2025, 1, 2), time, 1L);
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+        Reservation reservation = new Reservation(1L, 1L, LocalDate.of(2025, 1, 2), time, 1L);
 
         // when
         reservationRepository.save(reservation);
@@ -49,7 +50,8 @@ class JdbcReservationRepositoryTest {
     void deleteTest() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", 1, "10:00");
-        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id) VALUES (?, ?, ?, ?)", 1, "test", "2025-01-01", 1);
+        jdbcTemplate.update("INSERT INTO theme(id, name, description, thumbnail) VALUES (?, ?, ?, ?)", 1, "hello", "hi", "thumbnail");
+        jdbcTemplate.update("INSERT INTO reservation (id, member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?, ?)", 1, 1, "2025-01-01", 1, 1);
 
         // when
         reservationRepository.deleteById(1L);
@@ -68,8 +70,8 @@ class JdbcReservationRepositoryTest {
         // theme
         jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) VALUES ( ?, ?, ?, ? )", 1, "hello", "hi", "hh");
         // reservation
-        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES ( ?, ?, ?, ?, ? )", 1, "first", "2025-01-01", 1, 1);
-        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES ( ?, ?, ?, ?, ? )", 2, "second", "2025-01-01", 2, 1);
+        jdbcTemplate.update("INSERT INTO reservation (id, member_id, date, time_id, theme_id) VALUES ( ?, ?, ?, ?, ? )", 1, 1, "2025-01-01", 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation (id, member_id, date, time_id, theme_id) VALUES ( ?, ?, ?, ?, ? )", 2, 1, "2025-01-01", 2, 1);
 
         // when
         List<Reservation> firstTimeReservations = reservationRepository.findAllByTimeId(1L);

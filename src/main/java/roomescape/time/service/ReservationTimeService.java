@@ -1,9 +1,9 @@
 package roomescape.time.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.exception.badRequest.BadRequestException;
-import roomescape.exception.conflict.ReservationTimeConflictException;
-import roomescape.exception.notFound.ReservationTimeNotFoundException;
+import roomescape.global.exception.badRequest.BadRequestException;
+import roomescape.global.exception.conflict.ReservationTimeConflictException;
+import roomescape.global.exception.notFound.ReservationTimeNotFoundException;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.entity.ReservationTime;
@@ -30,9 +30,10 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse create(ReservationTimeRequest requestDto) {
         ReservationTime entity = requestDto.toEntity();
+        validateOperatingTime(entity);
         validateDuplicated(entity);
         ReservationTime saved = timeRepository.save(entity);
-        return ReservationTimeResponse.from(saved);
+        return ReservationTimeResponse.of(saved);
     }
 
     private void validateDuplicated(ReservationTime entity) {
@@ -45,9 +46,15 @@ public class ReservationTimeService {
         return timeRepository.findByStartAt(entity.getStartAt()).isPresent();
     }
 
+    private void validateOperatingTime(ReservationTime newTime) {
+        if (!newTime.isOnOperatingTime()) {
+            throw new BadRequestException("운영 시간 이외의 시간이 입력되었습니다.");
+        }
+    }
+
     public List<ReservationTimeResponse> getAllTimes() {
         return timeRepository.findAll().stream()
-                .map(ReservationTimeResponse::from)
+                .map(ReservationTimeResponse::of)
                 .toList();
     }
 
@@ -65,7 +72,7 @@ public class ReservationTimeService {
     public List<ReservationTimeWithBookedResponse> getAllTimesWithBooked(LocalDate date, final Long themeId) {
         return timeRepository.findAllWithBooked(date, themeId)
                 .stream()
-                .map(ReservationTimeWithBookedResponse::from)
+                .map(ReservationTimeWithBookedResponse::of)
                 .toList();
     }
 }

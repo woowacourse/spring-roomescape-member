@@ -16,18 +16,13 @@ import java.util.Optional;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
-    private final RowMapper<Theme> ROW_MAPPER = (resultSet, rowNum) -> {
-        final long id = resultSet.getLong("id");
-        String name = resultSet.getString("name");
-        String description = resultSet.getString("description");
-        String thumbnail = resultSet.getString("thumbnail");
-        return new Theme(
-                id,
-                name,
-                description,
-                thumbnail
+    private final RowMapper<Theme> ROW_MAPPER = (resultSet, rowNum) ->
+        new Theme(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail")
         );
-    };
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
@@ -80,6 +75,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         }
     }
 
+    
     @Override
     public Optional<Theme> findByName(String name) {
         String query = "SELECT * FROM theme WHERE name = :name";
