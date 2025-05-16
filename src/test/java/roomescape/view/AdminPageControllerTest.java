@@ -13,37 +13,49 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class AdminPageControllerTest {
 
-    private String token;
+    private String adminToken;
+    private String userToken;
 
     @BeforeEach
     void setUp() {
-        token = getAdminToken();
+        adminToken = getToken("admin@email.com", "password");
+        userToken = getToken("user@email.com", "password");
     }
 
-    private String getAdminToken() {
+    private String getToken(String email, String password) {
         return RestAssured.given()
                 .contentType(ContentType.JSON)
-                .body(Map.of("email", "admin@email.com", "password", "password"))
+                .body(Map.of("email", email, "password", password))
                 .when().post("/login")
                 .then().statusCode(200)
                 .extract().response().getDetailedCookies().getValue("token");
     }
 
-    @DisplayName("어드민 페이지를 불러 온다")
+    @DisplayName("어드민 계정으로 어드민 페이지에 접근할 수 있다")
     @Test
-    void getAdminPageTest() {
+    void getAdminPageTest_WhenAdminLogin() {
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie("token", adminToken)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    @DisplayName("유저 계정으로 어드민 페이지에 접근할 수 없다")
+    @Test
+    void getAdminPageTest_WhenUserLogin() {
+        RestAssured.given().log().all()
+                .cookie("token", userToken)
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(403);
     }
 
     @DisplayName("어드민 예약 관리 페이지를 불러 온다")
     @Test
     void getAdminReservationPageTest() {
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie("token", adminToken)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
@@ -53,7 +65,7 @@ class AdminPageControllerTest {
     @Test
     void getAdminTimePageTest() {
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie("token", adminToken)
                 .when().get("/admin/time")
                 .then().log().all()
                 .statusCode(200);
@@ -63,7 +75,7 @@ class AdminPageControllerTest {
     @Test
     void getAdminThemePageTest() {
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie("token", adminToken)
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200);
