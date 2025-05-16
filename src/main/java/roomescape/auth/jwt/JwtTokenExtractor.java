@@ -1,13 +1,11 @@
 package roomescape.auth.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import java.security.Key;
-import java.util.Base64;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.exception.custom.AuthorizationException;
@@ -15,35 +13,25 @@ import roomescape.exception.custom.AuthorizationException;
 @Component
 public class JwtTokenExtractor implements AuthTokenExtractor {
 
-    private final Key key;
+    private final JWTVerifier verifier;
 
     public JwtTokenExtractor(@Value("${security.jwt.token.secret-key}") String secretKey) {
-        byte[] keyBytes = Base64.getDecoder().decode(secretKey);
-        this.key = Keys.hmacShaKeyFor(keyBytes);
+        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+        this.verifier = JWT.require(algorithm).build();
     }
 
     @Override
     public String extractMemberIdFromToken(String token) {
         validateValidToken(token);
-
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        DecodedJWT jwt = verifier.verify(token);
+        return jwt.getSubject();
     }
 
     @Override
     public String extractMemberRoleFromToken(String token) {
         validateValidToken(token);
-
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get("role", String.class);
+        DecodedJWT jwt = verifier.verify(token);
+        return jwt.getClaim("role").asString();
     }
 
     private void validateValidToken(final String token) {
@@ -59,13 +47,10 @@ public class JwtTokenExtractor implements AuthTokenExtractor {
 
     private void validateTokenIntegrityAndExpiration(String token) {
         try {
-            Jws<Claims> claims = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token);
-        } catch (ExpiredJwtException e) {
+            verifier.verify(token);
+        } catch (TokenExpiredException e) {
             throw new AuthorizationException("토큰이 만료 되었습니다");
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (JWTVerificationException | IllegalArgumentException e) {
             throw new AuthorizationException("서명이 올바르지 않거나 잘못된 토큰입니다");
         }
     }

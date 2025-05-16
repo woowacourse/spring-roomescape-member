@@ -3,11 +3,8 @@ package roomescape.auth.jwt;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import java.security.Key;
-import java.util.Base64;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import java.util.Date;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,19 +12,17 @@ import roomescape.exception.custom.AuthorizationException;
 
 class JwtTokenExtractorTest {
 
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private final JwtTokenExtractor jwtTokenExtractor = new JwtTokenExtractor(
-            Base64.getEncoder().encodeToString(key.getEncoded())
-    );
+    private final String secretKey = "test-secret-key-for-jwt-which-should-be-long-enough";
+    private final Algorithm algorithm = Algorithm.HMAC256(secretKey);
+    private final JwtTokenExtractor jwtTokenExtractor = new JwtTokenExtractor(secretKey);
 
     private String createToken(String name, String role, Date expiration) {
-        return Jwts.builder()
-                .setSubject("1")
-                .claim("name", name)
-                .claim("role", role)
-                .setExpiration(expiration)
-                .signWith(key)
-                .compact();
+        return JWT.create()
+                .withSubject("1")
+                .withClaim("name", name)
+                .withClaim("role", role)
+                .withExpiresAt(expiration)
+                .sign(algorithm);
     }
 
     @DisplayName("토큰에서 멤버 아이디를 추출한다")
