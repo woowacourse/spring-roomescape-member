@@ -8,8 +8,7 @@ import roomescape.domain.Member;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Reservation;
-import roomescape.dto.AdminReservationRequest;
-import roomescape.dto.ReservationRequest;
+import roomescape.dto.ReservationRecipe;
 import roomescape.dto.ReservationResponse;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
@@ -35,12 +34,12 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public ReservationResponse addReservationWithMemberId(final ReservationRequest request, final long memberId) {
-        long timeId = request.timeId();
-        final long themeId = request.themeId();
-        final LocalDate date = request.date();
+    public ReservationResponse addReservation(final ReservationRecipe recipe) {
+        long timeId = recipe.timeId();
+        final long themeId = recipe.themeId();
+        final LocalDate date = recipe.date();
         validateUniqueReservation(date, timeId, themeId);
-        final Member member = memberRepository.findById(memberId)
+        final Member member = memberRepository.findById(recipe.memberId())
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 사용자 입니다."));
         final ReservationTime time = reservationTimeRepository.findById(timeId).orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 예약 시간 입니다."));
         final ReservationTheme theme = reservationThemeRepository.findById(themeId).orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 테마 입니다."));
@@ -49,19 +48,6 @@ public class ReservationService {
         return ReservationResponse.fromV2(saved);
     }
 
-    public ReservationResponse addReservationForAdmin(final AdminReservationRequest request) {
-        long timeId = request.timeId();
-        final long themeId = request.themeId();
-        final LocalDate date = request.date();
-        validateUniqueReservation(date, timeId, themeId);
-        final Member member = memberRepository.findById(request.memberId())
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 사용자 입니다."));
-        final ReservationTime time = reservationTimeRepository.findById(timeId).orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 예약 시간 입니다."));
-        final ReservationTheme theme = reservationThemeRepository.findById(themeId).orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 테마 입니다."));
-        final Reservation reservation = new Reservation(member, date, time, theme);
-        Reservation saved = reservationRepository.saveWithMember(reservation);
-        return ReservationResponse.fromV2(saved);
-    }
 
     public void removeReservation(final long id) {
         int deleteCounts = reservationRepository.deleteById(id);

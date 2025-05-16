@@ -39,7 +39,7 @@ class MemberServiceTest {
     @DisplayName("모든 멤버를 성공적으로 가져온다.")
     void getAllMembersTest() {
         //given
-        final MemberRegisterRequest memberRegisterRequest = new MemberRegisterRequest("test", "test", "test");
+        final MemberRegisterRequest memberRegisterRequest = new MemberRegisterRequest("test12", "test12", "test12");
         memberService.addMember(memberRegisterRequest);
 
         //when
@@ -53,7 +53,7 @@ class MemberServiceTest {
     @DisplayName("id로 멤버를 성공적으로 가져온다.")
     void getMemberById() {
         //given
-        final MemberRegisterRequest memberRegisterRequest = new MemberRegisterRequest("test", "test", "test");
+        final MemberRegisterRequest memberRegisterRequest = new MemberRegisterRequest("test123", "test123", "test123");
         final MemberRegisterResponse saved = memberService.addMember(memberRegisterRequest);
 
         //when
