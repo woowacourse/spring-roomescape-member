@@ -20,10 +20,11 @@ function render(data) {
     data.forEach(item => {
         const row = tableBody.insertRow();
 
-        row.insertCell(0).textContent = item.id;
-        row.insertCell(1).textContent = item.name;
-        row.insertCell(2).textContent = item.date;
-        row.insertCell(3).textContent = item.time.startAt;
+        row.insertCell(0).textContent = item.id;              // 예약 id
+        row.insertCell(1).textContent = item.member.name;     // 사용자 name
+        row.insertCell(2).textContent = item.theme.name;      // 테마 name
+        row.insertCell(3).textContent = item.date;            // date
+        row.insertCell(4).textContent = item.time.startAt;    // 예약 시간 startAt
 
         const actionCell = row.insertCell(row.cells.length);
         actionCell.appendChild(createActionButton('삭제', 'btn-danger', deleteRow));
@@ -74,11 +75,10 @@ function addInputRow() {
     const row = tableBody.insertRow();
     isEditing = true;
 
-    const nameInput = createInput('text');
     const dateInput = createInput('date');
     const timeDropdown = createSelect(timesOptions, "시간 선택", 'time-select', 'startAt');
 
-    const cellFieldsToCreate = ['', nameInput, dateInput, timeDropdown];
+    const cellFieldsToCreate = ['', dateInput, timeDropdown];
 
     cellFieldsToCreate.forEach((field, index) => {
         const cell = row.insertCell(index);
@@ -117,12 +117,10 @@ function saveRow(event) {
     event.stopPropagation();
 
     const row = event.target.parentNode.parentNode;
-    const nameInput = row.querySelector('input[type="text"]');
     const dateInput = row.querySelector('input[type="date"]');
     const timeSelect = row.querySelector('select');
 
     const reservation = {
-        name: nameInput.value,
         date: dateInput.value,
         timeId: timeSelect.value
     };
