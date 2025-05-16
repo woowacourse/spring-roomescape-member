@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -11,11 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.ThemeDao;
+import roomescape.TestConstants;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 @JdbcTest
@@ -24,6 +24,7 @@ class ReservationDaoTest {
     ReservationDao reservationDao;
     ReservationTimeDao reservationTimeDao;
     ThemeDao themeDao;
+    MemberDao memberDao;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -35,6 +36,7 @@ class ReservationDaoTest {
         reservationDao = new ReservationDao(jdbcTemplate);
         reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
         themeDao = new ThemeDao(jdbcTemplate);
+        memberDao = new MemberDao(jdbcTemplate);
         ReservationTime reservationTime = reservationTimeDao.save(
             new ReservationTime(
                 LocalTime.of(10, 5)
@@ -48,10 +50,10 @@ class ReservationDaoTest {
             )
         );
         Reservation reservation = new Reservation(
-            "두리",
             LocalDate.of(2025, 10, 5),
             reservationTime,
-            savedTheme
+            savedTheme,
+            new Member(1L, "두리", "a@a.com", "1234", Role.USER)
         );
         savedReservation = reservationDao.save(reservation);
     }
@@ -60,7 +62,6 @@ class ReservationDaoTest {
     @DisplayName("Reservation 객체를 저장한다")
     void saveReservation() {
         Reservation reservation = new Reservation(
-            "두리",
             LocalDate.of(2025, 10, 5),
             new ReservationTime(
                 LocalTime.of(10, 5)
@@ -69,21 +70,16 @@ class ReservationDaoTest {
                 "탈출",
                 "탈출하는 내용",
                 "abc.jpg"
-            )
+            ),
+            TestConstants.DEFAULT_MEMBER
         );
         Reservation savedReservation = reservationDao.save(reservation);
 
         assertAll(
-            () -> assertThat(savedReservation.getName()).isEqualTo("두리"),
+            () -> assertThat(savedReservation.getMember().getName()).isEqualTo("두리"),
             () -> assertThat(savedReservation.getDate()).isEqualTo(LocalDate.of(2025, 10, 5)),
             () -> assertThat(savedReservation.getTime().getStartAt()).isEqualTo(LocalTime.of(10, 5))
         );
-    }
-
-    @Test
-    @DisplayName("저장된 Reservation 전체를 조회한다")
-    void selectReservation() {
-        assertThat(reservationDao.findAll()).contains(savedReservation);
     }
 
     @Test

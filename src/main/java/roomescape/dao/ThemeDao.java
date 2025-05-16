@@ -64,10 +64,10 @@ public class ThemeDao {
         String sql = """
             select count(*), t.id, t.name, t.description, t.thumbnail from theme as t
             left join (
-                select * 
-                from reservation as r 
-                where PARSEDATETIME(r.date, 'yyyy-MM-dd') 
-                    between TIMESTAMPADD(DAY, -8, CURRENT_DATE) 
+                select *
+                from reservation as r
+                where PARSEDATETIME(r.date, 'yyyy-MM-dd')
+                    between TIMESTAMPADD(DAY, -8, CURRENT_DATE)
                         and TIMESTAMPADD(DAY, -1, CURRENT_DATE)
                 )
             as r on t.id = r.theme_id

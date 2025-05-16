@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.rest;
 
 import java.time.LocalDate;
 import java.util.List;

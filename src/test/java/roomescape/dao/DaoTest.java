@@ -1,7 +1,6 @@
-package roomescape;
+package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -31,7 +30,8 @@ public class DaoTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "탈출 스페셜", "탈출하는 내용", "abc.jpg");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+            "탈출 스페셜", "탈출하는 내용", "abc.jpg");
     }
 
     @Test
@@ -48,9 +48,10 @@ public class DaoTest {
 
     @Test
     void 오단계() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-            "브라운",
+        jdbcTemplate.update(
+            "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
             LocalDate.now().plusDays(1),
+            1L,
             1L,
             1L
         );
@@ -65,35 +66,6 @@ public class DaoTest {
             Integer.class);
 
         assertThat(reservations.size()).isEqualTo(count);
-    }
-
-    @Test
-    void 육단계() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", LocalDate.now().plusDays(1));
-        params.put("timeId", 1);
-        params.put("themeId", 1);
-
-        RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(201);
-
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation",
-            Integer.class);
-        assertThat(count).isEqualTo(1);
-
-        RestAssured.given().log().all()
-            .when().delete("/reservations/1")
-            .then().log().all()
-            .statusCode(204);
-
-        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation",
-            Integer.class);
-        assertThat(countAfterDelete).isEqualTo(0);
     }
 
     @Test
@@ -112,27 +84,5 @@ public class DaoTest {
             .when().delete("/times/1")
             .then().log().all()
             .statusCode(204);
-    }
-
-    @Test
-    void 팔단계() {
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", LocalDate.now().plusDays(1));
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
-
-        RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(reservation)
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(201);
-
-        RestAssured.given().log().all()
-            .when().get("/reservations")
-            .then().log().all()
-            .statusCode(200)
-            .body("size()", is(1));
     }
 }

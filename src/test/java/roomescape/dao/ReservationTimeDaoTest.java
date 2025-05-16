@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,10 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.dao.ReservationTimeDao;
+import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.ReservationTime;
 
 @JdbcTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeDaoTest {
 
     ReservationTimeDao reservationTimeDao;
@@ -36,7 +37,8 @@ class ReservationTimeDaoTest {
     @Test
     @DisplayName("id로 ReservationTime 을 조회 할 수 있다")
     void select_with_id() {
-        Optional<ReservationTime> reservationTime = reservationTimeDao.findById(savedReservationTime.getId());
+        Optional<ReservationTime> reservationTime = reservationTimeDao.findById(
+            savedReservationTime.getId());
         assertThat(reservationTime.get()).isEqualTo(savedReservationTime);
     }
 
@@ -60,6 +62,7 @@ class ReservationTimeDaoTest {
     @Test
     @DisplayName("id로 해당 entity를 삭제한다")
     void delete_with_id() {
-        Assertions.assertDoesNotThrow(() -> reservationTimeDao.deleteById(savedReservationTime.getId()));
+        Assertions.assertDoesNotThrow(
+            () -> reservationTimeDao.deleteById(savedReservationTime.getId()));
     }
 }

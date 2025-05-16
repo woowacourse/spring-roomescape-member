@@ -16,5 +16,4 @@ class ReservationTimeTest {
             );
         }).isInstanceOf(NullPointerException.class);
     }
-
 }
