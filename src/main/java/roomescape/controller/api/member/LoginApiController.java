@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.controller.api.member.dto.LoginCheckResponse;
 import roomescape.controller.api.member.dto.MemberLoginRequest;
 import roomescape.controller.api.member.dto.TokenResponse;
+import roomescape.controller.helper.LoginMember;
 import roomescape.infrastructure.CookieExtractor;
+import roomescape.model.Member;
 import roomescape.service.MemberService;
 
 @Controller
@@ -38,11 +40,9 @@ public class LoginApiController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> checkLogin(final HttpServletRequest request) {
-        final Cookie[] cookies = request.getCookies();
-        final String token = cookieExtractor.extractToken(cookies);
-        final LoginCheckResponse response = memberService.checkLogin(token);
-        return ResponseEntity.ok().body(response);
+    public ResponseEntity<LoginCheckResponse> checkLogin(@LoginMember final Member member) {
+        final LoginCheckResponse response = memberService.checkLogin(member);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/logout")

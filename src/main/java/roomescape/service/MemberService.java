@@ -31,13 +31,10 @@ public class MemberService {
         return jwtTokenProvider.createToken(member);
     }
 
-    public LoginCheckResponse checkLogin(final String token) {
-        if (token.isEmpty() || !jwtTokenProvider.validateToken(token)) {
-            throw new AuthorizationException("유효하지 않은 토큰입니다.");
+    public LoginCheckResponse checkLogin(final Member member) {
+        if (member == null) {
+            throw new AuthorizationException("회원 정보가 존재하지 않습니다.");
         }
-        final String email = jwtTokenProvider.getPayload(token);
-        final Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new AuthorizationException("해당 이메일에 대한 회원 정보가 존재하지 않습니다. 이메일: " + email));
         return new LoginCheckResponse(member.name());
     }
 
