@@ -7,11 +7,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.dto.TokenResponse;
 import roomescape.fake.FakeMemberDao;
 import roomescape.global.auth.JwtTokenProvider;
+import roomescape.global.auth.LoginMember;
 import roomescape.global.exception.custom.UnauthorizedException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberEmail;
@@ -84,7 +84,7 @@ class AuthServiceTest {
             // given
             String token = jwtTokenProvider.createToken(String.valueOf(SAVED_ID));
             // when
-            LoginCheckResponse response = authService.checkMember(token);
+            LoginMember response = authService.checkMember(token);
             // then
             assertThat(response.name()).isEqualTo(SAVED_NAME.getName());
         }
