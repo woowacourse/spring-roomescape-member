@@ -48,7 +48,6 @@ public class ReservationService {
         return ReservationResponse.fromV2(saved);
     }
 
-
     public void removeReservation(final long id) {
         int deleteCounts = reservationRepository.deleteById(id);
         if (deleteCounts == DELETE_FAILED_COUNT) {
@@ -61,6 +60,7 @@ public class ReservationService {
                 .map(ReservationResponse::fromV2)
                 .toList();
     }
+
 
     public List<ReservationResponse> getFilteredReservations(final Long memberId, final Long themeId,
                                                        final LocalDate dateFrom, final LocalDate dateTo) {
