@@ -31,7 +31,8 @@ public class Reservation {
 
     public Reservation(@NonNull final LocalDate date,
                        @NonNull final ReservationTime reservationTime,
-                       @NonNull final Theme theme, @NonNull final Member member) {
+                       @NonNull final Theme theme,
+                       @NonNull final Member member) {
         validateFutureOrPresent(date, reservationTime.getStartAt());
         this.id = null;
         this.date = date;

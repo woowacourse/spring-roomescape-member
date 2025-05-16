@@ -6,9 +6,17 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 
 class MemberTest {
+
+
     @Test
     void 생성자_정상_동작() {
-        Member member = new Member(1L, "홍길동", "hong@example.com", "password", "ADMIN");
+        Member member = Member.builder()
+                .id(1L)
+                .name("홍길동")
+                .email("hong@example.com")
+                .password(Password.createForMember("password"))
+                .role(MemberRole.ADMIN)
+                .build();
 
         assertThat(member.getId()).isEqualTo(1L);
         assertThat(member.getName()).isEqualTo("홍길동");
@@ -19,18 +27,28 @@ class MemberTest {
 
     @Test
     void 기본_생성자_사용_시_role_은_MEMBER_id는_null() {
-        Member member = new Member("김철수", "kim@example.com", "pass123");
+        Member member = Member.builder()
+                .name("김철수")
+                .email("kim@example.com")
+                .password(Password.createForMember("password"))
+                .role(MemberRole.MEMBER)
+                .build();
 
         assertThat(member.getId()).isNull();
         assertThat(member.getName()).isEqualTo("김철수");
         assertThat(member.getEmail()).isEqualTo("kim@example.com");
-        assertThat(member.getPassword()).isEqualTo("pass123");
+        assertThat(member.getPassword()).isEqualTo("password");
         assertThat(member.getRole()).isEqualTo(MemberRole.MEMBER);
     }
 
     @Test
     void matchesPassword가_올바르게_동작() {
-        Member member = new Member("호랑이", "park@example.com", "secret");
+        Member member = Member.builder()
+                .name("호랑이")
+                .email("park@example.com")
+                .password(Password.createForMember("secret"))
+                .role(MemberRole.MEMBER)
+                .build();
 
         assertThat(member.matchesPassword("secret")).isTrue();
         assertThat(member.matchesPassword("wrong")).isFalse();
@@ -39,13 +57,20 @@ class MemberTest {
     @Test
     void null_값_입력_시_IllegalArgumentException_발생() {
         SoftAssertions.assertSoftly(soft -> {
-            soft.assertThatThrownBy(() -> new Member(1L, null, "b", "c", "MEMBER"))
+            soft.assertThatThrownBy(
+                            () -> Member.builder().id(1L).name(null).email("b").password(Password.createForMember("c"))
+                                    .role(MemberRole.MEMBER).build())
                     .isInstanceOf(IllegalArgumentException.class);
-            soft.assertThatThrownBy(() -> new Member(1L, "a", null, "c", "MEMBER"))
+            soft.assertThatThrownBy(
+                            () -> Member.builder().id(1L).name("a").email(null).password(Password.createForMember("c"))
+                                    .role(MemberRole.MEMBER).build())
                     .isInstanceOf(IllegalArgumentException.class);
-            soft.assertThatThrownBy(() -> new Member(1L, "a", "b", null, "MEMBER"))
+            soft.assertThatThrownBy(
+                            () -> Member.builder().id(1L).name("a").email("b").password(null).role(MemberRole.MEMBER).build())
                     .isInstanceOf(IllegalArgumentException.class);
-            soft.assertThatThrownBy(() -> new Member(1L, "a", "b", "c", (String) null))
+            soft.assertThatThrownBy(
+                            () -> Member.builder().id(1L).name("a").email("b").password(Password.createForMember("c"))
+                                    .role(null).build())
                     .isInstanceOf(IllegalArgumentException.class);
         });
     }

@@ -15,6 +15,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRole;
+import roomescape.member.domain.Password;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -73,16 +74,20 @@ class JdbcThemeRepositoryTest {
     @Test
     void 인기있는_테마_10개를_조회한다() {
         // given
-        Member member1 = new Member(1L, "유저1", "user1@naver.com", "pwd", MemberRole.MEMBER.name());
+        Member member = Member.builder()
+                .name("이름")
+                .email("email")
+                .password(Password.createForMember("비번"))
+                .role(MemberRole.MEMBER).build();
         jdbcReservationRepository.save(
                 new Reservation(1L, LocalDate.now().minusDays(3), new ReservationTime(1L, LocalTime.of(10, 0)),
-                        new Theme(1L, "이름1", "썸네일1", "설명1"), member1));
+                        new Theme(1L, "이름1", "썸네일1", "설명1"), member));
         jdbcReservationRepository.save(
                 new Reservation(2L, LocalDate.now().minusDays(3), new ReservationTime(2L, LocalTime.of(11, 0)),
-                        new Theme(1L, "이름1", "썸네일1", "설명1"), member1));
+                        new Theme(1L, "이름1", "썸네일1", "설명1"), member));
         jdbcReservationRepository.save(
                 new Reservation(3L, LocalDate.now().minusDays(3), new ReservationTime(1L, LocalTime.of(10, 0)),
-                        new Theme(2L, "이름2", "썸네일2", "설명2"), member1));
+                        new Theme(2L, "이름2", "썸네일2", "설명2"), member));
 
         // when
         List<PopularThemeResponse> allPopular = repository.findAllPopular();

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Password;
 import roomescape.member.repository.MemberRepository;
 
 public class FakeMemberRepository implements MemberRepository {
@@ -49,9 +50,15 @@ public class FakeMemberRepository implements MemberRepository {
     }
 
     @Override
-    public void save(final Member member) {
+    public void save(final Member inputMember) {
         final Long newId = atomicLong.incrementAndGet();
-        data.add(new Member(newId, member.getName(), member.getEmail(), member.getPassword(), member.getRole()));
+        final Member member = Member.builder().id(newId)
+                .name(inputMember.getName())
+                .email(inputMember.getEmail())
+                .password(Password.createForMember(inputMember.getPassword()))
+                .role(inputMember.getRole())
+                .build();
+        data.add(member);
     }
 
     @Override

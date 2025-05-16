@@ -10,8 +10,8 @@ import java.util.Optional;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import roomescape.error.ReservationException;
+import roomescape.fixture.Fixture;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.MemberRole;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.fake.FakeReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -31,7 +31,7 @@ class ReservationTimeServiceTest {
     private final Theme theme1 = new Theme(1L, "테마1", "설명1", "썸네일1");
     private final Theme theme2 = new Theme(1L, "테마2", "설명2", "썸네일2");
 
-    Member member1 = new Member(1L, "유저1", "user1@naver.com", "pwd", MemberRole.MEMBER.name());
+    Member member1 = new Fixture().getNomalMember();
 
     private final Reservation r1 = new Reservation(1L, LocalDate.of(2025, 5, 11), rt1, theme1, member1);
     private final Reservation r2 = new Reservation(2L, LocalDate.of(2025, 6, 11), rt2, theme2, member1);

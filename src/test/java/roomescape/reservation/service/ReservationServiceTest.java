@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.auth.dto.LoginMember;
 import roomescape.error.NotFoundException;
 import roomescape.error.ReservationException;
+import roomescape.fixture.Fixture;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRole;
 import roomescape.member.fake.FakeMemberRepository;
@@ -27,13 +28,15 @@ import roomescape.theme.fake.FakeThemeRepository;
 
 class ReservationServiceTest {
 
+    Fixture fixture = new Fixture();
+
     private final ReservationTime time1 = new ReservationTime(1L, LocalTime.of(14, 0));
     private final ReservationTime time2 = new ReservationTime(2L, LocalTime.of(13, 0));
 
     private final Theme theme1 = new Theme(1L, "테마1", "설명1", "썸네일1");
     private final Theme theme2 = new Theme(2L, "테마2", "설명2", "썸네일2");
 
-    final Member member = new Member(1L, "member", "member@naver.com", "1234", MemberRole.MEMBER.name());
+    private final Member member = fixture.getNomalMember();
 
     private final Reservation r1 = new Reservation(1L, LocalDate.of(2025, 5, 11), time1, theme1, member);
     private final Reservation r2 = new Reservation(2L, LocalDate.of(2025, 6, 11), time2, theme2, member);

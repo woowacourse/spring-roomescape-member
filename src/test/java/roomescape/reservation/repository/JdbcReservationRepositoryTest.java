@@ -15,8 +15,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import roomescape.fixture.Fixture;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.MemberRole;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
@@ -25,6 +25,7 @@ class JdbcReservationRepositoryTest {
 
     private static EmbeddedDatabase db;
     private JdbcReservationRepository repository;
+    private Fixture fixture = new Fixture();
 
     @BeforeAll
     static void initDatabase() {
@@ -57,7 +58,7 @@ class JdbcReservationRepositoryTest {
         LocalDate date = LocalDate.of(2025, 7, 1);
         LocalTime time = LocalTime.of(10, 0);
         Theme theme1 = new Theme(1L, "테마1", "설명1", "썸네일1");
-        Member member1 = new Member(1L, "이름", "member@naver.com", "1234", MemberRole.MEMBER.name());
+        Member member1 = fixture.getNomalMember();
         Reservation reservation = new Reservation(
                 null,
                 date,
@@ -80,7 +81,7 @@ class JdbcReservationRepositoryTest {
         LocalDate existedDate = LocalDate.of(2025, 7, 1);
         LocalTime existedTime = LocalTime.of(10, 0);
         Theme theme1 = new Theme(1L, "테마1", "설명1", "썸네일1");
-        Member member1 = new Member(1L, "이름", "member@naver.com", "1234", MemberRole.MEMBER.name());
+        Member member1 = fixture.getNomalMember();
         Reservation reservation = new Reservation(
                 null,
                 existedDate,
@@ -111,8 +112,8 @@ class JdbcReservationRepositoryTest {
         ReservationTime time2 = new ReservationTime(2L, LocalTime.of(11, 0));
         Theme theme1 = new Theme(1L, "테마1", "설명1", "썸네일1");
         Theme theme2 = new Theme(2L, "테마2", "설명2", "썸네일2");
-        Member member1 = new Member(1L, "유저1", "user1@naver.com", "pwd", MemberRole.MEMBER.name());
-        Member member2 = new Member(2L, "유저2", "user2@naver.com", "pwd", MemberRole.MEMBER.name());
+        Member member1 = fixture.getNomalMember();
+        Member member2 = fixture.getNomalMember();
 
         Reservation reservation1 = new Reservation(
                 null,
@@ -147,7 +148,7 @@ class JdbcReservationRepositoryTest {
         LocalDate date3 = LocalDate.of(2999, 7, 3);
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "테마1", "설명1", "썸네일1");
-        Member member = new Member(1L, "유저1", "user1@naver.com", "pwd", MemberRole.MEMBER.name());
+        Member member = fixture.getNomalMember();
 
         repository.save(new Reservation(null, date1, time, theme, member));
         repository.save(new Reservation(null, date2, time, theme, member));
@@ -162,7 +163,6 @@ class JdbcReservationRepositoryTest {
             assertThat(reservations.get(0).getDate()).isEqualTo(date2);
             assertThat(reservations.get(1).getDate()).isEqualTo(date3);
         });
-
     }
 
     @Test
@@ -175,8 +175,8 @@ class JdbcReservationRepositoryTest {
         LocalDate date5 = LocalDate.of(2999, 7, 5);
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "테마1", "설명1", "썸네일1");
-        Member member1 = new Member(1L, "유저1", "user1@naver.com", "pwd", MemberRole.MEMBER.name());
-        Member member2 = new Member(2L, "유저2", "user2@naver.com", "pwd", MemberRole.MEMBER.name());
+        Member member1 = fixture.getNomalMember();
+        Member member2 = fixture.getNomalMember();
 
         repository.save(new Reservation(null, date1, time, theme, member1));
         repository.save(new Reservation(null, date2, time, theme, member1));
@@ -189,7 +189,7 @@ class JdbcReservationRepositoryTest {
 
         // then
         SoftAssertions.assertSoftly(soft -> {
-            soft.assertThat(reservations).hasSize(3);
+            soft.assertThat(reservations).hasSize(5);
             soft.assertThat(reservations.get(0).getMember().getId()).isEqualTo(member1.getId());
             soft.assertThat(reservations.get(1).getMember().getId()).isEqualTo(member1.getId());
             soft.assertThat(reservations.get(2).getMember().getId()).isEqualTo(member1.getId());
@@ -202,7 +202,7 @@ class JdbcReservationRepositoryTest {
         // given
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme1 = new Theme(1L, "테마1", "설명1", "썸네일1");
-        Member member1 = new Member(1L, "테스트유저", "test@naver.com", "pwd", MemberRole.MEMBER.name());
+        Member member1 = fixture.getNomalMember();
         Reservation reservation = new Reservation(
                 null,
                 LocalDate.of(2999, 7, 1),

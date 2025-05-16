@@ -8,6 +8,7 @@ import roomescape.auth.dto.LoginMember;
 import roomescape.error.NotFoundException;
 import roomescape.error.ReservationException;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Password;
 import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.AdminReservationRequest;
@@ -52,8 +53,13 @@ public class ReservationService {
                 theme.getId())) {
             throw new ReservationException("해당 시간은 이미 예약되어있습니다.");
         }
-
-        final Member member = new Member(loginMember.id(), loginMember.name(), loginMember.email(), loginMember.role());
+        final Member member = Member.builder()
+                .id(loginMember.id())
+                .name(loginMember.name())
+                .email(loginMember.email())
+                .role(loginMember.role())
+                .password(Password.createForLoginMember())
+                .build();
         final Reservation reservation = new Reservation(request.date(), reservationTime, theme, member);
         final Reservation newReservation = reservationRepository.save(reservation);
         return new ReservationResponse(newReservation);

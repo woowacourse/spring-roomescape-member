@@ -55,7 +55,7 @@ public class AuthService {
     }
 
     public void checkAdmin(final HttpServletRequest request) {
-        if (isAdmin(request)) {
+        if (!isAdmin(request)) {
             throw new ForbiddenException("관리자 권한이 필요합니다.");
         }
     }

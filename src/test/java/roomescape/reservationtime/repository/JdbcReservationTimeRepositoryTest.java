@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import roomescape.member.domain.Member;
+import roomescape.fixture.Fixture;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -24,6 +24,7 @@ class JdbcReservationTimeRepositoryTest {
     private static EmbeddedDatabase db;
     private JdbcReservationTimeRepository repository;
     private JdbcReservationRepository jdbcReservationRepository;
+    private Fixture fixture = new Fixture();
 
     @BeforeEach
     void setUp() {
@@ -74,7 +75,7 @@ class JdbcReservationTimeRepositoryTest {
                         LocalDate.of(2999, 5, 1),
                         new ReservationTime(1L, LocalTime.of(10, 0)),
                         new Theme(1L, "이름1", "썸네일1", "설명1"),
-                        new Member("테스트", "테스트@naver.com", "1234")
+                        fixture.getNomalMember()
                 )
         );
         jdbcReservationRepository.save(
@@ -82,7 +83,7 @@ class JdbcReservationTimeRepositoryTest {
                         LocalDate.of(2999, 5, 1),
                         new ReservationTime(2L, LocalTime.of(11, 0)),
                         new Theme(1L, "이름1", "썸네일1", "설명1"),
-                        new Member("테스트", "테스트@naver.com", "1234")
+                        fixture.getNomalMember()
                 )
         );
 

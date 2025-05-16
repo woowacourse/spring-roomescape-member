@@ -8,18 +8,20 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
+import roomescape.member.domain.Password;
 
 @Repository
 public class JdbcMemberRepository implements MemberRepository {
 
     private static final RowMapper<Member> memberRowMapper = (resultSet, rowNum) ->
-            new Member(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("email"),
-                    resultSet.getString("password"),
-                    resultSet.getString("role")
-            );
+            Member.builder().id(resultSet.getLong("id"))
+                    .name(resultSet.getString("name"))
+                    .email(resultSet.getString("email"))
+                    .password(Password.createForMember(resultSet.getString("password")))
+                    .role(MemberRole.from(resultSet.getString("role")))
+                    .build();
+
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;

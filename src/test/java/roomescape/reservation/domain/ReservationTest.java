@@ -9,16 +9,15 @@ import java.time.LocalTime;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import roomescape.error.ReservationException;
+import roomescape.fixture.Fixture;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.MemberRole;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 class ReservationTest {
 
     private final Theme DEFAULT_THEME = new Theme(1L, "테마", "설명", "썸네일");
-    private final Member DEFAULT_MEMBER = new Member(1L, "member", "member@naver.com", "1234",
-            MemberRole.MEMBER.name());
+    private final Member DEFAULT_MEMBER = new Fixture().getNomalMember();
 
     @Test
     void 예약_시간이_현재_이후면_객체가_정상_생성된다() {
@@ -69,7 +68,7 @@ class ReservationTest {
         final LocalDate localDate = LocalDate.of(2999, 1, 1);
         final ReservationTime reservationTime = new ReservationTime(LocalTime.of(11, 0));
         final Theme theme = new Theme("test", "test", "test");
-        final Member member = new Member(1L, "member", "member@naver.com", "1234", MemberRole.MEMBER.name());
+        final Member member = new Fixture().getNomalMember();
 
         // when
         // then

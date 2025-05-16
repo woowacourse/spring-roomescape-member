@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.error.ReservationException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRole;
+import roomescape.member.domain.Password;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.fake.FakeReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -29,7 +30,11 @@ class ThemeServiceTest {
     private final Theme th1 = new Theme(1L, "이름1", "설명1", "썸네일1");
     private final Theme th2 = new Theme(2L, "이름2", "이름2", "이름2");
 
-    Member member1 = new Member(1L, "유저1", "user1@naver.com", "pwd", MemberRole.MEMBER.name());
+    Member member1 = Member.builder()
+            .name("유저")
+            .email("email")
+            .password(Password.createForMember("비번"))
+            .role(MemberRole.MEMBER).build();
 
     private final Reservation r1 = new Reservation(1L, LocalDate.of(2025, 5, 11), rt1, th1, member1);
     private final Reservation r2 = new Reservation(2L, LocalDate.of(2025, 6, 11), rt2, th2, member1);

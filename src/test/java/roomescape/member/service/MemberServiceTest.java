@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRole;
+import roomescape.member.domain.Password;
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.repository.MemberRepository;
@@ -48,8 +49,20 @@ class MemberServiceTest {
     @Test
     void repository_findAll_결과가_MemberResponse_리스트로_매핑된다() {
         // given
-        Member m1 = new Member(1L, "A", "a@a.com", "pw", "ADMIN");
-        Member m2 = new Member(2L, "B", "b@b.com", "pw", "MEMBER");
+        Member m1 = Member.builder()
+                .id(1L)
+                .name("A")
+                .email("a@a.com")
+                .password(Password.createForMember("pw"))
+                .role(MemberRole.ADMIN)
+                .build();
+        Member m2 = Member.builder()
+                .id(2L)
+                .name("B")
+                .email("b@b.com")
+                .password(Password.createForMember("pw"))
+                .role(MemberRole.MEMBER)
+                .build();
         when(memberRepository.findAll()).thenReturn(List.of(m1, m2));
 
         // when

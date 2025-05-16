@@ -13,6 +13,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
+import roomescape.member.domain.Password;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
@@ -29,9 +31,12 @@ public class JdbcReservationRepository implements ReservationRepository {
                 new ReservationTime(resultSet.getLong("time_id"), time),
                 new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
                         resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail")),
-                new Member(resultSet.getLong("member_id"), resultSet.getString("member_name"),
-                        resultSet.getString("member_email"), resultSet.getString("member_password"),
-                        resultSet.getString("member_role"))
+                Member.builder().id(resultSet.getLong("member_id"))
+                        .name(resultSet.getString("member_name"))
+                        .email(resultSet.getString("member_email"))
+                        .password(Password.createForMember(resultSet.getString("member_password")))
+                        .role(MemberRole.from(resultSet.getString("member_role")))
+                        .build()
         );
     };
 
