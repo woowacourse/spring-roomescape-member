@@ -5,8 +5,8 @@ import static roomescape.service.ReservationService.DELETE_FAILED_COUNT;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTheme;
-import roomescape.dto.ReservationThemeRequest;
-import roomescape.dto.ReservationThemeResponse;
+import roomescape.service.dto.ReservationThemeRequest;
+import roomescape.service.dto.ReservationThemeResponse;
 import roomescape.repository.ReservationThemeRepository;
 
 @Service

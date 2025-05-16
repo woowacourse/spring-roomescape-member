@@ -17,10 +17,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.dto.ReservationRecipe;
-import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationThemeResponse;
-import roomescape.dto.ReservationTimeResponse;
+import roomescape.service.dto.ReservationRecipe;
+import roomescape.service.dto.ReservationResponse;
+import roomescape.service.dto.ReservationThemeResponse;
+import roomescape.service.dto.ReservationTimeResponse;
 import roomescape.global.AuthInterceptor;
 import roomescape.service.ReservationService;
 

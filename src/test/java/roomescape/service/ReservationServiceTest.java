@@ -12,8 +12,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.dto.ReservationRecipe;
-import roomescape.dto.ReservationResponse;
+import roomescape.service.dto.ReservationRecipe;
+import roomescape.service.dto.ReservationResponse;
 
 @SpringBootTest
 class ReservationServiceTest {
@@ -25,7 +25,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가한다.")
     void addReservationTest() {
         //given
-        final ReservationRecipe reservationRecipe = new ReservationRecipe(1L, LocalDate.now().plusDays(1), 1L, 1L);
+        final ReservationRecipe reservationRecipe = new ReservationRecipe(1L, LocalDate.now().plusDays(13), 1L, 1L);
 
         //when
         final ReservationResponse expected = reservationService.addReservation(reservationRecipe);
@@ -42,7 +42,7 @@ class ReservationServiceTest {
     @DisplayName("id로 예약을 성공적으로 삭제한다.")
     void removeReservationSuccessTest() {
         //given
-        final ReservationRecipe reservationRecipe = new ReservationRecipe(1L, LocalDate.now().plusDays(1), 1L, 1L);
+        final ReservationRecipe reservationRecipe = new ReservationRecipe(1L, LocalDate.now().plusDays(14), 1L, 1L);
         final ReservationResponse saved = reservationService.addReservation(reservationRecipe);
 
         //should
@@ -63,7 +63,7 @@ class ReservationServiceTest {
     @DisplayName("모든 예약을 가져온다.")
     void getAllReservationTest() {
         //given
-        final ReservationRecipe reservationRecipe = new ReservationRecipe(1L, LocalDate.now().plusDays(1), 1L, 1L);
+        final ReservationRecipe reservationRecipe = new ReservationRecipe(1L, LocalDate.now().plusDays(15), 1L, 1L);
         reservationService.addReservation(reservationRecipe);
 
         //when
@@ -78,7 +78,7 @@ class ReservationServiceTest {
     void getFilteredReservationsTest() {
         //given
         final long memberId = 1L;
-        final LocalDate localDate = LocalDate.now().plusDays(1);
+        final LocalDate localDate = LocalDate.now().plusDays(17);
         final long themeId = 1L;
         final long timeId = 1L;
         final LocalDate dateFrom = LocalDate.now();
