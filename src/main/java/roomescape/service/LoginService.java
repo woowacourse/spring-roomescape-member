@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import roomescape.config.JwtTokenProvider;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
 import roomescape.dto.request.LoginRequest;
@@ -14,33 +15,24 @@ import roomescape.exception.AuthenticationException;
 public class LoginService {
 
     private final MemberDao memberDao;
-    private final String secretKey;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginService(MemberDao memberDao, @Value("${jwt.secret.key}") String secretKey) {
+    public LoginService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
         this.memberDao = memberDao;
-        this.secretKey = secretKey;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public String login(LoginRequest request) {
-        Member user = memberDao.findByEmail(request.email())
+        Member member = memberDao.findByEmail(request.email())
             .orElseThrow((() -> new AuthenticationException("존재하지 않는 이메일입니다.")));
-        if (user.isPasswordNotEqual(request.password())) {
+        if (member.isPasswordNotEqual(request.password())) {
             throw new AuthenticationException("비밀번호가 일치하지 않습니다.");
         }
-        return Jwts.builder()
-            .claim(Claims.SUBJECT, user.getId().toString())
-            .claim("name", user.getName())
-            .claim("email", user.getEmail())
-            .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-            .compact();
+        return jwtTokenProvider.get(member);
     }
 
     public Member getLoginMemberByToken(String token) {
-        Long memberId = Long.valueOf(Jwts.parser()
-            .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-            .build()
-            .parseSignedClaims(token)
-            .getPayload().getSubject());
+        Long memberId = jwtTokenProvider.getMemberIdFromToken(token);
         return memberDao.findById(memberId)
             .orElseThrow(() -> new AuthenticationException("존재하지 않는 id 입니다"));
     }

@@ -13,7 +13,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     private final LoginService loginService;
 
     public WebMvcConfiguration(LoginService loginService) {
-        this.loginService = loginService;
+        this.loginService =  loginService;
     }
 
     @Override
