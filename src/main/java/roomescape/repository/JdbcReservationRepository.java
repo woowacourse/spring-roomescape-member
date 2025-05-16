@@ -2,9 +2,11 @@ package roomescape.repository;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -27,19 +29,8 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Override
-    public List<Reservation> getAllReservations() {
-        String sql = """
-                                SELECT r.id, r.member_id, r.date,
-                                       r.time_id, t.start_at, r.theme_id,
-                                       th.name AS theme_name, th.description, th.thumbnail,
-                                       m.name AS member_name, m.email, m.password, m.role
-                                FROM reservation as r inner join reservation_time as t on r.time_id = t.id
-                                inner join theme as th on r.theme_id = th.id
-                                inner join member as m on r.member_id = m.id
-                """;
-
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+    private static RowMapper<Reservation> getReservationRowMapper() {
+        return (rs, rowNum) -> {
             ReservationDateTime dateTime = new ReservationDateTime(
                     LocalDate.parse(rs.getString("date")),
                     new ReservationTime(rs.getLong("time_id"),
@@ -57,7 +48,46 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
                     Role.of(rs.getString("role")));
 
             return new Reservation(rs.getLong("id"), member, dateTime, theme);
-        });
+        };
+    }
+
+    @Override
+    public List<Reservation> getReservations(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = """
+                                SELECT r.id, r.member_id, r.date,
+                                       r.time_id, t.start_at, r.theme_id,
+                                       th.name AS theme_name, th.description, th.thumbnail,
+                                       m.name AS member_name, m.email, m.password, m.role
+                                FROM reservation as r inner join reservation_time as t on r.time_id = t.id
+                                inner join theme as th on r.theme_id = th.id
+                                inner join member as m on r.member_id = m.id
+                                where true;
+                """;
+
+        List<Object> params = new ArrayList<>();
+
+        if (themeId != null) {
+            sql += " and r.theme_id = ?";
+            params.add(themeId);
+        }
+        if (memberId != null) {
+            sql += " and r.member_id = ?";
+            params.add(memberId);
+        }
+        if (dateFrom != null) {
+            sql += " and r.date >= ?";
+            params.add(dateFrom);
+        }
+        if (dateTo != null) {
+            sql += " and r.date <= ?";
+            params.add(dateTo);
+        }
+
+        if (params.isEmpty()) {
+            return jdbcTemplate.query(sql, getReservationRowMapper());
+        }
+
+        return jdbcTemplate.query(sql, getReservationRowMapper(), params.toArray());
     }
 
     @Override

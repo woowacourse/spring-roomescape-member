@@ -28,7 +28,7 @@ public class ReservationService {
     }
 
     public List<Reservation> getAllReservations() {
-        return reservationRepository.getAllReservations();
+        return reservationRepository.getReservations(null, null, null, null);
     }
 
     public Reservation addReservation(Member member, UserReservationRequest userReservationRequest) {
@@ -54,7 +54,7 @@ public class ReservationService {
     }
 
     public List<Reservation> getFilteredReservation(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
-        List<Reservation> allReservations = reservationRepository.getAllReservations();
+        List<Reservation> allReservations = reservationRepository.getReservations(themeId, memberId, dateFrom, dateTo);
         List<Reservation> filteredReservation = new ArrayList<>(allReservations);
         if (themeId != null) {
             filteredReservation = allReservations.stream().filter(r -> r.getTheme().getId().equals(themeId)).toList();

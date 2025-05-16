@@ -55,7 +55,7 @@ class ReservationServiceTest {
         List<Reservation> reservations = List.of(reservation1, reservation2);
 
         // when
-        when(reservationRepository.getAllReservations()).thenReturn(reservations);
+        when(reservationRepository.getReservations(null, null, null, null)).thenReturn(reservations);
         List<Reservation> reservationsResult = reservationService.getAllReservations();
 
         // then
