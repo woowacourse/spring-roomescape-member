@@ -19,7 +19,7 @@ import roomescape.fake.FakeReservationTimeDao;
 import roomescape.fake.FakeThemeDao;
 import roomescape.global.exception.custom.BadRequestException;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.CreateReservationRequest;
+import roomescape.reservation.dto.CreateReservationWithMemberRequest;
 import roomescape.reservation.dto.ReservationResponse;
 
 class ReservationServiceTest {
@@ -37,27 +37,31 @@ class ReservationServiceTest {
     void setUp() {
         reservationTimeDao.save(TIME);
         themeDao.save(THEME);
-        CreateReservationRequest request1 = new CreateReservationRequest(TOMORROW, TIME.getId(), THEME.getId());
-        CreateReservationRequest request2 = new CreateReservationRequest(TOMORROW.plusDays(1), TIME.getId(),
-                THEME.getId());
-        reservationService.createReservation(request1, MEMBER);
-        reservationService.createReservation(request2, MEMBER);
+        fakeMemberDao.save(MEMBER);
+        CreateReservationWithMemberRequest request1 = new CreateReservationWithMemberRequest(
+                TOMORROW, TIME.getId(), THEME.getId(), MEMBER.getId());
+        CreateReservationWithMemberRequest request2 = new CreateReservationWithMemberRequest(TOMORROW.plusDays(1),
+                TIME.getId(), THEME.getId(), MEMBER.getId());
+        reservationService.createReservation(request1);
+        reservationService.createReservation(request2);
     }
 
     @DisplayName("예약 생성 테스트")
     @Nested
     class CreateReservationTest {
 
-        private static final CreateReservationRequest REQUEST = new CreateReservationRequest(
+        private static final CreateReservationWithMemberRequest REQUEST = new CreateReservationWithMemberRequest(
                 TOMORROW.plusDays(2),
                 TIME.getId(),
-                THEME.getId());
+                THEME.getId(),
+                MEMBER.getId());
+
 
         @DisplayName("예약을 생성할 수 있다.")
         @Test
         void testCreate() {
             // when
-            ReservationResponse result = reservationService.createReservation(REQUEST, MEMBER);
+            ReservationResponse result = reservationService.createReservation(REQUEST);
             // then
             Reservation savedReservation = reservationDao.findById(3L);
             assertAll(
@@ -87,10 +91,10 @@ class ReservationServiceTest {
         @Test
         void testValidateDuplication() {
             // given
-            reservationService.createReservation(REQUEST, MEMBER);
+            reservationService.createReservation(REQUEST);
             // when
             // then
-            assertThatThrownBy(() -> reservationService.createReservation(REQUEST, MEMBER))
+            assertThatThrownBy(() -> reservationService.createReservation(REQUEST))
                     .isInstanceOf(BadRequestException.class)
                     .hasMessage("해당 시간에 이미 예약이 존재합니다.");
         }
@@ -99,10 +103,11 @@ class ReservationServiceTest {
         @Test
         void testValidateTime() {
             // given
-            CreateReservationRequest request = new CreateReservationRequest(TOMORROW, 2L, THEME.getId());
+            CreateReservationWithMemberRequest request = new CreateReservationWithMemberRequest(TOMORROW, 2L,
+                    THEME.getId(), MEMBER.getId());
             // when
             // then
-            assertThatThrownBy(() -> reservationService.createReservation(request, MEMBER))
+            assertThatThrownBy(() -> reservationService.createReservation(request))
                     .isInstanceOf(BadRequestException.class)
                     .hasMessage("예약 시간이 존재하지 않습니다.");
         }
@@ -111,10 +116,11 @@ class ReservationServiceTest {
         @Test
         void testValidateTheme() {
             // given
-            CreateReservationRequest request = new CreateReservationRequest(TOMORROW, TIME.getId(), 2L);
+            CreateReservationWithMemberRequest request = new CreateReservationWithMemberRequest(TOMORROW, TIME.getId(),
+                    2L, MEMBER.getId());
             // when
             // then
-            assertThatThrownBy(() -> reservationService.createReservation(request, MEMBER))
+            assertThatThrownBy(() -> reservationService.createReservation(request))
                     .isInstanceOf(BadRequestException.class)
                     .hasMessage("테마가 존재하지 않습니다.");
         }
@@ -124,10 +130,11 @@ class ReservationServiceTest {
         void testValidatePastTime() {
             // given
             LocalDate yesterday = LocalDate.now().minusDays(1);
-            CreateReservationRequest request = new CreateReservationRequest(yesterday, TIME.getId(), THEME.getId());
+            CreateReservationWithMemberRequest request = new CreateReservationWithMemberRequest(yesterday, TIME.getId(),
+                    THEME.getId(), MEMBER.getId());
             // when
             // then
-            assertThatThrownBy(() -> reservationService.createReservation(request, MEMBER))
+            assertThatThrownBy(() -> reservationService.createReservation(request))
                     .isInstanceOf(BadRequestException.class)
                     .hasMessage("지나간 날짜와 시간은 예약 불가합니다.");
         }
