@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.infra;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,11 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Role;
-import roomescape.domain.Theme;
+import roomescape.domain.entity.Member;
+import roomescape.domain.entity.Reservation;
+import roomescape.domain.entity.ReservationTime;
+import roomescape.domain.entity.Role;
+import roomescape.domain.entity.Theme;
 import roomescape.error.NotFoundException;
 
 @JdbcTest

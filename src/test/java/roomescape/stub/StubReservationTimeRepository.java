@@ -7,9 +7,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.Setter;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.entity.ReservationTime;
+import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.dto.response.AvailableReservationTimeResponse;
-import roomescape.repository.ReservationTimeRepository;
 
 public class StubReservationTimeRepository implements ReservationTimeRepository {
 

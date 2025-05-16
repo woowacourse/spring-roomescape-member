@@ -1,8 +1,8 @@
-package roomescape.repository;
+package roomescape.domain.repository;
 
 import java.util.List;
 import java.util.Optional;
-import roomescape.domain.Member;
+import roomescape.domain.entity.Member;
 
 public interface MemberRepository {
 

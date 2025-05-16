@@ -10,12 +10,12 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.dto.LoginInfo;
 import roomescape.error.AccessDeniedException;
-import roomescape.service.LoginSessionService;
+import roomescape.infra.SessionLoginRepository;
 
 @RequiredArgsConstructor
 public class LoginInfoArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final LoginSessionService loginSessionService;
+    private final SessionLoginRepository sessionLoginRepository;
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
@@ -34,6 +34,6 @@ public class LoginInfoArgumentResolver implements HandlerMethodArgumentResolver 
             throw new AccessDeniedException("세션이 존재하지 않습니다.");
         }
 
-        return loginSessionService.getLoginInfo(session);
+        return sessionLoginRepository.getLoginInfo(session);
     }
 }

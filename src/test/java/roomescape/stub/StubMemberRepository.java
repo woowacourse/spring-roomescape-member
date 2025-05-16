@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.domain.Member;
-import roomescape.repository.MemberRepository;
+import roomescape.domain.entity.Member;
+import roomescape.domain.repository.MemberRepository;
 
 public class StubMemberRepository implements MemberRepository {
 

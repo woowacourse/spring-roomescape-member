@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.Setter;
-import roomescape.domain.Reservation;
-import roomescape.repository.ReservationRepository;
+import roomescape.domain.entity.Reservation;
+import roomescape.domain.repository.ReservationRepository;
 
 public class StubReservationRepository implements ReservationRepository {
 

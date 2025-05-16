@@ -1,8 +1,8 @@
-package roomescape.repository;
+package roomescape.domain.repository;
 
 import java.util.List;
 import java.util.Optional;
-import roomescape.domain.Theme;
+import roomescape.domain.entity.Theme;
 import roomescape.dto.response.PopularThemeResponse;
 
 public interface ThemeRepository {

@@ -3,12 +3,12 @@ package roomescape.service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.domain.Member;
-import roomescape.domain.Role;
+import roomescape.domain.entity.Member;
+import roomescape.domain.entity.Role;
+import roomescape.domain.repository.MemberRepository;
 import roomescape.dto.request.MemberRequest;
 import roomescape.dto.response.MemberResponse;
 import roomescape.error.MemberException;
-import roomescape.repository.MemberRepository;
 
 @Service
 @RequiredArgsConstructor

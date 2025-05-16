@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.infra;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,7 +10,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.entity.ReservationTime;
+import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.dto.response.AvailableReservationTimeResponse;
 import roomescape.error.NotFoundException;
 

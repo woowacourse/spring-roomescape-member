@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.infra;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
@@ -6,7 +6,7 @@ import roomescape.dto.LoginInfo;
 import roomescape.error.AccessDeniedException;
 
 @Component
-public class LoginSessionService {  // NOTE. 유틸 클래스는 테스트하기 어렵기에 Bean으로 등록함. 지노에게 질문하기
+public class SessionLoginRepository {
 
     public static final String LOGIN_INFO_KEY = "loginInfo";
 

@@ -8,12 +8,13 @@ import static org.mockito.Mockito.verify;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpSession;
-import roomescape.domain.Member;
-import roomescape.domain.Role;
+import roomescape.domain.entity.Member;
+import roomescape.domain.entity.Role;
+import roomescape.domain.repository.MemberRepository;
 import roomescape.dto.LoginInfo;
 import roomescape.dto.request.AuthRequest;
 import roomescape.error.AuthenticationException;
-import roomescape.repository.MemberRepository;
+import roomescape.infra.SessionLoginRepository;
 import roomescape.stub.StubMemberRepository;
 
 class AuthServiceTest {
@@ -22,9 +23,9 @@ class AuthServiceTest {
     private final LoginInfo savedLoginInfo = new LoginInfo(savedMember.getId(), savedMember.getName(), savedMember.getRole());
 
     private final MemberRepository stubMemberRepository = new StubMemberRepository(savedMember);
-    private final LoginSessionService loginSessionService = mock(
-            LoginSessionService.class);  // NOTE. Mock을 사용하여 행위를 검증함. 지노에게 여쭤보기
-    private final AuthService sut = new AuthService(stubMemberRepository, loginSessionService);
+    private final SessionLoginRepository sessionLoginRepository = mock(
+            SessionLoginRepository.class);
+    private final AuthService sut = new AuthService(stubMemberRepository, sessionLoginRepository);
 
     @DisplayName("로그인에 성공하면 세션에 로그인 정보가 저장된다")
     @Test
@@ -37,7 +38,7 @@ class AuthServiceTest {
         sut.login(request, session);
 
         // then
-        verify(loginSessionService, times(1)).setLoginInfo(session, savedLoginInfo);
+        verify(sessionLoginRepository, times(1)).setLoginInfo(session, savedLoginInfo);
     }
 
     @DisplayName("존재하지 않는 이메일로 로그인하면 예외가 발생한다")
@@ -71,12 +72,12 @@ class AuthServiceTest {
     void logout() {
         // given
         var session = new MockHttpSession();
-        loginSessionService.setLoginInfo(session, savedLoginInfo);
+        sessionLoginRepository.setLoginInfo(session, savedLoginInfo);
 
         // when
         sut.logout(session);
 
         // then
-        verify(loginSessionService, times(1)).clear(session);
+        verify(sessionLoginRepository, times(1)).clear(session);
     }
 }

@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.infra;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import roomescape.domain.Member;
-import roomescape.domain.Role;
+import roomescape.domain.entity.Member;
+import roomescape.domain.entity.Role;
 
 @JdbcTest
 @Import(JdbcMemberRepository.class)

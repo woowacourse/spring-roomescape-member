@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.infra;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -6,15 +6,15 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpSession;
-import roomescape.domain.Role;
+import roomescape.domain.entity.Role;
 import roomescape.dto.LoginInfo;
 import roomescape.error.AccessDeniedException;
 
-class LoginSessionServiceTest {
+class SessionLoginRepositoryTest {
 
     private final LoginInfo loginInfo = new LoginInfo(1L, "홍길동", Role.USER);
 
-    private final LoginSessionService sut = new LoginSessionService();
+    private final SessionLoginRepository sut = new SessionLoginRepository();
 
     @DisplayName("세션에 로그인 정보를 저장한다")
     @Test
@@ -39,7 +39,7 @@ class LoginSessionServiceTest {
     void getLoginInfo() {
         // given
         var session = new MockHttpSession();
-        session.setAttribute(LoginSessionService.LOGIN_INFO_KEY, loginInfo);
+        session.setAttribute(SessionLoginRepository.LOGIN_INFO_KEY, loginInfo);
 
         // when
         var found = sut.getLoginInfo(session);
@@ -69,7 +69,7 @@ class LoginSessionServiceTest {
     void clear() {
         // given
         var session = new MockHttpSession();
-        session.setAttribute(LoginSessionService.LOGIN_INFO_KEY, loginInfo);
+        session.setAttribute(SessionLoginRepository.LOGIN_INFO_KEY, loginInfo);
 
         // when
         sut.clear(session);

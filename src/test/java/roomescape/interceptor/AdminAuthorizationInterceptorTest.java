@@ -12,15 +12,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import roomescape.domain.Role;
+import roomescape.domain.entity.Role;
 import roomescape.dto.LoginInfo;
 import roomescape.error.AccessDeniedException;
-import roomescape.service.LoginSessionService;
+import roomescape.infra.SessionLoginRepository;
 
 class AdminAuthorizationInterceptorTest {
 
-    private final LoginSessionService loginSessionService = mock(LoginSessionService.class);
-    private final AdminAuthorizationInterceptor sut = new AdminAuthorizationInterceptor(loginSessionService);
+    private final SessionLoginRepository sessionLoginRepository = mock(SessionLoginRepository.class);
+    private final AdminAuthorizationInterceptor sut = new AdminAuthorizationInterceptor(sessionLoginRepository);
 
     @DisplayName("관리자 권한이 있으면 true 를 반환한다")
     @Test
@@ -30,7 +30,7 @@ class AdminAuthorizationInterceptorTest {
         var response = new MockHttpServletResponse();
         var session = request.getSession(true);
 
-        when(loginSessionService.getLoginInfo(session))
+        when(sessionLoginRepository.getLoginInfo(session))
                 .thenReturn(new LoginInfo(1L, "관리자", Role.ADMIN));
 
         // when
@@ -81,7 +81,7 @@ class AdminAuthorizationInterceptorTest {
         var response = new MockHttpServletResponse();
         var session = request.getSession(true);
 
-        when(loginSessionService.getLoginInfo(session))
+        when(sessionLoginRepository.getLoginInfo(session))
                 .thenReturn(new LoginInfo(1L, "유저", Role.USER));
 
         // when // then
@@ -99,7 +99,7 @@ class AdminAuthorizationInterceptorTest {
         var response = new MockHttpServletResponse();
         var session = request.getSession(true);
 
-        when(loginSessionService.getLoginInfo(session))
+        when(sessionLoginRepository.getLoginInfo(session))
                 .thenReturn(new LoginInfo(1L, "유저", Role.USER));
 
         // when

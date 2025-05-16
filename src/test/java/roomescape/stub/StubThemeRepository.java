@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.Setter;
-import roomescape.domain.Theme;
+import roomescape.domain.entity.Theme;
+import roomescape.domain.repository.ThemeRepository;
 import roomescape.dto.response.PopularThemeResponse;
-import roomescape.repository.ThemeRepository;
 
 public class StubThemeRepository implements ThemeRepository {
 

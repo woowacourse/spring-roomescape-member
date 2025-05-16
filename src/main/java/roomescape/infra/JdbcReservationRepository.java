@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.infra;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -11,11 +11,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Role;
-import roomescape.domain.Theme;
+import roomescape.domain.entity.Member;
+import roomescape.domain.entity.Reservation;
+import roomescape.domain.entity.ReservationTime;
+import roomescape.domain.entity.Role;
+import roomescape.domain.entity.Theme;
+import roomescape.domain.repository.ReservationRepository;
 import roomescape.error.NotFoundException;
 
 @Repository
