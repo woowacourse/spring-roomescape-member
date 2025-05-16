@@ -16,8 +16,6 @@ import roomescape.member.service.MemberService;
 @RequiredArgsConstructor
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private static final String TOKEN_COOKIE_NAME = "token";
-
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenExtractor jwtTokenExtractor;
