@@ -142,18 +142,12 @@ function onReservationButtonClick() {
   const selectedDate = document.getElementById("datepicker").value;
   const selectedThemeId = document.querySelector('.theme-slot.active')?.getAttribute('data-theme-id');
   const selectedTimeId = document.querySelector('.time-slot.active')?.getAttribute('data-time-id');
-  const name = document.getElementById('user-name').value;
 
   if (selectedDate && selectedThemeId && selectedTimeId) {
-
-    /*
-    TODO: [5단계] 예약 생성 기능 변경 - 사용자 request 명세에 맞게 설정
-    */
     const reservationData = {
       date: selectedDate,
       themeId: selectedThemeId,
-      timeId: selectedTimeId,
-      name: name
+      timeId: selectedTimeId
     };
 
     fetch('/reservations', {
@@ -165,13 +159,13 @@ function onReservationButtonClick() {
     })
         .then(response => response.json())
         .then(data => {
-          if (data.status !== 200) throw new Error(data.errors);
+          if (data.hasOwnProperty("status") && data.status !== 201) throw new Error(data.errors);
           alert("Reservation successful!");
           location.reload();
         })
         .catch(error => {
           alert(error);
-          console.error(error);
+          console.error('Error:', error);
         });
   } else {
     alert("Please select a date, theme, and time before making a reservation.");

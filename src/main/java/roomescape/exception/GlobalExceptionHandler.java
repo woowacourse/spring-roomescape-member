@@ -3,12 +3,14 @@ package roomescape.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -50,5 +52,26 @@ public class GlobalExceptionHandler {
                 .toList();
 
         return GlobalProblemDetail.of(HttpStatus.BAD_REQUEST, errors, request.getRequestURI());
+    }
+
+    @ExceptionHandler({
+            InvalidCredentialsException.class,
+            InvalidTokenException.class
+    })
+    public ProblemDetail handleInvalidAuthorizationException(InvalidCredentialsException ex, HttpServletRequest request) {
+        return GlobalProblemDetail.of(HttpStatus.UNAUTHORIZED, List.of(ex.getMessage()), request.getRequestURI());
+    }
+
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ProblemDetail handleUnauthorizedAccessException(UnauthorizedAccessException ex, HttpServletRequest request) {
+        return GlobalProblemDetail.of(HttpStatus.FORBIDDEN, List.of(ex.getMessage()), request.getRequestURI());
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ProblemDetail handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+        MethodParameter parameter = ex.getParameter();
+        return GlobalProblemDetail.of(HttpStatus.BAD_REQUEST,
+                List.of("[ERROR] " + parameter.getParameterName() + " 값의 형식이 올바르지 않습니다."),
+                request.getRequestURI());
     }
 }

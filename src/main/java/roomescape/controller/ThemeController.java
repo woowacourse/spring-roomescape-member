@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.ThemeCreateRequestDto;
-import roomescape.dto.ThemeResponseDto;
+import roomescape.domain.LoginMember;
+import roomescape.domain.Role;
+import roomescape.dto.theme.ThemeCreateRequest;
+import roomescape.dto.theme.ThemeResponse;
+import roomescape.exception.UnauthorizedAccessException;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -26,25 +29,33 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponseDto>> getAllThemes() {
-        List<ThemeResponseDto> allThemes = themeService.findAllThemes();
+    public ResponseEntity<List<ThemeResponse>> getAllThemes() {
+        List<ThemeResponse> allThemes = themeService.findAllThemes();
         return ResponseEntity.ok(allThemes);
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponseDto> addTheme(@Valid @RequestBody final ThemeCreateRequestDto requestDto) {
-        ThemeResponseDto responseDto = themeService.createTheme(requestDto);
+    public ResponseEntity<ThemeResponse> addTheme(@Valid @RequestBody final ThemeCreateRequest requestDto, LoginMember member) {
+        if (member.getRole() == Role.USER) {
+            throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
+        }
+
+        ThemeResponse responseDto = themeService.createTheme(requestDto);
         return ResponseEntity.created(URI.create("themes/" + responseDto.id())).body(responseDto);
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponseDto>> getPopularThemes() {
-        List<ThemeResponseDto> popularThemes = themeService.findPopularThemes();
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
+        List<ThemeResponse> popularThemes = themeService.findPopularThemes();
         return ResponseEntity.ok(popularThemes);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable("id") final Long id) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable("id") final Long id, LoginMember member) {
+        if (member.getRole() == Role.USER) {
+            throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
+        }
+
         themeService.deleteThemeById(id);
         return ResponseEntity.noContent().build();
     }

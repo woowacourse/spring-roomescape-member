@@ -5,33 +5,62 @@ import io.restassured.http.ContentType;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dto.ReservationTimeCreateRequestDto;
-import roomescape.dto.ThemeCreateRequestDto;
+import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.LoginMember;
+import roomescape.dto.member.LoginRequest;
+import roomescape.dto.time.ReservationTimeCreateRequest;
+import roomescape.fixture.LoginMemberFixture;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql("/test-data.sql")
 class ReservationTimeControllerTest {
+
+    private String userCookie;
+    private String adminCookie;
+
+    @BeforeEach
+    void login() {
+        LoginMember admin = LoginMemberFixture.getAdmin();
+
+        adminCookie = RestAssured
+                .given().log().all()
+                .body(new LoginRequest(admin.getPassword(), admin.getEmail()))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+
+        LoginMember user = LoginMemberFixture.getUser();
+
+        userCookie = RestAssured
+                .given().log().all()
+                .body(new LoginRequest(user.getPassword(), user.getEmail()))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+    }
 
     @Nested
     @DisplayName("예약시간 조회")
     class ReservationTimeGetTest {
 
-        @DisplayName("ReservationTime 목록 내용 갯수를 검사한다")
+        @DisplayName("예약 시간 목록을 조회한다")
         @Test
         void timesTest() {
             RestAssured.given().log().all()
                     .when().get("/times")
                     .then().log().all()
                     .statusCode(200)
-                    .body("size()", is(0));
+                    .body("size()", is(1));
         }
     }
 
@@ -39,53 +68,63 @@ class ReservationTimeControllerTest {
     @DisplayName("예약시간 생성")
     class ReservationTimePostTest {
 
-        @DisplayName("Time 입력 테스트")
+        @DisplayName("어드민은 /times API를 통해 ReservationTime을 생성할 수 있다")
         @Test
         void addReservationTimeTest() {
-            LocalTime reservationTime = LocalTime.of(15, 30);
-            ReservationTimeCreateRequestDto requestTime = new ReservationTimeCreateRequestDto(reservationTime);
+            ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(15, 30));
 
             RestAssured.given().log().all()
+                    .header("Cookie", adminCookie)
                     .contentType(ContentType.JSON)
-                    .body(requestTime)
+                    .body(request)
                     .when().post("/times")
                     .then().log().all()
                     .statusCode(201)
-                    .body("id", is(1));
+                    .body("id", is(2));
 
             RestAssured.given().log().all()
                     .when().get("/times")
                     .then().log().all()
                     .statusCode(200)
-                    .body("size()", is(1));
+                    .body("size()", is(2));
         }
 
-        @DisplayName("times 응답의 LocalTime 형식은 xx:xx 이다.")
+        @DisplayName("일반 유저는 /times API를 통해 ReservationTime을 생성할 수 없다")
         @Test
-        void timeResponseTest() {
-            LocalTime reservationTime = LocalTime.of(15, 40);
-            ReservationTimeCreateRequestDto requestTime = new ReservationTimeCreateRequestDto(reservationTime);
+        void addReservationTimeExceptionTest1() {
+            ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(15, 30));
 
             RestAssured.given().log().all()
+                    .header("Cookie", userCookie)
                     .contentType(ContentType.JSON)
-                    .body(requestTime)
+                    .body(request)
                     .when().post("/times")
                     .then().log().all()
-                    .statusCode(201);
+                    .statusCode(403);
+        }
+
+        @DisplayName("중복된 시간은 생성할 수 없다")
+        @Test
+        void addReservationTimeExceptionTest2() {
+            ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(9, 0));
 
             RestAssured.given().log().all()
-                    .when().get("/times")
+                    .header("Cookie", adminCookie)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when().post("/times")
                     .then().log().all()
-                    .body("[0].startAt", equalTo("15:40"));
+                    .statusCode(400);
         }
 
         @DisplayName("유효한 시간만 생성 가능하다")
         @Test
-        void invalidRequestTimeTest2() {
+        void invalidRequestTimeTest() {
             Map<String, String> params = new HashMap<>();
             params.put("startAt", "25:40");
 
             RestAssured.given().log().all()
+                    .header("Cookie", adminCookie)
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/times")
@@ -96,22 +135,19 @@ class ReservationTimeControllerTest {
 
     @Nested
     @DisplayName("예약시간 삭제")
-    class DeleteReservationTimeTest {
+    class ReservationTimeDeleteTest {
 
-        @DisplayName("저장된 Id 제거 테스트")
+        @DisplayName("지정된 예약 시간을 삭제할 수 있다")
         @Test
         void deleteTimeTest() {
-            LocalTime reservationTime = LocalTime.of(15, 30);
-            ReservationTimeCreateRequestDto requestTime = new ReservationTimeCreateRequestDto(reservationTime);
-
             RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(requestTime)
-                    .when().post("/times")
+                    .header("Cookie", adminCookie)
+                    .when().delete("/reservations/1")
                     .then().log().all()
-                    .statusCode(201);
+                    .statusCode(204);
 
             RestAssured.given().log().all()
+                    .header("Cookie", adminCookie)
                     .when().delete("/times/1")
                     .then().log().all()
                     .statusCode(204);
@@ -125,46 +161,35 @@ class ReservationTimeControllerTest {
 
         @DisplayName("예약된 내역이 존재하는 시간은 삭제할 수 없다")
         @Test
-        void deleteThemeExceptionTest() {
-            ReservationTimeCreateRequestDto requestTime = new ReservationTimeCreateRequestDto(LocalTime.of(10, 0));
-            ThemeCreateRequestDto requestTheme = new ThemeCreateRequestDto("테마", "설명", "https://");
-            Map<String, Object> reservationParams = new HashMap<>();
-            reservationParams.put("name", "브라운");
-            reservationParams.put("date", "2030-08-05");
-            reservationParams.put("timeId", 1);
-            reservationParams.put("themeId", 1);
-
+        void deleteTimeExceptionTest1() {
             RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(requestTime)
-                    .when().post("/times")
-                    .then().log().all()
-                    .statusCode(201);
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(requestTheme)
-                    .when().post("/themes")
-                    .then().log().all()
-                    .statusCode(201);
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(reservationParams)
-                    .when().post("/reservations")
-                    .then().log().all()
-                    .statusCode(201);
-
-            RestAssured.given().log().all()
+                    .header("Cookie", adminCookie)
                     .when().delete("/times/1")
                     .then().log().all()
                     .statusCode(409);
         }
 
-        @DisplayName("존재하지 않는 Id의 Time 을 삭제할 수 없다")
+        @DisplayName("일반 유저는 /times API를 통해 ReservationTime을 삭제할 수 없다")
+        @Test
+        void deleteTimeExceptionTest2() {
+            RestAssured.given().log().all()
+                    .header("Cookie", adminCookie)
+                    .when().delete("/reservations/1")
+                    .then().log().all()
+                    .statusCode(204);
+
+            RestAssured.given().log().all()
+                    .header("Cookie", userCookie)
+                    .when().delete("/times/1")
+                    .then().log().all()
+                    .statusCode(403);
+        }
+
+        @DisplayName("존재하지 않는 Id의 ReservationTime을 삭제할 수 없다")
         @Test
         void invalidTimeIdTest() {
             RestAssured.given().log().all()
+                    .header("Cookie", adminCookie)
                     .when().delete("/times/5")
                     .then().log().all()
                     .statusCode(404);

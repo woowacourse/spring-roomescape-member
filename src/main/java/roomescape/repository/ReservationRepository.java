@@ -8,7 +8,7 @@ import roomescape.domain.Reservation;
 
 public interface ReservationRepository {
 
-    Optional<Reservation> save(final Reservation reservation);
+    long save(final Reservation reservation);
 
     List<Reservation> findAll();
 
@@ -17,6 +17,8 @@ public interface ReservationRepository {
     List<Reservation> findByDateTimeTheme(final LocalDate date, final LocalTime time, final long themeId);
 
     List<Reservation> findByDateAndTheme(final LocalDate date, final long themeId);
+
+    List<Reservation> findByThemeMemberDateRange(final Long themeId, final Long memberId, final LocalDate from, final LocalDate to);
 
     int deleteById(final long id);
 }
