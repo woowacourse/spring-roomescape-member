@@ -32,7 +32,6 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = request.getCookies();
-        // 웹요청의 토큰에서 페이로드 email 꺼내서 멤버 반환
         if (cookies != null) {
             String token = authService.extractTokenFromCookies(cookies);
             Member byEmail = memberService.findByEmail(authService.getPayload(token));

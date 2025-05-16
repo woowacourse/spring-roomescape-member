@@ -10,13 +10,13 @@ import roomescape.infra.auth.CheckAdminInterceptor;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
-    private final AuthenticationPrincipalArgumentResolver authenticationPrincipalArgumentResolver;
     private final CheckAdminInterceptor checkAdminInterceptor;
+    private final AuthenticationPrincipalArgumentResolver authenticationPrincipalArgumentResolver;
 
-    public WebMvcConfiguration(AuthenticationPrincipalArgumentResolver authenticationPrincipalArgumentResolver,
-                               CheckAdminInterceptor checkAdminInterceptor) {
-        this.authenticationPrincipalArgumentResolver = authenticationPrincipalArgumentResolver;
+    public WebMvcConfiguration(CheckAdminInterceptor checkAdminInterceptor,
+                               AuthenticationPrincipalArgumentResolver authenticationPrincipalArgumentResolver) {
         this.checkAdminInterceptor = checkAdminInterceptor;
+        this.authenticationPrincipalArgumentResolver = authenticationPrincipalArgumentResolver;
     }
 
     @Override

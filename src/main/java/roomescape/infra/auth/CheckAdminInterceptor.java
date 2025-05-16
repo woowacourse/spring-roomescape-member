@@ -24,7 +24,6 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         }
         String loginToken = authService.extractTokenFromCookies(cookies);
         Role role = authService.getRole(loginToken);
-        System.out.println(role);
         if (role != Role.ADMIN) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;

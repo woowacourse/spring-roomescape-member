@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.AdminReservationRequest;
@@ -17,6 +18,7 @@ import roomescape.service.MemberService;
 import roomescape.service.ReservationService;
 
 @RestController
+@RequestMapping("/admin/reservations")
 public class AdminController {
     private final ReservationService reservationService;
     private final MemberService memberService;
@@ -26,7 +28,7 @@ public class AdminController {
         this.memberService = memberService;
     }
 
-    @PostMapping("/admin/reservations")
+    @PostMapping
     public ResponseEntity<Reservation> addReservation(@RequestBody AdminReservationRequest request) {
 
         Member member = memberService.getMemberById(request.userId());
@@ -35,7 +37,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
     }
 
-    @GetMapping("/admin/reservations/filter")
+    @GetMapping("/filter")
     public List<Reservation> filterReservation(
             @RequestParam(required = false) Long themeId,
             @RequestParam(required = false) Long memberId,
