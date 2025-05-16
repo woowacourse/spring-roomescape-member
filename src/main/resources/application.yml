@@ -9,6 +9,11 @@ spring:
   datasource:
     url: jdbc:h2:mem:database
 
+jwt:
+  secret: d29vd2Fjb3Vyc2UtZG9uZ2NoYW4tand0
+  expiration:
+    access-token: 3600000
+
 ---
 spring:
   config:
@@ -22,3 +27,8 @@ spring:
     url: jdbc:h2:mem:database_test
 server:
   port: 8081
+
+jwt:
+  secret: "testtesttesttesttesttesttesttesttesttest"
+  expiration:
+    access-token: 1000
