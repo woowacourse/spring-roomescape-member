@@ -9,7 +9,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.model.user.Member;
 import roomescape.service.MemberService;
 
 @Component
@@ -33,9 +32,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
-            String token = authService.extractTokenFromCookies(cookies);
-            Member byEmail = memberService.findByEmail(authService.getPayload(token));
-            return byEmail;
+            return authService.getMemberFromCookies(cookies);
         }
         throw new BadRequestException("인증 실패");
     }

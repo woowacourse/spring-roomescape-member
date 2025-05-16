@@ -38,6 +38,14 @@ public class AuthService {
         return jwtTokenProcessor.extractTokenFromCookies(cookies);
     }
 
+    private Member getMemberByEmail(String email) {
+        return memberRepository.findByEmail(email);
+    }
+
+    public Member getMemberFromCookies(Cookie[] cookies) {
+        return getMemberByEmail(getPayload(extractTokenFromCookies(cookies)));
+    }
+
     public void validateLoginToken(String loginToken) {
         if (jwtTokenProcessor.validateToken(loginToken)) {
             return;
@@ -45,7 +53,7 @@ public class AuthService {
         throw new JwtException("Invalid token");
     }
 
-    public String getPayload(String token) {
+    private String getPayload(String token) {
         return jwtTokenProcessor.getPayload(token);
     }
 
