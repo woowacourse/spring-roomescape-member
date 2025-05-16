@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +21,7 @@ import roomescape.infra.auth.AuthService;
 @RequestMapping("/login")
 public class LoginController {
     AuthService authService;
+    private final Logger log = LoggerFactory.getLogger(LoginController.class);
 
     public LoginController(AuthService authService) {
         this.authService = authService;
@@ -33,11 +36,12 @@ public class LoginController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<NameResponse> checkLogin(HttpServletRequest request) throws BadRequestException {
+    public ResponseEntity<NameResponse> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             return ResponseEntity.ok(authService.checkLogin(cookies));
         }
-        throw new BadRequestException("인증 실패");
+        log.warn("인증 정보 오류");
+        return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).build();
     }
 }
