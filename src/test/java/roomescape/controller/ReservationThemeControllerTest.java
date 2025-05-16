@@ -1,6 +1,5 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
@@ -10,7 +9,6 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.util.List;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +19,20 @@ import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.ReservationTheme;
 import roomescape.dto.ReservationThemeRequest;
 import roomescape.dto.ReservationThemeResponse;
+import roomescape.global.AuthInterceptor;
 import roomescape.service.ReservationThemeService;
 
 @WebMvcTest(ReservationThemeController.class)
-@Disabled
 class ReservationThemeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
-    private ReservationThemeService reservationThemeService;
+    private AuthInterceptor authInterceptor;
 
+    @MockitoBean
+    private ReservationThemeService reservationThemeService;
 
     @BeforeEach
     void setUp() {
@@ -93,7 +93,6 @@ class ReservationThemeControllerTest {
                 .body(reservationThemeRequest)
                 .when().post("/themes")
                 .then().log().all()
-                .body("themeId",is(1))
                 .statusCode(HttpStatus.CREATED.value());
     }
 

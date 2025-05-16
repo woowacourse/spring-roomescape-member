@@ -21,11 +21,11 @@ import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationThemeResponse;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.service.MemberService;
+import roomescape.global.AuthInterceptor;
 import roomescape.service.ReservationService;
 
 @WebMvcTest(ReservationController.class)
-public class ReservationControllerTestV2 {
+public class ReservationControllerTestWithMock {
 
     @Autowired
     private MockMvc mockMvc;
@@ -34,8 +34,7 @@ public class ReservationControllerTestV2 {
     private ReservationService reservationService;
 
     @MockitoBean
-    private MemberService memberService;
-
+    private AuthInterceptor authInterceptor;
 
     @BeforeEach
     void setUp() {
