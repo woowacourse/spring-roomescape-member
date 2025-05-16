@@ -16,6 +16,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.LoginMember;
 import roomescape.dto.request.AdminReservationRequest;
+import roomescape.dto.request.ReservationFilterRequest;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.ResourceNotExistException;
@@ -46,10 +47,9 @@ public class ReservationService {
             .toList();
     }
 
-    public List<ReservationResponse> findFiltered(Long themeId, Long memberId, LocalDate dateFrom,
-        LocalDate dateTo) {
-        List<Reservation> reservations = reservationDao.findByFilters(themeId, memberId, dateFrom,
-            dateTo);
+    public List<ReservationResponse> findFiltered(ReservationFilterRequest request) {
+        List<Reservation> reservations = reservationDao.findByFilters(request.themeId(),
+            request.memberId(), request.dateFrom(), request.dateTo());
         return reservations.stream()
             .map(ReservationResponse::from)
             .toList();

@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+
 public class Member {
 
     private final Long id;

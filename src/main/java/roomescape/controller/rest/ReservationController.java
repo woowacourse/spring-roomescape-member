@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.LoginMember;
+import roomescape.dto.request.ReservationFilterRequest;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
@@ -48,11 +49,9 @@ public class ReservationController {
 
     @GetMapping("/filter")
     public ResponseEntity<List<ReservationResponse>> findFiltered(
-        @RequestParam("themeId") Long themeId,
-        @RequestParam("memberId") Long memberId, @RequestParam("dateFrom") LocalDate dateFrom,
-        @RequestParam("dateTo") LocalDate dateTo) {
-        List<ReservationResponse> response = reservationService.findFiltered(themeId, memberId,
-            dateFrom, dateTo);
+        @RequestBody ReservationFilterRequest request
+    ) {
+        List<ReservationResponse> response = reservationService.findFiltered(request);
         return ResponseEntity.ok().body(response);
     }
 }
