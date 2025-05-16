@@ -8,16 +8,17 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.LoginMember;
 import roomescape.service.MemberService;
-import roomescape.util.CookieTokenExtractor;
+import roomescape.util.CookieExtractor;
+import roomescape.util.CookieKeys;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberService memberService;
-    private final CookieTokenExtractor authorizationExtractor;
+    private final CookieExtractor authorizationExtractor;
 
     public LoginMemberArgumentResolver(MemberService memberService) {
         this.memberService = memberService;
-        this.authorizationExtractor = new CookieTokenExtractor();
+        this.authorizationExtractor = new CookieExtractor();
     }
 
     @Override
@@ -28,7 +29,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = authorizationExtractor.extract(request);
+        String token = authorizationExtractor.extract(request, CookieKeys.TOKEN);
         return memberService.findMemberByToken(token);
     }
 }

@@ -19,6 +19,7 @@ import roomescape.exception.UnauthorizedAccessException;
 import roomescape.service.LoginService;
 import roomescape.service.MemberService;
 import roomescape.service.SignupService;
+import roomescape.util.CookieKeys;
 
 @RestController
 public class AuthController {
@@ -62,7 +63,7 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginMemberResponse> checkLogin(@CookieValue(name = "token", required = false) String token) {
+    public ResponseEntity<LoginMemberResponse> checkLogin(@CookieValue(name = CookieKeys.TOKEN, required = false) String token) {
         LoginMemberResponse response = loginService.findMemberByToken(token);
         return ResponseEntity.ok().body(response);
     }

@@ -7,24 +7,25 @@ import roomescape.domain.LoginMember;
 import roomescape.domain.Role;
 import roomescape.exception.InvalidCredentialsException;
 import roomescape.service.MemberService;
-import roomescape.util.CookieTokenExtractor;
+import roomescape.util.CookieExtractor;
+import roomescape.util.CookieKeys;
 import roomescape.util.JwtTokenProvider;
 
 public class LoginInterceptor implements HandlerInterceptor {
 
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final CookieTokenExtractor authorizationExtractor;
+    private final CookieExtractor authorizationExtractor;
 
     public LoginInterceptor(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
         this.memberService = memberService;
         this.jwtTokenProvider = jwtTokenProvider;
-        this.authorizationExtractor = new CookieTokenExtractor();
+        this.authorizationExtractor = new CookieExtractor();
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String token = authorizationExtractor.extract(request);
+        String token = authorizationExtractor.extract(request, CookieKeys.TOKEN);
         if (token == null || token.isBlank()) {
             throw new InvalidCredentialsException("[ERROR] 로그인이 필요합니다.");
         }
