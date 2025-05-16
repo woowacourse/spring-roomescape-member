@@ -32,4 +32,8 @@ public class Member {
     public boolean isAdmin() {
         return role.equals(Role.ADMIN);
     }
+
+    public boolean isPasswordMatched(final String password) {
+        return this.password.equals(password);
+    }
 }

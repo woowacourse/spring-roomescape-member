@@ -25,7 +25,7 @@ public class MemberService {
     public String login(final MemberLoginRequest request) {
         final Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new AuthorizationException("해당 이메일에 대한 회원 정보가 존재하지 않습니다. 이메일: " + request.email()));
-        if (!member.password().equals(request.password())) {
+        if (!member.isPasswordMatched(request.password())) {
             throw new AuthorizationException("비밀번호가 틀립니다.");
         }
         return jwtTokenProvider.createToken(member);
