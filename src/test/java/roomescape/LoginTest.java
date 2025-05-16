@@ -47,16 +47,9 @@ class LoginTest {
                 "password", password
         );
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(loginParams)
-                .when()
-                .post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract();
+        String token = doLogin(loginParams);
 
-        assertThat(response.cookie("token")).isNotEmpty();
+        assertThat(token).isNotEmpty();
     }
         
     @DisplayName("쿠키가 존재하는 경우, 로그인 여부를 확인할 수 있다.")
@@ -70,15 +63,7 @@ class LoginTest {
         );
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(loginParams)
-                .when()
-                .post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract();
-        String token = response.cookie("token");
+        String token = doLogin(loginParams);
 
         // then
         RestAssured.given().log().all()
@@ -88,5 +73,17 @@ class LoginTest {
                 .get("/login/check")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    private String doLogin(Map<String, String> loginParams) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(loginParams)
+                .when()
+                .post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract();
+        return response.cookie("token");
     }
 }
