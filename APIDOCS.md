@@ -6,36 +6,43 @@
     - 설명 : 랭킹 페이지 응답
     - 정상 응답 (200)
 
-- GET /admin
-    - 설명 : 메인페이지 응답
+- GET /admin (ADMIN 권한 유저만 접근 가능)
+    - 설명 : 어드민 메인페이지 응답
     - 정상 응답 (200)
       ```
       메인 페이지 HTML 파일
       ```
 
-- GET /admin/reservation
+- GET /admin/reservation (ADMIN 권한 유저만 접근 가능)
     - 설명 : 예약페이지 응답
     - 정상 응답 (200)
       ```
       예약 페이지 HTML 문서
       ```
 
-- GET /admin/time
+- GET /admin/time (ADMIN 권한 유저만 접근 가능)
     - 설명 : 시간페이지 응답
     - 정상 응답 (200)
       ```
       시간 페이지 HTML 문서
       ```
-      
-- GET /admin/theme
+
+- GET /admin/theme (ADMIN 권한 유저만 접근 가능)
     - 설명 : 테마페이지 응답
     - 정상 응답 (200)
       ```
       테마 페이지 HTML 문서
       ```
-      
+
 - GET /reservation
     - 설명 : 사용자 예약페이지 응답
+    - 정상 응답 (200)
+      ```
+      테마 페이지 HTML 문서
+      ```
+
+- GET /login
+    - 설명 : 사용자 로그인 페이지 응답
     - 정상 응답 (200)
       ```
       테마 페이지 HTML 문서
@@ -45,33 +52,24 @@
 
 - GET /reservations
     - 설명 : 예약 조회
-    - 정상 응답 (200)
-      ```
-      [
-          {
-             "id": 1,
-             "name": "랜디",
-             "date": "2025-04-30",
-             "time": {
-                "id": 1,
-                "startAt": "10:00:00"
-             },
-             "theme": {
-                "id": 12,
-                "name": "테마12",
-                "description": "서커스의신",
-                "thumbnail": "http://localhost:8080/image/theme.jpg"
-             }
-          },
-          ...
-      ]
-      ```
+        - 정상 응답 (200)
+          ```
+          [
+              {
+                  "id":1,
+                  "member":{"id":1,"name":"아마"},
+                  "date":"2025-04-30",
+                  "time":{"id":1,"startAt":"10:00:00"},
+                  "theme":{"id":12,"name":"테마12","description":"서커스의신","thumbnail":"http://localhost:8080/image/theme.jpg"}
+              }
+              ...
+          ]
+          ```
 - POST /reservations
-    - 설명 : 예약 추가
+    - 설명 : 사용자 예약 추가
     - 요청 파라미터
       ```
       {
-          String "name": "브라운",          // NotNull, NotBlank
           LocalDate "date": "2023-08-05",  // NotNull, (과거 날짜 허용X)
           Long "timeId": 1                 // NotNull, (과거 시간 허용X)
           Long "themeId": 1                 // NotNull, (과거 시간 허용X)
@@ -105,9 +103,9 @@
     - 설명 : 예약 취소
     - 정상 응답 (204)
     - 예외 응답 (404)
-      - reservationId가 NULL인 경우
+        - reservationId가 NULL인 경우
     - 예외 응답 (400)
-      - reservationId에 해당하는 예약이 없는 경우
+        - reservationId에 해당하는 예약이 없는 경우
 
 ### 예약 시간 API
 
@@ -160,7 +158,7 @@
     - 설명 : ID에 해당하는 예약 가능한 시간 삭제
     - 정상 응답 (204)
     - 예외 응답 (404)
-      - API 입력값 입력되지 않은 경우
+        - API 입력값 입력되지 않은 경우
     - 예외 응답 (400)
         - 이미 해당 예약 가능 시간으로 예약 데이터가 존재하는 경우
 
@@ -214,13 +212,35 @@
       }
       ```
     - 예외 응답 (400)
-      - 요청 페이로드가 올바르지 않을 경우
+        - 요청 페이로드가 올바르지 않을 경우
 
 - DELETE /themes/{themesId}
-  - 설명 : 테마 삭제
-  - 정상 응답 (204)
-  - 예외 응답 (404)
-      - ID에 대한 테마가 존재하지 않는 경우
-  - 예외 응답 (400)
-      - themesId가 NULL인 경우
-      - 테마에 대한 예약이 존재할 경우
+    - 설명 : 테마 삭제
+    - 정상 응답 (204)
+    - 예외 응답 (404)
+        - ID에 대한 테마가 존재하지 않는 경우
+    - 예외 응답 (400)
+        - themesId가 NULL인 경우
+        - 테마에 대한 예약이 존재할 경우
+
+### 로그인 API
+
+- POST /login
+    - 설명 : 사용자 로그인
+    - 정상 응답 (200)
+      ```
+        HTTP/1.1 200 OK
+        Content-Type: application/json
+        Keep-Alive: timeout=60
+        Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+
+      ```
+
+- GET /login/check
+    - 설명 : 사용자 로그인 정보 조회
+    - 정상 응답 (200)
+      ```
+      {
+         "name": "어드민"
+      }
+      ```

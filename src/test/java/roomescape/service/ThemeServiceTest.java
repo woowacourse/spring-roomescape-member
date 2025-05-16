@@ -10,6 +10,7 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -22,13 +23,13 @@ import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.test.fake.FakeH2ReservationRepository;
 import roomescape.test.fake.FakeH2ReservationTimeRepository;
-import roomescape.test.fake.FakeThemeRepository;
+import roomescape.test.fake.FakeH2ThemeRepository;
 
 class ThemeServiceTest {
 
     private final ReservationRepository reservationRepository = new FakeH2ReservationRepository();
     private final ReservationTimeRepository reservationTimeRepository = new FakeH2ReservationTimeRepository();
-    private final ThemeRepository themeRepository = new FakeThemeRepository();
+    private final ThemeRepository themeRepository = new FakeH2ThemeRepository();
     private final ThemeService themeService = new ThemeService(reservationRepository, themeRepository);
 
     @DisplayName("테마를 추가할 수 있다.")
@@ -88,8 +89,9 @@ class ThemeServiceTest {
     void cannotDeleteThemeWhenReservationExist() {
         ReservationTime reservationTime = addReservationTimeInRepository(reservationTimeRepository, LocalTime.now());
         Theme theme = addThemeInRepository(themeRepository, "이름", "설명", "썸네일");
+        Member member = new Member(1L, "사람", "email", "비번", "member");
         reservationRepository.add(
-                Reservation.createWithoutId("이름", LocalDate.now().plusDays(1), reservationTime, theme));
+                Reservation.createWithoutId(member, LocalDate.now().plusDays(1), reservationTime, theme));
 
         assertThatThrownBy(() -> themeService.deleteThemeById(theme.getId()))
                 .isInstanceOf(BadRequestException.class)

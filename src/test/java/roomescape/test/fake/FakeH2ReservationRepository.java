@@ -52,7 +52,7 @@ public class FakeH2ReservationRepository implements ReservationRepository {
     @Override
     public long add(Reservation reservation) {
         Reservation newReservation = new Reservation(
-                index.getAndIncrement(), reservation.getName(), reservation.getDate(), reservation.getTime(),
+                index.getAndIncrement(), reservation.getMember(), reservation.getDate(), reservation.getTime(),
                 reservation.getTheme());
         reservations.put(newReservation.getId(), newReservation);
         return newReservation.getId();
@@ -61,5 +61,11 @@ public class FakeH2ReservationRepository implements ReservationRepository {
     @Override
     public void deleteById(long id) {
         reservations.remove(id);
+    }
+
+    @Override
+    public List<Reservation> saerch(final Long themeId, final Long memberId, final LocalDate dateFrom,
+                                    final LocalDate dateTo) {
+        return List.of();
     }
 }
