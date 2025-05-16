@@ -18,8 +18,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.ReservationController;
+import roomescape.infra.auth.JwtTokenProcessor;
 import roomescape.model.Reservation;
-import roomescape.service.MemberService;
+import roomescape.model.user.Role;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -29,14 +30,14 @@ public class MissionStepTest {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private MemberService memberService;
+    private JwtTokenProcessor jwtTokenProcessor;
     private String adminToken;
     private String userToken;
 
     @BeforeEach
     void setUp() {
-        adminToken = memberService.createToken("asd@asd.com").token();
-        userToken = memberService.createToken("vec@vec.com").token();
+        adminToken = jwtTokenProcessor.createToken("asd@asd.com", Role.ADMIN);
+        userToken = jwtTokenProcessor.createToken("vec@vec.com", Role.USER);
     }
 
     void Test_ReservationTime_Post() {
@@ -68,7 +69,7 @@ public class MissionStepTest {
     @Test
     void 일단계() {
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("loginToken", adminToken)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -77,13 +78,13 @@ public class MissionStepTest {
     @Test
     void 이단계() {
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("loginToken", adminToken)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
 
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("loginToken", adminToken)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -98,7 +99,7 @@ public class MissionStepTest {
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
-                .cookie("token", userToken)
+                .cookie("loginToken", userToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -106,19 +107,19 @@ public class MissionStepTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("loginToken", adminToken)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200);
 
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("loginToken", adminToken)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("loginToken", adminToken)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200);
@@ -144,7 +145,7 @@ public class MissionStepTest {
                 "2025-08-05", 1, 1);
 
         List<Reservation> reservations = RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("loginToken", adminToken)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -167,7 +168,7 @@ public class MissionStepTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", userToken)
+                .cookie("loginToken", userToken)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -207,7 +208,7 @@ public class MissionStepTest {
         reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
-                .cookie("token", userToken)
+                .cookie("loginToken", userToken)
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")

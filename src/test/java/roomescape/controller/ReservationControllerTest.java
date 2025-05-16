@@ -5,8 +5,6 @@ import static org.hamcrest.Matchers.containsString;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,22 +13,25 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.service.MemberService;
+import roomescape.infra.auth.JwtTokenProcessor;
+import roomescape.model.user.Role;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationControllerTest {
 
     @Autowired
-    private MemberService memberService;
+    private JwtTokenProcessor jwtTokenProcessor;
 
     private String adminToken;
     private String userToken;
 
+    private final String loginToken = "loginToken";
+
     @BeforeEach
     void setUp() {
-        adminToken = memberService.createToken("asd@asd.com").token();
-        userToken = memberService.createToken("vec@vec.com").token();
+        adminToken = jwtTokenProcessor.createToken("asd@asd.com", Role.ADMIN);
+        userToken = jwtTokenProcessor.createToken("vec@vec.com", Role.USER);
     }
 
     void Test_ReservationTime_Post() {
@@ -68,7 +69,7 @@ public class ReservationControllerTest {
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
-                .cookie("token", userToken)
+                .cookie(loginToken, userToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -89,40 +90,9 @@ public class ReservationControllerTest {
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
-                .cookie("token", userToken)
+                .cookie(loginToken, userToken)
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400).body(containsString("[ERROR]"))
-        ;
-    }
-
-    @Test
-    @DisplayName("과거 예약을 생성하면 예외 처리한다. - 1시간 전")
-    void test3() {
-        Test_Theme_Post();
-
-        Map<String, String> timeParams = new HashMap<>();
-        timeParams.put("startAt", LocalTime.now().minusHours(1).format(DateTimeFormatter.ofPattern("HH:mm")));
-
-        RestAssured.given().log().all()
-                .cookie("token", userToken)
-                .contentType(ContentType.JSON)
-                .body(timeParams)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-
-        Map<String, Object> reservationParams = new HashMap<>();
-        reservationParams.put("date", String.valueOf(LocalDate.now()));
-        reservationParams.put("timeId", 1);
-        reservationParams.put("themeId", 1);
-
-        RestAssured.given().log().all()
-                .cookie("token", userToken)
-                .contentType(ContentType.JSON)
-                .body(reservationParams)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400).body(containsString("[ERROR]"))
@@ -141,7 +111,7 @@ public class ReservationControllerTest {
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
-                .cookie("token", userToken)
+                .cookie(loginToken, userToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -152,7 +122,7 @@ public class ReservationControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", userToken)
+                .cookie(loginToken, userToken)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()

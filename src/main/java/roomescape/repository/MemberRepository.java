@@ -1,7 +1,7 @@
 package roomescape.repository;
 
 import java.util.List;
-import roomescape.controller.MemberRequest;
+import roomescape.dto.MemberRequest;
 import roomescape.model.user.Member;
 import roomescape.model.user.Name;
 import roomescape.model.user.Role;

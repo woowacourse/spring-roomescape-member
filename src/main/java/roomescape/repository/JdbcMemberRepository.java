@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.controller.MemberRequest;
+import roomescape.dto.MemberRequest;
 import roomescape.model.user.Email;
 import roomescape.model.user.Member;
 import roomescape.model.user.Name;

@@ -24,9 +24,9 @@ public class GlobalExceptionHandler {
                 .body("[ERROR] " + ex);
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<String> handleGenericException(Exception e) {
-//        log.error("[ERROR] " + e.getMessage());
-//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[ERROR] " + "오류가 발생했습니다.");
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleGenericException(Exception e) {
+        log.error("[ERROR] " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[ERROR] " + "오류가 발생했습니다.");
+    }
 }

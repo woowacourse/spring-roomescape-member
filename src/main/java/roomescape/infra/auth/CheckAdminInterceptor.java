@@ -6,26 +6,25 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.model.user.Role;
-import roomescape.service.MemberService;
 
 @Component
 public class CheckAdminInterceptor implements HandlerInterceptor {
-    private final MemberService memberService;
+    private final AuthService authService;
 
-    public CheckAdminInterceptor(MemberService memberService) {
-        this.memberService = memberService;
+    public CheckAdminInterceptor(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        // role이랑 이름 담아서 보내면 된다.
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
-        String email = memberService.extractEmailFromCookies(cookies);
-        Role role = memberService.getRoleByEmail(email);
+        String loginToken = authService.extractTokenFromCookies(cookies);
+        Role role = authService.getRole(loginToken);
+        System.out.println(role);
         if (role != Role.ADMIN) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;

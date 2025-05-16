@@ -9,14 +9,17 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.model.user.Member;
 import roomescape.service.MemberService;
 
 @Component
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
     private final MemberService memberService;
+    private final AuthService authService;
 
-    public AuthenticationPrincipalArgumentResolver(MemberService memberService) {
+    public AuthenticationPrincipalArgumentResolver(MemberService memberService, AuthService authService) {
         this.memberService = memberService;
+        this.authService = authService;
     }
 
     @Override
@@ -29,9 +32,11 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = request.getCookies();
+        // 웹요청의 토큰에서 페이로드 email 꺼내서 멤버 반환
         if (cookies != null) {
-            String userEmail = memberService.extractEmailFromCookies(cookies);
-            return memberService.findByEmail(userEmail);
+            String token = authService.extractTokenFromCookies(cookies);
+            Member byEmail = memberService.findByEmail(authService.getPayload(token));
+            return byEmail;
         }
         throw new BadRequestException("인증 실패");
     }

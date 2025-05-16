@@ -12,21 +12,24 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.service.MemberService;
+import roomescape.infra.auth.JwtTokenProcessor;
+import roomescape.model.user.Role;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationTimeControllerTest {
 
     @Autowired
-    private MemberService memberService;
+    private JwtTokenProcessor jwtTokenProcessor;
+
     private String adminToken;
     private String userToken;
+    private String loginToken = "loginToken";
 
     @BeforeEach
     void setUp() {
-        adminToken = memberService.createToken("asd@asd.com").token();
-        userToken = memberService.createToken("vec@vec.com").token();
+        adminToken = jwtTokenProcessor.createToken("asd@asd.com", Role.ADMIN);
+        userToken = jwtTokenProcessor.createToken("vec@vec.com", Role.USER);
     }
 
     void Test_ReservationTime_Post() {
@@ -94,7 +97,7 @@ public class ReservationTimeControllerTest {
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
-                .cookie("token", userToken)
+                .cookie(loginToken, userToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -106,7 +109,7 @@ public class ReservationTimeControllerTest {
         // then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", userToken)
+                .cookie(loginToken, userToken)
                 .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(400);
