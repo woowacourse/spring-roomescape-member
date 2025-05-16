@@ -8,6 +8,7 @@ import roomescape.auth.service.dto.request.LoginRequest;
 import roomescape.auth.service.dto.request.UserSignupRequest;
 import roomescape.auth.service.dto.response.LoginResponse;
 import roomescape.auth.service.dto.response.MemberBasicInfoResponse;
+import roomescape.global.exception.badRequest.BadRequestException;
 import roomescape.global.exception.conflict.MemberEmailConflictException;
 import roomescape.global.exception.notFound.MemberNotFoundException;
 import roomescape.global.exception.notFound.NotFoundException;
@@ -27,8 +28,11 @@ public class MemberService {
     }
 
     public LoginResponse login(LoginRequest request) {
-        Member member = memberRepository.findByEmailAndPassword(request.email(), request.password())
-                .orElseThrow(() -> new NotFoundException("입력한 정보와 일치하는 회원 정보가 존재하지 않습니다."));
+        Member member = memberRepository.findByEmail(request.email())
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 아이디입니다."));
+        if (!member.isSamePassword(request.password())) {
+            throw new BadRequestException("비밀번호가 올바르지 않습니다.");
+        }
         String token = jwtTokenProvider.createToken(member);
         return new LoginResponse(token);
     }

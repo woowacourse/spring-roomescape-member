@@ -15,6 +15,10 @@ public class Member {
         this.password = password;
     }
 
+    public boolean isSamePassword(String password) {
+        return this.password.equals(password);
+    }
+
     public Long getId() {
         return id;
     }

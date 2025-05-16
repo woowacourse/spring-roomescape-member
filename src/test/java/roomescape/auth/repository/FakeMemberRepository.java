@@ -24,13 +24,6 @@ public class FakeMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findByEmailAndPassword(String email, String password) {
-        return members.stream()
-                .filter(user -> user.getEmail().equals(email) && user.getPassword().equals(password))
-                .findFirst();
-    }
-
-    @Override
     public Optional<Member> findByEmail(String email) {
         return members.stream()
                 .filter(user -> user.getEmail().equals(email))
