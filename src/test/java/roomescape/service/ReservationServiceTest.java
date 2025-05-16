@@ -1,72 +1,98 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
+import roomescape.service.dto.ReservationRecipe;
+import roomescape.service.dto.ReservationResponse;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@SpringBootTest
 class ReservationServiceTest {
 
     @Autowired
-    ReservationService service;
+    private ReservationService reservationService;
 
-    @Autowired
-    ReservationTimeService timeService;
-
-    @DisplayName("같은 날짜 및 시간 예약이 존재하면 예외를 던진다")
     @Test
-    void addReservationWithDuplicatedReservation() {
+    @DisplayName("예약을 추가한다.")
+    void addReservationTest() {
         //given
-        LocalDate date = LocalDate.now().plusDays(1);
-        
-        ReservationTimeResponse response = timeService.addReservationTime(
-                new ReservationTimeRequest(LocalTime.parse("10:00")));
+        final ReservationRecipe reservationRecipe = new ReservationRecipe(1L, LocalDate.now().plusDays(13), 1L, 1L);
 
-        service.addReservation(new ReservationRequest("test", date, 1L, response.timeId()));
+        //when
+        final ReservationResponse expected = reservationService.addReservation(reservationRecipe);
 
-        //when & then
-        ReservationRequest duplicated = new ReservationRequest("test2", date, 1L, response.timeId());
-        assertThatThrownBy(() -> service.addReservation(duplicated))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이미 존재하는 예약시간입니다.");
-
+        //then
+        assertAll(
+                () -> assertThat(expected.date()).isEqualTo(reservationRecipe.date()),
+                () -> assertThat(expected.theme().id()).isEqualTo(reservationRecipe.themeId()),
+                () -> assertThat(expected.time().id()).isEqualTo(reservationRecipe.timeId())
+        );
     }
 
-    @DisplayName("현재 시점 이전의 예약을 생성할 시 예외를 던진다")
     @Test
-    void addReservationBeforeCurrentDateTime() {
-        // given
-        timeService.addReservationTime(new ReservationTimeRequest(LocalTime.parse("10:10")));
-        LocalDate date = LocalDate.now().minusDays(1);
-        ReservationRequest request = new ReservationRequest("호떡", date, 1L, 1L);
+    @DisplayName("id로 예약을 성공적으로 삭제한다.")
+    void removeReservationSuccessTest() {
+        //given
+        final ReservationRecipe reservationRecipe = new ReservationRecipe(1L, LocalDate.now().plusDays(14), 1L, 1L);
+        final ReservationResponse saved = reservationService.addReservation(reservationRecipe);
 
-        // then & when
-        assertThatThrownBy(() -> service.addReservation(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이전 시각으로 예약할 수 없습니다.");
+        //should
+        assertThatCode(() -> reservationService.removeReservation(saved.id())).doesNotThrowAnyException();
     }
 
-    @DisplayName("존재하지 않는 예약을 삭제하려는 경우 예외를 던진다")
     @Test
-    void removeReservation() {
+    @DisplayName("존재하지 않는 id로 예약을 삭제하여 예외가 발생한다.")
+    void removeReservationFailTest() {
         //given
-        long notExistId = 999;
+        final long id = 101010101010101010L;
 
-        //when & then
-        assertThatThrownBy(() -> service.removeReservation(notExistId))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("[ERROR] 예약번호 999번은 존재하지 않습니다.");
+        //should
+        assertThatThrownBy(() -> reservationService.removeReservation(id)).isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    @DisplayName("모든 예약을 가져온다.")
+    void getAllReservationTest() {
+        //given
+        final ReservationRecipe reservationRecipe = new ReservationRecipe(1L, LocalDate.now().plusDays(15), 1L, 1L);
+        reservationService.addReservation(reservationRecipe);
+
+        //when
+        final List<ReservationResponse> expected = reservationService.getAllReservations();
+
+        //then
+        assertThat(expected).hasSizeGreaterThanOrEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("필터링된 예약을 가져온다.")
+    void getFilteredReservationsTest() {
+        //given
+        final long memberId = 1L;
+        final LocalDate localDate = LocalDate.now().plusDays(17);
+        final long themeId = 1L;
+        final long timeId = 1L;
+        final LocalDate dateFrom = LocalDate.now();
+        final LocalDate dateTo = LocalDate.now().plusDays(1);
+        final ReservationRecipe reservationRecipe = new ReservationRecipe(memberId, localDate, themeId, timeId);
+        reservationService.addReservation(reservationRecipe);
+
+        //when
+        final List<ReservationResponse> expected = reservationService.getFilteredReservations(memberId,
+                themeId, dateFrom, dateTo);
+
+        //then
+        assertThat(expected).hasSizeGreaterThanOrEqualTo(1);
+
     }
 
 }

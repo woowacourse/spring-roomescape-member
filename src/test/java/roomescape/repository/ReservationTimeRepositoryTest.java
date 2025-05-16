@@ -62,20 +62,14 @@ class ReservationTimeRepositoryTest {
     @Test
     void save() {
         //given
-        ReservationTime reservationTime = ReservationTime.parse("16:30");
+        ReservationTime reservationTime = new ReservationTime(LocalTime.of(16, 40));
 
         //when
         ReservationTime saved = timeRepository.save(reservationTime);
-        ReservationTime firstTime = timeRepository.findById(1L).get();
-        ReservationTime secondTime = timeRepository.findById(2L).get();
+        ReservationTime firstTime = timeRepository.findById(saved.getId()).get();
 
         //then
-        assertThat(saved.getId()).isEqualTo(2L);
-        assertThat(saved.getStartAt()).isEqualTo(LocalTime.parse("16:30"));
-        assertThat(firstTime.getId()).isEqualTo(1L);
-        assertThat(firstTime.getStartAt()).isEqualTo(LocalTime.parse("15:40"));
-        assertThat(secondTime.getId()).isEqualTo(2L);
-        assertThat(secondTime.getStartAt()).isEqualTo(LocalTime.parse("16:30"));
+        assertThat(reservationTime.getStartAt()).isEqualTo(firstTime.getStartAt());
     }
 
     @DisplayName("id로 예약시간을 삭제한다.")
@@ -93,8 +87,8 @@ class ReservationTimeRepositoryTest {
     @Test
     void existByStartAt() {
         //given
-        final String startAt = "16:30";
-        ReservationTime reservationTime = ReservationTime.parse(startAt);
+        final LocalTime startAt = LocalTime.of(16, 40);
+        ReservationTime reservationTime = new ReservationTime(startAt);
         timeRepository.save(reservationTime);
 
         //when

@@ -1,13 +1,16 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
-import roomescape.domain.Reservation;
+import roomescape.domain.Member;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
+import roomescape.domain.Reservation;
+import roomescape.service.dto.ReservationRecipe;
+import roomescape.service.dto.ReservationResponse;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationThemeRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -16,34 +19,33 @@ import roomescape.repository.ReservationTimeRepository;
 public class ReservationService {
 
     public static final int DELETE_FAILED_COUNT = 0;
-
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationThemeRepository reservationThemeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(final ReservationRepository reservationRepository,
                               final ReservationTimeRepository reservationTimeRepository,
-                              final ReservationThemeRepository reservationThemeRepository) {
+                              final ReservationThemeRepository reservationThemeRepository,
+                              final MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationThemeRepository = reservationThemeRepository;
+        this.memberRepository = memberRepository;
     }
 
-    public List<ReservationResponse> findReservations() {
-        List<Reservation> reservations = reservationRepository.findAll();
-        return reservations.stream().map(ReservationResponse::from).toList();
-    }
-
-    public ReservationResponse addReservation(final ReservationRequest request) {
-        long timeId = request.timeId();
-        final long themeId = request.themeId();
-
-        ReservationTime time = reservationTimeRepository.findById(timeId).orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 예약 시간 입니다."));
-        ReservationTheme theme = reservationThemeRepository.findById(themeId).orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 테마 입니다."));
-        Reservation reservation = new Reservation(request.name(), request.date(), time, theme);
-        validateUniqueReservation(reservation);
-        Reservation saved = reservationRepository.save(reservation);
-        return ReservationResponse.from(saved);
+    public ReservationResponse addReservation(final ReservationRecipe recipe) {
+        long timeId = recipe.timeId();
+        final long themeId = recipe.themeId();
+        final LocalDate date = recipe.date();
+        validateUniqueReservation(date, timeId, themeId);
+        final Member member = memberRepository.findById(recipe.memberId())
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 사용자 입니다."));
+        final ReservationTime time = reservationTimeRepository.findById(timeId).orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 예약 시간 입니다."));
+        final ReservationTheme theme = reservationThemeRepository.findById(themeId).orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 테마 입니다."));
+        final Reservation reservation = new Reservation(member, date, time, theme);
+        Reservation saved = reservationRepository.saveWithMember(reservation);
+        return ReservationResponse.fromV2(saved);
     }
 
     public void removeReservation(final long id) {
@@ -53,15 +55,26 @@ public class ReservationService {
         }
     }
 
-    private void validateUniqueReservation(final Reservation reservation) {
-        if (existsSameReservation(reservation)) {
-            throw new IllegalArgumentException("[ERROR] 이미 존재하는 예약시간입니다.");
-        }
+    public List<ReservationResponse> getAllReservations() {
+        return reservationRepository.findAllReservationsV2().stream()
+                .map(ReservationResponse::fromV2)
+                .toList();
     }
 
-    private boolean existsSameReservation(final Reservation reservation) {
-        List<Reservation> reservations = reservationRepository.findByDate(reservation.getDate());
+
+    public List<ReservationResponse> getFilteredReservations(final Long memberId, final Long themeId,
+                                                       final LocalDate dateFrom, final LocalDate dateTo) {
+        final List<Reservation> reservations = reservationRepository.findByMemberIdAndThemeIdAndDateFromAndDateTo(
+                memberId, themeId, dateFrom, dateTo);
         return reservations.stream()
-                .anyMatch(candidate -> candidate.isDuplicateReservation(reservation));
+                .map(ReservationResponse::fromV2)
+                .toList();
+    }
+
+
+    private void validateUniqueReservation(final LocalDate date, final long timeId, final long themeId) {
+        if (reservationRepository.existByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+            throw new IllegalArgumentException("[ERROR] 이미 존재하는 예약시간입니다.");
+        }
     }
 }

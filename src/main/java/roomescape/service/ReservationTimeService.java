@@ -1,17 +1,18 @@
 package roomescape.service;
 
+import static roomescape.service.ReservationService.DELETE_FAILED_COUNT;
+
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
+import roomescape.service.dto.ReservationTimeRequest;
+import roomescape.service.dto.ReservationTimeResponse;
 import roomescape.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
 
-    public static final int DELETE_FAILED_COUNT = 0;
     private final ReservationTimeRepository reservationTimeRepository;
 
     public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository) {
@@ -39,7 +40,7 @@ public class ReservationTimeService {
 
     private void validateUniqueReservationTime(final ReservationTime reservationTime) {
         final LocalTime startAt = reservationTime.getStartAt();
-        if (reservationTimeRepository.existsByStartAt(startAt.toString())) {
+        if (reservationTimeRepository.existsByStartAt(startAt)) {
             throw new IllegalArgumentException("[ERROR] 이미 존재하는 예약 시간 입니다.");
         }
     }

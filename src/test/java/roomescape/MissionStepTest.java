@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.controller.ReservationController;
-import roomescape.dto.ReservationResponse;
+import roomescape.service.dto.LoginRequest;
+import roomescape.service.dto.ReservationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
@@ -31,10 +33,24 @@ class MissionStepTest {
     @Autowired
     private ReservationController reservationController;
 
+    private String sessionId;
+
+    @BeforeEach
+    void setUp() {
+        final LoginRequest loginRequest = new LoginRequest("admin@email.com", "1234");
+        sessionId = RestAssured.given().contentType(ContentType.JSON)
+                .body(loginRequest)
+                .when()
+                .post("/login")
+                .then()
+                .extract().cookie("JSESSIONID");
+    }
+
     @DisplayName("일단계")
     @Test
     void level1() {
         RestAssured.given().log().all()
+                .sessionId(sessionId)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -44,11 +60,13 @@ class MissionStepTest {
     @Test
     void level2() {
         RestAssured.given().log().all()
+                .sessionId(sessionId)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
 
         RestAssured.given().log().all()
+                .sessionId(sessionId)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -63,21 +81,23 @@ class MissionStepTest {
         );
 
         RestAssured.given().log().all()
+                .sessionId(sessionId)
                 .contentType(ContentType.JSON)
                 .body(timeParams)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
-                .body("timeId", greaterThan(0));
+                .body("id", greaterThan(0));
 
         Map<String, String> params = Map.of(
-                "name", "브라운",
+                "memberId", "1",
                 "date", LocalDate.now().plusDays(1).toString(),
                 "themeId", "1",
                 "timeId", "1"
         );
 
         RestAssured.given().log().all()
+                .sessionId(sessionId)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -86,17 +106,20 @@ class MissionStepTest {
                 .body("id", greaterThan(0));
 
         RestAssured.given().log().all()
+                .sessionId(sessionId)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", greaterThan(0));
 
         RestAssured.given().log().all()
+                .sessionId(sessionId)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
+                .sessionId(sessionId)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -123,17 +146,19 @@ class MissionStepTest {
         );
 
         RestAssured.given().log().all()
+                .sessionId(sessionId)
                 .contentType(ContentType.JSON)
                 .body(timeParams)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
-                .body("timeId", greaterThan(0));
+                .body("id", greaterThan(0));
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2023-08-05", 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation (member_id, date, theme_id, time_id) VALUES (?, ?, ?, ?)",
+                "1", "2023-08-05", 1, 1);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
+                .sessionId(sessionId)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -152,21 +177,23 @@ class MissionStepTest {
         );
 
         RestAssured.given().log().all()
+                .sessionId(sessionId)
                 .contentType(ContentType.JSON)
                 .body(timeParams)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
-                .body("timeId", greaterThan(0));
+                .body("id", greaterThan(0));
 
         Map<String, String> params = Map.of(
-                "name", "브라운",
+                "memberId", "1",
                 "date", LocalDate.now().plusDays(1).toString(),
                 "themeId", "1",
                 "timeId", "1"
         );
 
         RestAssured.given().log().all()
+                .sessionId(sessionId)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -177,6 +204,7 @@ class MissionStepTest {
         assertThat(count).isPositive();
 
         RestAssured.given().log().all()
+                .sessionId(sessionId)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
@@ -224,16 +252,17 @@ class MissionStepTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
-                .body("timeId", greaterThan(0));
+                .body("id", greaterThan(0));
 
         Map<String, String> params = Map.of(
-                "name", "브라운",
+                "memberId", "1",
                 "date", LocalDate.now().plusDays(1).toString(),
                 "themeId", "1",
                 "timeId", "1"
         );
 
         RestAssured.given().log().all()
+                .sessionId(sessionId)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -241,6 +270,7 @@ class MissionStepTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
+                .sessionId(sessionId)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)

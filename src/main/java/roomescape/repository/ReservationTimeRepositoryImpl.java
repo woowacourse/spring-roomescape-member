@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.sql.PreparedStatement;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -46,7 +47,7 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
         }, keyHolder);
 
         long id = keyHolder.getKey().longValue();
-        return reservationTime.toEntity(id);
+        return reservationTime.createWithId(id);
     }
 
     @Override
@@ -60,7 +61,7 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean existsByStartAt(final String startAt) {
+    public boolean existsByStartAt(final LocalTime startAt) {
         String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
         return Boolean.TRUE.equals(template.queryForObject(sql, Boolean.class, startAt));
     }
@@ -69,7 +70,7 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
         return (rs, rowNum) -> {
             return new ReservationTime(
                     rs.getLong("id"),
-                    rs.getString("start_at")
+                    rs.getTime("start_at").toLocalTime()
             );
         };
     }
