@@ -39,8 +39,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
         try {
             return authService.extractMemberByRequest(request);
         } catch (IllegalArgumentException | NotFoundException e) {
-            log.error(e.getMessage());
-            throw new UnauthorizedException("인증에 실패했습니다.");
+            throw new UnauthorizedException("인증에 실패했습니다.", e);
         }
     }
 }
