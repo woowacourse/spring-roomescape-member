@@ -1,14 +1,14 @@
 package roomescape.auth.controller;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.auth.controller.dto.MemberNameResponse;
 import roomescape.auth.service.MemberService;
-import roomescape.auth.service.dto.request.LoginRequest;
 import roomescape.auth.service.dto.LoginMember;
+import roomescape.auth.service.dto.request.LoginRequest;
 import roomescape.auth.service.dto.response.LoginResponse;
 import roomescape.global.infrastructure.AuthTokenCookieProvider;
 
@@ -24,10 +24,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public void login(@RequestBody @Valid LoginRequest request, HttpServletResponse response) {
+    public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest request) {
         LoginResponse loginResponse = service.login(request);
-        Cookie cookie = authTokenCookieProvider.generate(loginResponse.token());
-        response.addCookie(cookie);
+        ResponseCookie cookie = authTokenCookieProvider.generate(loginResponse.token());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .build();
     }
 
     @GetMapping("/login/check")
@@ -36,8 +38,10 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public void logout(HttpServletResponse response) {
-        Cookie cookie = authTokenCookieProvider.generateExpired();
-        response.addCookie(cookie);
+    public ResponseEntity<Void> logout() {
+        ResponseCookie cookie = authTokenCookieProvider.generateExpired();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .build();
     }
 }

@@ -3,6 +3,7 @@ package roomescape.global.infrastructure;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import roomescape.global.exception.unauthorized.MemberUnauthorizedException;
 
@@ -27,17 +28,17 @@ public class AuthTokenCookieProvider {
         throw new MemberUnauthorizedException();
     }
 
-    public Cookie generate(String token) {
-        Cookie cookie = new Cookie(TOKEN_NAME, token);
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge((int) expireMillTime / 1000);
-        cookie.setPath("/");
-        return cookie;
+    public ResponseCookie generate(String token) {
+        return ResponseCookie.from(TOKEN_NAME, token)
+                .httpOnly(true)
+                .maxAge((int) expireMillTime / 1000)
+                .path("/")
+                .build();
     }
 
-    public Cookie generateExpired() {
-        Cookie cookie = new Cookie(TOKEN_NAME, null);
-        cookie.setMaxAge(0);
-        return cookie;
+    public ResponseCookie generateExpired() {
+        return ResponseCookie.from(TOKEN_NAME)
+                .maxAge(0)
+                .build();
     }
 }
