@@ -26,15 +26,12 @@ public class AuthService {
     }
 
     public String createToken(final CreateTokenServiceRequest request) {
-        final Member member = findMemberByEmail(request.email());
+        final Member member = memberDao.findByEmail(request.email())
+                .orElseThrow(() -> new AuthenticationException("존재하지 않는 이메일 입니다"));
+
         member.validateRightPassword(request.password());
 
         return authTokenProvider.createTokenFromMember(member);
-    }
-
-    private Member findMemberByEmail(final String email) {
-        return memberDao.findByEmail(email)
-                .orElseThrow(() -> new AuthenticationException("존재하지 않는 이메일 입니다"));
     }
 
     public Member findMemberByToken(final String token) {
