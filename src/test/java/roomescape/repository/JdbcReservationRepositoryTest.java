@@ -178,12 +178,15 @@ class JdbcReservationRepositoryTest {
         var resultsByDate = sut.search(null, null, LocalDate.of(2025, 7, 2), LocalDate.of(2025, 7, 3));
         var resultByThemeAndMemberAndDate = sut.search(savedTheme.getId(), savedMember.getId(),
                 LocalDate.of(2025, 7, 1), LocalDate.of(2025, 7, 3));
+        var resultsByNull = sut.search(null, null, null, null);
+
         // then
         assertSoftly(soft -> {
             soft.assertThat(resultsByTheme).hasSize(2);
             soft.assertThat(resultsByMember).hasSize(2);
             soft.assertThat(resultsByDate).hasSize(2);
             soft.assertThat(resultByThemeAndMemberAndDate).hasSize(1);
+            soft.assertThat(resultsByNull).hasSize(3);
         });
     }
 }
