@@ -31,12 +31,7 @@ public class MemberRepositoryImpl implements MemberRepository {
         jdbcInsert = new SimpleJdbcInsert(this.jdbcTemplate).withTableName("member")
                 .usingGeneratedKeyColumns("id");
     }
-
-    @Override
-    public boolean existBySessionId(final String sessionId) {
-        String sql = "SELECT EXISTS(SELECT 1 FROM member WHERE session_id = ?)";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, sessionId));
-    }
+    
     @Override
     public Member save(final Member member) {
         Map<String, Object> parameters = new HashMap<>();

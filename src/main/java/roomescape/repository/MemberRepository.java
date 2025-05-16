@@ -6,8 +6,6 @@ import roomescape.domain.Member;
 
 public interface MemberRepository {
 
-    boolean existBySessionId(final String sessionId);
-
     boolean existByEmail(final String email);
 
     boolean existByName(final String name);
