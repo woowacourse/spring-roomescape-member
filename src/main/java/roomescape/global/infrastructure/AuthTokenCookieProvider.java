@@ -9,10 +9,10 @@ import roomescape.global.exception.unauthorized.MemberUnauthorizedException;
 @Component
 public class AuthTokenCookieProvider {
 
-    private static final String TOKEN_NAME = "token";
+    private final String TOKEN_NAME = "token";
 
     @Value("${security.jwt.token.expire-length}")
-    private long EXPIRE_MILLI;
+    private long expireMillTime;
 
     public String extractToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
@@ -30,7 +30,7 @@ public class AuthTokenCookieProvider {
     public Cookie generate(String token) {
         Cookie cookie = new Cookie(TOKEN_NAME, token);
         cookie.setHttpOnly(true);
-        cookie.setMaxAge((int) EXPIRE_MILLI / 1000);
+        cookie.setMaxAge((int) expireMillTime / 1000);
         cookie.setPath("/");
         return cookie;
     }

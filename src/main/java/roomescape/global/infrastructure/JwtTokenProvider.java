@@ -15,9 +15,9 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
     @Value("${security.jwt.token.secret-key}")
-    private String SECRET_KEY;
+    private String secretKey;
     @Value("${security.jwt.token.expire-length}")
-    private long EXPIRE_LENGTH_MILLI;
+    private long expireLengthMilli;
 
     public String createToken(Member member) {
         Claims claims = Jwts.claims()
@@ -25,11 +25,11 @@ public class JwtTokenProvider {
                 .add("role", member.getRole().name())
                 .build();
         Date now = new Date();
-        Date expiration = new Date(now.getTime() + EXPIRE_LENGTH_MILLI);
+        Date expiration = new Date(now.getTime() + expireLengthMilli);
         return Jwts.builder()
                 .claims(claims)
                 .expiration(expiration)
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
 
@@ -46,7 +46,7 @@ public class JwtTokenProvider {
     public Claims getClaims(String token) {
         try {
             return Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                    .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
