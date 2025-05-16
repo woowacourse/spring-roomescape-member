@@ -1,67 +1,72 @@
-# Mission 2) 방탈출 사용자 예약
+# 방탈출 예약 관리 프로그램
 
-- 테마별 예외처리를 함께 고려하기 위하여 2단계 → 1단계 → 3단계 순으로 진행한다.
+## 📌 페이지 응답
 
-## 0단계: 기본 코드 준비
+**어드민 페이지**
 
-Mission 1의 코드 파일을 복사해서 준비한다.
-
-- 기반 코드: 플린트
-
-## 1단계: 예외 처리와 응답
-
-- 예외 처리 시, CustomException 클래스를 작성하여 사용한다.
-    - `PharmaceuticalViolationException`
-        - **도메인 규칙 위반(ex. 과거 날짜, 존재하지 않는 ID)** `422 Unprocessable Content`
-    - `ExistedDuplicateValueException`
-        - **이미 존재하는 값을 중복 입력, 사용 중인 상태를 삭제** `409 Conflict`
-    - `NotExistedValueException`
-        - **존재하지 않는 값** `404 Not Found`
-    - `InvalidInputException`
-        - **필드 누락 / 빈 값 / null** `400 Bad Request`
-
-### 📌시간만 고려했을 때 예외사항 (시간)
-
-- 동일한 시간이 추가 입력되는 경우 `409 Conflict`
-- 유효하지 않는 시간 값(null, 시간 형식)을 입력하는 경우 `400 BAD REQEUST`
-- 유효하지 않는 시간을 삭제하려고 할 때 (즉, id 값이 옳지 않을 때) `404 Not Found`
-- 예약에서 사용중인 시간을 삭제하려고 할 때 `422 Unprocessable Content`
-
-### 📌테마만 고려했을 때 예외사항 (테마 이름, 테마 설명, 테마 썸네일)
-
-- 동일한 테마가 입력되는 경우 (테마 명을 기준으로 확인) `409 Conflict`
-- 유효하지 않는 테마 값(null, 테마 형식)을 입력하는 경우 `400 BAD REQEUST`
-- 유효하지 않는 테마를 삭제하려고 할 때 (즉, id 값이 옳지 않을 때) `404 Not Found`
-- 예약에서 사용중인 테마를 삭제하려고 할 때 `422 Unprocessable Content`
-
-### 📌예약, 날짜, 시간, 테마를 고려했을 때 예외사항
-
-- 같은 테마에서 같은 날짜와 시간의 예약이 존재할 경우 `409 Conflict`
-- 날짜와 시간을 고려해서 과거의 날짜나 시간인 경우 `422 Unprocessable Content`
-- 예약 생성 시, 예약자명, 날짜, 시간, 테마 입력이 빈값이거나 null인 경우 `400 BAD REQEUST`
-
-## 2단계: 테마 추가
-
+- `/admin`요청 시 어드민 메인 페이지를 응답한다.
+    - 어드민 메인 페이지는 `templates/admin/index.html` 파일을 이용한다.
+- `/admin/time` 요청 시 시간 관리 페이지를 응답한다.
+    - 시간 관리 페이지는 `templates/admin/time.html` 파일을 이용한다.
 - `/admin/theme`요청 시 테마 관리 페이지를 응답한다.
-    - 페이지는`templates/admin/theme.html`파일을 이용한다.
-- 어드민에서 방탈출 예약 시, 테마 정보를 포함할 수 있도록 신규 페이지 파일을 사용한다.
-    - AS-IS:**`templates/admin/reservation.html`**
-    - TO-BE:**`templates/admin/reservation-new.html`**
+    - 테마 관리 페이지는 `templates/admin/theme.html`파일을 이용한다.
+- `/admin/reservation`요청 시 예약 관리 페이지를 응답한다.
+    - 예약 관리 페이지는 `templates/admin/reservation-new.html`파일을 이용한다.
 
-## 3단계: 사용자 기능
+**사용자 페이지**
 
-### 사용자 예약
+- `/`요청 시 인기 테마 페이지를 응답한다.
+    - 인기 테마 페이지는`templates/index.html`파일을 이용한다.
+- `/login` 요청 시 로그인 폼 페이지를 응답한다.
+    - 로그인 폼 페이지는 `templates/login.html` 파일을 이용한다.
+- `/signup`요청 시 회원 가입 페이지를 응답한다.
+    - 회원 가입 페이지는 `templates/signup`파일을 이용한다.
+- `/reservation`요청 시 사용자 예약 페이지를 응답한다.
+    - 사용자 예약 페이지는`templates/reservation.html`파일을 이용한다.
+
+## 📌 기능
+
+**로그인**
+
+- 이메일과 비밀 번호를 입력하여 로그인이 가능하다.
+- 로그 아웃 버튼을 눌러 로그아웃이 가능하다.
+
+**회원 가입**
+
+- 사용자는 이메일, 비밀 번호, 이름을 입력하여 회원 가입할 수 있다.
+    - 가입된 이메일로 가입하는 것은 불가능하다.
+
+**인기 테마**
+
+- 최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 보여준다.
+    - 예약 이력이 없는 테마는 보여 주지 않는다.
+- 현재 날짜로부터 7일 전 날짜를 시작으로 하루 전 날짜까지 예약 건수가 많은 순서대로 테마를 정렬한다.
+
+**사용자 방탈출 예약**
 
 - 사용자는 날짜와 테마를 선택하면 예약 가능한 시간을 확인할 수 있다.
 - 사용자는 예약 가능한 시간을 확인하고, 원하는 시간에 예약을 할 수 있다.
     - 시간을 선택하고 예약자 명을 기입한 후 예약 버튼을 누르면 예약이 완료된다.
-- `/reservation`요청 시 사용자 예약 페이지를 응답한다.
-    - 페이지는`templates/reservation.html`파일을 이용한다.
 
-### 인기 테마
+**어드민 예약 관리**
 
-- 최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 보여준다.
-    - 예약 이력이 없는 테마는 보여주지 않는다.
-- 현재 날짜로부터 7일 전 날짜를 시작으로 하루 전 날짜까지 예약 건수가 많은 순서대로 테마를 정렬한다.
-- `/`요청 시 인기 테마 페이지를 응답한다.
-    - 페이지는`templates/index.html`파일을 이용한다.
+- 어드민 계정으로 로그인하면 어드민 페이지에 접근이 가능하다.
+- 어드민 예약 관리 페이지에서 예약 추가가 가능하다.
+    - 추가 시, 사용자를 선택한 후, 날짜, 테마, 시간을 선택하여 예약을 진행한다.
+- 어드민 예약 관리 페이지에서 예약 삭제가 가능하다.
+- 어드민 예약 관리 페이지에서 예약 조회가 가능하다.
+    - 조회시, 예약자 명, 테마 명, 기한을 설정하여 조회가 가능하다.
+- 어드민 테마, 시간 관리 페이지에서 각각 추가, 삭제 기능을 사용할 수 있다.
+
+## 📌 예외 처리와 응답
+
+- 예외 처리 시, CustomException 클래스를 작성하여 사용한다.
+    - BusinessRuleViolationException(`422 Unprocessable Content`): 도메인 규칙 위반(ex. 과거 날짜)
+    - ExistedDuplicateValueException(`409 Conflict`): 이미 존재하는 값을 중복 입력
+    - NotExistedValueException(`404 Not Found`): 존재하지 않는 값
+    - InvalidInputException(`400 Bad Request`): 빈 값 / null / 불가능한 값
+    - InUseException(`409 Conflict`): 사용 중인 상태를 삭제
+    - AuthorizationException(`401 UNAUTHORIZED`): 사용자 인증 예외
+
+- 테마 명이 같다면 동일한 테마로 간주한다.
+- 같은 테마에서 같은 날짜와 시간의 예약이 존재하는 경우, 예약이 중복되었다고 판단한다.

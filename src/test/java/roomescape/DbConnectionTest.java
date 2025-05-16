@@ -44,7 +44,7 @@ public class DbConnectionTest {
 
     @DisplayName("방 테마 데이터 베이스 연결 여부를 확인한다")
     @Test
-    void roomThemeDBConnectionTest() {
+    void themeDBConnectionTest() {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             assertThat(connection).isNotNull();
             assertThat(connection.getCatalog()).isEqualTo("DATABASE");
