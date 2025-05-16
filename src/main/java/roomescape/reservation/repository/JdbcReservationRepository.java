@@ -143,7 +143,6 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(query, params, ROW_MAPPER);
     }
 
-    // TODO: (모든 Repository, Service에 적용) try-catch 삭제 및 Service에서 DataAccessException 핸들링하도록
     @Override
     public Optional<Reservation> findDuplicatedWith(Reservation entity) {
         String query = """

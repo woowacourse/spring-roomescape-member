@@ -15,7 +15,6 @@ import roomescape.time.service.dto.response.ReservationTimeWithBookedResponse;
 import java.time.LocalDate;
 import java.util.List;
 
-// TODO: findByXXX - DataAccessException 핸들링
 @Service
 public class ReservationTimeService {
     private final ReservationTimeRepository timeRepository;

@@ -62,7 +62,6 @@ public class JdbcThemeRepository implements ThemeRepository {
         return updated > 0;
     }
 
-    // TODO: (모든 Repository, Service에 적용) try-catch 삭제 및 Service에서 DataAccessException 핸들링하도록
     @Override
     public Optional<Theme> findById(Long id) {
         String query = "SELECT * FROM theme WHERE id = :id";
@@ -76,7 +75,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         }
     }
 
-    // TODO: (모든 Repository, Service에 적용) try-catch 삭제 및 Service에서 DataAccessException 핸들링하도록
+    
     @Override
     public Optional<Theme> findByName(String name) {
         String query = "SELECT * FROM theme WHERE name = :name";

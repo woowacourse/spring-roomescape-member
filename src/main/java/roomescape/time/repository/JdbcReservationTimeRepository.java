@@ -54,7 +54,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return updated > 0;
     }
 
-    // TODO: (모든 Repository, Service에 적용) try-catch 삭제 및 Service에서 DataAccessException 핸들링하도록
     @Override
     public Optional<ReservationTime> findById(final Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = :id";
@@ -94,7 +93,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         });
     }
 
-    // TODO: (모든 Repository, Service에 적용) try-catch 삭제 및 Service에서 DataAccessException 핸들링하도록
+    
     @Override
     public Optional<ReservationTime> findByStartAt(LocalTime startAt) {
         String query = """

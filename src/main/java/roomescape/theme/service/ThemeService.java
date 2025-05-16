@@ -12,7 +12,6 @@ import roomescape.theme.service.dto.response.ThemeResponse;
 import java.time.LocalDate;
 import java.util.List;
 
-// TODO: findByXXX - DataAccessException 핸들링
 @Service
 public class ThemeService {
     private final ThemeRepository themeRepository;
