@@ -19,7 +19,7 @@ public class AdminController {
     }
 
     @GetMapping("/time")
-    public String time(){
+    public String time() {
         return "admin/time";
     }
 

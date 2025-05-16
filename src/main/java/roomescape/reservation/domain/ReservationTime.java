@@ -1,6 +1,7 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalTime;
+import java.util.Objects;
 
 public class ReservationTime {
 
@@ -10,6 +11,11 @@ public class ReservationTime {
     public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
+        validate();
+    }
+
+    private void validate() {
+        Objects.requireNonNull(startAt, "시작 시간은 null일 수 없습니다.");
     }
 
     public ReservationTime withId(Long id) {

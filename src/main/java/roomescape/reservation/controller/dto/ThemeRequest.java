@@ -1,35 +1,19 @@
 package roomescape.reservation.controller.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import roomescape.reservation.domain.Theme;
 
-public record ThemeRequest(String name, String description, String thumbnail) {
-
-    public ThemeRequest {
-        validateName(name);
-        validateDescription(description);
-        validateThumbnail(thumbnail);
-    }
+public record ThemeRequest(
+        @NotBlank(message = "테마 이름을 입력해주세요.")
+        String name,
+        @NotBlank(message = "테마 설명을 입력해주세요.")
+        String description,
+        @NotBlank(message = "대표 이미지를 입력해주세요.")
+        String thumbnail
+) {
 
     public Theme toThemeWithoutId() {
         return new Theme(null, name, description, thumbnail);
-    }
-
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름은 필수입니다.");
-        }
-    }
-
-    private void validateDescription(String description) {
-        if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("설명은 필수입니다.");
-        }
-    }
-
-    private void validateThumbnail(String thumbnail) {
-        if (thumbnail == null || thumbnail.isBlank()) {
-            throw new IllegalArgumentException("대표 이미지는 필수입니다.");
-        }
     }
 
 }

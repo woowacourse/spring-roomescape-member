@@ -5,6 +5,7 @@ import java.sql.Statement;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -58,24 +59,20 @@ public class JdbcReservationTimeDao implements ReservationTimeRepository {
     public Optional<ReservationTime> findById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
 
-        List<ReservationTime> findTimes = jdbcTemplate.query(sql, rowMapper, id);
-
-        if (findTimes.isEmpty()) {
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
-        if (findTimes.size() > 1) {
-            throw new IllegalStateException("조회 결과가 2개 이상입니다.");
-        }
-        return Optional.of(findTimes.getFirst());
     }
 
     @Override
     public Boolean existSameStartAt(LocalTime time) {
         String sql = """
                 SELECT EXISTS(
-                    SELECT 1 
-                    FROM reservation_time 
-                    WHERE start_at =  ?
+                    SELECT 1
+                    FROM reservation_time
+                    WHERE start_at = ?
                 )
                 """;
         return jdbcTemplate.queryForObject(sql, Boolean.class, time);

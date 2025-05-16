@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -61,14 +62,12 @@ public class JdbcThemeDao implements ThemeRepository {
     @Override
     public Optional<Theme> findById(Long id) {
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
-        List<Theme> findThemes = jdbcTemplate.query(sql, rowMapper, id);
-        if (findThemes.isEmpty()) {
+
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
-        if (findThemes.size() > 1) {
-            throw new IllegalStateException("조회 결과가 2개 이상입니다.");
-        }
-        return Optional.of(findThemes.getFirst());
     }
 
     @Override
@@ -88,10 +87,11 @@ public class JdbcThemeDao implements ThemeRepository {
     @Override
     public List<Theme> findByIdIn(List<Long> ids) {
         if (ids.isEmpty()) {
-            throw new IllegalStateException("테마 ID가 존재하지 않습니다.");
+            return List.of();
         }
         String holders = String.join(", ", Collections.nCopies(ids.size(), "?"));
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id IN (" + holders + ")";
-        return jdbcTemplate.query(sql, ids.toArray(), rowMapper);
+        return jdbcTemplate.query(sql, rowMapper, ids.toArray());
     }
+
 }

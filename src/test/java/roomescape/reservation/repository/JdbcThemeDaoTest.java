@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
@@ -28,7 +29,7 @@ class JdbcThemeDaoTest {
 
     @AfterEach
     void dropTable() {
-        String dropSql = "DROP TABLE IF EXISTS reservation, reservation_time, theme";
+        String dropSql = "DROP TABLE IF EXISTS reservation, reservation_time, theme, member";
         jdbcTemplate.execute(dropSql);
     }
 
@@ -114,10 +115,10 @@ class JdbcThemeDaoTest {
 
     @DisplayName("인기 테마 목록의 ID를 조회한다")
     @Test
-    void find_top_theme_id_by_date_range_test(){
+    void find_top_theme_id_by_date_range_test() {
         // given
-        LocalDate start = LocalDate.of(2025, 4, 27);
-        LocalDate end = LocalDate.of(2025, 5, 3);
+        LocalDate start = LocalDate.now().minusDays(3);
+        LocalDate end = LocalDate.now().plusDays(3);
         int limit = 10;
 
         // when
@@ -146,7 +147,19 @@ class JdbcThemeDaoTest {
                 () -> assertThat(themes).extracting(Theme::getId)
                         .containsExactlyInAnyOrder(2L, 5L)
         );
+    }
 
+    @DisplayName("조회하려는 데이터가 없으면 빈 배열을 반환한다")
+    @Test
+    void find_by_id_in_empty_test() {
+        // given
+        List<Long> ids = new ArrayList<>();
+
+        // when
+        List<Theme> findThemes = jdbcThemeDao.findByIdIn(ids);
+
+        // then
+        assertThat(findThemes).isEmpty();
     }
 
 }

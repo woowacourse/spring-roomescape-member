@@ -29,7 +29,7 @@ class JdbcReservationTimeDaoTest {
 
     @AfterEach
     void dropTable() {
-        String dropSql = "DROP TABLE IF EXISTS reservation, reservation_time, theme";
+        String dropSql = "DROP TABLE IF EXISTS reservation, reservation_time, theme, member";
         jdbcTemplate.execute(dropSql);
     }
 
@@ -63,7 +63,7 @@ class JdbcReservationTimeDaoTest {
                 () -> assertThat(times).hasSize(6),
                 () -> assertThat(times).extracting(ReservationTime::getStartAt)
                         .containsExactlyInAnyOrder(
-                                LocalTime.of(10, 0),
+                                LocalTime.of(0, 0),
                                 LocalTime.of(10, 10),
                                 LocalTime.of(12, 0),
                                 LocalTime.of(15, 30),
@@ -102,7 +102,7 @@ class JdbcReservationTimeDaoTest {
 
         // then
         assertThat(findTime.getId()).isEqualTo(1L);
-        assertThat(findTime.getStartAt()).isEqualTo(LocalTime.of(10, 0));
+        assertThat(findTime.getStartAt()).isEqualTo(LocalTime.of(0, 0));
     }
 
     @DisplayName("같은 시간이 있는지 확인한다")

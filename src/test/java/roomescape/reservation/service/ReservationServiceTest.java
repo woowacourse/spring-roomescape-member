@@ -4,17 +4,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneOffset;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import roomescape.global.exception.error.ConflictException;
+import roomescape.global.exception.error.InvalidRequestException;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.enums.Role;
 import roomescape.reservation.controller.dto.AvailableTimeResponse;
-import roomescape.reservation.controller.dto.ReservationRequest;
+import roomescape.reservation.controller.dto.ReservationCreate;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
@@ -22,61 +27,51 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.reservation.repository.ThemeRepository;
-import roomescape.util.repository.ReservationFakeRepository;
-import roomescape.util.repository.ReservationTimeFakeRepository;
-import roomescape.util.repository.ThemeFakeRepository;
+import roomescape.reservation.repository.fake.MemberFakeRepository;
+import roomescape.reservation.repository.fake.ReservationFakeRepository;
+import roomescape.reservation.repository.fake.ReservationTimeFakeRepository;
+import roomescape.reservation.repository.fake.ThemeFakeRepository;
 
 class ReservationServiceTest {
 
     private ReservationService reservationService;
     private ReservationRepository reservationRepository;
-    private Clock clock;
 
     @BeforeEach
     void setup() {
         reservationRepository = new ReservationFakeRepository();
         ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
         ThemeRepository themeRepository = new ThemeFakeRepository(reservationRepository);
-        clock = Clock.fixed(Instant.parse("2025-03-28T23:59:59Z"), ZoneOffset.UTC);
+        MemberFakeRepository memberRepository = new MemberFakeRepository();
 
-        List<ReservationTime> times = List.of(
-                new ReservationTime(null, LocalTime.of(3, 12)),
-                new ReservationTime(null, LocalTime.of(11, 33)),
-                new ReservationTime(null, LocalTime.of(16, 54)),
-                new ReservationTime(null, LocalTime.of(23, 53))
-        );
+        reservationTimeRepository.saveAndReturnId(new ReservationTime(null, LocalTime.of(0, 0)));
+        reservationTimeRepository.saveAndReturnId(new ReservationTime(null, LocalTime.of(11, 33)));
+        reservationTimeRepository.saveAndReturnId(new ReservationTime(null, LocalTime.of(16, 54)));
+        reservationTimeRepository.saveAndReturnId(new ReservationTime(null, LocalTime.of(23, 53)));
 
-        List<Theme> themes = List.of(
-                new Theme(null, "레벨1 탈출", "우테코 레벨1를 탈출하는 내용입니다.",
-                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
-                new Theme(null, "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
-                new Theme(null, "레벨3 탈출", "우테코 레벨3를 탈출하는 내용입니다.",
-                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        themeRepository.saveAndReturnId(new Theme(null, "레벨1 탈출", "우테코 레벨1를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        themeRepository.saveAndReturnId(new Theme(null, "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        themeRepository.saveAndReturnId(new Theme(null, "레벨3 탈출", "우테코 레벨3를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
-        for (Theme theme : themes) {
-            themeRepository.saveAndReturnId(theme);
-        }
+        memberRepository.save(new Member(null, "루키", "rookie123@woowa.com", "rookierookie123", Role.USER));
+        memberRepository.save(new Member(null, "하루", "haru123@woowa.com", "haruharu123", Role.USER));
+        memberRepository.save(new Member(null, "베루스", "verus@woowa.com", "verusverus123", Role.ADMIN));
 
-        for (ReservationTime time : times) {
-            reservationTimeRepository.saveAndReturnId(time);
-        }
-
-        List<Reservation> reservations = List.of(
-                new Reservation(null, "루키", LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L).get(),
-                        themeRepository.findById(1L).get()),
-                new Reservation(null, "슬링키", LocalDate.of(2025, 4, 5), reservationTimeRepository.findById(2L).get(),
-                       themeRepository.findById(2L).get()),
-                new Reservation(null, "범블비", LocalDate.of(2025, 5, 15), reservationTimeRepository.findById(3L).get(),
-                        themeRepository.findById(3L).get())
-        );
-
-        for (Reservation reservation : reservations) {
-            reservationRepository.saveAndReturnId(reservation);
-        }
+        reservationRepository.saveAndReturnId(
+                new Reservation(null, LocalDate.now().minusDays(3), reservationTimeRepository.findById(1L).get(),
+                        themeRepository.findById(1L).get(), memberRepository.findById(1L).get()));
+        reservationRepository.saveAndReturnId(
+                new Reservation(null, LocalDate.now().minusDays(1), reservationTimeRepository.findById(2L).get(),
+                        themeRepository.findById(2L).get(), memberRepository.findById(2L).get()));
+        reservationRepository.saveAndReturnId(
+                new Reservation(null, LocalDate.now().plusDays(3), reservationTimeRepository.findById(3L).get(),
+                        themeRepository.findById(3L).get(), memberRepository.findById(3L).get()));
 
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
-                clock);
+                memberRepository);
     }
 
     @DisplayName("전체 예약 정보를 조회한다")
@@ -91,18 +86,11 @@ class ReservationServiceTest {
                 .map(Reservation::getDate)
                 .toList();
 
-        List<String> expectedNames = reservations.stream()
-                .map(Reservation::getName)
-                .toList();
-
         assertAll(
                 () -> assertThat(reservationResponses).hasSize(reservations.size()),
                 () -> assertThat(reservationResponses)
                         .extracting(ReservationResponse::date)
-                        .containsExactlyInAnyOrderElementsOf(expectedDates),
-                () -> assertThat(reservationResponses)
-                        .extracting(ReservationResponse::name)
-                        .containsExactlyInAnyOrderElementsOf(expectedNames)
+                        .containsExactlyInAnyOrderElementsOf(expectedDates)
         );
     }
 
@@ -110,7 +98,7 @@ class ReservationServiceTest {
     @Test
     void add_test() {
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.of(2025, 5, 3), 4L, 3L);
+        ReservationCreate request = new ReservationCreate(LocalDate.now().plusDays(2), 4L, 3L, 1L);
 
         // when
         ReservationResponse response = reservationService.add(request);
@@ -120,8 +108,7 @@ class ReservationServiceTest {
         assertAll(
                 () -> assertThat(response.id()).isEqualTo(savedReservation.getId()),
                 () -> assertThat(response.theme().id()).isEqualTo(savedReservation.getThemeId()),
-                () -> assertThat(response.time().id()).isEqualTo(savedReservation.getTimeId()),
-                () -> assertThat(response.name()).isEqualTo(savedReservation.getName())
+                () -> assertThat(response.time().id()).isEqualTo(savedReservation.getTimeId())
         );
     }
 
@@ -142,11 +129,11 @@ class ReservationServiceTest {
     @Test
     void past_day_exception_test() {
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.now(clock).minusDays(1), 4L, 3L);
+        ReservationCreate request = new ReservationCreate(LocalDate.now().minusDays(1), 4L, 3L, 1L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.add(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidRequestException.class)
                 .hasMessage("지난 날짜는 예약할 수 없습니다.");
     }
 
@@ -154,11 +141,11 @@ class ReservationServiceTest {
     @Test
     void past_time_exception_test() {
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.now(clock), 1L, 3L);
+        ReservationCreate request = new ReservationCreate(LocalDate.now(), 1L, 3L, 1L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.add(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidRequestException.class)
                 .hasMessage("지난 시각은 예약할 수 없습니다.");
     }
 
@@ -166,7 +153,7 @@ class ReservationServiceTest {
     @Test
     void future_test() {
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.now(clock).plusDays(3), 1L, 1L);
+        ReservationCreate request = new ReservationCreate(LocalDate.now().plusDays(3), 1L, 1L, 1L);
 
         // when
         ReservationResponse response = reservationService.add(request);
@@ -176,7 +163,6 @@ class ReservationServiceTest {
         assertAll(
                 () -> assertThat(response.id()).isEqualTo(savedReservation.getId()),
                 () -> assertThat(response.date()).isEqualTo(savedReservation.getDate()),
-                () -> assertThat(response.name()).isEqualTo(savedReservation.getName()),
                 () -> assertThat(response.theme().id()).isEqualTo(savedReservation.getThemeId()),
                 () -> assertThat(response.time().id()).isEqualTo(savedReservation.getTimeId())
         );
@@ -186,11 +172,11 @@ class ReservationServiceTest {
     @Test
     void reservation_duplicate_exception() {
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.of(2025, 5, 15), 3L, 3L);
+        ReservationCreate request = new ReservationCreate(LocalDate.now().plusDays(3), 3L, 3L, 1L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.add(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ConflictException.class)
                 .hasMessage("해당 날짜, 시간, 테마에 대한 동일한 예약이 존재합니다.");
     }
 
@@ -198,7 +184,7 @@ class ReservationServiceTest {
     @Test
     void get_available_times_test() {
         // given
-        LocalDate date = LocalDate.of(2025, 3, 28);
+        LocalDate date = LocalDate.now().minusDays(3);
         Long themeId = 1L;
 
         // when
@@ -208,6 +194,37 @@ class ReservationServiceTest {
         assertAll(
                 () -> assertThat(availableTimes.get(0).alreadyBooked()).isTrue(),
                 () -> assertThat(availableTimes.get(1).alreadyBooked()).isFalse()
+        );
+    }
+
+    @DisplayName("필터 조건에 해당하는 예약 목록을 반환한다")
+    @MethodSource
+    @ParameterizedTest
+    void get_all_by_filter_test(
+            Long memberId,
+            Long themeId,
+            LocalDate dateFrom,
+            LocalDate dateTo,
+            List<Long> expectedReservationIds
+    ) {
+        // when
+        List<ReservationResponse> reservations = reservationService.getAllByFilter(memberId, themeId, dateFrom, dateTo);
+
+        // then
+        assertThat(reservations).extracting(ReservationResponse::id)
+                .containsExactlyInAnyOrderElementsOf(expectedReservationIds);
+    }
+
+    static Stream<Arguments> get_all_by_filter_test() {
+        return Stream.of(
+                Arguments.of(1L, null, null, null, List.of(1L)),
+                Arguments.of(null, 2L, null, null, List.of(2L)),
+                Arguments.of(null, null, LocalDate.now().minusDays(2), null, List.of(2L, 3L)),
+                Arguments.of(null, null, null, LocalDate.now().minusDays(2), List.of(1L)),
+                Arguments.of(null, null, LocalDate.now().minusDays(2), LocalDate.now().plusDays(2), List.of(2L)),
+                Arguments.of(3L, 3L, null, null, List.of(3L)),
+                Arguments.of(1L, 1L, LocalDate.now().minusDays(5), LocalDate.now().minusDays(2), List.of(1L)),
+                Arguments.of(null, null, null, null, List.of(1L, 2L, 3L))
         );
     }
 

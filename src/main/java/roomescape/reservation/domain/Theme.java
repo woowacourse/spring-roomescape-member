@@ -1,5 +1,7 @@
 package roomescape.reservation.domain;
 
+import java.util.Objects;
+
 public class Theme {
 
     private final Long id;
@@ -12,6 +14,13 @@ public class Theme {
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+        validate();
+    }
+
+    private void validate() {
+        Objects.requireNonNull(name, "테마 이름은 null일 수 없습니다.");
+        Objects.requireNonNull(description, "테마 설명은 null일 수 없습니다.");
+        Objects.requireNonNull(thumbnail, "테마 대표 이미지는 null일 수 없습니다.");
     }
 
     public Theme withId(Long id) {

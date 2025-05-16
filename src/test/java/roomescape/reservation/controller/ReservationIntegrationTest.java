@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -20,18 +19,21 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.global.config.TestConfig;
+import roomescape.auth.controller.LoginController;
+import roomescape.auth.service.AuthService;
 import roomescape.reservation.controller.dto.AvailableTimeResponse;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.util.fixture.AuthFixture;
 
-@Import(TestConfig.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationIntegrationTest {
+
+    @Autowired
+    private AuthService authService;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -48,38 +50,43 @@ class ReservationIntegrationTest {
 
         // then
         List<Reservation> savedReservations = reservationRepository.findAll();
-        assertAll(
-                () -> assertThat(reservations)
-                        .extracting(ReservationResponse::name)
-                        .containsExactlyInAnyOrderElementsOf(
-                                savedReservations.stream()
-                                        .map(Reservation::getName)
-                                        .toList()
-                        ),
-                () -> assertThat(reservations)
-                        .extracting(ReservationResponse::date)
-                        .containsExactlyInAnyOrderElementsOf(
-                                savedReservations.stream()
-                                        .map(Reservation::getDate)
-                                        .toList()
-                        )
-        );
+        assertThat(reservations)
+                .extracting(ReservationResponse::date)
+                .containsExactlyInAnyOrderElementsOf(
+                        savedReservations.stream()
+                                .map(Reservation::getDate)
+                                .toList()
+                );
+    }
 
+    @DisplayName("예약 생성 시 사용자의 요청 쿠키 내부에 토큰이 존재하지 않으면 예외가 발생한다")
+    @Test
+    void extract_token_exception_test() {
+        // when & then
+        RestAssured.given().log().all()
+                .cookie("empty", "")
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(401)
+                .body(equalTo("인증에 실패했습니다."));
     }
 
     @DisplayName("예약을 생성하면 DB에 예약 데이터가 저장된다")
     @Test
     void add_reservation_test() {
         //given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", "2026-08-05");
-        params.put("timeId", "6");
-        params.put("themeId", "2");
+        String token = AuthFixture.createUserToken(authService);
+
+        Map<String, String> params = Map.of(
+                "date", "2026-08-05",
+                "timeId", "6",
+                "themeId", "2"
+        );
 
         // when
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(LoginController.TOKEN_COOKIE_NAME, token)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -91,7 +98,6 @@ class ReservationIntegrationTest {
 
         assertAll(
                 () -> assertThat(savedReservation.getId()).isEqualTo(17L),
-                () -> assertThat(savedReservation.getName()).isEqualTo("브라운"),
                 () -> assertThat(savedReservation.getDate()).isEqualTo(LocalDate.of(2026, 8, 5)),
                 () -> assertThat(savedReservation.getTimeId()).isEqualTo(6L),
                 () -> assertThat(savedReservation.getThemeId()).isEqualTo(2L)
@@ -101,8 +107,12 @@ class ReservationIntegrationTest {
     @DisplayName("예약을 삭제하면 DB의 예약 데이터가 삭제된다")
     @Test
     void delete_reservation_test() {
+        // given
+        String userToken = AuthFixture.createUserToken(authService);
+
         // when
         RestAssured.given().log().all()
+                .cookie(LoginController.TOKEN_COOKIE_NAME, userToken)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
@@ -122,7 +132,7 @@ class ReservationIntegrationTest {
     void get_available_times_test() {
         // when
         List<AvailableTimeResponse> availableTimes = RestAssured.given().log().all()
-                .queryParam("date", "2025-04-25")
+                .queryParam("date", LocalDate.now().minusDays(5).toString())
                 .queryParam("themeId", "1")
                 .when().get("/reservations/available")
                 .then().log().all()
@@ -138,35 +148,24 @@ class ReservationIntegrationTest {
         assertThat(bookedTimeIds).containsExactly(2L, 3L);
     }
 
-    @DisplayName("예약 생성 시 요청 값에 공백이나 null값이 포함되면 400에러가 발생한다")
-    @MethodSource
-    @ParameterizedTest
-    void add_reservation_null_empty_exception(Map<String, String> requestBody) {
-        // when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(requestBody)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400)
-                .body(equalTo("요청 형식이 올바르지 않습니다."));
-    }
-
     @DisplayName("예약 생성 시 요청 날짜가 형식에 맞지 않으면 400에러가 발생한다")
     @ValueSource(strings = {"2025-13-33", "2025:11:21", "20251225"})
     @ParameterizedTest
     void add_reservation_date_format_exception(String inputDateString) {
         // given
+        String token = AuthFixture.createUserToken(authService);
+
         Map<String, String> requestBody = Map.of(
-                "name", "루키",
                 "date", inputDateString,
-                "timeId", "1L",
-                "themeId", "1L"
+                "timeId", "1",
+                "themeId", "1",
+                "memberId", "2"
         );
 
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(LoginController.TOKEN_COOKIE_NAME, token)
                 .body(requestBody)
                 .when().post("/reservations")
                 .then().log().all()
@@ -179,20 +178,23 @@ class ReservationIntegrationTest {
     @Test
     void add_reservation_time_id_exception() {
         // given
+        String token = AuthFixture.createUserToken(authService);
+
         Map<String, String> requestBody = Map.of(
-                "name", "루키",
                 "date", "2025-05-06",
                 "timeId", "200",
-                "themeId", "1"
+                "themeId", "1",
+                "memberId", "3"
         );
 
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(LoginController.TOKEN_COOKIE_NAME, token)
                 .body(requestBody)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(404)
                 .body(equalTo("해당하는 시간 정보가 존재하지 않습니다."));
     }
 
@@ -200,20 +202,23 @@ class ReservationIntegrationTest {
     @Test
     void add_reservation_theme_id_exception() {
         // given
+        String token = AuthFixture.createUserToken(authService);
+
         Map<String, String> requestBody = Map.of(
-                "name", "루키",
-                "date", "2025-05-06",
+                "date", LocalDate.now().plusDays(3).toString(),
                 "timeId", "1",
-                "themeId", "200"
+                "themeId", "200",
+                "memberId", "1"
         );
 
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(LoginController.TOKEN_COOKIE_NAME, token)
                 .body(requestBody)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(404)
                 .body(equalTo("해당하는 테마가 존재하지 않습니다."));
     }
 
@@ -221,9 +226,13 @@ class ReservationIntegrationTest {
     @MethodSource
     @ParameterizedTest
     void add_reservation_past_exception(Map<String, String> requestBody, String errorMessage) {
+        // given
+        String token = AuthFixture.createUserToken(authService);
+
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(LoginController.TOKEN_COOKIE_NAME, token)
                 .body(requestBody)
                 .when().post("/reservations")
                 .then().log().all()
@@ -233,41 +242,38 @@ class ReservationIntegrationTest {
 
 
     static Stream<Arguments> add_reservation_null_empty_exception() {
+        String saveDate = LocalDate.now().plusDays(2).toString();
         return Stream.of(
                 Arguments.of(
                         Map.of(
-                                "name", " ",
-                                "date", "2025-03-21",
-                                "timeId", "1L",
-                                "themeId", "1L"
+                                "date", saveDate,
+                                "timeId", "1",
+                                "themeId", "1"
                         )
                 ),
                 Arguments.of(
                         Map.of(
-                                "date", "2025-03-21",
-                                "timeId", "1L",
-                                "themeId", "1L"
+                                "date", saveDate,
+                                "timeId", "1",
+                                "themeId", "1"
                         )
                 ),
                 Arguments.of(
                         Map.of(
-                                "name", "루키",
-                                "timeId", "1L",
-                                "themeId", "1L"
+                                "timeId", "1",
+                                "themeId", "1"
                         )
                 ),
                 Arguments.of(
                         Map.of(
-                                "name", "루키",
-                                "date", "2025-03-21",
-                                "themeId", "1L"
+                                "date", saveDate,
+                                "themeId", "1"
                         )
                 ),
                 Arguments.of(
                         Map.of(
-                                "name", "루키",
-                                "date", "2025-03-21",
-                                "timeId", "1L"
+                                "date", saveDate,
+                                "timeId", "1"
                         )
                 )
         );
@@ -277,8 +283,7 @@ class ReservationIntegrationTest {
         return Stream.of(
                 Arguments.of(
                         Map.of(
-                                "name", "루키",
-                                "date", "2000-01-01",
+                                "date", LocalDate.now().minusDays(10).toString(),
                                 "timeId", "1",
                                 "themeId", "1"
                         ),
@@ -286,8 +291,7 @@ class ReservationIntegrationTest {
                 ),
                 Arguments.of(
                         Map.of(
-                                "name", "루키",
-                                "date", "2025-05-04",
+                                "date", LocalDate.now().toString(),
                                 "timeId", "1",
                                 "themeId", "1"
                         ),

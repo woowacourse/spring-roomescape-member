@@ -1,12 +1,12 @@
 package roomescape.reservation.service;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import roomescape.global.exception.error.ConflictException;
 import roomescape.reservation.controller.dto.ThemeRankingResponse;
 import roomescape.reservation.controller.dto.ThemeRequest;
 import roomescape.reservation.controller.dto.ThemeResponse;
@@ -23,12 +23,10 @@ public class ThemeService {
     private static final int RANKING_LIMIT = 10;
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
-    private final Clock clock;
 
-    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository, Clock clock) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
-        this.clock = clock;
     }
 
     public ThemeResponse add(ThemeRequest request) {
@@ -53,13 +51,13 @@ public class ThemeService {
     private void validateReservationConstraint(Long id) {
         List<Reservation> constraintReservations = reservationRepository.findAllByThemeId(id);
         if (!constraintReservations.isEmpty()) {
-            throw new IllegalStateException("해당 테마와 연관된 예약이 있어 삭제할 수 없습니다.");
+            throw new ConflictException("해당 테마와 연관된 예약이 있어 삭제할 수 없습니다.");
         }
     }
 
     public List<ThemeRankingResponse> getThemeRankings() {
-        LocalDate startDate = LocalDate.now(clock).minusDays(DAYS_BEFORE_START);
-        LocalDate endDate = LocalDate.now(clock).minusDays(DAYS_BEFORE_END);
+        LocalDate startDate = LocalDate.now().minusDays(DAYS_BEFORE_START);
+        LocalDate endDate = LocalDate.now().minusDays(DAYS_BEFORE_END);
         List<Long> themeRankIds = themeRepository.findTopThemeIdByDateRange(startDate, endDate, RANKING_LIMIT);
         List<Theme> unorderedThemes = themeRepository.findByIdIn(themeRankIds);
 

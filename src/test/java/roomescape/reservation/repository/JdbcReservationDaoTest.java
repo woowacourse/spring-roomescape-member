@@ -12,6 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.enums.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -31,7 +33,7 @@ class JdbcReservationDaoTest {
 
     @AfterEach
     void dropTable() {
-        String dropSql = "DROP TABLE IF EXISTS reservation, reservation_time, theme";
+        String dropSql = "DROP TABLE IF EXISTS reservation, reservation_time, theme, member";
         jdbcTemplate.execute(dropSql);
     }
 
@@ -39,12 +41,12 @@ class JdbcReservationDaoTest {
     @Test
     void save_and_return_id_test() {
         // given
-        String name = "루키";
-        LocalDate date = LocalDate.of(2024, 12, 31);
+        LocalDate date = LocalDate.of(2000, 1, 1);
         ReservationTime time = new ReservationTime(6L, LocalTime.of(13, 15));
         Theme theme = new Theme(3L, "레벨1 탈출", "우테코 레벨1를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Reservation reservation = new Reservation(null, name, date, time, theme);
+        Member member = new Member(3L, "행성이", "woowa@woowa.com", "woowa123", Role.USER);
+        Reservation reservation = new Reservation(null, date, time, theme, member);
 
         // when
         Long savedId = jdbcReservationDao.saveAndReturnId(reservation);
@@ -53,10 +55,10 @@ class JdbcReservationDaoTest {
         Reservation savedReservation = jdbcReservationDao.findById(savedId).get();
 
         assertAll(
-                () -> assertThat(savedReservation.getName()).isEqualTo("루키"),
-                () -> assertThat(savedReservation.getDate()).isEqualTo(LocalDate.of(2024, 12, 31)),
+                () -> assertThat(savedReservation.getDate()).isEqualTo(LocalDate.of(2000, 1, 1)),
                 () -> assertThat(savedReservation.getThemeId()).isEqualTo(3L),
-                () -> assertThat(savedReservation.getTimeId()).isEqualTo(6L)
+                () -> assertThat(savedReservation.getTimeId()).isEqualTo(6L),
+                () -> assertThat(savedReservation.getMemberId()).isEqualTo(3L)
         );
     }
 
@@ -91,8 +93,7 @@ class JdbcReservationDaoTest {
                 () -> assertThat(findReservation.getId()).isEqualTo(10L),
                 () -> assertThat(findReservation.getTimeId()).isEqualTo(2L),
                 () -> assertThat(findReservation.getThemeId()).isEqualTo(3L),
-                () -> assertThat(findReservation.getName()).isEqualTo("하루"),
-                () -> assertThat(findReservation.getDate()).isEqualTo(LocalDate.of(2025, 4, 30))
+                () -> assertThat(findReservation.getDate()).isEqualTo(LocalDate.now())
         );
     }
 
@@ -129,10 +130,10 @@ class JdbcReservationDaoTest {
                         .containsExactlyInAnyOrder(2L, 3L, 4L, 5L),
                 () -> assertThat(reservations).extracting(Reservation::getDate)
                         .containsExactlyInAnyOrder(
-                                LocalDate.of(2025, 4, 26),
-                                LocalDate.of(2025, 4, 28),
-                                LocalDate.of(2025, 5, 2),
-                                LocalDate.of(2025, 5, 5)
+                                LocalDate.now().minusDays(4),
+                                LocalDate.now().minusDays(2),
+                                LocalDate.now().plusDays(2),
+                                LocalDate.now().plusDays(5)
                         )
         );
 
@@ -154,8 +155,8 @@ class JdbcReservationDaoTest {
                         .containsExactlyInAnyOrder(3L, 4L),
                 () -> assertThat(reservations).extracting(Reservation::getDate)
                         .containsExactlyInAnyOrder(
-                                LocalDate.of(2025, 5, 1),
-                                LocalDate.of(2025, 5, 2)
+                                LocalDate.now().plusDays(1),
+                                LocalDate.now().plusDays(2)
                         )
         );
     }

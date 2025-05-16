@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -12,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.controller.annotation.LoginMemberId;
+import roomescape.auth.controller.annotation.LoginRequired;
 import roomescape.reservation.controller.dto.AvailableTimeResponse;
-import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
+import roomescape.reservation.controller.dto.UserReservationRequest;
 import roomescape.reservation.service.ReservationService;
 
 @RequestMapping("/reservations")
@@ -38,12 +41,15 @@ public class ReservationController {
         return reservationService.getAvailableTimes(date, themeId);
     }
 
+    @LoginRequired
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ReservationResponse addReservation(@RequestBody ReservationRequest request) {
-        return reservationService.add(request);
+    public ReservationResponse addReservation(@Valid @RequestBody UserReservationRequest request,
+                                              @LoginMemberId Long memberId) {
+        return reservationService.add(request.toReservationCreate(memberId));
     }
 
+    @LoginRequired
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{reservationId}")
     public void deleteReservation(@PathVariable("reservationId") Long reservationId) {
