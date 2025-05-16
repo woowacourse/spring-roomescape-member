@@ -49,7 +49,7 @@ public class JwtTokenProvider {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
-            throw new UnauthorizedException("인증할 수 없는 토큰입니다.");
+            throw new UnauthorizedException();
         }
     }
 }

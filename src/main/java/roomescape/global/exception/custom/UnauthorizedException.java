@@ -9,4 +9,8 @@ public class UnauthorizedException extends RuntimeException {
     public UnauthorizedException(final String message) {
         super(message);
     }
+
+    public UnauthorizedException() {
+        super("로그인 후 이용해주세요.");
+    }
 }

@@ -48,7 +48,7 @@ public class AuthService {
     private Member findMemberByToken(final String token) {
         final long id = jwtTokenProvider.getId(token);
         final Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new UnauthorizedException("확인할 수 없는 사용자입니다."));
+                .orElseThrow(() -> new UnauthorizedException());
         return member;
     }
 }

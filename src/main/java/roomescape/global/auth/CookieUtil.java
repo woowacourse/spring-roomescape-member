@@ -20,11 +20,11 @@ public class CookieUtil {
 
     public static String parseCookie(final Cookie[] cookies) {
         if (cookies == null) {
-            throw new UnauthorizedException("인증할 수 없는 사용자입니다.");
+            throw new UnauthorizedException();
         }
-        return Arrays.stream(cookies).filter(cookie -> cookie.getName().equals("token"))
+        return Arrays.stream(cookies).filter(cookie -> cookie.getName().equals(TOKEN_NAME))
                 .findFirst()
-                .orElseThrow(() -> new UnauthorizedException("인증할 수 없는 사용자입니다."))
+                .orElseThrow(() -> new UnauthorizedException())
                 .getValue();
     }
 }
