@@ -6,9 +6,11 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.time.LocalDate;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import roomescape.reservation.dto.AdminReservationRequest;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -62,6 +64,40 @@ class AuthTest {
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    @Test
+    void 어드민_회원이_예약을_할_수_있다() {
+
+        // given
+        Map<String, String> adminUser = Map.of(
+                "email", "admin@naver.com",
+                "password", "1234"
+        );
+        String token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(adminUser)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .cookie("token");
+        AdminReservationRequest request = new AdminReservationRequest(
+                LocalDate.of(2999, 7, 1),
+                1L,
+                1L,
+                1L
+        );
+
+        // when
+        // then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", token)
+                .body(request)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(201);
     }
 
     @Test
