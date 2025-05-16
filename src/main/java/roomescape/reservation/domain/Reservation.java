@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.FieldNameConstants;
+import roomescape.common.exception.BadRequestException;
 import roomescape.common.utils.Validator;
+import roomescape.member.domain.Member;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -18,46 +20,46 @@ import java.time.LocalDateTime;
 public class Reservation {
 
     private final ReservationId id;
-    private final ReserverName name;
+    private final Member member;
     private final ReservationDate date;
     private final ReservationTime time;
     private final Theme theme;
 
     private static Reservation of(final ReservationId id,
-                                  final ReserverName name,
+                                  final Member member,
                                   final ReservationDate date,
                                   final ReservationTime time,
                                   final Theme theme) {
-        validate(id, name, date, time, theme);
-        return new Reservation(id, name, date, time, theme);
+        validate(id, member, date, time, theme);
+        return new Reservation(id, member, date, time, theme);
     }
 
     public static Reservation withId(final ReservationId id,
-                                     final ReserverName name,
+                                     final Member member,
                                      final ReservationDate date,
                                      final ReservationTime time,
                                      final Theme theme) {
-        return of(id, name, date, time, theme);
+        return of(id, member, date, time, theme);
     }
 
-    public static Reservation withoutId(final ReserverName name,
+    public static Reservation withoutId(final Member member,
                                         final ReservationDate date,
                                         final ReservationTime time,
                                         final Theme theme) {
 
         validatePast(date, time);
-        return of(ReservationId.unassigned(), name, date, time, theme);
+        return of(ReservationId.unassigned(), member, date, time, theme);
     }
 
     private static void validate(final ReservationId id,
-                                 final ReserverName name,
+                                 final Member member,
                                  final ReservationDate date,
                                  final ReservationTime time,
                                  final Theme theme) {
 
         Validator.of(Reservation.class)
                 .notNullField(Fields.id, id)
-                .notNullField(Fields.name, name)
+                .notNullField(Fields.member, member)
                 .notNullField(Fields.date, date)
                 .notNullField(Fields.time, time)
                 .notNullField(Fields.theme, theme);
@@ -69,10 +71,10 @@ public class Reservation {
             return;
         }
         if (date.isBefore(now.toLocalDate())) {
-            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
+            throw new BadRequestException("지난 날짜는 예약할 수 없습니다.");
         }
         if (time.isBefore(now.toLocalTime())) {
-            throw new IllegalArgumentException("이미 지난 시간에는 예약할 수 없습니다.");
+            throw new BadRequestException("이미 지난 시간에는 예약할 수 없습니다.");
         }
     }
 }

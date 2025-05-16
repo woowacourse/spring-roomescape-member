@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.utils.UriFactory;
+import roomescape.member.auth.RoleRequired;
+import roomescape.member.domain.Role;
 import roomescape.time.controller.dto.CreateReservationTimeWebRequest;
-import roomescape.time.controller.dto.ReservationTimeResponse;
+import roomescape.time.controller.dto.ReservationTimeWebResponse;
 import roomescape.time.service.ReservationTimeService;
 
 import java.net.URI;
@@ -27,19 +29,21 @@ public class ReservationTimeController {
     private final ReservationTimeService reservationTimeService;
 
     @GetMapping
-    public List<ReservationTimeResponse> getAll() {
+    public List<ReservationTimeWebResponse> getAll() {
         return reservationTimeService.getAll();
     }
 
+    @RoleRequired(value = Role.ADMIN)
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> create(
+    public ResponseEntity<ReservationTimeWebResponse> create(
             @RequestBody final CreateReservationTimeWebRequest createReservationTimeWebRequest) {
-        final ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(createReservationTimeWebRequest);
-        final URI location = UriFactory.buildPath(BASE_PATH, String.valueOf(reservationTimeResponse.id()));
+        final ReservationTimeWebResponse reservationTimeWebResponse = reservationTimeService.create(createReservationTimeWebRequest);
+        final URI location = UriFactory.buildPath(BASE_PATH, String.valueOf(reservationTimeWebResponse.id()));
         return ResponseEntity.created(location)
-                .body(reservationTimeResponse);
+                .body(reservationTimeWebResponse);
     }
 
+    @RoleRequired(value = Role.ADMIN)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable final Long id) {
         reservationTimeService.delete(id);

@@ -1,6 +1,7 @@
 package roomescape.common.utils;
 
 public enum ExecuteResult {
+
     SUCCESS, FAIL;
 
     public static ExecuteResult of(final int result) {

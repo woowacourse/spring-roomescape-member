@@ -2,6 +2,7 @@ package roomescape.reservation.service.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.member.domain.MemberId;
 import roomescape.reservation.service.dto.AvailableReservationTimeServiceRequest;
 import roomescape.reservation.service.dto.AvailableReservationTimeServiceResponse;
 import roomescape.reservation.service.dto.ThemeToBookCountServiceResponse;
@@ -27,6 +28,10 @@ public class ReservationQueryUseCase {
 
     public List<Reservation> getAll() {
         return reservationRepository.findAll();
+    }
+
+    public List<Reservation> getAllByMemberId(final MemberId memberId) {
+        return reservationRepository.findAllByMemberId(memberId);
     }
 
     public List<AvailableReservationTimeServiceResponse> getTimesWithAvailability(
@@ -69,5 +74,12 @@ public class ReservationQueryUseCase {
                                   final ReservationTimeId timeId,
                                   final ThemeId themeId) {
         return reservationRepository.existsByParams(date, timeId, themeId);
+    }
+
+    public List<Reservation> search(final MemberId memberId,
+                                    final ThemeId themeId,
+                                    final ReservationDate from,
+                                    final ReservationDate to) {
+        return reservationRepository.findByParams(memberId, themeId, from, to);
     }
 }

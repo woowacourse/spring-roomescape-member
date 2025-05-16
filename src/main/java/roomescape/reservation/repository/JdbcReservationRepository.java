@@ -9,9 +9,14 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.exception.NotFoundException;
 import roomescape.common.utils.ExecuteResult;
 import roomescape.common.utils.JdbcUtils;
-import roomescape.reservation.domain.ReserverName;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberEmail;
+import roomescape.member.domain.MemberId;
+import roomescape.member.domain.MemberName;
+import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
@@ -51,25 +56,21 @@ public class JdbcReservationRepository implements ReservationRepository {
                 ThemeThumbnail.from(resultSet.getString("thumbnail"))
         );
 
+        Member member = Member.withId(
+                MemberId.from(resultSet.getLong("member_id")),
+                MemberName.from(resultSet.getString("member_name")),
+                MemberEmail.from(resultSet.getString("email")),
+                Role.from(resultSet.getString("role"))
+        );
+
         return Reservation.withId(
                 ReservationId.from(resultSet.getLong("id")),
-                ReserverName.from(resultSet.getString("name")),
+                member,
                 ReservationDate.from(resultSet.getObject("date", LocalDate.class)),
                 time,
                 theme
         );
     };
-
-    @Override
-    public boolean existsByParams(final ReservationId id) {
-        final String sql = """
-                select exists 
-                    (select 1 from reservation where id = ?)
-                """;
-
-        return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, id.getValue()));
-    }
 
     @Override
     public boolean existsByParams(final ReservationTimeId timeId) {
@@ -78,8 +79,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     (select 1 from reservation where time_id = ?)
                 """;
 
-        return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, timeId.getValue()));
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, timeId.getValue()));
     }
 
     @Override
@@ -92,7 +92,14 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """;
 
         return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, date.getValue(), timeId.getValue(), themeId.getValue()));
+                jdbcTemplate.queryForObject(
+                        sql,
+                        Boolean.class,
+                        date.getValue(),
+                        timeId.getValue(),
+                        themeId.getValue()
+                )
+        );
 
     }
 
@@ -101,23 +108,66 @@ public class JdbcReservationRepository implements ReservationRepository {
         final String sql = """
                 select
                     r.id,
-                    r.name,
+                    r.member_id,
                     r.date,
                     rt.id as time_id,
                     rt.start_at as start_at,
                     t.id as theme_id,
                     t.name as theme_name,
                     t.description as description,
-                    t.thumbnail as thumbnail
+                    t.thumbnail as thumbnail,
+                    m.name as member_name,
+                    m.email as email,
+                    m.role as role
                 from reservation r
                 join reservation_time rt
                     on r.time_id = rt.id
                 join theme t
                     on r.theme_id = t.id
+                join member m
+                    on r.member_id = m.id
                 where r.id = ?
                 """;
 
         return JdbcUtils.queryForOptional(jdbcTemplate, sql, reservationMapper, id.getValue());
+    }
+
+    @Override
+    public List<Reservation> findByParams(MemberId memberId, ThemeId themeId, ReservationDate from,
+                                          ReservationDate to) {
+        final String sql = """
+                select
+                    r.id,
+                    r.member_id,
+                    r.date,
+                    rt.id as time_id,
+                    rt.start_at as start_at,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description as description,
+                    t.thumbnail as thumbnail,
+                    m.name as member_name,
+                    m.email as email,
+                    m.role as role
+                from reservation r
+                join reservation_time rt
+                    on r.time_id = rt.id
+                join theme t
+                    on r.theme_id = t.id
+                join member m
+                    on r.member_id = m.id
+                where r.member_id = ? and r.theme_id = ? and r.date between ? and ?
+                """;
+
+        return jdbcTemplate.query(
+                        sql,
+                        reservationMapper,
+                        memberId.getValue(),
+                        themeId.getValue(),
+                        from.getValue(),
+                        to.getValue()
+                ).stream()
+                .toList();
     }
 
     @Override
@@ -138,8 +188,39 @@ public class JdbcReservationRepository implements ReservationRepository {
                         sql,
                         (rs, rowNum) -> rs.getLong("time_id"),
                         date.getValue(),
-                        themeId.getValue()).stream()
+                        themeId.getValue()
+                ).stream()
                 .map(ReservationTimeId::from)
+                .toList();
+    }
+
+    @Override
+    public List<Reservation> findAllByMemberId(final MemberId memberId) {
+        final String sql = """
+                select
+                    r.id,
+                    r.member_id,
+                    r.date,
+                    rt.id as time_id,
+                    rt.start_at as start_at,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description as description,
+                    t.thumbnail as thumbnail,
+                    m.name as member_name,
+                    m.email as email,
+                    m.role as role
+                from reservation r
+                join reservation_time rt
+                    on r.time_id = rt.id
+                join theme t
+                    on r.theme_id = t.id
+                join member m
+                    on r.member_id = m.id
+                where r.member_id = ?
+                """;
+
+        return jdbcTemplate.query(sql, reservationMapper, memberId.getValue()).stream()
                 .toList();
     }
 
@@ -148,19 +229,24 @@ public class JdbcReservationRepository implements ReservationRepository {
         final String sql = """
                 select
                     r.id,
-                    r.name,
+                    r.member_id,
                     r.date,
                     rt.id as time_id,
                     rt.start_at as start_at,
                     t.id as theme_id,
                     t.name as theme_name,
                     t.description as description,
-                    t.thumbnail as thumbnail
+                    t.thumbnail as thumbnail,
+                    m.name as member_name,
+                    m.email as email,
+                    m.role as role
                 from reservation r
                 join reservation_time rt
                     on r.time_id = rt.id
                 join theme t
                     on r.theme_id = t.id
+                join member m
+                    on r.member_id = m.id
                 """;
 
         return jdbcTemplate.query(sql, reservationMapper).stream()
@@ -169,12 +255,13 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(final Reservation reservation) {
-        final String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
+        final String sql = "insert into reservation (member_id, date, time_id, theme_id) values (?, ?, ?, ?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            final PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1, reservation.getName().getValue());
+            final PreparedStatement preparedStatement = connection.prepareStatement(sql,
+                    Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setLong(1, reservation.getMember().getId().getValue());
             preparedStatement.setDate(2, Date.valueOf(reservation.getDate().getValue()));
             preparedStatement.setLong(3, reservation.getTime().getId().getValue());
             preparedStatement.setLong(4, reservation.getTheme().getId().getValue());
@@ -186,10 +273,11 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         return Reservation.withId(
                 ReservationId.from(generatedId),
-                reservation.getName(),
+                reservation.getMember(),
                 reservation.getDate(),
                 reservation.getTime(),
-                reservation.getTheme());
+                reservation.getTheme()
+        );
     }
 
     @Override
@@ -198,7 +286,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         ExecuteResult result = ExecuteResult.of(jdbcTemplate.update(sql, id.getValue()));
 
         if (result == ExecuteResult.FAIL) {
-            throw new NoSuchElementException("삭제할 예약을 찾을 수 없습니다.");
+            throw new NotFoundException("삭제할 예약을 찾을 수 없습니다.");
         }
     }
 
@@ -235,12 +323,14 @@ public class JdbcReservationRepository implements ReservationRepository {
         );
 
         return resultList.stream()
-                .collect(Collectors.toMap(
-                        Entry::getKey,
-                        Entry::getValue,
-                        (v1, v2) -> v1,
-                        LinkedHashMap::new
-                ));
+                .collect(
+                        Collectors.toMap(
+                                Entry::getKey,
+                                Entry::getValue,
+                                (v1, v2) -> v1,
+                                LinkedHashMap::new
+                        )
+                );
     }
 
     private RowMapper<Entry<Theme, Integer>> getThemesToBookedCountRowMapper() {

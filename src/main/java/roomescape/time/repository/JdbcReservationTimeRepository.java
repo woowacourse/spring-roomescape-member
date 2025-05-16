@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.exception.NotFoundException;
 import roomescape.common.utils.ExecuteResult;
 import roomescape.common.utils.JdbcUtils;
 import roomescape.time.domain.ReservationTime;
@@ -15,7 +16,6 @@ import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -31,25 +31,13 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     );
 
     @Override
-    public boolean existsById(final ReservationTimeId id) {
-        final String sql = """
-                select exists
-                    (select 1 from reservation_time where id = ?)
-                """;
-
-        return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, id.getValue()));
-    }
-
-    @Override
     public boolean existsByStartAt(final LocalTime startAt) {
         final String sql = """
                 select exists
                     (select 1 from reservation_time where start_at = ?)
                 """;
 
-        return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
     }
 
     @Override
@@ -89,7 +77,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         ExecuteResult result = ExecuteResult.of(jdbcTemplate.update(sql, id.getValue()));
 
         if (result == ExecuteResult.FAIL) {
-            throw new NoSuchElementException("삭제할 시간을 찾을 수 없습니다.");
+            throw new NotFoundException("삭제할 시간을 찾을 수 없습니다.");
         }
     }
 }

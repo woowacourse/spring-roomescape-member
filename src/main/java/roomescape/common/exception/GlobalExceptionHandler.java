@@ -1,23 +1,31 @@
 package roomescape.common.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.format.DateTimeParseException;
-import java.util.NoSuchElementException;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = DateTimeParseException.class)
-    public ResponseEntity<String> handleDateTimeParseException() {
-        return ResponseEntity.badRequest().body("잘못된 날짜/시간 형식입니다.");
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity<ErrorResponse> handleDateTimeParseException(final HttpServletRequest request) {
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_DATETIME_FORMAT, request);
+        return ResponseEntity.badRequest().body(errorResponse);
     }
 
-    @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class, NoSuchElementException.class})
-    public ResponseEntity<String> handleIllegalException(final Exception e) {
-        String message = e.getMessage();
-        return ResponseEntity.badRequest().body(message);
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ErrorResponse> handleCustomException(final CustomException e, final HttpServletRequest request) {
+        ErrorCode errorCode = e.getErrorCode();
+        ErrorResponse errorResponse = ErrorResponse.of(errorCode, request);
+        return ResponseEntity.status(errorCode.getStatus()).body(errorResponse);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleAllException(final HttpServletRequest request) {
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, request);
+        return ResponseEntity.internalServerError().body(errorResponse);
     }
 }

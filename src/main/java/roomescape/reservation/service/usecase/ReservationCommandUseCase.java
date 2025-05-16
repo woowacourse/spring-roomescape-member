@@ -2,6 +2,10 @@ package roomescape.reservation.service.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.common.exception.AlreadyExistException;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberId;
+import roomescape.member.service.usecase.MemberQueryUseCase;
 import roomescape.reservation.service.converter.ReservationConverter;
 import roomescape.reservation.service.dto.CreateReservationServiceRequest;
 import roomescape.reservation.domain.Reservation;
@@ -23,6 +27,7 @@ public class ReservationCommandUseCase {
     private final ReservationQueryUseCase reservationQueryUseCase;
     private final ReservationTimeQueryUseCase reservationTimeQueryUseCase;
     private final ThemeQueryUseCase themeQueryUseCase;
+    private final MemberQueryUseCase memberQueryUseCase;
 
     public Reservation create(final CreateReservationServiceRequest createReservationServiceRequest) {
         if (reservationQueryUseCase.existsByParams(
@@ -30,7 +35,7 @@ public class ReservationCommandUseCase {
                 ReservationTimeId.from(createReservationServiceRequest.timeId()),
                 ThemeId.from(createReservationServiceRequest.themeId()))) {
 
-            throw new IllegalStateException("추가하려는 예약이 이미 존재합니다.");
+            throw new AlreadyExistException("추가하려는 예약이 이미 존재합니다.");
         }
 
         final ReservationTime reservationTime = reservationTimeQueryUseCase.get(
@@ -39,8 +44,11 @@ public class ReservationCommandUseCase {
         final Theme theme = themeQueryUseCase.get(
                 ThemeId.from(createReservationServiceRequest.themeId()));
 
+        final Member member = memberQueryUseCase.get(
+                MemberId.from(createReservationServiceRequest.memberId()));
+
         return reservationRepository.save(
-                ReservationConverter.toDomain(createReservationServiceRequest, reservationTime, theme));
+                ReservationConverter.toDomain(createReservationServiceRequest, member, reservationTime, theme));
     }
 
     public void delete(final ReservationId id) {

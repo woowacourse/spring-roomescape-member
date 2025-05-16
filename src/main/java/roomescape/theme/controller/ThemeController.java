@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.utils.UriFactory;
+import roomescape.member.auth.PermitAll;
+import roomescape.member.auth.RoleRequired;
+import roomescape.member.domain.Role;
 import roomescape.theme.controller.dto.CreateThemeWebRequest;
-import roomescape.theme.controller.dto.ThemeResponse;
+import roomescape.theme.controller.dto.ThemeWebResponse;
 import roomescape.theme.service.ThemeService;
 
 import java.net.URI;
@@ -27,23 +30,26 @@ public class ThemeController {
     private final ThemeService themeService;
 
     @GetMapping
-    public List<ThemeResponse> getAll() {
+    public List<ThemeWebResponse> getAll() {
         return themeService.getAll();
     }
 
+    @PermitAll
     @GetMapping("/ranking")
-    public ResponseEntity<List<ThemeResponse>> getRanking() {
+    public ResponseEntity<List<ThemeWebResponse>> getRanking() {
         return ResponseEntity.ok(themeService.getRanking());
     }
 
+    @RoleRequired(value = Role.ADMIN)
     @PostMapping
-    public ResponseEntity<ThemeResponse> create(@RequestBody final CreateThemeWebRequest createThemeWebRequest) {
-        final ThemeResponse themeResponse = themeService.create(createThemeWebRequest);
-        final URI location = UriFactory.buildPath(BASE_PATH, String.valueOf(themeResponse.id()));
+    public ResponseEntity<ThemeWebResponse> create(@RequestBody final CreateThemeWebRequest createThemeWebRequest) {
+        final ThemeWebResponse themeWebResponse = themeService.create(createThemeWebRequest);
+        final URI location = UriFactory.buildPath(BASE_PATH, String.valueOf(themeWebResponse.id()));
         return ResponseEntity.created(location)
-                .body(themeResponse);
+                .body(themeWebResponse);
     }
 
+    @RoleRequired(value = Role.ADMIN)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable final Long id) {
         themeService.delete(id);

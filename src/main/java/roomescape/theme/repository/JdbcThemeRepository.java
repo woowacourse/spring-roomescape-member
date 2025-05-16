@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.exception.NotFoundException;
 import roomescape.common.utils.ExecuteResult;
 import roomescape.common.utils.JdbcUtils;
 import roomescape.theme.domain.ThemeDescription;
@@ -16,7 +17,6 @@ import roomescape.theme.domain.ThemeId;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -75,7 +75,8 @@ public class JdbcThemeRepository implements ThemeRepository {
                 ThemeId.from(generatedId),
                 theme.getName(),
                 theme.getDescription(),
-                theme.getThumbnail());
+                theme.getThumbnail()
+        );
     }
 
     @Override
@@ -85,7 +86,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         ExecuteResult result = ExecuteResult.of(jdbcTemplate.update(sql, id.getValue()));
 
         if (result == ExecuteResult.FAIL) {
-            throw new NoSuchElementException("삭제할 테마를 찾을 수 없습니다.");
+            throw new NotFoundException("삭제할 테마를 찾을 수 없습니다.");
         }
     }
 }

@@ -6,7 +6,7 @@ import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeName;
 import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.theme.controller.dto.CreateThemeWebRequest;
-import roomescape.theme.controller.dto.ThemeResponse;
+import roomescape.theme.controller.dto.ThemeWebResponse;
 
 import java.util.List;
 
@@ -20,15 +20,15 @@ public class ThemeConverter {
         );
     }
 
-    public static ThemeResponse toDto(final Theme theme) {
-        return new ThemeResponse(
+    public static ThemeWebResponse toDto(final Theme theme) {
+        return new ThemeWebResponse(
                 theme.getId().getValue(),
                 theme.getName().getValue(),
                 theme.getDescription().getValue(),
                 theme.getThumbnail().getValue());
     }
 
-    public static List<ThemeResponse> toDto(final List<Theme> themes) {
+    public static List<ThemeWebResponse> toDto(final List<Theme> themes) {
         return themes.stream()
                 .map(ThemeConverter::toDto)
                 .toList();
