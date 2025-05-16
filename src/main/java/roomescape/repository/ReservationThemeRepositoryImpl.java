@@ -39,7 +39,7 @@ public class ReservationThemeRepositoryImpl implements ReservationThemeRepositor
     public List<ReservationTheme> findWeeklyThemeOrderByCountDesc() {
         String sql = """
                 SELECT th.id, th.name, th.description, th.thumbnail, COUNT(*) AS reservation_count
-                FROM reservation_v2 r
+                FROM reservation r
                 JOIN reservation_theme th ON r.theme_id = th.id
                 WHERE PARSEDATETIME(r.date, 'yyyy-MM-dd') BETWEEN DATEADD('DAY', -7, CURRENT_DATE) AND DATEADD('DAY', -1, CURRENT_DATE)
                 GROUP BY th.id, th.name, th.description, th.thumbnail

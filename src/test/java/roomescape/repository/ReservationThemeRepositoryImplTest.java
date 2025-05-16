@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.ReservationTheme;
 
 @JdbcTest
-@Disabled
 class ReservationThemeRepositoryImplTest {
 
     @Autowired

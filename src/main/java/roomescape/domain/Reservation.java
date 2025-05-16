@@ -6,50 +6,46 @@ import java.time.LocalTime;
 
 public class Reservation {
 
-    private final long id;
-    private final String name;
+    private final Long id;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final ReservationTheme theme;
 
-    private Reservation(final long id, final String name, final LocalDate date, final ReservationTime time,
+    private Reservation(final long id, final Member member, final LocalDate date, final ReservationTime time,
                         final ReservationTheme theme) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public Reservation(final long id, final String name, final String date, final ReservationTime time,
-                       final ReservationTheme theme) {
-        this(id, name, LocalDate.parse(date), time, theme);
+    public Reservation(final long id, final String date, final ReservationTime time,
+                       final ReservationTheme theme, final Member member) {
+        this(id, member, LocalDate.parse(date), time, theme);
     }
 
-    public Reservation(final String name, final LocalDate date, final ReservationTime time,
+    public Reservation(final Member member, final LocalDate date, final ReservationTime time,
                        final ReservationTheme theme) {
         validateFutureDateTime(date, time.getStartAt());
-        this.id = 0L;
-        this.name = name;
+        this.id = null;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
     public Reservation toEntity(long id) {
-        return new Reservation(id, name, date, time, theme);
+        return new Reservation(id, member, date, time, theme);
     }
 
     public boolean isDuplicateReservation(Reservation reservation) {
-        return this.date.equals(reservation.date) && this.time.isSameTime(reservation.time);
+        return this.date.equals(reservation.date) && this.time.isSameTime(reservation.time) && this.theme.equals(reservation.theme);
     }
 
     public long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public LocalDate getDate() {
@@ -62,6 +58,14 @@ public class Reservation {
 
     public ReservationTheme getTheme() {
         return theme;
+    }
+
+    public String getMemberName() {
+        return member.getName();
+    }
+
+    public long getMemberId() {
+        return member.getId();
     }
 
     private void validateFutureDateTime(final LocalDate date, final LocalTime time) {

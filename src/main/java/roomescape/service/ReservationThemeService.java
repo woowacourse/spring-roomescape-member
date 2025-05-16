@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import static roomescape.service.ReservationService.DELETE_FAILED_COUNT;
+
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTheme;
@@ -10,7 +12,7 @@ import roomescape.repository.ReservationThemeRepository;
 @Service
 public class ReservationThemeService {
 
-    public static final int DELETE_FAILED_COUNT = 0;
+
     private final ReservationThemeRepository reservationThemeRepository;
 
     public ReservationThemeService(final ReservationThemeRepository reservationThemeRepository) {

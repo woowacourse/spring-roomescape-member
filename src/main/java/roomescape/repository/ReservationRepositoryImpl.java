@@ -12,10 +12,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationV2;
+import roomescape.domain.Reservation;
 
 @Repository
 public class ReservationRepositoryImpl implements ReservationRepository {
@@ -28,8 +27,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     @Override
     public Optional<Reservation> findById(final long id) {
-        String sql = joinReservationAndTime("WHERE r.id = ?");
-        final List<Reservation> reservations = template.query(sql, reservationRowMapper(), id);
+        String sql = joinSql("WHERE rv.id = ?");
+        final List<Reservation> reservations = template.query(sql, reservationV2RowMapper(), id);
         if (reservations.isEmpty()) {
             return Optional.empty();
         }
@@ -37,43 +36,20 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByDate(final LocalDate date) {
-        String sql = joinReservationAndTime("WHERE r.date = ?");
-        return template.query(sql, reservationRowMapper(), date.toString());
+    public boolean existByDateAndTimeIdAndThemeId(final LocalDate date, final long timeId, final long themeId) {
+        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
+        return Boolean.TRUE.equals(template.queryForObject(sql, Boolean.class, date.toString(), timeId, themeId));
     }
 
     @Override
-    public List<Reservation> findAll() {
-        String sql = joinReservationAndTime("");
-        return template.query(sql, reservationRowMapper());
-    }
-
-    @Override
-    public List<ReservationV2> findAllReservationsV2() {
-        String sql = joinReservationV2AndRelatedTables("");
+    public List<Reservation> findAllReservationsV2() {
+        String sql = joinSql("");
         return template.query(sql, reservationV2RowMapper());
     }
 
     @Override
-    public Reservation save(final Reservation reservation) {
-        String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        template.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservation.getName());
-            ps.setString(2, reservation.getDate().toString());
-            ps.setLong(3, reservation.getTime().getId());
-            ps.setLong(4, reservation.getTheme().getId());
-            return ps;
-        }, keyHolder);
-
-        long id = keyHolder.getKey().longValue();
-        return reservation.toEntity(id);
-    }
-
-    @Override
-    public ReservationV2 saveWithMember(final ReservationV2 reservation) {
-        String sql = "insert into reservation_v2 (member_id,date, time_id, theme_id) values (? ,?, ?, ?)";
+    public Reservation saveWithMember(final Reservation reservation) {
+        String sql = "insert into reservation (member_id,date, time_id, theme_id) values (? ,?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
@@ -90,21 +66,15 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     @Override
     public int deleteById(final long id) {
-        String sql = "delete from reservation_v2 where id = ?";
+        String sql = "delete from reservation where id = ?";
         return template.update(sql, id);
     }
 
     @Override
-    public boolean existsByDateAndTime(final LocalDate date, final ReservationTime time) {
-        String sql = wrapExistsQuery(joinReservationAndTime("WHERE r.date = ? and t.start_at = ?"));
-        return template.queryForObject(sql, Boolean.class, date.toString(), time.getStartAt().toString());
-    }
-
-    @Override
-    public List<ReservationV2> findByMemberIdAndThemeIdAndDateFromAndDateTo(final long memberId, final long themeId,
-                                                                            final LocalDate dateFrom,
-                                                                            final LocalDate dateTo) {
-        StringBuilder queryBuilder = new StringBuilder(joinReservationV2AndRelatedTables(""));
+    public List<Reservation> findByMemberIdAndThemeIdAndDateFromAndDateTo(final long memberId, final long themeId,
+                                                                          final LocalDate dateFrom,
+                                                                          final LocalDate dateTo) {
+        StringBuilder queryBuilder = new StringBuilder(joinSql(""));
         List<Object> params = new ArrayList<>();
         List<String> conditions = new ArrayList<>();
 
@@ -138,38 +108,13 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         return template.query(queryBuilder.toString(), reservationV2RowMapper(), params.toArray());
     }
 
-    private RowMapper<Reservation> reservationRowMapper() {
+    private RowMapper<Reservation> reservationV2RowMapper() {
         return (rs, rowNum) -> {
             ReservationTime reservationTime = new ReservationTime(
                     rs.getLong("time_id"),
-                    rs.getString("time_value")
+                    rs.getTime("time_value").toLocalTime()
             );
 
-            ReservationTheme reservationTheme = new ReservationTheme(
-                    rs.getLong("theme_id"),
-                    rs.getString("theme_name"),
-                    rs.getString("theme_description"),
-                    rs.getString("theme_thumbnail")
-            );
-            return new Reservation(
-                    rs.getLong("reservation_id"),
-                    rs.getString("name"),
-                    rs.getString("date"),
-                    reservationTime,
-                    reservationTheme
-            );
-        };
-    }
-
-    private RowMapper<ReservationV2> reservationV2RowMapper() {
-        return (rs, rowNum) -> {
-            // ReservationTime 생성
-            ReservationTime reservationTime = new ReservationTime(
-                    rs.getLong("time_id"),
-                    rs.getString("time_value")
-            );
-
-            // ReservationTheme 생성
             ReservationTheme reservationTheme = new ReservationTheme(
                     rs.getLong("theme_id"),
                     rs.getString("theme_name"),
@@ -186,7 +131,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                     rs.getString("member_session_id")
             );
 
-            return new ReservationV2(
+            return new Reservation(
                     rs.getLong("reservation_id"),
                     rs.getString("date"),
                     reservationTime,
@@ -196,46 +141,20 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         };
     }
 
-    private String joinReservationV2AndRelatedTables(String where) {
-        String sql = """
-                SELECT 
-                    rv.id AS reservation_id,
-                    rv.date, 
-                    m.id AS member_id, 
-                    m.email AS member_email, 
-                    m.password AS member_password, 
-                    m.name AS member_name, 
-                    m.session_id AS member_session_id,
-                    m.role AS member_role,
-                    t.id AS time_id, 
-                    t.start_at AS time_value, 
-                    th.id AS theme_id, 
-                    th.name AS theme_name, 
-                    th.description AS theme_description, 
-                    th.thumbnail AS theme_thumbnail
-                FROM reservation_v2 AS rv 
-                INNER JOIN member AS m
-                ON rv.member_id = m.id
-                INNER JOIN reservation_time AS t
-                ON rv.time_id = t.id
-                INNER JOIN reservation_theme AS th
-                ON rv.theme_id = th.id
-                """;
-        return sql + where;
-    }
-
     private String wrapExistsQuery(String sql) {
         return "SELECT EXISTS(" + sql + ")";
     }
 
-    private String joinReservationAndTime(String where) {
+    private String joinSql(String where) {
         String sql = """
-                SELECT r.id AS reservation_id, r.name, r.date, t.id AS time_id, t.start_at AS time_value, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail, th.id AS theme_id
-                FROM reservation as r 
+                SELECT rv.id AS reservation_id, m.id AS member_id, m.role AS member_role, m.email AS member_email, m.name AS member_name, m.password AS member_password, m.session_id AS member_session_id, rv.date, t.id AS time_id, t.start_at AS time_value, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail, th.id AS theme_id
+                FROM reservation as rv
                 INNER JOIN reservation_time AS t
-                ON r.time_id = t.id
+                ON rv.time_id = t.id
                 INNER JOIN reservation_theme AS th
-                ON r.theme_id = th.id
+                ON rv.theme_id = th.id
+                INNER JOIN member AS m
+                ON rv.member_id = m.id
                 """;
         return sql + where;
     }
