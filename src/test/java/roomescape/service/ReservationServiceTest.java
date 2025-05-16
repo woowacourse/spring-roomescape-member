@@ -12,18 +12,19 @@ import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import roomescape.DataBasedTest;
+import roomescape.domain.Member;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.request.CreateReservationRequest;
+import roomescape.dto.request.SearchReservationRequest;
+import roomescape.dto.response.ReservationResponse;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationThemeRepository;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.service.dto.request.CreateReservationServiceRequest;
-import roomescape.service.dto.response.ReservationServiceResponse;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ReservationServiceTest extends DataBasedTest {
 
     @Autowired
@@ -38,16 +39,19 @@ class ReservationServiceTest extends DataBasedTest {
     @Autowired
     ReservationThemeRepository reservationThemeRepository;
 
+    @Autowired
+    MemberRepository memberRepository;
+
     @Test
     void create() {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
-        ReservationTheme theme = reservationThemeRepository.save(new ReservationTheme("theme", "desc", "thumb"));
-        CreateReservationServiceRequest request = new CreateReservationServiceRequest("moko",
-                LocalDate.now().plusDays(1), time.id(), theme.id());
+        var member = memberRepository.save(new Member("pobi", "pobi@example.com", "password"));
+        var time = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
+        var theme = reservationThemeRepository.save(new ReservationTheme("theme", "desc", "thumb"));
+        var request = new CreateReservationRequest(LocalDate.now().plusDays(1), time.id(), theme.id());
 
         // when
-        reservationService.create(request);
+        reservationService.create(member.id(), LocalDate.now().plusDays(1), time.id(), theme.id());
 
         // then
         assertThat(reservationRepository.getAll()).hasSize(RESERVATION_COUNT + 1);
@@ -56,7 +60,7 @@ class ReservationServiceTest extends DataBasedTest {
     @Test
     void getAll() {
         // when
-        List<ReservationServiceResponse> responses = reservationService.getAll();
+        List<ReservationResponse> responses = reservationService.getAll();
 
         // then
         assertThat(reservationRepository.getAll()).hasSize(responses.size());
@@ -79,5 +83,26 @@ class ReservationServiceTest extends DataBasedTest {
 
         // then
         assertThatCode(throwingCallable).doesNotThrowAnyException();
+    }
+
+    @Test
+    void search() {
+        // given
+        var themeSearch = new SearchReservationRequest(1L, null, null, null);
+        var memberSearch = new SearchReservationRequest(null, 1L, null, null);
+        var dateFromSearch = new SearchReservationRequest(null, null, LocalDate.of(2025, 1, 1), null);
+        var dateToSearch = new SearchReservationRequest(null, null, null, LocalDate.of(2025, 1, 1));
+
+        // when
+        List<ReservationResponse> theme = reservationService.search(themeSearch);
+        List<ReservationResponse> member = reservationService.search(memberSearch);
+        List<ReservationResponse> dateFrom = reservationService.search(dateFromSearch);
+        List<ReservationResponse> dateTo = reservationService.search(dateToSearch);
+
+        // then
+        assertThat(theme).hasSize(1);
+        assertThat(member).hasSize(1);
+        assertThat(dateFrom).hasSize(RESERVATION_COUNT);
+        assertThat(dateTo).hasSize(0);
     }
 }

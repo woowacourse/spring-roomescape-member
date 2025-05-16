@@ -109,7 +109,6 @@ function renderAvailableTimes(times) {
   times.forEach(time => {
     const startAt = time.startAt;
     const timeId = time.id;
-    // TODO: [3단계] api 명세에 필드 추가해야함
     const alreadyBooked = time.isBooked;
 
     const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
@@ -141,19 +140,13 @@ function onReservationButtonClick() {
   const selectedDate = document.getElementById("datepicker").value;
   const selectedThemeId = document.querySelector('.theme-slot.active')?.getAttribute('data-theme-id');
   const selectedTimeId = document.querySelector('.time-slot.active')?.getAttribute('data-time-id');
-  const name = document.getElementById('user-name').value;
 
   if (selectedDate && selectedThemeId && selectedTimeId) {
 
-    /*
-    TODO: [5단계] 예약 생성 기능 변경 - 사용자
-          request 명세에 맞게 설정
-    */
     const reservationData = {
       date: selectedDate,
       themeId: selectedThemeId,
       timeId: selectedTimeId,
-      name: name
     };
 
     fetch('/reservations', {
@@ -165,7 +158,7 @@ function onReservationButtonClick() {
     })
         .then(response => {
           if (!response.ok) throw new Error('Reservation failed');
-          return response.json();
+          return response;
         })
         .then(data => {
           alert("Reservation successful!");

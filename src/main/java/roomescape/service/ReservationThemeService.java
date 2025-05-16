@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import roomescape.dto.request.CreateReservationThemeRequest;
+import roomescape.dto.response.ReservationThemeResponse;
 import lombok.RequiredArgsConstructor;
 import roomescape.domain.ReservationTheme;
 import roomescape.repository.ReservationThemeRepository;
-import roomescape.service.dto.request.CreateReservationThemeServiceRequest;
-import roomescape.service.dto.response.ReservationThemeServiceResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -16,15 +16,15 @@ public class ReservationThemeService {
 
     private final ReservationThemeRepository reservationThemeRepository;
 
-    public ReservationThemeServiceResponse create(CreateReservationThemeServiceRequest request) {
+    public ReservationThemeResponse create(CreateReservationThemeRequest request) {
         ReservationTheme reservationTheme = reservationThemeRepository.save(request.toReservationTheme());
-        return ReservationThemeServiceResponse.from(reservationTheme);
+        return ReservationThemeResponse.from(reservationTheme);
     }
 
-    public List<ReservationThemeServiceResponse> getAll() {
+    public List<ReservationThemeResponse> getAll() {
         List<ReservationTheme> reservationThemes = reservationThemeRepository.getAll();
         return reservationThemes.stream()
-                .map(ReservationThemeServiceResponse::from)
+                .map(ReservationThemeResponse::from)
                 .toList();
     }
 
@@ -33,10 +33,10 @@ public class ReservationThemeService {
                 .ifPresent(reservationThemeRepository::remove);
     }
 
-    public List<ReservationThemeServiceResponse> getPopularThemes(int limit) {
+    public List<ReservationThemeResponse> getPopularThemes(int limit) {
         List<ReservationTheme> reservationThemes = reservationThemeRepository.orderByThemeBookedCountWithLimit(limit);
         return reservationThemes.stream()
-                .map(ReservationThemeServiceResponse::from)
+                .map(ReservationThemeResponse::from)
                 .toList();
     }
 }

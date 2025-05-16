@@ -4,19 +4,54 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Repository;
+
+import lombok.RequiredArgsConstructor;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTheme;
+import roomescape.repository.dao.ReservationDao;
 
-public interface ReservationRepository {
+@Repository
+@RequiredArgsConstructor
+public class ReservationRepository {
 
-    List<Reservation> getAll();
+    private final ReservationDao reservationDao;
 
-    Reservation save(Reservation reservation);
+    public List<Reservation> getAll() {
+        return reservationDao.selectAll();
+    }
 
-    Optional<Reservation> findById(Long id);
+    public Reservation save(Reservation reservation) {
+        return reservationDao.insertAndGet(reservation);
+    }
 
-    Reservation getById(Long id);
+    public Optional<Reservation> findById(Long reservationId) {
+        return reservationDao.selectById(reservationId);
+    }
 
-    void remove(Reservation reservation);
+    public Reservation getById(Long id) {
+        return findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+    }
 
-    boolean existDuplicatedDateTime(LocalDate date, Long timeId, Long themeId);
+    public void remove(Reservation reservation) {
+        reservationDao.deleteById(reservation.id());
+    }
+
+    public boolean existDuplicatedDateTime(LocalDate date, Long timeId, Long themeId) {
+        return reservationDao.existDuplicatedDateTime(date, timeId, themeId);
+    }
+
+    public List<Reservation> findAllByThemeAndMemberInDateRange(ReservationTheme theme, Member member, LocalDate dateFrom,
+            LocalDate dateTo) {
+        Long themeId = null;
+        if (theme != null) {
+            themeId = theme.id();
+        }
+        Long memberId = null;
+        if (member != null) {
+            memberId = member.id();
+        }
+        return reservationDao.selectAllByThemeIdAndMemberIdInDateRange(themeId, memberId, dateFrom, dateTo);
+    }
 }

@@ -20,8 +20,11 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import roomescape.controller.api.ReservationController;
-import roomescape.controller.api.dto.response.ReservationResponse;
+import roomescape.auth.JwtProvider;
+import roomescape.controller.ReservationController;
+import roomescape.domain.Member;
+import roomescape.dto.response.ReservationResponse;
+import roomescape.repository.MemberRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
@@ -33,6 +36,16 @@ class MissionTest {
     @Autowired
     private ReservationController reservationController;
 
+    @Autowired
+    private JwtProvider jwtProvider;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
+    private Member admin;
+
+    private String adminLoginToken;
+
     @BeforeEach
     void setUp() {
         jdbcTemplate.update("""
@@ -41,13 +54,20 @@ class MissionTest {
                 ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1;
                 TRUNCATE TABLE reservation_time;
                 ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1;
+                TRUNCATE TABLE theme;
+                ALTER TABLE theme ALTER COLUMN id RESTART WITH 1;
+                TRUNCATE TABLE member;
+                ALTER TABLE member ALTER COLUMN id RESTART WITH 1;
                 SET REFERENTIAL_INTEGRITY TRUE;
                 """);
+        admin = memberRepository.save(new Member("admin", "admin@admin.com", "password", "admin"));
+        adminLoginToken = jwtProvider.createToken(admin);
     }
 
     @Test
     void 일단계() {
-        RestAssured.given().log().all()
+        RestAssured.given()
+                .cookie("token", adminLoginToken).log().all()
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -55,7 +75,8 @@ class MissionTest {
 
     @Test
     void 이단계() {
-        RestAssured.given().log().all()
+        RestAssured.given()
+                .cookie("token", adminLoginToken).log().all()
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
@@ -92,18 +113,17 @@ class MissionTest {
                 .statusCode(201);
 
         Map<String, Object> params3 = new HashMap<>();
-        params3.put("name", "브라운");
         params3.put("date", LocalDate.now().plusDays(20));
         params3.put("timeId", "1");
         params3.put("themeId", "1");
 
-        RestAssured.given().log().all()
+        RestAssured.given()
+                .cookie("token", adminLoginToken).log().all()
                 .contentType(ContentType.JSON)
                 .body(params3)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201)
-                .body("id", is(1));
+                .statusCode(201);
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
@@ -136,8 +156,8 @@ class MissionTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "name", "desc", "thumb");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
-                LocalDate.now().plusDays(20), "1", "1");
+        jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                admin.id(), LocalDate.now().plusDays(20), "1", "1");
 
         final List<ReservationResponse> response = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -162,7 +182,8 @@ class MissionTest {
         params.put("timeId", "1");
         params.put("themeId", "1");
 
-        RestAssured.given().log().all()
+        RestAssured.given()
+                .cookie("token", adminLoginToken).log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -228,12 +249,12 @@ class MissionTest {
                 .statusCode(201);
 
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", LocalDate.now().plusDays(1));
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
-        RestAssured.given().log().all()
+        RestAssured.given()
+                .cookie("token", adminLoginToken).log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
