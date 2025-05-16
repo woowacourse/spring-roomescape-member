@@ -21,7 +21,7 @@ function render(data) {
         const row = tableBody.insertRow();
 
         row.insertCell(0).textContent = item.id;
-        row.insertCell(1).textContent = item.userName.name;
+        row.insertCell(1).textContent = item.name.name;
         row.insertCell(2).textContent = item.reservationDateTime.date.date;
         row.insertCell(3).textContent = item.reservationDateTime.time.startAt;
 

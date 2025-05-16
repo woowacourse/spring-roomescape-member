@@ -1,32 +1,34 @@
 package roomescape.model;
 
 import java.time.LocalDateTime;
-import roomescape.dto.ReservationRequest;
+import roomescape.dto.UserReservationRequest;
+import roomescape.model.user.Member;
 
 public class Reservation {
     private final Long id;
-    private final UserName userName;
+    private final Member member;
     private final ReservationDateTime reservationDateTime;
     private final Theme theme;
 
-    public Reservation(Long id, UserName userName, ReservationDateTime reservationDateTime, Theme theme) {
+    public Reservation(Long id, Member member, ReservationDateTime reservationDateTime, Theme theme) {
         this.id = id;
-        this.userName = userName;
+        this.member = member;
         this.reservationDateTime = reservationDateTime;
         this.theme = theme;
     }
 
-    public static Reservation createWithNoId(ReservationRequest reservationRequest, ReservationTime reservationTime,
+    public static Reservation createWithNoId(Member member, UserReservationRequest userReservationRequest,
+                                             ReservationTime reservationTime,
                                              Theme theme) {
-        validateFuture(reservationRequest, reservationTime);
+        validateFuture(userReservationRequest, reservationTime);
         return new Reservation(null,
-                new UserName(reservationRequest.name()),
-                new ReservationDateTime(reservationRequest.date(), reservationTime),
+                member,
+                new ReservationDateTime(userReservationRequest.date(), reservationTime),
                 theme);
     }
 
-    private static void validateFuture(ReservationRequest reservationRequest, ReservationTime reservationTime) {
-        LocalDateTime dateTime = LocalDateTime.of(reservationRequest.date(),
+    private static void validateFuture(UserReservationRequest userReservationRequest, ReservationTime reservationTime) {
+        LocalDateTime dateTime = LocalDateTime.of(userReservationRequest.date(),
                 reservationTime.getStartAt());
         LocalDateTime now = LocalDateTime.now();
         if (dateTime.isBefore(now)) {
@@ -38,8 +40,8 @@ public class Reservation {
         return id;
     }
 
-    public UserName getUserName() {
-        return userName;
+    public Member getMember() {
+        return member;
     }
 
     public ReservationDateTime getReservationDateTime() {
