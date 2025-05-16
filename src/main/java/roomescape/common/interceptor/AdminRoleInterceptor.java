@@ -3,6 +3,7 @@ package roomescape.common.interceptor;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.jwt.JwtTokenProvider;
@@ -45,12 +46,10 @@ public class AdminRoleInterceptor implements HandlerInterceptor {
             throw new MissingTokenExcpetion("Token is missing");
         }
 
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-
-        throw new MissingTokenExcpetion("Token is missing");
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie != null && "token".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElseThrow(() -> new MissingTokenExcpetion("Token is missing"));
     }
 }
