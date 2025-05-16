@@ -34,6 +34,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         final Cookie[] cookies = nativeRequest.getCookies();
 
         final String token = CookieHandler.extractTokenFromCookies(cookies);
-        return authService.findMemberByToken(token);
+        return authService.getMemberByToken(token);
     }
 }

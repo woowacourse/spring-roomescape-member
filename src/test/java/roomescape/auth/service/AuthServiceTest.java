@@ -55,13 +55,13 @@ class AuthServiceTest {
 
     @DisplayName("토큰으로 회원 정보를 조회할 수 있다")
     @Test
-    void findMemberByTokenTest() {
+    void getMemberByTokenTest() {
         // given
         CreateTokenServiceRequest request = new CreateTokenServiceRequest("admin@email.com", "password");
         String token = authService.createToken(request);
 
         // when
-        Member result = authService.findMemberByToken(token);
+        Member result = authService.getMemberByToken(token);
 
         // then
         assertAll(
@@ -72,8 +72,8 @@ class AuthServiceTest {
 
     @DisplayName("토큰 없이 회원 조회 시 예외를 던진다")
     @Test
-    void findMemberByTokenTest_WhenTokenNotExists() {
-        assertThatThrownBy(() -> authService.findMemberByToken(" "))
+    void getMemberByTokenTest_WhenTokenNotExists() {
+        assertThatThrownBy(() -> authService.getMemberByToken(" "))
                 .isInstanceOf(AuthorizationException.class)
                 .hasMessage("로그인 토큰이 존재하지 않습니다");
     }

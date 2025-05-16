@@ -35,9 +35,9 @@ public class ReservationService {
     }
 
     public Reservation addReservation(final CreateReservationServiceRequest creation) {
-        final ReservationTime reservationTime = findReservationTimeByTimeId(creation.timeId());
-        final Theme theme = findThemeByThemeId(creation.themeId());
-        final Member member = findMemberByMemberId(creation.memberId());
+        final ReservationTime reservationTime = getReservationTimeByTimeId(creation.timeId());
+        final Theme theme = getThemeByThemeId(creation.themeId());
+        final Member member = getMemberByMemberId(creation.memberId());
         final Reservation reservation = new Reservation(creation.date(), reservationTime, theme, member);
 
         validatePastDateAndTime(reservation);
@@ -47,17 +47,17 @@ public class ReservationService {
         return new Reservation(savedId, reservation);
     }
 
-    private ReservationTime findReservationTimeByTimeId(final long timeId) {
+    private ReservationTime getReservationTimeByTimeId(final long timeId) {
         return reservationTimeDAO.findById(timeId)
                 .orElseThrow(() -> new NotExistedValueException("존재하지 않는 예약 가능 시간입니다: timeId=%d".formatted(timeId)));
     }
 
-    private Theme findThemeByThemeId(final long themeId) {
+    private Theme getThemeByThemeId(final long themeId) {
         return themeDAO.findById(themeId)
                 .orElseThrow(() -> new NotExistedValueException("존재하지 않는 테마 입니다"));
     }
 
-    private Member findMemberByMemberId(final long memberId) {
+    private Member getMemberByMemberId(final long memberId) {
         return memberDao.findById(memberId)
                 .orElseThrow(() -> new NotExistedValueException("존재하지 않는 멤버 입니다"));
     }

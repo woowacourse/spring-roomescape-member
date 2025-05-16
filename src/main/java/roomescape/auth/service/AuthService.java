@@ -34,7 +34,7 @@ public class AuthService {
         return authTokenProvider.createTokenFromMember(member);
     }
 
-    public Member findMemberByToken(final String token) {
+    public Member getMemberByToken(final String token) {
         validateTokenExisted(token);
         final long memberId = Long.parseLong(authTokenExtractor.extractMemberIdFromToken(token));
 
