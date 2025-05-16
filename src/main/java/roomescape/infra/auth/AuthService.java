@@ -34,18 +34,6 @@ public class AuthService {
         return new NameResponse(name);
     }
 
-    public String extractTokenFromCookies(Cookie[] cookies) {
-        return jwtTokenProcessor.extractTokenFromCookies(cookies);
-    }
-
-    private Member getMemberByEmail(String email) {
-        return memberRepository.findByEmail(email);
-    }
-
-    public Member getMemberFromCookies(Cookie[] cookies) {
-        return getMemberByEmail(getPayload(extractTokenFromCookies(cookies)));
-    }
-
     public void validateLoginToken(String loginToken) {
         if (jwtTokenProcessor.validateToken(loginToken)) {
             return;
@@ -57,7 +45,20 @@ public class AuthService {
         return jwtTokenProcessor.getPayload(token);
     }
 
-    public Role getRole(String token) {
-        return jwtTokenProcessor.getRole(token);
+    public Member getMemberFromCookies(Cookie[] cookies) {
+        return getMemberByEmail(getPayload(extractTokenFromCookies(cookies)));
     }
+
+    private Member getMemberByEmail(String email) {
+        return memberRepository.findByEmail(email);
+    }
+
+    public String extractTokenFromCookies(Cookie[] cookies) {
+        return jwtTokenProcessor.extractTokenFromCookies(cookies);
+    }
+
+    public Role getRoleFromCookies(Cookie[] cookies) {
+        return jwtTokenProcessor.getRole(extractTokenFromCookies(cookies));
+    }
+
 }
