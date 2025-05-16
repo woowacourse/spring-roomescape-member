@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Theme;
+import roomescape.domain.theme.dao.ThemeDao;
+import roomescape.domain.theme.model.Theme;
 
 @Repository
 public class FakeThemeDaoImpl implements ThemeDao {
@@ -27,10 +28,10 @@ public class FakeThemeDaoImpl implements ThemeDao {
     }
 
     @Override
-    public void delete(Long id) {
+    public boolean delete(Long id) {
         Theme theme = findById(id).
             orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약번호 입니다."));
-        themes.remove(theme);
+        return themes.remove(theme);
     }
 
     @Override

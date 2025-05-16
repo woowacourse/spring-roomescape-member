@@ -1,12 +1,14 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
+import roomescape.domain.reservation.dao.ReservationDao;
+import roomescape.domain.reservation.model.Reservation;
+import roomescape.domain.reservation.model.ReservationDate;
 
 public class FakeReservationDaoImpl implements ReservationDao {
 
@@ -25,9 +27,10 @@ public class FakeReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public void delete(Long id) {
-        Reservation reservation = findById(id).orElseThrow(() -> new IllegalArgumentException());
-        reservations.remove(reservation);
+    public boolean delete(Long id) {
+        Reservation reservation = findById(id)
+            .orElseThrow(() -> new IllegalArgumentException());
+        return reservations.remove(reservation);
     }
 
     @Override
@@ -38,24 +41,32 @@ public class FakeReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public int countExistReservationByTime(Long id) {
-        return (int) reservations.stream()
-            .filter(reservation -> reservation.getId().equals(id))
-            .count();
+    public boolean existReservationByTime(Long timeId) {
+        return reservations.stream()
+            .anyMatch(reservation -> reservation.getTimeId() == timeId);
     }
 
     @Override
-    public int countExistReservationByTheme(Long id) {
-        return (int) reservations.stream()
-            .filter(reservation -> reservation.getId().equals(id))
-            .count();
+    public boolean existReservationByTheme(Long themeId) {
+        return reservations.stream()
+            .anyMatch(reservation -> reservation.getThemeId().equals(themeId));
     }
 
     @Override
-    public int countAlreadyReservationOf(ReservationDate date, Long timeId) {
-        return (int) reservations.stream()
-            .filter(reservation -> reservation.getReservationDate().equals(date))
-            .filter(reservation -> reservation.getTimeId() == timeId)
-            .count();
+    public boolean existReservationOf(ReservationDate date, Long themeId, Long timeId) {
+        return reservations.stream()
+            .anyMatch(reservation -> reservation.getReservationDate().equals(date)
+                && reservation.getThemeId().equals(themeId)
+                && reservation.getTimeId() == timeId);
+    }
+
+    @Override
+    public List<Reservation> findOf(String dateFrom, String dateTo, Long memberId, Long themeId) {
+        return reservations.stream()
+            .filter(reservation -> reservation.getMemberId() == memberId
+                && reservation.getThemeId().equals(themeId)
+                && reservation.getReservationDate().getDate().isAfter(LocalDate.parse(dateFrom))
+                && reservation.getReservationDate().getDate().isBefore(LocalDate.parse(dateTo)))
+            .toList();
     }
 }

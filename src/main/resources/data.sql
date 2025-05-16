@@ -14,15 +14,5 @@ VALUES (3, '12:00');
 INSERT INTO reservation_time (id, start_at)
 VALUES (4, '13:00');
 
-INSERT INTO reservation (id, name, date, time_id, theme_id)
-VALUES (1, '김덕배', '2025-04-24', 1, 1);
-INSERT INTO reservation (id, name, date, time_id, theme_id)
-VALUES (2, '김덕배2', '2025-04-25', 2, 1);
-INSERT INTO reservation (id, name, date, time_id, theme_id)
-VALUES (3, '김덕배3', '2025-04-26', 3, 1);
-INSERT INTO reservation (id, name, date, time_id, theme_id)
-VALUES (4, '김다배', '2025-04-27', 1, 2);
-INSERT INTO reservation (id, name, date, time_id, theme_id)
-VALUES (5, '김덕배', '2025-04-28', 1, 2);
-INSERT INTO reservation (id, name, date, time_id, theme_id)
-VALUES (6, '김덕배', '2025-05-01', 2, 3);
+INSERT INTO member (role, name, email, password)
+VALUES ('admin', 'jenson', 'a@example.com', 'abc');

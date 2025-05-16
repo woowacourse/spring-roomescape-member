@@ -12,7 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.Theme;
+import roomescape.domain.theme.dao.ThemeDao;
+import roomescape.domain.theme.model.Theme;
 
 @Sql(scripts = {"/test-schema.sql"})
 @SpringBootTest
@@ -29,6 +30,7 @@ public class JdbcThemeDaoTest {
         jdbcTemplate.update("DELETE FROM RESERVATION");
         jdbcTemplate.update("DELETE FROM RESERVATION_TIME");
         jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("DELETE FROM MEMBER");
     }
 
     @DisplayName("테마 저장 테스트")
@@ -101,12 +103,13 @@ public class JdbcThemeDaoTest {
         String sql5 = "INSERT INTO reservation_time (id, start_at) VALUES (2, '11:00');";
         String sql6 = "INSERT INTO reservation_time (id, start_at) VALUES (3, '12:00');";
         String sql7 = "INSERT INTO reservation_time (id, start_at) VALUES (4, '13:00');";
-        String sql8 = "INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (1, '김덕배', '2025-04-24', 1, 1);";
-        String sql9 = "INSERT INTO reservation (id, name, date, time_id, theme_id)VALUES (2, '김덕배2', '2025-04-25', 2, 1);";
-        String sql10 = "INSERT INTO reservation (id, name, date, time_id, theme_id)VALUES (3, '김덕배3', '2025-04-26', 3, 1);";
-        String sql11 = "INSERT INTO reservation (id, name, date, time_id, theme_id)VALUES (4, '김다배', '2025-04-27', 1, 2);";
-        String sql12 = "INSERT INTO reservation (id, name, date, time_id, theme_id)VALUES (5, '김덕배', '2025-04-28', 1, 2);";
-        String sql13 = "INSERT INTO reservation (id, name, date, time_id, theme_id)VALUES (6, '김덕배', '2025-05-01', 2, 3);";
+        String sql8 = "INSERT INTO member (id, role, name, email, password) VALUES (1, 'admin', 'jenson', 'a@example.com', 'abc');";
+        String sql9 = "INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES ('2025-04-24', 1, 1, 1);";
+        String sql10 = "INSERT INTO reservation (date, member_id, time_id, theme_id)VALUES ('2025-04-25', 1, 2, 1);";
+        String sql11 = "INSERT INTO reservation (date, member_id, time_id, theme_id)VALUES ('2025-04-26', 1, 3, 1);";
+        String sql12 = "INSERT INTO reservation (date, member_id, time_id, theme_id)VALUES ('2025-04-27', 1, 1, 2);";
+        String sql13 = "INSERT INTO reservation (date, member_id, time_id, theme_id)VALUES ('2025-04-28', 1, 1, 2);";
+        String sql14 = "INSERT INTO reservation (date, member_id, time_id, theme_id)VALUES ('2025-05-01', 1, 2, 3);";
         jdbcTemplate.update(sql1);
         jdbcTemplate.update(sql2);
         jdbcTemplate.update(sql3);
@@ -120,6 +123,7 @@ public class JdbcThemeDaoTest {
         jdbcTemplate.update(sql11);
         jdbcTemplate.update(sql12);
         jdbcTemplate.update(sql13);
+        jdbcTemplate.update(sql14);
     }
 
 }
