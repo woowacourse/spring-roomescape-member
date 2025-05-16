@@ -21,6 +21,7 @@ public class JdbcMemberRepository implements MemberRepository {
                     resultSet.getString("role"),
                     resultSet.getString("email"),
                     resultSet.getString("password"));
+                    
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {
