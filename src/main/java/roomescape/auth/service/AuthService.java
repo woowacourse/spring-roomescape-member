@@ -9,7 +9,6 @@ import roomescape.global.exception.custom.ForbiddenException;
 import roomescape.global.exception.custom.UnauthorizedException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberEmail;
-import roomescape.member.domain.Role;
 import roomescape.member.repository.MemberRepository;
 
 @Service
@@ -40,7 +39,7 @@ public class AuthService {
 
     public LoginMember checkAdminMember(final String token) {
         final Member member = findMemberByToken(token);
-        if (!member.hasRole(Role.ADMIN)) {
+        if (!member.isAdmin()) {
             throw new ForbiddenException("접근 권한이 없습니다.");
         }
         return new LoginMember(member);

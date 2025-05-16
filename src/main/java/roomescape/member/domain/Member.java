@@ -32,8 +32,8 @@ public final class Member {
         return new Member(id, memberName, email, password, Role.USER);
     }
 
-    public boolean hasRole(final Role other) {
-        return this.role == other;
+    public boolean isAdmin() {
+        return this.role == Role.ADMIN;
     }
 
     private void validateNotNull(final MemberName memberName, final MemberEmail email,
