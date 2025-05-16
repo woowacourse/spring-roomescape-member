@@ -1,11 +1,11 @@
-package roomescape.global.config;
+package roomescape.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.global.config.interceptor.CheckAdminInterceptor;
-import roomescape.global.config.resolver.LoginMemberArgumentResolver;
+import roomescape.config.interceptor.CheckAdminInterceptor;
+import roomescape.config.resolver.LoginMemberArgumentResolver;
 
 import java.util.List;
 
