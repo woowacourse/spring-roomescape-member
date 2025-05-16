@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import roomescape.auth.util.LoginTokenParser;
 import roomescape.exception.DatabaseForeignKeyException;
 import roomescape.exception.InvalidTokenException;
 
@@ -54,7 +55,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(InvalidTokenException.class)
     public String handleInvalidTokenException(InvalidTokenException e, HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", null);
+        Cookie cookie = new Cookie(LoginTokenParser.LOGIN_TOKEN_NAME, null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
         response.addCookie(cookie);

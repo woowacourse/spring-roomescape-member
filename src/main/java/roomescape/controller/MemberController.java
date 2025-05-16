@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import roomescape.auth.RequestMember;
+import roomescape.auth.util.LoginTokenParser;
 import roomescape.domain.Member;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.request.SignupRequest;
@@ -31,7 +32,7 @@ public class MemberController {
     @PostMapping("/login")
     public void login(@RequestBody @Valid LoginRequest request, HttpServletResponse response) {
         String token = memberService.login(request);
-        Cookie cookie = new Cookie("token", token);
+        Cookie cookie = new Cookie(LoginTokenParser.LOGIN_TOKEN_NAME, token);
         cookie.setPath("/");
         response.addCookie(cookie);
     }
@@ -39,7 +40,7 @@ public class MemberController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/logout")
     public void logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", null);
+        Cookie cookie = new Cookie(LoginTokenParser.LOGIN_TOKEN_NAME, null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
         response.addCookie(cookie);
