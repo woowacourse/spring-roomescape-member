@@ -34,24 +34,12 @@ public class JwtTokenProvider {
     }
 
     public Role getRole(String token) {
-        Claims claims = getClaims(token);
         try {
+            Claims claims = getClaims(token);
             String role = claims.get("role", String.class);
             return Role.valueOf(role);
         } catch (NullPointerException | IllegalArgumentException e) {
             throw new BadRequestException("잘못된 형식의 토큰입니다.");
-        }
-    }
-
-    public Claims getClaims(String token) {
-        try {
-            return Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-        } catch (JwtException e) {
-            throw new BadRequestException("올바르지 않은 토큰입니다.");
         }
     }
 
@@ -61,6 +49,18 @@ public class JwtTokenProvider {
             return Long.parseLong(claims.getSubject());
         } catch (NumberFormatException e) {
             throw new BadRequestException("잘못된 형식의 토큰입니다.");
+        }
+    }
+
+    private Claims getClaims(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (JwtException e) {
+            throw new BadRequestException("올바르지 않은 토큰입니다.");
         }
     }
 }
