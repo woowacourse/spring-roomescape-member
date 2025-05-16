@@ -13,6 +13,7 @@ import roomescape.theme.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
+
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
@@ -22,7 +23,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getThemes() {
-        return themeRepository.getAll().stream()
+        return themeRepository.findAll().stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
@@ -37,12 +38,12 @@ public class ThemeService {
     }
 
     public ThemeResponse create(final ThemeCreateRequest request) {
-        Theme theme = themeRepository.put(request.toTheme());
+        Theme theme = themeRepository.save(request.toTheme());
         return ThemeResponse.from(theme);
     }
 
     public List<ThemeResponse> getPopularThemes() {
-        final LocalDate date = LocalDate.now().plusDays(10);
+        final LocalDate date = LocalDate.now();
         return themeRepository.findTop10PopularThemesWithinLastWeek(date).stream()
                 .map(ThemeResponse::from)
                 .toList();

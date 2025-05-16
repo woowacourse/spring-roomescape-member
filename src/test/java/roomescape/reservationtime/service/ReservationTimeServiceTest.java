@@ -4,40 +4,64 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.dto.request.ReservationCreateRequest;
-import roomescape.reservation.repository.FakeReservationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
+import roomescape.config.TestConfig;
+import roomescape.member.repository.MemberRepository;
+import roomescape.reservation.fixture.TestFixture;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservationtime.dto.request.ReservationTimeCreateRequest;
 import roomescape.reservationtime.dto.response.AvailableReservationTimeResponse;
 import roomescape.reservationtime.dto.response.ReservationTimeResponse;
 import roomescape.reservationtime.exception.ReservationTimeAlreadyExistsException;
+import roomescape.reservationtime.exception.ReservationTimeInUseException;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
-import roomescape.reservationtime.repository.FakeReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 
+@JdbcTest
+@Import(TestConfig.class)
+@TestPropertySource(properties = {
+        "spring.sql.init.schema-locations=classpath:schema.sql",
+        "spring.sql.init.data-locations="
+})
 class ReservationTimeServiceTest {
-    private final LocalDate futureDate = LocalDate.now().plusDays(1);
-    private final Theme theme = Theme.of(1L, "추리", "셜록 추리 게임 with Danny", "image.png");
+
+    private final LocalDate futureDate = TestFixture.makeFutureDate();
+    private final LocalDateTime afterOneHour = TestFixture.makeTimeAfterOneHour();
+
+    private Long themeId;
+    private Long memberId;
 
     private ReservationService reservationService;
     private ReservationTimeService reservationTimeService;
 
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
     @BeforeEach
     void setUp() {
-        ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
-        ReservationRepository reservationRepository = new FakeReservationRepository();
-        ThemeRepository themeRepository = new FakeThemeRepository();
-        themeRepository.put(theme);
+        themeId = themeRepository.save(TestFixture.makeTheme(1L)).getId();
         reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+        memberId = memberRepository.save(TestFixture.makeMember()).getId();
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
+                memberRepository);
     }
 
     @Test
@@ -48,7 +72,8 @@ class ReservationTimeServiceTest {
         reservationTimeService.create(request);
 
         assertThatThrownBy(() -> reservationTimeService.create(request))
-                .isInstanceOf(ReservationTimeAlreadyExistsException.class);
+                .isInstanceOf(ReservationTimeAlreadyExistsException.class)
+                .hasMessageContaining("중복된 예약 시간을 생성할 수 없습니다.");
     }
 
     @Test
@@ -72,13 +97,6 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void deleteReservationTime_shouldThrowException_WhenIdNotFound() {
-        assertThatThrownBy(() -> reservationTimeService.delete(999L))
-                .isInstanceOf(ReservationTimeNotFoundException.class)
-                .hasMessageContaining("요청한 id와 일치하는 예약 시간 정보가 없습니다.");
-    }
-
-    @Test
     void deleteReservationTime_shouldRemoveSuccessfully() {
         ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(13, 30));
         ReservationTimeResponse response = reservationTimeService.create(request);
@@ -90,26 +108,37 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    void deleteReservationTime_shouldThrowException_WhenIdNotFound() {
+        assertThatThrownBy(() -> reservationTimeService.delete(999L))
+                .isInstanceOf(ReservationTimeNotFoundException.class)
+                .hasMessageContaining("요청한 id와 일치하는 예약 시간 정보가 없습니다.");
+    }
+
+    @Test
     void deleteReservationTime_shouldThrowException_WhenReservationExists() {
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
                 new ReservationTimeCreateRequest(LocalTime.now()));
-        reservationService.create(new ReservationCreateRequest("danny", futureDate, reservationTimeResponse.id(), theme.getId()));
+        reservationService.create(futureDate, reservationTimeResponse.id(), themeId, memberId, afterOneHour);
         assertThatThrownBy(() -> reservationTimeService.delete(reservationTimeResponse.id()))
-                .hasMessage("해당 시간에 대한 예약이 존재하여 삭제할 수 없습니다.");
+                .isInstanceOf(ReservationTimeInUseException.class)
+                .hasMessageContaining("해당 시간에 대한 예약이 존재하여 삭제할 수 없습니다.");
     }
 
     @Test
     void getAvailableReservationTimes_shouldReturnAllAvailableReservationTimes() {
-        reservationTimeService.create(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
+                new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
         reservationTimeService.create(new ReservationTimeCreateRequest(LocalTime.of(11, 0)));
         reservationTimeService.create(new ReservationTimeCreateRequest(LocalTime.of(12, 0)));
 
-        reservationService.create(new ReservationCreateRequest("mint", futureDate, 1L, 1L));
+        reservationService.create(futureDate, reservationTimeResponse.id(), themeId, memberId, afterOneHour);
         List<AvailableReservationTimeResponse> availableReservationTimes = reservationTimeService.getAvailableReservationTimes(
-                futureDate, 1L);
+                futureDate, themeId);
 
         assertThat(
-                availableReservationTimes.stream().filter(reservationTime -> !reservationTime.alreadyBooked()).count())
-                .isEqualTo(2);
+                availableReservationTimes.stream()
+                        .filter(AvailableReservationTimeResponse::alreadyBooked)
+                        .count())
+                .isEqualTo(1L);
     }
 }

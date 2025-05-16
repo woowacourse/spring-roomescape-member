@@ -1,11 +1,8 @@
 package roomescape.reservationtime.service;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
@@ -21,6 +18,7 @@ import roomescape.reservationtime.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
+
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
@@ -31,7 +29,7 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeResponse> getReservationTimes() {
-        return reservationTimeRepository.getAll().stream()
+        return reservationTimeRepository.findAll().stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
     }
@@ -47,44 +45,17 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse create(final ReservationTimeCreateRequest request) {
         validateIsTimeUnique(request);
-        ReservationTime newReservationTime = reservationTimeRepository.put(request.toReservationTime());
+        ReservationTime newReservationTime = reservationTimeRepository.save(request.toReservationTime());
         return ReservationTimeResponse.from(newReservationTime);
     }
 
     private void validateIsTimeUnique(final ReservationTimeCreateRequest request) {
         if (reservationTimeRepository.checkExistsByStartAt(request.startAt())) {
-            throw new ReservationTimeAlreadyExistsException("중복된 예약 시간을 생성할 수 없습니다");
+            throw new ReservationTimeAlreadyExistsException("중복된 예약 시간을 생성할 수 없습니다.");
         }
     }
 
-    public List<AvailableReservationTimeResponse> getAvailableReservationTimes(final LocalDate date,
-                                                                               final Long themeId) {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.getAll();
-        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
-
-        Map<ReservationTime, Boolean> availabilities = reservationTimes.stream()
-                .map(reservationTime -> mapToDto(reservations, reservationTime))
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-
-        return availabilities.entrySet().stream()
-                .map(entry -> {
-                    ReservationTime reservationTime = entry.getKey();
-                    return new AvailableReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt(),
-                            entry.getValue());
-                })
-                .toList();
-    }
-
-    private Entry<ReservationTime, Boolean> mapToDto(final List<Reservation> reservations,
-                                                     final ReservationTime reservationTime) {
-        if (containsTime(reservations, reservationTime.getId())) {
-           return Map.entry(reservationTime, true);
-        }
-        return Map.entry(reservationTime, false);
-    }
-
-    private boolean containsTime(final List<Reservation> reservations, final Long id) {
-        return reservations.stream()
-                .anyMatch(reservation -> Objects.equals(reservation.getId(), id));
+    public List<AvailableReservationTimeResponse> getAvailableReservationTimes(final LocalDate date, final Long themeId) {
+        return reservationRepository.findAvailableTimesByDateAndThemeId(date, themeId);
     }
 }
