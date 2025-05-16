@@ -17,7 +17,7 @@ public class Reservation {
         this.date = Objects.requireNonNull(date, "[ERROR] 날짜는 null이 될 수 없습니다.");
         this.time = Objects.requireNonNull(time, "[ERROR] 시간은 null이 될 수 없습니다.");
         this.theme = Objects.requireNonNull(theme, "[ERROR] 테마는 null이 될 수 없습니다.");
-        this.member = member;
+        this.member = Objects.requireNonNull(member, "[ERROR] 맴버는 null이 될 수 없습니다.");
     }
 
     public Reservation(LocalDate date, ReservationTime time, Theme theme,
