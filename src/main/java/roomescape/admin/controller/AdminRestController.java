@@ -14,6 +14,8 @@ import roomescape.admin.dto.AdminReservationRequest;
 import roomescape.admin.dto.AdminReservationResponse;
 import roomescape.admin.dto.ReservationSearchRequest;
 import roomescape.admin.service.AdminService;
+import roomescape.member.domain.Member;
+import roomescape.member.dto.MemberResponse;
 import roomescape.reservation.domain.Reservation;
 
 @RequestMapping("/admin")
@@ -54,5 +56,15 @@ public class AdminRestController {
                 .toList();
 
         return ResponseEntity.ok(searchedResponses);
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity<List<MemberResponse>> getMembers() {
+        final List<Member> members = adminService.findAll();
+        final List<MemberResponse> memberResponses = members.stream()
+                .map(MemberResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(memberResponses);
     }
 }

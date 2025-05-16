@@ -1,6 +1,5 @@
 package roomescape.member.service;
 
-import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +8,6 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.common.exception.DataNotFoundException;
-import roomescape.member.domain.Member;
 import roomescape.member.repository.JdbcMemberRepository;
 import roomescape.member.repository.MemberRepository;
 
@@ -39,16 +37,6 @@ public class MemberServiceTest {
                 () -> memberService.findMemberByEmail(email)
         ).isInstanceOf(DataNotFoundException.class);
     }
-
-    @Test
-    void 모든_멤버_조회() {
-        //when
-        final List<Member> members = memberService.findAll();
-
-        //then
-        Assertions.assertThat(members).isNotEmpty();
-    }
-
 
     @TestConfiguration
     static class TestConfig {

@@ -58,4 +58,8 @@ public class AdminService {
 
         return searchedReservations;
     }
+
+    public List<Member> findAll() {
+        return memberRepository.findAll();
+    }
 }
