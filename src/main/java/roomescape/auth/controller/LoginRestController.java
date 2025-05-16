@@ -3,7 +3,6 @@ package roomescape.auth.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.dto.LoginResponse;
+import roomescape.auth.jwt.JwtTokenExtractor;
 import roomescape.auth.service.AuthService;
-import roomescape.common.exception.MissingTokenExcpetion;
 
 @RequestMapping("/login")
 @RestController
@@ -24,6 +23,7 @@ import roomescape.common.exception.MissingTokenExcpetion;
 public class LoginRestController {
 
     private final AuthService authService;
+    private final JwtTokenExtractor jwtTokenExtractor;
 
     @PostMapping
     public ResponseEntity<LoginResponse> login(
@@ -51,24 +51,12 @@ public class LoginRestController {
     ) {
 
         final Cookie[] cookies = request.getCookies();
-        final String token = extractTokenFromCookie(cookies);
+        final String token = jwtTokenExtractor.extractTokenFromCookies(cookies);
         if (token.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         final String name = authService.findNameByToken(token);
 
         return ResponseEntity.ok(new LoginCheckResponse(name));
-    }
-
-    private String extractTokenFromCookie(final Cookie[] cookies) {
-        if (cookies == null) {
-            return "";
-        }
-
-        return Arrays.stream(cookies)
-                .filter(cookie -> cookie != null && "token".equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElseThrow(() -> new MissingTokenExcpetion("Token is missing"));
     }
 }

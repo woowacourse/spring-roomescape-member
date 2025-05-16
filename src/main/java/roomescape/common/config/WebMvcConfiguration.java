@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import roomescape.auth.jwt.JwtTokenExtractor;
 import roomescape.auth.jwt.JwtTokenProvider;
 import roomescape.common.interceptor.AdminRoleInterceptor;
 import roomescape.common.resolver.LoginMemberArgumentResolver;
@@ -17,15 +18,16 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenExtractor jwtTokenExtractor;
 
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberArgumentResolver(memberService, jwtTokenProvider));
+        resolvers.add(new LoginMemberArgumentResolver(memberService, jwtTokenProvider, jwtTokenExtractor));
     }
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminRoleInterceptor(jwtTokenProvider))
+        registry.addInterceptor(new AdminRoleInterceptor(jwtTokenProvider, jwtTokenExtractor))
                 .addPathPatterns("/admin/**");
     }
 }
