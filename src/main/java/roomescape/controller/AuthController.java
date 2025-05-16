@@ -1,6 +1,5 @@
 package roomescape.controller;
 
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,13 +18,13 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public void login(@Valid @RequestBody final AuthRequest request, final HttpSession session) {
-        authService.login(request, session);
+    public void login(@Valid @RequestBody final AuthRequest request) {
+        authService.login(request);
     }
 
     @PostMapping("/logout")
-    public void logout(final HttpSession session) {
-        authService.logout(session);
+    public void logout() {
+        authService.logout();
     }
 
     @GetMapping("/login/check")

@@ -28,9 +28,8 @@ class AdminAuthorizationInterceptorTest {
         // given
         var request = new MockHttpServletRequest();
         var response = new MockHttpServletResponse();
-        var session = request.getSession(true);
 
-        when(sessionLoginRepository.getLoginInfo(session))
+        when(sessionLoginRepository.getLoginInfo())
                 .thenReturn(new LoginInfo(1L, "관리자", Role.ADMIN));
 
         // when
@@ -40,38 +39,6 @@ class AdminAuthorizationInterceptorTest {
         assertThat(result).isTrue();
     }
 
-    @DisplayName("세션이 없는 경우 JSON 요청이면 예외를 던진다")
-    @Test
-    void preHandle_noSession_AccessDeniedException() {
-        // given
-        var request = new MockHttpServletRequest();
-        request.addHeader(ACCEPT, MediaType.APPLICATION_JSON_VALUE);
-        var response = new MockHttpServletResponse();
-
-        // when // then
-        assertThatThrownBy(() -> sut.preHandle(request, response, new Object()))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessage("관리자 권한이 없습니다.");
-    }
-
-    @DisplayName("세션이 없는 경우 HTML 요청이면 /login 으로 리다이렉트된다")
-    @Test
-    void preHandle_noSession_redirectsToLogin() throws Exception {
-        // given
-        var request = new MockHttpServletRequest();
-        request.addHeader(ACCEPT, MediaType.TEXT_HTML_VALUE);
-        var response = new MockHttpServletResponse();
-
-        // when
-        var result = sut.preHandle(request, response, new Object());
-
-        // then
-        assertSoftly(softly -> {
-            softly.assertThat(result).isFalse();
-            softly.assertThat(response.getRedirectedUrl()).isEqualTo("/login");
-        });
-    }
-
     @DisplayName("권한이 없는 사용자의 경우 JSON요청 이면 예외를 던진다")
     @Test
     void preHandle_nonAdminUser_AccessDeniedException() {
@@ -79,9 +46,8 @@ class AdminAuthorizationInterceptorTest {
         var request = new MockHttpServletRequest();
         request.addHeader(ACCEPT, MediaType.APPLICATION_JSON_VALUE);
         var response = new MockHttpServletResponse();
-        var session = request.getSession(true);
 
-        when(sessionLoginRepository.getLoginInfo(session))
+        when(sessionLoginRepository.getLoginInfo())
                 .thenReturn(new LoginInfo(1L, "유저", Role.USER));
 
         // when // then
@@ -97,9 +63,8 @@ class AdminAuthorizationInterceptorTest {
         var request = new MockHttpServletRequest();
         request.addHeader(ACCEPT, MediaType.TEXT_HTML_VALUE);
         var response = new MockHttpServletResponse();
-        var session = request.getSession(true);
 
-        when(sessionLoginRepository.getLoginInfo(session))
+        when(sessionLoginRepository.getLoginInfo())
                 .thenReturn(new LoginInfo(1L, "유저", Role.USER));
 
         // when

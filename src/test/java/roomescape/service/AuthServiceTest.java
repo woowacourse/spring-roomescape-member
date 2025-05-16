@@ -7,7 +7,6 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.mock.web.MockHttpSession;
 import roomescape.domain.entity.Member;
 import roomescape.domain.entity.Role;
 import roomescape.domain.repository.MemberRepository;
@@ -23,33 +22,30 @@ class AuthServiceTest {
     private final LoginInfo savedLoginInfo = new LoginInfo(savedMember.getId(), savedMember.getName(), savedMember.getRole());
 
     private final MemberRepository stubMemberRepository = new StubMemberRepository(savedMember);
-    private final SessionLoginRepository sessionLoginRepository = mock(
-            SessionLoginRepository.class);
+    private final SessionLoginRepository sessionLoginRepository = mock(SessionLoginRepository.class);
     private final AuthService sut = new AuthService(stubMemberRepository, sessionLoginRepository);
 
     @DisplayName("로그인에 성공하면 세션에 로그인 정보가 저장된다")
     @Test
     void login() {
         // given
-        var session = new MockHttpSession();
         var request = new AuthRequest(savedMember.getEmail(), savedMember.getPassword());
 
         // when
-        sut.login(request, session);
+        sut.login(request);
 
         // then
-        verify(sessionLoginRepository, times(1)).setLoginInfo(session, savedLoginInfo);
+        verify(sessionLoginRepository, times(1)).setLoginInfo(savedLoginInfo);
     }
 
     @DisplayName("존재하지 않는 이메일로 로그인하면 예외가 발생한다")
     @Test
     void login_nonexistentEmail() {
         // given
-        var session = new MockHttpSession();
         var request = new AuthRequest("unknown@example.com", "1234");
 
         // when // then
-        assertThatThrownBy(() -> sut.login(request, session))
+        assertThatThrownBy(() -> sut.login(request))
                 .isInstanceOf(AuthenticationException.class)
                 .hasMessage("존재하지 않는 이메일입니다.");
     }
@@ -58,11 +54,10 @@ class AuthServiceTest {
     @Test
     void login_wrongPassword() {
         // given
-        var session = new MockHttpSession();
         var request = new AuthRequest(savedMember.getEmail(), "wrong");
 
         // when // then
-        assertThatThrownBy(() -> sut.login(request, session))
+        assertThatThrownBy(() -> sut.login(request))
                 .isInstanceOf(AuthenticationException.class)
                 .hasMessage("비밀번호가 일치하지 않습니다.");
     }
@@ -71,13 +66,12 @@ class AuthServiceTest {
     @Test
     void logout() {
         // given
-        var session = new MockHttpSession();
-        sessionLoginRepository.setLoginInfo(session, savedLoginInfo);
+        sessionLoginRepository.setLoginInfo(savedLoginInfo);
 
         // when
-        sut.logout(session);
+        sut.logout();
 
         // then
-        verify(sessionLoginRepository, times(1)).clear(session);
+        verify(sessionLoginRepository, times(1)).clear();
     }
 }

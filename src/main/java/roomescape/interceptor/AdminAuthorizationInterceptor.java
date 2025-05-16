@@ -2,7 +2,6 @@ package roomescape.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -21,14 +20,8 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler)
             throws Exception {
-        final HttpSession session = request.getSession(false);
-        if (session == null) {
-            processUnauthorized(request, response);
-            return false;
-        }
-
         try {
-            final LoginInfo loginInfo = sessionLoginRepository.getLoginInfo(session);
+            final LoginInfo loginInfo = sessionLoginRepository.getLoginInfo();
             if (Role.ADMIN.equals(loginInfo.role())) {
                 return true;
             }

@@ -3,6 +3,7 @@ package roomescape.infra;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpSession;
@@ -13,18 +14,16 @@ import roomescape.error.AccessDeniedException;
 class SessionLoginRepositoryTest {
 
     private final LoginInfo loginInfo = new LoginInfo(1L, "홍길동", Role.USER);
+    private final HttpSession session = new MockHttpSession();
 
-    private final SessionLoginRepository sut = new SessionLoginRepository();
+    private final SessionLoginRepository sut = new SessionLoginRepository(session);
 
     @DisplayName("세션에 로그인 정보를 저장한다")
     @Test
     void setLoginInfo() {
-        // given
-        var session = new MockHttpSession();
-
         // when
-        sut.setLoginInfo(session, loginInfo);
-        var found = sut.getLoginInfo(session);
+        sut.setLoginInfo(loginInfo);
+        var found = sut.getLoginInfo();
 
         // then
         assertSoftly(soft -> {
@@ -38,11 +37,10 @@ class SessionLoginRepositoryTest {
     @Test
     void getLoginInfo() {
         // given
-        var session = new MockHttpSession();
         session.setAttribute(SessionLoginRepository.LOGIN_INFO_KEY, loginInfo);
 
         // when
-        var found = sut.getLoginInfo(session);
+        var found = sut.getLoginInfo();
 
         // then
         assertSoftly(soft -> {
@@ -55,11 +53,8 @@ class SessionLoginRepositoryTest {
     @DisplayName("세션에 로그인 정보가 없으면 예외가 발생한다")
     @Test
     void getLoginInfo_notLoggedIn() {
-        // given
-        var session = new MockHttpSession();
-
         // when // then
-        assertThatThrownBy(() -> sut.getLoginInfo(session))
+        assertThatThrownBy(() -> sut.getLoginInfo())
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessage("로그인 정보가 없습니다.");
     }
@@ -68,14 +63,13 @@ class SessionLoginRepositoryTest {
     @Test
     void clear() {
         // given
-        var session = new MockHttpSession();
         session.setAttribute(SessionLoginRepository.LOGIN_INFO_KEY, loginInfo);
 
         // when
-        sut.clear(session);
+        sut.clear();
 
         // then
-        assertThatThrownBy(() -> sut.getLoginInfo(session))
+        assertThatThrownBy(sut::getLoginInfo)
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessage("로그인 정보가 없습니다.");
     }

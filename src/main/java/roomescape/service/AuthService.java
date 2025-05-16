@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.domain.entity.Member;
@@ -17,16 +16,16 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final SessionLoginRepository sessionLoginRepository;
 
-    public void login(final AuthRequest request, final HttpSession session) {
+    public void login(final AuthRequest request) {
         final Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new AuthenticationException("존재하지 않는 이메일입니다."));
         member.validatePassword(request.password());
 
         final LoginInfo loginInfo = new LoginInfo(member.getId(), member.getName(), member.getRole());
-        sessionLoginRepository.setLoginInfo(session, loginInfo);
+        sessionLoginRepository.setLoginInfo(loginInfo);
     }
 
-    public void logout(final HttpSession session) {
-        sessionLoginRepository.clear(session);
+    public void logout() {
+        sessionLoginRepository.clear();
     }
 }
