@@ -19,11 +19,8 @@ public class AuthService {
     public void login(final AuthRequest request, final HttpSession session) {
         final Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new AuthenticationException("존재하지 않는 이메일입니다."));
-
-        if (!member.getPassword().equals(request.password())) {
-            throw new AuthenticationException("비밀번호가 일치하지 않습니다.");
-        }
-
+        member.validatePassword(request.password());
+        
         final LoginInfo loginInfo = new LoginInfo(member.getId(), member.getName(), member.getRole());
         loginSessionService.setLoginInfo(session, loginInfo);
     }

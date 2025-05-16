@@ -41,7 +41,6 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
         }
     }
 
-
     private void processUnauthorized(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         final String accept = request.getHeader(HttpHeaders.ACCEPT);
         final boolean isApiRequest = accept != null && accept.contains(MediaType.APPLICATION_JSON_VALUE);

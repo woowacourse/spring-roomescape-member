@@ -3,6 +3,7 @@ package roomescape.domain;
 import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.NonNull;
+import roomescape.error.AuthenticationException;
 
 @Getter
 public class Member {
@@ -36,6 +37,12 @@ public class Member {
     private void validateEmail(final String email) {
         if (!EMAIL_PATTERN.matcher(email).matches()) {
             throw new IllegalArgumentException("이메일 형식이 올바르지 않습니다.");
+        }
+    }
+
+    public void validatePassword(final String rawPassword) {
+        if (!this.password.equals(rawPassword)) {
+            throw new AuthenticationException("비밀번호가 일치하지 않습니다.");
         }
     }
 
