@@ -2,7 +2,6 @@ package roomescape.controller.api.member.dto;
 
 import java.util.List;
 import roomescape.model.Member;
-import roomescape.model.Role;
 
 public record MemberResponse(
         Long id,
@@ -21,9 +20,5 @@ public record MemberResponse(
         return members.stream()
                 .map(MemberResponse::from)
                 .toList();
-    }
-
-    public Member toEntity() {
-        return new Member(this.id, this.name, this.email, this.password, Role.findByName(this.role));
     }
 }

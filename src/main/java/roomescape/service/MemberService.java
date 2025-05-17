@@ -3,6 +3,7 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.api.member.dto.LoginCheckResponse;
+import roomescape.controller.api.member.dto.LoginMemberInfo;
 import roomescape.controller.api.member.dto.MemberLoginRequest;
 import roomescape.controller.api.member.dto.MemberResponse;
 import roomescape.controller.api.member.dto.MemberSignupRequest;
@@ -31,10 +32,9 @@ public class MemberService {
         return jwtTokenProvider.createToken(member);
     }
 
-    public LoginCheckResponse checkLogin(final Member member) {
-        if (member == null) {
-            throw new AuthorizationException("회원 정보가 존재하지 않습니다.");
-        }
+    public LoginCheckResponse checkLogin(final LoginMemberInfo loginMemberInfo) {
+        final Member member = memberRepository.findById(loginMemberInfo.id())
+                .orElseThrow(() -> new AuthorizationException("회원 정보가 존재하지 않습니다."));
         return new LoginCheckResponse(member.name());
     }
 

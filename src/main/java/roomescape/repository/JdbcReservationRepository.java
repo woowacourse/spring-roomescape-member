@@ -56,11 +56,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public boolean existsByDateTime(final LocalDate date, final LocalTime time) {
         String sql = """
-            SELECT COUNT(*) 
-            FROM RESERVATION R
-            JOIN RESERVATION_TIME RT ON R.TIME_ID = RT.ID
-            WHERE R.DATE = ? AND RT.START_AT = ?
-            """;
+                SELECT COUNT(*) 
+                FROM RESERVATION R
+                JOIN RESERVATION_TIME RT ON R.TIME_ID = RT.ID
+                WHERE R.DATE = ? AND RT.START_AT = ?
+                """;
 
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, time);
 

@@ -29,10 +29,6 @@ public class Member {
         this(null, name, email, password, role);
     }
 
-    public boolean isAdmin() {
-        return role.equals(Role.ADMIN);
-    }
-
     public boolean isPasswordMatched(final String password) {
         return this.password.equals(password);
     }

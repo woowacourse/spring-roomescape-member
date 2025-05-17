@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import roomescape.controller.api.member.dto.LoginMemberInfo;
 import roomescape.controller.api.reservation.dto.AddAdminReservationRequest;
 import roomescape.controller.api.reservation.dto.AddReservationRequest;
 import roomescape.controller.api.reservation.dto.ReservationResponse;
@@ -44,7 +45,8 @@ public class ReservationService {
         return createReservation(member, request.date(), request.timeId(), request.themeId());
     }
 
-    public ReservationResponse add(final AddReservationRequest request, final Member member) {
+    public ReservationResponse add(final AddReservationRequest request, final LoginMemberInfo loginMemberInfo) {
+        final Member member = findMember(loginMemberInfo.id());
         return createReservation(member, request.date(), request.timeId(), request.themeId());
     }
 
@@ -76,7 +78,8 @@ public class ReservationService {
     }
 
     private void validateDuplicateReservation(final Reservation reservation) {
-        boolean hasDuplicate = reservationRepository.existsByDateTime(reservation.date(), reservation.timeSlot().startAt());
+        boolean hasDuplicate = reservationRepository.existsByDateTime(reservation.date(),
+                reservation.timeSlot().startAt());
         if (hasDuplicate) {
             throw new RoomescapeException(
                     String.format("이미 예약된 슬롯에 대한 예약은 불가능합니다. 예약 날짜: %s, 시간: %s, 테마: %s", reservation.date(),

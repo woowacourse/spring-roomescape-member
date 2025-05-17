@@ -3,7 +3,9 @@ package roomescape.controller.helper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.model.Member;
+import roomescape.controller.api.member.dto.LoginMemberInfo;
+import roomescape.controller.api.member.dto.MemberResponse;
+import roomescape.model.Role;
 import roomescape.service.MemberService;
 
 public class CheckAdminInterceptor implements HandlerInterceptor {
@@ -17,19 +19,20 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response,
                              final Object handler) {
-        final Member member = findMember(request);
-        if (member == null || !member.isAdmin()) {
+        final LoginMemberInfo loginMemberInfo = findLoginMember(request);
+        if (loginMemberInfo == null || !loginMemberInfo.isAdmin()) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
         return true;
     }
 
-    private Member findMember(final HttpServletRequest request) {
+    private LoginMemberInfo findLoginMember(final HttpServletRequest request) {
         final String token = ControllerSupports.findCookieByKey(request, "token");
         if (!memberService.isValidToken(token)) {
             return null;
         }
-        return memberService.findByToken(token).toEntity();
+        final MemberResponse response = memberService.findByToken(token);
+        return new LoginMemberInfo(response.id(), response.name(), response.email(), Role.findByName(response.role()));
     }
 }

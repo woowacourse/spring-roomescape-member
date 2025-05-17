@@ -20,27 +20,27 @@ import roomescape.service.ThemeService;
 @RequestMapping("/themes")
 public class ThemeApiController {
 
-    private final ThemeService service;
+    private final ThemeService themeService;
 
-    public ThemeApiController(final ThemeService service) {
-        this.service = service;
+    public ThemeApiController(final ThemeService themeService) {
+        this.themeService = themeService;
     }
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> findAllThemes() {
-        final List<ThemeResponse> response = service.findAll();
+        final List<ThemeResponse> response = themeService.findAll();
         return ResponseEntity.ok().body(response);
     }
 
     @PostMapping
     public ResponseEntity<ThemeResponse> addTheme(@RequestBody @Valid final AddThemeRequest request) {
-        final ThemeResponse response = service.add(request);
+        final ThemeResponse response = themeService.add(request);
         return ResponseEntity.created(URI.create("/themes/" + response.id())).body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable("id") final Long id) {
-        final boolean isRemoved = service.removeById(id);
+        final boolean isRemoved = themeService.removeById(id);
         if (isRemoved) {
             return ResponseEntity.noContent().build();
         }
@@ -49,7 +49,7 @@ public class ThemeApiController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> findPopularThemes(@Valid final PopularThemeRequest request) {
-        final List<ThemeResponse> response = service.findPopularThemes(request.startDate(), request.endDate(),
+        final List<ThemeResponse> response = themeService.findPopularThemes(request.startDate(), request.endDate(),
                 request.limit());
         return ResponseEntity.ok().body(response);
     }
