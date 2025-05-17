@@ -10,8 +10,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.exception.DataExistException;
-import roomescape.exception.DataNotFoundException;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import roomescape.common.exception.DataExistException;
+import roomescape.common.exception.DataNotFoundException;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.repository.JdbcReservationTimeRepository;
@@ -29,7 +30,7 @@ class ReservationTimeServiceTest {
 
     @ParameterizedTest
     @CsvSource(value = {
-            "10:00", "22:00"
+            "20:00", "22:00"
     })
     void 예약시간을_추가한다(final LocalTime startAt) {
         // when & then
@@ -95,9 +96,9 @@ class ReservationTimeServiceTest {
 
         @Bean
         public ReservationRepository reservationRepository(
-                final JdbcTemplate jdbcTemplate
+                final NamedParameterJdbcTemplate namedParameterJdbcTemplate
         ) {
-            return new JdbcReservationRepository(jdbcTemplate);
+            return new JdbcReservationRepository(namedParameterJdbcTemplate);
         }
 
         @Bean

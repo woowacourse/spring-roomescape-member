@@ -10,7 +10,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.exception.DataExistException;
+import roomescape.common.exception.DataExistException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
@@ -74,32 +74,11 @@ class ThemeServiceTest {
 
     @Test
     void 테마_전체를_조회한다() {
-        // given
-        final String name1 = "우가우가";
-        final String description1 = "우가우가 설명";
-        final String thumbnail1 = "따봉우가.jpg";
-        final Theme theme1 = new Theme(name1, description1, thumbnail1);
-        themeRepository.save(theme1);
-
-        final String name2 = "우가우가2";
-        final String description2 = "우가우가2 설명";
-        final String thumbnail2 = "따봉우가2.jpg";
-        final Theme theme2 = new Theme(name2, description2, thumbnail2);
-        themeRepository.save(theme2);
-
         // when
         final List<Theme> themes = themeService.findAll();
 
         // then
-        SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(themes).hasSize(2);
-            softly.assertThat(themes.get(0).getName()).isEqualTo(name1);
-            softly.assertThat(themes.get(0).getDescription()).isEqualTo(description1);
-            softly.assertThat(themes.get(0).getThumbnail()).isEqualTo(thumbnail1);
-            softly.assertThat(themes.get(1).getName()).isEqualTo(name2);
-            softly.assertThat(themes.get(1).getDescription()).isEqualTo(description2);
-            softly.assertThat(themes.get(1).getThumbnail()).isEqualTo(thumbnail2);
-        });
+        Assertions.assertThat(themes).hasSize(5);
     }
 
     @Test

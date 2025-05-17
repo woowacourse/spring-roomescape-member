@@ -3,8 +3,8 @@ package roomescape.theme.service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.exception.DataExistException;
-import roomescape.exception.DataNotFoundException;
+import roomescape.common.exception.DataExistException;
+import roomescape.common.exception.DataNotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 

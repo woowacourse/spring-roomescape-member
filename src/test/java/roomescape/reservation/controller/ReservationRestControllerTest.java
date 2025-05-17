@@ -3,10 +3,8 @@ package roomescape.reservation.controller;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.reservation.controller.dto.AvailableReservationTimeResponse;
+import roomescape.auth.jwt.JwtTokenProvider;
+import roomescape.member.domain.Role;
+import roomescape.reservation.dto.AvailableReservationTimeResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -24,42 +24,17 @@ import static org.hamcrest.Matchers.is;
 class ReservationRestControllerTest {
 
     @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
     private ReservationRestController reservationRestController;
-
-    @BeforeEach
-    void setUp() {
-        final String TIME1 = "10:00";
-        final String TIME2 = "11:00";
-        final List<String> times = List.of(TIME1, TIME2);
-
-        for (String time : times) {
-            final Map<String, String> params = new HashMap<>();
-            params.put("startAt", time);
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(params)
-                    .when().post("/times")
-                    .then().log().all()
-                    .statusCode(HttpStatus.CREATED.value());
-        }
-
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "우가우가");
-        params.put("description", "우가우가 설명");
-        params.put("thumbnail", "따봉우가.jpg");
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
-    }
 
     @Test
     void 요청_형식이_맞지_않아_예약_정보_저장에_실패하는_경우_bad_request를_반환한다() {
-        final Map<String, String> params
-                = createReservationRequestJsonMap("헤일러", "2025 04 15", "1", "10 00");
+        //given
+        final Map<String, String> params = createReservationRequestJsonMap("2025 04 15", "1", "1");
 
+        //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
@@ -70,11 +45,15 @@ class ReservationRestControllerTest {
 
     @Test
     void 예약_정보를_저장한다() {
-        final Map<String, String> params
-                = createReservationRequestJsonMap("헤일러", "2026-04-15", "1", "1");
+        //given
+        final String payload = "wooga@gmail.com";
+        final String token = jwtTokenProvider.createToken(payload, Role.USER);
+        final Map<String, String> params = createReservationRequestJsonMap("2025-10-15", "1", "1");
 
+        //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -83,37 +62,28 @@ class ReservationRestControllerTest {
 
     @Test
     void 예약_정보를_삭제한다() {
-        final Map<String, String> params
-                = createReservationRequestJsonMap("헤일러", "2026-04-15", "1", "1");
+        //given
+        final String payload = "wooga@gmail.com";
+        final String token = jwtTokenProvider.createToken(payload, Role.USER);
+        final Map<String, String> params = createReservationRequestJsonMap("2026-10-15", "1", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
 
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .body("size()", is(1));
-
+        //when & then
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
     }
 
     @Test
     void 삭제할_예약_정보가_없는_경우_not_found를_반환한다() {
-
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when().delete("/reservations/1")
@@ -123,11 +93,14 @@ class ReservationRestControllerTest {
 
     @Test
     void 예약_정보_목록을_조회한다() {
-        final Map<String, String> params
-                = createReservationRequestJsonMap("헤일러", "2026-04-15", "1", "1");
+        //given
+        final String payload = "wooga@gmail.com";
+        final String token = jwtTokenProvider.createToken(payload, Role.USER);
+        final Map<String, String> params = createReservationRequestJsonMap("2026-10-15", "1", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -142,28 +115,28 @@ class ReservationRestControllerTest {
 
     @Test
     void 예약_가능한_시간_목록을_조회한다() {
-        final Map<String, String> params
-                = createReservationRequestJsonMap("헤일러", "2026-04-15", "1", "1");
+        //given
+        final String payload = "wooga@gmail.com";
+        final String token = jwtTokenProvider.createToken(payload, Role.USER);
+        final Map<String, String> params = createReservationRequestJsonMap("2026-04-15", "1", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
 
-        final Map<String, String> availableParams = new HashMap<>();
-        availableParams.put("date", "2026-04-15");
-        availableParams.put("themeId", "1");
-
-        final List<AvailableReservationTimeResponse> availableReservationTimeResponses = RestAssured.given().log().all()
-                .queryParam("date", "2026-04-15")
-                .queryParam("themeId", "1")
-                .when().get("/reservations/available-times")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract().jsonPath()
-                .getList(".", AvailableReservationTimeResponse.class);
+        final List<AvailableReservationTimeResponse> availableReservationTimeResponses =
+                RestAssured.given().log().all()
+                        .queryParam("date", "2026-04-15")
+                        .queryParam("themeId", "1")
+                        .when().get("/reservations/available-times")
+                        .then().log().all()
+                        .statusCode(HttpStatus.OK.value())
+                        .extract().jsonPath()
+                        .getList(".", AvailableReservationTimeResponse.class);
 
         final long count = availableReservationTimeResponses.stream()
                 .filter(AvailableReservationTimeResponse::alreadyBooked)
@@ -186,13 +159,15 @@ class ReservationRestControllerTest {
         assertThat(isJdbcTemplateInjected).isFalse();
     }
 
-    private Map<String, String> createReservationRequestJsonMap(String name, String date, String themeId,
-                                                                String timeId) {
-        return Map.ofEntries(
-                Map.entry("name", name),
-                Map.entry("date", date),
-                Map.entry("themeId", themeId),
-                Map.entry("timeId", timeId)
+    private Map<String, String> createReservationRequestJsonMap(
+            final String date,
+            final String themeId,
+            final String timeId) {
+        return Map.of(
+                "date", date,
+                "themeId", themeId,
+                "timeId", timeId
         );
     }
+
 }

@@ -19,4 +19,7 @@ public interface ReservationRepository {
     Optional<Reservation> findById(Long id);
 
     List<Reservation> findAll();
+
+    List<Reservation> findByInFromTo(final Long themeId, final Long memberId, final LocalDate dateFrom,
+                                     final LocalDate dateTo);
 }

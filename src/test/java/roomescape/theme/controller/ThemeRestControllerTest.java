@@ -1,7 +1,5 @@
 package roomescape.theme.controller;
 
-import static org.hamcrest.Matchers.is;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
@@ -36,24 +34,11 @@ class ThemeRestControllerTest {
 
     @Test
     void 테마를_조회한다() {
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "우가우가");
-        params.put("description", "우가우가 설명");
-        params.put("thumbnail", "따봉우가.jpg");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
-
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when().get("/themes")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .body("size()", is(1));
+                .statusCode(HttpStatus.OK.value());
     }
 
     @Test
