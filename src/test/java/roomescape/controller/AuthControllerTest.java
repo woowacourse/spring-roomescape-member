@@ -14,13 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.TokenInfo;
 import roomescape.infrastructure.JwtTokenProvider;
 
+@Sql(scripts = "/data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class AuthControllerTest {
 
     @Autowired
@@ -118,7 +117,7 @@ public class AuthControllerTest {
         void loginFailureWithPasswordIncorrectTest() {
             // given
             String email = "jeffrey@gmail.com";
-            String password = "1234";
+            String password = "1234!";
 
             // when & then
             RestAssured.given()

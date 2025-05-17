@@ -1,3 +1,13 @@
+DELETE FROM reservation;
+DELETE FROM reservation_time;
+DELETE FROM reservation_theme;
+DELETE FROM member;
+
+ALTER TABLE member ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE reservation_theme ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1;
+
 INSERT INTO member (name, email, password, role)
 VALUES ('제프리', 'jeffrey@gmail.com', '1234!@#$', 'USER'),
        ('김지은', 'jieun.kim@example.com', 'abcd!1234', 'USER'),
