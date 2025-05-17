@@ -12,8 +12,8 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.JwtProvider;
 import roomescape.auth.TokenBody;
 import roomescape.auth.dto.LoginMember;
-import roomescape.exception.custom.reason.auth.AuthNotExistsCookieException;
 import roomescape.exception.custom.reason.auth.AuthNotValidTokenException;
+import roomescape.exception.custom.reason.config.NotExistsCookieException;
 
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -59,18 +59,18 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
                 .filter(cookie -> Objects.equals(cookie.getName(), TOKEN_NAME))
                 .map(Cookie::getValue)
                 .findAny()
-                .orElseThrow(AuthNotExistsCookieException::new);
+                .orElseThrow(NotExistsCookieException::new);
     }
 
     private void validateToken(final String token) {
-        if(!jwtProvider.isValidToken(token)){
+        if (!jwtProvider.isValidToken(token)) {
             throw new AuthNotValidTokenException();
         }
     }
 
     private void validateExistsCookies(final Cookie[] cookies) {
-        if(cookies == null){
-            throw new AuthNotExistsCookieException();
+        if (cookies == null) {
+            throw new NotExistsCookieException();
         }
     }
 }

@@ -22,7 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class AuthApiTest {
+class AuthApiTest {
 
     private static final Map<String, Object> MEMBER_BODY = new HashMap<>();
     private static final Map<String, Object> AUTH_BODY = new HashMap<>();
@@ -69,7 +69,7 @@ public class AuthApiTest {
                     .body(AUTH_BODY)
                     .when().post("/login")
                     .then().log().all().statusCode(200)
-                    .header(HttpHeaders.SET_COOKIE.toString(), notNullValue());
+                    .header(HttpHeaders.SET_COOKIE, notNullValue());
         }
 
         @DisplayName("존재하지 않는 이메일이라면, 400을 응답한다.")
@@ -81,7 +81,7 @@ public class AuthApiTest {
                     .body(AUTH_BODY)
                     .when().post("/login")
                     .then().log().all().statusCode(400)
-                    .header(HttpHeaders.SET_COOKIE.toString(), nullValue());
+                    .header(HttpHeaders.SET_COOKIE, nullValue());
         }
 
         @DisplayName("비밀번호가 일치하지 않는다면, 400을 응답한다.")
@@ -95,7 +95,7 @@ public class AuthApiTest {
                     .body(AUTH_BODY)
                     .when().post("/login")
                     .then().log().all().statusCode(400)
-                    .header(HttpHeaders.SET_COOKIE.toString(), nullValue());
+                    .header(HttpHeaders.SET_COOKIE, nullValue());
         }
     }
 
@@ -131,15 +131,15 @@ public class AuthApiTest {
         }
     }
 
-    @DisplayName("쿠키를 사용하는 api에 대해 쿠키가 존재하지 않는다면, 400을 응답한다.")
+    @DisplayName("쿠키를 사용하는 api에 대해 쿠키가 존재하지 않는다면, 401을 응답한다.")
     @Test
     void interceptor1() {
         RestAssured.given().log().all().port(port)
                 .when().get("/admin/reservation")
-                .then().log().all().statusCode(400);
+                .then().log().all().statusCode(401);
     }
 
-    @DisplayName("쿠키를 사용하는 api에 대해 token 키를 가진 쿠키가 존재하지 않는다면, 400을 응답한다.")
+    @DisplayName("쿠키를 사용하는 api에 대해 token 키를 가진 쿠키가 존재하지 않는다면, 401을 응답한다.")
     @Test
     void interceptor2() {
         // given
@@ -149,7 +149,7 @@ public class AuthApiTest {
         RestAssured.given().log().all().port(port)
                 .cookie(notToken)
                 .when().get("/admin/reservation")
-                .then().log().all().statusCode(400);
+                .then().log().all().statusCode(401);
     }
 
 
