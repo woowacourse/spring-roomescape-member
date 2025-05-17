@@ -2,15 +2,15 @@ package roomescape.auth.infrastructure;
 
 import roomescape.auth.infrastructure.jwt.JwtPayload;
 
-public record Principal(
+public record AuthorizationContext(
     String identifier,
     Role role
 ) {
 
     public static final String ATTRIBUTE_NAME = "principal";
 
-    public static Principal fromJwtPayload(JwtPayload jwtPayload) {
-        return new Principal(
+    public static AuthorizationContext fromJwtPayload(JwtPayload jwtPayload) {
+        return new AuthorizationContext(
             jwtPayload.identifier(),
             jwtPayload.role()
         );

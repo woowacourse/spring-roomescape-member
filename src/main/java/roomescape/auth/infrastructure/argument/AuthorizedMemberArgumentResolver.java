@@ -7,7 +7,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.auth.infrastructure.Principal;
+import roomescape.auth.infrastructure.AuthorizationContext;
 import roomescape.auth.infrastructure.Role;
 import roomescape.globalexception.ForbiddenException;
 import roomescape.globalexception.InternalServerException;
@@ -40,17 +40,18 @@ public class AuthorizedMemberArgumentResolver implements HandlerMethodArgumentRe
         if (request == null) {
             throw new InternalServerException("NativeWebRequest 를 HttpServletRequest 로 변환하는 데에 실패했습니다.");
         }
-        Principal principal = (Principal) request.getAttribute(Principal.ATTRIBUTE_NAME);
-        validatePrincipal(principal);
-        return memberService.findByEmail(principal.identifier())
+        AuthorizationContext authorizationContext = (AuthorizationContext) request.getAttribute(
+            AuthorizationContext.ATTRIBUTE_NAME);
+        validatePrincipal(authorizationContext);
+        return memberService.findByEmail(authorizationContext.identifier())
             .orElseThrow(() -> new UnauthorizedException("잘못된 인증 정보입니다."));
     }
 
-    private void validatePrincipal(Principal principal) {
-        if (principal == null) {
+    private void validatePrincipal(AuthorizationContext authorizationContext) {
+        if (authorizationContext == null) {
             throw new UnauthorizedException("인증 정보가 없습니다.");
         }
-        if (!principal.role().equals(Role.MEMBER)) {
+        if (!authorizationContext.role().equals(Role.MEMBER)) {
             throw new ForbiddenException("사용자 권한이 없습니다.");
         }
     }

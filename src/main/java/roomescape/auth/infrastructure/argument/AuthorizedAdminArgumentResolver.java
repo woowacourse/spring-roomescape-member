@@ -9,7 +9,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.admin.domain.Admin;
 import roomescape.admin.service.AdminService;
-import roomescape.auth.infrastructure.Principal;
+import roomescape.auth.infrastructure.AuthorizationContext;
 import roomescape.auth.infrastructure.Role;
 import roomescape.globalexception.ForbiddenException;
 import roomescape.globalexception.InternalServerException;
@@ -40,17 +40,18 @@ public class AuthorizedAdminArgumentResolver implements HandlerMethodArgumentRes
         if (request == null) {
             throw new InternalServerException("NativeWebRequest 를 HttpServletRequest 로 변환하는 데에 실패했습니다.");
         }
-        Principal principal = (Principal) request.getAttribute(Principal.ATTRIBUTE_NAME);
-        validatePrincipal(principal);
-        return adminService.findByLoginId(principal.identifier())
+        AuthorizationContext authorizationContext = (AuthorizationContext) request.getAttribute(
+            AuthorizationContext.ATTRIBUTE_NAME);
+        validatePrincipal(authorizationContext);
+        return adminService.findByLoginId(authorizationContext.identifier())
             .orElseThrow(() -> new UnauthorizedException("잘못된 인증 정보입니다."));
     }
 
-    private void validatePrincipal(Principal principal) {
-        if (principal == null) {
+    private void validatePrincipal(AuthorizationContext authorizationContext) {
+        if (authorizationContext == null) {
             throw new UnauthorizedException("인증 정보가 없습니다.");
         }
-        if (!principal.role().equals(Role.ADMIN)) {
+        if (!authorizationContext.role().equals(Role.ADMIN)) {
             throw new ForbiddenException("관리자 권한이 없습니다.");
         }
     }

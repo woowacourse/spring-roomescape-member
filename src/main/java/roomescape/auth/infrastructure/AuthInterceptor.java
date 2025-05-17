@@ -29,12 +29,12 @@ public class AuthInterceptor implements HandlerInterceptor {
         Optional<String> jwt = jwtHandler.parseJwt(request);
 
         if (jwt.isEmpty()) {
-            request.setAttribute(Principal.ATTRIBUTE_NAME, null);
+            request.setAttribute(AuthorizationContext.ATTRIBUTE_NAME, null);
             return true;
         }
 
         JwtPayload jwtPayload = jwtProvider.getPayload(jwt.get());
-        request.setAttribute(Principal.ATTRIBUTE_NAME, Principal.fromJwtPayload(jwtPayload));
+        request.setAttribute(AuthorizationContext.ATTRIBUTE_NAME, AuthorizationContext.fromJwtPayload(jwtPayload));
         return true;
     }
 }
