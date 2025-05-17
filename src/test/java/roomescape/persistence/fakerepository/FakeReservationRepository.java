@@ -6,38 +6,38 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.stereotype.Repository;
-import roomescape.business.Reservation;
+import roomescape.business.domain.reservation.Reservation;
 import roomescape.persistence.ReservationRepository;
+import roomescape.persistence.entity.ReservationEntity;
+import roomescape.presentation.admin.dto.ReservationQueryCondition;
 
 @Repository
 public class FakeReservationRepository implements ReservationRepository, FakeRepository {
 
-    private final List<Reservation> reservations = new ArrayList<>();
+    private final List<ReservationEntity> reservations = new ArrayList<>();
     private final AtomicLong idGenerator = new AtomicLong(1);
 
     @Override
     public List<Reservation> findAll() {
-        return reservations;
+        return reservations.stream()
+                .map(ReservationEntity::toDomain)
+                .toList();
     }
 
     @Override
     public Optional<Reservation> findById(Long id) {
         return reservations.stream()
                 .filter(reservation -> Objects.equals(reservation.getId(), id))
-                .findFirst();
+                .findFirst()
+                .map(ReservationEntity::toDomain);
     }
 
     @Override
-    public Long add(Reservation reservation) {
-        Reservation savedReservation = new Reservation(
-                idGenerator.getAndIncrement(),
-                reservation.getName(),
-                reservation.getDate(),
-                reservation.getTime(),
-                reservation.getTheme()
-        );
-        reservations.add(savedReservation);
-        return savedReservation.getId();
+    public Reservation add(Reservation reservation) {
+        ReservationEntity newReservationEntity = ReservationEntity.fromDomain(reservation)
+                .copyWithId(idGenerator.getAndIncrement());
+        reservations.add(newReservationEntity);
+        return newReservationEntity.toDomain();
     }
 
     @Override
@@ -47,20 +47,32 @@ public class FakeReservationRepository implements ReservationRepository, FakeRep
 
     @Override
     public boolean existsByReservation(Reservation otherReservation) {
+        ReservationEntity otherReservationEntity = ReservationEntity.fromDomain(otherReservation);
         return reservations.stream()
-                .anyMatch(reservation -> reservation.isSameReservation(otherReservation));
+                .anyMatch(reservation -> reservation.isSameReservation(otherReservationEntity));
     }
 
     @Override
     public boolean existsByTimeId(Long timeId) {
         return reservations.stream()
-                .anyMatch(reservation -> reservation.getTime().getId().equals(timeId));
+                .anyMatch(reservation -> reservation.getTimeEntity().getId().equals(timeId));
     }
 
     @Override
     public boolean existsByThemeId(Long id) {
         return reservations.stream()
-                .anyMatch(reservation -> reservation.getTheme().getId().equals(id));
+                .anyMatch(reservation -> reservation.getThemeEntity().getId().equals(id));
+    }
+
+    @Override
+    public List<Reservation> findAllByCondition(ReservationQueryCondition condition) {
+        return reservations.stream()
+                .filter(reservation -> reservation.getDate().equals(condition.dateFrom().toString()))
+                .filter(reservation -> reservation.getDate().equals(condition.dateTo().toString()))
+                .filter(reservation -> reservation.getMemberEntity().getId().equals(condition.memberId()))
+                .filter(reservation -> reservation.getThemeEntity().getId().equals(condition.themeId()))
+                .map(ReservationEntity::toDomain)
+                .toList();
     }
 
     @Override

@@ -11,7 +11,7 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
       .then(response => {
         if(response.ok) {
           // 로그아웃 성공, 페이지 새로고침 또는 리다이렉트
-          window.location.reload();
+          window.location.href = '/'; // 홈 페이지로 리다이렉트
         } else {
           // 로그아웃 실패 처리
           console.error('Logout failed');
@@ -59,7 +59,7 @@ function login() {
 
   // 입력 필드 검증
   if (!email || !password) {
-    alert('Please fill in all fields.');
+    alert('이메일 혹은 비밀번호를 입력해주세요.');
     return; // 필수 입력 필드가 비어있으면 여기서 함수 실행을 중단
   }
 
@@ -74,9 +74,10 @@ function login() {
     })
   })
       .then(response => {
-        if (200 === !response.status) {
-          alert('Login failed'); // 로그인 실패 시 경고창 표시
-          throw new Error('Login failed');
+        if (response.status !== 200) {
+          return response.json().then(error => {
+            throw new Error(error.message); // 에러 메시지를 실제로 추출
+          });
         }
       })
       .then(() => {
@@ -84,7 +85,7 @@ function login() {
         window.location.href = '/';
       })
       .catch(error => {
-        console.error('Error during login:', error);
+        alert(error.message);
       });
 }
 
@@ -92,6 +93,13 @@ function signup() {
   // Redirect to signup page
   window.location.href = '/signup';
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    if (document.getElementById('signup-form')) {
+        const signupForm = document.getElementById('signup-form');
+        signupForm.addEventListener('submit', register);
+    }
+});
 
 function register(event) {
   // 폼 데이터 수집
@@ -101,7 +109,7 @@ function register(event) {
 
   // 입력 필드 검증
   if (!email || !password || !name) {
-    alert('Please fill in all fields.');
+    alert('이메일, 비밀번호, 이름을 모두 입력해주세요.');
     return; // 필수 입력 필드가 비어있으면 여기서 함수 실행을 중단
   }
 
@@ -121,20 +129,18 @@ function register(event) {
     body: JSON.stringify(formData)
   })
       .then(response => {
-        if (!response.ok) {
-          alert('Signup request failed');
-          throw new Error('Signup request failed');
+        if (response.status !== 201) {
+          return response.json().then(error => {
+            throw new Error(error.message); // 에러 메시지를 실제로 추출
+          });
         }
-        return response.json(); // 여기서 응답을 JSON 형태로 변환
       })
       .then(data => {
         // 성공적인 응답 처리
-        console.log('Signup successful:', data);
         window.location.href = '/login';
       })
       .catch(error => {
-        // 에러 처리
-        console.error('Error during signup:', error);
+        alert(error.message);
       });
 
   // 폼 제출에 의한 페이지 리로드 방지

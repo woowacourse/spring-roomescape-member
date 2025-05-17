@@ -8,36 +8,39 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.stereotype.Repository;
-import roomescape.business.ReservationTime;
+import roomescape.business.domain.reservation.ReservationDateTimeFormatter;
+import roomescape.business.domain.reservation.ReservationTime;
 import roomescape.persistence.ReservationTimeRepository;
-import roomescape.presentation.dto.AvailableTimesResponseDto;
+import roomescape.persistence.entity.ReservationTimeEntity;
+import roomescape.presentation.member.dto.AvailableTimesResponseDto;
 
 @Repository
 public class FakeReservationTimeRepository implements ReservationTimeRepository, FakeRepository {
 
-    private final List<ReservationTime> reservationTimes = new ArrayList<>();
+    private final List<ReservationTimeEntity> reservationTimes = new ArrayList<>();
     private final AtomicLong idGenerator = new AtomicLong(1);
 
     @Override
     public List<ReservationTime> findAll() {
-        return reservationTimes;
+        return reservationTimes.stream()
+                .map(ReservationTimeEntity::toDomain)
+                .toList();
     }
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
         return reservationTimes.stream()
                 .filter(time -> Objects.equals(time.getId(), id))
-                .findFirst();
+                .findFirst()
+                .map(ReservationTimeEntity::toDomain);
     }
 
     @Override
-    public Long add(ReservationTime reservationTime) {
-        ReservationTime savedReservationTime = new ReservationTime(
-                idGenerator.getAndIncrement(),
-                reservationTime.getStartAt()
-        );
-        reservationTimes.add(savedReservationTime);
-        return savedReservationTime.getId();
+    public ReservationTime add(ReservationTime reservationTime) {
+        ReservationTimeEntity newReservationTimeEntity = ReservationTimeEntity.fromDomain(reservationTime)
+                .copyWithId(idGenerator.getAndIncrement());
+        reservationTimes.add(newReservationTimeEntity);
+        return newReservationTimeEntity.toDomain();
     }
 
     @Override
@@ -53,7 +56,10 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository,
     @Override
     public boolean existsByStartAt(LocalTime startAt) {
         return reservationTimes.stream()
-                .anyMatch(reservationTime -> reservationTime.getStartAt().equals(startAt));
+                .anyMatch(reservationTime ->
+                        reservationTime.getStartAt()
+                                .equals(ReservationDateTimeFormatter.formatTime(startAt))
+                );
     }
 
     @Override

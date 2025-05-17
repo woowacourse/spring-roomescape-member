@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import roomescape.business.ReservationTime;
-import roomescape.presentation.dto.AvailableTimesResponseDto;
+import roomescape.business.domain.reservation.ReservationTime;
+import roomescape.presentation.member.dto.AvailableTimesResponseDto;
 
 public interface ReservationTimeRepository {
 
@@ -13,7 +13,7 @@ public interface ReservationTimeRepository {
 
     Optional<ReservationTime> findById(Long id);
 
-    Long add(ReservationTime reservationTime);
+    ReservationTime add(ReservationTime reservationTime);
 
     void deleteById(Long id);
 

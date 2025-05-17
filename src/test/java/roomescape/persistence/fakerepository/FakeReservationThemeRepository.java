@@ -6,30 +6,29 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.stereotype.Repository;
-import roomescape.business.ReservationTheme;
+import roomescape.business.domain.reservation.ReservationTheme;
 import roomescape.persistence.ReservationThemeRepository;
+import roomescape.persistence.entity.ReservationThemeEntity;
 
 @Repository
 public class FakeReservationThemeRepository implements ReservationThemeRepository, FakeRepository {
 
-    private final List<ReservationTheme> themes = new ArrayList<>();
+    private final List<ReservationThemeEntity> themes = new ArrayList<>();
     private final AtomicLong idGenerator = new AtomicLong(1);
 
     @Override
     public List<ReservationTheme> findAll() {
-        return themes;
+        return themes.stream()
+                .map(ReservationThemeEntity::toDomain)
+                .toList();
     }
 
     @Override
-    public Long add(ReservationTheme reservationTheme) {
-        ReservationTheme savedReservationTheme = new ReservationTheme(
-                idGenerator.getAndIncrement(),
-                reservationTheme.getName(),
-                reservationTheme.getDescription(),
-                reservationTheme.getThumbnail()
-        );
-        themes.add(savedReservationTheme);
-        return savedReservationTheme.getId();
+    public ReservationTheme add(ReservationTheme reservationTheme) {
+        ReservationThemeEntity newThemeEntity = ReservationThemeEntity.fromDomain(reservationTheme)
+                .copyWithId(idGenerator.getAndIncrement());
+        themes.add(newThemeEntity);
+        return newThemeEntity.toDomain();
     }
 
     @Override
@@ -47,14 +46,17 @@ public class FakeReservationThemeRepository implements ReservationThemeRepositor
     public Optional<ReservationTheme> findById(Long id) {
         return themes.stream()
                 .filter(theme -> theme.getId().equals(id))
-                .findFirst();
+                .findFirst()
+                .map(ReservationThemeEntity::toDomain);
     }
 
     @Override
     public List<ReservationTheme> findByStartDateAndEndDateOrderByReservedDesc(LocalDate start,
                                                                                LocalDate end,
                                                                                int limit) {
-        return themes;
+        return themes.stream()
+                .map(ReservationThemeEntity::toDomain)
+                .toList();
     }
 
     @Override

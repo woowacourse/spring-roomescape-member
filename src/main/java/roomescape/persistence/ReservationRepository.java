@@ -2,7 +2,8 @@ package roomescape.persistence;
 
 import java.util.List;
 import java.util.Optional;
-import roomescape.business.Reservation;
+import roomescape.business.domain.reservation.Reservation;
+import roomescape.presentation.admin.dto.ReservationQueryCondition;
 
 public interface ReservationRepository {
 
@@ -10,7 +11,7 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(Long id);
 
-    Long add(Reservation reservation);
+    Reservation add(Reservation reservation);
 
     void deleteById(Long id);
 
@@ -19,4 +20,6 @@ public interface ReservationRepository {
     boolean existsByTimeId(Long timeId);
 
     boolean existsByThemeId(Long id);
+
+    List<Reservation> findAllByCondition(ReservationQueryCondition condition);
 }

@@ -3,13 +3,13 @@ package roomescape.persistence;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import roomescape.business.ReservationTheme;
+import roomescape.business.domain.reservation.ReservationTheme;
 
 public interface ReservationThemeRepository {
 
     List<ReservationTheme> findAll();
 
-    Long add(ReservationTheme reservationTheme);
+    ReservationTheme add(ReservationTheme reservationTheme);
 
     boolean existByName(String name);
 
