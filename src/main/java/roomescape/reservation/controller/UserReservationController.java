@@ -1,37 +1,35 @@
 package roomescape.reservation.controller;
 
-import java.time.LocalDate;
-import java.util.List;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import roomescape.auth.LoginMember;
+import roomescape.reservation.controller.dto.MemberReservationRequest;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 import roomescape.time.controller.dto.AvailableTimeResponse;
 
-@RequestMapping("/reservations")
+import java.time.LocalDate;
+import java.util.List;
+
 @RestController
-public class ReservationController {
+@RequestMapping("/reservations")
+public class UserReservationController {
 
     private final ReservationService reservationService;
 
-    public ReservationController(ReservationService reservationService) {
+    public UserReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<ReservationResponse> getReservations() {
         return reservationService.getAll();
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/available-times")
     public List<AvailableTimeResponse> getAvailableTimes(@RequestParam LocalDate date, @RequestParam Long themeId) {
         return reservationService.getAvailableTimes(date, themeId);
@@ -39,8 +37,11 @@ public class ReservationController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ReservationResponse addReservation(@RequestBody ReservationRequest request) {
-        return reservationService.add(request);
+    public ReservationResponse addMemberReservation(@RequestBody MemberReservationRequest memberRequest,
+                                                    @Valid LoginMember loginMember) {
+        ReservationRequest reservationRequest = new ReservationRequest(memberRequest.date(), memberRequest.timeId(),
+                memberRequest.themeId(), loginMember.id());
+        return reservationService.add(reservationRequest);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -1,8 +1,13 @@
 package roomescape.theme.controller.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import roomescape.theme.domain.Theme;
 
-public record ThemeRequest(String name, String description, String thumbnail) {
+public record ThemeRequest(
+        @NotBlank String name,
+        @NotBlank String description,
+        @NotBlank String thumbnail
+) {
 
     public ThemeRequest {
         validateName(name);

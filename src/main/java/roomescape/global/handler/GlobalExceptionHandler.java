@@ -1,4 +1,4 @@
-package roomescape.handler;
+package roomescape.global.handler;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.http.HttpStatus;

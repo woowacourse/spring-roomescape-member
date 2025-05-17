@@ -64,4 +64,14 @@ public class ReservationFakeRepository implements ReservationRepository {
                 .toList();
     }
 
+    @Override
+    public List<Reservation> findAllByThemeIdAndMemberIdAndPeriod(Long themeId, Long memberId, LocalDate dateFrom,
+                                                                  LocalDate dateTo) {
+        return reservations.values().stream()
+                .filter(reservation -> reservation.getTheme().getId().equals(themeId))
+                .filter(reservation -> reservation.getMember().getId().equals(memberId))
+                .filter(reservation -> reservation.getDate().equals(dateFrom))
+                .filter(reservation -> reservation.getDate().equals(dateTo))
+                .toList();
+    }
 }
