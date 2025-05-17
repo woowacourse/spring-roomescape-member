@@ -38,7 +38,7 @@ public class MemberService {
         return new LoginCheckResponse(member.name());
     }
 
-    public MemberResponse add(final MemberSignupRequest request) {
+    public MemberResponse registerMember(final MemberSignupRequest request) {
         final Member member = request.toEntity();
         final Long id = memberRepository.save(member);
         final Member savedMember = new Member(id, member.name(), member.email(), member.password(), member.role());

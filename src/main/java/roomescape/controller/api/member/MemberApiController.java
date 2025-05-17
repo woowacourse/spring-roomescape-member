@@ -30,7 +30,7 @@ public class MemberApiController {
 
     @PostMapping
     public ResponseEntity<MemberResponse> addMember(@RequestBody @Valid final MemberSignupRequest request) {
-        final MemberResponse response = service.add(request);
+        final MemberResponse response = service.registerMember(request);
         return ResponseEntity.created(URI.create("/reservations/" + response.id())).body(response);
     }
 
