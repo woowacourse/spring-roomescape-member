@@ -17,12 +17,13 @@ public class MemberController {
         this.memberService = memberService;
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/members")
     public List<MemberResponse> getMembers() {
         return memberService.getAll();
     }
 
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/members")
     public MemberResponse signup(@RequestBody SignupRequest request) {
         return memberService.add(request);

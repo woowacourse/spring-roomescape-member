@@ -18,6 +18,7 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<ReservationTimeResponse> getTimes() {
         return reservationTimeService.getTimes();

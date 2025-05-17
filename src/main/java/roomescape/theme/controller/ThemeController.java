@@ -19,11 +19,13 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<ThemeResponse> getThemes() {
         return themeService.getThemes();
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/rankings")
     public List<ThemeRankingResponse> getThemeRankings() {
         return themeService.getThemeRankings();

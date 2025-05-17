@@ -30,7 +30,7 @@ public class AuthController {
         return memberService.search(token);
     }
 
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/login")
     public void login(@RequestBody LoginRequest request, HttpServletResponse response) {
         String accessToken = memberService.login(request);
@@ -40,6 +40,7 @@ public class AuthController {
         response.addCookie(cookie);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();

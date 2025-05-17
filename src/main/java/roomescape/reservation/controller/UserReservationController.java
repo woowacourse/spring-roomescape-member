@@ -22,6 +22,7 @@ public class UserReservationController {
         this.reservationService = reservationService;
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<ReservationResponse> getReservations() {
         return reservationService.getAll();
