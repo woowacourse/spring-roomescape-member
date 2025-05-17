@@ -9,13 +9,15 @@ import java.time.LocalTime;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import roomescape.error.ReservationException;
+import roomescape.fixture.Fixture;
+import roomescape.member.domain.Member;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 class ReservationTest {
 
-    private final String DEFAULT_NAME = "홍길동";
     private final Theme DEFAULT_THEME = new Theme(1L, "테마", "설명", "썸네일");
+    private final Member DEFAULT_MEMBER = new Fixture().getNomalMember();
 
     @Test
     void 예약_시간이_현재_이후면_객체가_정상_생성된다() {
@@ -27,7 +29,7 @@ class ReservationTest {
         // when
         // then
         assertThatCode(() ->
-                new Reservation(DEFAULT_NAME, today, futureTime, DEFAULT_THEME)
+                new Reservation(today, futureTime, DEFAULT_THEME, DEFAULT_MEMBER)
         ).doesNotThrowAnyException();
     }
 
@@ -41,7 +43,7 @@ class ReservationTest {
         // when
         // then
         assertThatThrownBy(() ->
-                new Reservation(DEFAULT_NAME, today, pastTime, DEFAULT_THEME)
+                new Reservation(today, pastTime, DEFAULT_THEME, DEFAULT_MEMBER)
         )
                 .isInstanceOf(ReservationException.class)
                 .hasMessage("예약은 현재 시간 이후로 가능합니다.");
@@ -53,7 +55,7 @@ class ReservationTest {
         LocalDate today = LocalDate.now();
         LocalTime later = LocalTime.now().plusMinutes(5);
         ReservationTime rt = new ReservationTime(1L, later);
-        Reservation reservation = new Reservation(DEFAULT_NAME, today, rt, DEFAULT_THEME);
+        Reservation reservation = new Reservation(today, rt, DEFAULT_THEME, DEFAULT_MEMBER);
 
         // when
         // then
@@ -63,29 +65,27 @@ class ReservationTest {
     @Test
     void id_필드를_제외한_필드가_null이면_예외처리() {
         // given
-        final String name = "test";
         final LocalDate localDate = LocalDate.of(2999, 1, 1);
         final ReservationTime reservationTime = new ReservationTime(LocalTime.of(11, 0));
         final Theme theme = new Theme("test", "test", "test");
+        final Member member = new Fixture().getNomalMember();
 
         // when
         // then
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThatThrownBy(() -> new Reservation(null, null, localDate, reservationTime, theme))
+            softly.assertThatThrownBy(() -> new Reservation(null, null, reservationTime, theme, member))
                     .isInstanceOf(IllegalArgumentException.class);
-            softly.assertThatThrownBy(() -> new Reservation(null, name, null, reservationTime, theme))
+            softly.assertThatThrownBy(() -> new Reservation(null, localDate, null, theme, member))
                     .isInstanceOf(IllegalArgumentException.class);
-            softly.assertThatThrownBy(() -> new Reservation(null, name, localDate, null, theme))
+            softly.assertThatThrownBy(() -> new Reservation(null, localDate, reservationTime, null, member))
                     .isInstanceOf(IllegalArgumentException.class);
-            softly.assertThatThrownBy(() -> new Reservation(null, name, localDate, reservationTime, null))
+            softly.assertThatThrownBy(() -> new Reservation(null, reservationTime, theme, member))
                     .isInstanceOf(IllegalArgumentException.class);
-            softly.assertThatThrownBy(() -> new Reservation(null, localDate, reservationTime, theme))
+            softly.assertThatThrownBy(() -> new Reservation(localDate, null, theme, member))
                     .isInstanceOf(IllegalArgumentException.class);
-            softly.assertThatThrownBy(() -> new Reservation(name, null, reservationTime, theme))
+            softly.assertThatThrownBy(() -> new Reservation(localDate, reservationTime, null, member))
                     .isInstanceOf(IllegalArgumentException.class);
-            softly.assertThatThrownBy(() -> new Reservation(name, localDate, null, theme))
-                    .isInstanceOf(IllegalArgumentException.class);
-            softly.assertThatThrownBy(() -> new Reservation(name, localDate, reservationTime, null))
+            softly.assertThatThrownBy(() -> new Reservation(localDate, reservationTime, theme, null))
                     .isInstanceOf(IllegalArgumentException.class);
         });
     }

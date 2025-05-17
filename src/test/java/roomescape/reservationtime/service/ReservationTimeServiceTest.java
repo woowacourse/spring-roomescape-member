@@ -10,12 +10,14 @@ import java.util.Optional;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import roomescape.error.ReservationException;
+import roomescape.fixture.Fixture;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.stub.StubReservationRepository;
+import roomescape.reservation.fake.FakeReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.dto.ReservationTimeRequest;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
-import roomescape.reservationtime.stub.StubReservationTimeRepository;
+import roomescape.reservationtime.fake.FakeReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 
 class ReservationTimeServiceTest {
@@ -29,14 +31,16 @@ class ReservationTimeServiceTest {
     private final Theme theme1 = new Theme(1L, "테마1", "설명1", "썸네일1");
     private final Theme theme2 = new Theme(1L, "테마2", "설명2", "썸네일2");
 
-    private final Reservation r1 = new Reservation(1L, "테스트", LocalDate.of(2025, 5, 11), rt1, theme1);
-    private final Reservation r2 = new Reservation(2L, "테스트2", LocalDate.of(2025, 6, 11), rt2, theme2);
+    Member member1 = new Fixture().getNomalMember();
 
-    private final StubReservationRepository stubReservationRepo = new StubReservationRepository(r1, r2);
-    private final StubReservationTimeRepository stubReservationTimeRepo = new StubReservationTimeRepository(rt1, rt2);
+    private final Reservation r1 = new Reservation(1L, LocalDate.of(2025, 5, 11), rt1, theme1, member1);
+    private final Reservation r2 = new Reservation(2L, LocalDate.of(2025, 6, 11), rt2, theme2, member1);
+
+    private final FakeReservationRepository fakeReservationRepo = new FakeReservationRepository(r1, r2);
+    private final FakeReservationTimeRepository stubReservationTimeRepo = new FakeReservationTimeRepository(rt1, rt2);
 
     private final ReservationTimeService service = new ReservationTimeService(stubReservationTimeRepo,
-            stubReservationRepo);
+            fakeReservationRepo);
 
 
     @Test
@@ -97,13 +101,13 @@ class ReservationTimeServiceTest {
     @Test
     void 예약이_존재하는_시간을_삭제하지_못_한다() {
         // given
-        stubReservationRepo.setExistsByReservationTimeId(true);
+        fakeReservationRepo.setExistsByReservationTimeId(true);
 
         // when
         // then
         assertThatThrownBy(() -> service.delete(1L))
                 .isInstanceOf(ReservationException.class)
                 .hasMessage("해당 시간으로 예약된 건이 존재합니다.");
-        stubReservationRepo.setExistsByReservationTimeId(false);
+        fakeReservationRepo.setExistsByReservationTimeId(false);
     }
 }

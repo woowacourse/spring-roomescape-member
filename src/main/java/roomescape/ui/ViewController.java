@@ -35,4 +35,15 @@ public class ViewController {
     public String getHomePage() {
         return "index";
     }
+
+    @GetMapping("/login")
+    public String loginPage() {
+        return "login";
+    }
+
+    @GetMapping("/signup")
+    public String signupPage() {
+        return "signup";
+    }
+
 }

@@ -28,23 +28,52 @@ class MissionStepTest {
     private JdbcTemplate jdbcTemplate;
 
     @Test
-    void 일단계() {
+    void 일단계_어드민_페이지_접근() {
+        // given
+        Map<String, String> adminUser = Map.of("email", "admin@naver.com", "password", "1234");
+        String token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(adminUser)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .cookie("token");
+
+        // when
+        // then
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
     }
 
     @Test
-    void 이단계_웹() {
+    void 이단계_어드민_예약페이지_접근() {
+
+        // given
+        Map<String, String> adminUser = Map.of("email", "admin@naver.com", "password", "1234");
+        String token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(adminUser)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .cookie("token");
+
+        // then
+        // when
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
     }
 
     @Test
-    void 이단계_API() {
+    void 이단계_예약조회() {
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
@@ -53,16 +82,29 @@ class MissionStepTest {
     }
 
     @Test
-    void 삼단계() {
+    void 삼단계_유저_예약() {
+
+        // given
         Map<String, String> params = new HashMap<>();
         LocalDate now = LocalDate.now();
         LocalDate localDate = now.plusDays(1);
-        params.put("name", "브라운");
         params.put("date", localDate.toString());
         params.put("timeId", "1");
         params.put("themeId", "1");
+        Map<String, String> normalUser = Map.of("email", "member@naver.com", "password", "1234");
+        String token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(normalUser)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .cookie("token");
 
+        // when
+        // then
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -97,7 +139,7 @@ class MissionStepTest {
     }
 
     @Test
-    void 사단계() {
+    void 사단계_db연결() {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             assertThat(connection).isNotNull();
             assertThat(connection.getCatalog()).isEqualTo("DATABASE");
@@ -108,25 +150,47 @@ class MissionStepTest {
     }
 
     @Test
-    void 오단계() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2023-08-05", 1, 1);
+    void 오단계_예약_조회() {
 
+        // given
+        Map<String, String> normalUser = Map.of("email", "member@naver.com", "password", "1234");
+        String token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(normalUser)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .cookie("token");
+        jdbcTemplate.update("INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+                "2023-08-05", 1, 1, 2);
+
+        // when
+        // then
         List<ReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationResponse.class);
-
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-
         assertThat(reservations.size()).isEqualTo(count);
     }
 
     @Test
-    void 육단계() {
+    void 육단계_예약_삭제() {
+
+        // given
+        Map<String, String> normalUser = Map.of("email", "member@naver.com", "password", "1234");
+        String token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(normalUser)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .cookie("token");
         Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", "2999-08-05");
         params.put("timeId", "1");
         params.put("themeId", "1");
@@ -134,6 +198,7 @@ class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
+                .cookie("token", token)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
@@ -151,7 +216,7 @@ class MissionStepTest {
     }
 
     @Test
-    void 칠단계() {
+    void 칠단계_예약_시간_삭제() {
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
@@ -165,9 +230,19 @@ class MissionStepTest {
     }
 
     @Test
-    void 팔단계() {
+    void 팔단계_예약_조회() {
+
+        // given
+        Map<String, String> normalUser = Map.of("email", "member@naver.com", "password", "1234");
+        String token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(normalUser)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .cookie("token");
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", "2999-08-05");
         reservation.put("timeId", 1);
         reservation.put("themeId", "1");
@@ -175,10 +250,13 @@ class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
+                .cookie("token", token)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
 
+        // when
+        // then
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()

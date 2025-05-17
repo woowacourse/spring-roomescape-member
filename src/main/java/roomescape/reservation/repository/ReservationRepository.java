@@ -8,7 +8,9 @@ import roomescape.reservation.domain.Reservation;
 
 public interface ReservationRepository {
 
-    List<Reservation> findAll();
+
+    List<Reservation> findByCriteria(Long themeId, Long memberId, LocalDate localDateFrom,
+                                     LocalDate localDateTo);
 
     boolean existsByDateAndTimeAndTheme(final LocalDate date, final LocalTime time, final Long themeId);
 

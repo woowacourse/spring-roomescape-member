@@ -9,14 +9,16 @@ import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import roomescape.error.ReservationException;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
+import roomescape.member.domain.Password;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.stub.StubReservationRepository;
+import roomescape.reservation.fake.FakeReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.stub.StubReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
-import roomescape.theme.stub.StubThemeRepository;
+import roomescape.theme.fake.FakeThemeRepository;
 
 class ThemeServiceTest {
     private final LocalTime t1 = LocalTime.of(10, 0);
@@ -28,14 +30,19 @@ class ThemeServiceTest {
     private final Theme th1 = new Theme(1L, "이름1", "설명1", "썸네일1");
     private final Theme th2 = new Theme(2L, "이름2", "이름2", "이름2");
 
-    private final Reservation r1 = new Reservation(1L, "테스트", LocalDate.of(2025, 5, 11), rt1, th1);
-    private final Reservation r2 = new Reservation(2L, "테스트2", LocalDate.of(2025, 6, 11), rt2, th2);
+    Member member1 = Member.builder()
+            .name("유저")
+            .email("email")
+            .password(Password.createForMember("비번"))
+            .role(MemberRole.MEMBER).build();
 
-    private final StubReservationRepository stubReservationRepo = new StubReservationRepository(r1, r2);
-    private final StubReservationTimeRepository stubReservationTimeRepo = new StubReservationTimeRepository(rt1, rt2);
-    private final StubThemeRepository stubThemeRepo = new StubThemeRepository(th1, th2);
+    private final Reservation r1 = new Reservation(1L, LocalDate.of(2025, 5, 11), rt1, th1, member1);
+    private final Reservation r2 = new Reservation(2L, LocalDate.of(2025, 6, 11), rt2, th2, member1);
 
-    private final ThemeService service = new ThemeService(stubThemeRepo, stubReservationRepo);
+    private final FakeReservationRepository fakeReservationRepo = new FakeReservationRepository(r1, r2);
+    private final FakeThemeRepository fakeThemeRepo = new FakeThemeRepository(th1, th2);
+
+    private final ThemeService service = new ThemeService(fakeThemeRepo, fakeReservationRepo);
 
 
     @Test
@@ -82,13 +89,13 @@ class ThemeServiceTest {
     @Test
     void 예약이_존재하는_테마를_삭제하지_못_한다() {
         // given
-        stubReservationRepo.setExistsByThemeId(true);
+        fakeReservationRepo.setExistsByThemeId(true);
 
         // when
         // then
         assertThatThrownBy(() -> service.delete(1L))
                 .isInstanceOf(ReservationException.class)
                 .hasMessage("해당 테마로 예약된 건이 존재합니다.");
-        stubReservationRepo.setExistsByThemeId(false);
+        fakeReservationRepo.setExistsByThemeId(false);
     }
 }

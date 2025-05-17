@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import roomescape.error.ReservationException;
+import roomescape.member.domain.Member;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
@@ -15,9 +16,6 @@ import roomescape.theme.domain.Theme;
 @AllArgsConstructor
 public class Reservation {
     private final Long id;
-
-    @NonNull
-    private final String name;
 
     @NonNull
     private final LocalDate date;
@@ -28,15 +26,19 @@ public class Reservation {
     @NonNull
     private final Theme theme;
 
-    public Reservation(@NonNull final String name, @NonNull final LocalDate date,
+    @NonNull
+    private final Member member;
+
+    public Reservation(@NonNull final LocalDate date,
                        @NonNull final ReservationTime reservationTime,
-                       @NonNull final Theme theme) {
+                       @NonNull final Theme theme,
+                       @NonNull final Member member) {
         validateFutureOrPresent(date, reservationTime.getStartAt());
         this.id = null;
-        this.name = name;
         this.date = date;
         this.time = reservationTime;
         this.theme = theme;
+        this.member = member;
     }
 
     private void validateFutureOrPresent(final LocalDate date, final LocalTime time) {
