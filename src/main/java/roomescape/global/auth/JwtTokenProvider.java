@@ -6,14 +6,17 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.global.exception.custom.UnauthorizedException;
 
 @Component
 public class JwtTokenProvider {
 
-    private static final String secretKey = "secret";
-    private static final long validityInMilliseconds = 300000;
+    @Value("${jwt.secret-key}")
+    private String secretKey;
+    @Value("${jwt.expire-seconds}")
+    private long validityInMilliseconds;
 
     public String createToken(final String payload) {
         final Claims claims = Jwts.claims().setSubject(payload);
