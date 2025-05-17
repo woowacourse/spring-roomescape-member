@@ -4,9 +4,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeName;
-import roomescape.repository.ThemeRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeName;
+import roomescape.theme.repository.ThemeRepository;
 
 public class FakeThemeDao implements ThemeRepository {
 
@@ -49,7 +49,7 @@ public class FakeThemeDao implements ThemeRepository {
 
     @Override
     public void deleteById(long id) {
-        Theme theme = findById(id).orElseThrow(); // TODO 이거 맞나?
+        Theme theme = findById(id).orElseThrow();
         themes.remove(theme);
     }
 }

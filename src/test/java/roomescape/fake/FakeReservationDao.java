@@ -3,8 +3,8 @@ package roomescape.fake;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import roomescape.domain.Reservation;
-import roomescape.repository.ReservationRepository;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.ReservationRepository;
 
 public class FakeReservationDao implements ReservationRepository {
 
@@ -13,8 +13,7 @@ public class FakeReservationDao implements ReservationRepository {
 
     @Override
     public Reservation save(final Reservation reservation) {
-        Reservation newReservation = new Reservation(index++, reservation.getName(), reservation.getDate(),
-                reservation.getTime(), reservation.getTheme());
+        Reservation newReservation = reservation.withId(index++);
         reservations.add(newReservation);
         return newReservation;
     }
@@ -22,6 +21,16 @@ public class FakeReservationDao implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         return reservations;
+    }
+
+    @Override
+    public List<Reservation> findAll(
+            final Long memberId,
+            final Long themeId,
+            final LocalDate fromDate,
+            final LocalDate toDate
+    ) {
+        return List.of();
     }
 
     @Override
@@ -33,7 +42,7 @@ public class FakeReservationDao implements ReservationRepository {
     @Override
     public boolean existsByTimeId(final long timeId) {
         return reservations.stream()
-                .anyMatch(reservation -> reservation.getTimeId() == timeId);
+                .anyMatch(reservation -> reservation.getDateTime().getTimeId() == timeId);
     }
 
     @Override
@@ -47,8 +56,8 @@ public class FakeReservationDao implements ReservationRepository {
         return reservations.stream()
                 .anyMatch(reservation ->
                         reservation.getTheme().getId() == themeId
-                                && reservation.getDate().isEqual(date)
-                                && reservation.getTime().getId() == timeId);
+                                && reservation.getDateTime().getDate().isEqual(date)
+                                && reservation.getDateTime().getTimeId() == timeId);
     }
 
     public Reservation findById(final long id) {
