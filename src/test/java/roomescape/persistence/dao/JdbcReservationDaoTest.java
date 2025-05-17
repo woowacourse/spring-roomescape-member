@@ -14,11 +14,14 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
+import roomescape.business.domain.Role;
 import roomescape.business.domain.Theme;
+import roomescape.business.domain.User;
 import roomescape.persistence.entity.PlayTimeEntity;
 import roomescape.persistence.entity.ReservationEntity;
 import roomescape.persistence.entity.ThemeEntity;
-import roomescape.presentation.dto.ReservationAvailableTimeResponse;
+import roomescape.persistence.entity.UserEntity;
+import roomescape.presentation.dto.reservation.ReservationAvailableTimeResponse;
 
 @JdbcTest
 class JdbcReservationDaoTest {
@@ -26,13 +29,29 @@ class JdbcReservationDaoTest {
     private ReservationDao reservationDao;
 
     private final JdbcTemplate jdbcTemplate;
+    private final User userFixture = User.createWithId(1L, "hotteok", "hoho", "qwe123", Role.USER);
     private final PlayTime playTimeFixture = PlayTime.createWithId(1L, LocalTime.of(10, 10));
     private final Theme themeFixture = Theme.createWithId(1L, "테마", "소개", "썸네일");
 
     @Autowired
     public JdbcReservationDaoTest(final JdbcTemplate jdbcTemplate) {
+        jdbcTemplate.execute("DROP TABLE IF EXISTS users CASCADE");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS reservation_time CASCADE");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS theme CASCADE");
+
         jdbcTemplate.execute("""
-                CREATE TABLE IF NOT EXISTS reservation_time
+                CREATE TABLE users
+                  (
+                      id   SERIAL,
+                      name VARCHAR(255) NOT NULL,
+                      email VARCHAR(255) NOT NULL UNIQUE,
+                      password VARCHAR(255) NOT NULL,
+                      role VARCHAR(255) NOT NULL,
+                      PRIMARY KEY (id)
+                  );
+                """);
+        jdbcTemplate.execute("""
+                CREATE TABLE reservation_time
                 (
                     id SERIAL,
                     start_at VARCHAR(255) NOT NULL,
@@ -40,7 +59,7 @@ class JdbcReservationDaoTest {
                 );
                 """);
         jdbcTemplate.execute("""
-                CREATE TABLE IF NOT EXISTS theme
+                CREATE TABLE theme
                 (
                     id SERIAL,
                     name        VARCHAR(255) NOT NULL,
@@ -49,6 +68,8 @@ class JdbcReservationDaoTest {
                     PRIMARY KEY (id)
                 );
                 """);
+        jdbcTemplate.update("INSERT INTO USERS (name, email, password, role) values ('hotteok', 'hoho', 'qwe123', 'USER')");
+        jdbcTemplate.update("INSERT INTO USERS (name, email, password, role) values ('saba', 'saba', 'qwe123', 'USER')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:10')");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마', '소개', '썸네일')");
 
@@ -61,16 +82,15 @@ class JdbcReservationDaoTest {
 
         jdbcTemplate.execute("DROP TABLE IF EXISTS reservation CASCADE");
         jdbcTemplate.execute("""
-                CREATE TABLE reservation
-                (
-                    id SERIAL,
-                    name VARCHAR(255) NOT NULL,
+                CREATE TABLE reservation (
+                    id SERIAL PRIMARY KEY,
+                    user_id BIGINT,
                     date VARCHAR(255) NOT NULL,
                     time_id BIGINT,
                     theme_id BIGINT,
-                    PRIMARY KEY (id),
-                    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-                    FOREIGN KEY (theme_id) REFERENCES theme (id)
+                    FOREIGN KEY (user_id) REFERENCES users(id),
+                    FOREIGN KEY (time_id) REFERENCES reservation_time(id),
+                    FOREIGN KEY (theme_id) REFERENCES theme(id)
                 );
                 """);
     }
@@ -80,25 +100,33 @@ class JdbcReservationDaoTest {
     void save() {
         // given & when
         final Long id = reservationDao.save(new Reservation(
-                "hotteok",
+                userFixture,
                 LocalDate.of(2025, 1, 1),
                 playTimeFixture,
                 themeFixture
         ));
         final ReservationEntity actual = jdbcTemplate.queryForObject("""
                 SELECT
-                    r.id AS reservation_id,
-                    r.name,
-                    r.date,
-                    t.id AS time_id,
-                    t.start_at AS time_value,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
+                r.id AS reservation_id,
+                u.id AS user_id,
+                u.name AS user_name,
+                u.email AS user_email,
+                u.password AS user_password,
+                u.role AS user_role,
+                r.date,
+                rt.id AS time_id,
+                rt.start_at AS time_value,
+                t.id AS theme_id,
+                t.name AS theme_name,
+                t.description AS theme_description,
+                t.thumbnail AS theme_thumbnail
                 FROM reservation AS r
-                INNER JOIN reservation_time AS t ON r.time_id = t.id
-                INNER JOIN theme AS th ON r.theme_id = th.id
+                INNER JOIN users AS u 
+                ON r.user_id = u.id
+                INNER JOIN reservation_time AS rt
+                ON r.time_id = rt.id 
+                INNER JOIN theme AS t 
+                ON r.theme_id = t.id
                 WHERE r.id = ?
                 """, ReservationEntity.getDefaultRowMapper(), id
         );
@@ -106,7 +134,7 @@ class JdbcReservationDaoTest {
         // then
         assertThat(actual).isEqualTo(new ReservationEntity(
                 1L,
-                "hotteok",
+                UserEntity.from(userFixture),
                 "2025-01-01",
                 PlayTimeEntity.from(playTimeFixture),
                 ThemeEntity.from(themeFixture))
@@ -117,16 +145,16 @@ class JdbcReservationDaoTest {
     @Test
     void findAll() {
         // given
-        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', '2025-01-01', 1, 1)");
-        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', '2025-01-02', 1, 1)");
+        jdbcTemplate.update("INSERT INTO RESERVATION (user_id, date, time_id, theme_id) values (1, '2025-01-01', 1, 1)");
+        jdbcTemplate.update("INSERT INTO RESERVATION (user_id, date, time_id, theme_id) values (1, '2025-01-02', 1, 1)");
 
         // when
         final List<Reservation> actual = reservationDao.findAll();
 
         // then
-        assertThat(actual).containsExactly(
-                Reservation.createWithId(1L, "hotteok", LocalDate.of(2025, 1, 1), playTimeFixture, themeFixture),
-                Reservation.createWithId(2L, "hotteok", LocalDate.of(2025, 1, 2), playTimeFixture, themeFixture)
+        assertThat(actual).containsExactlyInAnyOrder(
+                Reservation.createWithId(1L, userFixture, LocalDate.of(2025, 1, 1), playTimeFixture, themeFixture),
+                Reservation.createWithId(2L, userFixture, LocalDate.of(2025, 1, 2), playTimeFixture, themeFixture)
         );
     }
 
@@ -134,7 +162,7 @@ class JdbcReservationDaoTest {
     @Test
     void remove() {
         // given
-        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', '2025-01-01', 1, 1)");
+        jdbcTemplate.update("INSERT INTO RESERVATION (user_id, date, time_id, theme_id) values (1, '2025-01-01', 1, 1)");
 
         // when
         final boolean flag = reservationDao.remove(1L);
@@ -161,7 +189,7 @@ class JdbcReservationDaoTest {
     @Test
     void existsByDate() {
         // given
-        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', '2025-01-01', 1, 1)");
+        jdbcTemplate.update("INSERT INTO RESERVATION (user_id, date, time_id, theme_id) values (1, '2025-01-01', 1, 1)");
         final LocalDate validDate = LocalDate.of(2025, 1, 1);
         final LocalDate invalidDate = LocalDate.of(2025, 1, 2);
 
@@ -176,7 +204,7 @@ class JdbcReservationDaoTest {
     @Test
     void existsByTime() {
         // given
-        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', '2025-01-01', 1, 1)");
+        jdbcTemplate.update("INSERT INTO RESERVATION (user_id, date, time_id, theme_id) values (1, '2025-01-01', 1, 1)");
         final PlayTime validTime = playTimeFixture;
         final PlayTime invalidTime = new PlayTime(LocalTime.of(10, 20));
 
@@ -197,7 +225,7 @@ class JdbcReservationDaoTest {
     @Test
     void existsByTheme() {
         // given
-        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', '2025-01-01', 1, 1)");
+        jdbcTemplate.update("INSERT INTO RESERVATION (user_id, date, time_id, theme_id) values (1, '2025-01-01', 1, 1)");
         final Theme validTheme = themeFixture;
         final Theme invalidTheme = new Theme("더미", "더미", "더미");
 
@@ -219,7 +247,7 @@ class JdbcReservationDaoTest {
     void findAvailableTimesByDateAndTheme() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:20')");
-        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', '2025-01-01', 1, 1)");
+        jdbcTemplate.update("INSERT INTO RESERVATION (user_id, date, time_id, theme_id) values (1, '2025-01-01', 1, 1)");
 
         // when
         final List<ReservationAvailableTimeResponse> actual =

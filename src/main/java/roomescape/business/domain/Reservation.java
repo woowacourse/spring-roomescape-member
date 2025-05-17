@@ -8,31 +8,30 @@ public class Reservation {
 
     private Long id;
 
-    private final String name;
+    private final User user;
     private final LocalDate date;
     private final PlayTime playTime;
     private final Theme theme;
 
     public Reservation(
-            final String name,
+            final User user,
             final LocalDate date,
             final PlayTime playTime,
             final Theme theme
     ) {
-        this(null, name, date, playTime, theme);
+        this(null, user, date, playTime, theme);
     }
 
     private Reservation(
             final Long id,
-            final String name,
+            final User user,
             final LocalDate date,
             final PlayTime playTime,
             final Theme theme
     ) {
-        validateNonNull(name, date, playTime, theme);
-        validateNameIsNotBlank(name);
+        validateNonNull(user, date, playTime, theme);
         this.id = id;
-        this.name = name;
+        this.user = user;
         this.date = date;
         this.playTime = playTime;
         this.theme = theme;
@@ -44,20 +43,14 @@ public class Reservation {
         return reservationDateTime.isBefore(dateTime);
     }
 
-    private void validateNameIsNotBlank(final String name) {
-        if (name.isBlank()) {
-            throw new IllegalArgumentException("name이 empty 입니다.");
-        }
-    }
-
     private void validateNonNull(
-            final String name,
+            final User user,
             final LocalDate date,
             final PlayTime playTime,
             final Theme theme
     ) {
-        if (name == null) {
-            throw new IllegalArgumentException("name이 null 입니다.");
+        if (user == null) {
+            throw new IllegalArgumentException("user가 null 입니다.");
         }
         if (date == null) {
             throw new IllegalArgumentException("date가 null 입니다.");
@@ -72,7 +65,7 @@ public class Reservation {
 
     public static Reservation createWithId(
             final Long id,
-            final String name,
+            final User user,
             final LocalDate date,
             final PlayTime playTime,
             final Theme theme
@@ -81,15 +74,15 @@ public class Reservation {
             throw new IllegalArgumentException("id가 null 입니다.");
         }
 
-        return new Reservation(id, name, date, playTime, theme);
+        return new Reservation(id, user, date, playTime, theme);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public User getUser() {
+        return user;
     }
 
     public LocalDate getDate() {
@@ -110,12 +103,13 @@ public class Reservation {
             return false;
         }
         final Reservation that = (Reservation) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name)
-               && Objects.equals(date, that.date) && Objects.equals(playTime, that.playTime);
+        return Objects.equals(id, that.id) && Objects.equals(user, that.user)
+               && Objects.equals(date, that.date) && Objects.equals(playTime, that.playTime)
+               && Objects.equals(theme, that.theme);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, date, playTime);
+        return Objects.hash(id, user, date, playTime, theme);
     }
 }

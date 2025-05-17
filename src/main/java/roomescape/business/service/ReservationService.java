@@ -6,43 +6,62 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
+import roomescape.business.domain.Role;
 import roomescape.business.domain.Theme;
+import roomescape.business.domain.User;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidReservationDateException;
 import roomescape.exception.ReservationNotFoundException;
+import roomescape.exception.auth.UnauthorizedAccessException;
 import roomescape.persistence.dao.ReservationDao;
-import roomescape.presentation.dto.ReservationAvailableTimeResponse;
-import roomescape.presentation.dto.ReservationRequest;
-import roomescape.presentation.dto.ReservationResponse;
+import roomescape.presentation.dto.reservation.ReservationAvailableTimeResponse;
+import roomescape.presentation.dto.reservation.ReservationFilterDto;
+import roomescape.presentation.dto.reservation.ReservationRequest;
+import roomescape.presentation.dto.reservation.ReservationResponse;
 
 @Service
 public class ReservationService {
 
+    private final UserService userService;
     private final PlayTimeService playTimeService;
     private final ThemeService themeService;
+
     private final ReservationDao reservationDao;
 
     public ReservationService(
+            final UserService userService,
             final PlayTimeService playTimeService,
             final ThemeService themeService,
             final ReservationDao reservationDao
     ) {
+        this.userService = userService;
         this.playTimeService = playTimeService;
         this.themeService = themeService;
         this.reservationDao = reservationDao;
     }
 
-    public ReservationResponse create(final ReservationRequest reservationRequest) {
+    public ReservationResponse create(
+            final Long userId,
+            final ReservationRequest reservationRequest
+    ) {
+        final User user = userService.find(userId);
+        validateUserPermission(user.getRole());
         final PlayTime playTime = playTimeService.find(reservationRequest.timeId());
         final Theme theme = themeService.find(reservationRequest.themeId());
         validateIsDuplicate(reservationRequest.date(), playTime, theme);
 
-        final Reservation reservation = reservationRequest.toDomain(playTime, theme);
+        final Reservation reservation = reservationRequest.toDomain(user, playTime, theme);
         validateIsFuture(reservation);
 
         final Long id = reservationDao.save(reservation);
 
         return ReservationResponse.withId(reservation, id);
+    }
+
+    private void validateUserPermission(final Role role) {
+        if (!role.hasPermission(Role.USER)) {
+            throw new UnauthorizedAccessException(role, Role.USER);
+        }
     }
 
     private void validateIsDuplicate(
@@ -82,5 +101,11 @@ public class ReservationService {
         final Theme theme = themeService.find(themeId);
 
         return reservationDao.findAvailableTimesByDateAndTheme(date, theme);
+    }
+
+    public List<ReservationResponse> findByFilter(final ReservationFilterDto filter) {
+        return reservationDao.findByFilter(filter).stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 }

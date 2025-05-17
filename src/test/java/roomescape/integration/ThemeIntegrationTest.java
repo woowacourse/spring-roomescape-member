@@ -16,12 +16,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.persistence.entity.ReservationEntity;
-import roomescape.presentation.dto.ThemeRequest;
-import roomescape.presentation.dto.ThemeResponse;
+import roomescape.presentation.dto.theme.ThemeRequest;
+import roomescape.presentation.dto.theme.ThemeResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class ThemeIntegrationTest {
 
     @Autowired
@@ -113,7 +114,8 @@ class ThemeIntegrationTest {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마2', '소개2', '썸네일2')");
 
         final String formattedYesterdayDate = ReservationEntity.formatDate(LocalDate.now().minusDays(1));
-        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', ?, 1, 2)", formattedYesterdayDate);
+        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', ?, 1, 2)",
+                formattedYesterdayDate);
 
         given()
                 .when()

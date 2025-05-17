@@ -1,12 +1,14 @@
-package roomescape.presentation.dto;
+package roomescape.presentation.dto.reservation;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import roomescape.business.domain.Reservation;
+import roomescape.presentation.dto.theme.ThemeResponse;
+import roomescape.presentation.dto.UserResponse;
+import roomescape.presentation.dto.playtime.PlayTimeResponse;
 
 public record ReservationResponse(
         Long id,
-        String name,
+        UserResponse user,
         LocalDate date,
         PlayTimeResponse time,
         ThemeResponse theme
@@ -15,7 +17,7 @@ public record ReservationResponse(
     public static ReservationResponse from(final Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getName(),
+                UserResponse.from(reservation.getUser()),
                 reservation.getDate(),
                 PlayTimeResponse.from(reservation.getPlayTime()),
                 ThemeResponse.from(reservation.getTheme())
@@ -25,7 +27,7 @@ public record ReservationResponse(
     public static ReservationResponse withId(final Reservation reservation, final Long id) {
         return new ReservationResponse(
                 id,
-                reservation.getName(),
+                UserResponse.from(reservation.getUser()),
                 reservation.getDate(),
                 PlayTimeResponse.from(reservation.getPlayTime()),
                 ThemeResponse.from(reservation.getTheme())

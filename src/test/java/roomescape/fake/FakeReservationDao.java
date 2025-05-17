@@ -11,7 +11,8 @@ import roomescape.persistence.dao.ReservationDao;
 import roomescape.persistence.entity.PlayTimeEntity;
 import roomescape.persistence.entity.ReservationEntity;
 import roomescape.persistence.entity.ThemeEntity;
-import roomescape.presentation.dto.ReservationAvailableTimeResponse;
+import roomescape.presentation.dto.reservation.ReservationAvailableTimeResponse;
+import roomescape.presentation.dto.reservation.ReservationFilterDto;
 
 public class FakeReservationDao implements ReservationDao {
 
@@ -31,7 +32,7 @@ public class FakeReservationDao implements ReservationDao {
         final ReservationEntity temp = ReservationEntity.from(reservation);
         final ReservationEntity reservationEntity = new ReservationEntity(
                 (long) index,
-                temp.name(), temp.date(), temp.playTimeEntity(), temp.themeEntity()
+                temp.userEntity(), temp.date(), temp.playTimeEntity(), temp.themeEntity()
         );
         reservations.add(index, reservationEntity);
 
@@ -114,5 +115,10 @@ public class FakeReservationDao implements ReservationDao {
         }
 
         return result;
+    }
+
+    @Override
+    public List<Reservation> findByFilter(final ReservationFilterDto filter) {
+        return List.of();
     }
 }

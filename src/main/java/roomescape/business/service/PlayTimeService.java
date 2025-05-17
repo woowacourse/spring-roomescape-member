@@ -7,8 +7,8 @@ import roomescape.business.domain.PlayTime;
 import roomescape.exception.DuplicatePlayTimeException;
 import roomescape.persistence.dao.PlayTimeDao;
 import roomescape.exception.PlayTimeNotFoundException;
-import roomescape.presentation.dto.PlayTimeRequest;
-import roomescape.presentation.dto.PlayTimeResponse;
+import roomescape.presentation.dto.playtime.PlayTimeRequest;
+import roomescape.presentation.dto.playtime.PlayTimeResponse;
 
 @Service
 public class PlayTimeService {

@@ -11,7 +11,8 @@ import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
 import roomescape.business.domain.Theme;
 import roomescape.persistence.entity.ReservationEntity;
-import roomescape.presentation.dto.ReservationAvailableTimeResponse;
+import roomescape.presentation.dto.reservation.ReservationAvailableTimeResponse;
+import roomescape.presentation.dto.reservation.ReservationFilterDto;
 
 @Repository
 public class JdbcReservationDao implements ReservationDao {
@@ -25,12 +26,12 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public Long save(final Reservation reservation) {
         final ReservationEntity reservationEntity = ReservationEntity.from(reservation);
-        final String sql = "INSERT INTO RESERVATION (name, date, time_id, theme_id) values (?, ?, ?, ?)";
+        final String sql = "INSERT INTO RESERVATION (user_id, date, time_id, theme_id) values (?, ?, ?, ?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservationEntity.name());
+            ps.setLong(1, reservationEntity.userEntity().id());
             ps.setString(2, reservationEntity.date());
             ps.setLong(3, reservationEntity.playTimeEntity().id());
             ps.setLong(4, reservationEntity.themeEntity().id());
@@ -46,7 +47,11 @@ public class JdbcReservationDao implements ReservationDao {
                 """
                         SELECT
                         r.id AS reservation_id,
-                        r.name,
+                        u.id AS user_id,
+                        u.name AS user_name,
+                        u.email AS user_email,
+                        u.password AS user_password,
+                        u.role AS user_role,
                         r.date,
                         rt.id AS time_id,
                         rt.start_at AS time_value,
@@ -55,6 +60,8 @@ public class JdbcReservationDao implements ReservationDao {
                         t.description AS theme_description,
                         t.thumbnail AS theme_thumbnail
                         FROM reservation AS r
+                        INNER JOIN users AS u 
+                        ON r.user_id = u.id
                         INNER JOIN reservation_time AS rt
                         ON r.time_id = rt.id 
                         INNER JOIN theme AS t 
@@ -121,5 +128,69 @@ public class JdbcReservationDao implements ReservationDao {
                 ReservationEntity.formatDate(date),
                 theme.getId()
         );
+    }
+
+    @Override
+    public List<Reservation> findByFilter(final ReservationFilterDto filter) {
+        final String sql =
+                """
+                        SELECT
+                        r.id AS reservation_id,
+                        u.id AS user_id,
+                        u.name AS user_name,
+                        u.email AS user_email,
+                        u.password AS user_password,
+                        u.role AS user_role,
+                        r.date,
+                        rt.id AS time_id,
+                        rt.start_at AS time_value,
+                        t.id AS theme_id,
+                        t.name AS theme_name,
+                        t.description AS theme_description,
+                        t.thumbnail AS theme_thumbnail
+                        FROM reservation AS r
+                        INNER JOIN users AS u 
+                        ON r.user_id = u.id
+                        INNER JOIN reservation_time AS rt
+                        ON r.time_id = rt.id 
+                        INNER JOIN theme AS t 
+                        ON r.theme_id = t.id
+                        WHERE 1=1
+                        """ + buildWhereQuery(filter);
+
+        return jdbcTemplate.query(sql, ReservationEntity.getDefaultRowMapper()).stream()
+                .map(ReservationEntity::toDomain)
+                .toList();
+    }
+
+    private String buildWhereQuery(final ReservationFilterDto filter) {
+        final StringBuilder whereQuery = new StringBuilder();
+
+        if (filter.themeId() != null) {
+            whereQuery.append(" AND ")
+                    .append("t.id = ")
+                    .append(filter.themeId());
+        }
+        if (filter.userId() != null) {
+            whereQuery.append(" AND ")
+                    .append("u.id = ")
+                    .append(filter.userId());
+        }
+        if (filter.from() != null) {
+            whereQuery.append(" AND ")
+                    .append("r.date >= ")
+                    .append("'")
+                    .append(filter.from())
+                    .append("'");
+        }
+        if (filter.to() != null) {
+            whereQuery.append(" AND ")
+                    .append("r.date <= ")
+                    .append("'")
+                    .append(filter.to())
+                    .append("'");
+        }
+
+        return whereQuery.toString();
     }
 }

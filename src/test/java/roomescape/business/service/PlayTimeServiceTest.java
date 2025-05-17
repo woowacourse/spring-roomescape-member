@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 import roomescape.business.domain.PlayTime;
 import roomescape.exception.DuplicatePlayTimeException;
 import roomescape.fake.FakePlayTimeDao;
-import roomescape.presentation.dto.PlayTimeRequest;
-import roomescape.presentation.dto.PlayTimeResponse;
+import roomescape.presentation.dto.playtime.PlayTimeRequest;
+import roomescape.presentation.dto.playtime.PlayTimeResponse;
 
 class PlayTimeServiceTest {
 

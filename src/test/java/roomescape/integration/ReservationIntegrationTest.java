@@ -16,23 +16,44 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.presentation.dto.ReservationRequest;
-import roomescape.presentation.dto.ReservationResponse;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import roomescape.business.service.AuthService;
+import roomescape.presentation.dto.LoginRequest;
+import roomescape.presentation.dto.reservation.ReservationRequest;
+import roomescape.presentation.dto.reservation.ReservationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationIntegrationTest {
+
+    private static final LocalDate FORMATTED_MAX_LOCAL_DATE = LocalDate.of(9999, 12, 31);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private static final LocalDate FORMATTED_MAX_LOCAL_DATE = LocalDate.of(9999, 12, 31);
+    @Autowired
+    private AuthService authService;
+
+    private String userToken;
 
     @BeforeEach
     void setUp() {
         jdbcTemplate.execute("DROP TABLE IF EXISTS reservation CASCADE");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS users CASCADE");
         jdbcTemplate.execute("DROP TABLE IF EXISTS theme CASCADE");
         jdbcTemplate.execute("DROP TABLE IF EXISTS reservation_time CASCADE");
+
+        jdbcTemplate.execute("""
+                CREATE TABLE users
+                  (
+                      id   SERIAL,
+                      name VARCHAR(255) NOT NULL,
+                      email VARCHAR(255) NOT NULL UNIQUE,
+                      password VARCHAR(255) NOT NULL,
+                      role VARCHAR(255) NOT NULL,
+                      PRIMARY KEY (id)
+                  );
+                """);
 
         jdbcTemplate.execute("""
                 CREATE TABLE reservation_time (
@@ -53,30 +74,35 @@ class ReservationIntegrationTest {
         jdbcTemplate.execute("""
                 CREATE TABLE reservation (
                     id SERIAL PRIMARY KEY,
-                    name VARCHAR(255) NOT NULL,
+                    user_id BIGINT,
                     date VARCHAR(255) NOT NULL,
                     time_id BIGINT,
                     theme_id BIGINT,
+                    FOREIGN KEY (user_id) REFERENCES users(id),
                     FOREIGN KEY (time_id) REFERENCES reservation_time(id),
                     FOREIGN KEY (theme_id) REFERENCES theme(id)
                 );
                 """);
 
+        jdbcTemplate.update("INSERT INTO USERS (name, email, password, role) values ('hotteok', 'hoho', 'qwe123', 'USER')");
+        jdbcTemplate.update("INSERT INTO USERS (name, email, password, role) values ('saba', 'saba', 'qwe123', 'USER')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:10')");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '소개1', '썸네일1')");
-    }
 
+        userToken = authService.createToken(new LoginRequest("hoho", "qwe123"));
+    }
 
     @DisplayName("방탈출 예약을 생성한다.")
     @Test
     void create() {
         final ReservationRequest request = new ReservationRequest(
-                "hotteok", FORMATTED_MAX_LOCAL_DATE, 1L, 1L);
+                FORMATTED_MAX_LOCAL_DATE, 1L, 1L);
 
         final ReservationResponse response =
                 given()
                         .contentType(ContentType.JSON)
                         .body(request)
+                        .cookie("token", userToken)
                         .when()
                         .post("/reservations")
                         .then()
@@ -85,7 +111,7 @@ class ReservationIntegrationTest {
                         .as(ReservationResponse.class);
 
         assertAll(
-                () -> assertThat(response.name()).isEqualTo("hotteok"),
+                () -> assertThat(response.user().name()).isEqualTo("hotteok"),
                 () -> assertThat(response.date()).isEqualTo(FORMATTED_MAX_LOCAL_DATE)
         );
     }
@@ -94,9 +120,9 @@ class ReservationIntegrationTest {
     @Test
     void readAll() {
         jdbcTemplate.update(
-                "INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', '2025-01-01', 1, 1)");
+                "INSERT INTO RESERVATION (user_id, date, time_id, theme_id) values (1, '2025-01-01', 1, 1)");
         jdbcTemplate.update(
-                "INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('saba', '2025-01-01', 1, 1)");
+                "INSERT INTO RESERVATION (user_id, date, time_id, theme_id) values (2, '2025-01-01', 1, 1)");
 
         given()
                 .when()
@@ -105,14 +131,14 @@ class ReservationIntegrationTest {
                 .statusCode(HttpStatus.OK.value())
                 .contentType(ContentType.JSON)
                 .body("size()", equalTo(2))
-                .body("name", contains("hotteok", "saba"));
+                .body("user.name", contains("hotteok", "saba"));
     }
 
     @DisplayName("방탈출 예약을 삭제한다.")
     @Test
     void delete() {
         jdbcTemplate.update(
-                "INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', '2025-01-01', 1, 1)");
+                "INSERT INTO RESERVATION (user_id, date, time_id, theme_id) values (1, '2025-01-01', 1, 1)");
 
         given()
                 .when()
@@ -127,7 +153,7 @@ class ReservationIntegrationTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:20')");
 
         jdbcTemplate.update(
-                "INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', '2025-01-01', 1, 1)");
+                "INSERT INTO RESERVATION (user_id, date, time_id, theme_id) values (1, '2025-01-01', 1, 1)");
 
         given()
                 .queryParam("date", "2025-01-01")

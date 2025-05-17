@@ -17,13 +17,15 @@ import roomescape.exception.ThemeNotFoundException;
 import roomescape.fake.FakePlayTimeDao;
 import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeThemeDao;
+import roomescape.fake.FakeUserDao;
 import roomescape.persistence.entity.PlayTimeEntity;
 import roomescape.persistence.entity.ThemeEntity;
-import roomescape.presentation.dto.PlayTimeResponse;
-import roomescape.presentation.dto.ReservationAvailableTimeResponse;
-import roomescape.presentation.dto.ReservationRequest;
-import roomescape.presentation.dto.ReservationResponse;
-import roomescape.presentation.dto.ThemeResponse;
+import roomescape.presentation.dto.UserResponse;
+import roomescape.presentation.dto.playtime.PlayTimeResponse;
+import roomescape.presentation.dto.reservation.ReservationAvailableTimeResponse;
+import roomescape.presentation.dto.reservation.ReservationRequest;
+import roomescape.presentation.dto.reservation.ReservationResponse;
+import roomescape.presentation.dto.theme.ThemeResponse;
 
 public class ReservationServiceTest {
 
@@ -39,12 +41,14 @@ public class ReservationServiceTest {
     private final FakeThemeDao themeDaoFixture = new FakeThemeDao(new ArrayList<>(List.of(
             new ThemeEntity(1L, "테마", "소개", "썸네일")
     )));
+    private final UserService userServiceFixture = new UserService(new FakeUserDao());
     private final PlayTimeService playTimeServiceFixture = new PlayTimeService(timeDaoFixture);
     private final ThemeService themeServiceFixture = new ThemeService(themeDaoFixture);
 
     @BeforeEach
     void setUp() {
         reservationService = new ReservationService(
+                userServiceFixture,
                 playTimeServiceFixture,
                 themeServiceFixture,
                 new FakeReservationDao(timeDaoFixture.getTimes())
@@ -56,18 +60,18 @@ public class ReservationServiceTest {
     void create() {
         // given
         final ReservationRequest reservationRequest = new ReservationRequest(
-                "hotteok", FORMATTED_MAX_LOCAL_DATE, 1L, 1L
+                FORMATTED_MAX_LOCAL_DATE, 1L, 1L
         );
         final ReservationResponse expected = new ReservationResponse(
                 1L,
-                "hotteok",
+                new UserResponse(1L, "hotteok", "hoho"),
                 FORMATTED_MAX_LOCAL_DATE,
                 new PlayTimeResponse(1L, FORMATTED_MAX_LOCAL_TIME),
                 new ThemeResponse(1L, "테마", "소개", "썸네일")
         );
 
         // when & then
-        assertThat(reservationService.create(reservationRequest))
+        assertThat(reservationService.create(1L, reservationRequest))
                 .isEqualTo(expected);
     }
 
@@ -76,11 +80,11 @@ public class ReservationServiceTest {
     void createOrThrowIfTimeIdNotExists() {
         // given
         final ReservationRequest reservationRequest = new ReservationRequest(
-                "hotteok", FORMATTED_MAX_LOCAL_DATE, 3L, 1L
+                FORMATTED_MAX_LOCAL_DATE, 3L, 1L
         );
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+        assertThatThrownBy(() -> reservationService.create(1L, reservationRequest))
                 .isInstanceOf(PlayTimeNotFoundException.class);
     }
 
@@ -89,11 +93,11 @@ public class ReservationServiceTest {
     void createOrThrowIfThemeIdNotExists() {
         // given
         final ReservationRequest reservationRequest = new ReservationRequest(
-                "hotteok", FORMATTED_MAX_LOCAL_DATE, 1L, 2L
+                FORMATTED_MAX_LOCAL_DATE, 1L, 2L
         );
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+        assertThatThrownBy(() -> reservationService.create(1L, reservationRequest))
                 .isInstanceOf(ThemeNotFoundException.class);
     }
 
@@ -102,12 +106,12 @@ public class ReservationServiceTest {
     void createOrThrowIfDateAndTimeAndThemeDuplicate() {
         // given
         final ReservationRequest reservationRequest = new ReservationRequest(
-                "hotteok", FORMATTED_MAX_LOCAL_DATE, 1L, 1L
+                FORMATTED_MAX_LOCAL_DATE, 1L, 1L
         );
-        reservationService.create(reservationRequest);
+        reservationService.create(1L, reservationRequest);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+        assertThatThrownBy(() -> reservationService.create(1L, reservationRequest))
                 .isInstanceOf(DuplicateReservationException.class);
     }
 
@@ -116,11 +120,11 @@ public class ReservationServiceTest {
     void createOrThrowIfFuture() {
         // given
         final ReservationRequest reservationRequest = new ReservationRequest(
-                "hotteok", LocalDate.of(0, 1, 1), 1L, 1L
+                LocalDate.of(0, 1, 1), 1L, 1L
         );
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+        assertThatThrownBy(() -> reservationService.create(1L, reservationRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 날짜 및 시간이 현재보다 과거일 수 없습니다.");
     }
@@ -129,20 +133,24 @@ public class ReservationServiceTest {
     @Test
     void findAll() {
         // given
-        reservationService.create(new ReservationRequest(
-                "hotteok", FORMATTED_MAX_LOCAL_DATE, 1L, 1L
+        reservationService.create(1L, new ReservationRequest(
+                FORMATTED_MAX_LOCAL_DATE, 1L, 1L
         ));
-        reservationService.create(new ReservationRequest(
-                "saba", FORMATTED_MAX_LOCAL_DATE.minusDays(1), 1L, 1L
+        reservationService.create(1L, new ReservationRequest(
+                FORMATTED_MAX_LOCAL_DATE.minusDays(1), 1L, 1L
         ));
 
         // when & then
         assertThat(reservationService.findAll())
                 .containsExactly(
-                        new ReservationResponse(1L, "hotteok", FORMATTED_MAX_LOCAL_DATE,
+                        new ReservationResponse(1L,
+                                new UserResponse(1L, "hotteok", "hoho"),
+                                FORMATTED_MAX_LOCAL_DATE,
                                 new PlayTimeResponse(1L, FORMATTED_MAX_LOCAL_TIME),
                                 new ThemeResponse(1L, "테마", "소개", "썸네일")),
-                        new ReservationResponse(2L, "saba", FORMATTED_MAX_LOCAL_DATE.minusDays(1),
+                        new ReservationResponse(2L,
+                                new UserResponse(1L, "hotteok", "hoho"),
+                                FORMATTED_MAX_LOCAL_DATE.minusDays(1),
                                 new PlayTimeResponse(1L, FORMATTED_MAX_LOCAL_TIME),
                                 new ThemeResponse(1L, "테마", "소개", "썸네일"))
                 );
@@ -152,8 +160,8 @@ public class ReservationServiceTest {
     @Test
     void remove() {
         // given
-        reservationService.create(new ReservationRequest(
-                "hotteok", FORMATTED_MAX_LOCAL_DATE, 1L, 1L
+        reservationService.create(1L, new ReservationRequest(
+                FORMATTED_MAX_LOCAL_DATE, 1L, 1L
         ));
 
         // when
@@ -175,8 +183,8 @@ public class ReservationServiceTest {
     @Test
     void findAvailableTimes() {
         // given
-        reservationService.create(new ReservationRequest(
-                "hotteok", FORMATTED_MAX_LOCAL_DATE, 1L, 1L
+        reservationService.create(1L, new ReservationRequest(
+                FORMATTED_MAX_LOCAL_DATE, 1L, 1L
         ));
 
         // when
