@@ -1,10 +1,8 @@
 package roomescape.exception;
 
-public class RoomescapeException extends RuntimeException {
-
-    private static final String ERROR_PREFIX = "[ERROR] ";
+public class RoomescapeException extends CustomException {
 
     public RoomescapeException(final String message) {
-        super(ERROR_PREFIX + message);
+        super(message);
     }
 }

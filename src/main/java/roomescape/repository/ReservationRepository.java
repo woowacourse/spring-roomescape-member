@@ -1,14 +1,19 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
+import roomescape.controller.api.reservation.dto.ReservationSearchFilter;
 import roomescape.model.Reservation;
 import roomescape.model.Theme;
 
 public interface ReservationRepository {
 
+    boolean existsByDateTime(final LocalDate date, final LocalTime time);
+
     List<Reservation> findAll();
+
+    List<Reservation> findAllByFilter(final ReservationSearchFilter filter);
 
     List<Reservation> findAllByTimeSlotId(final Long id);
 
@@ -19,8 +24,6 @@ public interface ReservationRepository {
     List<Theme> findPopularThemesByPeriod(final LocalDate startDate, final LocalDate endDate, final Integer limit);
 
     Long save(final Reservation reservation);
-
-    Optional<Reservation> findById(final Long id);
 
     Boolean removeById(final Long id);
 }
