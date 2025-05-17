@@ -2,13 +2,14 @@ package roomescape.member.service;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.member.controller.dto.LoginRequest;
+import roomescape.member.auth.controller.dto.LoginRequest;
 import roomescape.member.controller.dto.MemberResponse;
 import roomescape.member.controller.dto.SignupRequest;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
+
+import java.util.List;
 
 @Service
 public class MemberService {

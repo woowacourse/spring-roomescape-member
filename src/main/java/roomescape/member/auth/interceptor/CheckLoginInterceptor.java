@@ -1,15 +1,16 @@
-package roomescape.interceptor;
+package roomescape.member.auth.interceptor;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.Optional;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.service.MemberService;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 @Component
 public class CheckLoginInterceptor implements HandlerInterceptor {

@@ -1,0 +1,14 @@
+package roomescape.member.auth.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class UserAuthViewController {
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+
+}

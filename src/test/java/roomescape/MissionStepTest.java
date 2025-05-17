@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.member.domain.Role;
-import roomescape.reservation.controller.ReservationController;
+import roomescape.reservation.controller.UserReservationController;
 import roomescape.reservation.controller.dto.ReservationResponse;
 
 import java.lang.reflect.Field;
@@ -29,7 +29,7 @@ class MissionStepTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
-    private ReservationController reservationController;
+    private UserReservationController userReservationController;
 
     @DisplayName("루트 경로 페이지 요청에 성공하면 200 코드를 반환한다")
     @Test
@@ -180,7 +180,7 @@ class MissionStepTest {
     void jdbcTemplate_inject_test() {
         boolean isJdbcTemplateInjected = false;
 
-        for (Field field : reservationController.getClass().getDeclaredFields()) {
+        for (Field field : userReservationController.getClass().getDeclaredFields()) {
             if (field.getType().equals(JdbcTemplate.class)) {
                 isJdbcTemplateInjected = true;
                 break;
