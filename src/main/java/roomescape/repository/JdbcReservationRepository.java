@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
@@ -50,6 +51,20 @@ public class JdbcReservationRepository implements ReservationRepository {
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("RESERVATION")
                 .usingGeneratedKeyColumns("ID");
+    }
+
+    @Override
+    public boolean existsByDateTime(final LocalDate date, final LocalTime time) {
+        String sql = """
+            SELECT COUNT(*) 
+            FROM RESERVATION R
+            JOIN RESERVATION_TIME RT ON R.TIME_ID = RT.ID
+            WHERE R.DATE = ? AND RT.START_AT = ?
+            """;
+
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, time);
+
+        return count != null && count > 0;
     }
 
     @Override

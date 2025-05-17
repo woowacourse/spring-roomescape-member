@@ -1,12 +1,17 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import org.springframework.cglib.core.Local;
 import roomescape.controller.api.reservation.dto.ReservationSearchFilter;
 import roomescape.model.Reservation;
 import roomescape.model.Theme;
 
 public interface ReservationRepository {
+
+    boolean existsByDateTime(final LocalDate date, final LocalTime time);
 
     List<Reservation> findAll();
 
