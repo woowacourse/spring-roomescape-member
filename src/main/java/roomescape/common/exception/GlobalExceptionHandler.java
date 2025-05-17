@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(e.getMessage());
     }
 
-    @ExceptionHandler({MissingTokenExcpetion.class, InvalidTokenException.class})
+    @ExceptionHandler({MissingTokenExcpetion.class, InvalidTokenException.class, ExpiredTokenException.class})
     public ResponseEntity<String> handleMissingTokenException(final MissingTokenExcpetion e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
