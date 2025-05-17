@@ -1,17 +1,19 @@
 package roomescape.reservation.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.time.LocalDate;
+import jakarta.validation.constraints.NotBlank;
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
+import java.time.LocalDate;
+
 public record ReservationRequest(
-        @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul") LocalDate date,
-        Long timeId,
-        Long themeId,
-        Long memberId
+        @NotBlank @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul") LocalDate date,
+        @NotBlank Long timeId,
+        @NotBlank Long themeId,
+        @NotBlank Long memberId
 ) {
 
     public ReservationRequest {

@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import roomescape.member.auth.controller.dto.LoginMember;
@@ -37,7 +38,7 @@ public class UserReservationController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ReservationResponse addMemberReservation(@RequestBody MemberReservationRequest memberRequest,
-                                                    LoginMember loginMember) {
+                                                    @Valid LoginMember loginMember) {
         ReservationRequest reservationRequest = new ReservationRequest(memberRequest.date(), memberRequest.timeId(),
                 memberRequest.themeId(), loginMember.id());
         return reservationService.add(reservationRequest);

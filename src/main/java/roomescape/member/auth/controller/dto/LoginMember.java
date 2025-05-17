@@ -1,4 +1,11 @@
 package roomescape.member.auth.controller.dto;
 
-public record LoginMember(Long id, String email, String name, String role) {
+import jakarta.validation.constraints.NotBlank;
+
+public record LoginMember(
+        @NotBlank Long id,
+        @NotBlank String email,
+        @NotBlank String name,
+        @NotBlank String role
+) {
 }
