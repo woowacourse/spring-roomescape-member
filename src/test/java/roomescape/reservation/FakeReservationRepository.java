@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
+import roomescape.member.Member;
+import roomescape.member.MemberRole;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.theme.Theme;
 
@@ -17,11 +19,11 @@ public class FakeReservationRepository implements ReservationRepository {
     private final List<Long> invokeDeleteId = new ArrayList<>();
 
     @Override
-    public Long save(final Reservation reservation, final Long timeId, final Long themeId) {
+    public Long save(final Reservation reservation, final Long timeId, final Long themeId, final Long memberId) {
         final Reservation writedReservation = new Reservation(
                 NEXT_ID++,
-                reservation.getName(),
                 reservation.getDate(),
+                generateMemberDummy(memberId),
                 generateReservationTimeDummy(timeId),
                 generateReservationThemeDummy(themeId)
         );
@@ -37,8 +39,21 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAllByThemeIdAndDate(final Long themeId, final LocalDate date) {
         return reservations.stream()
-                .filter(reservation -> Objects.equals(reservation.getTheme().getId(), themeId) && Objects.equals(reservation.getDate(), date))
+                .filter(reservation -> Objects.equals(reservation.getTheme().getId(), themeId) && Objects.equals(
+                        reservation.getDate(), date))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Reservation> findAllByMemberIdAndThemeIdAndDateRange(final Long memberId, final Long themeId,
+                                                                     final LocalDate from,
+                                                                     final LocalDate to) {
+        return reservations.stream()
+                .filter(reservation -> Objects.equals(reservation.getMember().getId(), memberId))
+                .filter(reservation -> Objects.equals(reservation.getTheme().getId(), themeId))
+                .filter(reservation -> reservation.getDate().isAfter(from) || reservation.getDate().equals(from))
+                .filter(reservation -> reservation.getDate().isBefore(to) || reservation.getDate().equals(to))
+                .toList();
     }
 
     @Override
@@ -79,11 +94,15 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Boolean existsByReservationTimeIdAndDate(final Long reservationTimeId, final LocalDate date) {
+    public Boolean existsByReservationTimeIdAndDateAndThemeId(
+            final Long reservationTimeId,
+            final LocalDate date,
+            final Long themeId
+    ) {
         return reservations.stream()
                 .filter(reservation -> Objects.equals(reservation.getDate(), date))
-                .map(reservation -> reservation.getReservationTime())
-                .anyMatch(reservationTime -> Objects.equals(reservationTime.getId(), reservationTimeId));
+                .filter(reservation -> Objects.equals(reservation.getTheme().getId(), themeId))
+                .anyMatch(reservation -> Objects.equals(reservation.getReservationTime().getId(), reservationTimeId));
     }
 
     public boolean isInvokeDeleteById(final Long id) {
@@ -110,6 +129,16 @@ public class FakeReservationRepository implements ReservationRepository {
                 "",
                 "",
                 ""
+        );
+    }
+
+    private Member generateMemberDummy(final Long id) {
+        return new Member(
+                id,
+                "email",
+                "pass",
+                "boogie",
+                MemberRole.MEMBER
         );
     }
 }

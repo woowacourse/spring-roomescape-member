@@ -146,7 +146,7 @@ class ThemeServiceTest {
             // given
             final Long id = 1L;
             fakeThemeRepository.save(new Theme("로키1", "로키로키1", "http://www.google.com/1"));
-            fakeReservationRepository.save(new Reservation("로키", LocalDate.of(2026, 12, 1)), 1L, id);
+            fakeReservationRepository.save(new Reservation(LocalDate.of(2026, 12, 1)), 1L, id, 1L);
 
             // when & then
             assertThatThrownBy(() -> {

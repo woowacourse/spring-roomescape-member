@@ -27,7 +27,7 @@ public class ReservationTimeServiceTest {
     private final FakeReservationRepository fakeReservationRepository;
 
     public ReservationTimeServiceTest() {
-        fakeReservationTimeRepository = new FakeReservationTimeRepository();
+        fakeReservationTimeRepository = new roomescape.reservationtime.FakeReservationTimeRepository();
         fakeReservationRepository = new FakeReservationRepository();
         reservationTimeService = new ReservationTimeService(fakeReservationTimeRepository, fakeReservationRepository);
     }
@@ -134,7 +134,7 @@ public class ReservationTimeServiceTest {
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
             final Long dummyThemeId = 1L;
             final LocalDate targetDate = LocalDate.of(2026, 12, 1);
-            fakeReservationRepository.save(new Reservation("부기", targetDate), 1L, dummyThemeId);
+            fakeReservationRepository.save(new Reservation(targetDate), 1L, dummyThemeId, 1L);
 
             // when
             final List<AvailableReservationTimeResponse> allAvailableTimes = reservationTimeService.findAllAvailableTimes(dummyThemeId, targetDate);
@@ -192,7 +192,7 @@ public class ReservationTimeServiceTest {
         void deleteTimeById3() {
             // given
             fakeReservationRepository.save(new Reservation(
-                    "", LocalDate.of(2026, 12, 01)), 1L, 1L
+                    LocalDate.of(2026, 12, 01)), 1L, 1L, 1L
             );
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
 
