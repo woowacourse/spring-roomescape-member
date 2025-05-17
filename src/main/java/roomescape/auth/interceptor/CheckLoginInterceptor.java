@@ -1,13 +1,13 @@
-package roomescape.member.auth.interceptor;
+package roomescape.auth.interceptor;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.member.domain.Member;
+import roomescape.auth.LoginMember;
+import roomescape.auth.service.AuthService;
 import roomescape.member.domain.Role;
-import roomescape.member.service.MemberService;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -15,10 +15,10 @@ import java.util.Optional;
 @Component
 public class CheckLoginInterceptor implements HandlerInterceptor {
 
-    private final MemberService memberService;
+    private final AuthService authService;
 
-    public CheckLoginInterceptor(MemberService memberService) {
-        this.memberService = memberService;
+    public CheckLoginInterceptor(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -27,9 +27,9 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies)
                 .orElseThrow(() -> new IllegalArgumentException("token 쿠키가 없습니다."));
-        Member member = memberService.searchLoginMember(token);
+        LoginMember loginMember = authService.findAuthenticatedMember(token);
 
-        if (member == null || !member.isSameRole(Role.ADMIN)) {
+        if (loginMember == null || !loginMember.role().equals(Role.ADMIN.name())) {
             response.setStatus(401);
             return false;
         }

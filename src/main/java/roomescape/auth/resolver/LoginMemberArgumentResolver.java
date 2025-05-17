@@ -1,4 +1,4 @@
-package roomescape.member.auth.resolver;
+package roomescape.auth.resolver;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,9 +8,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.member.auth.controller.dto.LoginMember;
-import roomescape.member.domain.Member;
-import roomescape.member.service.MemberService;
+import roomescape.auth.LoginMember;
+import roomescape.auth.service.AuthService;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -18,10 +17,10 @@ import java.util.Optional;
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberService memberService;
+    private final AuthService authService;
 
-    public LoginMemberArgumentResolver(MemberService memberService) {
-        this.memberService = memberService;
+    public LoginMemberArgumentResolver(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -36,8 +35,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies)
                 .orElseThrow(() -> new IllegalArgumentException("token 쿠키가 없습니다."));
-        Member member = memberService.searchLoginMember(token);
-        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole().name());
+        return authService.findAuthenticatedMember(token);
     }
 
     private Optional<String> extractTokenFromCookie(Cookie[] cookies) {
