@@ -38,8 +38,8 @@ public class AuthService {
         }
     }
 
-    private void validatePassword(final LoginRequest loginRequest, final Member memberByEmail) {
-        if (!memberByEmail.matchesPassword(loginRequest.password())) {
+    private void validatePassword(final LoginRequest loginRequest, final Member member) {
+        if (!member.matchesPassword(loginRequest.password())) {
             throw new AuthNotValidPasswordException();
         }
     }
