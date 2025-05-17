@@ -17,7 +17,7 @@ import roomescape.domain.ReservationTheme;
 
 @JdbcTest
 @ActiveProfiles("test")
-class RoomescapeThemeRepositoryImplTest {
+class RoomescapeThemeRepositoryTest {
 
     @Autowired
     DataSource dataSource;

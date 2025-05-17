@@ -200,10 +200,10 @@ function applyFilter(event) {
   TODO: [6단계] 예약 검색 - 조건에 따른 예약 조회 API 호출
         요청 포맷에 맞게 설정
   */
-  fetch('/', { // 예약 검색 API 호출
+  fetch('/reservations?themeId='+themeId+"&memberId="+memberId+"&dateFrom="+dateFrom+"&dateTo="+dateTo, { // 예약 검색 API 호출
     method: 'GET',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
   }).then(response => {
     if (response.status === 200) return response.json();

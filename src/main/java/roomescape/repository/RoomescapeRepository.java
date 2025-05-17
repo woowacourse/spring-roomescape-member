@@ -12,7 +12,8 @@ public interface RoomescapeRepository {
 
     List<Reservation> findByDate(final LocalDate date);
 
-    List<Reservation> findAll();
+    List<Reservation> findAll(final Long memberId, final Long themeId, final LocalDate dateFrom,
+                              final LocalDate dateTo);
 
     Reservation save(final Reservation reservation);
 
