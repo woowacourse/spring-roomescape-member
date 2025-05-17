@@ -11,7 +11,7 @@ public class AuthCookie {
 
     @Value("${cookie.token-name}")
     private String name;
-    @Value("${jwt.expire-seconds}")
+    @Value("${cookie.expire-seconds}")
     private int maxAge;
 
     public Cookie createTokenCookie(final String token) {
