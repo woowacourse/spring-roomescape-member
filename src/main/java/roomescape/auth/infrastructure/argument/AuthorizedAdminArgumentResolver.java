@@ -11,9 +11,9 @@ import roomescape.admin.domain.Admin;
 import roomescape.admin.service.AdminService;
 import roomescape.auth.infrastructure.AuthorizationContext;
 import roomescape.auth.infrastructure.Role;
-import roomescape.globalexception.ForbiddenException;
-import roomescape.globalexception.InternalServerException;
-import roomescape.globalexception.UnauthorizedException;
+import roomescape.common.globalexception.ForbiddenException;
+import roomescape.common.globalexception.InternalServerException;
+import roomescape.common.globalexception.UnauthorizedException;
 
 @Component
 public class AuthorizedAdminArgumentResolver implements HandlerMethodArgumentResolver {

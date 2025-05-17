@@ -7,7 +7,7 @@ import roomescape.auth.dto.MemberLoginRequest;
 import roomescape.auth.infrastructure.Role;
 import roomescape.auth.infrastructure.jwt.JwtPayload;
 import roomescape.auth.infrastructure.jwt.JwtProvider;
-import roomescape.globalexception.BadRequestException;
+import roomescape.common.globalexception.BadRequestException;
 import roomescape.member.service.MemberService;
 
 @Service

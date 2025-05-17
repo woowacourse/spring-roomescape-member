@@ -9,9 +9,9 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.infrastructure.AuthorizationContext;
 import roomescape.auth.infrastructure.Role;
-import roomescape.globalexception.ForbiddenException;
-import roomescape.globalexception.InternalServerException;
-import roomescape.globalexception.UnauthorizedException;
+import roomescape.common.globalexception.ForbiddenException;
+import roomescape.common.globalexception.InternalServerException;
+import roomescape.common.globalexception.UnauthorizedException;
 import roomescape.member.domain.Member;
 import roomescape.member.service.MemberService;
 

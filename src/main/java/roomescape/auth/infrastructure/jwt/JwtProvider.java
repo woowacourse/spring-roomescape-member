@@ -10,7 +10,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.auth.infrastructure.Role;
-import roomescape.globalexception.UnauthorizedException;
+import roomescape.common.globalexception.UnauthorizedException;
 
 @Component
 public class JwtProvider {
