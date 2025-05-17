@@ -12,17 +12,19 @@ import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.dto.TokenResponse;
 import roomescape.auth.service.AuthService;
+import roomescape.global.auth.AuthCookie;
 import roomescape.global.auth.AuthMember;
-import roomescape.global.auth.CookieUtil;
 import roomescape.global.auth.LoginMember;
 
 @RestController
 public class AuthController {
 
     private final AuthService authService;
+    private final AuthCookie authCookie;
 
-    public AuthController(final AuthService authService) {
+    public AuthController(final AuthService authService, final AuthCookie authCookie) {
         this.authService = authService;
+        this.authCookie = authCookie;
     }
 
     @PostMapping("/login")
@@ -31,7 +33,7 @@ public class AuthController {
             final HttpServletResponse response
     ) {
         final TokenResponse token = authService.createToken(loginRequest);
-        final Cookie cookie = CookieUtil.setTokenInfo(token.accessToken());
+        final Cookie cookie = authCookie.createTokenCookie(token.accessToken());
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
@@ -41,7 +43,7 @@ public class AuthController {
             @AuthMember final LoginMember member,
             final HttpServletResponse response
     ) {
-        final Cookie cookie = CookieUtil.setTokenInfo(null);
+        final Cookie cookie = authCookie.createExpiredCookie();
         response.addCookie(cookie);
         return ResponseEntity.noContent().build();
     }

@@ -98,7 +98,7 @@ class AuthServiceTest {
             // then
             assertThatThrownBy(() -> authService.checkMember(invalidToken))
                     .isInstanceOf(UnauthorizedException.class)
-                    .hasMessage("확인할 수 없는 사용자입니다.");
+                    .hasMessage("로그인 후 이용해주세요.");
         }
     }
 }
