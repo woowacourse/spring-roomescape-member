@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import roomescape.globalexception.NotFoundException;
+import roomescape.common.globalexception.NotFoundException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.fixture.ReservationTimeFixture;
 
