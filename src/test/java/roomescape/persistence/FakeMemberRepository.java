@@ -31,6 +31,12 @@ public class FakeMemberRepository implements MemberRepository {
     }
 
     @Override
+    public boolean existsByEmail(String email) {
+        return members.stream()
+                .anyMatch(member -> member.getEmail().equals(email));
+    }
+
+    @Override
     public Long add(Member member) {
         Member savedMember = new Member(
                 idGenerator.getAndIncrement(),

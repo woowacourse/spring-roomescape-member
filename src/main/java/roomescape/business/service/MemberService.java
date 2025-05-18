@@ -5,6 +5,7 @@ import jakarta.inject.Named;
 import java.util.List;
 import roomescape.business.Member;
 import roomescape.business.MemberRole;
+import roomescape.exception.MemberException;
 import roomescape.persistence.MemberRepository;
 import roomescape.presentation.dto.SignUpRequestDto;
 import roomescape.presentation.dto.response.MemberResponseDto;
@@ -31,7 +32,9 @@ public class MemberService {
     }
 
     public MemberResponseDto createMember(SignUpRequestDto signUpRequestDto) {
-
+        if (memberRepository.existsByEmail(signUpRequestDto.email())) {
+            throw new MemberException("이미 등록된 사용자입니다.");
+        }
         Member member = new Member(
                 signUpRequestDto.name(),
                 signUpRequestDto.email(),

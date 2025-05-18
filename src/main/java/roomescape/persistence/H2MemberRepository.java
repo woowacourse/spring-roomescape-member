@@ -70,6 +70,19 @@ public class H2MemberRepository implements MemberRepository {
     }
 
     @Override
+    public boolean existsByEmail(String email) {
+        String query = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM member
+                    WHERE email = ?
+                )
+                """;
+        Boolean result = jdbcTemplate.queryForObject(query, Boolean.class, email);
+        return Boolean.TRUE.equals(result);
+    }
+
+    @Override
     public Long add(Member member) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", member.getName());
