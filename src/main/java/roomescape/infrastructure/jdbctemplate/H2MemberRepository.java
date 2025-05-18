@@ -1,4 +1,4 @@
-package roomescape.persistence;
+package roomescape.infrastructure.jdbctemplate;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.Member;
 import roomescape.business.MemberRole;
+import roomescape.persistence.MemberRepository;
 
 @Repository
 public class H2MemberRepository implements MemberRepository {

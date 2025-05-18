@@ -1,4 +1,4 @@
-package roomescape.persistence;
+package roomescape.infrastructure.jdbctemplate;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.ReservationTime;
+import roomescape.persistence.ReservationTimeRepository;
 import roomescape.presentation.dto.response.AvailableTimesResponseDto;
 
 @Repository

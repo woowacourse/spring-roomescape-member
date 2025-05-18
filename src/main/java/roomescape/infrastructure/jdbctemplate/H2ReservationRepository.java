@@ -1,4 +1,4 @@
-package roomescape.persistence;
+package roomescape.infrastructure.jdbctemplate;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -16,6 +16,7 @@ import roomescape.business.MemberRole;
 import roomescape.business.Reservation;
 import roomescape.business.ReservationTheme;
 import roomescape.business.ReservationTime;
+import roomescape.persistence.ReservationRepository;
 
 @Repository
 public class H2ReservationRepository implements ReservationRepository {
