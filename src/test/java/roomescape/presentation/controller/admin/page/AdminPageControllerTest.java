@@ -3,9 +3,12 @@ package roomescape.presentation.controller.admin.page;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -41,82 +44,33 @@ class AdminPageControllerTest {
                 .extract().response().getCookie("token");
     }
 
-    @Test
-    @DisplayName("/admin 관리자 인덱스 페이지 관리자 요청을 응답한다.")
-    void test1() {
+    private static Stream<Arguments> adminPages() {
+        return Stream.of(
+                Arguments.of("/admin"),
+                Arguments.of("/admin/reservation"),
+                Arguments.of("/admin/time"),
+                Arguments.of("/admin/theme")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("adminPages")
+    @DisplayName("관리자는 관리자 페이지에 접근할 수 있다.")
+    void adminAccessAdminPage(String path) {
         RestAssured.given().log().all()
                 .cookie("token", adminToken)
-                .when().get("/admin")
+                .when().get(path)
                 .then().log().all()
                 .statusCode(200);
     }
 
-    @Test
-    @DisplayName("/admin 관리자 인덱스 페이지 일반 사용자 요청을 거부한다.")
-    void test2() {
+    @ParameterizedTest
+    @MethodSource("adminPages")
+    @DisplayName("사용자는 관리자 페이지에 접근할 수 없다.")
+    void userAccessAdminPage(String path) {
         RestAssured.given().log().all()
                 .cookie("token", userToken)
-                .when().get("/admin")
-                .then().log().all()
-                .statusCode(401);
-    }
-
-    @Test
-    @DisplayName("/admin/reservation 페이지 관리자 요청을 응답한다.")
-    void test3() {
-        RestAssured.given().log().all()
-                .cookie("token", adminToken)
-                .when().get("/admin/reservation")
-                .then().log().all()
-                .statusCode(200);
-    }
-
-    @Test
-    @DisplayName("/admin/reservation 페이지 일반 사용자 요청을 거부한다.")
-    void test4() {
-        RestAssured.given().log().all()
-                .cookie("token", userToken)
-                .when().get("/admin/reservation")
-                .then().log().all()
-                .statusCode(401);
-    }
-
-    @Test
-    @DisplayName("/admin/time 페이지 관리자 요청을 응답한다.")
-    void test5() {
-        RestAssured.given().log().all()
-                .cookie("token", adminToken)
-                .when().get("/admin/time")
-                .then().log().all()
-                .statusCode(200);
-    }
-
-    @Test
-    @DisplayName("/admin/time 페이지 관리자 요청을 응답한다.")
-    void test6() {
-        RestAssured.given().log().all()
-                .cookie("token", userToken)
-                .when().get("/admin/time")
-                .then().log().all()
-                .statusCode(401);
-    }
-
-    @Test
-    @DisplayName("/admin/theme 페이지 관리자 요청을 응답한다.")
-    void test7() {
-        RestAssured.given().log().all()
-                .cookie("token", adminToken)
-                .when().get("/admin/theme")
-                .then().log().all()
-                .statusCode(200);
-    }
-
-    @Test
-    @DisplayName("/admin/theme 페이지 일반 사용자 요청을 응답한다.")
-    void test8() {
-        RestAssured.given().log().all()
-                .cookie("token", userToken)
-                .when().get("/admin/theme")
+                .when().get(path)
                 .then().log().all()
                 .statusCode(401);
     }
