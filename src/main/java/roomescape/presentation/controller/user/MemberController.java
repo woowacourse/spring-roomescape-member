@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.business.LoginInformation;
 import roomescape.business.service.AuthenticationService;
 import roomescape.business.service.MemberService;
-import roomescape.presentation.dto.SignUpRequestDto;
+import roomescape.presentation.dto.request.SignUpRequestDto;
 import roomescape.presentation.dto.request.LoginRequestDto;
 import roomescape.presentation.dto.response.MemberCheckResponseDto;
 import roomescape.presentation.dto.response.MemberResponseDto;

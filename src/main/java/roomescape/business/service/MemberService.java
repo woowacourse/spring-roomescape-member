@@ -7,7 +7,7 @@ import roomescape.business.Member;
 import roomescape.business.MemberRole;
 import roomescape.exception.MemberException;
 import roomescape.persistence.MemberRepository;
-import roomescape.presentation.dto.SignUpRequestDto;
+import roomescape.presentation.dto.request.SignUpRequestDto;
 import roomescape.presentation.dto.response.MemberResponseDto;
 
 @Named
