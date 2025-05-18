@@ -6,6 +6,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
@@ -17,6 +18,9 @@ import roomescape.global.auth.JwtTokenProvider;
 public class AuthApiTest {
 
     public static final String TOKEN_COOKIE_NAME = "token";
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @DisplayName("로그인 테스트")
     @Nested
@@ -116,7 +120,6 @@ public class AuthApiTest {
         @Test
         void testNotFoundMember() {
             // given
-            JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
             String token = jwtTokenProvider.createToken("4");
             // when
             // then

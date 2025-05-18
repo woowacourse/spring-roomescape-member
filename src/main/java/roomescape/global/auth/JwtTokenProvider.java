@@ -13,10 +13,16 @@ import roomescape.global.exception.custom.UnauthorizedException;
 @Component
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret-key}")
-    private String secretKey;
-    @Value("${jwt.expire-milliseconds}")
-    private long validityInMilliseconds;
+    private final String secretKey;
+    private final long validityInMilliseconds;
+
+    public JwtTokenProvider(
+            @Value("${jwt.secret-key}") String secretKey,
+            @Value("${jwt.expire-milliseconds}") long validityInMilliseconds
+    ) {
+        this.secretKey = secretKey;
+        this.validityInMilliseconds = validityInMilliseconds;
+    }
 
     public String createToken(final String payload) {
         final Claims claims = Jwts.claims().setSubject(payload);

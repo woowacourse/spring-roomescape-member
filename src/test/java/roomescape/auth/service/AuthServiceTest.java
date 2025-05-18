@@ -21,7 +21,7 @@ import roomescape.member.domain.Role;
 class AuthServiceTest {
 
     private final FakeMemberDao fakeMemberDao = new FakeMemberDao();
-    private final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
+    private final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider("test-secret-key", 3600000);
     private final AuthService authService = new AuthService(fakeMemberDao, jwtTokenProvider);
 
     private final static long SAVED_ID = 1L;

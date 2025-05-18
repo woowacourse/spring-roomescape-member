@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
@@ -22,6 +23,9 @@ import roomescape.reservation.dto.CreateReservationWithMemberRequest;
 public class ReservationApiTest {
 
     private static final String TOKEN_COOKIE_NAME = "token";
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @DisplayName("예약 생성 API 테스트")
     @Nested
@@ -74,7 +78,6 @@ public class ReservationApiTest {
                     .then().log().all()
                     .statusCode(401);
             // payload 값으로 식별할 수 없음
-            JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
             String token = jwtTokenProvider.createToken("4");
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -160,7 +163,6 @@ public class ReservationApiTest {
                     .then().log().all()
                     .statusCode(401);
             // payload 값으로 식별할 수 없음
-            JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
             String token = jwtTokenProvider.createToken("4");
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
