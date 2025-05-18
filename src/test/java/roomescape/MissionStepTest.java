@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -25,10 +27,64 @@ public class MissionStepTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    private RequestSpecification authenticatedRequest;
+    private RequestSpecification authenticatedAdminRequest;
+
+    private static final String TEST_EMAIL = "test@test.com";
+    private static final String TEST_ADMIN_EMAIL = "admintest@test.com";
+    private static final String TEST_PASSWORD = "1234";
 
     @BeforeEach
-    void setupDatabase() {
+    void setUp() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        jdbcTemplate.update("INSERT INTO member(name, email, password, role) values (?, ?, ?, ?)",
+            "테스트", "test@test.com", "1234", "USER");
+        jdbcTemplate.update("INSERT INTO member(name, email, password, role) values (?, ?, ?, ?)",
+            "어드민테스트", "admintest@test.com", "1234", "ADMIN");
+
+        String token = login();
+        authenticatedRequest = RestAssured.given()
+            .cookie("token", token)
+            .contentType(ContentType.JSON)
+            .log().all();
+
+        token = adminLogin();
+        authenticatedAdminRequest = RestAssured.given()
+            .cookie("token", token)
+            .contentType(ContentType.JSON)
+            .log().all();
+    }
+
+    private String login() {
+        Map<String, String> params = new HashMap<>();
+        params.put("email", TEST_EMAIL);
+        params.put("password", TEST_PASSWORD);
+
+        Response response = RestAssured.given()
+            .contentType(ContentType.JSON)
+            .body(params)
+            .when().post("/login")
+            .then()
+            .statusCode(200)
+            .extract().response();
+
+        return response.cookie("token");
+    }
+
+    private String adminLogin() {
+        Map<String, String> params = new HashMap<>();
+        params.put("email", TEST_ADMIN_EMAIL);
+        params.put("password", TEST_PASSWORD);
+
+        Response response = RestAssured.given()
+            .contentType(ContentType.JSON)
+            .body(params)
+            .when().post("/login")
+            .then()
+            .statusCode(200)
+            .extract().response();
+
+        return response.cookie("token");
     }
 
     @Test
@@ -42,20 +98,34 @@ public class MissionStepTest {
 
     @Test
     @DisplayName("/admin GET 요청에 응답한다")
-    void admin_page() {
-        RestAssured.given().log().all()
-            .when().get("/admin")
+    void admin_page_admin() {
+        authenticatedAdminRequest.when().get("/admin")
             .then().log().all()
             .statusCode(200);
     }
 
     @Test
+    @DisplayName("/admin GET 요청에 어드민이 아닐 시 401을 반환한다")
+    void admin_page_user() {
+        authenticatedRequest.when().get("/admin")
+            .then().log().all()
+            .statusCode(401);
+    }
+
+    @Test
     @DisplayName("/admin/reservation GET 요청에 응답한다")
-    void admin_reservation_page() {
-        RestAssured.given().log().all()
-            .when().get("/admin/reservation")
+    void admin_reservation_page_admin() {
+        authenticatedAdminRequest.when().get("/admin/reservation")
             .then().log().all()
             .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("/admin/reservation GET 요청에 ADMIN이 아니면 401을 반환한다")
+    void admin_reservation_page_user() {
+        authenticatedRequest.when().get("/admin/reservation")
+            .then().log().all()
+            .statusCode(401);
     }
 
     @Test
@@ -73,18 +143,15 @@ public class MissionStepTest {
     @DisplayName("/reservations POST 요청에 정상적으로 응답한다")
     void reservation_post_api() {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", LocalDate.now().plusDays(1));
         params.put("timeId", 1);
         params.put("themeId", 1);
 
-        RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
+        authenticatedRequest.body(params)
             .when().post("/reservations")
             .then().log().all()
             .statusCode(201)
-            .body("id", is(1));
+            .body("id", notNullValue());
 
         RestAssured.given().log().all()
             .when().get("/reservations")
@@ -97,14 +164,11 @@ public class MissionStepTest {
     @DisplayName("/reservations DELETE 요청에 정상적으로 응답한다")
     void reservation_delete_api() {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", LocalDate.now().plusDays(1));
         params.put("timeId", 1);
         params.put("themeId", 1);
 
-        RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
+        authenticatedRequest.body(params)
             .when().post("/reservations")
             .then().log().all()
             .statusCode(201)
@@ -175,12 +239,11 @@ public class MissionStepTest {
         params.put("timeId", 1);
         params.put("themeId", 1);
 
-        RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
+        authenticatedRequest.body(params)
             .when().post("/reservations")
             .then().log().all()
-            .statusCode(201);
+            .statusCode(201)
+            .body("id", notNullValue());
 
         RestAssured.given().log().all()
             .when().delete("/times/1")
@@ -226,7 +289,8 @@ public class MissionStepTest {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "레벨2 탈출");
         params.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
-        params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        params.put("thumbnail",
+            "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -265,12 +329,11 @@ public class MissionStepTest {
         params.put("timeId", 1);
         params.put("themeId", 1);
 
-        RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
+        authenticatedRequest.body(params)
             .when().post("/reservations")
             .then().log().all()
-            .statusCode(201);
+            .statusCode(201)
+            .body("id", notNullValue());
 
         RestAssured.given().log().all()
             .when().delete("/themes/1")
@@ -283,29 +346,29 @@ public class MissionStepTest {
     void theme_top_10() {
         LocalDate yesterday = LocalDate.now().minusDays(1);
         jdbcTemplate.update(
-            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "두리",
-            yesterday, 1L, 1L);
+            "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+            yesterday, 1L, 1L, 1L);
         jdbcTemplate.update(
-            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "두리",
-            yesterday, 2L, 1L);
+            "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+            yesterday, 2L, 1L, 1L);
         jdbcTemplate.update(
-            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "두리",
-            yesterday, 3L, 1L);
+            "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+            yesterday, 3L, 1L, 1L);
         jdbcTemplate.update(
-            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "두리",
-            yesterday, 1L, 2L);
+            "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+            yesterday, 1L, 2L, 1L);
         jdbcTemplate.update(
-            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "두리",
-            yesterday, 2L, 2L);
+            "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+            yesterday, 2L, 2L, 1L);
         jdbcTemplate.update(
-            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "두리",
-            yesterday, 3L, 2L);
+            "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+            yesterday, 3L, 2L, 1L);
         jdbcTemplate.update(
-            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "두리",
-            yesterday, 4L, 2L);
+            "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+            yesterday, 4L, 2L, 1L);
         jdbcTemplate.update(
-            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "두리",
-            yesterday, 1L, 3L);
+            "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+            yesterday, 1L, 3L, 1L);
 
         List<Integer> ids = RestAssured.given().log().all()
             .when().get("/themes/top10")

@@ -1,16 +1,18 @@
-package roomescape.exception_handler;
+package roomescape.exceptionhandler;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import roomescape.exception.AuthenticationException;
 import roomescape.exception.ConstraintException;
 import roomescape.exception.ResourceNotExistException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({NullPointerException.class, ConstraintException.class, IllegalArgumentException.class})
+    @ExceptionHandler({NullPointerException.class, ConstraintException.class,
+        IllegalArgumentException.class, AuthenticationException.class})
     public ResponseEntity<String> handleBadRequestException(RuntimeException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
