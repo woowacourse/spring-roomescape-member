@@ -84,7 +84,7 @@ class AuthServiceTest {
             // given
             String token = jwtTokenProvider.createToken(String.valueOf(SAVED_ID));
             // when
-            LoginMember response = authService.checkMember(token);
+            LoginMember response = authService.findMemberByToken(token);
             // then
             assertThat(response.name()).isEqualTo(SAVED_NAME.getName());
         }
@@ -96,7 +96,7 @@ class AuthServiceTest {
             String invalidToken = jwtTokenProvider.createToken(String.valueOf(2L));
             // when
             // then
-            assertThatThrownBy(() -> authService.checkMember(invalidToken))
+            assertThatThrownBy(() -> authService.findMemberByToken(invalidToken))
                     .isInstanceOf(UnauthorizedException.class)
                     .hasMessage("로그인 후 이용해주세요.");
         }

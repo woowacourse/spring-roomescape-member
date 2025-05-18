@@ -21,7 +21,7 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
             final HttpServletResponse response, final Object handler
     ) throws Exception {
         final String token = authCookie.getValue(request.getCookies());
-        authService.checkAdminMember(token);
+        authService.checkAdminMemberByToken(token);
         return true;
     }
 }

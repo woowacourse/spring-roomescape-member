@@ -29,6 +29,6 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
             throws Exception {
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         final String token = authCookie.getValue(request.getCookies());
-        return authService.checkMember(token);
+        return authService.findMemberByToken(token);
     }
 }

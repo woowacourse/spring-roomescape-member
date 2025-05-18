@@ -32,23 +32,19 @@ public class AuthService {
         return new TokenResponse(token);
     }
 
-    public LoginMember checkMember(final String token) {
-        final Member member = findMemberByToken(token);
-        return new LoginMember(member);
-    }
-
-    public LoginMember checkAdminMember(final String token) {
-        final Member member = findMemberByToken(token);
-        if (!member.isAdmin()) {
-            throw new ForbiddenException("접근 권한이 없습니다.");
-        }
-        return new LoginMember(member);
-    }
-
-    private Member findMemberByToken(final String token) {
+    public LoginMember findMemberByToken(final String token) {
         final long id = jwtTokenProvider.getId(token);
         final Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new UnauthorizedException());
-        return member;
+        return new LoginMember(member);
+    }
+
+    public void checkAdminMemberByToken(final String token) {
+        final long id = jwtTokenProvider.getId(token);
+        final Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new UnauthorizedException());
+        if (!member.isAdmin()) {
+            throw new ForbiddenException("접근 권한이 없습니다.");
+        }
     }
 }
