@@ -21,6 +21,7 @@ public class AdminAuthorityInterceptor implements HandlerInterceptor {
         this.authenticationService = authenticationService;
     }
 
+    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         Cookie[] cookies = request.getCookies();
