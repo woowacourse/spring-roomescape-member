@@ -1,11 +1,13 @@
 package roomescape.time.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.time.LocalTime;
+import jakarta.validation.constraints.NotBlank;
 import roomescape.time.domain.ReservationTime;
 
+import java.time.LocalTime;
+
 public record ReservationTimeRequest(
-        @JsonFormat(pattern = "HH:mm", timezone = "Asia/Seoul") LocalTime startAt
+        @NotBlank @JsonFormat(pattern = "HH:mm", timezone = "Asia/Seoul") LocalTime startAt
 ) {
 
     public ReservationTimeRequest {

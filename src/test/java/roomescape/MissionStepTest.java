@@ -1,24 +1,26 @@
 package roomescape;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.core.Is.is;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.reservation.controller.ReservationController;
+import roomescape.member.domain.Role;
+import roomescape.reservation.controller.UserReservationController;
 import roomescape.reservation.controller.dto.ReservationResponse;
+
+import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.core.Is.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -27,7 +29,7 @@ class MissionStepTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
-    private ReservationController reservationController;
+    private UserReservationController userReservationController;
 
     @DisplayName("루트 경로 페이지 요청에 성공하면 200 코드를 반환한다")
     @Test
@@ -41,7 +43,10 @@ class MissionStepTest {
     @DisplayName("어드민 경로 페이지 요청에 성공하면 200 코드를 반환한다")
     @Test
     void admin_request_test() {
+        String token = getToken("admin@gmail.com", "a", "어드민", Role.ADMIN);
+
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -50,7 +55,10 @@ class MissionStepTest {
     @DisplayName("예약 경로 페이지 요청에 성공하면 200 코드를 반환한다")
     @Test
     void reservation_request_test() {
+        String token = getToken("admin@gmail.com", "a", "어드민", Role.ADMIN);
+
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
@@ -65,13 +73,16 @@ class MissionStepTest {
     @DisplayName("예약 및 삭제 요청이 200 코드를 반환한다")
     @Test
     void reservation_delete_test() {
+        String token = getToken("a@gmail.com", "a", "하루", Role.USER);
+
         Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", "2026-08-05");
         params.put("timeId", "6");
         params.put("themeId", "2");
+//        params.put("memberId", "1");
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -80,17 +91,20 @@ class MissionStepTest {
                 .body("id", is(17));
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(17));
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -121,9 +135,9 @@ class MissionStepTest {
     @DisplayName("전체 Reservation 객체를 조회한다")
     @Test
     void get_reservations_test() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
+        jdbcTemplate.update("INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
                 "2023-08-05",
-                "1", "1");
+                "1", "1", "1");
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -166,7 +180,7 @@ class MissionStepTest {
     void jdbcTemplate_inject_test() {
         boolean isJdbcTemplateInjected = false;
 
-        for (Field field : reservationController.getClass().getDeclaredFields()) {
+        for (Field field : userReservationController.getClass().getDeclaredFields()) {
             if (field.getType().equals(JdbcTemplate.class)) {
                 isJdbcTemplateInjected = true;
                 break;
@@ -203,4 +217,13 @@ class MissionStepTest {
                 .statusCode(204);
     }
 
+    private String getToken(String email, String password, String name, Role role) {
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("email", email, "password", password, "name", name, "role", role.name()))
+                .when().post("/login")
+                .then().log().all()
+                .extract()
+                .cookie("token");
+    }
 }

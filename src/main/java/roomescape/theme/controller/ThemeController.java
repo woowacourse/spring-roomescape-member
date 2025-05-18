@@ -1,19 +1,13 @@
 package roomescape.theme.controller;
 
-import java.util.List;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import roomescape.theme.controller.dto.ThemeRankingResponse;
 import roomescape.theme.controller.dto.ThemeRequest;
 import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/themes")
@@ -25,11 +19,13 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<ThemeResponse> getThemes() {
         return themeService.getThemes();
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/rankings")
     public List<ThemeRankingResponse> getThemeRankings() {
         return themeService.getThemeRankings();
