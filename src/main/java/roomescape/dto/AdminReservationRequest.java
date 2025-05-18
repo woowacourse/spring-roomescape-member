@@ -7,11 +7,10 @@ import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 import roomescape.model.User;
-import roomescape.model.UserName;
 
-
-public record ReservationRequest(
+public record AdminReservationRequest(
         @NotNull @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
+        @NotNull Long memberId,
         @NotNull Long timeId,
         @NotNull Long themeId
 ) {

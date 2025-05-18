@@ -16,6 +16,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import roomescape.infra.JwtTokenProvider;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -26,6 +27,8 @@ class ReservationTimeControllerTest {
 
     @LocalServerPort
     int port;
+
+    private String adminToken;
 
     private static void 예약_시간_생성(String startAt) {
         Map<String, String> params = new HashMap<>();
@@ -42,6 +45,7 @@ class ReservationTimeControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        adminToken = new JwtTokenProvider().createToken(1L, "admin", "ADMIN");
     }
 
     @Test
@@ -80,15 +84,16 @@ class ReservationTimeControllerTest {
     @Test
     void 예약시간_생성_후_전체조회() {
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", LocalDate.now().plusDays(1));
+        reservation.put("memberId", 1);
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .cookie("token", adminToken)
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
 

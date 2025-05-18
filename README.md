@@ -38,89 +38,34 @@
 - [x] 최근 일주일을 기준으로 가장 방문이 많은 예약 10개 확인
 - [x] ThemeDao에서 인기 테마 조회 시 파라미터를 `(count, startAt, endAt)`과 같이 유동적으로 수정
 
-4. 테스트 코드
+4. 사용자 로그인
 
-- [x] Reservation
-    - [x] Reservation 모델
-        - [x] 예약자의 이름이 유효하지 않은 경우
-        - [x] 예약 시간 비교 테스트
-    - [x] ReservationDao
-        - [x] 저장 성공 테스트
-        - [x] 삭제
-            - [x] 삭제 성공
-            - [x] 삭제할 id 없는 경우
-        - [x] 모든 예약 반환
-        - [x] time_id로 존재 여부 반환
-            - [x] 존재하는 경우
-            - [x] 존재하지 않는 경우
-        - [x] theme_id, time_id, date로 존재 여부 반환
-            - [x] 존재하는 경우
-            - [x] 존재하지 않는 경우
-        - [x] theme_id로 존재 여부 반환
-            - [x] 존재하는 경우
-            - [x] 존재하지 않는 경우
-        - [x] theme_id, date에 해당하는 예약 리스트 반환
-    - [x] ReservationService
-        - [x] 예약하기
-            - [x] 예약 성공
-            - [x] 등록되지 않는 시간에 대해 예외처리
-            - [x] 등록되지 않는 테마에 대해 예외처리
-            - [x] 과거 날짜 예약 시도 시 예외처리
-            - [x] 날짜, 테마, 시간이 동시에 중복된 예약에 대해서 예외처리
-        - [x] 예약 삭제
-            - [x] 예약 삭제 성공
-            - [x] 존재하지 않는 예약 삭제 시도 시 예외처리
-        - [x] 예약 조회
-            - [x] 모든 예약 반환
+- [x] 사용자 도메인 추가
+  - [x] name, email, password
+- [x] 로그인 기능 구현
+  - [x] email을 로그인 id로, password를 비밀번호로
+  - [x] `GET /login` 요청 시 로그인 폼이 있는 페이지 응답
+  - [x] `POST /login` 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
+  - [x] 응답 Cookie에 "token" 값으로 토큰을 포함
+- [x] 로그인 후 Cookie를 이용하여 사용자 정보 조회 API 구현
+  - [x] 'GET /login/check'를 통해 인증 정보 조회
+  - [x] Cookie를 이용하여 사용자 정보 확인
+  - [x] 로그인 상태를 표현하기 위해 사용자의 정보 조회
 
-- [x] ReservationTime
-    - [x] ReservationTime 모델
-        - [x] 예약 시간이 같은지 판단
-    - [x] ReservationTimeDao
-        -[x] 저장 성공 테스트
-        -[x] 삭제
-            -[x] 삭제 성공
-            -[x] 삭제할 id 없는 경우
-        - [x] 모든 예약 시간 반환
-        - [x] time_id로 예약시간 조회
-            - [x] id의 예약 시간이 있는 경우
-            - [x] id의 예약 시간이 없는 경우
-    - [x] ReservationTimeService
-        - [x] 예약 시간 등록하기
-            - [x] 예약 시간 등록 성공
-            - [x] 예약 시간이 중복인 경우 예외처리
-        - [x] 예약 시간 삭제하기
-            - [x] 예약 삭제 성공
-            - [x] 삭제 시 해당 시간의 예약 존재 시 예외처리
-            - [x] 예약 시간의 id가 없는 경우 예외처리
-        - [x] 예약 시간 조회하기
-        - [x] 선택한 날짜와 테마의 시간과 예약 여부 조회하기
+5. 로그인 리팩터링
 
-- [x] Theme
-    - [x] Theme 모델
-        - [x] 테마 이름에 대한 유효성 검증
-    - [x] ThemeDao
-        -[x] 저장 성공 테스트
-            -[x] 삭제
-                -[x] 삭제 성공
-                -[x] 삭제할 id 없는 경우
-        - [x] 모든 테마 반환
-        - [x] theme_id로 테마 조회
-            - [x] id의 테마가 있는 경우
-            - [x] id의 테마가 없는 경우
-        - [x] 예약 건 수가 많은 순서대로 10개의 테마 조회
-    - [x] ThemeService
-        - [x] 테마 등록하기
-            - [x] 테마 등록 성공
-            - [x] 테마 이름이 같을 시 예외처리
-        - [x] 모든 테마 조회하기
-        - [x] 최근 일주일 동안 가장 인기있는 10개 테마 반환
-        - [x] 테마 삭제
-            - [x] 테마 삭제 성공
-            - [x] 삭제하려는 테마에 대한 예약 존재 시 예외처리
-            - [x] 해당하는 Id가 없을 시 예외처리
+- [x] 예약 생성 기능 변경 - 사용자
+  - [x] 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용
+  - [x] js, html 파일 코드 수정
+- [x] 예약 생성 기능 변경 - 관리자
+  - [x] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약 생성
+  - [x] html -> js
+- [x] `HandlerMethodArgumentResoler`를 이용
 
-- [x] AdminViewController
-    - [x] `/admin`, `/admin/reservation`,  `/admin/time`, `/admin/theme` 페이지 반환 성공 테스트
-- [x] UserViewController
-    - [x] `/reservation` 페이지 반환 테스트
+6. 관리자 기능
+
+- [x] 접근 권한 제어
+  - [x] Member의 Role이 `ADMIN`인 사람만 `/admin`으로 시작하는 페이지에 접근
+  - [x] HandlerInterceptor를 활용하여 권한을 확인하고, 권한이 없는 경우 거부 응답
+- [x] 예약 목록 검색
+  - [x] 예약자별, 테마별, 날짜별 검색 조건
