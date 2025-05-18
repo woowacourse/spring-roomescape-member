@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.dto.ReservationReqDto;
 import roomescape.reservation.domain.dto.ReservationResDto;
@@ -10,18 +11,24 @@ import roomescape.theme.domain.dto.ThemeResDto;
 
 public class ReservationMapper {
 
-    public static Reservation toEntity(ReservationReqDto reqDto, ReservationTime reservationTime, Theme theme) {
-        return Reservation.withoutId(reqDto.name(), reqDto.date(), reservationTime, theme);
+    public static Reservation toEntity(
+        Member member,
+        ReservationReqDto reqDto,
+        ReservationTime reservationTime,
+        Theme theme
+    ) {
+        return Reservation.withoutId(member.getName(), reqDto.date(), reservationTime, theme);
     }
 
     public static ReservationResDto toResDto(
         Reservation reservation,
+        Member member,
         ReservationTimeResDto reservationTimeResDto,
         ThemeResDto themeResDto
     ) {
         return new ReservationResDto(
             reservation.getId(),
-            reservation.getName(),
+            member,
             reservation.getDate(),
             reservationTimeResDto,
             themeResDto

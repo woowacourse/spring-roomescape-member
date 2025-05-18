@@ -4,14 +4,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
 document.getElementById('logout-btn').addEventListener('click', function (event) {
     event.preventDefault();
-    fetch('/logout', {
+    fetch('/members/logout', {
         method: 'POST', // 또는 서버 설정에 따라 GET 일 수도 있음
         credentials: 'include' // 쿠키를 포함시키기 위해 필요
     })
         .then(response => {
             if (response.ok) {
                 // 로그아웃 성공, 페이지 새로고침 또는 리다이렉트
-                window.location.reload();
+                localStorage.removeItem('role'); // 로컬 스토리지에서 역할 제거
+                window.location.href = '/'; // 홈으로 리다이렉트
             } else {
                 // 로그아웃 실패 처리
                 console.error('Logout failed');
@@ -25,10 +26,25 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
 });
 
 function updateUIBasedOnLogin() {
-    fetch('/login/check') // 로그인 상태 확인 API 호출
+
+    // 'role' 이 없으면 로그인 상태가 아님
+    if (!localStorage.getItem("role")) {
+        return;
+    }
+    let url;
+    let buttonToHide;
+    if (localStorage.getItem('role') === 'member') {
+        url = '/members/my/name'; // 일반 사용자
+        buttonToHide = document.querySelector('.nav-item a[href="/member/login"]')
+    } else if (localStorage.getItem('role') === 'admin') {
+        url = '/admins/my/name'; // 관리자
+        buttonToHide = document.querySelector('.nav-item a[href="/admin/login"]')
+    }
+
+    fetch(url) // 로그인 상태 확인 API 호출
         .then(response => {
             if (!response.ok) { // 요청이 실패하거나 로그인 상태가 아닌 경우
-                throw new Error('Not logged in or other error');
+                throw new Error('로그인되어있지 않습니다.');
             }
             return response.json(); // 응답 본문을 JSON으로 파싱
         })
@@ -36,15 +52,14 @@ function updateUIBasedOnLogin() {
             // 응답에서 사용자 이름을 추출하여 UI 업데이트
             document.getElementById('profile-name').textContent = data.name; // 프로필 이름 설정
             document.querySelector('.nav-item.dropdown').style.display = 'block'; // 드롭다운 메뉴 표시
-            document.querySelector('.nav-item a[href="/login"]').parentElement.style.display = 'none'; // 로그인 버튼 숨김
+            buttonToHide.parentElement.style.display = 'none'; // 로그인 버튼 숨김
         })
         .catch(error => {
             // 에러 처리 또는 로그아웃 상태일 때 UI 업데이트
             console.error('Error:', error);
-            alert(error.message);
             document.getElementById('profile-name').textContent = 'Profile'; // 기본 텍스트로 재설정
             document.querySelector('.nav-item.dropdown').style.display = 'none'; // 드롭다운 메뉴 숨김
-            document.querySelector('.nav-item a[href="/login"]').parentElement.style.display = 'block'; // 로그인 버튼 표시
+            buttonToHide.parentElement.style.display = 'block'; // 로그인 버튼 표시
         });
 }
 
@@ -66,7 +81,7 @@ function login() {
         return; // 필수 입력 필드가 비어있으면 여기서 함수 실행을 중단
     }
 
-    fetch('/login', {
+    fetch('/members/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -83,6 +98,7 @@ function login() {
             }
         })
         .then(() => {
+            localStorage.setItem('role', 'member'); // 로그인 성공 시 로컬 스토리지에 역할 저장
             updateUIBasedOnLogin(); // UI 업데이트
             window.location.href = '/';
         })
@@ -134,7 +150,7 @@ function register(event) {
         .then(data => {
             // 성공적인 응답 처리
             console.log('Signup successful:', data);
-            window.location.href = '/login';
+            window.location.href = '/members/login';
         })
         .catch(error => {
             // 에러 처리
