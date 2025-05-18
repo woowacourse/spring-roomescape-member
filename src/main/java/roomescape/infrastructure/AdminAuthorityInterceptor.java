@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.business.Member;
 import roomescape.business.service.AuthenticationService;
+import roomescape.exception.AuthException;
 
 @Named
 public class AdminAuthorityInterceptor implements HandlerInterceptor {
@@ -26,22 +27,18 @@ public class AdminAuthorityInterceptor implements HandlerInterceptor {
             throws Exception {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            response.setStatus(401);
-            return false;
+            throw new AuthException("토큰이 존재하지 않습니다.");
         }
         Optional<Cookie> token = Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals("token"))
                 .findFirst();
         if (token.isEmpty()) {
-            response.setStatus(401);
-            return false;
+            throw new AuthException("토큰이 존재하지 않습니다.");
         }
         Member member = authenticationService.findMemberByToken(token.get().getValue());
         if (!member.isAdmin()) {
-            response.setStatus(401);
-            return false;
+            throw new AuthException("토큰이 존재하지 않습니다.");
         }
         return true;
-
     }
 }

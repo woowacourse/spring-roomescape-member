@@ -13,7 +13,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.business.LoginInformation;
 import roomescape.business.Member;
 import roomescape.business.service.AuthenticationService;
-import roomescape.exception.MemberException;
+import roomescape.exception.AuthException;
 
 @Named
 public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
@@ -36,12 +36,12 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            throw new MemberException("토큰이 존재하지 않습니다.");
+            throw new AuthException("토큰이 존재하지 않습니다.");
         }
         String token = Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals("token"))
                 .findFirst()
-                .orElseThrow(() -> new MemberException("토큰이 존재하지 않습니다."))
+                .orElseThrow(() -> new AuthException("토큰이 존재하지 않습니다."))
                 .getValue();
         Member member = authenticationService.findMemberByToken(token);
         return new LoginInformation(

@@ -19,6 +19,13 @@ public final class GlobalExceptionHandler {
                 .body(exception.getMessage());
     }
 
+    @ExceptionHandler(value = AuthException.class)
+    public ResponseEntity<String> handleAuthException(AuthException exception) {
+        return ResponseEntity
+                .status(401)
+                .body(exception.getMessage());
+    }
+
     @ExceptionHandler(value = ReservationThemeException.class)
     public ResponseEntity<String> handleReservationThemeException(ReservationThemeException exception) {
         return ResponseEntity
