@@ -63,6 +63,8 @@ public class MemberController {
         Cookie emptyCookie = new Cookie("token", null);
         emptyCookie.setMaxAge(0);
         emptyCookie.setPath("/");
+        emptyCookie.setHttpOnly(true);
+        emptyCookie.setSecure(true);
         response.addCookie(emptyCookie);
         return ResponseEntity.noContent()
                 .build();
