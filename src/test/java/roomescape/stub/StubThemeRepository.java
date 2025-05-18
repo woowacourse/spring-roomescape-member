@@ -4,27 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.domain.Theme;
-import roomescape.dto.PopularThemeResponse;
-import roomescape.repository.ThemeRepository;
+import lombok.Setter;
+import roomescape.domain.entity.Theme;
+import roomescape.domain.repository.ThemeRepository;
+import roomescape.dto.response.PopularThemeResponse;
 
 public class StubThemeRepository implements ThemeRepository {
 
     private final List<Theme> data = new ArrayList<>();
-    private final AtomicLong atomicLong = new AtomicLong();
+    private final AtomicLong idSequence = new AtomicLong();
+    @Setter
+    private List<Long> popularThemeIds = List.of();
 
-    public StubThemeRepository(Theme... themes) {
-        data.addAll(List.of(themes));
+    public StubThemeRepository(Theme... initialThemes) {
+        data.addAll(List.of(initialThemes));
         long maxId = data.stream()
                 .mapToLong(Theme::getId)
                 .max()
                 .orElse(0L);
-        atomicLong.set(maxId);
+        idSequence.set(maxId);
     }
 
     @Override
     public Theme save(Theme theme) {
-        Theme savedTheme = new Theme(atomicLong.incrementAndGet(), theme.getName(),
+        Theme savedTheme = new Theme(idSequence.incrementAndGet(), theme.getName(),
                 theme.getDescription(), theme.getThumbnail());
         data.add(savedTheme);
         return savedTheme;
@@ -37,7 +40,11 @@ public class StubThemeRepository implements ThemeRepository {
 
     @Override
     public List<PopularThemeResponse> findAllPopular() {
-        return List.of(); // TODO. Stub이기 때문에 Setter로 구현하는 방식을 어떻게 생각하시는지 지노에게 여쭤보기
+        return popularThemeIds.stream()
+                .map(this::findById)
+                .flatMap(Optional::stream)
+                .map(theme -> new PopularThemeResponse(theme.getName(), theme.getDescription(), theme.getThumbnail()))
+                .toList();
     }
 
     @Override

@@ -3,13 +3,13 @@ package roomescape.service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.domain.entity.Theme;
+import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.repository.ThemeRepository;
+import roomescape.dto.request.ThemeRequest;
+import roomescape.dto.response.PopularThemeResponse;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.error.ReservationException;
-import roomescape.repository.ReservationRepository;
-import roomescape.domain.Theme;
-import roomescape.dto.PopularThemeResponse;
-import roomescape.dto.ThemeRequest;
-import roomescape.dto.ThemeResponse;
-import roomescape.repository.ThemeRepository;
 
 @Service
 @RequiredArgsConstructor

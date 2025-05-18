@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.PopularThemeResponse;
-import roomescape.dto.ThemeRequest;
-import roomescape.dto.ThemeResponse;
+import roomescape.dto.request.ThemeRequest;
+import roomescape.dto.response.PopularThemeResponse;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController

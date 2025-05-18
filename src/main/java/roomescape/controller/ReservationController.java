@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
+import roomescape.dto.LoginInfo;
+import roomescape.dto.request.UserReservationRequest;
+import roomescape.dto.response.ReservationResponse;
+import roomescape.resolver.LoginRequired;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -25,8 +27,9 @@ public class ReservationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponse saveReservation(@Valid @RequestBody final ReservationRequest request) {
-        return reservationService.saveReservation(request);
+    public ReservationResponse saveReservation(@Valid @RequestBody final UserReservationRequest request,
+                                               @LoginRequired final LoginInfo loginInfo) {
+        return reservationService.saveReservation(request, loginInfo);
     }
 
     @GetMapping
@@ -35,7 +38,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.NO_CONTENT)  // TODO. 본인의 예약만 삭제 가능하도록 수정
     public void deleteReservation(@PathVariable final Long id) {
         reservationService.deleteReservation(id);
     }
