@@ -38,19 +38,19 @@ VALUES ('15:40'),
        ('19:10');
 
 INSERT INTO reservation (date, time_id, theme_id, member_id)
-VALUES ('2025-05-10', 1, 8, 1),
-       ('2025-05-10', 2, 3, 1),
-       ('2025-05-10', 3, 11, 1),
+VALUES (DATEADD('DAY', -1, CURRENT_DATE), 1, 8, 1),
+       (DATEADD('DAY', -1, CURRENT_DATE), 2, 3, 1),
+       (DATEADD('DAY', -1, CURRENT_DATE), 3, 11, 1),
 
-       ('2025-05-10', 1, 5, 2),
-       ('2025-05-10', 2, 1, 2),
-       ('2025-05-10', 3, 12, 2),
+       (DATEADD('DAY', -1, CURRENT_DATE), 1, 5, 2),
+       (DATEADD('DAY', -1, CURRENT_DATE), 2, 1, 2),
+       (DATEADD('DAY', -1, CURRENT_DATE), 3, 12, 2),
 
-       ('2025-05-10', 1, 6, 3),
-       ('2025-05-10', 2, 9, 3),
-       ('2025-05-10', 3, 2, 3),
+       (DATEADD('DAY', -1, CURRENT_DATE), 1, 6, 3),
+       (DATEADD('DAY', -1, CURRENT_DATE), 2, 9, 3),
+       (DATEADD('DAY', -1, CURRENT_DATE), 3, 2, 3),
 
-       ('2025-05-10', 1, 10, 4),
-       ('2025-05-10', 2, 4, 4),
-       ('2025-05-10', 3, 7, 4);
+       (DATEADD('DAY', -1, CURRENT_DATE), 1, 10, 4),
+       (DATEADD('DAY', -1, CURRENT_DATE), 2, 4, 4),
+       (DATEADD('DAY', -1, CURRENT_DATE), 3, 7, 4);
 
