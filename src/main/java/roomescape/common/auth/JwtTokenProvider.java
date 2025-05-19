@@ -10,7 +10,7 @@ import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.common.exception.auth.InvalidAuthException;
+import roomescape.common.exception.auth.InvalidTokenException;
 import roomescape.domain.member.Member;
 
 @Component
@@ -40,11 +40,11 @@ public class JwtTokenProvider {
         try {
             getParse().parseClaimsJws(token);
         } catch (final ExpiredJwtException e) {
-            throw new InvalidAuthException("유효시간이 만료된 토큰입니다.");
+            throw new InvalidTokenException("유효시간이 만료된 토큰입니다.");
         } catch (final MalformedJwtException | SignatureException | UnsupportedJwtException e) {
-            throw new InvalidAuthException("유효하지 않은 토큰입니다.");
+            throw new InvalidTokenException("유효하지 않은 토큰입니다.");
         } catch (final IllegalArgumentException e) {
-            throw new InvalidAuthException("토큰이 비어있습니다.");
+            throw new InvalidTokenException("토큰이 비어있습니다.");
         }
     }
 

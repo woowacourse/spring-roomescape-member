@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import roomescape.common.exception.auth.InvalidAuthException;
 import roomescape.common.exception.auth.InvalidAuthorizationException;
+import roomescape.common.exception.auth.InvalidTokenException;
 import roomescape.common.exception.member.MemberException;
 import roomescape.common.exception.reservation.InvalidReservationException;
 import roomescape.common.exception.reservationtime.InvalidReservationTimeException;
@@ -46,13 +47,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidAuthException.class)
-    public ResponseEntity<String> handleMemberException(final InvalidAuthException e) {
+    public ResponseEntity<String> handleAuthException(final InvalidAuthException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(InvalidAuthorizationException.class)
-    public ResponseEntity<String> handleMemberException(final InvalidAuthorizationException e) {
+    public ResponseEntity<String> handleAuthorizationException(final InvalidAuthorizationException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
     }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<String> handleTokenException(final InvalidTokenException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
 
 }
