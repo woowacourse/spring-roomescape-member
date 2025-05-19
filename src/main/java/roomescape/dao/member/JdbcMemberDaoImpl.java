@@ -22,7 +22,7 @@ public class JdbcMemberDaoImpl implements MemberDao {
 
     public JdbcMemberDaoImpl(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.insertActor = new SimpleJdbcInsert(jdbcTemplate)
+        insertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("member")
                 .usingGeneratedKeyColumns("id");
     }
@@ -47,9 +47,9 @@ public class JdbcMemberDaoImpl implements MemberDao {
     public Optional<Member> findByEmail(final String email) {
         final String query = "select * from member where email = ?";
         try {
-            Member member = jdbcTemplate.queryForObject(query, getMemberRowMapper(), email);
+            final Member member = jdbcTemplate.queryForObject(query, getMemberRowMapper(), email);
             return Optional.ofNullable(member);
-        } catch (EmptyResultDataAccessException e) {
+        } catch (final EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
@@ -58,9 +58,9 @@ public class JdbcMemberDaoImpl implements MemberDao {
     public Optional<Member> findById(final Long id) {
         final String query = "select * from member where id = ?";
         try {
-            Member member = jdbcTemplate.queryForObject(query, getMemberRowMapper(), id);
+            final Member member = jdbcTemplate.queryForObject(query, getMemberRowMapper(), id);
             return Optional.ofNullable(member);
-        } catch (EmptyResultDataAccessException e) {
+        } catch (final EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
@@ -72,11 +72,10 @@ public class JdbcMemberDaoImpl implements MemberDao {
     }
 
     private RowMapper<Member> getMemberRowMapper() {
-        return (rs, rowNum) -> Member.from(
+        return (rs, rowNum) -> Member.fromWithoutPassword(
                 rs.getLong("id"),
                 rs.getString("name"),
                 rs.getString("email"),
-                rs.getString("password"),
                 MemberRole.from(rs.getString("role"))
         );
     }
