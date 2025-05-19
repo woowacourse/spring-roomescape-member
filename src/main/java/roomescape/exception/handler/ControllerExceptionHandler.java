@@ -1,5 +1,6 @@
 package roomescape.exception.handler;
 
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -9,10 +10,36 @@ import roomescape.dto.ErrorResponse;
 import roomescape.exception.exception.DataNotFoundException;
 import roomescape.exception.exception.DeletionNotAllowedException;
 import roomescape.exception.exception.DuplicateReservationException;
+import roomescape.exception.exception.InvalidLoginInfoException;
 import roomescape.exception.exception.PastReservationTimeException;
+import roomescape.exception.exception.UnauthenticatedException;
+import roomescape.exception.exception.UnauthorizedException;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ErrorResponse> handleJwtException(JwtException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse("토큰이 유효하지 않습니다: " + ex.getMessage()));
+    }
+
+    @ExceptionHandler(UnauthenticatedException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthenticatedException(UnauthenticatedException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse("로그인이 필요합니다: " + ex.getMessage()));
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse("관리자만 접근할 수 있습니다: " + ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidLoginInfoException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidPasswordException(InvalidLoginInfoException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(ex.getMessage()));
+    }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException() {

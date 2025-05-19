@@ -10,7 +10,7 @@ public interface RoomescapeTimeRepository {
 
     List<ReservationTime> findAll();
 
-    ReservationTime save(final ReservationTime reservationTime);
+    ReservationTime save(final ReservationTime time);
 
     boolean deleteById(final Long id);
 }

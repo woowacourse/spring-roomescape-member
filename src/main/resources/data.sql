@@ -1,3 +1,20 @@
+DELETE FROM reservation;
+DELETE FROM reservation_time;
+DELETE FROM reservation_theme;
+DELETE FROM member;
+
+ALTER TABLE member ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE reservation_theme ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1;
+
+INSERT INTO member (name, email, password, role)
+VALUES ('제프리', 'jeffrey@gmail.com', '1234!@#$', 'USER'),
+       ('김지은', 'jieun.kim@example.com', 'abcd!1234', 'USER'),
+       ('박철수', 'chulsoo.park@example.com', 'qwer@5678', 'USER'),
+       ('이민지', 'minji.lee@example.com', 'zxcv#9012', 'USER'),
+       ('관리자', 'admin@gmail.com', '1234!@#$', 'ADMIN');
+
 INSERT INTO reservation_theme (name, description, thumbnail)
 VALUES ('레벨 1탈출', '우테코 레벨1를 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
        ('레벨 2탈출', '우테코 레벨2를 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
@@ -10,29 +27,30 @@ VALUES ('레벨 1탈출', '우테코 레벨1를 탈출하는 내용입니다.', 
        ('레벨 9탈출', '우테코 레벨9를 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
        ('레벨 10탈출', '우테코 레벨10를 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
        ('레벨 11탈출', '우테코 레벨11를 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
-       ('레벨 12탈출', '우테코 레벨12를 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
+       ('레벨 12탈출', '우테코 레벨12를 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
+       ('레벨 13탈출', '우테코 레벨13를 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
+
 INSERT INTO reservation_time (start_at)
 VALUES ('15:40'),
        ('16:30'),
-       ('17:50');
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('김민준', '2025-04-30', 1, 8),
-       ('이서연', '2025-04-30', 2, 3),
-       ('박지후', '2025-04-30', 3, 11),
-       ('최예린', '2025-04-30', 1, 5),
-       ('정우진', '2025-04-30', 2, 1),
-       ('한수아', '2025-04-30', 3, 12),
-       ('윤도현', '2025-04-30', 1, 6),
-       ('장하윤', '2025-04-30', 2, 9),
-       ('서지호', '2025-04-30', 3, 2),
-       ('배예준', '2025-04-30', 1, 10),
-       ('임하람', '2025-04-30', 2, 4),
-       ('권지민', '2025-04-30', 3, 7),
-       ('조유진', '2025-04-30', 1, 2),
-       ('백승현', '2025-04-30', 2, 12),
-       ('노하은', '2025-04-30', 3, 6),
-       ('하준서', '2025-04-30', 1, 3),
-       ('문다연', '2025-04-30', 2, 5),
-       ('송지후', '2025-04-30', 3, 8),
-       ('남시우', '2025-04-30', 1, 11),
-       ('오예린', '2025-04-30', 2, 1);
+       ('17:50'),
+       ('18:20'),
+       ('19:10');
+
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES (DATEADD('DAY', -1, CURRENT_DATE), 1, 8, 1),
+       (DATEADD('DAY', -1, CURRENT_DATE), 2, 3, 1),
+       (DATEADD('DAY', -1, CURRENT_DATE), 3, 11, 1),
+
+       (DATEADD('DAY', -1, CURRENT_DATE), 1, 5, 2),
+       (DATEADD('DAY', -1, CURRENT_DATE), 2, 1, 2),
+       (DATEADD('DAY', -1, CURRENT_DATE), 3, 12, 2),
+
+       (DATEADD('DAY', -1, CURRENT_DATE), 1, 6, 3),
+       (DATEADD('DAY', -1, CURRENT_DATE), 2, 9, 3),
+       (DATEADD('DAY', -1, CURRENT_DATE), 3, 2, 3),
+
+       (DATEADD('DAY', -1, CURRENT_DATE), 1, 10, 4),
+       (DATEADD('DAY', -1, CURRENT_DATE), 2, 4, 4),
+       (DATEADD('DAY', -1, CURRENT_DATE), 3, 7, 4);
+

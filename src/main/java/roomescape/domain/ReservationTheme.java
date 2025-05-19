@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+import java.util.Objects;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -16,6 +17,7 @@ public class ReservationTheme {
     private final String thumbnail;
 
     public ReservationTheme(final Long id, final String name, final String description, final String thumbnail) {
+        validateNotNulls(name, description, thumbnail);
         validateThemeNameSize(name);
         this.id = id;
         this.name = name;
@@ -29,6 +31,12 @@ public class ReservationTheme {
 
     public ReservationTheme assignId(final Long id) {
         return new ReservationTheme(id, name, description, thumbnail);
+    }
+
+    private void validateNotNulls(String name, String description, String thumbnail) {
+        Objects.requireNonNull(name, "테마 이름을 입력 해 주세요.");
+        Objects.requireNonNull(description, "설명을 입력 해 주세요.");
+        Objects.requireNonNull(thumbnail, "썸네일을 입력 해 주세요.");
     }
 
     private void validateThemeNameSize(String name) {

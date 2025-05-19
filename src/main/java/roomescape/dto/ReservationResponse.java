@@ -6,15 +6,18 @@ import roomescape.domain.Reservation;
 
 public record ReservationResponse(
         long id,
-        String name,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate date,
+        MemberResponse member,
         ReservationTimeResponse time,
         ReservationThemeResponse theme) {
 
     public static ReservationResponse of(Reservation reservation) {
-        return new ReservationResponse(reservation.getId(), reservation.getName(),
-                reservation.getDate(), ReservationTimeResponse.of(reservation.getTime()),
+        return new ReservationResponse(
+                reservation.getId(),
+                reservation.getDate(),
+                MemberResponse.of(reservation.getMember()),
+                ReservationTimeResponse.of(reservation.getTime()),
                 ReservationThemeResponse.of(reservation.getTheme()));
     }
 }
