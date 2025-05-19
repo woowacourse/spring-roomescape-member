@@ -11,26 +11,32 @@ import java.time.ZoneId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.business.Member;
+import roomescape.business.MemberRole;
 import roomescape.business.Reservation;
 import roomescape.business.ReservationTime;
-import roomescape.business.fakerepository.FakeReservationRepository;
-import roomescape.business.fakerepository.FakeReservationTimeRepository;
+import roomescape.persistence.FakeMemberRepository;
+import roomescape.persistence.FakeReservationRepository;
+import roomescape.persistence.FakeReservationTimeRepository;
 import roomescape.exception.ReservationTimeException;
+import roomescape.persistence.MemberRepository;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationTimeRepository;
-import roomescape.presentation.dto.ReservationTimeRequestDto;
-import roomescape.presentation.dto.ReservationTimeResponseDto;
+import roomescape.presentation.dto.request.ReservationTimeRequestDto;
+import roomescape.presentation.dto.response.ReservationTimeResponseDto;
 
 class ReservationTimeServiceTest {
 
     private ReservationTimeService reservationTimeService;
     private ReservationRepository reservationRepository;
     private ReservationTimeRepository reservationTimeRepository;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
         reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
+        memberRepository = new FakeMemberRepository();
         reservationTimeService = new ReservationTimeService(
                 reservationRepository,
                 reservationTimeRepository
@@ -97,8 +103,23 @@ class ReservationTimeServiceTest {
                 .plusDays(1);
         LocalDate date = tomorrow.toLocalDate();
         LocalTime time = tomorrow.toLocalTime();
+        Member member = new Member("사용자", "user@user.com", "1234", MemberRole.ADMIN);
         Long timeId = reservationTimeRepository.add(new ReservationTime(time));
-        reservationRepository.add(new Reservation("수양", date, new ReservationTime(timeId, time), null));
+        Long memberId = memberRepository.add(member);
+        reservationRepository.add(new Reservation(
+                new Member(
+                        memberId,
+                        member.getName(),
+                        member.getEmail(),
+                        member.getPassword(),
+                        member.getRole()
+                ), date,
+                new ReservationTime(
+                        timeId,
+                        time
+                ),
+                null)
+        );
 
         // when
         // then

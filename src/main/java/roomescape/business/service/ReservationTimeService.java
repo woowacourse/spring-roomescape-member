@@ -1,26 +1,26 @@
 package roomescape.business.service;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.business.ReservationTime;
 import roomescape.exception.ReservationTimeException;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationTimeRepository;
-import roomescape.presentation.dto.AvailableTimesResponseDto;
-import roomescape.presentation.dto.ReservationTimeRequestDto;
-import roomescape.presentation.dto.ReservationTimeResponseDto;
+import roomescape.presentation.dto.request.ReservationTimeRequestDto;
+import roomescape.presentation.dto.response.AvailableTimesResponseDto;
+import roomescape.presentation.dto.response.ReservationTimeResponseDto;
 
-@Service
+@Named
 @Transactional
 public class ReservationTimeService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    @Autowired
+    @Inject
     public ReservationTimeService(ReservationRepository reservationRepository,
                                   ReservationTimeRepository reservationTimeRepository) {
         this.reservationRepository = reservationRepository;
