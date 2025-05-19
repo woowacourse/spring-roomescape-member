@@ -16,3 +16,9 @@ spring:
     init:
       mode: embedded
       schema-locations: classpath:schema.sql
+
+security:
+  jwt:
+    token:
+      secret-key: "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E="
+      expire-length: 3600000

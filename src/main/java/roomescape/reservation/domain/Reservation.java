@@ -4,7 +4,8 @@ import java.time.LocalDate;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import roomescape.exception.ReservationException;
+import roomescape.common.exception.ReservationException;
+import roomescape.member.domain.Member;
 import roomescape.theme.domain.Theme;
 
 @Getter
@@ -13,32 +14,25 @@ import roomescape.theme.domain.Theme;
 public class Reservation {
 
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time,
+    public Reservation(final Long id, final Member member, final LocalDate date, final ReservationTime time,
                        final Theme theme) {
-        validateName(name);
         validateDate(date);
         validateTime(time);
         validateTheme(theme);
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public Reservation(final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
-        this(null, name, date, time, theme);
-    }
-
-    private void validateName(final String name) {
-        if (name == null || name.isBlank()) {
-            throw new ReservationException("Name cannot be null or blank");
-        }
+    public Reservation(final Member member, final LocalDate date, final ReservationTime time, final Theme theme) {
+        this(null, member, date, time, theme);
     }
 
     private void validateDate(final LocalDate date) {

@@ -3,7 +3,7 @@ package roomescape.reservation.domain;
 import java.time.LocalTime;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import roomescape.exception.ReservationException;
+import roomescape.common.exception.ReservationException;
 
 @Getter
 @EqualsAndHashCode(of = {"id"})

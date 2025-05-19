@@ -25,7 +25,7 @@ class ReservationTimeRestControllerTest {
     @Test
     void 예약_가능한_시간을_목록에_추가한다() {
         final Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        params.put("startAt", "20:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -42,13 +42,13 @@ class ReservationTimeRestControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
-                .body("size()", is(0));
+                .body("size()", is(10));
     }
 
     @Test
     void 예약_가능한_시간을_목록에서_삭제한다() {
         final Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        params.put("startAt", "20:00");
 
         final Integer id = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
