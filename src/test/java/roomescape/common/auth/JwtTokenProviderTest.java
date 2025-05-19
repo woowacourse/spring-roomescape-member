@@ -9,7 +9,9 @@ import roomescape.domain.member.MemberRole;
 
 class JwtTokenProviderTest {
 
-    private JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
+    private static final String SECRET_KEY = "my-test-secret-key-my-test-secret-key";
+
+    private final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(SECRET_KEY);
 
     @DisplayName("토큰을 생성한다.")
     @Test

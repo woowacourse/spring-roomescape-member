@@ -1,21 +1,33 @@
 package roomescape.common.auth;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.common.exception.auth.InvalidAuthException;
 import roomescape.domain.member.Member;
 
 @Component
 public class JwtTokenProvider {
 
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+    private final SecretKey secretKey;
+
+    public JwtTokenProvider(@Value("${jwt.secret-key}") final String secretKey) {
+        this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
+    }
 
     public String createToken(final Member member) {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .signWith(secretKey)
                 .compact();
     }
 
@@ -41,4 +53,11 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody().getSubject();
     }
+
+    private JwtParser getParse() {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build();
+    }
+
 }

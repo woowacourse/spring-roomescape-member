@@ -17,13 +17,15 @@ import roomescape.service.auth.AuthService;
 
 class AuthServiceTest {
 
+    private static final String SECRET_KEY = "my-test-secret-key-my-test-secret-key";
+
     private AuthService authService;
     private MemberDao memberDao;
 
     @BeforeEach
     void setUp() {
         this.memberDao = new FakeMemberDaoImpl();
-        this.authService = new AuthService(new JwtTokenProvider(), memberDao);
+        this.authService = new AuthService(new JwtTokenProvider(SECRET_KEY), memberDao);
     }
 
     @DisplayName("인증에 성공하면 Jwt 토큰을 발급한다.")
