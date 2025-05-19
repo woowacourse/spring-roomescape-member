@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.common.auth.JwtExtractor;
 import roomescape.common.exception.auth.InvalidAuthorizationException;
+import roomescape.common.exception.auth.InvalidTokenException;
 import roomescape.domain.member.LoginMember;
 import roomescape.service.auth.AuthService;
 
@@ -25,11 +26,19 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler)
             throws Exception {
         final Cookie[] cookies = request.getCookies();
+        validateNull(cookies);
+
         final String token = jwtExtractor.extractTokenFromCookie("token", cookies);
         final LoginMember loginMember = authService.findLoginMemberByToken(token);
 
         validateAuthorization(loginMember);
         return HandlerInterceptor.super.preHandle(request, response, handler);
+    }
+
+    private void validateNull(final Cookie[] cookies) {
+        if (cookies == null || cookies.length == 0) {
+            throw new InvalidTokenException("토큰을 찾을 수 없습니다.");
+        }
     }
 
     private void validateAuthorization(final LoginMember loginMember) {

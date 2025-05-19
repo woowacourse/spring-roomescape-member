@@ -9,6 +9,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.common.auth.JwtExtractor;
+import roomescape.common.exception.auth.InvalidTokenException;
 import roomescape.domain.member.LoginMember;
 import roomescape.service.auth.AuthService;
 
@@ -34,7 +35,16 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             throws Exception {
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         final Cookie[] cookies = request.getCookies();
+        validateNull(cookies);
+
         final String token = jwtExtractor.extractTokenFromCookie("token", cookies);
         return authService.findLoginMemberByToken(token);
     }
+
+    private void validateNull(final Cookie[] cookies) {
+        if (cookies == null || cookies.length == 0) {
+            throw new InvalidTokenException("토큰을 찾을 수 없습니다.");
+        }
+    }
+
 }
