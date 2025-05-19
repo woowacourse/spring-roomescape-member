@@ -28,6 +28,10 @@ public class PlayTime {
         }
     }
 
+    public boolean isSamePlayTime(final PlayTime playTime) {
+        return id.equals(playTime.getId());
+    }
+
     public Long getId() {
         return id;
     }

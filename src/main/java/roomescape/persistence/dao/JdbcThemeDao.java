@@ -105,35 +105,4 @@ public class JdbcThemeDao implements ThemeDao {
         final int flag = jdbcTemplate.queryForObject(sql, Integer.class, name);
         return flag == 1;
     }
-
-    @Override
-    public List<Theme> findPopularThemesBetween(
-            final String startDate,
-            final String endDate
-    ) {
-        final String sql = """
-                SELECT
-                    t.id,
-                    t.name,
-                    t.description,
-                    t.thumbnail,
-                    COUNT(r.id) AS reservation_count
-                FROM theme AS t
-                LEFT JOIN reservation AS r
-                    ON t.id = r.theme_id
-                    AND r.date BETWEEN ? AND ?
-                GROUP BY t.id, t.name, t.description, t.thumbnail
-                ORDER BY reservation_count DESC
-                """;
-
-        return jdbcTemplate.query(
-                sql,
-                (rs, rowNum) -> new Theme(
-                        rs.getLong(1),
-                        rs.getString(2),
-                        rs.getString(3),
-                        rs.getString(4)
-                ), startDate, endDate
-        );
-    }
 }
