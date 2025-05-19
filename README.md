@@ -1,119 +1,68 @@
 # 방탈출 사용자 예약
 
-## 1단계 - 예외 처리와 응답
+## 4단계
 
 ### 요구사항
 
-- 0단계에서 이전 미션의 코드를 옮겨와도 어드민 페이지에서 기능이 정상적으로 동작하지 않습니다.
-- [x] 이를 보완하기 위해 시간 관리, 예약 관리 API가 적절한 응답을 하도록 변경합니다.
-- 발생할 수 있는 예외 상황에 대한 처리를 하여, 사용자에게 적절한 응답을 합니다.
-    - [x] 시간 생성 시 시작 시간에 유효하지 않은 값이 입력되었을 때
-        - [x] startAt = null 값 입력되었을 때
-        - [x] startAt이 표준 LocalTime 의 형식에 안 맞을 때
-    - [x] 예약 생성 시 예약자명, 날짜, 시간에 유효하지 않은 값이 입력 되었을 때
-        - [x] 지나간 날짜와 시간에 대한 예약 생성은 불가능하다.
-        - [x] 중복 예약은 불가능하다. ex. 이미 4월 1일 10시에 예약이 되어있다면, 4월 1일 10시에 대한 예약을 생성할 수 없다.
-        - [x] 특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때
-          등등
+- [x] 사용자 도메인 추가
+    - 사용자
+        - name : 사용자 이름
+        - email : 이메일
+        - password : 비밀번호
+    - email을 로그인 id
+    - password를 비밀번호로 사용
+- 로그인 기능 구현
+    - [x] 로그인 페이지 호출 시 GET /login 요청이 호출되고, login.html 페이지가 응답
+    - [x] 로그인 요청(POST /login)에 응답하는 API
+        - [x] email과 password를 이용해서 멤버를 조회하고
+            - [x] 사용자 DB 테이블 스키마 생성
+                - table member (user는 h2 예약어라 사용할 수 없고, 관리자도 같은 테이블에서 관리할 것이기 때문에 member로 네이밍)
+            - [x] 테스트용 더미 데이터 삽입 후 조회
+        - [x] 조회한 멤버로 토큰을 만듭니다.
+            - 조회한 멤버의 email을 payload로 사용
+        - [x] Cookie를 만들어 응답합니다.
+            - header에 cookie 생성하여 정보 입력
+        - [x] 인증 정보 조회(GET /login/check)하는 API
+            - [x] Cookie에서 토큰 정보를 추출하여
+            - [x] 멤버를 찾아 멤버 정보를 응답합니다.
 
-  어드민의 시간 관리 페이지, 방탈출 예약 페이지에서 모든 기능이 정상적으로 동작하는지 확인합니다.
+## 5단계
 
-### 고민해볼 내용
+### 요구사항
 
-- 서버 내부에서 NullPointerException 이 발생할 경우 이 역시 ExceptionHandler 가 잡게 된다.
-- 다른 NullPointerException 도 400 반환하지 않도록 CustomException 처리를 해야 될까?
-- 요청 DTO 에서 비즈니스 로직이 들어가면 안된다. 그런데 null 검사는 해도 되는가?
-    - 된다. 그정도는 유효성 검증으로 보기 때문
-- NullPointException 을 반환할 것인가? 아니면 IllegalArgumentException 을 반환할 것인가
-- Test 용 DB를 만들어야 하나??
-- Time delete 시에 Reservation테이블이 필요해졌음 -> ReservationService(=RS)를 불러올까? -> 순환참조(이미 RS에서 ReservationTimeService(=RTS)를
-  호출)
-    - 그러면 어떡할까? 1. 두개의 서비스가 각각 두 개의 리포지토리를 갖기 -> 이러면 뭐하러 서비스를 나누지? and 해당 서비스에서 불필요한 리포지토리 메서드를 사용할 수 있게 됨.
-    - -> 천재적인 해결법 : 지금은 delete 시에 timeId 조회 기능만 필요하기 때문에 해당 기능만을 함수형 인터페이스로 분리해 냄.
-    - Service에서 해당 인터페이스를 필드로 갖게 하여 SRP, ISP 를 지켜냄. 휴
+- [x] Cookie에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 로직을 분리
+    - [x] 클라이언트 코드 변경
+    - [x] HandlerMethodArgumentResolver을 활용하여 회원 객체를 컨트롤러 메서드에 주입
+    - [x] 기존 예약 추가 방식(이름을 필드에 입력하는 방식) -> 쿠키에서 멤버 이름 조회해서 name 의 not null
 
-## 2단계
+## 6단계
 
-- [x] 방탈출 게임은 '테마' 라는 정보를 포함합니다. 사용자 예약 시 원하는 테마를 선택할 수 있도록 테마 도메인을 추가합니다.
-- 모든 테마는 시작 시간과 소요 시간이 동일하다고 가정합니다.
-- [x] 관리자가 테마를 관리할 수 있도록 기능을 추가합니다.
-    - [x] 테마 추가
-    - [x] 테마 조회
-    - [x] 테마 삭제
-- 관리자가 방탈출 예약 시, 테마 정보를 포함할 수 있도록 기능을 변경합니다.
-- [x] /admin/theme 요청 시 테마 관리 페이지를 응답
-- [x] 어드민에서방탈출 예약 시, 테마 정보를 포함할 수 있도록 신규 페이지 파일을 사용
+### 요구사항
 
-### 고민해볼 내용
+- 접근 권한 제어
+    - [x] Memeber의 Roledl Admin인 사람만 /admin 으로 시작하는 페이지에 접근할 수 있도록 구현
+        - [x] /admin으로 시작하는 요청들을 확인
+        - [x] cookie -> token -> email 로 member.role 조회
+    - [x] HandlerInterceptor를 이용해 요청자의 권한을 확인하고, 권한이 없는 경우 거부 응답
+    - [x] 컨트롤러에 진입하기 전에 Cookie 값을 확인하여 role를 확인
+    - [x] return 값에 따라 처리되는 방식을 확인
+        - return false 의 경우 컨트롤러 진입이 안된다.
+            ```java
+            @Override
+            public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+          
+                // ...
+          
+                if (member == null || !member.getRole().equals("ADMIN")) {
+                    response.setStatus(401);
+                    return false;
+                }
+          
+                return true;
+            }
+            ```
 
-- DTO를 서비스에서 끊어내야한다. repository까지 들어올 경우 유효하지 않은 값을 db에 저장해버리는 문제가 발생
-
----
-
-## 3단계
-
-## 사용자 예약
-
-- 사용자는 날짜와 테마를 선택하면 예약 가능한 시간을 확인할 수 있습니다.
-  - 
-- 사용자는 예약 가능한 시간을 확인하고, 원하는 시간에 예약을 할 수 있습니다.
-    - 예약 가능 시간 조회 API 만들기
-    - 예약 가능 : 테마가
-    - GET API 명새
-    - response
-      timeId = '';
-      startAt = '';
-      alreadyBooked = false; - 해당 테마 Id와 해당 dateTime을 가진 Reservation이 존재하는가?
-    - 이미
-- 예약 시 사용자 구분은 어드민과 동일하게 사용자의 이름으로 합니다.
-- /reservation 요청 시 사용자 예약 페이지를 응답합니다.
-- 페이지는 templates/reservation.html 파일을 이용하세요.
-
-## 인기 테마
-
-- 최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 확인하려 합니다.
-- 예를 들어 오늘이 4월 8일인 경우, 게임 날짜가 4월 1일부터 4월 7일까지인 예약 건수가 많은 순서대로 10개의 테마를 조회할 수 있어야 합니다.
-- / 요청 시 인기 테마 페이지를 응답합니다.
-- [x] 페이지는 templates/index.html 파일을 이용하세요.
-
-## 리팩터링 및 고려사항
-
-### 1. ReservedChecker.contains 인자 문제
-
-- 문제상황설명 :
-    1. 중복 예약 방지를 위해 기존에 존재하는 예약과 입력정보가 일치하는 함수(contains)를 만든다.
-    2. 예약은 엔티티가 되기 전에(DB에 들어가기 전에) 중복 검증을 거치므로 ID가 없는 상태 (null)
-    3. 이런 상황에서 **contains의 파라미터로 어떤 것을 넘겨야 할까?**
-
-----
-
-- 고민
-    1. id를 제외한 예약의 모든 필드값
-        - contains 메서드의 인자가 복잡해짐. 예약이 더 많은 필드를 가질 경우 id 빼고 다 들어가야 함.
-        - 예약 객체 생성 시에 유효성 검증을 시행하는 경우, 검증이 안된 엔티티가 DB에 들어갈 위험이 있음.
-        - JPA도 이런 식으로 함수 짜는데 뭐가 문제임?
-    2. id가 null 인 예약 객체
-        - 리포지토리에서 시그니처 정보로 id가 null임을 유추할 수 없음.
-    3. id를 제외하고 예약의 모든 필드값을 가지는 값 전달용 객체 (DTO)
-       (service에서 예약객체생성을 해서 유효성 검증 -> id없는 DTO 만들어서 repo에 넘기기)
-        - 관리해야 하는 DTO가 하나 더 늘어남.
-        - 작업이 한 단계 번거로워지는 느낌(?)
-        - 그래도 유지보수 및 예외 방지를 위한 가장 좋은 방법인 듯 하다.
-
-- 결과
-    - addReservation이 필요한 인자와 contains가 필요한 인자가 다름. 3번으로 두 함수의 파라미터를 통일하려 했지만 실패
-    - add시에는 2번 방법을 사용하고 파라미터 명으로 ID가 없음을 알림
-    - contains시에는 필요한 인자만 전달함.
-
----
-
-2. ReservationService 인자 필드 너무 많음 -> 어쩔 수 없음
-3. DTO들 이름 뒤에 DTO 뺄까? - 반영
-
-### 고민해볼 내용
-
-- 인기 테마를 불러올 때 ReservationService 에서 해야되는가? ReservationThemeService에서 해야하는가?
-    - 두 개의 테이블 모두 접근해야된다
-    - Reservation 테이블에서 검색하는 것은 중간로직이기 때문에 ReservationTimeService에서 수행하자
-- 인기 테마 id를 반환할때 List or Map? 순서가 중요하기 때문
-- 리포지토리는 컬렉션 처럼 동작해야 한다던데 메서드 명이 점점 이상함. 일반적인 컬렉션 같지가 않음 
+- 예약 검색 기능 추가
+    - 어드민 > 예약 관리 페이지에서 검색 조건을 선택하고 적용을 누르면, reservation-with-member.js의 applyFilter() 함수가 실행된다.
+    - [ ] 입력한 themeId, memberId, dateFrom, dateTo 값을 사용해 검색 기능을 완성
+    - [ ] js 명세를 활용해 필터링한 예약 정보를 반환하도록 구현

@@ -1,16 +1,16 @@
-package roomescape.model;
+package roomescape.model.user;
 
 import static roomescape.util.FormatValidator.validateNameFormat;
 
-public class UserName {
+public class Name {
     private final String name;
 
-    public UserName(String name) {
+    public Name(String name) {
         validateNameFormat(name);
         this.name = name;
     }
 
-    public String getName() {
+    public String getValue() {
         return name;
     }
 }

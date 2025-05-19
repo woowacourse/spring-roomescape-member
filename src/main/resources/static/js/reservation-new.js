@@ -28,7 +28,7 @@ function render(data) {
               response 명세에 맞춰 값 설정
         */
         row.insertCell(0).textContent = item.id;            // 예약 id
-        row.insertCell(1).textContent = item.userName.name;          // 예약자명
+        row.insertCell(1).textContent = item.name.name;          // 예약자명
         row.insertCell(2).textContent = item.theme.name;    // 테마명
         row.insertCell(3).textContent = item.reservationDateTime.date;          // 예약 날짜
         row.insertCell(4).textContent = item.reservationDateTime.time.startAt;  // 시작 시간

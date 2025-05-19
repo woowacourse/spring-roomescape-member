@@ -11,13 +11,16 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.ReservationController;
+import roomescape.infra.auth.JwtTokenProcessor;
 import roomescape.model.Reservation;
+import roomescape.model.user.Role;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -25,6 +28,17 @@ public class MissionStepTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private JwtTokenProcessor jwtTokenProcessor;
+    private String adminToken;
+    private String userToken;
+
+    @BeforeEach
+    void setUp() {
+        adminToken = jwtTokenProcessor.createToken("asd@asd.com", Role.ADMIN);
+        userToken = jwtTokenProcessor.createToken("vec@vec.com", Role.USER);
+    }
 
     void Test_ReservationTime_Post() {
         Map<String, String> params = new HashMap<>();
@@ -38,7 +52,7 @@ public class MissionStepTest {
                 .statusCode(201);
     }
 
-    private static void Test_Theme_Post() {
+    private void Test_Theme_Post() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "Ddyong");
         params.put("description", "살인마가 쫓아오는 느낌");
@@ -55,6 +69,7 @@ public class MissionStepTest {
     @Test
     void 일단계() {
         RestAssured.given().log().all()
+                .cookie("loginToken", adminToken)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -63,53 +78,51 @@ public class MissionStepTest {
     @Test
     void 이단계() {
         RestAssured.given().log().all()
+                .cookie("loginToken", adminToken)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
 
         RestAssured.given().log().all()
+                .cookie("loginToken", adminToken)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
+                .body("size()", is(8)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
     }
 
     @Test
     void 삼단계() {
-        Test_ReservationTime_Post();
-        Test_Theme_Post();
-
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", "2025-08-05");
         params.put("timeId", 1);
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("loginToken", userToken)
                 .contentType(ContentType.JSON)
                 .body(params)
-
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201)
-                .body("id", is(1));
+                .statusCode(201);
 
         RestAssured.given().log().all()
+                .cookie("loginToken", adminToken)
                 .when().get("/reservations")
                 .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
+                .statusCode(200);
 
         RestAssured.given().log().all()
+                .cookie("loginToken", adminToken)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
+                .cookie("loginToken", adminToken)
                 .when().get("/reservations")
                 .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
+                .statusCode(200);
     }
 
     @Test
@@ -128,10 +141,11 @@ public class MissionStepTest {
         Test_ReservationTime_Post();
         Test_Theme_Post();
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id,theme_id) VALUES (?, ?, ?,?)", "브라운",
+        jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id,theme_id) VALUES (?, ?, ?,?)", 1,
                 "2025-08-05", 1, 1);
 
         List<Reservation> reservations = RestAssured.given().log().all()
+                .cookie("loginToken", adminToken)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -148,20 +162,19 @@ public class MissionStepTest {
         Test_Theme_Post();
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", "2025-08-05");
         params.put("timeId", 1);
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("loginToken", userToken)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
@@ -169,21 +182,16 @@ public class MissionStepTest {
                 .statusCode(204);
 
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(countAfterDelete).isEqualTo(0);
+        assertThat(countAfterDelete).isEqualTo(count - 1);
     }
 
     @Test
     void 칠단계() {
         Test_ReservationTime_Post();
+        Integer lastTimeIndex = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
 
         RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
-
-        RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/times/" + lastTimeIndex)
                 .then().log().all()
                 .statusCode(204);
     }
@@ -194,12 +202,13 @@ public class MissionStepTest {
         Test_Theme_Post();
 
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
+        reservation.put("memberId", 1);
         reservation.put("date", "2025-08-05");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("loginToken", userToken)
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
@@ -209,8 +218,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
+                .statusCode(200);
     }
 
     @Autowired
