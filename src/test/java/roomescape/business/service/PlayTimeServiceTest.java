@@ -13,30 +13,41 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
+import roomescape.business.domain.Member;
 import roomescape.business.domain.PlayTime;
+import roomescape.business.domain.Reservation;
+import roomescape.business.domain.Theme;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.NotFoundException;
+import roomescape.persistence.dao.JdbcMemberDao;
 import roomescape.persistence.dao.JdbcPlayTimeDao;
 import roomescape.persistence.dao.JdbcReservationDao;
+import roomescape.persistence.dao.JdbcThemeDao;
+import roomescape.persistence.dao.MemberDao;
 import roomescape.persistence.dao.PlayTimeDao;
 import roomescape.persistence.dao.ReservationDao;
+import roomescape.persistence.dao.ThemeDao;
 import roomescape.presentation.dto.PlayTimeRequest;
 import roomescape.presentation.dto.PlayTimeResponse;
 import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 
 @JdbcTest
-@Sql("classpath:data-playTimeService.sql")
 class PlayTimeServiceTest {
 
     private final PlayTimeService playTimeService;
     private final PlayTimeDao playTimeDao;
+    private final ThemeDao themeDao;
+    private final MemberDao memberDao;
+    private final ReservationDao reservationDao;
 
     @Autowired
     public PlayTimeServiceTest(final JdbcTemplate jdbcTemplate) {
         this.playTimeDao = new JdbcPlayTimeDao(jdbcTemplate);
         final ReservationDao reservationDao = new JdbcReservationDao(jdbcTemplate);
         this.playTimeService = new PlayTimeService(playTimeDao, reservationDao);
+        this.themeDao = new JdbcThemeDao(jdbcTemplate);
+        this.memberDao = new JdbcMemberDao(jdbcTemplate);
+        this.reservationDao = new JdbcReservationDao(jdbcTemplate);
     }
 
     @Test
@@ -70,8 +81,10 @@ class PlayTimeServiceTest {
     @DisplayName("모든 방탈출 예약 시간을 조회한다")
     void findAll() {
         // given
-        // data-playTimeService.sql
-        // 2개의 방탈출 예약 시간이 주어진다.
+        final PlayTime playTime1 = new PlayTime(LocalTime.of(10, 10));
+        playTimeDao.insert(playTime1);
+        final PlayTime playTime2 = new PlayTime(LocalTime.of(14, 0));
+        playTimeDao.insert(playTime2);
 
         // when
         final List<PlayTimeResponse> playTimeResponses = playTimeService.findAll();
@@ -142,25 +155,36 @@ class PlayTimeServiceTest {
     @DisplayName("예약 가능 시간 목록을 조회한다")
     void findAvailableTimes() {
         // given
-        // data-playTimeService.sql
-        // 2개의 방탈출 예약 시간, 1개의 테마, 1개의 예약이 주어진다.
+        final PlayTime playTime1 = new PlayTime(LocalTime.of(10, 10));
+        final PlayTime insertPlayTime1 = playTimeDao.insert(playTime1);
+        final PlayTime playTime2 = new PlayTime(LocalTime.of(14, 0));
+        final PlayTime insertPlayTime2 = playTimeDao.insert(playTime2);
+
+        final Theme theme = new Theme("테마", "소개", "썸네일");
+        final Theme insertTheme = themeDao.insert(theme);
+
+        final Member member = new Member("kim", "USER", "email@test.com", "pass");
+        final Member insertMember = memberDao.insert(member);
+
+        final Reservation reservation = new Reservation(LocalDate.MAX, insertMember, insertPlayTime1, insertTheme);
+        reservationDao.insert(reservation);
 
         // when
         final List<ReservationAvailableTimeResponse> availableTimeResponses = playTimeService.findAvailableTimes(
-                LocalDate.parse("2025-05-10"),
-                100L
+                LocalDate.MAX,
+                insertTheme.getId()
         );
 
         // then
         final ReservationAvailableTimeResponse notAvailableTimeResponse = availableTimeResponses.stream()
-                        .filter(response -> response.playTime().getId() == 100L)
+                .filter(response -> response.playTime().getId().equals(insertPlayTime1.getId()))
                 .findFirst().get();
         final ReservationAvailableTimeResponse availableTimeResponse = availableTimeResponses.stream()
-                        .filter(response -> response.playTime().getId() == 101L)
+                .filter(response -> response.playTime().getId().equals(insertPlayTime2.getId()))
                 .findFirst().get();
         assertAll(
                 () -> assertThat(availableTimeResponses).hasSize(2),
-                ()-> assertThat(notAvailableTimeResponse.alreadyBooked()).isTrue(),
+                () -> assertThat(notAvailableTimeResponse.alreadyBooked()).isTrue(),
                 () -> assertThat(availableTimeResponse.alreadyBooked()).isFalse()
         );
     }

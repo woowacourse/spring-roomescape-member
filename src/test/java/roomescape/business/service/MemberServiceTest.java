@@ -8,20 +8,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
+import roomescape.business.domain.Member;
 import roomescape.persistence.dao.JdbcMemberDao;
 import roomescape.persistence.dao.MemberDao;
 import roomescape.presentation.dto.MemberResponse;
 
 @JdbcTest
-@Sql("classpath:data-memberService.sql")
 class MemberServiceTest {
 
     private final MemberService memberService;
+    private final MemberDao memberDao;
 
     @Autowired
     public MemberServiceTest(final JdbcTemplate jdbcTemplate) {
-        final MemberDao memberDao = new JdbcMemberDao(jdbcTemplate);
+        this.memberDao = new JdbcMemberDao(jdbcTemplate);
         this.memberService = new MemberService(memberDao);
     }
 
@@ -29,13 +29,15 @@ class MemberServiceTest {
     @DisplayName("모든 사용자를 조회한다")
     void findAll() {
         // given
-        // data-memberService.sql
-        // 4명의 사용자가 주어진다.
+        final Member member1 = new Member("name1", "role1", "email1", "password1");
+        memberDao.insert(member1);
+        final Member member2 = new Member("name2", "role2", "email2", "password2");
+        memberDao.insert(member2);
 
         // when
-        List<MemberResponse> memberResponses = memberService.findAll();
+        final List<MemberResponse> memberResponses = memberService.findAll();
 
         // then
-        assertThat(memberResponses).hasSize(4);
+        assertThat(memberResponses).hasSize(2);
     }
 }
