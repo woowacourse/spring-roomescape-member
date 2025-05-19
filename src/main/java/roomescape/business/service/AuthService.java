@@ -11,6 +11,7 @@ import roomescape.business.domain.Member;
 import roomescape.exception.UnauthorizedException;
 import roomescape.persistence.dao.MemberDao;
 import roomescape.presentation.dto.LoginMember;
+import roomescape.presentation.dto.MemberResponse;
 
 @Service
 public class AuthService {
@@ -27,8 +28,16 @@ public class AuthService {
                 .build();
     }
 
+    public MemberResponse signUp(final String name, final String role, final String email, final String password) {
+        final String hashPassword = Integer.toString(password.hashCode());
+        final Member member = new Member(name, role, email, hashPassword);
+        final Member insertMember = memberDao.insert(member);
+        return new MemberResponse(insertMember.getId(), insertMember.getName(), insertMember.getEmail());
+    }
+
     public String login(final String email, final String password) {
-        final Member member = memberDao.findByEmailAndPassword(email, password)
+        final String hashPassword = Integer.toString(password.hashCode());
+        final Member member = memberDao.findByEmailAndPassword(email, hashPassword)
                 .orElseThrow(() -> new UnauthorizedException("해당하는 사용자를 찾을 수 없습니다. email: %s".formatted(email)));
         return createAccessToken(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }

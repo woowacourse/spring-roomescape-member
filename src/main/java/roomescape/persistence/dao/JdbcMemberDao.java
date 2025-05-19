@@ -1,10 +1,13 @@
 package roomescape.persistence.dao;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.domain.Member;
 
@@ -26,9 +29,24 @@ public class JdbcMemberDao implements MemberDao {
             );
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcMemberDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("member")
+                .usingGeneratedKeyColumns(ID);
+    }
+
+    @Override
+    public Member insert(final Member member) {
+        final Map<String, Object> parameters = new HashMap<>();
+        parameters.put(NAME, member.getName());
+        parameters.put(ROLE, member.getRole());
+        parameters.put(EMAIL, member.getEmail());
+        parameters.put(PASSWORD, member.getPassword());
+        final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        return new Member(id, member.getName(), member.getRole(), member.getEmail(), member.getPassword());
     }
 
     @Override

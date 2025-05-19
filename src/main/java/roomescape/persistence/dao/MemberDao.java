@@ -6,6 +6,8 @@ import roomescape.business.domain.Member;
 
 public interface MemberDao {
 
+    Member insert(Member member);
+
     List<Member> findAll();
 
     Optional<Member> findById(Long memberId);

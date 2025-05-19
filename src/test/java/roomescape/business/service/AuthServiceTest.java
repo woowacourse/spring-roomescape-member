@@ -8,13 +8,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
 import roomescape.exception.UnauthorizedException;
 import roomescape.persistence.dao.JdbcMemberDao;
 import roomescape.persistence.dao.MemberDao;
 
 @JdbcTest
-@Sql("classpath:data-authService.sql")
 class AuthServiceTest {
 
     private final AuthService authService;
@@ -29,9 +27,11 @@ class AuthServiceTest {
     @DisplayName("email, password 통해 인증에 성공하면 AccessToken 반환한다")
     void login() {
         // given
-        // data-authService.sql
+        final String name = "testName";
+        final String role = "USER";
         final String email = "email@test.com";
         final String password = "pass";
+        authService.signUp(name, role, email, password);
 
         // when
         final String accessToken = authService.login(email, password);
