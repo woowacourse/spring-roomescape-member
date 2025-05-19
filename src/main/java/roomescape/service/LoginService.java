@@ -8,6 +8,7 @@ import roomescape.dto.member.LoginMemberResponse;
 import roomescape.dto.member.LoginRequest;
 import roomescape.exception.InvalidCredentialsException;
 import roomescape.repository.MemberRepository;
+import roomescape.util.CookieKeys;
 import roomescape.util.TokenProvider;
 
 @Service
@@ -33,7 +34,7 @@ public class LoginService {
     }
 
     private Cookie createCookie(String token) {
-        Cookie cookie = new Cookie("token", token);
+        Cookie cookie = new Cookie(CookieKeys.TOKEN, token);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/");
@@ -52,7 +53,7 @@ public class LoginService {
     }
 
     public Cookie setLogoutCookie() {
-        Cookie cookie = new Cookie("token", null);
+        Cookie cookie = new Cookie(CookieKeys.TOKEN, null);
         cookie.setMaxAge(0);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);

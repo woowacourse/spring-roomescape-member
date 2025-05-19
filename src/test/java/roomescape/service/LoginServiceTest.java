@@ -9,6 +9,7 @@ import roomescape.exception.InvalidCredentialsException;
 import roomescape.fixture.FakeMemberRepositoryFixture;
 import roomescape.repository.FakeTokenProvider;
 import roomescape.repository.MemberRepository;
+import roomescape.util.CookieKeys;
 import roomescape.util.TokenProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +32,7 @@ class LoginServiceTest {
         // when
         Cookie cookie = loginService.createLoginCookie(request);
         String actual = cookie.getName();
-        String expected = "token";
+        String expected = CookieKeys.TOKEN;
 
         // then
         assertThat(actual).isEqualTo(expected);
