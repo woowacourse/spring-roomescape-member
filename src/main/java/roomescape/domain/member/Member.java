@@ -1,6 +1,7 @@
 package roomescape.domain.member;
 
 import java.util.Objects;
+import roomescape.common.auth.PasswordEncryptor;
 import roomescape.common.exception.auth.InvalidAuthException;
 
 public class Member {
@@ -19,26 +20,41 @@ public class Member {
         this.role = role;
     }
 
+    public static Member from(final Long id, final String name, final String email, final String password,
+                              final MemberRole role) {
+        final String encryptPassword = getEncryptPassword(password);
+        return new Member(id, name, email, encryptPassword, role);
+    }
+
     public static Member fromWithoutId(final String name, final String email, final String password) {
+        final String hashPassword = getEncryptPassword(password);
         if (isAdmin(name)) {
-            return new Member(null, name, email, password, MemberRole.ADMIN);
+            return new Member(null, name, email, hashPassword, MemberRole.ADMIN);
         }
-        return new Member(null, name, email, password, MemberRole.USER);
+        return new Member(null, name, email, hashPassword, MemberRole.USER);
+    }
+
+    public static Member fromWithoutPassword(final Long id, final String name, final String email,
+                                             final MemberRole role) {
+        return new Member(id, name, email, null, role);
     }
 
     private static boolean isAdmin(final String name) {
         return name.equals("어드민") || name.equals("admin");
     }
 
-    public static Member from(final Long id, final String name, final String email, final String password,
-                              final MemberRole role) {
-        return new Member(id, name, email, password, role);
+    private static String getEncryptPassword(final String password) {
+        return PasswordEncryptor.encrypt(password);
     }
 
     public void validatePassword(final String password) {
-        if (!this.password.equals(password)) {
+        if (isNotMatches(password)) {
             throw new InvalidAuthException("비밀번호가 일치하지 않습니다.");
         }
+    }
+
+    private boolean isNotMatches(final String password) {
+        return !PasswordEncryptor.matches(password, this.password);
     }
 
     public Long getId() {
@@ -71,13 +87,12 @@ public class Member {
             return false;
         }
         final Member member = (Member) o;
-        return Objects.equals(getId(), member.getId()) && Objects.equals(getName(), member.getName())
-                && Objects.equals(getEmail(), member.getEmail()) && Objects.equals(getPassword(),
-                member.getPassword()) && Objects.equals(getRole(), member.getRole());
+        return Objects.equals(getId(), member.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getEmail(), getPassword(), getRole());
+        return Objects.hashCode(getId());
     }
 }
+
