@@ -6,6 +6,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.LoginMember;
 import roomescape.domain.Role;
 import roomescape.exception.InvalidCredentialsException;
+import roomescape.exception.UnauthorizedAccessException;
 import roomescape.service.MemberService;
 import roomescape.util.CookieExtractor;
 import roomescape.util.CookieKeys;
@@ -34,8 +35,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         LoginMember member = memberService.findMemberByToken(token);
 
         if (member.getRole() != Role.ADMIN) {
-            response.setStatus(403);
-            return false;
+            throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
         }
         return true;
     }
