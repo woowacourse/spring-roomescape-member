@@ -14,14 +14,17 @@ import roomescape.exception.InvalidTokenException;
 import roomescape.service.MemberService;
 import roomescape.util.CookieExtractor;
 import roomescape.util.CookieKeys;
+import roomescape.util.TokenProvider;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberService memberService;
+    private final TokenProvider tokenProvider;
     private final CookieExtractor authorizationExtractor;
 
-    public LoginMemberArgumentResolver(MemberService memberService) {
+    public LoginMemberArgumentResolver(MemberService memberService, TokenProvider tokenProvider) {
         this.memberService = memberService;
+        this.tokenProvider = tokenProvider;
         this.authorizationExtractor = new CookieExtractor();
     }
 
@@ -35,6 +38,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         try {
             String token = authorizationExtractor.extract(request, CookieKeys.TOKEN);
+            tokenProvider.validateToken(token);
             return memberService.findMemberByToken(token);
         } catch (InvalidCredentialsException | InvalidTokenException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());

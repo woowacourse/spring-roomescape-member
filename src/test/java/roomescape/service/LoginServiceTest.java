@@ -19,7 +19,7 @@ class LoginServiceTest {
 
     private final MemberRepository memberRepository = FakeMemberRepositoryFixture.create();
     private final TokenProvider tokenProvider = new FakeTokenProvider();
-    private final LoginService loginService = new LoginService(memberRepository, new MemberService(memberRepository, tokenProvider), tokenProvider);
+    private final LoginService loginService = new LoginService(memberRepository, tokenProvider);
 
     @DisplayName("올바른 사용자 정보를 전달하면 JWT 토큰을 생성하여 쿠키에 저장한다")
     @Test

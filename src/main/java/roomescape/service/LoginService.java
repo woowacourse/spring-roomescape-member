@@ -14,12 +14,10 @@ import roomescape.util.TokenProvider;
 public class LoginService {
 
     private final MemberRepository memberRepository;
-    private final MemberService memberService;
     private final TokenProvider jwtTokenProvider;
 
-    public LoginService(MemberRepository memberRepository, MemberService memberService, TokenProvider jwtTokenProvider) {
+    public LoginService(MemberRepository memberRepository, TokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;
-        this.memberService = memberService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
