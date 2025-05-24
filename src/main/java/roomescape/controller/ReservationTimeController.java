@@ -13,12 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.LoginMember;
-import roomescape.domain.Role;
 import roomescape.dto.time.AvailableReservationTimeResponse;
 import roomescape.dto.time.ReservationTimeCreateRequest;
 import roomescape.dto.time.ReservationTimeResponse;
-import roomescape.exception.UnauthorizedAccessException;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -44,21 +41,13 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> addReservationTime(@Valid @RequestBody final ReservationTimeCreateRequest requestDto, LoginMember member) {
-        if (member.getRole() == Role.USER) {
-            throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
-        }
-
+    public ResponseEntity<ReservationTimeResponse> addReservationTime(@Valid @RequestBody final ReservationTimeCreateRequest requestDto) {
         ReservationTimeResponse responseDto = reservationTimeService.createReservationTime(requestDto);
         return ResponseEntity.created(URI.create("times/" + responseDto.id())).body(responseDto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id, LoginMember member) {
-        if (member.getRole() == Role.USER) {
-            throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
-        }
-
+    public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
         reservationTimeService.deleteReservationTimeById(id);
         return ResponseEntity.noContent().build();
     }

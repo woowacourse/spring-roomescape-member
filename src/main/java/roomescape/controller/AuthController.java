@@ -10,12 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.LoginMember;
-import roomescape.domain.Role;
 import roomescape.dto.member.LoginMemberResponse;
 import roomescape.dto.member.LoginRequest;
 import roomescape.dto.member.RegistrationRequest;
-import roomescape.exception.UnauthorizedAccessException;
 import roomescape.service.LoginService;
 import roomescape.service.MemberService;
 import roomescape.service.SignupService;
@@ -41,11 +38,7 @@ public class AuthController {
     }
 
     @GetMapping("/members")
-    public ResponseEntity<List<LoginMemberResponse>> getAllMembers(LoginMember member) {
-        if (member.getRole() == Role.USER) {
-            throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
-        }
-
+    public ResponseEntity<List<LoginMemberResponse>> getAllMembers() {
         List<LoginMemberResponse> response = memberService.findAllMembers()
                 .stream()
                 .map(value -> new LoginMemberResponse(value.getId(), value.getName()))

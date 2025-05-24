@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.LoginMember;
-import roomescape.domain.Role;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservation.UserReservationRequest;
-import roomescape.exception.UnauthorizedAccessException;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -29,11 +27,7 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getAllReservations(LoginMember member) {
-        if (member.getRole() == Role.USER) {
-            throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
-        }
-
+    public ResponseEntity<List<ReservationResponse>> getAllReservations() {
         List<ReservationResponse> allReservations = reservationService.findAllReservationResponses();
         return ResponseEntity.ok(allReservations);
     }
@@ -45,11 +39,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable("id") final Long id, LoginMember member) {
-        if (member.getRole() == Role.USER) {
-            throw new UnauthorizedAccessException("[ERROR] 접근 권한이 없습니다.");
-        }
-
+    public ResponseEntity<Void> deleteReservation(@PathVariable("id") final Long id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
     }
