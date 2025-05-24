@@ -5,18 +5,17 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.domain.LoginMember;
 import roomescape.dto.member.LoginMemberResponse;
 import roomescape.dto.member.LoginRequest;
 import roomescape.dto.member.RegistrationRequest;
 import roomescape.service.LoginService;
 import roomescape.service.MemberService;
 import roomescape.service.SignupService;
-import roomescape.util.CookieKeys;
 
 @RestController
 public class AuthController {
@@ -56,9 +55,8 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginMemberResponse> checkLogin(@CookieValue(name = CookieKeys.TOKEN, required = false) String token) {
-        LoginMemberResponse response = loginService.findMemberByToken(token);
-        return ResponseEntity.ok().body(response);
+    public ResponseEntity<LoginMemberResponse> checkLogin(LoginMember member) {
+        return ResponseEntity.ok().body(new LoginMemberResponse(member.getId(), member.getName()));
     }
 
     @PostMapping("/logout")
