@@ -17,11 +17,12 @@ import roomescape.domain.Theme;
 public class FakeThemeRepository implements ThemeRepository {
 
     private final List<Theme> themes;
-    private final AtomicLong themeId = new AtomicLong(1);
+    private final AtomicLong themeId;
     private final List<Reservation> reservations = new ArrayList<>();
 
     public FakeThemeRepository(final List<Theme> themes) {
         this.themes = new ArrayList<>(themes);
+        this.themeId = new AtomicLong(themes.size() + 1);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findMostReservedByDateRange(LocalDate start, LocalDate end) {
         Map<Theme, Long> themeCounts = reservations.stream()
-                .filter(r -> !r.getDate().isBefore(start) && r.getDate().isBefore(end))
+                .filter(r -> r.getDate().isAfter(start.minusDays(1)) && r.getDate().isBefore(end))
                 .collect(Collectors.groupingBy(Reservation::getTheme, Collectors.counting()));
 
         return themeCounts.entrySet().stream()

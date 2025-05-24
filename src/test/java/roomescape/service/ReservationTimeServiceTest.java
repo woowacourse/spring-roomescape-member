@@ -4,16 +4,16 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationName;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.AvailableReservationTimeResponseDto;
-import roomescape.dto.ReservationTimeCreateRequestDto;
-import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.dto.time.AvailableReservationTimeResponse;
+import roomescape.dto.time.ReservationTimeCreateRequest;
+import roomescape.dto.time.ReservationTimeResponse;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeReservationTimeRepository;
@@ -26,19 +26,19 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 class ReservationTimeServiceTest {
 
-    ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(new ArrayList<>());
-    ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
-    ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
+    private final ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(new ArrayList<>());
+    private final ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
+    private final ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
 
     @Nested
     @DisplayName("예약시간 생성")
-    class ReservationTimeCreateTest{
+    class ReservationTimeCreateTest {
 
         @DisplayName("ReservationTime을 생성할 수 있다")
         @Test
         void createReservationTimeTest() {
-            ReservationTimeCreateRequestDto requestDto = new ReservationTimeCreateRequestDto(LocalTime.of(10, 0));
-            ReservationTimeResponseDto responseDto = reservationTimeService.createReservationTime(requestDto);
+            ReservationTimeCreateRequest requestDto = new ReservationTimeCreateRequest(LocalTime.of(10, 0));
+            ReservationTimeResponse responseDto = reservationTimeService.createReservationTime(requestDto);
 
             assertThat(responseDto).isNotNull();
             assertThat(responseDto.startAt()).isEqualTo(LocalTime.of(10, 0));
@@ -47,26 +47,26 @@ class ReservationTimeServiceTest {
         @DisplayName("이미 예약시간이 존재하면 ReservationTime을 생성할 수 없다")
         @Test
         void createInvalidReservationTimeTest() {
-            ReservationTimeCreateRequestDto requestDto = new ReservationTimeCreateRequestDto(LocalTime.of(10, 0));
-            ReservationTimeCreateRequestDto invalidRequestDto = new ReservationTimeCreateRequestDto(LocalTime.of(10, 0));
+            ReservationTimeCreateRequest requestDto = new ReservationTimeCreateRequest(LocalTime.of(10, 0));
+            ReservationTimeCreateRequest invalidRequestDto = new ReservationTimeCreateRequest(LocalTime.of(10, 0));
             reservationTimeService.createReservationTime(requestDto);
 
-            Assertions.assertThatThrownBy(() -> reservationTimeService.createReservationTime(invalidRequestDto));
+            assertThatThrownBy(() -> reservationTimeService.createReservationTime(invalidRequestDto));
         }
     }
 
 
     @Nested
     @DisplayName("예약시간 조회")
-    class ReservationTimeFindTest{
+    class ReservationTimeFindTest {
 
         @DisplayName("모든 ReservationTime을 조회할 수 있다")
         @Test
         void findAllReservationTimesTest() {
-            reservationTimeService.createReservationTime(new ReservationTimeCreateRequestDto(LocalTime.of(10, 0)));
-            reservationTimeService.createReservationTime(new ReservationTimeCreateRequestDto(LocalTime.of(11, 0)));
+            reservationTimeService.createReservationTime(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
+            reservationTimeService.createReservationTime(new ReservationTimeCreateRequest(LocalTime.of(11, 0)));
 
-            List<ReservationTimeResponseDto> allTimes = reservationTimeService.findAllReservationTimes();
+            List<ReservationTimeResponse> allTimes = reservationTimeService.findAllReservationTimes();
 
             assertThat(allTimes).hasSize(2);
             assertThat(allTimes).extracting("startAt").containsExactly(LocalTime.of(10, 0), LocalTime.of(11, 0));
@@ -75,15 +75,15 @@ class ReservationTimeServiceTest {
         @DisplayName("특정한 날짜의 이용 가능한 예약시간을 조회한다")
         @Test
         void findAvailableReservationTimesTest() {
-            reservationTimeService.createReservationTime(new ReservationTimeCreateRequestDto(LocalTime.of(10, 0)));
-            reservationTimeService.createReservationTime(new ReservationTimeCreateRequestDto(LocalTime.of(11, 0)));
+            reservationTimeService.createReservationTime(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
+            reservationTimeService.createReservationTime(new ReservationTimeCreateRequest(LocalTime.of(11, 0)));
 
             ReservationTime reservationTime = reservationTimeRepository.findById(1L).get();
-            Theme theme = new Theme(1L, "ABC","DEF","https://");
-            Reservation reservation = new Reservation(1L, "가이온", LocalDate.now().plusDays(1), reservationTime, theme);
+            Theme theme = new Theme(1L, "ABC", "DEF", "https://");
+            Reservation reservation = new Reservation(1L, new ReservationName(1L, "가이온"), LocalDate.now().plusDays(1), reservationTime, theme);
             reservationRepository.save(reservation);
 
-            List<AvailableReservationTimeResponseDto> availableReservationTimes = reservationTimeService.findAvailableReservationTimes(LocalDate.now().plusDays(1), 1L);
+            List<AvailableReservationTimeResponse> availableReservationTimes = reservationTimeService.findAvailableReservationTimes(LocalDate.now().plusDays(1), 1L);
 
             boolean alreadyBooked = availableReservationTimes.stream()
                     .filter(dto -> dto.startAt().equals(LocalTime.of(10, 0)))
@@ -109,12 +109,12 @@ class ReservationTimeServiceTest {
         @DisplayName("ReservationTime을 삭제할 수 있다")
         @Test
         void deleteReservationTimeByIdTest() {
-            ReservationTimeCreateRequestDto requestDto = new ReservationTimeCreateRequestDto(LocalTime.of(10, 0));
-            ReservationTimeResponseDto responseDto = reservationTimeService.createReservationTime(requestDto);
+            ReservationTimeCreateRequest requestDto = new ReservationTimeCreateRequest(LocalTime.of(10, 0));
+            ReservationTimeResponse responseDto = reservationTimeService.createReservationTime(requestDto);
 
             reservationTimeService.deleteReservationTimeById(responseDto.id());
 
-            List<ReservationTimeResponseDto> allTimes = reservationTimeService.findAllReservationTimes();
+            List<ReservationTimeResponse> allTimes = reservationTimeService.findAllReservationTimes();
             assertThat(allTimes).isEmpty();
         }
 
