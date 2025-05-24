@@ -3,7 +3,6 @@ package roomescape.service;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.dto.member.LoginMemberResponse;
 import roomescape.dto.member.LoginRequest;
 import roomescape.exception.InvalidCredentialsException;
 import roomescape.fixture.FakeMemberRepositoryFixture;
@@ -14,7 +13,6 @@ import roomescape.util.TokenProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("사용자 로그인")
 class LoginServiceTest {
@@ -36,22 +34,6 @@ class LoginServiceTest {
 
         // then
         assertThat(actual).isEqualTo(expected);
-    }
-
-    @DisplayName("토큰 정보로 사용자 응답 DTO를 추출할 수 있다")
-    @Test
-    void findMemberTest() {
-        // given
-        String token = "admin@gmail.com";
-
-        // when
-        LoginMemberResponse response = loginService.findMemberByToken(token);
-
-        // then
-        assertAll(
-                () -> assertThat(response.id()).isEqualTo(1L),
-                () -> assertThat(response.name()).isEqualTo("어드민")
-        );
     }
 
     @DisplayName("토큰 생성 시 사용자 정보가 잘못되면 예외가 발생한다")

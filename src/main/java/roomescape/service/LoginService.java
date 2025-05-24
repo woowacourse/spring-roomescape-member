@@ -4,7 +4,6 @@ import jakarta.servlet.http.Cookie;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.LoginMember;
-import roomescape.dto.member.LoginMemberResponse;
 import roomescape.dto.member.LoginRequest;
 import roomescape.exception.InvalidCredentialsException;
 import roomescape.repository.MemberRepository;
@@ -45,11 +44,6 @@ public class LoginService {
     private boolean isInvalidLogin(String email, String password) {
         Optional<LoginMember> member = memberRepository.findByEmailAndPassword(email, password);
         return member.isEmpty();
-    }
-
-    public LoginMemberResponse findMemberByToken(String token) {
-        LoginMember loginMember = memberService.findMemberByToken(token);
-        return new LoginMemberResponse(loginMember.getId(), loginMember.getName());
     }
 
     public Cookie setLogoutCookie() {
