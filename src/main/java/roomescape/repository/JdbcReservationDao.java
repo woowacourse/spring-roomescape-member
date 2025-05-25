@@ -2,7 +2,9 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -13,6 +15,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationName;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
@@ -21,8 +24,10 @@ public class JdbcReservationDao implements ReservationRepository {
 
     private static final RowMapper<Reservation> rowMapper = (rs, rowNum) -> {
         String date = rs.getString("date");
+        Long memberId = rs.getLong("member_id");
         Long timeId = rs.getLong("reservation_time_id");
         String timeValue = rs.getString("start_at");
+        ReservationName reservationName = new ReservationName(memberId, rs.getString("member_name"));
         ReservationTime reservationTime = new ReservationTime(timeId, LocalTime.parse(timeValue));
         Theme theme = new Theme(
                 rs.getLong("reservation_theme_id"),
@@ -33,7 +38,7 @@ public class JdbcReservationDao implements ReservationRepository {
 
         return new Reservation(
                 rs.getLong("id"),
-                rs.getString("name"),
+                reservationName,
                 LocalDate.parse(date),
                 reservationTime,
                 theme
@@ -51,15 +56,14 @@ public class JdbcReservationDao implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> save(final Reservation reservation) {
+    public long save(final Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
+                .addValue("member_id", reservation.getName().getId())
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
 
-        long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return findById(id);
+        return jdbcInsert.executeAndReturnKey(params).longValue();
     }
 
     @Override
@@ -68,7 +72,8 @@ public class JdbcReservationDao implements ReservationRepository {
                 SELECT
                 r.id,
                 r.date,
-                r.name,
+                m.name as member_name,
+                r.member_id,
                 r.time_id as reservation_time_id,
                 r.theme_id as reservation_theme_id,
                 t.start_at,
@@ -78,6 +83,7 @@ public class JdbcReservationDao implements ReservationRepository {
                 FROM reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on r.theme_id = th.id
+                inner join member as m on r.member_id = m.id
                 """;
         return jdbcTemplate.query(sql, rowMapper);
     }
@@ -88,7 +94,8 @@ public class JdbcReservationDao implements ReservationRepository {
                 SELECT
                 r.id,
                 r.date,
-                r.name,
+                m.name as member_name,
+                r.member_id,
                 r.time_id as reservation_time_id,
                 r.theme_id as reservation_theme_id,
                 t.start_at,
@@ -98,6 +105,7 @@ public class JdbcReservationDao implements ReservationRepository {
                 FROM reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on r.theme_id = th.id
+                inner join member as m on r.member_id = m.id
                 where r.id = ?
                 """;
         try {
@@ -113,7 +121,8 @@ public class JdbcReservationDao implements ReservationRepository {
                 SELECT
                 r.id,
                 r.date,
-                r.name,
+                m.name as member_name,
+                r.member_id,
                 r.time_id as reservation_time_id,
                 r.theme_id as reservation_theme_id,
                 t.start_at,
@@ -123,6 +132,7 @@ public class JdbcReservationDao implements ReservationRepository {
                 FROM reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on r.theme_id = th.id
+                inner join member as m on r.member_id = m.id
                 where r.date = ? and t.start_at = ? and r.theme_id = ?
                 """;
         try {
@@ -138,7 +148,8 @@ public class JdbcReservationDao implements ReservationRepository {
                 SELECT
                 r.id,
                 r.date,
-                r.name,
+                m.name as member_name,
+                r.member_id,
                 r.time_id as reservation_time_id,
                 r.theme_id as reservation_theme_id,
                 t.start_at,
@@ -148,10 +159,47 @@ public class JdbcReservationDao implements ReservationRepository {
                 FROM reservation as r
                 INNER JOIN reservation_time as t on r.time_id = t.id
                 INNER JOIN theme as th on r.theme_id = th.id
+                INNER JOIN member as m on r.member_id = m.id
                 WHERE r.date = ? AND r.theme_id = ?
                 """;
         try {
             return jdbcTemplate.query(sql, rowMapper, date, themeId);
+        } catch (EmptyResultDataAccessException e) {
+            return List.of();
+        }
+    }
+
+    @Override
+    public List<Reservation> findByThemeMemberDateRange(Long themeId, Long memberId, LocalDate from, LocalDate to) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("r.theme_id = ?", themeId);
+        params.put("r.member_id = ?", memberId);
+        params.put("r.date >= ?", from);
+        params.put("r.date <= ?", to);
+
+        WhereClauseParamSet paramSet = WhereClauseParamSetBuilder.makeFrom(params);
+
+        if (paramSet.isEmpty()) return findAll();
+
+        String sql = """
+                SELECT
+                r.id,
+                r.date,
+                m.name as member_name,
+                r.member_id,
+                r.time_id as reservation_time_id,
+                r.theme_id as reservation_theme_id,
+                t.start_at,
+                th.name as theme_name,
+                th.description,
+                th.thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as t on r.time_id = t.id
+                INNER JOIN theme as th on r.theme_id = th.id
+                INNER JOIN member as m on r.member_id = m.id
+                """ + "\n" + paramSet.getWhereClause();
+        try {
+            return jdbcTemplate.query(sql, rowMapper, paramSet.params().toArray());
         } catch (EmptyResultDataAccessException e) {
             return List.of();
         }

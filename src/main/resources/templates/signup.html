@@ -58,10 +58,15 @@
       <label for="name">Name</label>
       <input type="name" class="form-control" id="name" placeholder="Enter name">
     </div>
-    <button type="submit" class="btn btn-custom" onclick="register()">Register</button>
+    <button type="submit" class="btn btn-custom">Register</button>
   </form>
 </div>
 
 <script src="/js/user-scripts.js"></script>
+<script>
+  document.getElementById('signup-form').addEventListener('submit', function (event) {
+    register(event);
+  });
+</script>
 </body>
 </html>

@@ -7,9 +7,9 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.AvailableReservationTimeResponseDto;
-import roomescape.dto.ReservationTimeCreateRequestDto;
-import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.dto.time.AvailableReservationTimeResponse;
+import roomescape.dto.time.ReservationTimeCreateRequest;
+import roomescape.dto.time.ReservationTimeResponse;
 import roomescape.exception.ConstrainedDataException;
 import roomescape.exception.DuplicateContentException;
 import roomescape.exception.NotFoundException;
@@ -27,38 +27,38 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public ReservationTimeResponseDto createReservationTime(final ReservationTimeCreateRequestDto requestDto) {
+    public ReservationTimeResponse createReservationTime(final ReservationTimeCreateRequest requestDto) {
         ReservationTime requestTime = requestDto.createWithoutId();
         try {
             ReservationTime savedTime = reservationTimeRepository.save(requestTime)
                     .orElseThrow(() -> new IllegalStateException("[ERROR] 예약시간을 저장할 수 없습니다. 관리자에게 문의해 주세요."));
 
-            return ReservationTimeResponseDto.from(savedTime);
+            return ReservationTimeResponse.from(savedTime);
         } catch (DuplicateKeyException e) {
             throw new DuplicateContentException("[ERROR] 이미 동일한 예약 시간이 존재합니다.");
         }
     }
 
-    public List<ReservationTimeResponseDto> findAllReservationTimes() {
+    public List<ReservationTimeResponse> findAllReservationTimes() {
         List<ReservationTime> allReservationTime = reservationTimeRepository.findAll();
         return allReservationTime.stream()
-                .map(ReservationTimeResponseDto::from)
+                .map(ReservationTimeResponse::from)
                 .toList();
     }
 
-    public List<AvailableReservationTimeResponseDto> findAvailableReservationTimes(LocalDate date, Long themeId) {
+    public List<AvailableReservationTimeResponse> findAvailableReservationTimes(LocalDate date, Long themeId) {
         List<ReservationTime> allReservationTimes = reservationTimeRepository.findAll();
-        List<Reservation> availableReservationsByDate = reservationRepository.findByDateAndTheme(date, themeId);
+        List<Reservation> reservationsOnDate = reservationRepository.findByDateAndTheme(date, themeId);
 
-        List<ReservationTime> availableReservationTimes = availableReservationsByDate.stream()
+        List<ReservationTime> reservedTimes = reservationsOnDate.stream()
                 .map(Reservation::getTime)
                 .toList();
 
         return allReservationTimes.stream()
-                .map(reservationTime -> new AvailableReservationTimeResponseDto(
+                .map(reservationTime -> new AvailableReservationTimeResponse(
                         reservationTime.getId(),
                         reservationTime.getStartAt(),
-                        availableReservationTimes.contains(reservationTime)
+                        reservedTimes.contains(reservationTime)
                 ))
                 .toList();
     }

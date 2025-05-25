@@ -2,10 +2,9 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,15 +12,44 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dto.ReservationTimeCreateRequestDto;
-import roomescape.dto.ThemeCreateRequestDto;
+import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.LoginMember;
+import roomescape.dto.member.LoginRequest;
+import roomescape.dto.theme.ThemeCreateRequest;
+import roomescape.fixture.LoginMemberFixture;
 
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql("/test-data.sql")
 class ThemeControllerTest {
+
+    private String adminCookie;
+    private String userCookie;
+
+    @BeforeEach
+    void login() {
+        LoginMember admin = LoginMemberFixture.getAdmin();
+
+        adminCookie = RestAssured
+                .given().log().all()
+                .body(new LoginRequest(admin.getPassword(), admin.getEmail()))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+
+        LoginMember user = LoginMemberFixture.getUser();
+
+        userCookie = RestAssured
+                .given().log().all()
+                .body(new LoginRequest(user.getPassword(), user.getEmail()))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+    }
 
     @Nested
     @DisplayName("테마 조회")
@@ -34,7 +62,7 @@ class ThemeControllerTest {
                     .when().get("/themes")
                     .then().log().all()
                     .statusCode(200)
-                    .body("size()", is(0));
+                    .body("size()", is(1));
         }
     }
 
@@ -42,40 +70,48 @@ class ThemeControllerTest {
     @DisplayName("테마 생성")
     class ThemePostTest {
 
-        @DisplayName("Theme를 생성할 수 있다")
+        @DisplayName("어드민은 /themes API를 통해 Theme를 생성할 수 있다")
         @Test
         void addThemeTest() {
-            ThemeCreateRequestDto requestTheme = new ThemeCreateRequestDto("테마", "설명", "https://");
+            ThemeCreateRequest request = new ThemeCreateRequest("테마", "설명", "https://");
 
             RestAssured.given().log().all()
+                    .header("Cookie", adminCookie)
                     .contentType(ContentType.JSON)
-                    .body(requestTheme)
+                    .body(request)
                     .when().post("/themes")
                     .then().log().all()
                     .statusCode(201)
-                    .body("id", is(1));
+                    .body("id", is(2));
 
             RestAssured.given().log().all()
                     .when().get("/themes")
                     .then().log().all()
                     .statusCode(200)
-                    .body("size()", is(1));
+                    .body("size()", is(2));
+        }
+
+        @DisplayName("일반 유저는 /themes API를 통해 Theme를 생성할 수 없다")
+        @Test
+        void addThemeExceptionTest1() {
+            ThemeCreateRequest request = new ThemeCreateRequest("테마", "설명", "https://");
+
+            RestAssured.given().log().all()
+                    .header("Cookie", userCookie)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when().post("/themes")
+                    .then().log().all()
+                    .statusCode(403);
         }
 
         @DisplayName("기존과 동일한 이름을 가진 테마는 생성할 수 없다")
         @Test
-        void addThemeExceptionTest() {
-            ThemeCreateRequestDto requestTheme = new ThemeCreateRequestDto("테마", "설명", "https://");
+        void addThemeExceptionTest2() {
+            ThemeCreateRequest requestTheme = new ThemeCreateRequest("테마 A", "설명", "https://");
 
             RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(requestTheme)
-                    .when().post("/themes")
-                    .then().log().all()
-                    .statusCode(201)
-                    .body("id", is(1));
-
-            RestAssured.given().log().all()
+                    .header("Cookie", adminCookie)
                     .contentType(ContentType.JSON)
                     .body(requestTheme)
                     .when().post("/themes")
@@ -94,6 +130,7 @@ class ThemeControllerTest {
             );
 
             RestAssured.given().log().all()
+                    .header("Cookie", adminCookie)
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/themes")
@@ -113,6 +150,7 @@ class ThemeControllerTest {
             );
 
             RestAssured.given().log().all()
+                    .header("Cookie", adminCookie)
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/themes")
@@ -138,6 +176,7 @@ class ThemeControllerTest {
             );
 
             RestAssured.given().log().all()
+                    .header("Cookie", adminCookie)
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/themes")
@@ -156,21 +195,19 @@ class ThemeControllerTest {
 
     @Nested
     @DisplayName("테마 삭제")
-    class DeleteThemeTest {
+    class ThemeDeleteTest {
 
         @DisplayName("저장된 테마를 삭제할 수 있다")
         @Test
         void deleteThemeTest() {
-            ThemeCreateRequestDto requestTheme = new ThemeCreateRequestDto("테마", "설명", "https://");
-
             RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(requestTheme)
-                    .when().post("/themes")
+                    .header("Cookie", adminCookie)
+                    .when().delete("/reservations/1")
                     .then().log().all()
-                    .statusCode(201);
+                    .statusCode(204);
 
             RestAssured.given().log().all()
+                    .header("Cookie", adminCookie)
                     .when().delete("/themes/1")
                     .then().log().all()
                     .statusCode(204);
@@ -185,45 +222,34 @@ class ThemeControllerTest {
         @DisplayName("예약된 내역이 존재하는 테마는 삭제할 수 없다")
         @Test
         void deleteThemeExceptionTest() {
-            ReservationTimeCreateRequestDto requestTime = new ReservationTimeCreateRequestDto(LocalTime.of(10, 0));
-            ThemeCreateRequestDto requestTheme = new ThemeCreateRequestDto("테마", "설명", "https://");
-            Map<String, Object> reservationParams = new HashMap<>();
-            reservationParams.put("name", "브라운");
-            reservationParams.put("date", "2030-08-05");
-            reservationParams.put("timeId", 1);
-            reservationParams.put("themeId", 1);
-
             RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(requestTime)
-                    .when().post("/times")
-                    .then().log().all()
-                    .statusCode(201);
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(requestTheme)
-                    .when().post("/themes")
-                    .then().log().all()
-                    .statusCode(201);
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(reservationParams)
-                    .when().post("/reservations")
-                    .then().log().all()
-                    .statusCode(201);
-
-            RestAssured.given().log().all()
+                    .header("Cookie", adminCookie)
                     .when().delete("/themes/1")
                     .then().log().all()
                     .statusCode(409);
+        }
+
+        @DisplayName("일반 유저는 /themes API를 통해 Theme를 삭제할 수 없다")
+        @Test
+        void deleteThemeExceptionTest2() {
+            RestAssured.given().log().all()
+                    .header("Cookie", adminCookie)
+                    .when().delete("/reservations/1")
+                    .then().log().all()
+                    .statusCode(204);
+
+            RestAssured.given().log().all()
+                    .header("Cookie", userCookie)
+                    .when().delete("/themes/1")
+                    .then().log().all()
+                    .statusCode(403);
         }
 
         @DisplayName("존재하지 않는 Id의 Theme 을 삭제할 수 없다")
         @Test
         void invalidThemeIdTest() {
             RestAssured.given().log().all()
+                    .header("Cookie", adminCookie)
                     .when().delete("/themes/5")
                     .then().log().all()
                     .statusCode(404);

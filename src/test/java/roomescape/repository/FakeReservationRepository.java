@@ -14,21 +14,23 @@ import roomescape.domain.Reservation;
 public class FakeReservationRepository implements ReservationRepository {
 
     private final List<Reservation> reservations;
-    private final AtomicLong reservationId = new AtomicLong(1);
+    private final AtomicLong reservationId;
 
-    public FakeReservationRepository(final List<Reservation> reservations) {
+    public FakeReservationRepository(List<Reservation> reservations) {
         this.reservations = new ArrayList<>(reservations);
+        this.reservationId = new AtomicLong(reservations.size() + 1);
     }
 
     @Override
-    public Optional<Reservation> save(final Reservation reservation) {
+    public long save(Reservation reservation) {
         List<Reservation> existingReservations = findByDateTimeTheme(reservation.getDate(), reservation.getTime().getStartAt(), reservation.getTheme().getId());
         if (!existingReservations.isEmpty()) {
             throw new DuplicateKeyException("동일한 예약이 존재합니다.");
         }
-        Reservation newReservation = new Reservation(reservationId.getAndIncrement(), reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+        long id = reservationId.getAndIncrement();
+        Reservation newReservation = new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
         reservations.add(newReservation);
-        return findById(newReservation.getId());
+        return id;
     }
 
     @Override
@@ -54,6 +56,16 @@ public class FakeReservationRepository implements ReservationRepository {
     public List<Reservation> findByDateAndTheme(LocalDate date, long themeId) {
         return reservations.stream()
                 .filter(reservation -> reservation.getDate().equals(date) && reservation.getTheme().getId().equals(themeId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Reservation> findByThemeMemberDateRange(Long themeId, Long memberId, LocalDate from, LocalDate to) {
+        return reservations.stream()
+                .filter(r -> themeId == null || r.getTheme().getId().equals(themeId))
+                .filter(r -> memberId == null || r.getName().getId().equals(memberId))
+                .filter(r -> from == null || !r.getDate().isBefore(from))
+                .filter(r -> to == null || !r.getDate().isAfter(to))
                 .collect(Collectors.toList());
     }
 
