@@ -8,6 +8,7 @@ import roomescape.controller.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.response.ReservationResult;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -28,7 +29,8 @@ public class ReservationController {
             @RequestBody ReservationCreateRequest request
     ) {
         final ReservationResult result = reservationService.create(request.toData());
-        return ResponseEntity.ok(ReservationResponse.from(result));
+        return ResponseEntity.created(URI.create("/reservations"))
+                .body(ReservationResponse.from(result));
     }
 
     @DeleteMapping("/{reservation-id}")
