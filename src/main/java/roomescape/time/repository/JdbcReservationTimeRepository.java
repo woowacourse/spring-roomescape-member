@@ -1,0 +1,60 @@
+package roomescape.time.repository;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+import roomescape.time.domain.ReservationTime;
+
+import java.sql.PreparedStatement;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public class JdbcReservationTimeRepository implements ReservationTimeRepository {
+
+    private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
+            new ReservationTime(
+                resultSet.getLong("id"),
+                resultSet.getObject("start_at", LocalTime.class)
+    );
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public ReservationTime save(ReservationTime reservationTime) {
+        String sql = "insert into reservation_time (start_at) values (?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setObject(1, reservationTime.getStartAt());
+            return ps;
+        }, keyHolder);
+
+        Long id = keyHolder.getKey().longValue();
+        return new ReservationTime(id, reservationTime.getStartAt());
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        jdbcTemplate.update("delete from reservation_time where id = ?", id);
+    }
+
+    @Override
+    public Optional<ReservationTime> findById(Long id) {
+        String sql = "select id, start_at from reservation_time where id = ?";
+        List<ReservationTime> results = jdbcTemplate.query(sql, reservationTimeRowMapper, id);
+        return results.stream().findFirst();
+    }
+
+    @Override
+    public List<ReservationTime> findAll() {
+        return jdbcTemplate.query("select id, start_at from reservation_time", reservationTimeRowMapper);
+    }
+}
