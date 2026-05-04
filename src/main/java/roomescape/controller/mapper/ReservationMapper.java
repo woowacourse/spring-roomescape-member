@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import roomescape.controller.dto.ReservationCreateRequest;
 import roomescape.controller.dto.ReservationResponse;
 import roomescape.controller.dto.ReservationTimeResponse;
+import roomescape.controller.dto.ThemeResponse;
 import roomescape.domain.Reservation;
 import roomescape.service.command.ReservationCreateCommand;
 
@@ -11,9 +12,14 @@ import roomescape.service.command.ReservationCreateCommand;
 public class ReservationMapper {
 
     private final ReservationTimeMapper timeMapper;
+    private final ThemeMapper themeMapper;
 
-    public ReservationMapper(ReservationTimeMapper timeMapper) {
+    public ReservationMapper(
+            ReservationTimeMapper timeMapper,
+            ThemeMapper themeMapper
+    ) {
         this.timeMapper = timeMapper;
+        this.themeMapper = themeMapper;
     }
 
     public ReservationCreateCommand mapCreateToCommand(
@@ -31,12 +37,14 @@ public class ReservationMapper {
             Reservation reservation
     ) {
         ReservationTimeResponse time = timeMapper.mapToResponse(reservation.getTime());
+        ThemeResponse theme = themeMapper.mapToResponse(reservation.getTheme());
 
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
-                time
+                time,
+                theme
         );
     }
 }

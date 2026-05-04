@@ -20,6 +20,11 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
+    @Transactional(readOnly = true)
+    public List<Theme> findAll() {
+        return themeRepository.findAll();
+    }
+
     public Theme create(
             ThemeCreateRequest themeCreateRequest
     ) {

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,9 +31,19 @@ public class ThemeController {
         this.themeMapper = themeMapper;
     }
 
+    @GetMapping
+    public ResponseEntity<List<ThemeResponse>> findAll() {
+        List<ThemeResponse> responses = themeService.findAll()
+                .stream()
+                .map(themeMapper::mapToResponse)
+                .toList();
+
+        return ResponseEntity.ok(responses);
+    }
+
     @PostMapping
     public ResponseEntity<ThemeResponse> create(
-            ThemeCreateRequest themeCreateRequest
+            @RequestBody ThemeCreateRequest themeCreateRequest
     ) {
         Theme theme = themeService.create(themeCreateRequest);
         ThemeResponse response = themeMapper.mapToResponse(theme);

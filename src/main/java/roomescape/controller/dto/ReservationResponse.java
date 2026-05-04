@@ -6,6 +6,7 @@ public record ReservationResponse(
         long id,
         String name,
         LocalDate date,
-        ReservationTimeResponse time
+        ReservationTimeResponse time,
+        ThemeResponse theme
 ) {
 }

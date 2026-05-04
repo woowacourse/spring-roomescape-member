@@ -120,6 +120,10 @@ public class Reservation {
         return theme.getId();
     }
 
+    public Theme getTheme() {
+        return theme;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {

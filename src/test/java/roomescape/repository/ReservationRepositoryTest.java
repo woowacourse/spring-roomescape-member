@@ -79,11 +79,18 @@ class ReservationRepositoryTest {
             Reservation persistedReservation = reservationRepository.persist(transientReservation);
 
             // then
-            String selectSql = "SELECT r.*, rt.start_at, t.*"
+            String selectSql = "SELECT r.id AS reservation_id,"
+                    + " r.name AS member_name,"
+                    + " r.date AS reservation_date,"
+                    + " r.time_id,"
+                    + " r.theme_id,"
+                    + " rt.start_at AS time_start_at,"
+                    + " t.name AS theme_name,"
+                    + " t.description AS theme_description,"
+                    + " t.image_url AS theme_image_url"
                     + " FROM reservation r"
-                    + " JOIN reservation_time rt"
-                    + " JOIN theme t"
-                    + " ON r.time_id = rt.id";
+                    + " INNER JOIN reservation_time rt ON r.time_id = rt.id"
+                    + " INNER JOIN theme t ON r.theme_id = t.id";
             List<Reservation> foundReservations = jdbcTemplate.query(selectSql, reservationRowMapper());
 
             assertThat(foundReservations).hasSize(1);
@@ -222,19 +229,19 @@ class ReservationRepositoryTest {
     private RowMapper<Reservation> reservationRowMapper() {
         return (resultSet, rowNum) -> {
             long timeId = resultSet.getLong("time_id");
-            LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
+            LocalTime startAt = resultSet.getObject("time_start_at", LocalTime.class);
 
             long themeId = resultSet.getLong("theme_id");
-            String name = resultSet.getString("name");
-            String description = resultSet.getString("description");
-            String imageUrl = resultSet.getString("image_url");
+            String themeName = resultSet.getString("theme_name");
+            String description = resultSet.getString("theme_description");
+            String imageUrl = resultSet.getString("theme_image_url");
 
             return Reservation.retrieve(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    resultSet.getObject("date", LocalDate.class),
+                    resultSet.getLong("reservation_id"),
+                    resultSet.getString("member_name"),
+                    resultSet.getObject("reservation_date", LocalDate.class),
                     ReservationTime.retrieve(timeId, startAt),
-                    Theme.retrieve(themeId, name, description, imageUrl)
+                    Theme.retrieve(themeId, themeName, description, imageUrl)
             );
         };
     }

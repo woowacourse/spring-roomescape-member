@@ -37,6 +37,14 @@ public class ThemeRepository {
         return theme.with(id.longValue());
     }
 
+    public List<Theme> findAll() {
+        String findSql = "SELECT id, name, description, image_url"
+                + " FROM theme"
+                + " ORDER BY id";
+
+        return jdbcTemplate.query(findSql, themeRowMapper());
+    }
+
     public Optional<Theme> findById(long id) {
         try {
             String findSql = "SELECT id, name, description, image_url"
