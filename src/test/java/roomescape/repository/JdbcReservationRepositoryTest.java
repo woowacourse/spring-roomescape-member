@@ -29,6 +29,7 @@ class JdbcReservationRepositoryTest {
 
     @BeforeEach
     void setup() {
+        clearTables();
         jdbcReservationRepository = new JdbcReservationRepository(jdbcTemplate);
         jdbcReservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
     }
@@ -115,6 +116,13 @@ class JdbcReservationRepositoryTest {
         int afterSize = jdbcReservationRepository.findAll().size();
 
         assertThat(afterSize).isEqualTo(beforeSize - 1);
+    }
+
+    private void clearTables() {
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.update("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
     }
 
 }

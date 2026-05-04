@@ -16,3 +16,13 @@ CREATE TABLE reservation
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     UNIQUE (date, time_id)
 );
+
+CREATE TABLE theme
+(
+    id            BIGINT       NOT NULL AUTO_INCREMENT,
+    name          VARCHAR(255) NOT NULL,
+    description   VARCHAR(255) NOT NULL,
+    thumbnail_url VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE (name)
+);

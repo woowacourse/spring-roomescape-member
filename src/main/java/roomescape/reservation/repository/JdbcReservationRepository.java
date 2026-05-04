@@ -64,7 +64,9 @@ public class JdbcReservationRepository implements ReservationRepository {
                 WHERE r.id = ?
                 """;
 
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationRowMapper, id));
+        return jdbcTemplate.query(sql, reservationRowMapper, id)
+                .stream()
+                .findFirst();
     }
 
     @Override
