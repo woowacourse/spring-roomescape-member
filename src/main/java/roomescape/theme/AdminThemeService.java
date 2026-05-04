@@ -4,11 +4,11 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ThemeService {
+public class AdminThemeService {
 
     private final ThemeRepository themeRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public AdminThemeService(ThemeRepository themeRepository) {
         this.themeRepository = themeRepository;
     }
 

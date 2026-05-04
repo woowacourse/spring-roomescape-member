@@ -1,6 +1,8 @@
 package roomescape.theme;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -42,5 +44,25 @@ public class ThemeDao {
         String sql = "DELETE FROM themes WHERE id = ?";
 
         jdbcTemplate.update(sql, id);
+    }
+
+    public List<Theme> findAll(String sort, String order, LocalDate startDate, LocalDate endDate, Long limit) {
+        String sql = getReservationSortSql(sort, order, limit);
+        return jdbcTemplate.query(sql, rowMapper, startDate, endDate, limit);
+    }
+
+    private String getReservationSortSql(String sort, String order, Long limit) {
+        String sql = "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservationCount " + "FROM theme t "
+                + "INNER JOIN reservation r ON t.id = r.theme_id "
+                + "WHERE r.date >= ? AND r.date <= ? "
+                + "GROUP BY t.id, t.name, t.description, t.thumbnail "
+                + "ORDER BY "
+                + sort
+                + order;
+
+        if (limit != null) {
+            sql += " LIMIT " + limit;
+        }
+        return sql;
     }
 }

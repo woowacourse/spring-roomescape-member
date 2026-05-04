@@ -1,24 +1,30 @@
-CREATE TABLE reservation_time (
-                                  id       BIGINT       NOT NULL AUTO_INCREMENT,
-                                  start_at VARCHAR(255) NOT NULL UNIQUE,
-                                  PRIMARY KEY (id)
+CREATE TABLE reservation_time
+(
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
+    start_at VARCHAR(255) NOT NULL UNIQUE,
+    PRIMARY KEY (id)
 );
 
-CREATE TABLE reservation (
-                             id      BIGINT       NOT NULL AUTO_INCREMENT,
-                             name    VARCHAR(255) NOT NULL,
-                             date    VARCHAR(255) NOT NULL,
-                             time_id BIGINT,
-                             PRIMARY KEY (id),
-                             FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-                             CONSTRAINT unique_date_time UNIQUE (date, time_id)
+CREATE TABLE reservation
+(
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(255) NOT NULL,
+    date     VARCHAR(255) NOT NULL,
+    time_id  BIGINT,
+    theme_id BIGINT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (time_id) REFERENCES reservation_time (id) CASCADE,
+    FOREIGN KEY (theme_id) REFERENCES themes (id) CASCADE,
+    CONSTRAINT unique_date_time UNIQUE (date, time_id)
+
 );
 
-CREATE TABLE themes (
-    id  BIGINT  NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL UNIQUE,
-    description VARCHAR(255) NOT NULL,
-    thumbnail VARCHAR(2048) NOT NULL,
+CREATE TABLE themes
+(
+    id          BIGINT        NOT NULL AUTO_INCREMENT,
+    name        VARCHAR(255)  NOT NULL UNIQUE,
+    description VARCHAR(255)  NOT NULL,
+    thumbnail   VARCHAR(2048) NOT NULL,
     PRIMARY KEY (id)
 )
 

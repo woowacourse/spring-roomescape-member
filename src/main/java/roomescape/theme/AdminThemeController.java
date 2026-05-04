@@ -11,23 +11,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/admin/themes")
-public class ThemeController {
+public class AdminThemeController {
 
-    private final ThemeService themeService;
+    private final AdminThemeService adminThemeService;
 
-    public ThemeController(ThemeService themeService) {
-        this.themeService = themeService;
+    public AdminThemeController(AdminThemeService adminThemeService) {
+        this.adminThemeService = adminThemeService;
     }
 
     @PostMapping()
     public ResponseEntity<?> addTheme(@RequestBody ThemeRequest themeRequest) {
-        Long id = themeService.save(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
+        Long id = adminThemeService.save(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteTheme(@PathVariable long id) {
-        themeService.delete(id);
+        adminThemeService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

@@ -1,5 +1,7 @@
 package roomescape.theme;
 
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -17,5 +19,9 @@ public class ThemeRepository {
 
     public void delete(long id) {
         themeDao.delete(id);
+    }
+
+    public List<Theme> findAll(String sort, String order, LocalDate startDate, LocalDate endDate, Long limit) {
+        return themeDao.findAll(sort, order, startDate, endDate, limit);
     }
 }
