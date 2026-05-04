@@ -48,4 +48,8 @@ public class ThemeDao {
         }, keyHolder);
         return keyHolder.getKey().longValue();
     }
+
+    public int delete(Long id) {
+        return jdbcTemplate.update("delete from theme where id = ?", id);
+    }
 }

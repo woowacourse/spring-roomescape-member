@@ -38,12 +38,50 @@ public class ThemeControllerTest {
 
     @Test
     void 테마_추가시_관리자가_아닌경우_401을_반환한다() {
+        Map<String, Object> userThemeParams = themeParams();
+        userThemeParams.put("userName", "정콩이");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(userThemeParams)
+                .when().post("/api/v1/themes")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+    @Test
+    void 테마_삭제() {
         Map<String, Object> adminThemeParams = themeParams();
-        adminThemeParams.put("userName", "정콩이");
+        adminThemeParams.put("userName", "ADMIN");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(adminThemeParams)
                 .when().post("/api/v1/themes")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("userName", "ADMIN"))
+                .when().delete("/api/v1/themes/1")
+                .then().log().all()
+                .statusCode(204);
+    }
+
+    @Test
+    void 테마_삭제시_관리자가_아닌경우_401을_반환한다() {
+        Map<String, Object> adminThemeParams = themeParams();
+        adminThemeParams.put("userName", "ADMIN");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(adminThemeParams)
+                .when().post("/api/v1/themes")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("userName", "정콩이"))
+                .when().delete("/api/v1/themes/1")
                 .then().log().all()
                 .statusCode(401);
     }

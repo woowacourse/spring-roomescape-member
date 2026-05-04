@@ -1,12 +1,15 @@
 package roomescape.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeCreateRequest;
+import roomescape.dto.ThemeDeleteRequest;
 import roomescape.service.ThemeService;
 
 import java.net.URI;
@@ -29,5 +32,12 @@ public class ThemeController {
                 request.userName()
         );
         return ResponseEntity.created(URI.create("/api/v1/themes/" + theme.getId())).body(theme);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTheme(@PathVariable Long id,
+                                            @RequestBody ThemeDeleteRequest request) {
+        themeService.deleteTheme(id, request.userName());
+        return ResponseEntity.noContent().build();
     }
 }
