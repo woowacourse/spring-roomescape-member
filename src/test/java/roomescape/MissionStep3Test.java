@@ -40,10 +40,34 @@ public class MissionStep3Test {
 
     @Test
     void 예약과_시간_연결() {
+        Map<String, Object> reservationTime = new HashMap<>();
+        reservationTime.put("startAt", "12:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationTime)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(200);
+
+        Map<String, Object> theme = new HashMap<>();
+        reservationTime.put("name", "테마A");
+        reservationTime.put("description", "테마A란...");
+        reservationTime.put("thumbnailUrl", "www.d.d.d");
+        reservationTime.put("runtime", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(200);
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
