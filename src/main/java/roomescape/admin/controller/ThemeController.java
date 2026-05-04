@@ -1,0 +1,30 @@
+package roomescape.admin.controller;
+
+import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.admin.service.ThemeService;
+import roomescape.domain.Theme;
+
+@RestController
+public class ThemeController {
+    private final ThemeService themeService;
+
+    public ThemeController(ThemeService themeService) {
+        this.themeService = themeService;
+    }
+
+    @GetMapping("/themes")
+    public ResponseEntity<List<Theme>> readAll() {
+        List<Theme> themes = themeService.findAll();
+        return ResponseEntity.ok(themes);
+    }
+
+    @GetMapping("/themes/{id}")
+    public ResponseEntity<Theme> readById(@PathVariable Long id) {
+        Theme theme = themeService.findById(id);
+        return ResponseEntity.ok(theme);
+    }
+}
