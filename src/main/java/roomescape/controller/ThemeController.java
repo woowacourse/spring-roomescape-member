@@ -5,14 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.response.ReservationTimeResponse;
-import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
-@RequestMapping("/themes")
+@RequestMapping("/theme")
 public class ThemeController {
     private final ThemeService themeService;
 
@@ -20,28 +18,13 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping("/{id}/available-time")
+    @GetMapping("/{id}/available-time?date={date}")
     public ResponseEntity<List<ReservationTimeResponse>> getAvailableTime(
             @PathVariable long id,
-            @RequestParam String date
+            @PathVariable String date
     ) {
         List<ReservationTimeResponse> availableTimes = themeService.findAvailableTime(id, date);
 
         return ResponseEntity.ok().body(availableTimes);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<ThemeResponse>> getAllThemes() {
-        List<ThemeResponse> themes = themeService.findAllThemes();
-        return ResponseEntity.ok().body(themes);
-    }
-
-    @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> getTopThemes(
-            @RequestParam("limit") long limit
-    ) {
-        List<ThemeResponse> topTheme = themeService.findTopTheme(limit);
-
-        return ResponseEntity.ok().body(topTheme);
     }
 }
