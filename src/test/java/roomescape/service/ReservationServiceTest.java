@@ -10,14 +10,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dto.request.ReservationRequest;
+import roomescape.dao.ReservationDao;
+import roomescape.dto.ReservationRequest;
 
 @ExtendWith(MockitoExtension.class)
 public class ReservationServiceTest {
 
     @Mock
-    private ReservationTimeDao reservationTimeDao;
+    private ReservationDao reservationDao;
 
     @InjectMocks
     private ReservationService reservationService;
@@ -27,10 +27,10 @@ public class ReservationServiceTest {
     void save_fail_invalid_time_id() {
         // given
         Long invalidTimeId = 999L;
-        ReservationRequest request = new ReservationRequest("아나키", LocalDate.of(2026,5,4), invalidTimeId, 1L);
+        ReservationRequest request = new ReservationRequest("아나키", LocalDate.of(2026,5,4), invalidTimeId);
 
         // when & then
-        when(reservationTimeDao.findTimeById(invalidTimeId)).thenReturn(null);
+        when(reservationDao.findTimeById(invalidTimeId)).thenReturn(null);
         assertThatThrownBy(() -> reservationService.save(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("요청하신 시간 ID가 존재하지 않습니다.");

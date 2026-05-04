@@ -6,11 +6,9 @@ import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 
 @Repository
-@Transactional(readOnly = true)
 public class ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
@@ -33,7 +31,6 @@ public class ReservationTimeDao {
         );
     }
 
-    @Transactional
     public ReservationTime save(ReservationTime reservationTime) {
         Map<String, Object> params = new HashMap<>();
         params.put("start_at", reservationTime.getStartAt());
@@ -43,19 +40,7 @@ public class ReservationTimeDao {
         return new ReservationTime(id, reservationTime.getStartAt());
     }
 
-    @Transactional
     public void delete(Long id) {
         jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
-    }
-
-    public ReservationTime findTimeById(Long timeId) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, start_at FROM reservation_time WHERE id = ?",
-                (rs, rowNum) -> new ReservationTime(
-                        rs.getLong("id"),
-                        rs.getTime("start_at").toLocalTime()
-                ),
-                timeId
-        );
     }
 }

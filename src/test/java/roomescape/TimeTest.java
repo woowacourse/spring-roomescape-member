@@ -16,12 +16,12 @@ public class TimeTest {
     @Test
     void 시간_관리_API() {
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", "19:00");
+        params.put("startAt", "10:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/admin/times")
+                .when().post("/times")
                 .then().log().all()
                 .statusCode(200);
 
@@ -29,21 +29,30 @@ public class TimeTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(10));
+                .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/admin/times/10")
+                .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(200);
     }
 
     @Test
     void 예약과_시간_연결() {
+        Map<String, String> timeParams = new HashMap<>();
+        timeParams.put("startAt", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(timeParams)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(200);
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2026-05-05");
+        reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -56,6 +65,7 @@ public class TimeTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(20));
+                .body("size()", is(1));
     }
+
 }
