@@ -1,9 +1,11 @@
 package roomescape.theme;
 
+import org.springframework.stereotype.Service;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.ThemeCreateRequest;
 import roomescape.theme.dto.ThemeResponse;
 
+@Service
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
