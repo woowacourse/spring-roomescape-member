@@ -7,6 +7,8 @@ import java.time.LocalDate;
 
 
 public record ReservationRequest(
+        @NotBlank(message = "테마 정보가 필요합니다.")
+        Long themeId,
         @NotBlank(message = "이름은 비어있을 수 없습니다.")
         String name,
         @NotNull(message = "날짜를 입력해주세요.")

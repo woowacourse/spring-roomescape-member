@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservationtime.ReservationTime;
+import roomescape.theme.Theme;
 
 @Repository
 public class ReservationDao {
@@ -19,7 +20,8 @@ public class ReservationDao {
             rs.getLong("reservation_id"),
             rs.getString("name"),
             rs.getObject("date", LocalDate.class),
-            new ReservationTime(rs.getLong("time_id"), rs.getObject("time_value", LocalTime.class))
+            new ReservationTime(rs.getLong("time_id"), rs.getObject("time_value", LocalTime.class)),
+            new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("theme_description"), rs.getString("theme_thumbnail"))
     );
 
 
@@ -27,8 +29,8 @@ public class ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    Reservation save(String name, LocalDate date, ReservationTime time) {
-        String sql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
+    Reservation save(String name, LocalDate date, ReservationTime time, Theme theme) {
+        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -36,12 +38,13 @@ public class ReservationDao {
             ps.setString(1, name);
             ps.setObject(2, date);
             ps.setLong(3, time.id());
+            ps.setLong(4, theme.id());
             return ps;
         }, keyHolder);
 
         long generatedId = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
-        return new Reservation(generatedId, name, date, time);
+        return new Reservation(generatedId, name, date, time, theme);
     }
 
     List<Reservation> findAll() {
