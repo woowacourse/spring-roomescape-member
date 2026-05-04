@@ -6,7 +6,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.dto.ReservationCreateCommand;
 import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ReservationTimeDao;
 import roomescape.service.dto.request.ReservationCreateRequest;
 import roomescape.service.dto.response.ReservationResponse;
 
@@ -17,7 +17,7 @@ import java.util.List;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationTimeDao reservationTimeDao;
 
     public List<ReservationResponse> getReservations() {
         return reservationRepository.findAll()
@@ -27,7 +27,7 @@ public class ReservationService {
     }
 
     public ReservationResponse create(final ReservationCreateRequest data) {
-        final ReservationTime reservationTime = reservationTimeRepository.findById(data.timeId())
+        final ReservationTime reservationTime = reservationTimeDao.findById(data.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
 
         final Reservation reservation = Reservation.create(

@@ -1,9 +1,9 @@
 package roomescape.repository.entity;
 
-import java.time.LocalTime;
+import java.sql.Time;
 
 public record ReservationTimeEntity(
-    Long id,
-    LocalTime startAt
+        Long id,
+        Time startAt
 ) {
 }

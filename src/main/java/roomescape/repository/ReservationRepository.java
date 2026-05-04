@@ -7,13 +7,11 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.repository.entity.ReservationEntity;
 import roomescape.repository.entity.ReservationTimeEntity;
 import roomescape.repository.entity.ReservationWithTimeEntity;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 
 @Repository
@@ -42,7 +40,9 @@ public class ReservationRepository {
     }
 
     public Reservation save(final Reservation newReservation) {
-        final long newReservationId = insertReservation(newReservation);
+        final ReservationEntity entity = toEntity(newReservation);
+
+        final long newReservationId = insertReservation(entity);
 
         return newReservation.saved(newReservationId);
     }
@@ -57,7 +57,7 @@ public class ReservationRepository {
     }
 
 
-    private long insertReservation(final Reservation newReservation) {
+    private long insertReservation(final ReservationEntity reservationEntity) {
         final String sql = """
                 INSERT INTO reservation (name, date, time_id)
                 VALUES (?, ?, ?)
@@ -71,9 +71,9 @@ public class ReservationRepository {
                     Statement.RETURN_GENERATED_KEYS
             );
 
-            preparedStatement.setString(1, newReservation.getName());
-            preparedStatement.setString(2, newReservation.getDate().toString());
-            preparedStatement.setLong(3, newReservation.getTime().getId());
+            preparedStatement.setString(1, reservationEntity.name());
+            preparedStatement.setDate(2, reservationEntity.date());
+            preparedStatement.setLong(3, reservationEntity.timeId());
 
             return preparedStatement;
         }, keyHolder);
@@ -103,15 +103,24 @@ public class ReservationRepository {
                 resultSet.getDate("reservation_date").toLocalDate(),
                 new ReservationTimeEntity(
                         resultSet.getLong("time_id"),
-                        resultSet.getTime("time_start_at").toLocalTime()
+                        resultSet.getTime("time_start_at")
                 )
+        );
+    }
+
+    private ReservationEntity toEntity(final Reservation reservation) {
+        return new ReservationEntity(
+                reservation.getId(),
+                reservation.getName(),
+                Date.valueOf(reservation.getDate()),
+                reservation.getTime().getId()
         );
     }
 
     private Reservation toDomain(final ReservationWithTimeEntity entity) {
         ReservationTime time = ReservationTime.restore(
                 entity.time().id(),
-                entity.time().startAt()
+                entity.time().startAt().toLocalTime()
         );
 
         return Reservation.restore(

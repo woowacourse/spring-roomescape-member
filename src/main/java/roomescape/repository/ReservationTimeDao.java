@@ -9,16 +9,13 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.entity.ReservationTimeEntity;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class ReservationTimeRepository {
+public class ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -56,6 +53,7 @@ public class ReservationTimeRepository {
     }
 
     public ReservationTime save(final ReservationTime newReservationTime) {
+        ///
         final long newTimeId = insertReservationTime(newReservationTime);
 
         return newReservationTime.saved(newTimeId);
@@ -85,7 +83,7 @@ public class ReservationTimeRepository {
                     Statement.RETURN_GENERATED_KEYS
             );
 
-            preparedStatement.setString(1, newReservationTime.getStartAt().toString());
+            preparedStatement.setTime(1, Time.valueOf(newReservationTime.getStartAt()));
 
             return preparedStatement;
         }, keyHolder);
@@ -108,14 +106,21 @@ public class ReservationTimeRepository {
     private ReservationTimeEntity mapToEntity(final ResultSet resultSet, final int rowNum) throws SQLException {
         return new ReservationTimeEntity(
                 resultSet.getLong("id"),
-                resultSet.getTime("start_at").toLocalTime()
+                resultSet.getTime("start_at")
+        );
+    }
+
+    private ReservationTimeEntity toEntity(final ReservationTime reservationTime) {
+        return new ReservationTimeEntity(
+                reservationTime.getId(),
+                Time.valueOf(reservationTime.getStartAt())
         );
     }
 
     private ReservationTime toDomain(final ReservationTimeEntity entity) {
         return ReservationTime.restore(
                 entity.id(),
-                entity.startAt()
+                entity.startAt().toLocalTime()
         );
     }
 }
