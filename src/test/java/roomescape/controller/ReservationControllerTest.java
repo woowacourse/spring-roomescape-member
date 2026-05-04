@@ -1,0 +1,111 @@
+package roomescape.controller;
+
+import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.dto.reservation.ReservationRequestDto;
+import roomescape.dto.reservation.ReservationResponseDto;
+import roomescape.service.ReservationService;
+
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class ReservationControllerTest {
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final ReservationTime TIME = new ReservationTime(1L, "12:00");
+    private static final Theme THEME = new Theme(1L, "name", "d", "url");
+    private static final Reservation RESERVATION = new Reservation("이름", "2026-05-01", TIME, THEME);
+
+    @LocalServerPort
+    private int port;
+
+    @MockitoBean
+    private ReservationService reservationService;
+
+    @BeforeEach
+    void setPort() {
+        RestAssured.port = port;
+    }
+
+    @Test
+    void 예약을_추가한다() {
+        //given
+        ReservationRequestDto request = requestDtoFrom(RESERVATION);
+        when(reservationService.addReservation(request))
+                .thenReturn(RESERVATION.withId(1L));
+
+        // when
+        Response response = RestAssured
+                .given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/reservations");
+
+        // then
+        response
+                .then()
+                .statusCode(HttpStatus.CREATED.value());
+
+        ReservationResponseDto responseDto = response.as(ReservationResponseDto.class);
+        assertThat(responseDto.id()).isEqualTo(1L);
+    }
+
+    @Test
+    void 예약을_삭제한다() {
+        // given & when
+        Response response = RestAssured
+                .given().log().all()
+                .pathParam("id", 1)
+                .when().delete("/reservations/{id}");
+
+        // then
+        response
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    void 모든_예약을_조회한다() {
+        // given
+        List<Reservation> reservations = List.of(RESERVATION.withId(1L), RESERVATION.withId(2L), RESERVATION.withId(3L));
+        List<ReservationResponseDto> dtos = reservations.stream()
+                .map(ReservationResponseDto::from)
+                .toList();
+
+        when(reservationService.getReservations())
+                .thenReturn(reservations);
+
+        // when
+        Response response = RestAssured
+                .given().log().all()
+                .when().get("/reservations");
+
+        // then
+        response
+                .then()
+                .statusCode(HttpStatus.OK.value());
+
+        List<ReservationResponseDto> responseDtos = response.as(new TypeRef<>() {});
+        assertThat(responseDtos).hasSize(3);
+        assertThat(responseDtos).containsExactlyElementsOf(dtos);
+    }
+
+    private ReservationRequestDto requestDtoFrom(Reservation reservation) {
+        return new ReservationRequestDto(reservation.getName().value(), DATE_FORMATTER.format(reservation.getDate()), reservation.getTime().getId(), reservation.getTheme().getId());
+    }
+}
