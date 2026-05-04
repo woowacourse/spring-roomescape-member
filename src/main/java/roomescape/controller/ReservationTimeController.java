@@ -40,7 +40,7 @@ public class ReservationTimeController {
         @PathVariable Long id
     ) {
         reservationTimeService.deleteById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 }
