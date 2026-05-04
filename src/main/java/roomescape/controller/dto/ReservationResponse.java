@@ -7,7 +7,8 @@ public record ReservationResponse(
         String name,
         String date,
         ReservationTimeResponse time,
-        ThemeResponse theme) {
+        ThemeResponse theme
+) {
 
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
