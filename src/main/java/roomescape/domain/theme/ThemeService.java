@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import roomescape.domain.theme.dto.AdminThemeResponse;
 import roomescape.domain.theme.dto.CreateThemeRequest;
 import roomescape.domain.theme.dto.CreateThemeResponse;
 import roomescape.domain.theme.dto.ThemeResponse;
@@ -15,9 +16,9 @@ public class ThemeService {
 
     private final JdbcThemeRepository jdbcThemeRepository;
 
-    public List<ThemeResponse> getAllTheme() {
+    public List<AdminThemeResponse> getAllThemeForAdmin() {
         return jdbcThemeRepository.findAll().stream()
-            .map(ThemeResponse::from)
+            .map(AdminThemeResponse::from)
             .toList();
     }
 
@@ -32,5 +33,11 @@ public class ThemeService {
         if (deletedCount == 0) {
             log.warn("삭제할 테마가 존재하지 않습니다. themeId = {}", id);
         }
+    }
+
+    public List<ThemeResponse> getAllTheme() {
+        return jdbcThemeRepository.findAll().stream()
+            .map(ThemeResponse::from)
+            .toList();
     }
 }

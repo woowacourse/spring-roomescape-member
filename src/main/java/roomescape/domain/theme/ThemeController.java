@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.admin.AdminRequestValidator;
+import roomescape.domain.theme.dto.AdminThemeResponse;
 import roomescape.domain.theme.dto.CreateThemeRequest;
 import roomescape.domain.theme.dto.CreateThemeResponse;
 import roomescape.domain.theme.dto.ThemeResponse;
@@ -24,11 +25,11 @@ public class ThemeController {
     private final AdminRequestValidator validator;
 
     @GetMapping("/admin/themes")
-    public ResponseEntity<List<ThemeResponse>> getAllTheme(HttpServletRequest request) {
+    public ResponseEntity<List<AdminThemeResponse>> getAllThemeForAdmin(HttpServletRequest request) {
         if (validator.isUnauthorized(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        List<ThemeResponse> response = themeService.getAllTheme();
+        List<AdminThemeResponse> response = themeService.getAllThemeForAdmin();
         return ResponseEntity.ok(response);
     }
 
@@ -49,5 +50,11 @@ public class ThemeController {
         }
         themeService.deleteTheme(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/themes")
+    public ResponseEntity<List<ThemeResponse>> getAllTheme() {
+        List<ThemeResponse> response = themeService.getAllTheme();
+        return ResponseEntity.ok(response);
     }
 }
