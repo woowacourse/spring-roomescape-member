@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.dto.CreateReservationRequest;
 import roomescape.domain.reservation.dto.CreateReservationResponse;
 import roomescape.domain.reservation.dto.ReservationResponse;
+import roomescape.domain.reservationdate.ReservationDate;
+import roomescape.domain.reservationdate.ReservationDateRepository;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.ReservationTimeRepository;
 import roomescape.support.exception.RoomescapeException;
@@ -23,15 +25,19 @@ class ReservationServiceTest {
         // given
         FakeReservationRepository reservationRepository = new FakeReservationRepository();
         FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
+        FakeReservationDateRepository reservationDateRepository = new FakeReservationDateRepository();
         ReservationTime reservationTime = ReservationTime.of(1L, LocalTime.of(10, 0));
+        ReservationDate reservationDate = ReservationDate.of(2L, LocalDate.of(2026, 5, 4));
         reservationTimeRepository.reservationTime = reservationTime;
+        reservationDateRepository.reservationDate = reservationDate;
         ReservationService reservationService = new ReservationService(
             reservationRepository,
-            reservationTimeRepository
+            reservationTimeRepository,
+            reservationDateRepository
         );
         CreateReservationRequest request = new CreateReservationRequest(
             "보예",
-            LocalDate.of(2026, 5, 4),
+            2L,
             1L
         );
 
@@ -53,11 +59,12 @@ class ReservationServiceTest {
         // given
         ReservationService reservationService = new ReservationService(
             new FakeReservationRepository(),
-            new FakeReservationTimeRepository()
+            new FakeReservationTimeRepository(),
+            new FakeReservationDateRepository()
         );
         CreateReservationRequest request = new CreateReservationRequest(
             "보예",
-            LocalDate.of(2026, 5, 4),
+            1L,
             1L
         );
 
@@ -76,13 +83,14 @@ class ReservationServiceTest {
             Reservation.of(
                 1L,
                 "보예",
-                LocalDate.of(2026, 5, 4),
+                ReservationDate.of(3L, LocalDate.of(2026, 5, 4)),
                 ReservationTime.of(2L, LocalTime.of(10, 0))
             )
         );
         ReservationService reservationService = new ReservationService(
             reservationRepository,
-            reservationTimeRepository
+            reservationTimeRepository,
+            new FakeReservationDateRepository()
         );
 
         // when
@@ -93,6 +101,7 @@ class ReservationServiceTest {
             assertThat(responses).hasSize(1);
             assertThat(responses.getFirst().id()).isEqualTo(1L);
             assertThat(responses.getFirst().name()).isEqualTo("보예");
+            assertThat(responses.getFirst().date()).isEqualTo(LocalDate.of(2026, 5, 4));
             assertThat(responses.getFirst().time().id()).isEqualTo(2L);
             assertThat(responses.getFirst().time().startAt()).isEqualTo(LocalTime.of(10, 0));
         });
@@ -123,6 +132,11 @@ class ReservationServiceTest {
         public int countByTimeId(Long timeId) {
             return 0;
         }
+
+        @Override
+        public int countByReservationDateId(Long dateId) {
+            return 0;
+        }
     }
 
     private static class FakeReservationTimeRepository implements ReservationTimeRepository {
@@ -142,6 +156,31 @@ class ReservationServiceTest {
         @Override
         public List<ReservationTime> findAll() {
             return List.of();
+        }
+
+        @Override
+        public int deleteById(Long id) {
+            return 0;
+        }
+    }
+
+    private static class FakeReservationDateRepository implements ReservationDateRepository {
+
+        private ReservationDate reservationDate;
+
+        @Override
+        public Optional<ReservationDate> findById(Long id) {
+            return Optional.ofNullable(reservationDate);
+        }
+
+        @Override
+        public List<ReservationDate> findAll() {
+            return List.of();
+        }
+
+        @Override
+        public ReservationDate save(ReservationDate reservationDate) {
+            return reservationDate;
         }
 
         @Override

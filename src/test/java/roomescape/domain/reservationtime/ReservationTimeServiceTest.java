@@ -149,5 +149,10 @@ class ReservationTimeServiceTest {
         public int countByTimeId(Long timeId) {
             return countByTimeIdResult;
         }
+
+        @Override
+        public int countByReservationDateId(Long dateId) {
+            return 0;
+        }
     }
 }
