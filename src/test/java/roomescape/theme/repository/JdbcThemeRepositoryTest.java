@@ -89,4 +89,30 @@ public class JdbcThemeRepositoryTest {
 
         assertThat(themeRepository.delete(savedTheme.getId())).isEqualTo(1);
     }
+
+    @DisplayName("db에서 테마를 전체 조회합니다.")
+    @Test
+    void find_all_themes() {
+        Theme theme1 = Theme.builder()
+                .name("theme name1")
+                .description("theme description1")
+                .thumbnailImgUrl("theme img url1")
+                .build();
+        Theme theme2 = Theme.builder()
+                .name("theme name2")
+                .description("theme description2")
+                .thumbnailImgUrl("theme img url2")
+                .build();
+        Theme theme3 = Theme.builder()
+                .name("theme name3")
+                .description("theme description3")
+                .thumbnailImgUrl("theme img url3")
+                .build();
+
+        themeRepository.save(theme1);
+        themeRepository.save(theme2);
+        themeRepository.save(theme3);
+
+        assertThat(themeRepository.findAll().size()).isEqualTo(3);
+    }
 }
