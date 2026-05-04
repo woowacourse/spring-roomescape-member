@@ -29,7 +29,6 @@ class ThemeRepositoryTest {
         Assertions.assertThat(savedTheme.getId()).isNotNull();
     }
 
-
     @Test
     @DisplayName("관리자가 테마를 삭제하면 정상적으로 삭제된다.")
     void deleteTest() {
@@ -45,6 +44,4 @@ class ThemeRepositoryTest {
         Assertions.assertThatCode(() -> themeRepository.delete(savedTheme.getId()))
                 .doesNotThrowAnyException();
     }
-
-
 }
