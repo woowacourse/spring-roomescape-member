@@ -8,17 +8,19 @@ public class ReservationResponse {
     private String name;
     private LocalDate date;
     private TimeResponse time;
+    private ThemeResponse theme;
 
-    public ReservationResponse(Long id, String name, LocalDate date, TimeResponse time) {
+    public ReservationResponse(Long id, String name, LocalDate date, TimeResponse time, ThemeResponse theme) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getDate(),
-                TimeResponse.from(reservation.getTime()));
+                TimeResponse.from(reservation.getTime()), ThemeResponse.from(reservation.getTheme()));
     }
 
     public Long getId() {
@@ -35,5 +37,8 @@ public class ReservationResponse {
 
     public TimeResponse getTime() {
         return time;
+    }
+    public ThemeResponse getTheme() {
+        return theme;
     }
 }
