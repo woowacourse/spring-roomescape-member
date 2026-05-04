@@ -1,5 +1,7 @@
 package roomescape.dao;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.Theme;
@@ -23,6 +25,22 @@ public class ThemeDao {
                         rs.getString("url")
                 ),
                 id
+        );
+    }
+
+    public Theme save(Theme theme) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", theme.getName());
+        params.put("description", theme.getDescription());
+        params.put("url", theme.getUrl());
+
+        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+
+        return new Theme(
+                id,
+                theme.getName(),
+                theme.getDescription(),
+                theme.getUrl()
         );
     }
 }
