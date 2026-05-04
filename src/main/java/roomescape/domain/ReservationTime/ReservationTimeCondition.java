@@ -3,7 +3,6 @@ package roomescape.domain.ReservationTime;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import roomescape.exception.ErrorMessage;
-import roomescape.exception.ReservationCommandException;
 import roomescape.exception.ReservationTimeConditionException;
 
 public record ReservationTimeCondition(String date, long themeId) {
