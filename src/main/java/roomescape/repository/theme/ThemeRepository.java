@@ -5,4 +5,6 @@ import roomescape.domain.Theme;
 public interface ThemeRepository {
 
     Theme createTheme(Theme theme);
+
+    void deleteById(Long id);
 }

@@ -18,4 +18,8 @@ public class ThemeService {
         Theme theme = new Theme(request.name(), request.description(), request.imageUrl());
         return themeRepository.createTheme(theme);
     }
+
+    public void deleteThemeById(Long id) {
+        themeRepository.deleteById(id);
+    }
 }

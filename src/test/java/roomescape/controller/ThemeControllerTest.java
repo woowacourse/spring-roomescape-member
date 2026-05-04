@@ -58,4 +58,18 @@ class ThemeControllerTest {
         ThemeResponseDto responseDto = response.as(ThemeResponseDto.class);
         assertThat(responseDto.id()).isEqualTo(SAVED_THEME.getId());
     }
+
+    @Test
+    void 테마를_삭제한다() {
+        // given & when
+        Response response = RestAssured
+            .given().log().all()
+            .pathParam("id", 1)
+            .when().delete("/themes/{id}");
+
+        // then
+        response
+            .then()
+            .statusCode(HttpStatus.NO_CONTENT.value());
+    }
 }

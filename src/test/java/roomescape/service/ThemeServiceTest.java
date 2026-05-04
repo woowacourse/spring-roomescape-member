@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -41,4 +42,9 @@ class ThemeServiceTest {
         assertThat(saved).isEqualTo(SAVED_THEME);
     }
 
+    @Test
+    void 테마를_삭제한다() {
+        assertThatCode(() -> themeService.deleteThemeById(SAVED_THEME.getId()))
+            .doesNotThrowAnyException();
+    }
 }
