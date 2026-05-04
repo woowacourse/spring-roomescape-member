@@ -8,7 +8,7 @@ import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
 import roomescape.domain.ReservationTime.ReservationTime;
-import roomescape.domain.Theme.Theme;
+import roomescape.domain.ReservationTheme.ReservationTheme;
 
 @Repository
 @Profile("web")
@@ -25,9 +25,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
+    public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, ReservationTheme reservationTheme) {
         long id = reservationDao.insertReservation(reservationCommand);
-        return new Reservation(id, reservationCommand.name(), reservationCommand.date(), reservationTime, theme);
+        return new Reservation(id, reservationCommand.name(), reservationCommand.date(), reservationTime,
+                reservationTheme);
     }
 
     @Override

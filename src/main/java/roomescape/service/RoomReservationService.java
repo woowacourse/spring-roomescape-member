@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
 import roomescape.domain.ReservationTime.ReservationTime;
-import roomescape.domain.Theme.Theme;
+import roomescape.domain.ReservationTheme.ReservationTheme;
 import roomescape.exception.ErrorMessage;
 import roomescape.exception.NotFoundResourceException;
 import roomescape.repository.ReservationTheme.ReservationThemeRepository;
@@ -34,7 +34,7 @@ public class RoomReservationService {
         ReservationTime reservationTime = reservationTimeRepository.getReservationTime(reservationCommand.timeId())
                 .orElseThrow(() -> new NotFoundResourceException(ErrorMessage.INVALID_RESERVATION_TIME_ID));
 
-        Theme theme = reservationThemeRepository.getTheme(reservationCommand.themeId())
+        ReservationTheme theme = reservationThemeRepository.getTheme(reservationCommand.themeId())
                 .orElseThrow(() -> new NotFoundResourceException(ErrorMessage.INVALID_THEME_ID));
 
         return reservationRepository.addReservation(reservationCommand, reservationTime, theme);

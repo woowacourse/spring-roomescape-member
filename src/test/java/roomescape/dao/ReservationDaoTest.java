@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
 import roomescape.domain.ReservationTime.ReservationTime;
-import roomescape.domain.Theme.Theme;
+import roomescape.domain.ReservationTheme.ReservationTheme;
 
 public class ReservationDaoTest extends BaseDaoTest {
     private ReservationDao reservationDao;
@@ -18,7 +18,7 @@ public class ReservationDaoTest extends BaseDaoTest {
             "브라운",
             "2023-08-05",
             new ReservationTime(1, "10:00"),
-            new Theme(1, "테마1", "테마 설명", "image url")
+            new ReservationTheme(1, "테마1", "테마 설명", "image url")
     );
 
     @Override
@@ -62,7 +62,7 @@ public class ReservationDaoTest extends BaseDaoTest {
         long updatedReservation = reservationDao.insertReservation(new ReservationCommand("테스트", "2023-08-15", 1, 1));
         List<Reservation> reservations = reservationDao.getAllReservation();
 
-        Reservation expectedReservation = new Reservation(2, "테스트", "2023-08-15", new ReservationTime(1, "10:00"), new Theme(1, "테마1", "테마 설명", "image url"));
+        Reservation expectedReservation = new Reservation(2, "테스트", "2023-08-15", new ReservationTime(1, "10:00"), new ReservationTheme(1, "테마1", "테마 설명", "image url"));
 
         assertThat(updatedReservation).isEqualTo(2);
         assertThat(reservations).contains(expectedReservation);

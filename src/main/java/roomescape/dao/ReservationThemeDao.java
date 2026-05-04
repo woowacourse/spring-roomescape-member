@@ -6,8 +6,8 @@ import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Theme.ThemeCommand;
-import roomescape.domain.Theme.ThemeDaoData;
+import roomescape.domain.ReservationTheme.ReservationThemeCommand;
+import roomescape.domain.ReservationTheme.ReservationThemeDaoData;
 
 @Repository
 public class ReservationThemeDao {
@@ -26,26 +26,26 @@ public class ReservationThemeDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public ThemeDaoData addTheme(ThemeCommand themeCommand) {
+    public ReservationThemeDaoData addTheme(ReservationThemeCommand reservationThemeCommand) {
         long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
-                "name", themeCommand.name(),
-                "description", themeCommand.description(),
-                "image_url", themeCommand.imageUrl()
+                "name", reservationThemeCommand.name(),
+                "description", reservationThemeCommand.description(),
+                "image_url", reservationThemeCommand.imageUrl()
         )).longValue();
 
-        return ThemeDaoData.from(id, themeCommand);
+        return ReservationThemeDaoData.from(id, reservationThemeCommand);
     }
 
-    public List<ThemeDaoData> getAllTheme() {
-        return jdbcTemplate.query(SELECT_ALL_SQL, (rs, i) -> ThemeDaoData.from(rs));
+    public List<ReservationThemeDaoData> getAllTheme() {
+        return jdbcTemplate.query(SELECT_ALL_SQL, (rs, i) -> ReservationThemeDaoData.from(rs));
     }
 
     public void deleteTheme(long id) {
         jdbcTemplate.update(DELETE_SPECIFIC_ID_SQL, id);
     }
 
-    public Optional<ThemeDaoData> getTheme(long id) {
-        return jdbcTemplate.query(SELECT_SPECIFIC_ID_SQL, ((rs, rowNum) -> ThemeDaoData.from(rs)), id)
+    public Optional<ReservationThemeDaoData> getTheme(long id) {
+        return jdbcTemplate.query(SELECT_SPECIFIC_ID_SQL, ((rs, rowNum) -> ReservationThemeDaoData.from(rs)), id)
                 .stream()
                 .findFirst();
     }

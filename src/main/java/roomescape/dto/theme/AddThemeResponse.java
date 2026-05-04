@@ -1,6 +1,6 @@
 package roomescape.dto.theme;
 
-import roomescape.domain.Theme.Theme;
+import roomescape.domain.ReservationTheme.ReservationTheme;
 
-public record AddThemeResponse(Theme theme) {
+public record AddThemeResponse(ReservationTheme reservationTheme) {
 }

@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.ReservationThemeDao;
-import roomescape.domain.Theme.Theme;
-import roomescape.domain.Theme.ThemeCommand;
-import roomescape.domain.Theme.ThemeDaoData;
+import roomescape.domain.ReservationTheme.ReservationTheme;
+import roomescape.domain.ReservationTheme.ReservationThemeCommand;
+import roomescape.domain.ReservationTheme.ReservationThemeDaoData;
 
 @Repository
 public class JdbcReservationThemeRepository implements ReservationThemeRepository {
@@ -16,20 +16,20 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
         this.reservationThemeDao = reservationThemeDao;
     }
 
-    public Theme addTheme(ThemeCommand themeCommand) {
-        ThemeDaoData themeDaoData = reservationThemeDao.addTheme(themeCommand);
-        return createTheme(themeDaoData);
+    public ReservationTheme addTheme(ReservationThemeCommand reservationThemeCommand) {
+        ReservationThemeDaoData reservationThemeDaoData = reservationThemeDao.addTheme(reservationThemeCommand);
+        return createTheme(reservationThemeDaoData);
     }
 
-    public List<Theme> getAllTheme() {
-        List<ThemeDaoData> themeDaoAllData = reservationThemeDao.getAllTheme();
+    public List<ReservationTheme> getAllTheme() {
+        List<ReservationThemeDaoData> themeDaoAllData = reservationThemeDao.getAllTheme();
         return themeDaoAllData.stream()
                 .map(this::createTheme)
                 .toList();
     }
 
-    public Optional<Theme> getTheme(long id) {
-        Optional<ThemeDaoData> themeDaoData = reservationThemeDao.getTheme(id);
+    public Optional<ReservationTheme> getTheme(long id) {
+        Optional<ReservationThemeDaoData> themeDaoData = reservationThemeDao.getTheme(id);
 
         if(themeDaoData.isEmpty()) {
             return Optional.empty();
@@ -42,12 +42,12 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
         reservationThemeDao.deleteTheme(id);
     }
 
-    private Theme createTheme(ThemeDaoData themeDaoData) {
-        return new Theme(
-                themeDaoData.id(),
-                themeDaoData.name(),
-                themeDaoData.description(),
-                themeDaoData.imageUrl()
+    private ReservationTheme createTheme(ReservationThemeDaoData reservationThemeDaoData) {
+        return new ReservationTheme(
+                reservationThemeDaoData.id(),
+                reservationThemeDaoData.name(),
+                reservationThemeDaoData.description(),
+                reservationThemeDaoData.imageUrl()
         );
     }
 }

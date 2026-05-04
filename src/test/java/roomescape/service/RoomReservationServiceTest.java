@@ -13,8 +13,8 @@ import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.ReservationTime.ReservationTimeCommand;
 import roomescape.domain.ReservationTime.ReservationTimeCondition;
 import roomescape.domain.ReservationTime.ReservationTimeWithAvailable;
-import roomescape.domain.Theme.Theme;
-import roomescape.domain.Theme.ThemeCommand;
+import roomescape.domain.ReservationTheme.ReservationTheme;
+import roomescape.domain.ReservationTheme.ReservationThemeCommand;
 import roomescape.exception.ErrorMessage;
 import roomescape.exception.NotFoundResourceException;
 import roomescape.repository.ReservationTheme.ReservationThemeRepository;
@@ -30,7 +30,7 @@ public class RoomReservationServiceTest {
             }
 
             @Override
-            public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
+            public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, ReservationTheme theme) {
                 return new Reservation(1, reservationCommand.name(), reservationCommand.date(), reservationTime, theme);
             }
 
@@ -84,24 +84,24 @@ public class RoomReservationServiceTest {
         };
     }
 
-    private ReservationThemeRepository createThemeRepository(Theme theme) {
+    private ReservationThemeRepository createThemeRepository(ReservationTheme reservationTheme) {
         return new ReservationThemeRepository() {
             @Override
-            public Theme addTheme(ThemeCommand themeCommand) {
-                return new Theme(1, themeCommand.name(), themeCommand.description(), themeCommand.imageUrl());
+            public ReservationTheme addTheme(ReservationThemeCommand reservationThemeCommand) {
+                return new ReservationTheme(1, reservationThemeCommand.name(), reservationThemeCommand.description(), reservationThemeCommand.imageUrl());
             }
 
             @Override
-            public List<Theme> getAllTheme() {
+            public List<ReservationTheme> getAllTheme() {
                 return List.of();
             }
 
             @Override
-            public Optional<Theme> getTheme(long id) {
-                if(theme == null) {
+            public Optional<ReservationTheme> getTheme(long id) {
+                if(reservationTheme == null) {
                     return Optional.empty();
                 }
-                return Optional.of(theme);
+                return Optional.of(reservationTheme);
             }
 
             @Override
@@ -115,20 +115,21 @@ public class RoomReservationServiceTest {
     @DisplayName("예약 생성 시 유효한 시간 ID, 테마 ID인 경우 정상 작동 테스트")
     void addReservationTest() {
         ReservationTime reservationTime = new ReservationTime(1, "10:00");
-        Theme theme = new Theme(1, "name", "description", "image");
+        ReservationTheme reservationTheme = new ReservationTheme(1, "name", "description", "image");
 
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(), createReservationTimeRepository(reservationTime), createThemeRepository(theme));
+        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(), createReservationTimeRepository(reservationTime), createThemeRepository(
+                reservationTheme));
         ReservationCommand reservationCommand = new ReservationCommand("브라운", "2023-08-05", 1, 1);
 
         Reservation reservation = reservationService.addReservation(reservationCommand);
 
-        assertThat(reservation).isEqualTo(new Reservation(1, "브라운", "2023-08-05", reservationTime, theme));
+        assertThat(reservation).isEqualTo(new Reservation(1, "브라운", "2023-08-05", reservationTime, reservationTheme));
     }
 
     @Test
     @DisplayName("예약 생성 시 존재하지 않는 시간ID인 경우 예외 테스트")
     void addReservationFailByInvalidTimeIdTest() {
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(), createReservationTimeRepository(null), createThemeRepository(new Theme(1, "테마1", "설명", "url")));
+        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(), createReservationTimeRepository(null), createThemeRepository(new ReservationTheme(1, "테마1", "설명", "url")));
         ReservationCommand reservationCommand = new ReservationCommand("브라운", "2023-08-05", 1, 1);
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationCommand))

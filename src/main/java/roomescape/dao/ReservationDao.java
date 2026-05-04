@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
 import roomescape.domain.ReservationTime.ReservationTime;
-import roomescape.domain.Theme.Theme;
+import roomescape.domain.ReservationTheme.ReservationTheme;
 
 @Repository
 public class ReservationDao {
@@ -41,7 +41,7 @@ public class ReservationDao {
             t.image_url AS themeImageUrl\s
         FROM reservation AS r\s
         JOIN reservation_time AS rt ON r.time_id = rt.id
-        JOIN theme AS t ON r.theme_id = t.id
+        JOIN reservationTheme AS t ON r.theme_id = t.id
     """;
     private static final String INSERT_SQL = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation WHERE id = ?";
@@ -68,7 +68,7 @@ public class ReservationDao {
                     rs.getLong(ALIAS_TIME_ID),
                     rs.getString(ALIAS_START_AT)
             ),
-            new Theme(
+            new ReservationTheme(
                     rs.getLong(ALIAS_THEME_ID),
                     rs.getString(ALIAS_THEME_NAME),
                     rs.getString(ALIAS_THEME_DESCRIPTION),

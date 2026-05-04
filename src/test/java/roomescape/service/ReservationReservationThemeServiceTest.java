@@ -11,14 +11,14 @@ import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
 import roomescape.domain.ReservationTime.ReservationTime;
-import roomescape.domain.Theme.Theme;
-import roomescape.domain.Theme.ThemeCommand;
+import roomescape.domain.ReservationTheme.ReservationTheme;
+import roomescape.domain.ReservationTheme.ReservationThemeCommand;
 import roomescape.exception.DataReferencedException;
 import roomescape.exception.ErrorMessage;
 import roomescape.repository.ReservationTheme.ReservationThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 
-public class ReservationThemeServiceTest {
+public class ReservationReservationThemeServiceTest {
     private ReservationRepository createReservationRepository(boolean isExistTheme) {
         return new ReservationRepository() {
             @Override
@@ -27,7 +27,7 @@ public class ReservationThemeServiceTest {
             }
 
             @Override
-            public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
+            public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, ReservationTheme theme) {
                 return null;
             }
 
@@ -51,17 +51,17 @@ public class ReservationThemeServiceTest {
     private ReservationThemeRepository createReservationThemeRepository(Runnable runnable) {
         return new ReservationThemeRepository() {
             @Override
-            public Theme addTheme(ThemeCommand themeCommand) {
-                return new Theme(1, themeCommand.name(), themeCommand.description(), themeCommand.imageUrl());
+            public ReservationTheme addTheme(ReservationThemeCommand reservationThemeCommand) {
+                return new ReservationTheme(1, reservationThemeCommand.name(), reservationThemeCommand.description(), reservationThemeCommand.imageUrl());
             }
 
             @Override
-            public List<Theme> getAllTheme() {
+            public List<ReservationTheme> getAllTheme() {
                 return List.of();
             }
 
             @Override
-            public Optional<Theme> getTheme(long id) {
+            public Optional<ReservationTheme> getTheme(long id) {
                 return Optional.empty();
             }
 

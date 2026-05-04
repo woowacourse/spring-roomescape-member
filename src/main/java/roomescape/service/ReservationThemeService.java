@@ -4,13 +4,12 @@ import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.Theme.Theme;
-import roomescape.domain.Theme.ThemeCommand;
+import roomescape.domain.ReservationTheme.ReservationTheme;
+import roomescape.domain.ReservationTheme.ReservationThemeCommand;
 import roomescape.exception.DataReferencedException;
 import roomescape.exception.ErrorMessage;
 import roomescape.repository.ReservationTheme.ReservationThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
-import roomescape.repository.ReservationTheme.JdbcReservationThemeRepository;
 
 @Service
 public class ReservationThemeService {
@@ -24,11 +23,11 @@ public class ReservationThemeService {
     }
 
     @Transactional
-    public Theme addTheme(ThemeCommand themeCommand) {
-        return reservationThemeRepository.addTheme(themeCommand);
+    public ReservationTheme addTheme(ReservationThemeCommand reservationThemeCommand) {
+        return reservationThemeRepository.addTheme(reservationThemeCommand);
     }
 
-    public List<Theme> getAllTheme() {
+    public List<ReservationTheme> getAllTheme() {
         return reservationThemeRepository.getAllTheme();
     }
 

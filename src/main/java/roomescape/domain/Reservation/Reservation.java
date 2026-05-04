@@ -1,7 +1,7 @@
 package roomescape.domain.Reservation;
 
 import roomescape.domain.ReservationTime.ReservationTime;
-import roomescape.domain.Theme.Theme;
+import roomescape.domain.ReservationTheme.ReservationTheme;
 
-public record Reservation(long id, String name, String date, ReservationTime time, Theme theme) {
+public record Reservation(long id, String name, String date, ReservationTime time, ReservationTheme reservationTheme) {
 }

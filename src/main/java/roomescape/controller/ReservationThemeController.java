@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.Theme.Theme;
-import roomescape.domain.Theme.ThemeCommand;
+import roomescape.domain.ReservationTheme.ReservationTheme;
+import roomescape.domain.ReservationTheme.ReservationThemeCommand;
 import roomescape.dto.theme.AddThemeRequest;
 import roomescape.dto.theme.AddThemeResponse;
 import roomescape.dto.theme.AllThemeResponse;
@@ -29,17 +29,17 @@ public class ReservationThemeController {
 
     @GetMapping()
     public ResponseEntity<AllThemeResponse> getThemes() {
-        List<Theme> themes = reservationThemeService.getAllTheme();
+        List<ReservationTheme> themes = reservationThemeService.getAllTheme();
 
         return new ResponseEntity<>(new AllThemeResponse(themes), HttpStatus.OK);
     }
 
     @PostMapping()
     public ResponseEntity<AddThemeResponse> addTheme(@RequestBody @Valid AddThemeRequest addThemeRequest) {
-        ThemeCommand themeCommand = addThemeRequest.from();
-        Theme addedTheme = reservationThemeService.addTheme(themeCommand);
+        ReservationThemeCommand reservationThemeCommand = addThemeRequest.from();
+        ReservationTheme addedReservationTheme = reservationThemeService.addTheme(reservationThemeCommand);
 
-        return new ResponseEntity<>(new AddThemeResponse(addedTheme), HttpStatus.CREATED);
+        return new ResponseEntity<>(new AddThemeResponse(addedReservationTheme), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")

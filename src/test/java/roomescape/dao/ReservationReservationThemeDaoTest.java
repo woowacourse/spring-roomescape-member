@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.Theme.ThemeCommand;
-import roomescape.domain.Theme.ThemeDaoData;
+import roomescape.domain.ReservationTheme.ReservationThemeCommand;
+import roomescape.domain.ReservationTheme.ReservationThemeDaoData;
 
-public class ReservationThemeDaoTest extends BaseDaoTest {
+public class ReservationReservationThemeDaoTest extends BaseDaoTest {
     private ReservationThemeDao reservationThemeDao;
 
     @Override
@@ -28,16 +28,16 @@ public class ReservationThemeDaoTest extends BaseDaoTest {
     @Test
     @DisplayName("특정 예약 테마 정상적으로 가져오는 지 테스트")
     void getReservationThemeTest() {
-        Optional<ThemeDaoData> reservationTheme = reservationThemeDao.getTheme(1L);
+        Optional<ReservationThemeDaoData> reservationTheme = reservationThemeDao.getTheme(1L);
 
         assertThat(reservationTheme.isPresent()).isTrue();
-        assertThat(reservationTheme.get()).isEqualTo(new ThemeDaoData(1, "테마1", "테마 설명", "image url"));
+        assertThat(reservationTheme.get()).isEqualTo(new ReservationThemeDaoData(1, "테마1", "테마 설명", "image url"));
     }
 
     @Test
     @DisplayName("존재하지 않는 특정 예약 테마 빈 값으로 가져오는 지 테스트")
     void getInvalidReservationThemTest() {
-        Optional<ThemeDaoData> reservationTheme = reservationThemeDao.getTheme(3L);
+        Optional<ReservationThemeDaoData> reservationTheme = reservationThemeDao.getTheme(3L);
 
         assertThat(reservationTheme.isEmpty()).isTrue();
     }
@@ -45,27 +45,27 @@ public class ReservationThemeDaoTest extends BaseDaoTest {
     @Test
     @DisplayName("전체 예약 테마 정상적으로 가져오는 지 테스트")
     void getReservationTimesTest() {
-        List<ThemeDaoData> reservationTimes = reservationThemeDao.getAllTheme();
+        List<ReservationThemeDaoData> reservationTimes = reservationThemeDao.getAllTheme();
 
-        assertThat(reservationTimes).containsExactly(new ThemeDaoData(1, "테마1", "테마 설명", "image url"));
+        assertThat(reservationTimes).containsExactly(new ReservationThemeDaoData(1, "테마1", "테마 설명", "image url"));
     }
 
     @Test
     @DisplayName("예약 테마 삭제 정상적으로 작동하는 지 테스트")
     void deleteReservationTest() {
         reservationThemeDao.deleteTheme(1);
-        List<ThemeDaoData> reservationTimes = reservationThemeDao.getAllTheme();
+        List<ReservationThemeDaoData> reservationTimes = reservationThemeDao.getAllTheme();
 
-        assertThat(reservationTimes).isNotIn(new ThemeDaoData(1, "테마1", "테마 설명", "image url"));
+        assertThat(reservationTimes).isNotIn(new ReservationThemeDaoData(1, "테마1", "테마 설명", "image url"));
     }
 
     @Test
     @DisplayName("예약 테마 추가 정상적으로 작동하는 지 테스트")
     void insertReservationTest() {
-        ThemeDaoData reservationTheme = reservationThemeDao.addTheme(new ThemeCommand( "테마2", "테마 설명", "image url"));
-        List<ThemeDaoData> reservations = reservationThemeDao.getAllTheme();
+        ReservationThemeDaoData reservationTheme = reservationThemeDao.addTheme(new ReservationThemeCommand( "테마2", "테마 설명", "image url"));
+        List<ReservationThemeDaoData> reservations = reservationThemeDao.getAllTheme();
 
-        ThemeDaoData expectedReservationTheme = new ThemeDaoData(2, "테마2", "테마 설명", "image url");
+        ReservationThemeDaoData expectedReservationTheme = new ReservationThemeDaoData(2, "테마2", "테마 설명", "image url");
 
         assertThat(reservationTheme).isEqualTo(expectedReservationTheme);
         assertThat(reservations).contains(expectedReservationTheme);

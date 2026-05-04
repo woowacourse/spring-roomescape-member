@@ -2,12 +2,12 @@ package roomescape.repository.ReservationTheme;
 
 import java.util.List;
 import java.util.Optional;
-import roomescape.domain.Theme.Theme;
-import roomescape.domain.Theme.ThemeCommand;
+import roomescape.domain.ReservationTheme.ReservationTheme;
+import roomescape.domain.ReservationTheme.ReservationThemeCommand;
 
 public interface ReservationThemeRepository {
-    Theme addTheme(ThemeCommand themeCommand);
-    List<Theme> getAllTheme();
-    Optional<Theme> getTheme(long id);
+    ReservationTheme addTheme(ReservationThemeCommand reservationThemeCommand);
+    List<ReservationTheme> getAllTheme();
+    Optional<ReservationTheme> getTheme(long id);
     void deleteTheme(long id);
 }

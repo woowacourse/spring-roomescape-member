@@ -14,7 +14,7 @@ import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.ReservationTime.ReservationTimeCommand;
 import roomescape.domain.ReservationTime.ReservationTimeCondition;
 import roomescape.domain.ReservationTime.ReservationTimeWithAvailable;
-import roomescape.domain.Theme.Theme;
+import roomescape.domain.ReservationTheme.ReservationTheme;
 import roomescape.exception.DataReferencedException;
 import roomescape.exception.ErrorMessage;
 import roomescape.repository.reservation.ReservationRepository;
@@ -29,7 +29,7 @@ public class ReservationTimeServiceTest {
             }
 
             @Override
-            public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
+            public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, ReservationTheme theme) {
                 return null;
             }
 
