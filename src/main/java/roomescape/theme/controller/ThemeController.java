@@ -1,0 +1,47 @@
+package roomescape.theme.controller;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.theme.controller.dto.ThemeResponseDto;
+import roomescape.theme.controller.dto.ThemeSaveRequestDto;
+import roomescape.theme.service.ThemeService;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+public class ThemeController {
+    private final ThemeService themeService;
+    
+    public ThemeController(ThemeService themeService) {
+        this.themeService = themeService;
+    }
+    
+    @GetMapping("/themes")
+    public ResponseEntity<List<ThemeResponseDto>> getThemes() {
+        List<ThemeResponseDto> body = themeService.getThemes().stream()
+                .map(ThemeResponseDto::from)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(body);
+    }
+
+    @PostMapping("/themes")
+    public ResponseEntity<ThemeResponseDto> saveThemes(
+            @RequestBody ThemeSaveRequestDto themeRequest) {
+        ThemeResponseDto body = ThemeResponseDto.from(
+                themeService.save(themeRequest.toServiceDto()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(body);
+    }
+
+    @DeleteMapping("/themes/{id}")
+    public ResponseEntity<Void> deleteTheme(@PathVariable long id) {
+        themeService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+}
