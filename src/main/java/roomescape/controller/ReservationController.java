@@ -33,7 +33,7 @@ public class ReservationController {
 
     @DeleteMapping("/reservations/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteReservation(@PathVariable("id") Long id) {
+    public void deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservation(id);
     }
 
@@ -51,7 +51,7 @@ public class ReservationController {
 
     @DeleteMapping("/times/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteReservationTime(@PathVariable("id") Long id) {
+    public void deleteReservationTime(@PathVariable Long id) {
         reservationService.deleteReservationTime(id);
     }
 }
