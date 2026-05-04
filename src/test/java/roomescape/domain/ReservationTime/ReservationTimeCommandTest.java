@@ -23,7 +23,7 @@ class ReservationTimeCommandTest {
     @ParameterizedTest
     @ValueSource(strings = {"", " ", "  "})
     @DisplayName("시작 시간이 비어있거나 공백인 경우 예외 테스트")
-    void fail_time_blank(String invalidTime) {
+    void EmptyStartTimeTest(String invalidTime) {
         assertThatThrownBy(() -> new ReservationTimeCommand(invalidTime))
                 .isInstanceOf(ReservationCommandException.class)
                 .hasMessage(ErrorMessage.INVALID_START_TIME_NULL.getMessage());
@@ -32,7 +32,7 @@ class ReservationTimeCommandTest {
     @ParameterizedTest
     @ValueSource(strings = {"24:00", "12:60", "25:01", "9:00", "오후 2시", "14-00"})
     @DisplayName("잘못된 형식의 시간인 경우 예외 테스트")
-    void fail_time_format(String invalidTime) {
+    void InvalidTimeFormatTest(String invalidTime) {
         assertThatThrownBy(() -> new ReservationTimeCommand(invalidTime))
                 .isInstanceOf(ReservationCommandException.class)
                 .hasMessage(ErrorMessage.INVALID_START_TIME_FORMAT.getMessage());

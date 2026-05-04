@@ -32,7 +32,7 @@ class ReservationCommandTest {
     @ParameterizedTest
     @ValueSource(strings = {"", " ", "  "})
     @DisplayName("이름이 비어있거나 공백인 경우 예외 테스트")
-    void fail_name_blank(String invalidName) {
+    void NameBlankTest(String invalidName) {
         assertThatThrownBy(() -> new ReservationCommand(invalidName, "2023-05-18", 1L, 1L))
                 .isInstanceOf(ReservationCommandException.class)
                 .hasMessage(ErrorMessage.INVALID_NAME_BLANK.getMessage());
@@ -40,7 +40,7 @@ class ReservationCommandTest {
 
     @Test
     @DisplayName("이름이 20자를 초과한 경우 예외 테스트")
-    void fail_name_length() {
+    void NameLengthTest() {
         String longName = "a".repeat(21);
 
         assertThatThrownBy(() -> new ReservationCommand(longName, "2023-05-18", 1L, 1L))
@@ -50,7 +50,7 @@ class ReservationCommandTest {
 
     @Test
     @DisplayName("날짜가 null인 경우 예외 테스트")
-    void fail_date_null() {
+    void NullDateTest() {
         assertThatThrownBy(() -> new ReservationCommand("브라운", null, 1L, 1L))
                 .isInstanceOf(ReservationCommandException.class)
                 .hasMessage(ErrorMessage.INVALID_DATE_NULL.getMessage());
@@ -59,7 +59,7 @@ class ReservationCommandTest {
     @ParameterizedTest
     @ValueSource(strings = {"2024-02-30", "2024-13-01", "not-a-date", "24-05-01"})
     @DisplayName("잘못된 형식의 날짜인 경우 예외 테스트")
-    void fail_date_format(String invalidDate) {
+    void InvalidDateFormatTest(String invalidDate) {
         assertThatThrownBy(() -> new ReservationCommand("브라운", invalidDate, 1L, 1L))
                 .isInstanceOf(ReservationCommandException.class)
                 .hasMessage(ErrorMessage.INVALID_DATE_FORMAT.getMessage());
@@ -68,8 +68,17 @@ class ReservationCommandTest {
     @ParameterizedTest
     @ValueSource(longs = {0, -1, -100})
     @DisplayName("시간 ID가 0 이하인 경우 예외 테스트")
-    void fail_timeId_format(long invalidTimeId) {
+    void NotPositiveTimeIdTest(long invalidTimeId) {
         assertThatThrownBy(() -> new ReservationCommand("브라운", "2024-05-01", invalidTimeId, 1L))
+                .isInstanceOf(ReservationCommandException.class)
+                .hasMessage(ErrorMessage.INVALID_TIME_ID_FORMAT.getMessage());
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {0, -1, -100})
+    @DisplayName("테마 ID가 0 이하인 경우 예외 테스트")
+    void NotPositiveThemeIdTest(long invalidThemeId) {
+        assertThatThrownBy(() -> new ReservationCommand("브라운", "2024-05-01", 1L, invalidThemeId))
                 .isInstanceOf(ReservationCommandException.class)
                 .hasMessage(ErrorMessage.INVALID_TIME_ID_FORMAT.getMessage());
     }
