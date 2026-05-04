@@ -1,18 +1,17 @@
-package roomescape.theme;
+package roomescape.theme.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.ThemeCreateRequest;
 import roomescape.theme.dto.ThemeResponse;
+import roomescape.theme.repository.ThemeRepository;
 
+@RequiredArgsConstructor
 @Service
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
-
-    public ThemeService(ThemeRepository themeRepository) {
-        this.themeRepository = themeRepository;
-    }
 
     public ThemeResponse saveTheme(ThemeCreateRequest request) {
         Theme theme = request.toEntity();
