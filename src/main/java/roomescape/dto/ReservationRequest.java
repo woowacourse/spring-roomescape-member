@@ -6,5 +6,5 @@ public record ReservationRequest(
         String name,
         LocalDate date,
         Long timeId
-){
+) {
 }

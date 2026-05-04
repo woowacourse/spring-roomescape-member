@@ -21,11 +21,7 @@ public class Reservation {
     }
 
     public Reservation(String name, LocalDate date, ReservationTime time) {
-        this.id = 0L;
-        validateNameFormat(name);
-        this.name = name;
-        this.date = date;
-        this.time = time;
+        this(null,name,date,time);
     }
 
     private void validateNameFormat(String name) {
