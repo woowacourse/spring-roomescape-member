@@ -8,8 +8,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.repository.reservationTime.JdbcReservationTimeRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
-import javax.sql.DataSource;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -80,9 +80,10 @@ class JdbcReservationTimeRepositoryTest {
         Long id = test.getId();
 
         // when
-        ReservationTime target = repository.findById(id);
+        // TODO: assertNotThrown로 검증
+        Optional<ReservationTime> target = repository.findById(id);
 
         // then
-        assertThat(target.getStartAt()).isEqualTo(test.getStartAt());
+        assertThat(target.get().getStartAt()).isEqualTo(test.getStartAt());
     }
 }
