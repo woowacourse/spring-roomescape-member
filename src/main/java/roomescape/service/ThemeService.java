@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
@@ -14,19 +15,15 @@ public class ThemeService {
         this.themeDao = themeDao;
     }
 
-    public List<Theme> findAll(){
+    public List<Theme> findAll() {
         return themeDao.findAll();
     }
 
-    public Theme findById(Long id){
-        return themeDao.findById(id);
-    }
-
-    public Theme save(Theme theme){
+    public Theme save(Theme theme) {
         return themeDao.save(theme);
     }
 
-    public void deleteById(Long id){
+    public void deleteById(Long id) {
         themeDao.deleteById(id);
     }
 }

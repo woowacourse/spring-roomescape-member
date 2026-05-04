@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import java.util.List;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,7 +34,8 @@ public class ReservationController {
         Reservation reservation = reservationService.save(
                 reservationRequest.name(),
                 reservationRequest.date(),
-                reservationRequest.timeId()
+                reservationRequest.timeId(),
+                reservationRequest.themeId()
         );
         return ReservationResponse.from(reservation);
     }

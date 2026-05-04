@@ -18,15 +18,15 @@ public class ThemeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Theme findById(Long id){
+    public Theme findById(Long id) {
         String sql = "select id, name, description, thumbnail from theme where id = ?";
         return jdbcTemplate.queryForObject(sql,
-                (resultSet,rowNum)-> new Theme(
+                (resultSet, rowNum) -> new Theme(
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
                         resultSet.getString("description"),
                         resultSet.getString("thumbnail")
-                ),id);
+                ), id);
     }
 
     public List<Theme> findAll() {

@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalTime;
+
 import lombok.Getter;
 
 @Getter
