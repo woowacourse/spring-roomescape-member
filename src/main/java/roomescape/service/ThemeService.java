@@ -19,17 +19,20 @@ public class ThemeService {
         Theme theme = request.toTheme();
         Optional<Theme> newTheme = themeDao.findById(theme.getId());
         validateUniqueTheme(newTheme);
+
         Theme savedTheme = themeDao.insert(theme);
         return ThemeResponse.from(savedTheme);
     }
 
-    private static void validateUniqueTheme(Optional<Theme> theme) {
+    public void delete(long themeId) {
+        themeDao.findById(themeId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+        themeDao.delete(themeId);
+    }
+
+    private void validateUniqueTheme(Optional<Theme> theme) {
         if (theme.isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 테마입니다.");
         }
-    }
-
-    public void delete(long themeId) {
-        themeDao.delete(themeId);
     }
 }

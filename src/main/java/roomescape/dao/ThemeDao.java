@@ -50,7 +50,7 @@ public class ThemeDao {
                 SELECT id, 
                        name, 
                        description,
-                       thumbnail ,
+                       thumbnail,
                 FROM theme
                 WHERE id = ?""";
 
