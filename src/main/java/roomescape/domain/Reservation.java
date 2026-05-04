@@ -8,10 +8,8 @@ public class Reservation {
     private final String date;
     private final ReservationTime time;
 
-    public Reservation(String name, String date, ReservationTime time) {
-        this.name = name;
-        this.date = date;
-        this.time = time;
+    public static Reservation createWithoutId(String name, String date, ReservationTime time) {
+        return new Reservation(null, name, date, time);
     }
 
     public Reservation(Long id, String name, String date, ReservationTime time) {
