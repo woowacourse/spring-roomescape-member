@@ -1,4 +1,4 @@
-package roomescape.model;
+package roomescape.theme.model;
 
 public class Theme {
 
