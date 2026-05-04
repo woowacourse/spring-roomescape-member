@@ -60,5 +60,4 @@ class ReservationRepositoryTest {
         Assertions.assertThat(savedReservation.getTime().getId())
                 .isEqualTo(savedTime.getId());
     }
-
 }
