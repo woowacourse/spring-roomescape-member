@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.dto.ReservationTimeCreateCommand;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.service.dto.request.ReservationTimeData;
-import roomescape.service.dto.response.ReservationTimeResult;
+import roomescape.service.dto.request.ReservationTimeCreateRequest;
+import roomescape.service.dto.response.ReservationTimeResponse;
 
 import java.util.List;
 
@@ -16,14 +16,14 @@ public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public List<ReservationTimeResult> getTimes() {
+    public List<ReservationTimeResponse> getTimes() {
         return reservationTimeRepository.findAll()
                 .stream()
-                .map(ReservationTimeResult::from)
+                .map(ReservationTimeResponse::from)
                 .toList();
     }
 
-    public ReservationTimeResult create(ReservationTimeData data) {
+    public ReservationTimeResponse create(ReservationTimeCreateRequest data) {
         final ReservationTime reservationTime = ReservationTime.create(
                 new ReservationTimeCreateCommand(
                         data.startAt()
@@ -32,7 +32,7 @@ public class ReservationTimeService {
 
         final ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
 
-        return ReservationTimeResult.from(savedTime);
+        return ReservationTimeResponse.from(savedTime);
     }
 
     public void delete(final Long timeId) {

@@ -3,10 +3,9 @@ package roomescape.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.controller.dto.request.ReservationTimeCreateRequest;
-import roomescape.controller.dto.response.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
-import roomescape.service.dto.response.ReservationTimeResult;
+import roomescape.service.dto.request.ReservationTimeCreateRequest;
+import roomescape.service.dto.response.ReservationTimeResponse;
 
 import java.net.URI;
 import java.util.List;
@@ -20,17 +19,17 @@ public class ReservationTimeController {
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> getTimes() {
-        final List<ReservationTimeResult> results = reservationTimeService.getTimes();
-        return ResponseEntity.ok(ReservationTimeResponse.from(results));
+        final List<ReservationTimeResponse> results = reservationTimeService.getTimes();
+        return ResponseEntity.ok(results);
     }
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> create(
             @RequestBody ReservationTimeCreateRequest request
     ) {
-        final ReservationTimeResult result = reservationTimeService.create(request.toData());
+        final ReservationTimeResponse result = reservationTimeService.create(request);
         return ResponseEntity.created(URI.create("/times"))
-                .body(ReservationTimeResponse.from(result));
+                .body(result);
     }
 
     @DeleteMapping("/{time-id}")
