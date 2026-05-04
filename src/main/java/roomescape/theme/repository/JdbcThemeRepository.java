@@ -2,12 +2,16 @@ package roomescape.theme.repository;
 
 import java.sql.PreparedStatement;
 import java.time.Duration;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.entity.Theme;
+import roomescape.theme.exception.ThemeNotFoundException;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -19,6 +23,16 @@ public class JdbcThemeRepository implements ThemeRepository {
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
+    private final RowMapper<Theme> themeRowMapper = (rs, rowNum) ->
+            Theme.of(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("description"),
+                    rs.getString("thumbnail_url"),
+                    Duration.ofHours(rs.getLong("runtime"))
+            );
+
 
     @Override
     public Theme save(String name, String description, String thumbnailUrl) {
@@ -46,5 +60,28 @@ public class JdbcThemeRepository implements ThemeRepository {
                 thumbnailUrl,
                 Duration.ofHours(RUNTIME)
         );
+    }
+
+    @Override
+    public Optional<Theme> findById(Long id) {
+        String sql = "SELECT id, name, description, thumbnail_url, runtime FROM theme WHERE id = ?";
+        List<Theme> result = jdbcTemplate.query(sql, themeRowMapper, id);
+        return result.stream().findFirst();
+    }
+
+    @Override
+    public List<Theme> findAll() {
+        String sql = "SELECT id, name, description, thumbnail_url, runtime FROM theme ORDER BY id";
+        return jdbcTemplate.query(sql, themeRowMapper);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM theme WHERE id = ?";
+
+        int affectedRows = jdbcTemplate.update(sql, id);
+        if (affectedRows == 0) {
+            throw new ThemeNotFoundException(id);
+        }
     }
 }
