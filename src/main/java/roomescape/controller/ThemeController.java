@@ -30,9 +30,9 @@ public class ThemeController {
                 .body(response);
     }
 
-    @DeleteMapping("/{reservationId}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable("reservationId") Long reservationId) {
-        themeService.delete(reservationId);
+    @DeleteMapping("/{themeId}")
+    public ResponseEntity<Void> deleteTheme(@PathVariable("themeId") Long themeId) {
+        themeService.delete(themeId);
         return ResponseEntity.noContent()
                 .build();
     }
