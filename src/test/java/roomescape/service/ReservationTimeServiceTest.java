@@ -1,0 +1,98 @@
+package roomescape.service;
+
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.dao.DataIntegrityViolationException;
+import roomescape.domain.Reservation.Reservation;
+import roomescape.domain.Reservation.ReservationCommand;
+import roomescape.domain.ReservationTime.ReservationTime;
+import roomescape.domain.ReservationTime.ReservationTimeCommand;
+import roomescape.exception.DataReferencedException;
+import roomescape.exception.ErrorMessage;
+import roomescape.repository.reservation.ReservationRepository;
+import roomescape.repository.reservationTime.ReservationTimeRepository;
+
+public class ReservationTimeServiceTest {
+    private ReservationRepository createReservationRepository(boolean isExist) {
+        return new ReservationRepository() {
+            @Override
+            public List<Reservation> getAllReservation() {
+                return List.of();
+            }
+
+            @Override
+            public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime) {
+                return null;
+            }
+
+            @Override
+            public void deleteReservation(long id) {
+
+            }
+
+            @Override
+            public boolean existsByTimeId(long timeId) {
+                return isExist;
+            }
+        };
+    }
+
+    private ReservationTimeRepository createReservationTimeRepository(Runnable runnable) {
+        return new ReservationTimeRepository() {
+            @Override
+            public ReservationTime addReservationTime(ReservationTimeCommand reservationTimeCommand) {
+                return null;
+            }
+
+            @Override
+            public Optional<ReservationTime> getReservationTime(long id) {
+                return Optional.empty();
+            }
+
+            @Override
+            public List<ReservationTime> getAllReservationTime() {
+                return List.of();
+            }
+
+            @Override
+            public void deleteReservationTime(long id) {
+                runnable.run();
+            }
+        };
+    }
+
+    @Test
+    @DisplayName("정상 삭제 테스트")
+    void deleteReservationTimeTest() {
+        ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {}), createReservationRepository(false));
+        assertThatCode(() -> reservationTimeService.deleteReservationTime(1)).doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("외부에서 사용이 되었을 때 예외 발생 테스트")
+    void deleteFailedWhenInUseTest() {
+        ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {}), createReservationRepository(true));
+
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1))
+                .isExactlyInstanceOf(DataReferencedException.class)
+                .hasMessage(ErrorMessage.CANNOT_DELETE_RESERVATION_TIME_IN_USE.getMessage());
+    }
+
+    @Test
+    @DisplayName("조회 시점엔 없었으나 삭제 시점에 제약조건 위반이 발생한 경우 예외 테스트")
+    void deleteFailByIntegrityTest() {
+        ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {
+            throw new DataIntegrityViolationException("정합성 오류");
+        }), createReservationRepository(false));
+
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1))
+                .isExactlyInstanceOf(DataReferencedException.class)
+                .hasMessage(ErrorMessage.INTEGRITY_VIOLATION_ON_DELETE.getMessage());
+    }
+
+}
