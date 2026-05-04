@@ -88,5 +88,10 @@ class AdminControllerTest {
         public void removeTheme(Long id) {
             this.removedId = id;
         }
+
+        @Override
+        public List<Theme> getThemes() {
+            return List.of();
+        }
     }
 }

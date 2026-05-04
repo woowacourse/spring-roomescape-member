@@ -43,7 +43,7 @@
 
 ## 2단계: 사용자 예약
 
-- [ ] 전체 테마를 조회할 수 있다.
+- [x] 전체 테마를 조회할 수 있다.
 
     ```
     GET /themes
@@ -53,6 +53,7 @@
     ```json
     [
       {
+        "id": 1,
         "name": "테마명",
         "description": "설명",
         "thumbnail": "image-path"
