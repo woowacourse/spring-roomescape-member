@@ -12,13 +12,20 @@ public record ReservationResponse(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
         LocalDate date,
 
-        ReservationTime time) {
+        ReservationTime time,
+        ReservationTheme theme
+) {
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
                 reservation.id(),
                 reservation.username(),
                 reservation.reservationDate(),
-                new ReservationTime(reservation.reservationTime().id(), reservation.reservationTime().startAt())
+                new ReservationTime(reservation.reservationTime().id(), reservation.reservationTime().startAt()),
+                new ReservationTheme(
+                        reservation.reservationTheme().id(),
+                        reservation.reservationTheme().name(),
+                        reservation.reservationTheme().thumbnailUrl(),
+                        reservation.reservationTheme().description())
         );
     }
 
@@ -28,5 +35,12 @@ public record ReservationResponse(
             @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
             LocalTime startAt) {
 
+    }
+
+    private record ReservationTheme(Long id,
+                                    String name,
+                                    String thumbnailUrl,
+                                    String description
+    ) {
     }
 }
