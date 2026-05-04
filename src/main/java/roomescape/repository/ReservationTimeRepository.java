@@ -1,0 +1,54 @@
+package roomescape.repository;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
+import roomescape.domain.ReservationTime;
+
+@Repository
+public class ReservationTimeRepository {
+    private static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (resultSet, rowNum) ->
+            ReservationTime.of(resultSet.getLong("id"), resultSet.getString("start_at"));
+
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
+
+    public ReservationTimeRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
+    }
+
+    public ReservationTime save(ReservationTime time) {
+        Map<String, Object> params = Map.of(
+                "start_at", time.getStartAt()
+        );
+
+        long generatedKey = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+
+        return ReservationTime.of(generatedKey, time.getStartAt());
+    }
+
+    public Optional<ReservationTime> findById(long id) {
+        String sql = "select id, start_at from reservation_time where id = ?";
+        List<ReservationTime> result = jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER, id);
+        return result.stream().findFirst();
+    }
+
+    public List<ReservationTime> findAll() {
+        String sql = "select id, start_at from reservation_time";
+
+        return jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER);
+    }
+
+    public void delete(long id) {
+        String sql = "delete from reservation_time where id = ?";
+
+        jdbcTemplate.update(sql, id);
+    }
+}
