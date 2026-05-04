@@ -50,10 +50,24 @@ public class MissionStepTest3 {
                 .then().log().all()
                 .statusCode(200);
 
+        params.clear();
+
+        params.put("name", "공포");
+        params.put("description", "test다");
+        params.put("url", "fakeurl");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
