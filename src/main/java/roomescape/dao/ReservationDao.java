@@ -1,70 +1,74 @@
 package roomescape.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
 @Repository
 public class ReservationDao {
-    private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> {
+    private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> {
         ReservationTime reservationTime = new ReservationTime(
                 resultSet.getLong("time_id"),
-                resultSet.getString("start_at")
+                resultSet.getTime("start_at").toLocalTime()
         );
 
         Reservation reservation = new Reservation(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("name"),
-                resultSet.getString("date"),
+                resultSet.getDate("date").toLocalDate(),
                 reservationTime
         );
         return reservation;
     };
 
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
+
     public ReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     public Reservation insert(Reservation reservation) {
-        String sql = "insert into reservation (name, date, time_id) values (?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("name", reservation.getName());
+        parameters.put("date", reservation.getDate());
+        parameters.put("time_id", reservation.getTime().getId());
 
-        jdbcTemplate.update(new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-                PreparedStatement statement = connection.prepareStatement(
-                        sql, new String[]{"id"}
-                );
-                statement.setString(1, reservation.getName());
-                statement.setString(2, reservation.getDate());
-                statement.setLong(3, reservation.getTime().getId());
-
-                return statement;
-            }
-        }, keyHolder);
-
-        long generatedId = keyHolder.getKey().longValue();
-        return new Reservation(generatedId, reservation.getName(), reservation.getDate(), new ReservationTime(reservation.getTime().getId(), reservation.getTime().getStartAt()));
+        Number generatedId = jdbcInsert.executeAndReturnKey(parameters);
+        return new Reservation(
+                generatedId.longValue(),
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime()
+        );
     }
 
     public List<Reservation> select() {
-        String sql = "select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as start_at from reservation as r "
-                + "inner join reservation_time as t on r.time_id = t.id";
-        return jdbcTemplate.query(sql, rowMapper);
+        String sql = """
+                SELECT r.id, 
+                       r.name, 
+                       r.date,
+                       rt.id ,
+                       rt.start_at
+                FROM reservation AS r
+                INNER JOIN reservation_time AS rt 
+                ON r.time_id = rt.id""";
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     public void delete(Long id) {
-        String sql = "delete from reservation where id = ?";
+        String sql = """
+                DELETE FROM reservation
+                WHERE id = ?""";
         jdbcTemplate.update(sql, id);
     }
 }
