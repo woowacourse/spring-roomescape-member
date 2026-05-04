@@ -5,9 +5,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.Reservation;
-import roomescape.reservationtime.ReservationTime;
-import roomescape.reservationtime.dto.ReservationTimeResponse;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.dto.ReservationResponse;
+import roomescape.dto.ReservationTimeResponse;
 
 class ReservationResponseTest {
 
