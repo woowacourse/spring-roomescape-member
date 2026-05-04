@@ -16,7 +16,7 @@ import roomescape.domain.reservation.dto.response.ReservationResponseDTO;
 import roomescape.domain.reservation.service.ReservationService;
 
 @RestController
-@RequestMapping("/api/admin/reservations")
+@RequestMapping("/api")
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -25,18 +25,18 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
+    @GetMapping("/admin/reservations")
     public ResponseEntity<List<ReservationResponseDTO>> getReservations() {
         return ResponseEntity.ok(reservationService.getReservations());
     }
 
-    @PostMapping
+    @PostMapping("/reservations")
     public ResponseEntity<ReservationCreateResponseDTO> saveReservation(
         @RequestBody ReservationCreateRequestDTO requestDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.saveReservation(requestDTO));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/reservations/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservationById(id);
         return ResponseEntity.status(HttpStatus.OK).build();

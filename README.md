@@ -1,5 +1,44 @@
 # Roomescape API 명세서
 
+## 관리자 사용자 통합 API
+
+### ✅ 예약 생성
+
+#### URL
+
+```http
+POST /api/reservations
+```
+
+#### Query Parameters
+
+없음
+
+#### Request Body
+
+```json
+{
+  "name": "서여",
+  "date": "2026-05-04",
+  "timeId": 1,
+  "themeId": 1
+}
+```
+
+#### Response Body
+
+##### 201 Created
+
+```json
+{
+  "id": 1,
+  "name": "서여",
+  "date": "2026-05-04",
+  "timeId": 1,
+  "themeId": 1
+}
+```
+
 ## 관리자
 
 ### ✅ 관리자 예약 조회
@@ -55,43 +94,6 @@ GET /api/admin/reservations
     }
   }
 ]
-```
-
-### ✅ 관리자 예약 추가
-
-#### URL
-
-```http
-POST /api/admin/reservations
-```
-
-#### Query Parameters
-
-없음
-
-#### Request Body
-
-```json
-{
-  "name": "서여",
-  "date": "2026-05-04",
-  "timeId": 1,
-  "themeId": 1
-}
-```
-
-#### Response Body
-
-##### 201 Created
-
-```json
-{
-  "id": 1,
-  "name": "서여",
-  "date": "2026-05-04",
-  "timeId": 1,
-  "themeId": 1
-}
 ```
 
 ### ✅ 관리자 예약 삭제
@@ -279,7 +281,7 @@ DELETE /api/admin/themes/{id}
 
 ## 사용자
 
-### ☑️사용자 테마 조회
+### ✅ 사용자 테마 조회
 
 #### URL
 
@@ -316,7 +318,7 @@ GET /api/themes
 ]
 ```
 
-### ☑️사용자 예약 가능한 시간 조회
+### ☑️ 사용자 예약 가능한 시간 조회
 
 #### URL
 
@@ -352,7 +354,7 @@ GET /api/times?date={date}&themeId={themeId}
 ]
 ```
 
-### ☑️사용자 예약 생성
+### ☑️ 사용자 예약 생성
 
 #### URL
 
