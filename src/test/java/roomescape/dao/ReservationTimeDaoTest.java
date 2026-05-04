@@ -8,6 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.ReservationTime.ReservationTimeCommand;
+import roomescape.domain.ReservationTime.ReservationTimeCondition;
+import roomescape.domain.ReservationTime.ReservationTimeWithAvailable;
 
 public class ReservationTimeDaoTest extends BaseDaoTest {
     private ReservationTimeDao reservationTimeDao;
@@ -15,6 +17,9 @@ public class ReservationTimeDaoTest extends BaseDaoTest {
     @Override
     protected void initTable() {
         createReservationTimeTable();
+        createReservationThemeTable();
+        createReservationTable();
+
         insertReservationTime("10:00");
 
         this.reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
@@ -22,7 +27,9 @@ public class ReservationTimeDaoTest extends BaseDaoTest {
 
     @Override
     protected void deleteTable() {
+        deleteReservationTable();
         deleteReservationTimeTable();
+        deleteReservationThemeTable();
     }
 
     @Test
@@ -51,7 +58,7 @@ public class ReservationTimeDaoTest extends BaseDaoTest {
     }
 
     @Test
-    @DisplayName("예약 삭제 정상적으로 작동하는 지 테스트")
+    @DisplayName("예약 시간 삭제 정상적으로 작동하는 지 테스트")
     void deleteReservationTest() {
         reservationTimeDao.deleteReservationTime(1);
         List<ReservationTime> reservationTimes = reservationTimeDao.getAllReservationTime();
@@ -60,7 +67,7 @@ public class ReservationTimeDaoTest extends BaseDaoTest {
     }
 
     @Test
-    @DisplayName("예약 추가 정상적으로 작동하는 지 테스트")
+    @DisplayName("예약 시간 추가 정상적으로 작동하는 지 테스트")
     void insertReservationTest() {
         long updatedReservation = reservationTimeDao.insertReservationTime(new ReservationTimeCommand("12:00"));
         List<ReservationTime> reservations = reservationTimeDao.getAllReservationTime();
@@ -69,5 +76,28 @@ public class ReservationTimeDaoTest extends BaseDaoTest {
 
         assertThat(updatedReservation).isEqualTo(2);
         assertThat(reservations).contains(expectedReservation);
+    }
+
+    @Test
+    @DisplayName("사용 가능한 예약 시간 반환 정상적으로 작동하는 지 테스트")
+    void getReservationTimeByDateAndThemeTest() {
+        insertReservationTime("11:00");
+
+        insertReservationTheme("테마1", "테마 설명", "image url");
+        insertReservationTheme("테마2", "테마 설명", "image url");
+
+        insertReservation("브라운", "2023-08-03", 1, 1);
+
+        List<ReservationTimeWithAvailable> reservationTimeWithAvailable1 = reservationTimeDao.getReservationTimeByDateAndTheme(new ReservationTimeCondition("2023-08-04", 1));
+        List<ReservationTimeWithAvailable> reservationTimeWithAvailable2 = reservationTimeDao.getReservationTimeByDateAndTheme(new ReservationTimeCondition("2023-08-03", 1));
+
+        assertThat(reservationTimeWithAvailable1).containsAll(List.of(
+                new ReservationTimeWithAvailable(1, "10:00", true),
+                new ReservationTimeWithAvailable(2, "11:00", true)
+        ));
+        assertThat(reservationTimeWithAvailable2).containsAll(List.of(
+                new ReservationTimeWithAvailable(1, "10:00", false),
+                new ReservationTimeWithAvailable(2, "11:00", true)
+        ));
     }
 }
