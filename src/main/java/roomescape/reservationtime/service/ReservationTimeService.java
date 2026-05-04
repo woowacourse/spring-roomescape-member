@@ -5,36 +5,46 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.service.ThemeService;
 
 @Service
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeService themeService;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository, ThemeService themeService) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeService = themeService;
     }
 
-    public ReservationTime save(LocalTime startAt) {
-        ReservationTime reservationTime = ReservationTime.createNew(startAt);
 
-        if (reservationTimeRepository.existsByStartAt(startAt)) {
+    public ReservationTime save(final LocalTime startAt, final Long themeId) {
+        Theme theme = themeService.getById(themeId);
+        ReservationTime reservationTime = ReservationTime.createNew(startAt, theme);
+
+        if (reservationTimeRepository.existsByStartAtAndThemeId(startAt, themeId)) {
             throw new IllegalArgumentException("[ERROR] 같은 시간을 추가할 수 없습니다.");
         }
 
         return reservationTimeRepository.save(reservationTime);
     }
 
-    public void deleteById(long id) {
-        reservationTimeRepository.deleteById(id);
+    public List<ReservationTime> findAllByThemeId(final long themeId) {
+        return reservationTimeRepository.findAllByThemeId(themeId);
     }
 
-    public ReservationTime getById(long id) {
-        return reservationTimeRepository.findById(id)
+    public void deleteByTimeIdAndThemeId(long timeId, long themeId) {
+        reservationTimeRepository.deleteByTimeIdAndThemeId(timeId, themeId);
+    }
+
+    public ReservationTime getByTimeIdAndThemeId(long timeId, long themeId) {
+        return reservationTimeRepository.findByTimeIdAndThemeId(timeId, themeId)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 찾는 시간이 없습니다"));
     }
 
-    public List<ReservationTime> getAll() {
+    public List<ReservationTime> findAll() {
         return reservationTimeRepository.findAll();
     }
 

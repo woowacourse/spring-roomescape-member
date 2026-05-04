@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
@@ -25,8 +26,16 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
-    public Reservation save(final String name, final LocalDate date, final Long timeId) {
-        ReservationTime reservationTime = reservationTimeService.getById(timeId);
+    public List<ReservationTime> findAvailableTimes(final LocalDate date, final Long themeId) {
+        Set<Long> reservedTimeIds = Set.copyOf(reservationRepository.findAllByDateAndThemeId(date, themeId));
+
+        return reservationTimeService.findAllByThemeId(themeId).stream()
+                .filter(reservationTime -> !reservedTimeIds.contains(reservationTime.getId()))
+                .toList();
+    }
+
+    public Reservation save(final String name, final LocalDate date, final Long timeId, final Long themeId) {
+        ReservationTime reservationTime = reservationTimeService.getByTimeIdAndThemeId(timeId, themeId);
 
         if(reservationRepository.existsByDateAndTimeId(date, timeId)){
             throw new IllegalArgumentException("[ERROR] 동일한 시기에 예약을 할 수 없습니다.");
@@ -39,5 +48,4 @@ public class ReservationService {
     public void deleteById(final long id) {
         reservationRepository.deleteById(id);
     }
-
 }

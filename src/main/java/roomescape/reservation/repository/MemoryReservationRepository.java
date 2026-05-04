@@ -50,4 +50,13 @@ public class MemoryReservationRepository implements ReservationRepository {
 
         return false;
     }
+
+    @Override
+    public List<Long> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
+        return reservations.stream()
+                .filter(reservation -> reservation.getDate().equals(date))
+                .filter(reservation -> reservation.getTime().getTheme().getId() == themeId)
+                .map(reservation -> reservation.getTime().getId())
+                .toList();
+    }
 }

@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 
 class ReservationTest {
 
@@ -20,7 +21,8 @@ class ReservationTest {
         // given
         String name = "쿠다";
         LocalDate date = LocalDate.parse("2026-03-08");
-        ReservationTime time = ReservationTime.createNew(LocalTime.parse("10:00"));
+        Theme theme = Theme.of(1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        ReservationTime time = ReservationTime.createNew(LocalTime.parse("10:00"), theme);
 
         // when & then
         assertThatCode(() -> Reservation.createNew(name, date, time))
@@ -34,7 +36,8 @@ class ReservationTest {
     void validateName_ThrowsException(String name) {
         // given
         LocalDate date = LocalDate.parse("2026-03-08");
-        ReservationTime time = ReservationTime.createNew(LocalTime.parse("10:00"));
+        Theme theme = Theme.of(1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        ReservationTime time = ReservationTime.createNew(LocalTime.parse("10:00"), theme);
 
         // when & then
         assertThatThrownBy(() -> Reservation.createNew(name, date, time))
@@ -46,7 +49,8 @@ class ReservationTest {
     void validateDate_ThrowsException() {
         // given
         String name = "쿠다";
-        ReservationTime time = ReservationTime.createNew(LocalTime.parse("10:00"));
+        Theme theme = Theme.of(1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        ReservationTime time = ReservationTime.createNew(LocalTime.parse("10:00"), theme);
 
         // when & then
         assertThatThrownBy(() -> Reservation.createNew(name, null, time))

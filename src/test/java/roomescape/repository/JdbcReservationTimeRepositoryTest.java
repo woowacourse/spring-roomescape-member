@@ -14,11 +14,14 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.JdbcThemeRepository;
 
 @JdbcTest
 class JdbcReservationTimeRepositoryTest {
 
     private JdbcReservationTimeRepository jdbcReservationTimeRepository;
+    private JdbcThemeRepository jdbcThemeRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -27,6 +30,7 @@ class JdbcReservationTimeRepositoryTest {
     void setup() {
         clearTables();
         jdbcReservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
+        jdbcThemeRepository = new JdbcThemeRepository(jdbcTemplate);
     }
 
     @Test
@@ -34,7 +38,9 @@ class JdbcReservationTimeRepositoryTest {
     void reservationTime_findAll_test() {
         //given & when
         LocalTime time = LocalTime.parse("11:00");
-        ReservationTime nonIdReservationTime = ReservationTime.createNew(time);
+        Theme theme = createTheme("미술관의 밤");
+
+        ReservationTime nonIdReservationTime = ReservationTime.createNew(time, theme);
         jdbcReservationTimeRepository.save(nonIdReservationTime);
 
         Optional<ReservationTime> reservationTime = jdbcReservationTimeRepository.findAll()
@@ -49,11 +55,12 @@ class JdbcReservationTimeRepositoryTest {
     void reservationTime_save_test() {
         //given
         LocalTime time = LocalTime.parse("11:00");
-        ReservationTime nonIdReservationTime = ReservationTime.createNew(time);
+        Theme theme = createTheme("미술관의 밤");
+        ReservationTime nonIdReservationTime = ReservationTime.createNew(time, theme);
 
         //when
         ReservationTime result = jdbcReservationTimeRepository.save(nonIdReservationTime);
-        ReservationTime saved = jdbcReservationTimeRepository.findById(result.getId())
+        ReservationTime saved = jdbcReservationTimeRepository.findByTimeIdAndThemeId(result.getId(), theme.getId())
                 .orElseThrow();
         //then
         assertThat(result).isEqualTo(saved);
@@ -64,13 +71,14 @@ class JdbcReservationTimeRepositoryTest {
     void save_duplicate_test() {
         //given
         LocalTime time = LocalTime.parse("11:00");
+        Theme theme = createTheme("미술관의 밤");
 
         //when
-        jdbcReservationTimeRepository.save(ReservationTime.createNew(time));
+        jdbcReservationTimeRepository.save(ReservationTime.createNew(time, theme));
 
         //then
         assertThrows(DataIntegrityViolationException.class, () -> {
-            jdbcReservationTimeRepository.save(ReservationTime.createNew(time));
+            jdbcReservationTimeRepository.save(ReservationTime.createNew(time, theme));
         });
     }
 
@@ -79,12 +87,13 @@ class JdbcReservationTimeRepositoryTest {
     void reservationTime_delete_test() {
         // given
         LocalTime time = LocalTime.parse("11:00");
-        ReservationTime nonIdReservationTime = ReservationTime.createNew(time);
+        Theme theme = createTheme("미술관의 밤");
+        ReservationTime nonIdReservationTime = ReservationTime.createNew(time, theme);
         ReservationTime reservationTime = jdbcReservationTimeRepository.save(nonIdReservationTime);
         int beforeSize = jdbcReservationTimeRepository.findAll().size();
 
         // when
-        jdbcReservationTimeRepository.deleteById(reservationTime.getId());
+        jdbcReservationTimeRepository.deleteByTimeIdAndThemeId(reservationTime.getId(), theme.getId());
 
         // then
         int afterSize = jdbcReservationTimeRepository.findAll().size();
@@ -95,7 +104,15 @@ class JdbcReservationTimeRepositoryTest {
     private void clearTables() {
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("DELETE FROM theme");
         jdbcTemplate.update("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+    }
+
+    private Theme createTheme(final String name) {
+        return jdbcThemeRepository.save(
+                Theme.createNew(name, "추리 테마", "https://example.com/theme.png")
+        );
     }
 
 }

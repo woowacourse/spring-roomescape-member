@@ -101,6 +101,8 @@ class JdbcThemeRepositoryTest {
     }
 
     private void clearTables() {
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("DELETE FROM theme");
         jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
     }

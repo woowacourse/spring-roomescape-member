@@ -1,47 +1,32 @@
 package roomescape.reservationtime.controller;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservationtime.controller.dto.ReservationTimeCreateRequest;
+import roomescape.reservation.service.ReservationService;
+import roomescape.reservationtime.controller.dto.ReservationTimeRequest;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.service.ReservationTimeService;
 
 @RestController
-@RequestMapping("/times")
+@RequestMapping("/themes/{themeId}/times")
 public class ReservationTimeController {
 
-    private final ReservationTimeService reservationTimeService;
+    private final ReservationService reservationService;
 
-    public ReservationTimeController(final ReservationTimeService reservationTimeService) {
-        this.reservationTimeService = reservationTimeService;
+    public ReservationTimeController(ReservationService reservationService) {
+        this.reservationService = reservationService;
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTime>> read() {
-        List<ReservationTime> reservationTimes = reservationTimeService.getAll();
+    public ResponseEntity<List<ReservationTime>> read(
+            @PathVariable final Long themeId,
+            @ModelAttribute final ReservationTimeRequest themeReservationTimeRequest
+    ) {
         return ResponseEntity.ok()
-                .body(reservationTimes);
-    }
-
-    @PostMapping
-    public ResponseEntity<ReservationTime> create(@RequestBody final ReservationTimeCreateRequest request) {
-        ReservationTime reservationTime = reservationTimeService.save(request.startAt());
-
-        return ResponseEntity.status(201)
-                .body(reservationTime);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable final Long id) {
-        reservationTimeService.deleteById(id);
-        return ResponseEntity.noContent()
-                .build();
+                .body(reservationService.findAvailableTimes(themeReservationTimeRequest.date(), themeId));
     }
 }

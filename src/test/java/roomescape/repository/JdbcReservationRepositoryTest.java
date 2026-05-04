@@ -17,12 +17,15 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.JdbcThemeRepository;
 
 @JdbcTest
 class JdbcReservationRepositoryTest {
 
     private JdbcReservationRepository jdbcReservationRepository;
     private JdbcReservationTimeRepository jdbcReservationTimeRepository;
+    private JdbcThemeRepository jdbcThemeRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -32,6 +35,7 @@ class JdbcReservationRepositoryTest {
         clearTables();
         jdbcReservationRepository = new JdbcReservationRepository(jdbcTemplate);
         jdbcReservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
+        jdbcThemeRepository = new JdbcThemeRepository(jdbcTemplate);
     }
 
     @Test
@@ -41,8 +45,9 @@ class JdbcReservationRepositoryTest {
         String name = "쿠다";
         LocalDate date = LocalDate.parse("2023-08-05");
         LocalTime time = LocalTime.parse("10:00");
+        Theme theme = createTheme("미술관의 밤");
 
-        ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time));
+        ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time, theme));
 
         Reservation reservation = Reservation.createNew(name, date, reservationTime);
         //when
@@ -60,8 +65,9 @@ class JdbcReservationRepositoryTest {
         // given
         LocalDate date = LocalDate.parse("2026-08-06");
         LocalTime time = LocalTime.parse("10:00");
+        Theme theme = createTheme("미술관의 밤");
 
-        ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time));
+        ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time, theme));
 
         // when & then
         assertThrows(DataIntegrityViolationException.class, () -> {
@@ -80,8 +86,9 @@ class JdbcReservationRepositoryTest {
         //given
         LocalDate date = LocalDate.parse("2026-08-06");
         LocalTime time = LocalTime.parse("10:00");
+        Theme theme = createTheme("미술관의 밤");
 
-        ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time));
+        ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time, theme));
         jdbcReservationRepository.save(Reservation.createNew("쿠다", date, reservationTime));
 
         //when
@@ -97,8 +104,9 @@ class JdbcReservationRepositoryTest {
         // given
         LocalDate date = LocalDate.parse("2026-08-06");
         LocalTime time = LocalTime.parse("10:00");
+        Theme theme = createTheme("미술관의 밤");
 
-        ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time));
+        ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time, theme));
 
         jdbcReservationRepository.save(Reservation.createNew("쿠다", date, reservationTime));
 
@@ -121,8 +129,16 @@ class JdbcReservationRepositoryTest {
     private void clearTables() {
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("DELETE FROM theme");
         jdbcTemplate.update("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.update("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+    }
+
+    private Theme createTheme(final String name) {
+        return jdbcThemeRepository.save(
+                Theme.createNew(name, "추리 테마", "https://example.com/theme.png")
+        );
     }
 
 }

@@ -12,19 +12,28 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
 
     private static final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
+        Theme theme = Theme.of(
+                resultSet.getLong("theme_id"),
+                resultSet.getString("theme_name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail_url")
+        );
+
         ReservationTime reservationTime = ReservationTime.of(
                 resultSet.getLong("time_id"),
-                resultSet.getTime("start_at").toLocalTime()
+                resultSet.getTime("start_at").toLocalTime(),
+                theme
         );
 
         return Reservation.of(
                 resultSet.getLong("id"),
-                resultSet.getString("name"),
+                resultSet.getString("reservation_name"),
                 resultSet.getDate("date").toLocalDate(),
                 reservationTime
         );
@@ -40,12 +49,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         String sql = """
                 SELECT r.id,
-                       r.name,
+                       r.name AS reservation_name,
                        r.date,
                        rt.id AS time_id,
-                       rt.start_at
+                       rt.start_at,
+                       t.id AS theme_id,
+                       t.name AS theme_name,
+                       t.description,
+                       t.thumbnail_url
                 FROM reservation AS r
-                JOIN reservation_time AS rt ON r.time_id = rt.id
+                INNER JOIN reservation_time AS rt ON r.time_id = rt.id
+                INNER JOIN theme AS t ON rt.theme_id = t.id
                 """;
 
         return jdbcTemplate.query(sql, reservationRowMapper);
@@ -55,12 +69,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Optional<Reservation> findById(final long id) {
         String sql = """
                 SELECT r.id,
-                       r.name,
+                       r.name AS reservation_name,
                        r.date,
                        rt.id AS time_id,
-                       rt.start_at
+                       rt.start_at,
+                       t.id AS theme_id,
+                       t.name AS theme_name,
+                       t.description,
+                       t.thumbnail_url
                 FROM reservation AS r
-                JOIN reservation_time AS rt ON r.time_id = rt.id
+                INNER JOIN reservation_time AS rt ON r.time_id = rt.id
+                INNER JOIN theme AS t ON rt.theme_id = t.id
                 WHERE r.id = ?
                 """;
 
@@ -106,6 +125,23 @@ public class JdbcReservationRepository implements ReservationRepository {
                 Date.valueOf(date),
                 timeId
         ));
+    }
+
+    @Override
+    public List<Long> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
+        final String sql = """
+                SELECT rt.id AS time_id
+                FROM reservation AS r
+                INNER JOIN reservation_time AS rt ON r.time_id = rt.id
+                WHERE rt.theme_id = ? AND r.date = ?
+                """;
+
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> resultSet.getLong("time_id"),
+                themeId,
+                Date.valueOf(date)
+        );
     }
 
 }

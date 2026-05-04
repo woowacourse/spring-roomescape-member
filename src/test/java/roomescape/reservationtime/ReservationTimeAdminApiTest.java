@@ -1,11 +1,10 @@
 package roomescape.reservationtime;
 
-import static org.hamcrest.Matchers.is;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
+import static org.hamcrest.Matchers.is;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationTimeApiTest {
+class ReservationTimeAdminApiTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -26,21 +25,7 @@ class ReservationTimeApiTest {
     }
 
     @Test
-    void 예약_가능_시간_조회_API() {
-        createTheme();
-        createReservationTime("10:00");
-        createReservationTime("11:00");
-        createReservation("브라운", "2026-05-10", 1L, 1L);
-
-        RestAssured.given().log().all()
-                .queryParam("date", "2026-05-10")
-                .when().get("/themes/1/times")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
-    }
-
-    private void createTheme() {
+    void 테마_시간_관리_API() {
         Map<String, String> theme = new HashMap<>();
         theme.put("name", "미술관의 밤");
         theme.put("description", "추리 테마");
@@ -52,40 +37,41 @@ class ReservationTimeApiTest {
                 .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201);
-    }
 
-    private void createReservationTime(final String startAt) {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", startAt);
+        Map<String, String> time = new HashMap<>();
+        time.put("startAt", "10:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(time)
                 .when().post("/admin/themes/1/times")
                 .then().log().all()
-                .statusCode(201);
-    }
-
-    private void createReservation(final String name, final String date, final Long timeId, final Long themeId) {
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", name);
-        reservation.put("date", date);
-        reservation.put("timeId", timeId);
-        reservation.put("themeId", themeId);
+                .statusCode(201)
+                .body("id", is(1));
 
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
+                .when().get("/admin/themes/1/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200)
+                .body("size()", is(1));
+
+        RestAssured.given().log().all()
+                .when().delete("/admin/themes/1/times/1")
+                .then().log().all()
+                .statusCode(204);
+
+        RestAssured.given().log().all()
+                .when().get("/admin/themes/1/times")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0));
     }
 
     private void clearTables() {
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("DELETE FROM theme");
-        jdbcTemplate.update("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.update("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
     }
 }

@@ -39,12 +39,14 @@ class ReservationApiTest {
 
     @Test
     void 예약_추가_및_삭제() {
-        createReservationTime("15:40");
+        createTheme();
+        createReservationTime("15:40", 1L);
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -74,7 +76,9 @@ class ReservationApiTest {
 
     @Test
     void DB_조회_API_전환() {
-        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", 1L, "15:40:00");
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail_url) VALUES (?, ?, ?, ?)",
+                1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at, theme_id) VALUES (?, ?, ?)", 1L, "15:40:00", 1L);
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05", 1L);
 
         List<Reservation> reservations = RestAssured.given().log().all()
@@ -91,12 +95,14 @@ class ReservationApiTest {
 
     @Test
     void DB_추가_삭제_API_전환() {
-        createReservationTime("10:00");
+        createTheme();
+        createReservationTime("10:00", 1L);
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -119,12 +125,14 @@ class ReservationApiTest {
 
     @Test
     void 예약과_시간_연결() {
-        createReservationTime("10:00");
+        createTheme();
+        createReservationTime("10:00", 1L);
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -140,14 +148,29 @@ class ReservationApiTest {
                 .body("size()", is(1));
     }
 
-    private void createReservationTime(final String startAt) {
-        Map<String, String> time = new HashMap<>();
+    private void createTheme() {
+        Map<String, String> theme = new HashMap<>();
+        theme.put("name", "미술관의 밤");
+        theme.put("description", "추리 테마");
+        theme.put("thumbnailUrl", "https://example.com/theme.png");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    private void createReservationTime(final String startAt, final Long themeId) {
+        Map<String, Object> time = new HashMap<>();
         time.put("startAt", startAt);
+        time.put("themeId", themeId);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(time)
-                .when().post("/times")
+                .when().post("/admin/themes/" + themeId + "/times")
                 .then().log().all()
                 .statusCode(201);
     }
@@ -155,7 +178,9 @@ class ReservationApiTest {
     private void clearTables() {
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("DELETE FROM theme");
         jdbcTemplate.update("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.update("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
     }
 }

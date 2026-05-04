@@ -15,7 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ThemeApiTest {
+class ThemeAdminApiTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -35,30 +35,32 @@ class ThemeApiTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(theme)
-                .when().post("/admin/theme")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(1));
 
         RestAssured.given().log().all()
-                .when().get("/admin/theme")
+                .when().get("/admin/themes")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/admin/theme/1")
+                .when().delete("/admin/themes/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .when().get("/admin/theme")
+                .when().get("/admin/themes")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
     }
 
     private void clearTables() {
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("DELETE FROM theme");
         jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
     }
