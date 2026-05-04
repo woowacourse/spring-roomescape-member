@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationTimeTest {
+class Level3Test {
     @Test
     void 시간_관리_API() {
         Map<String, String> params = new HashMap<>();
