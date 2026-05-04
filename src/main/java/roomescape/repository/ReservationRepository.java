@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -52,7 +53,7 @@ public class ReservationRepository {
         return Reservation.of(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
-    public List<Reservation> findAll() {
+    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
         String query = """
                 SELECT
                     r.id as reservation_id,
@@ -68,12 +69,14 @@ public class ReservationRepository {
                 FROM reservation as r
                 INNER JOIN reservation_time as t ON r.time_id = t.id
                 INNER JOIN theme as th ON r.theme_id = th.id
+                WHERE r.date = ? AND th.id = ?
                 """;
-        return jdbcTemplate.query(query, rowMapper);
+        return jdbcTemplate.query(query, rowMapper, date, themeId);
     }
 
     public void deleteById(Long id) {
         String query = "delete from reservation where id = ?";
         jdbcTemplate.update(query, id);
     }
+
 }
