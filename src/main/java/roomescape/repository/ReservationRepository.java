@@ -1,6 +1,6 @@
 package roomescape.repository;
 
-import java.time.Duration;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,10 +32,7 @@ public class ReservationRepository {
                     resultSet.getLong("theme_id"),
                     resultSet.getString("theme_name"),
                     resultSet.getString("theme_description"),
-                    resultSet.getString("theme_image_url"),
-                    resultSet.getTime("theme_start_at").toLocalTime(),
-                    resultSet.getTime("theme_finish_at").toLocalTime(),
-                    Duration.ofHours(resultSet.getLong("theme_play_time"))
+                    resultSet.getString("theme_image_url")
             )
     );
 
@@ -56,7 +53,7 @@ public class ReservationRepository {
         return Reservation.of(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
-    public List<Reservation> findAll() {
+    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
         String query = """
                 SELECT
                     r.id as reservation_id,
@@ -68,19 +65,18 @@ public class ReservationRepository {
                     th.id as theme_id,
                     th.name as theme_name,
                     th.description as theme_description,
-                    th.image_url as theme_image_url,
-                    th.start_at as theme_start_at,
-                    th.finish_at as theme_finish_at,
-                    th.play_time as theme_play_time
+                    th.image_url as theme_image_url
                 FROM reservation as r
                 INNER JOIN reservation_time as t ON r.time_id = t.id
                 INNER JOIN theme as th ON r.theme_id = th.id
+                WHERE r.date = ? AND th.id = ?
                 """;
-        return jdbcTemplate.query(query, rowMapper);
+        return jdbcTemplate.query(query, rowMapper, date, themeId);
     }
 
     public void deleteById(Long id) {
         String query = "delete from reservation where id = ?";
         jdbcTemplate.update(query, id);
     }
+
 }

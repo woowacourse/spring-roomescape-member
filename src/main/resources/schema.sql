@@ -1,7 +1,8 @@
 CREATE TABLE reservation_time
 (
-    id       BIGINT       NOT NULL AUTO_INCREMENT,
-    start_at VARCHAR(255) NOT NULL,
+    id        BIGINT NOT NULL AUTO_INCREMENT,
+    start_at  TIME   NOT NULL,
+    finish_at TIME   NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -11,9 +12,6 @@ CREATE TABLE theme
     name        VARCHAR(255) NOT NULL,
     description VARCHAR(500) NOT NULL,
     image_url   VARCHAR(255) NOT NULL,
-    start_at    VARCHAR(255) NOT NULL,
-    finish_at   VARCHAR(255) NOT NULL,
-    play_time   BIGINT NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -21,7 +19,7 @@ CREATE TABLE reservation
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     name     VARCHAR(255) NOT NULL,
-    date     VARCHAR(255) NOT NULL,
+    date     DATE         NOT NULL,
     time_id  BIGINT,
     theme_id BIGINT,
     PRIMARY KEY (id),
