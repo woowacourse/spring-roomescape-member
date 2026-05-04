@@ -19,6 +19,20 @@ public class ThemeControllerTest {
         params.put("description", "무서운 분위기의 방탈출");
         params.put("thumbnailUrl", "https://example.com/theme.jpg");
 
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    @Test
+    void 테마_추가_및_삭제_API_테스트() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "무서운게 딱 좋아");
+        params.put("description", "무서운 분위기의 방탈출");
+        params.put("thumbnailUrl", "https://example.com/theme.jpg");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -26,5 +40,10 @@ public class ThemeControllerTest {
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(204);
     }
 }

@@ -37,4 +37,13 @@ public class JdbcThemeRepository implements ThemeRepository {
                 theme.getThumbnailUrl()
         );
     }
+
+    @Override
+    public void deleteById(long id) {
+        String sql = "DELETE FROM theme WHERE id = :id";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        template.update(sql, params);
+    }
 }

@@ -16,4 +16,8 @@ public class ThemeService {
         Theme newTheme = themeRepository.save(body.toDomain());
         return ThemeSaveResponse.from(newTheme);
     }
+
+    public void delete(long id) {
+        themeRepository.deleteById(id);
+    }
 }
