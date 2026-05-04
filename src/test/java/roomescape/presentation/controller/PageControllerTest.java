@@ -107,8 +107,8 @@ class PageControllerTest {
                 .id(1L)
                 .name("포비")
                 .date(LocalDate.of(2026, 5, 4))
-                .time(time)
-                .theme(theme)
+                .time(ReservationTimeResponse.from(time))
+                .theme(ThemeResponse.from(theme))
                 .build();
     }
 }
