@@ -30,7 +30,7 @@ public class ReservationService {
 
     public ReservationResponse registerReservation(ReservationRequest reservationRequest) {
         Reservation reservation = reservationRepository.register(reservationRequest.getName(),
-                reservationRequest.getDate(), reservationRequest.getTimeId());
+                reservationRequest.getDate(), reservationRequest.getTimeId(), reservationRequest.getThemeId());
         return ReservationResponse.from(reservation);
     }
 
