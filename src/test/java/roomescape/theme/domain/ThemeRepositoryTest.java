@@ -47,4 +47,26 @@ class ThemeRepositoryTest {
         Assertions.assertThatCode(() -> themeRepository.delete(savedTheme.getId()))
                 .doesNotThrowAnyException();
     }
+
+    @Test
+    @DisplayName("테마 2개를 저장한 후에 테마 전체를 조회하면, 크기가 2이다.")
+    void findAllTest() {
+        Theme themeFirst = Theme.builder()
+                .name("포비")
+                .description("포비가 나와요")
+                .durationTime(LocalTime.of(1, 0))
+                .thumbnailImageUrl("http://~~~")
+                .build();
+        Theme themeSecond = Theme.builder()
+                .name("리사")
+                .description("리사가 나와요")
+                .durationTime(LocalTime.of(1, 0))
+                .thumbnailImageUrl("http://~~~")
+                .build();
+        themeRepository.save(themeFirst);
+        themeRepository.save(themeSecond);
+
+        Assertions.assertThat(themeRepository.findAll().size())
+                .isEqualTo(2);
+    }
 }
