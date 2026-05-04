@@ -46,7 +46,12 @@ public class ReservationService {
     }
 
     @Transactional
-    public void deleteReservation(long id) {
-        reservationRepository.delete(id);
+    public void deleteReservation(long id, String name) {
+        Reservation reservation = reservationRepository.findById(id);
+        if(reservation.getName().equals(name)) {
+            reservationRepository.delete(id);
+            return;
+        }
+        throw new ReservationException("예약자 이름이 일치하지 않습니다.");
     }
 }
