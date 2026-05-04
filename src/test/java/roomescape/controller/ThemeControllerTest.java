@@ -23,6 +23,15 @@ public class ThemeControllerTest {
         return params;
     }
 
+    private Map<String, Object> reservationParams() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2023-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+        return params;
+    }
+
     @Test
     void 테마_추가() {
         Map<String, Object> adminThemeParams = themeParams();
@@ -84,5 +93,37 @@ public class ThemeControllerTest {
                 .when().delete("/api/v1/themes/1")
                 .then().log().all()
                 .statusCode(401);
+    }
+
+    @Test
+    void 예약이_존재하는_테마를_삭제하면_409를_반환한다() {
+        Map<String, String> time = new HashMap<>();
+        time.put("startAt", "10:00");
+
+        RestAssured.given().contentType(ContentType.JSON)
+                .body(time)
+                .when().post("/api/v1/times")
+                .then().statusCode(201);
+
+        Map<String, Object> adminThemeParams = themeParams();
+        adminThemeParams.put("userName", "ADMIN");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(adminThemeParams)
+                .when().post("/api/v1/themes")
+                .then().statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams())
+                .when().post("/api/v1/reservations")
+                .then().statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("userName", "ADMIN"))
+                .when().delete("/api/v1/themes/1")
+                .then().log().all()
+                .statusCode(409);
     }
 }

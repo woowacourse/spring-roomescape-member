@@ -31,6 +31,10 @@ public class ReservationService {
     @Transactional
     public void deleteReservation(Long id) {
         int deleteCount = reservationDao.delete(id);
+        validateDelete(deleteCount);
+    }
+
+    private void validateDelete(int deleteCount) {
         if (deleteCount == 0) {
             throw new ReservationNotFoundException();
         }
