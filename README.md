@@ -31,4 +31,4 @@ class Theme
 - [X] 예약에 테마 필드 추가
 - [X] reservation 스키마 수정(테마를 참조하도록)
 - [X] reservation 테마 필드 null 검증 추가
-- [ ] 테마 조회, 등록, 삭제 API 구현
+- [X] 테마 조회, 등록, 삭제 API 구현

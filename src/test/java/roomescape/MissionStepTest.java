@@ -187,4 +187,32 @@ public class MissionStepTest {
 
         assertThat(isJdbcTemplateInjected).isFalse();
     }
+
+    @Test
+    void 테마_관리_API() {
+        jdbcTemplate.update("DELETE FROM theme;");
+        jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1;");
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "테마 이름");
+        params.put("description", "테마 설명");
+        params.put("thumbnail", "썸네일 주소");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
+
+        RestAssured.given().log().all()
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(204);
+    }
 }
