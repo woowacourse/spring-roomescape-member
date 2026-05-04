@@ -18,7 +18,7 @@ import roomescape.service.ReservationService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/reservations")
+@RequestMapping("/admin/reservations")
 public class ReservationController {
     private final ReservationService reservationService;
 

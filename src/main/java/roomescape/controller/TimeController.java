@@ -17,7 +17,7 @@ import roomescape.service.TimeService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/times")
+@RequestMapping("/admin/times")
 public class TimeController {
     private final TimeService timeService;
 
