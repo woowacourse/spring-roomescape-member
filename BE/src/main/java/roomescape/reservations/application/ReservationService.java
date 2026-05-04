@@ -56,6 +56,7 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
+    // TODO: 검증 로직 위치 분리
     private void validateSaveRequest(ReservationRequest request) {
         if (request == null) {
             throw new ReservationException(ErrorCode.RESERVATION_REQUEST_NULL);

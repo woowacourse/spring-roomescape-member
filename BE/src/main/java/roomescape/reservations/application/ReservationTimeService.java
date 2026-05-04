@@ -53,6 +53,7 @@ public class ReservationTimeService {
         reservationTimeRepository.deleteById(id);
     }
 
+    // TODO: 검증 로직 위치 분리
     private void validateSaveRequest(ReservationTimeRequest request) {
         if (request == null) {
             throw new ReservationTimeException(ErrorCode.RESERVATION_TIME_REQUEST_NULL);

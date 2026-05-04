@@ -26,10 +26,10 @@ public class ReservationTimeJdbcTemplateRepository implements ReservationTimeRep
     @Override
     public ReservationTime save(ReservationTime reservation) {
         Map<String, Object> params = Map.of(
-                "start_at", reservation.getStartAt()
+                "start_at", reservation.startAt()
         );
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return ReservationTime.of(id, reservation.getStartAt());
+        return ReservationTime.of(id, reservation.startAt());
     }
 
     @Override

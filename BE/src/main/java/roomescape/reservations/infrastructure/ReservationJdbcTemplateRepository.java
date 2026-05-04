@@ -27,16 +27,16 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
     @Override
     public Reservation save(Reservation reservation) {
         Map<String, Object> params = Map.of(
-                "name", reservation.getName(),
-                "date", reservation.getDate(),
-                "time_id", reservation.getTime().getId()
+                "name", reservation.name(),
+                "date", reservation.date(),
+                "time_id", reservation.time().id()
         );
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return Reservation.of(
                 id,
-                reservation.getName(),
-                reservation.getDate(),
-                reservation.getTime()
+                reservation.name(),
+                reservation.date(),
+                reservation.time()
         );
     }
 
