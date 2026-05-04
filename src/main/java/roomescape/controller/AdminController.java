@@ -45,7 +45,7 @@ public class AdminController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest request) {
-        ReservationResponse reservationResponse = reservationCommandService.create(request.name(), request.date(), request.timeId());
+        ReservationResponse reservationResponse = reservationCommandService.create(request.name(), request.date(), request.timeId(), request.themeId());
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .build()
@@ -97,7 +97,6 @@ public class AdminController {
 
         return ResponseEntity.created(location).body(themeResponse);
     }
-
 
     @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {

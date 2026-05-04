@@ -13,8 +13,8 @@ public class ReservationCommandService {
 
     private final ReservationDao reservationDao;
 
-    public ReservationResponse create(String name, LocalDate date, long timeId) {
-        Reservation savedReservation = reservationDao.save(Reservation.pending(name, date), timeId);
+    public ReservationResponse create(String name, LocalDate date, long timeId, long themeId) {
+        Reservation savedReservation = reservationDao.save(Reservation.pending(name, date), timeId, themeId);
         return ReservationResponse.from(savedReservation);
     }
 

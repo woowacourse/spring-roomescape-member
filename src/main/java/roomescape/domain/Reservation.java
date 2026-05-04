@@ -10,14 +10,14 @@ public class Reservation {
     private final String username;
     private final LocalDate reservationDate;
     private final ReservationTime reservationTime;
-//    private final Theme theme;
+    private final Theme reservationTheme;
 
     public static Reservation pending(String username, LocalDate date) {
-        return new Reservation(null, username, date, null);
+        return new Reservation(null, username, date, null, null);
     }
 
-    public static Reservation create(long id, String username, LocalDate date, ReservationTime time) {
-        return new Reservation(id, username, date, time);
+    public static Reservation create(long id, String username, LocalDate date, ReservationTime time, Theme theme) {
+        return new Reservation(id, username, date, time, theme);
     }
 
     public String username() {
@@ -32,9 +32,9 @@ public class Reservation {
         return reservationTime;
     }
 
-//    public Theme theme() {
-//        return theme;
-//    }
+    public Theme reservationTheme() {
+        return reservationTheme;
+    }
 
     public long id() {
         return id;
