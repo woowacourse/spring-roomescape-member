@@ -10,30 +10,34 @@ public class ReservationTime {
 
     private final Long id;
     private final LocalTime startAt;
+    private final LocalTime endAt;
 
-    private ReservationTime(final Long id, final LocalTime startAt) {
+    private ReservationTime(final Long id, final LocalTime startAt, final LocalTime endAt) {
         validateStartAt(startAt);
 
         this.id = id;
         this.startAt = startAt;
+        this.endAt = endAt;
     }
 
     public static ReservationTime create(ReservationTimeCreateCommand data) {
         return new ReservationTime(
                 null,
-                data.startAt()
+                data.startAt(),
+                data.endAt()
         );
     }
 
     public ReservationTime saved(final Long id) {
         return new ReservationTime(
                 id,
-                startAt
+                startAt,
+                endAt
         );
     }
 
-    public static ReservationTime restore(final Long id, final LocalTime startAt) {
-        return new ReservationTime(id, startAt);
+    public static ReservationTime restore(final Long id, final LocalTime startAt, final LocalTime endAt) {
+        return new ReservationTime(id, startAt, endAt);
     }
 
 

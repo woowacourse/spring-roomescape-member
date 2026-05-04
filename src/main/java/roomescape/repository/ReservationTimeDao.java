@@ -21,7 +21,7 @@ public class ReservationTimeDao {
 
     public List<ReservationTime> findAll() {
         final String sql = """
-                SELECT id, start_at
+                SELECT id, start_at, end_at
                 FROM reservation_time
                 ORDER BY id
                 """;
@@ -33,7 +33,7 @@ public class ReservationTimeDao {
 
     public Optional<ReservationTime> findById(final Long timeId) {
         final String sql = """
-                SELECT id, start_at
+                SELECT id, start_at, end_at
                 FROM reservation_time
                 WHERE id = ?
                 """;
@@ -71,8 +71,8 @@ public class ReservationTimeDao {
 
     private long insertReservationTime(final ReservationTimeEntity reservationTimeEntity) {
         final String sql = """
-                INSERT INTO reservation_time (start_at)
-                VALUES (?)
+                INSERT INTO reservation_time (start_at, end_at)
+                VALUES (?, ?)
                 """;
 
         final KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -84,6 +84,7 @@ public class ReservationTimeDao {
             );
 
             preparedStatement.setTime(1, reservationTimeEntity.startAt());
+            preparedStatement.setTime(2, reservationTimeEntity.endAt());
 
             return preparedStatement;
         }, keyHolder);
@@ -106,14 +107,16 @@ public class ReservationTimeDao {
     private ReservationTime mapToDomain(final ResultSet resultSet, final int rowNum) throws SQLException {
         return ReservationTime.restore(
                 resultSet.getLong("id"),
-                resultSet.getTime("start_at").toLocalTime()
+                resultSet.getTime("start_at").toLocalTime(),
+                resultSet.getTime("end_at").toLocalTime()
         );
     }
 
     private ReservationTimeEntity toEntity(final ReservationTime reservationTime) {
         return new ReservationTimeEntity(
                 reservationTime.getId(),
-                Time.valueOf(reservationTime.getStartAt())
+                Time.valueOf(reservationTime.getStartAt()),
+                Time.valueOf(reservationTime.getEndAt())
         );
     }
 }

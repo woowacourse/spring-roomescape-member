@@ -31,12 +31,14 @@ public class MissionStep1Test {
 
     @Test
     void 예약_추가_및_삭제() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2026-08-05");
-        params.put("timeId", 1);
+        params.put("timeId", 1L);
+        params.put("themeId", 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

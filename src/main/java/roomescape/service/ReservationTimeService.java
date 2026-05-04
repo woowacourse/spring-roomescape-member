@@ -26,7 +26,8 @@ public class ReservationTimeService {
     public ReservationTimeResponse create(ReservationTimeCreateRequest data) {
         final ReservationTime reservationTime = ReservationTime.create(
                 new ReservationTimeCreateCommand(
-                        data.startAt()
+                        data.startAt(),
+                        data.endAt()
                 )
         );
 

@@ -34,7 +34,8 @@ public class ReservationService {
                 new ReservationCreateCommand(
                         data.name(),
                         data.date(),
-                        reservationTime
+                        reservationTime,
+                        data.themeId()
                 )
         );
 

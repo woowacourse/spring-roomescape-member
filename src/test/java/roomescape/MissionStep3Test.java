@@ -24,6 +24,7 @@ public class MissionStep3Test {
     void 시간_관리_API() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
+        params.put("endAt", "10:30");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -46,12 +47,15 @@ public class MissionStep3Test {
 
     @Test
     void 예약과_시간_연결() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2026-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

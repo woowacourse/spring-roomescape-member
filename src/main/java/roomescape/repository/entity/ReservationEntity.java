@@ -6,6 +6,7 @@ public record ReservationEntity(
         Long id,
         String name,
         Date date,
-        Long timeId
+        Long timeId,
+        Long themeId
 ) {
 }

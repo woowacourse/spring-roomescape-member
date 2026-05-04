@@ -24,8 +24,10 @@ public class ReservationRepository {
                     r.id AS reservation_id,
                     r.name AS reservation_name,
                     r.date AS reservation_date,
+                    r.theme_id AS theme_id,
                     t.id AS time_id,
-                    t.start_at AS time_start_at
+                    t.start_at AS time_start_at,
+                    t.end_at AS time_end_at
                 FROM reservation r
                 JOIN reservation_time t ON r.time_id = t.id
                 ORDER BY r.id
@@ -56,8 +58,8 @@ public class ReservationRepository {
 
     private long insertReservation(final ReservationEntity reservationEntity) {
         final String sql = """
-                INSERT INTO reservation (name, date, time_id)
-                VALUES (?, ?, ?)
+                INSERT INTO reservation (name, date, time_id, theme_id)
+                VALUES (?, ?, ?, ?)
                 """;
 
         final KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -71,6 +73,7 @@ public class ReservationRepository {
             preparedStatement.setString(1, reservationEntity.name());
             preparedStatement.setDate(2, reservationEntity.date());
             preparedStatement.setLong(3, reservationEntity.timeId());
+            preparedStatement.setLong(4, reservationEntity.themeId());
 
             return preparedStatement;
         }, keyHolder);
@@ -96,14 +99,16 @@ public class ReservationRepository {
     ) throws SQLException {
         final ReservationTime reservationTime = ReservationTime.restore(
                 resultSet.getLong("time_id"),
-                resultSet.getTime("time_start_at").toLocalTime()
+                resultSet.getTime("time_start_at").toLocalTime(),
+                resultSet.getTime("time_end_at").toLocalTime()
         );
 
         return Reservation.restore(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("reservation_name"),
                 resultSet.getDate("reservation_date").toLocalDate(),
-                reservationTime
+                reservationTime,
+                resultSet.getLong("theme_id")
         );
     }
 
@@ -112,7 +117,8 @@ public class ReservationRepository {
                 reservation.getId(),
                 reservation.getName(),
                 Date.valueOf(reservation.getDate()),
-                reservation.getTime().getId()
+                reservation.getTime().getId(),
+                reservation.getThemeId()
         );
     }
 }

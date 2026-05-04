@@ -4,6 +4,7 @@ import java.sql.Time;
 
 public record ReservationTimeEntity(
         Long id,
-        Time startAt
+        Time startAt,
+        Time endAt
 ) {
 }
