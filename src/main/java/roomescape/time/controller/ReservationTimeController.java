@@ -2,12 +2,14 @@ package roomescape.time.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.time.controller.dto.ReservationTimeResponse;
+import roomescape.theme.service.ThemeService;
 import roomescape.time.controller.dto.ReservationTimeRequest;
+import roomescape.time.controller.dto.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.service.ReservationTimeService;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,14 +18,28 @@ import java.util.stream.Collectors;
 public class ReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
+    private final ThemeService themeService;
 
-    public ReservationTimeController(ReservationTimeService reservationTimeService) {
+    public ReservationTimeController(ReservationTimeService reservationTimeService, ThemeService themeService) {
         this.reservationTimeService = reservationTimeService;
+        this.themeService = themeService;
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> readAll() {
         List<ReservationTimeResponse> responses = reservationTimeService.findAll()
+                .stream()
+                .map(ReservationTimeResponse::from)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<ReservationTimeResponse>> readAvailable(
+            @RequestParam("themId") Long themeId,
+            @RequestParam("date") LocalDate date
+    ) {
+        List<ReservationTimeResponse> responses = themeService.findAvailableTimes(themeId, date)
                 .stream()
                 .map(ReservationTimeResponse::from)
                 .collect(Collectors.toList());
