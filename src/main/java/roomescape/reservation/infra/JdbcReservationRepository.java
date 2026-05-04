@@ -32,15 +32,12 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         String insertReservationSql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (:name, :date, :timeId, :themeId)";
-        String selectReservationTimeByIdSql = "SELECT start_at FROM reservation_time WHERE id = :timeId";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate().toString())
                 .addValue("timeId", reservation.getTime().getId())
                 .addValue("themeId", reservation.getTheme().getId());
-
-        String startAt = template.queryForObject(selectReservationTimeByIdSql, params, String.class);
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(insertReservationSql, params, keyHolder);
@@ -49,8 +46,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 keyHolder.getKey().longValue(),
                 reservation.getName(),
                 reservation.getDate(),
-                new ReservationTime(reservation.getTime().getId(), LocalTime.parse(startAt),
-                        new Theme())
+                reservation.getTime(),
+                reservation.getTheme()
         );
     }
 
