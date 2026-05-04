@@ -46,8 +46,8 @@ class ReservationRepositoryTest {
         Reservation reservation = Reservation.builder()
                 .name("포비")
                 .date(LocalDate.now())
-                .time(reservationTime)
-                .theme(theme)
+                .time(savedTime)
+                .theme(savedTheme)
                 .build();
 
         Reservation savedReservation = reservationRepository.save(reservation);
