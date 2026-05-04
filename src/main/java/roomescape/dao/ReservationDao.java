@@ -41,17 +41,6 @@ public class ReservationDao {
         );
     }
 
-    public ReservationTime findTimeById(Long timeId) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, start_at FROM reservation_time WHERE id = ?",
-                (rs, rowNum) -> new ReservationTime(
-                        rs.getLong("id"),
-                        rs.getTime("start_at").toLocalTime()
-                ),
-                timeId
-        );
-    }
-
     public Reservation save(Reservation reservation) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", reservation.getName());
