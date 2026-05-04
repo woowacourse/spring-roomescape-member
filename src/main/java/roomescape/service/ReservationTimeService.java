@@ -1,31 +1,30 @@
 package roomescape.service;
 
-import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
-import roomescape.repository.ReservationTimeDAO;
+import roomescape.dto.CreateReservationTimeRequest;
+import roomescape.repository.ReservationTimeDao;
 
 @Service
 public class ReservationTimeService {
 
-    private final ReservationTimeDAO reservationTimeDAO;
+    private final ReservationTimeDao reservationTimeDao;
 
-    public ReservationTimeService(ReservationTimeDAO reservationTimeDAO) {
-        this.reservationTimeDAO = reservationTimeDAO;
+    public ReservationTimeService(ReservationTimeDao reservationTimeDao) {
+        this.reservationTimeDao = reservationTimeDao;
     }
 
     public List<ReservationTime> getReservationTimes() {
-        return reservationTimeDAO.findAll();
+        return reservationTimeDao.findAll();
     }
 
-    public ReservationTime createReservationTime(LocalTime startAt) {
-        ReservationTime reservationTime = new ReservationTime(null, startAt);
-        Long newReservationTimeId = reservationTimeDAO.save(reservationTime);
-        return reservationTimeDAO.findById(newReservationTimeId);
+    public ReservationTime createReservationTime(CreateReservationTimeRequest request) {
+        Long newReservationTimeId = reservationTimeDao.save(request);
+        return reservationTimeDao.findById(newReservationTimeId);
     }
 
     public void deleteReservationTime(Long id) {
-        reservationTimeDAO.deleteById(id);
+        reservationTimeDao.deleteById(id);
     }
 }
