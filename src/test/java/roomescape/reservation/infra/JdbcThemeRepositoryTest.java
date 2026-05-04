@@ -26,8 +26,22 @@ class JdbcThemeRepositoryTest {
         Long id = jdbcTemplate.queryForObject("SELECT id FROM theme LIMIT 1", Long.class);
 
         assertThat(savedTheme.getId()).isEqualTo(id);
-        assertThat(savedTheme.getName()).isEqualTo("공포");
+        assertThat(savedTheme.getName()).isEqualTo("무서운게 딱 좋아");
         assertThat(savedTheme.getDescription()).isEqualTo("무서운 분위기의 방탈출");
         assertThat(savedTheme.getThumbnailUrl()).isEqualTo("https://example.com/theme.jpg");
     }
+
+    @Test
+    @Transactional
+    void 테마_삭제_레포지토리_테스트() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?,?,?)", "무서운게 딱 좋아",
+                "무서운 분위기의 방탈출", "https://example.com/theme.jpg");
+        Long themeId = jdbcTemplate.queryForObject("SELECT id FROM theme LIMIT 1", Long.class);
+
+        repository.deleteById(themeId);
+        int rowCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
+
+        assertThat(rowCount).isEqualTo(0);
+    }
+
 }
