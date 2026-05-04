@@ -9,6 +9,7 @@ import roomescape.exception.ReservationNotFoundException;
 import roomescape.repository.ReservationTimeQueryingDao;
 import roomescape.repository.ReservationTimeUpdatingDao;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Transactional(readOnly = true)
@@ -23,8 +24,8 @@ public class ReservationTimeService {
         this.reservationTimeUpdatingDao = reservationTimeUpdatingDao;
     }
 
-    public List<ReservationTimeResponse> read() {
-        List<ReservationTime> reservationTimes = reservationTimeQueryingDao.findAllReservationTime();
+    public List<ReservationTimeResponse> read(LocalDate date, Long themeId) {
+        List<ReservationTime> reservationTimes = reservationTimeQueryingDao.findAllReservationTime(date, themeId);
         return reservationTimes.stream()
                 .map(reservationTime -> ReservationTimeResponse.from(
                         new ReservationTime(

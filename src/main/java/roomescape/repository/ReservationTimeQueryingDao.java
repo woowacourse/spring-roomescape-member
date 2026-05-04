@@ -5,8 +5,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservationtime.ReservationTime;
-import roomescape.domain.reservationtime.ReservationTimeResponse;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -38,8 +38,21 @@ public class ReservationTimeQueryingDao {
         }
     }
 
-    public List<ReservationTime> findAllReservationTime() {
-        String sql = "select id, start_at from reservation_time";
-        return  jdbcTemplate.query(sql, reservationTimeRowMapper);
+    public List<ReservationTime> findAllReservationTime(LocalDate date, Long themeId) {
+        if (date == null && themeId == null) {
+            String sql = """
+                   select t.id, t.start_at from reservation_time as t
+                   """;
+            return jdbcTemplate.query(sql, reservationTimeRowMapper);
+        }
+
+        String sql = """
+                select t.id, t.start_at from reservation_time as t
+                left join reservation as r on t.id = r.time_id
+                                        and r.date = ?
+                                        and r.theme_id = ?
+                where r.id is null;
+                """;
+        return jdbcTemplate.query(sql, reservationTimeRowMapper, date, themeId);
     }
 }
