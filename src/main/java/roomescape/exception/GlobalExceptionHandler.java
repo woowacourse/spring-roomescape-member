@@ -12,4 +12,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Void> handleNoSuchElement(NoSuchElementException exception) {
         return ResponseEntity.notFound().build();
     }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Void> handleDuplicateReservation(IllegalStateException exception) {
+        return ResponseEntity.badRequest().build();
+    }
+
 }

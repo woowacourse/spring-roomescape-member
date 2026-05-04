@@ -43,6 +43,11 @@ public class ReservationDao {
     };
 
     public Reservation save(Reservation reservation, long timeId, long themeId) {
+
+        if(existsByDateAndTimeIdAndThemeId(reservation.reservationDate(), timeId, themeId)) {
+            throw new IllegalStateException("이미 중복된 예약이 존재합니다.");
+        }
+
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.username())
                 .addValue("date", reservation.reservationDate())
@@ -81,7 +86,7 @@ public class ReservationDao {
         String sql = "DELETE FROM reservation WHERE id = ?";
         int affected = jdbcTemplate.update(sql, reservationId);
 
-        if(affected == 0) {
+        if (affected == 0) {
             throw new NoSuchElementException("[ERROR] 삭제할 id에 해당하는 예약이 존재하지 않습니다.");
         }
     }
@@ -107,4 +112,18 @@ public class ReservationDao {
 
         return jdbcTemplate.query(sql, rowMapper);
     }
+
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = """
+        SELECT EXISTS (
+            SELECT 1 FROM reservation
+            WHERE date = ? AND time_id = ? AND theme_id = ?
+        )
+        """;
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId)
+        );
+    }
+
 }
+
