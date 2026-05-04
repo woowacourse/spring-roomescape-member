@@ -1,10 +1,13 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 @Repository
@@ -50,5 +53,23 @@ public class ThemeDao {
 
     public void delete(Long id) {
         jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+    }
+
+    public List<ReservationTime> findAvailableTime(Long id, LocalDate date) {
+        return jdbcTemplate.query(
+                """
+                        SELECT t.id AS time_id, t.start_at
+                        FROM reservation_time t
+                        LEFT JOIN reservation r ON t.id = r.time_id
+                           AND r.theme_id = ?
+                           AND r.date = ?
+                        WHERE r.id is NULL
+                   """,
+                (rs, rowNum) -> new ReservationTime(
+                        rs.getLong("time_id"),
+                        rs.getTime("start_at").toLocalTime()
+                ),
+                id, date
+        );
     }
 }
