@@ -1,36 +1,42 @@
-package roomescape.repository;
+package roomescape.reservation.repository;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservationtime.domain.ReservationTime;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
+
+    private static final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
+        ReservationTime reservationTime = ReservationTime.of(
+                resultSet.getLong("time_id"),
+                resultSet.getTime("start_at").toLocalTime()
+        );
+
+        return Reservation.of(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getDate("date").toLocalDate(),
+                reservationTime
+        );
+    };
+
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getDate("date").toLocalDate(),
-            mapReservationTime(resultSet)
-    );
 
     public JdbcReservationRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public List<Reservation> read() {
+    public List<Reservation> findAll() {
         String sql = """
                 SELECT r.id,
                        r.name,
@@ -45,7 +51,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation findById(final long id) {
+    public Optional<Reservation> findById(final long id) {
         String sql = """
                 SELECT r.id,
                        r.name,
@@ -57,25 +63,25 @@ public class JdbcReservationRepository implements ReservationRepository {
                 WHERE r.id = ?
                 """;
 
-        return jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationRowMapper, id));
     }
 
     @Override
-    public void delete(final long id) {
+    public void deleteById(final long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
     @Override
-    public Reservation create(final String name, final LocalDate date, final Long timeId) {
+    public Reservation save(final Reservation reservation) {
         String sql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setString(1, name);
-            preparedStatement.setDate(2, Date.valueOf(date));
-            preparedStatement.setLong(3, timeId);
+            preparedStatement.setString(1, reservation.getName());
+            preparedStatement.setDate(2, Date.valueOf(reservation.getDate()));
+            preparedStatement.setLong(3, reservation.getTime().getId());
             return preparedStatement;
         }, keyHolder);
 
@@ -84,19 +90,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             throw new IllegalStateException("[ERROR] 예약 ID를 생성하지 못했습니다.");
         }
 
-        return new Reservation(
-                key.longValue(),
-                name,
-                date,
-                null
-        );
+        return reservation.withId(key.longValue());
     }
 
-    private ReservationTime mapReservationTime(final ResultSet resultSet) throws SQLException {
-        Time startAt = resultSet.getTime("start_at");
-        return new ReservationTime(
-                resultSet.getLong("time_id"),
-                startAt.toLocalTime()
-        );
-    }
 }

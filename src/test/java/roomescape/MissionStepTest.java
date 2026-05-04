@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.controller.ReservationController;
-import roomescape.domain.Reservation;
+import roomescape.reservation.controller.ReservationController;
+import roomescape.reservation.domain.Reservation;
 
 import static org.hamcrest.Matchers.is;
 
