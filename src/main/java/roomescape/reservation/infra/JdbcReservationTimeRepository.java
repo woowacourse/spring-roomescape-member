@@ -2,6 +2,7 @@ package roomescape.reservation.infra;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -47,5 +48,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 .addValue("id", id);
 
         template.update(sql, params);
+    }
+
+    public Optional<ReservationTime> findById(long timeId){
+        String sql = "SELECT * FROM reservation_time WHERE id = :timeId";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("timeId", timeId);
+
+        return template.query(sql, params, reservationTimeRowMapper).stream().findFirst();
     }
 }

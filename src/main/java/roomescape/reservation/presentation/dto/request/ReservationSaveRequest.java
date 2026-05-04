@@ -4,8 +4,21 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
+import roomescape.reservation.presentation.dto.response.ReservationTimeFindResponse;
 
 public record ReservationSaveRequest(@NotBlank String name,
                                      @JsonFormat(pattern = "yyyy-MM-dd") @NotNull LocalDate date,
-                                     @NotNull Long timeId) {
+                                     @NotNull Long timeId,
+                                     @NotNull Long themeId) {
+    public Reservation toDomain(ReservationTime time, Theme theme) {
+        return new Reservation(
+                null,
+                name,
+                date,
+                time,
+                theme);
+    }
 }

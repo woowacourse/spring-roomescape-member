@@ -1,5 +1,6 @@
 package roomescape.reservation.infra;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -70,5 +71,17 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .addValue("date", date);
 
         return template.query(sql, params, themeRowMapper);
+    }
+
+    @Override
+    public Optional<Theme> findById(long id) {
+        String sql = "SELECT * FROM theme WHERE id = :id";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        List<Theme> result = template.query(sql, params, themeRowMapper);
+
+        return result.stream().findFirst();
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.reservation.infra;
 
+import java.util.Optional;
 import roomescape.reservation.domain.Theme;
 
 import java.time.LocalDate;
@@ -11,4 +12,6 @@ public interface ThemeRepository {
     void deleteById(long id);
 
     List<Theme> findByDate(LocalDate date);
+
+    Optional<Theme> findById(long id);
 }
