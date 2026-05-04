@@ -1,15 +1,14 @@
-package theme.repository;
+package roomescape.theme.repository;
 
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import theme.domain.Theme;
-
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Optional;
+import roomescape.theme.domain.Theme;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -19,7 +18,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("description"),
-                    resultSet.getString("thumbnailUrl")
+                    resultSet.getString("thumbnail_url")
             );
 
     private final JdbcTemplate jdbcTemplate;
@@ -30,7 +29,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Theme save(Theme theme) {
-        String sql = "insert into theme (name, description, thumbnailUrl) values (?, ?, ?)";
+        String sql = "insert into theme (name, description, thumbnail_url) values (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
@@ -51,7 +50,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Optional<Theme> findById(Long id) {
-        String sql = "select id, name from theme where id = ?";
+        String sql = "select * from theme where id = ?";
         List<Theme> results = jdbcTemplate.query(sql, ThemeMapper, id);
         return results.stream().findFirst();
     }

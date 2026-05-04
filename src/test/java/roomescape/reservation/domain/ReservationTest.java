@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 class ReservationTest {
@@ -19,9 +20,10 @@ class ReservationTest {
         // given
         String name = "브라운";
         LocalDate date = LocalDate.of(2024, 5, 1);
+        Theme theme = Theme.create("우테코", "우테코 전용 테마", "https://example.com");
 
         // when
-        Reservation reservation = Reservation.create(name, date, reservationTime);
+        Reservation reservation = Reservation.create(name, date, reservationTime, theme);
 
         // then
         assertThat(reservation.getName()).isEqualTo(name);
@@ -34,9 +36,10 @@ class ReservationTest {
     void validateNameSizeTest() {
         // given
         String longName = "열한글자짜리이름입니다아";
+        Theme theme = Theme.create("우테코", "우테코 전용 테마", "https://example.com");
 
         // when & then
-        assertThatThrownBy(() -> Reservation.create(longName, LocalDate.of(2024, 5, 1), reservationTime))
+        assertThatThrownBy(() -> Reservation.create(longName, LocalDate.of(2024, 5, 1), reservationTime, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이름은 10글자 이하여야 합니다.");
     }
@@ -46,7 +49,9 @@ class ReservationTest {
     void getterTest() {
         // given
         LocalDate date = LocalDate.of(2024, 5, 1);
-        Reservation reservation = new Reservation(1L, "제임스", date, reservationTime);
+        Theme theme = Theme.create("우테코", "우테코 전용 테마", "https://example.com");
+
+        Reservation reservation = new Reservation(1L, "제임스", date, reservationTime, theme);
 
         // then
         assertThat(reservation.getId()).isEqualTo(1L);

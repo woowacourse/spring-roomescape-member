@@ -1,4 +1,4 @@
-package theme.domain;
+package roomescape.theme.domain;
 
 public class Theme {
 
