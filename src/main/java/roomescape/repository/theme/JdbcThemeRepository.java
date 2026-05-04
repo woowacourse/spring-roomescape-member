@@ -10,6 +10,7 @@ import roomescape.domain.Theme;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -54,11 +55,21 @@ public class JdbcThemeRepository implements ThemeRepository {
         return template.query(sql, themeRowMapper());
     }
 
+    /*
+    List<ReservationTime> reservationTimes = jdbcTemplate.query(
+            "SELECT id, start_at FROM reservation_time WHERE id = ?",
+            reservationTimeRowMapper,
+            id);
+        return reservationTimes.stream().findFirst();
+     */
     @Override
-    public Theme findById(Long id) {
-        return template.queryForObject(
-            "SELECT id, name, description, image_url FROM theme;",
-            themeRowMapper());
+    public Optional<Theme> findById(Long id) {
+        List<Theme> themes = template.query(
+                "SELECT id, name, description, image_url FROM theme WHERE id = ?;",
+                themeRowMapper(),
+                id);
+
+        return themes.stream().findFirst();
     }
 
     private RowMapper<Theme> themeRowMapper() {
