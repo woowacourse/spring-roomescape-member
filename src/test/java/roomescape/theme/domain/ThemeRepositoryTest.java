@@ -1,7 +1,9 @@
 package roomescape.theme.domain;
 
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationRepository;
+import roomescape.time.domain.ReservationTime;
 
 @SpringBootTest
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -16,6 +21,9 @@ class ThemeRepositoryTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     @Test
     @DisplayName("관리자가 테마를 추가하면 정상적으로 저장된다.")
@@ -68,5 +76,50 @@ class ThemeRepositoryTest {
 
         Assertions.assertThat(themeRepository.findAll().size())
                 .isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("예약 수에 따라 정렬된 테마가 조회된다.")
+    void findByReservationCountWithLimitTest() {
+        Theme horror = saveTheme("공포");
+        Theme fantasy = saveTheme("판타지");
+        Theme reasoning = saveTheme("추리");
+        ReservationTime time = saveTime(LocalTime.now());
+        saveReservations("포비", horror, time, LocalDate.now().minusDays( 1));
+        saveReservations("브리", fantasy, time, LocalDate.now().minusDays( 2));
+        saveReservations("브리", fantasy, time, LocalDate.now().minusDays( 3));
+        saveReservations("리사", reasoning, time, LocalDate.now().minusDays(4));
+        saveReservations("리사", reasoning, time, LocalDate.now().minusDays(5));
+        saveReservations("리사", reasoning, time, LocalDate.now().minusDays(6));
+        List<Theme> themes = themeRepository.findByReservationCountWithLimit(
+                LocalDate.now().minusWeeks(1),
+                LocalDate.now().minusDays(1),
+                10
+        );
+        Assertions.assertThat(themes.getFirst()).isEqualTo(reasoning);
+        Assertions.assertThat(themes.get(1)).isEqualTo(fantasy);
+        Assertions.assertThat(themes.get(2)).isEqualTo(horror);
+    }
+
+    private Theme saveTheme(String name) {
+        return themeRepository.save(Theme.builder()
+                .name(name)
+                .description(name + "가 나와요")
+                .durationTime(LocalTime.of(1, 0))
+                .thumbnailImageUrl("http://~~~")
+                .build());
+    }
+
+    private ReservationTime saveTime(LocalTime time) {
+        return ReservationTime.builder().startAt(time).build();
+    }
+
+    private void saveReservations(String name, Theme theme, ReservationTime time, LocalDate date) {
+            reservationRepository.save(Reservation.builder()
+                    .name(name)
+                    .theme(theme)
+                    .date(date)
+                    .time(time)
+                    .build());
     }
 }
