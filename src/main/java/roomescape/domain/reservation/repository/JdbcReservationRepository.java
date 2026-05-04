@@ -49,7 +49,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Long> findTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
-        String sql = "SELECT time_id FROM reservation where date = :date AND themeId = :themeId";
+        String sql = "SELECT time_id FROM reservation WHERE date = :date AND theme_id = :themeId";
         SqlParameterSource parameters = new MapSqlParameterSource(Map.of(
             "date", date,
             "themeId", themeId
@@ -58,7 +58,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(
             sql,
             parameters,
-            (resultSet, rowNum) -> resultSet.getLong("timeId"));
+            (resultSet, rowNum) -> resultSet.getLong("time_id"));
     }
 
     @Override

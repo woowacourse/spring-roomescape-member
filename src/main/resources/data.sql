@@ -1,8 +1,8 @@
 INSERT INTO reservation_time (start_at)
-VALUES (18:00),
-       (19:00),
-       (20:00),
-       (21:00);
+VALUES ('18:00'),
+       ('19:00'),
+       ('20:00'),
+       ('21:00');
 
 INSERT INTO theme (name, description, image_url)
 VALUES ('셜록: 런던의 그림자', '안개 낀 런던, 의문의 살인 사건 현장에 남겨진 마지막 단서를 찾아 범인을 검거하세요.',
