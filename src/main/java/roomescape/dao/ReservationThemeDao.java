@@ -11,6 +11,13 @@ import roomescape.domain.ReservationTheme.ReservationThemeDaoData;
 
 @Repository
 public class ReservationThemeDao {
+    private static final String TABLE_NAME = "reservation_theme";
+
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_NAME = "name";
+    private static final String COLUMN_DESCRIPTION = "description";
+    private static final String COLUMN_IMAGE_URL = "image_url";
+
     private static final String SELECT_ALL_SQL = "SELECT id, name, description, image_url FROM reservation_theme";
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation_theme WHERE id = ?";
     private static final String SELECT_SPECIFIC_ID_SQL = "SELECT id, name, description, image_url FROM reservation_theme WHERE id = ?";
@@ -22,15 +29,15 @@ public class ReservationThemeDao {
     public ReservationThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation_theme")
-                .usingGeneratedKeyColumns("id");
+                .withTableName(TABLE_NAME)
+                .usingGeneratedKeyColumns(COLUMN_ID);
     }
 
     public ReservationThemeDaoData addTheme(ReservationThemeCommand reservationThemeCommand) {
         long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
-                "name", reservationThemeCommand.name(),
-                "description", reservationThemeCommand.description(),
-                "image_url", reservationThemeCommand.imageUrl()
+                COLUMN_NAME, reservationThemeCommand.name(),
+                COLUMN_DESCRIPTION, reservationThemeCommand.description(),
+                COLUMN_IMAGE_URL, reservationThemeCommand.imageUrl()
         )).longValue();
 
         return ReservationThemeDaoData.from(id, reservationThemeCommand);
