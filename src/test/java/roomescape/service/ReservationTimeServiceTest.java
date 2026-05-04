@@ -21,7 +21,7 @@ import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
 public class ReservationTimeServiceTest {
-    private ReservationRepository createReservationRepository(boolean isExistTime, boolean isExistTheme) {
+    private ReservationRepository createReservationRepository(boolean isExistTime) {
         return new ReservationRepository() {
             @Override
             public List<Reservation> getAllReservation() {
@@ -45,7 +45,7 @@ public class ReservationTimeServiceTest {
 
             @Override
             public boolean existsByThemeId(long themeId) {
-                return isExistTheme;
+                return false;
             }
         };
     }
@@ -82,14 +82,14 @@ public class ReservationTimeServiceTest {
     @Test
     @DisplayName("정상 삭제 테스트")
     void deleteReservationTimeTest() {
-        ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {}), createReservationRepository(false, false));
+        ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {}), createReservationRepository(false));
         assertThatCode(() -> reservationTimeService.deleteReservationTime(1)).doesNotThrowAnyException();
     }
 
     @Test
-    @DisplayName("외부에서 사용이 되었을 때 예외 발생 테스트")
+    @DisplayName("외부에서 사용이 되었을 때 삭제 시 예외 테스트")
     void deleteFailedWhenInUseTest() {
-        ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {}), createReservationRepository(true, true));
+        ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {}), createReservationRepository(true));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1))
                 .isExactlyInstanceOf(DataReferencedException.class)
@@ -98,10 +98,10 @@ public class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("조회 시점엔 없었으나 삭제 시점에 제약조건 위반이 발생한 경우 예외 테스트")
-    void deleteFailByIntegrityTest() {
+    void deleteFailedByIntegrityTest() {
         ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {
             throw new DataIntegrityViolationException("정합성 오류");
-        }), createReservationRepository(false, false));
+        }), createReservationRepository(false));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1))
                 .isExactlyInstanceOf(DataReferencedException.class)
