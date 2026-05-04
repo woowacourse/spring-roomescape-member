@@ -1,30 +1,204 @@
 # 기능명세서
 
-## 0단계
 
-### 추가 기능 정리
+# API 명세
 
-- 테마
-    - [ ]  (관리자) 테마 추가
-    - [ ]  (관리자) 테마 삭제
-    - [ ]  테마 전체 조회
-    - [ ]  인기 테마 조회 (최근 1주일간 예약 상위 10개)
-        - [ ]  집계 기간은 오늘을 제외한 직전 7일이다. (예: 오늘이 5/8이면 5/1 ~ 5/7)
-- 예약
-    - [ ]  예약 전체 조회
-    - [ ]  예약 단건 삭제
-    - [ ]  예약 단건 추가
-- 예약 시간
-    - [ ]  예약시간 전체 조회
-    - [ ]  (관리자) 예약시간 단건 삭제
-    - [ ]  (관리자) 예약시간 단건 추가
+## reservation
+
+### 예약 전체 조회
+
+`GET /reservations`
+
+**Response** `200 OK`
+```json
+[
+    {
+        "id": 1,
+        "name": "브라운",
+        "date": "2026-05-04",
+        "time": {
+            "id": 1,
+            "start_at": "12:30"
+        },
+        "theme": {
+            "id": 5,
+            "name": "공포",
+            "description": "짱무섭",
+            "image_url": "..."
+        }
+    }
+]
+```
+
+---
+
+### 예약 단건 추가
+
+`POST /reservations`
+
+**Request**
+```json
+{
+    "name": "브라운",
+    "date": "2026-05-04",
+    "time_id": 1,
+    "theme_id": 5
+}
+```
+
+**Response** `201 Created`
+```json
+{
+    "id": 1
+}
+```
+
+---
+
+### 예약 단건 삭제
+
+`DELETE /reservations/{id}`
+
+---
+
+## reservation_time
+
+### 예약시간 전체 조회
+
+`GET /times`
+
+**Response** `200 OK`
+```json
+[
+    {
+        "id": 1,
+        "start_at": "12:30"
+    }
+]
+```
+
+---
+
+### 예약시간 단건 추가
+
+`POST /times`
+
+**Request**
+```json
+{
+    "start_at": "17:00"
+}
+```
+
+**Response** `201 Created`
+```json
+{
+    "id": 1
+}
+```
+
+---
+
+### 예약시간 단건 삭제
+
+`DELETE /times/{id}`
+
+---
+
+### 예약 가능 시간 조회
+
+`GET /times?type=available&date={date}&themeId={themeId}`
+
+**Response** `200 OK`
+```json
+[
+    {
+        "id": 1,
+        "start_at": "12:30"
+    }
+]
+```
+
+---
+
+## theme
+
+### 테마 전체 조회
+
+`GET /themes`
+
+**Response** `200 OK`
+```json
+[
+    {
+        "id": 1,
+        "name": "공포",
+        "description": "짱무섭",
+        "image_url": "..."
+    }
+]
+```
+
+---
+
+### 테마 단건 추가
+
+`POST /themes`
+
+**Request**
+```json
+{
+    "name": "",
+    "description": "",
+    "image_url": ""
+}
+```
+
+**Response** `201 Created`
+```json
+{
+    "id": 1
+}
+```
+
+---
+
+### 테마 단건 삭제
+
+`DELETE /themes/{id}`
+
+---
+
+### 인기 테마 조회
+
+`GET /themes/popular?period=week&limit=10`
+
+**Response** `200 OK`
+```json
+[
+    {
+        "id": 2,
+        "rank": 1,
+        "name": "프랑켄슈타인",
+        "description": "설명",
+        "image_url": "..."
+    },
+    {
+        "id": 1,
+        "rank": 2,
+        "name": "나폴리탄",
+        "description": "설명",
+        "image_url": "..."
+    }
+]
+```
 
 ## 1단계 - 테마 도메인 추가
 
 ### 테마
 
 - [x]  테마는 이름, 설명, 썸네일 이미지 URL을 가진다.
-- [ ]  **관리자는 테마를 추가할 수 있다.**
+- [x]  **관리자는 테마를 추가할 수 있다.**
 - [ ]  **관리자는 테마를 삭제할 수 있다.**
 - [ ]  **관리자는 전체 테마 목록을 조회할 수 있다.**
 
