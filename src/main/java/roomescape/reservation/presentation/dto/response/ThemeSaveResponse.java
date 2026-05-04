@@ -6,7 +6,7 @@ public record ThemeSaveResponse(
         Long id,
         String name,
         String description,
-        String thumbnailUrl
+        String ThumbnailUrl
 ) {
     public static ThemeSaveResponse from(Theme theme) {
         return new ThemeSaveResponse(
