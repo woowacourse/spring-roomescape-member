@@ -8,7 +8,7 @@ public record Reservation(
         LocalDate date,
         ReservationTime time
 ) {
-    public static Reservation of(Long id, String name, LocalDate date, ReservationTime time) {
+    public static Reservation createWithNullId(Long id, String name, LocalDate date, ReservationTime time) {
         return new Reservation(id, name, date, time);
     }
 }

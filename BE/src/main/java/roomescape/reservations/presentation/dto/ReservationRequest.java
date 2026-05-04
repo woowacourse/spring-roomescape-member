@@ -33,6 +33,4 @@ public record ReservationRequest(
             throw new ReservationException(ErrorCode.RESERVATION_DATE_NULL);
         }
     }
-
-
 }
