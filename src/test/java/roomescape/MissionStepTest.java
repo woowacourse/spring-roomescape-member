@@ -27,6 +27,7 @@ public class MissionStepTest {
     void 예약_추가_및_삭제() {
         Map<String, String> time = new HashMap<>();
         time.put("startAt", "15:40");
+        time.put("endAt", "18:00");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)

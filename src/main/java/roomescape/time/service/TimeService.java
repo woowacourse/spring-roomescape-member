@@ -5,7 +5,7 @@ import java.util.List;
 import roomescape.reservation.domain.ReservationTime;
 
 public interface TimeService {
-  ReservationTime create(String startAt);
+  ReservationTime create(String startAt, String endAt);
 
   List<ReservationTime> findAll();
 

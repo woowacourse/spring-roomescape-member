@@ -34,10 +34,11 @@ public class JdbcTimeRepository implements TimeRepository {
   }
 
   @Override
-  public ReservationTime save(String startAt) {
+  public ReservationTime save(String startAt, String endAt) {
     Number id = timeInsert.executeAndReturnKey(
         new MapSqlParameterSource()
             .addValue("start_at", startAt)
+            .addValue("end_at", endAt)
     );
 
     long timeId = id.longValue();

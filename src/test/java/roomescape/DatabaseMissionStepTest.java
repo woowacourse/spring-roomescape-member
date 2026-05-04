@@ -37,8 +37,8 @@ public class DatabaseMissionStepTest {
     @Test
     void DB_조회_API_전환() {
         jdbcTemplate.update(
-                "INSERT INTO reservation_time (start_at) VALUES (?)",
-                "15:40"
+                "INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)",
+                "15:40", "16:00"
         );
         Long timeId = jdbcTemplate.queryForObject(
                 "SELECT id FROM reservation_time WHERE start_at = ?",
@@ -66,6 +66,7 @@ public class DatabaseMissionStepTest {
     void DB_추가_삭제_API_전환() {
         Map<String, String> time = new HashMap<>();
         time.put("startAt", "10:00");
+        time.put("endAt", "12:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

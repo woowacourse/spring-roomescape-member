@@ -17,8 +17,8 @@ public class TimeServiceImpl implements TimeService {
   }
 
   @Override
-  public ReservationTime create(String startAt) {
-    return timeRepository.save(startAt);
+  public ReservationTime create(String startAt, String endAt) {
+    return timeRepository.save(startAt, endAt);
   }
 
   @Override

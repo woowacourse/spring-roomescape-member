@@ -4,12 +4,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+@Repository
 public class JdbcThemeRepository implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -38,7 +40,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         Number id = themeInsert.executeAndReturnKey(new MapSqlParameterSource()
                 .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())
-                .addValue("imageUrl", theme.getImageUrl()));
+                .addValue("image_url", theme.getImageUrl()));
         return theme.withId(id.longValue());
     }
 

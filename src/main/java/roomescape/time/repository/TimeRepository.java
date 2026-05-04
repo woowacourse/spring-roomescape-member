@@ -8,7 +8,7 @@ import roomescape.reservation.domain.ReservationTime;
 public interface TimeRepository {
   List<ReservationTime> findAll();
 
-  ReservationTime save(String startAt);
+  ReservationTime save(String startAt, String endAt);
 
   Optional<ReservationTime> findById(long id);
 
