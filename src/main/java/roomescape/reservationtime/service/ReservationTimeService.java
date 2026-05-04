@@ -19,7 +19,7 @@ public class ReservationTimeService {
         ReservationTime reservationTime = ReservationTime.createNew(startAt);
 
         if (reservationTimeRepository.existsByStartAt(startAt)) {
-            throw new IllegalArgumentException("[ERROR] 찾는 시간이 없습니다");
+            throw new IllegalArgumentException("[ERROR] 같은 시간을 추가할 수 없습니다.");
         }
 
         return reservationTimeRepository.save(reservationTime);

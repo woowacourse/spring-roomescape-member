@@ -2,6 +2,7 @@ package roomescape.reservation.repository;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -91,6 +92,18 @@ public class JdbcReservationRepository implements ReservationRepository {
         }
 
         return reservation.withId(key.longValue());
+    }
+
+    @Override
+    public boolean existsByDateAndTimeId(final LocalDate date, final long timeId) {
+        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ?)";
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                sql,
+                Boolean.class,
+                Date.valueOf(date),
+                timeId
+        ));
     }
 
 }

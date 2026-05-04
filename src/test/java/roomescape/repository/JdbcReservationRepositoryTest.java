@@ -1,0 +1,120 @@
+package roomescape.repository;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.JdbcReservationRepository;
+import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
+
+@JdbcTest
+class JdbcReservationRepositoryTest {
+
+    private JdbcReservationRepository jdbcReservationRepository;
+    private JdbcReservationTimeRepository jdbcReservationTimeRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setup() {
+        jdbcReservationRepository = new JdbcReservationRepository(jdbcTemplate);
+        jdbcReservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
+    }
+
+    @Test
+    @DisplayName("예약 저장")
+    void reservation_save_test() {
+        //given
+        String name = "쿠다";
+        LocalDate date = LocalDate.parse("2023-08-05");
+        LocalTime time = LocalTime.parse("10:00");
+
+        ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time));
+
+        Reservation reservation = Reservation.createNew(name, date, reservationTime);
+        //when
+        Reservation result = jdbcReservationRepository.save(reservation);
+        Reservation saved = jdbcReservationRepository.findById(result.getId())
+                .orElseThrow();
+
+        // then
+        assertThat(result).isEqualTo(saved);
+    }
+
+    @Test
+    @DisplayName("예약 저장 중복 예외")
+    void reservation_save_duplicate_test() {
+        // given
+        LocalDate date = LocalDate.parse("2026-08-06");
+        LocalTime time = LocalTime.parse("10:00");
+
+        ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time));
+
+        // when & then
+        assertThrows(DataIntegrityViolationException.class, () -> {
+            jdbcReservationRepository.save(
+                    Reservation.createNew("쿠다", date, reservationTime)
+            );
+            jdbcReservationRepository.save(
+                    Reservation.createNew("아루", date, reservationTime)
+            );
+        });
+    }
+
+    @Test
+    @DisplayName("예약 전체 조회")
+    void reservation_findAll_test() {
+        //given
+        LocalDate date = LocalDate.parse("2026-08-06");
+        LocalTime time = LocalTime.parse("10:00");
+
+        ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time));
+        jdbcReservationRepository.save(Reservation.createNew("쿠다", date, reservationTime));
+
+        //when
+        List<Reservation> reservations = jdbcReservationRepository.findAll();
+
+        //then
+        assertThat(reservations.size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("예약 삭제")
+    void reservation_delete_test() {
+        // given
+        LocalDate date = LocalDate.parse("2026-08-06");
+        LocalTime time = LocalTime.parse("10:00");
+
+        ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time));
+
+        jdbcReservationRepository.save(Reservation.createNew("쿠다", date, reservationTime));
+
+        int beforeSize = jdbcReservationRepository.findAll().size();
+
+        Reservation reservation = jdbcReservationRepository.findAll()
+                .stream()
+                .findFirst()
+                .orElseThrow();
+
+        // when
+        jdbcReservationRepository.deleteById(reservation.getId());
+
+        // then
+        int afterSize = jdbcReservationRepository.findAll().size();
+
+        assertThat(afterSize).isEqualTo(beforeSize - 1);
+    }
+
+}

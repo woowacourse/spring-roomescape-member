@@ -1,14 +1,24 @@
 package roomescape.reservationtime.domain;
 
 import java.time.LocalTime;
+import java.util.Objects;
+import roomescape.reservation.domain.Reservation;
 
 public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
 
     private ReservationTime(final Long id, final LocalTime startAt) {
+        validateStartAt(startAt);
+
         this.id = id;
         this.startAt = startAt;
+    }
+
+    private void validateStartAt(LocalTime startAt) {
+        if (startAt == null) {
+            throw new IllegalArgumentException("[ERROR] 예약 시간을 비어있을 수 없습니다.");
+        }
     }
 
     public static ReservationTime createNew(final LocalTime startAt) {
@@ -37,6 +47,20 @@ public class ReservationTime {
 
     public LocalTime getStartAt() {
         return this.startAt;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(!(o instanceof ReservationTime)) {
+            return false;
+        }
+        ReservationTime r = (ReservationTime) o;
+        return Objects.equals(id, r.getId());
+    }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(id);
     }
 
 }

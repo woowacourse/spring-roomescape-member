@@ -40,7 +40,7 @@ public class Reservation {
     }
 
     private void validate(final String name, final LocalDate date, final ReservationTime time) {
-        if (name.length() >= 10) {
+        if (name == null || name.length() >= 10 || name.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 잘못된 이름 입력입니다.");
         }
 
@@ -75,7 +75,7 @@ public class Reservation {
             return false;
         }
         Reservation r = (Reservation) o;
-        return id == r.getId();
+        return Objects.equals(id, r.getId());
     }
 
     @Override

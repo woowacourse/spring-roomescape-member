@@ -1,5 +1,6 @@
 package roomescape.reservation.repository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,5 +38,16 @@ public class MemoryReservationRepository implements ReservationRepository {
         Reservation newReservation = reservation.withId(index.incrementAndGet());
         reservations.add(newReservation);
         return newReservation;
+    }
+
+    @Override
+    public boolean existsByDateAndTimeId(LocalDate date, long timeId) {
+        for (Reservation reservation : reservations) {
+            if (reservation.getDate().equals(date) && reservation.getTime().getId() == timeId) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
