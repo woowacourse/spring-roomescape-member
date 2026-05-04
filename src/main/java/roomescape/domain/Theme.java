@@ -32,6 +32,10 @@ public class Theme {
         return imageUrl;
     }
 
+    public Theme withId(Long id) {
+        return new Theme(id, this.name, this.description, this.imageUrl);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
