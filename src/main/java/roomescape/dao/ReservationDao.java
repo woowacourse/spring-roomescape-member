@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Repository
 public class ReservationDao {
@@ -23,19 +24,30 @@ public class ReservationDao {
 
     public List<Reservation> findAll() {
         return jdbcTemplate.query(
-                "SELECT r.id, r.name, r.date, t.id AS time_id, t.start_at " +
-                        "FROM reservation r " +
-                        "INNER JOIN reservation_time t ON r.time_id = t.id",
+                """
+                        SELECT r.id,r.name,r.date,rt.id AS time_id, rt.start_at,
+                        t.id AS theme_id, t.name AS theme_name, t.description, t.url
+                        FROM reservation r
+                        INNER JOIN reservation_time rt ON r.time_id = rt.id
+                        INNER JOIN theme t ON r.theme_id = t.id;
+                    """,
                 (rs, rowNum) -> {
                     ReservationTime time = new ReservationTime(
                             rs.getLong("time_id"),
                             rs.getTime("start_at").toLocalTime()
                     );
+                    Theme theme = new Theme(
+                            rs.getLong("theme_id"),
+                            rs.getString("theme_name"),
+                            rs.getString("description"),
+                            rs.getString("url")
+                    );
                     return new Reservation(
                             rs.getLong("id"),
                             rs.getString("name"),
                             rs.getDate("date").toLocalDate(),
-                            time
+                            time,
+                            theme
                     );
                 }
         );
@@ -48,7 +60,8 @@ public class ReservationDao {
         params.put("time_id", reservation.getTime().getId());
 
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime());
+        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+                reservation.getTheme());
     }
 
     public void delete(Long id) {
