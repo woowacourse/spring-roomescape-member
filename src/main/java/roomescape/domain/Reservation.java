@@ -10,12 +10,12 @@ import java.time.LocalDateTime;
 public class Reservation {
 
     private final Long id;
-    private final Name name;
+    private final PersonName name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Long themeId;
 
-    private Reservation(final Long id, final Name name, final LocalDate date, final ReservationTime time, final Long themeId) {
+    private Reservation(final Long id, final PersonName name, final LocalDate date, final ReservationTime time, final Long themeId) {
         validateDateTime(date, time);
 
         this.id = id;
@@ -28,7 +28,7 @@ public class Reservation {
     public static Reservation create(ReservationCreateCommand data) {
         return new Reservation(
                 null,
-                Name.from(data.name()),
+                PersonName.from(data.name()),
                 data.date(),
                 data.time(),
                 data.themeId()
@@ -53,7 +53,7 @@ public class Reservation {
             final Long themeId) {
         return new Reservation(
                 id,
-                Name.from(name),
+                PersonName.from(name),
                 date,
                 time,
                 themeId
