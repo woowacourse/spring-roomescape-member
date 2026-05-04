@@ -1,6 +1,7 @@
 package roomescape.model;
 
 import org.junit.jupiter.api.Test;
+import roomescape.theme.model.Theme;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
