@@ -1,6 +1,7 @@
 package roomescape.reservation.infra;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -8,10 +9,20 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Theme;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class JdbcThemeRepository implements ThemeRepository {
     private final NamedParameterJdbcTemplate template;
+    private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) ->
+            new Theme(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("description"),
+                    resultSet.getString("thumbnail_url")
+            );
 
     @Override
     public Theme save(Theme theme) {
@@ -45,5 +56,19 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .addValue("id", id);
 
         template.update(sql, params);
+    }
+
+    @Override
+    public List<Theme> findByDate(LocalDate date) {
+        String sql = "SELECT DISTINCT t.id, t.name, t.description, t.thumbnail_url " +
+                "FROM theme t " +
+                "JOIN schedule s ON t.id = s.theme_id " +
+                "WHERE s.date = :date " +
+                "ORDER BY t.id ASC";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("date", date);
+
+        return template.query(sql, params, themeRowMapper);
     }
 }

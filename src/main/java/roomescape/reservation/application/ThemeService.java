@@ -5,7 +5,11 @@ import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.infra.ThemeRepository;
 import roomescape.reservation.presentation.dto.request.ThemeSaveRequest;
+import roomescape.reservation.presentation.dto.response.ThemeFindResponse;
 import roomescape.reservation.presentation.dto.response.ThemeSaveResponse;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,5 +23,10 @@ public class ThemeService {
 
     public void delete(long id) {
         themeRepository.deleteById(id);
+    }
+
+    public List<ThemeFindResponse> findByDate(LocalDate date) {
+        List<Theme> themes = themeRepository.findByDate(date);
+        return ThemeFindResponse.of(themes);
     }
 }
