@@ -56,7 +56,7 @@ Location: /themes/{id}
 
 #### 메서드 / URL
 
-- GET /times
+- GET /times/available
 
 #### 요청
 
@@ -78,3 +78,38 @@ date=2026-05-08&themeId=1
   }
 ]
 ```
+
+## 3단계 - 인기 테마 조회
+
+### 1. 최근 1주 동안 예약이 많았던 테마 상위 10개 조회 기능
+
+#### 구현
+- [ ] 구현 완료
+
+#### 메서드 / URL
+
+- GET /themes/popular
+
+#### 요청
+
+- query parameter
+
+```text
+period=7d&limit=10
+```
+
+#### 응답
+
+- 200 ok
+
+```json
+[
+  {
+    id,
+    name,
+    description,
+    thumbnailUrl
+  }
+]
+```
+
