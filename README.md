@@ -25,13 +25,13 @@
 ## 관리자 API 명세서
 
 ### 1. 테마 추가
-| 항목 | 상세 내용 |
-| :--- | :--- |
-| **URL** | `/admin/themes` |
-| **HTTP Method** | `POST` |
-| **Request (Body)** | `{ "name": "테마명" }` |
-| **Response** | `{ "id": 1, "name": "테마명" }` |
-| **StatusCode** | `201 Created` |
+| 항목 | 상세 내용                                                               |
+| :--- |:--------------------------------------------------------------------|
+| **URL** | `/admin/themes`                                                     |
+| **HTTP Method** | `POST`                                                              |
+| **Request (Body)** | `{ "name": "테마명" }`                                                 |
+| **Response** | `{ "id": 1, "name": "테마명", "description":"설명", "imageUrl":"이미지경로" }` |
+| **StatusCode** | `201 Created`                                                       |
 
 ### 2. 테마 삭제
 | 항목 | 상세 내용 |
