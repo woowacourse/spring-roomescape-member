@@ -11,9 +11,13 @@ import roomescape.dto.response.ReservationResponse;
 @Service
 public class ReservationService {
     private final ReservationDao reservationDao;
+    private final ReservationTimeDao reservationTimeDao;
+    private final ThemeDao themeDao;
 
-    public ReservationService(ReservationDao reservationDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
         this.reservationDao = reservationDao;
+        this.reservationTimeDao = reservationTimeDao;
+        this.themeDao = themeDao;
     }
 
     public List<Reservation> findAll() {
@@ -21,7 +25,7 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest request) {
-        ReservationTime time = reservationDao.findTimeById(request.timeId());
+        ReservationTime time = reservationTimeDao.findTimeById(request.timeId());
 
         if (time == null) {
             throw new IllegalArgumentException("요청하신 시간 ID가 존재하지 않습니다.");
