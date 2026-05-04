@@ -5,6 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeRequest;
 import roomescape.domain.theme.ThemeResponse;
+import roomescape.exception.ReservationNotFoundException;
+import roomescape.exception.ThemeNotFoundException;
 import roomescape.repository.ThemeQueryingDao;
 import roomescape.repository.ThemeUpdatingDao;
 
@@ -37,6 +39,10 @@ public class ThemeService {
 
     @Transactional
     public void delete(Long id) {
-        themeUpdatingDao.delete(id);
+        int count = themeUpdatingDao.delete(id);
+
+        if (count == 0) {
+            throw new ThemeNotFoundException(id);
+        }
     }
 }
