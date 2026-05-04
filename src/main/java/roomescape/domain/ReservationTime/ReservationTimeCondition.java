@@ -20,7 +20,7 @@ public record ReservationTimeCondition(String date, long themeId) {
         try {
             LocalDate.parse(date);
         } catch (DateTimeParseException e) {
-            throw new ReservationCommandException(ErrorMessage.INVALID_DATE_FORMAT);
+            throw new ReservationTimeConditionException(ErrorMessage.INVALID_DATE_FORMAT);
         }
     }
 
