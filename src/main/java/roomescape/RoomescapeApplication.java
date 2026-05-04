@@ -1,4 +1,3 @@
-/*
 package roomescape;
 
 import org.springframework.boot.SpringApplication;
@@ -10,4 +9,3 @@ public class RoomescapeApplication {
         SpringApplication.run(RoomescapeApplication.class, args);
     }
 }
-*/
