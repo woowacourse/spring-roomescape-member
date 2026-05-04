@@ -6,6 +6,8 @@ import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.theme.Theme;
+import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.ReservationTime;
 import roomescape.time.ReservationTimeRepository;
 
@@ -14,19 +16,25 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository) {
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public ReservationResponse create(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
 
+        Theme theme = themeRepository.findById(reservationRequest.themeId()).stream().findFirst()
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
+
         Reservation reservation = new Reservation(
-                reservationRequest.name(),
+                reservationRequest.userName(),
+                theme,
                 reservationRequest.date(),
                 reservationTime
         );
