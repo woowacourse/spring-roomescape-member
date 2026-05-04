@@ -1,4 +1,6 @@
 package roomescape.reservation.service;
 
-public record ReservationCommand(String name, String date, Long timeId) {
+import java.time.LocalDate;
+
+public record ReservationCommand(String name, LocalDate date, Long timeId) {
 }

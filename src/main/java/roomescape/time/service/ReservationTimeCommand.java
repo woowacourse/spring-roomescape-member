@@ -1,4 +1,6 @@
 package roomescape.time.service;
 
-public record ReservationTimeCommand(String startAt) {
+import java.time.LocalTime;
+
+public record ReservationTimeCommand(LocalTime startAt) {
 }

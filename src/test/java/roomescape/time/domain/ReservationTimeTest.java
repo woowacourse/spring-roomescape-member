@@ -15,24 +15,14 @@ class ReservationTimeTest {
     @DisplayName("성공적으로 시간 도메인 객체를 생성한다.")
     void createSuccess() {
         // given
-        String timeString = "10:00";
+        LocalTime time = LocalTime.of(10, 0);
 
         // when
-        ReservationTime reservationTime = ReservationTime.create(timeString);
+        ReservationTime reservationTime = ReservationTime.create(time);
 
         // then
         assertThat(reservationTime.getStartAt()).isEqualTo(LocalTime.of(10, 0));
         assertThat(reservationTime.getId()).isNull();
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"10시 00분", "1000", "25:00", "10:61", "오전 10시"})
-    @DisplayName("잘못된 시간 형식이나 존재하지 않는 시간 입력 시 예외가 발생한다.")
-    void validateTimeFormatTest(String invalidTime) {
-        // when & then
-        assertThatThrownBy(() -> ReservationTime.create(invalidTime))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("시간 형식이 올바르지 않습니다.");
     }
 
     @Test
