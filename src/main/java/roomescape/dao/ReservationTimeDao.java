@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -18,17 +19,21 @@ public class ReservationTimeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    private RowMapper<ReservationTime> getReservationTimeRowMapper() {
+        return (resultSet, rowNum) -> {
+            ReservationTime reservationTime = new ReservationTime(
+                    resultSet.getLong("id"),
+                    LocalTime.parse(resultSet.getString("start_at"))
+            );
+            return reservationTime;
+        };
+    }
+
     public List<ReservationTime> findAllReservationTimes() {
         String sql = "select id, start_at from reservation_time";
         List<ReservationTime> reservationTimeList = jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> {
-                    ReservationTime reservationTime = new ReservationTime(
-                            resultSet.getLong("id"),
-                            LocalTime.parse(resultSet.getString("start_at"))
-                    );
-                    return reservationTime;
-                });
+                getReservationTimeRowMapper());
         return reservationTimeList;
     }
 

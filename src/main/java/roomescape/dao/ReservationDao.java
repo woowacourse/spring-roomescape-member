@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -18,6 +19,21 @@ public class ReservationDao {
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    private RowMapper<Reservation> reservationRowMapper() {
+        return (resultSet, rowNum) -> {
+            Reservation newReservation = new Reservation(
+                    resultSet.getLong("reservation_id"),
+                    resultSet.getString("name"),
+                    LocalDate.parse(resultSet.getString("date")),
+                    new ReservationTime(
+                            resultSet.getLong("time_id"),
+                            LocalTime.parse(resultSet.getString("start_at"))
+                    )
+            );
+            return newReservation;
+        };
     }
 
     public List<Reservation> findAllReservations() {
@@ -34,18 +50,7 @@ public class ReservationDao {
                 """;
         List<Reservation> reservations = jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> {
-                    Reservation reservation = new Reservation(
-                            resultSet.getLong("reservation_id"),
-                            resultSet.getString("name"),
-                            LocalDate.parse(resultSet.getString("date")),
-                            new ReservationTime(
-                                    resultSet.getLong("time_id"),
-                                    LocalTime.parse(resultSet.getString("start_at"))
-                            )
-                    );
-                    return reservation;
-                });
+                reservationRowMapper());
         return reservations;
     }
 
@@ -64,18 +69,7 @@ public class ReservationDao {
                 """;
         Reservation reservation = jdbcTemplate.queryForObject(
                 sql,
-                (resultSet, rowNum) -> {
-                    Reservation newReservation = new Reservation(
-                            resultSet.getLong("reservation_id"),
-                            resultSet.getString("name"),
-                            LocalDate.parse(resultSet.getString("date")),
-                            new ReservationTime(
-                                    resultSet.getLong("time_id"),
-                                    LocalTime.parse(resultSet.getString("start_at"))
-                            )
-                    );
-                    return newReservation;
-                }, id);
+                reservationRowMapper(), id);
         return reservation;
     }
 
