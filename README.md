@@ -24,10 +24,10 @@ class Theme
 | 예약 등록       | POST /reservations                     | `{name, date, timeId, themeId}`<br> | `{id, name, date, time, theme}`<br>         | 201   |
 
 ### 1단계 - 테마 도메인 추가
-가- [X] 테마 테이블 스키마 추가
+- [X] 테마 테이블 스키마 추가
 - [X] 초기 테마 데이터 삽입 쿼리문 추가
-- [ ] Theme 클래스 추가
-    - [ ] 검증 추가
+- [X] Theme 클래스 추가
+    - [X] 검증 추가
 - [ ] 예약에 테마 필드 추가
 - [ ] reservation 스키마 수정(테마를 참조하도록)
 - [ ] reservation 테마 필드 null 검증 추가
