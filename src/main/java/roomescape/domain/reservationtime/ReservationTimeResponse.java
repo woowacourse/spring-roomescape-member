@@ -4,16 +4,20 @@ import java.time.LocalTime;
 
 public class ReservationTimeResponse {
 
-    private Long timeId;
-    private LocalTime startAt;
+    private final Long id;
+    private final LocalTime startAt;
 
-    public ReservationTimeResponse(Long id, LocalTime startAt) {
-        this.timeId = id;
+    private ReservationTimeResponse(Long id, LocalTime startAt) {
+        this.id = id;
         this.startAt = startAt;
     }
 
+    public static ReservationTimeResponse from(ReservationTime reservationTime) {
+        return new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt());
+    }
+
     public Long getId() {
-        return timeId;
+        return id;
     }
 
     public LocalTime getStartAt() {

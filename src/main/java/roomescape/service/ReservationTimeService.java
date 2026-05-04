@@ -25,9 +25,11 @@ public class ReservationTimeService {
     public List<ReservationTimeResponse> read() {
         List<ReservationTime> reservationTimes = reservationTimeQueryingDao.findAllReservationTime();
         return reservationTimes.stream()
-                .map(reservationTime -> new ReservationTimeResponse(
-                        reservationTime.getId(),
-                        reservationTime.getStartAt()
+                .map(reservationTime -> ReservationTimeResponse.from(
+                        new ReservationTime(
+                                reservationTime.getId(),
+                                reservationTime.getStartAt()
+                        )
                 ))
                 .toList();
     }
@@ -35,7 +37,7 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTimeResponse create(ReservationTimeRequest reservationTimeReq) {
         Long generatedId = reservationTimeUpdatingDao.insert(reservationTimeReq);
-        return new ReservationTimeResponse(generatedId, reservationTimeReq.getStartAt());
+        return ReservationTimeResponse.from(new ReservationTime(generatedId, reservationTimeReq.getStartAt()));
     }
 
     public void update(ReservationTimeRequest newReservationTimeReq, Long id) {

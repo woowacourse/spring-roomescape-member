@@ -41,6 +41,18 @@ public class MissionStep3Test {
 
     @Test
     void 예약과_시간_연결() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "무서워");
+        params.put("description", "abc");
+        params.put("url", "https://hello.com");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(201);
+
         Map<String, String> timeParams = new HashMap<>();
         timeParams.put("startAt", "10:00");
 
@@ -55,6 +67,7 @@ public class MissionStep3Test {
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -73,6 +86,7 @@ public class MissionStep3Test {
         updatedReservation.put("name", "주니");
         updatedReservation.put("date", "2023-08-06");
         updatedReservation.put("timeId", 1);
+        updatedReservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

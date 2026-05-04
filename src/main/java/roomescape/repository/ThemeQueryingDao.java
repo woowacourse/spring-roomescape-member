@@ -27,6 +27,15 @@ public class ThemeQueryingDao {
         return theme;
     };
 
+    public Theme findThemeById(long id) {
+        String sql = """
+                SELECT id, name, description, url
+                FROM theme
+                WHERE id = ?
+                """;
+        return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
+    }
+
     public List<Theme> findAllTheme() {
         String sql = """
                 SELECT id, name, description, url

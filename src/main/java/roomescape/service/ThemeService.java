@@ -26,14 +26,14 @@ public class ThemeService {
     }
 
     @Transactional
-    public ThemeResponse create(ThemeRequest theme) {
-        Long id = themeUpdatingDao.insert(theme);
-        return new ThemeResponse(id, theme.getName(), theme.getDescription(), theme.getUrl());
+    public ThemeResponse create(ThemeRequest themeRequest) {
+        Long id = themeUpdatingDao.insert(themeRequest);
+        return ThemeResponse.from(new Theme(id, themeRequest.getName(), themeRequest.getDescription(), themeRequest.getUrl()));
     }
 
     public List<ThemeResponse> findAll() {
         return themeQueryingDao.findAllTheme().stream()
-                .map(theme -> new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(), theme.getUrl()))
+                .map(ThemeResponse::from)
                 .toList();
     }
 

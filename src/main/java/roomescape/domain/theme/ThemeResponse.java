@@ -7,11 +7,15 @@ public class ThemeResponse {
     private final String description;
     private final String url;
 
-    public ThemeResponse(Long id, String name, String description, String url) {
+    private ThemeResponse(Long id, String name, String description, String url) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.url = url;
+    }
+
+    public static ThemeResponse from(Theme theme) {
+        return new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(), theme.getUrl());
     }
 
     public Long getId() {

@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRequest;
 import roomescape.domain.reservation.ReservationResponse;
 import roomescape.service.ReservationService;
@@ -26,8 +25,14 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public List<ReservationResponse> read() {
-        return reservationService.read();
+    public List<ReservationResponse> readAll() {
+        return reservationService.readAll();
+    }
+
+    @GetMapping("/reservations/{id}")
+    public ResponseEntity<ReservationResponse> read(@PathVariable Long id) {
+        ReservationResponse reservationResponse = reservationService.read(id);
+        return ResponseEntity.ok(reservationResponse);
     }
 
     @PostMapping("/reservations")
