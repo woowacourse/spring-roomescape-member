@@ -1,20 +1,16 @@
 package roomescape.domain;
 
-import java.time.LocalTime;
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ReservationTime {
     private Long id;
-    private final LocalTime startAt;
+    private final String startAt;
 
-    public static ReservationTime createWithoutId(LocalTime startAt) {
-        return new ReservationTime(null, startAt);
+    public ReservationTime(String startAt) {
+        this.startAt = startAt;
     }
 
-    public ReservationTime(Long id, LocalTime startAt) {
+    public ReservationTime(Long id, String startAt) {
         this.id = id;
         this.startAt = startAt;
     }
@@ -23,19 +19,8 @@ public class ReservationTime {
         return id;
     }
 
-    public LocalTime getStartAt() {
+    public String getStartAt() {
         return startAt;
-    }
-
-    private Set<Long> extractReservedTimeIds(List<Reservation> reservations) {
-        return reservations.stream()
-                .map(reservation -> reservation.getTime().getId())
-                .collect(Collectors.toSet());
-    }
-
-    public boolean isNotReserved(List<Reservation> reservations) {
-        return reservations.stream()
-                .noneMatch(reservation -> reservation.getTime().equals(this));
     }
 
     @Override

@@ -1,8 +1,7 @@
 package roomescape.controller;
 
-import jakarta.validation.Valid;
-import java.net.URI;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,15 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.request.ReservationRequest;
-import roomescape.dto.response.ReservationResponse;
+import roomescape.dto.ReservationRequest;
+import roomescape.dto.ReservationResponse;
 import roomescape.service.ReservationService;
 
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
-    private static final String LOCATION_DEFAULT_VALUE = "/reservations/";
-
     private final ReservationService reservationService;
 
     public ReservationController(ReservationService reservationService) {
@@ -27,22 +24,20 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> addReservation(@Valid @RequestBody ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> addReservation(@RequestBody ReservationRequest request) {
         ReservationResponse response = reservationService.addReservation(request);
-        return ResponseEntity.created(URI.create(LOCATION_DEFAULT_VALUE + response.id()))
-                .body(response);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<ReservationResponse> responses = reservationService.getAllReservations();
-        return ResponseEntity.ok(responses);
+        List<ReservationResponse> responses = reservationService.findAllReservations();
+        return new ResponseEntity<>(responses, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{reservationId}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable("reservationId") Long reservationId) {
+    @DeleteMapping("/{reservation-id}")
+    public ResponseEntity<Void> deleteReservation(@PathVariable("reservation-id") Long reservationId) {
         reservationService.delete(reservationId);
-        return ResponseEntity.noContent()
-                .build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -1,25 +1,24 @@
 package roomescape.domain;
 
-import java.time.LocalDate;
 import java.util.Objects;
 
 public class Reservation {
     private Long id;
     private final String name;
-    private final LocalDate date;
+    private final String date;
     private final ReservationTime time;
-    private final Theme theme;
 
-    public static Reservation createWithoutId(String name, LocalDate date, ReservationTime time, Theme theme) {
-        return new Reservation(null, name, date, time, theme);
+    public Reservation(String name, String date, ReservationTime time) {
+        this.name = name;
+        this.date = date;
+        this.time = time;
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, String name, String date, ReservationTime time) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
-        this.theme = theme;
     }
 
     public Long getId() {
@@ -30,16 +29,12 @@ public class Reservation {
         return name;
     }
 
-    public LocalDate getDate() {
+    public String getDate() {
         return date;
     }
 
     public ReservationTime getTime() {
         return time;
-    }
-
-    public Theme getTheme() {
-        return theme;
     }
 
     @Override
@@ -53,8 +48,7 @@ public class Reservation {
             return Objects.equals(id, reservation.id);
         }
         return Objects.equals(name, reservation.name)
-                && Objects.equals(date, reservation.date) && Objects.equals(time, reservation.time)
-                && Objects.equals(theme, reservation.theme);
+                && Objects.equals(date, reservation.date) && Objects.equals(time, reservation.time);
     }
 
     @Override
@@ -62,6 +56,6 @@ public class Reservation {
         if (id != null) {
             return Objects.hash(id);
         }
-        return Objects.hash(name, date, time, theme);
+        return Objects.hash(name, date, time);
     }
 }
