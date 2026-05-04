@@ -29,7 +29,6 @@ public class ReservationService {
     }
 
     public Reservation create(String name, String date, Long timeId, Long themeId) {
-        validateId(timeId);
         ReservationTime time = findReservationTime(timeId);
         Theme theme = findTheme(themeId);
         Reservation reservation = new Reservation(null, name, date, time, theme);
@@ -42,18 +41,18 @@ public class ReservationService {
         reservationDao.delete(id);
     }
 
-    private void validateId(Long id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("[ERROR] id가 올바르지 않습니다.");
-        }
-    }
-
     private ReservationTime findReservationTime(Long timeId) {
         try {
             return reservationTimeDao.findBy(timeId);
         } catch (EmptyResultDataAccessException e) {
             System.out.println(e.getMessage());
             throw new IllegalArgumentException("[ERROR] 존재하지 않는 예약 시간입니다.");
+        }
+    }
+
+    private void validateId(Long id) {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("[ERROR] id는 양수이어야 합니다.");
         }
     }
 

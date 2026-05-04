@@ -86,6 +86,6 @@ class ReservationTimeServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationTimeService.delete(id))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] id가 올바르지 않습니다.");
+                .hasMessage("[ERROR] id는 양수이어야 합니다.");
     }
 }

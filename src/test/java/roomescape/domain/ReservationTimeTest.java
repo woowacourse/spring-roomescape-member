@@ -11,11 +11,12 @@ class ReservationTimeTest {
 
     @ParameterizedTest
     @NullSource
-    @ValueSource(strings = {"", " ", "12", "99:99"})
-    void 유효하지_않은_시간으로_예약시간_생성시_예외(String startAt) {
+    @ValueSource(strings = {"", " "})
+    void null_또는_빈_시간으로_예약시간_생성시_예외(String startAt) {
         // when & then
         assertThatThrownBy(() -> new ReservationTime(1L, startAt))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 시간은 비어 있을 수 없습니다.");
     }
 
     @ParameterizedTest

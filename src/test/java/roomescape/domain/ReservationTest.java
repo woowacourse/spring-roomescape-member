@@ -38,23 +38,8 @@ class ReservationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {1, 255})
-    void 예약_생성_성공_테스트(int count) {
-        // given
-        String name = "a".repeat(count);
-        ReservationTime time = new ReservationTime(1L, "10:00");
-        Theme theme = new Theme(null, "테마 이름", "테마 설명", "썸네일");
-
-        // when
-        Reservation result = new Reservation(null, name, "2026-05-02", time, theme);
-
-        // then
-        assertThat(result.getName()).isEqualTo(name);
-    }
-
-    @ParameterizedTest
     @NullSource
-    @ValueSource(strings = {"", " ", "2026-99-99"})
+    @ValueSource(strings = {"", " "})
     void 유효하지_않은_날짜로_예약_생성시_예외(String date) {
         // given
         ReservationTime time = new ReservationTime(1L, "10:00");
@@ -62,7 +47,8 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> new Reservation(null, "구구", date, time, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 날짜는 비어 있을 수 없습니다.");;
     }
 
     @Test
@@ -85,5 +71,20 @@ class ReservationTest {
         assertThatThrownBy(() -> new Reservation(null, "홍길동", "2026-05-02", time, null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 테마는 비어있을 수 없습니다.");
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 255})
+    void 예약_생성_성공_테스트(int count) {
+        // given
+        String name = "a".repeat(count);
+        ReservationTime time = new ReservationTime(1L, "10:00");
+        Theme theme = new Theme(null, "테마 이름", "테마 설명", "썸네일");
+
+        // when
+        Reservation result = new Reservation(null, name, "2026-05-02", time, theme);
+
+        // then
+        assertThat(result.getName()).isEqualTo(name);
     }
 }

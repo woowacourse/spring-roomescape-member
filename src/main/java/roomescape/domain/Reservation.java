@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class Reservation {
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private final Long id;
     private final String name;
@@ -58,12 +57,6 @@ public class Reservation {
     private void validateDate(String date) {
         if (date == null || date.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 날짜는 비어 있을 수 없습니다.");
-        }
-
-        try {
-            LocalDate.parse(date, formatter);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("[ERROR] 날짜 형식이 올바르지 않습니다.");
         }
     }
 

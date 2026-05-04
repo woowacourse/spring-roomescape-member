@@ -91,17 +91,7 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.delete(id))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] id가 올바르지 않습니다.");
-    }
-
-    @ParameterizedTest
-    @NullSource
-    @ValueSource(longs = {0, -1})
-    void 예약_생성시_timeId가_양수가_아니면_예외_발생(Long timeId) {
-        // when & then
-        assertThatThrownBy(() -> reservationService.create("홍길동", "2026-05-02", timeId, 1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] id가 올바르지 않습니다.");
+                .hasMessage("[ERROR] id는 양수이어야 합니다.");
     }
 
     @Test

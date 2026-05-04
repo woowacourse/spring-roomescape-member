@@ -31,7 +31,7 @@ public class ReservationTimeService {
 
     private void validateId(Long id) {
         if (id == null || id <= 0) {
-            throw new IllegalArgumentException("[ERROR] id가 올바르지 않습니다.");
+            throw new IllegalArgumentException("[ERROR] id는 양수이어야 합니다.");
         }
     }
 }
