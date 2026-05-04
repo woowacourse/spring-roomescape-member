@@ -1,9 +1,9 @@
-package roomescape.reservation.repository;
+package roomescape.reservationtime.repository;
 
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import roomescape.reservation.entity.ReservationTime;
+import roomescape.reservationtime.entity.ReservationTime;
 
 public interface ReservationTimeRepository {
 

@@ -1,4 +1,4 @@
-package roomescape.reservation.repository;
+package roomescape.reservationtime.repository;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import roomescape.reservation.entity.ReservationTime;
-import roomescape.reservation.exception.ReservationTimeNotFoundException;
+import roomescape.reservationtime.entity.ReservationTime;
+import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {

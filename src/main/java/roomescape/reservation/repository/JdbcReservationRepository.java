@@ -12,8 +12,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.entity.Reservation;
-import roomescape.reservation.entity.ReservationTime;
 import roomescape.reservation.exception.ReservationNotFoundException;
+import roomescape.reservationtime.entity.ReservationTime;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {

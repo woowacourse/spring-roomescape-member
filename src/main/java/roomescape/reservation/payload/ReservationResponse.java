@@ -2,6 +2,7 @@ package roomescape.reservation.payload;
 
 import java.time.LocalDate;
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservationtime.payload.ReservationTimeResponse;
 
 public record ReservationResponse(
         Long id,
