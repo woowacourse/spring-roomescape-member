@@ -34,10 +34,10 @@ public class ReservationDao {
             r.name AS name,\s
             r.date AS date,\s
             rt.id AS timeId,\s
-            rt.start_at AS startAt\s
-            t.id AS themeId\s
-            t.name AS themeName\s
-            t.description AS themeDescription\s
+            rt.start_at AS startAt,\s
+            t.id AS themeId,\s
+            t.name AS themeName,\s
+            t.description AS themeDescription,\s
             t.image_url AS themeImageUrl\s
         FROM reservation AS r\s
         JOIN reservation_time AS rt ON r.time_id = rt.id
