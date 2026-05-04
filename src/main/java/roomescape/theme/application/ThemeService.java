@@ -1,5 +1,6 @@
 package roomescape.theme.application;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,10 @@ import roomescape.theme.presentation.dto.ThemeResponse;
 @Transactional
 @RequiredArgsConstructor
 public class ThemeService {
+
+    private static final int WEEKS_BOUND = 1;
+    private static final int DAYS_BOUND = 1;
+    private static final int THEME_SIZE_LIMIT = 10;
 
     private final ThemeRepository repository;
 
@@ -31,6 +36,18 @@ public class ThemeService {
 
     public List<ThemeResponse> getThemes() {
         List<Theme> themes = repository.findAll();
+        return themes.stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
+
+    public List<ThemeResponse> getWeeksTopThemes() {
+        List<Theme> themes = repository.findByReservationCountWithLimit(
+                LocalDate.now().minusWeeks(WEEKS_BOUND),
+                LocalDate.now().minusDays(DAYS_BOUND),
+                THEME_SIZE_LIMIT
+        );
+
         return themes.stream()
                 .map(ThemeResponse::from)
                 .toList();
