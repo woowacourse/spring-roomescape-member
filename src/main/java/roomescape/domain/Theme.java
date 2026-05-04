@@ -1,0 +1,33 @@
+package roomescape.domain;
+
+import java.util.Objects;
+
+public class Theme {
+
+    private final Long id;
+    private final String name;
+    private final String description;
+    private final String imageUrl;
+
+    public Theme(Long id, String name, String description, String imageUrl) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.imageUrl = imageUrl;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Theme theme = (Theme) o;
+        return id != null
+            && Objects.equals(id, theme.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+}
