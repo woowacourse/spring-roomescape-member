@@ -40,9 +40,8 @@ public class ThemeController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-//    TODO
-//    @GetMapping("/popularity")
-//    public ResponseEntity<List<ThemeResponse>> readByPopularity() {
-//        return ResponseEntity.status(HttpStatus.OK).body(themeService.readPopularThemes());
-//    }
+    @GetMapping("/popularity")
+    public ResponseEntity<List<ThemeResponse>> readByPopularity() {
+        return ResponseEntity.status(HttpStatus.OK).body(themeService.readPopularThemes());
+    }
 }

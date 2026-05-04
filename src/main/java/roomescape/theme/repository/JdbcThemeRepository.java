@@ -1,6 +1,7 @@
 package roomescape.theme.repository;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -58,5 +59,21 @@ public class JdbcThemeRepository implements ThemeRepository {
     public void deleteById(Long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public List<Theme> findPopularThemes(LocalDate start, LocalDate end) {
+
+        String sql = """
+                SELECT t.id, t.name, t.description, t.thumbnail
+                FROM theme t
+                INNER JOIN reservation r ON r.theme_id = t.id
+                WHERE date BETWEEN ? AND ?
+                GROUP BY t.id, t.name, t.description, t.thumbnail
+                ORDER BY COUNT(*) DESC
+                LIMIT 10
+                """;
+
+        return jdbcTemplate.query(sql, themeRowMapper, start, end);
     }
 }

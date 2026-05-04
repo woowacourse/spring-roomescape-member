@@ -2,7 +2,6 @@ package roomescape.time;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.exception.ErrorCode;
