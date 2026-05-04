@@ -13,9 +13,9 @@ import roomescape.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
-@RequestMapping("/theme")
+@RequestMapping("/themes")
 public class ThemeController {
-    private static final String LOCATION_DEFAULT_VALUE = "/theme/";
+    private static final String LOCATION_DEFAULT_VALUE = "/themes/";
 
     private final ThemeService themeService;
 
