@@ -1,11 +1,11 @@
-package roomescape.service;
+package roomescape.user.service;
 
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
+import roomescape.user.dao.ReservationDao;
+import roomescape.user.dao.ReservationTimeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
