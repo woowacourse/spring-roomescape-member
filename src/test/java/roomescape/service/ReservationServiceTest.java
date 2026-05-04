@@ -1,0 +1,111 @@
+package roomescape.service;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.ReservationTimeDao;
+import roomescape.domain.Reservation;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+class ReservationServiceTest {
+
+    private ReservationService reservationService;
+
+    @BeforeEach
+    void setup() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("org.h2.Driver");
+        dataSource.setUrl("jdbc:h2:mem:reservation_service_test;DB_CLOSE_DELAY=-1");
+        dataSource.setUsername("sa");
+        dataSource.setPassword("");
+
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        jdbcTemplate.execute("DROP TABLE IF EXISTS reservation");
+
+        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        populator.addScript(new ClassPathResource("schema.sql"));
+        populator.execute(dataSource);
+
+        ReservationDao reservationDao = new ReservationDao(jdbcTemplate);
+        ReservationTimeDao reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
+        this.reservationService = new ReservationService(reservationDao, reservationTimeDao);
+    }
+
+    @Test
+    void 예약_생성_테스트() {
+        // when
+        Reservation result = reservationService.create("브라운", "2023-08-05", 1L);
+
+        // then
+        assertAll(
+                () -> assertThat(result.getId()).isNotNull(),
+                () -> assertThat(result.getName()).isEqualTo("브라운"),
+                () -> assertThat(result.getDate()).isEqualTo("2023-08-05")
+        );
+    }
+
+    @Test
+    void 전체_예약_조회_테스트() {
+        // given
+        reservationService.create("브라운", "2023-08-05", 1L);
+        reservationService.create("구구", "2023-08-06", 1L);
+
+        // when
+        List<Reservation> result = reservationService.findAll();
+
+        // then
+        assertThat(result).hasSize(2);
+    }
+
+    @Test
+    void 예약_삭제_테스트() {
+        // given
+        Reservation created = reservationService.create("브라운", "2023-08-05", 1L);
+
+        // when
+        reservationService.delete(created.getId());
+
+        // then
+        assertThat(reservationService.findAll()).isEmpty();
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(longs = {0, -1})
+    void 삭제하려는_id가_양수가_아니면_예외_발생(Long id) {
+        // when & then
+        assertThatThrownBy(() -> reservationService.delete(id))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] id가 올바르지 않습니다.");
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(longs = {0, -1})
+    void 예약_생성시_timeId가_양수가_아니면_예외_발생(Long timeId) {
+        // when & then
+        assertThatThrownBy(() -> reservationService.create("홍길동", "2026-05-02", timeId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] id가 올바르지 않습니다.");
+    }
+
+    @Test
+    void 존재하지_않는_timeId로_예약_생성시_예외_발생() {
+        // when & then
+        assertThatThrownBy(() -> reservationService.create("홍길동", "2026-05-02", 999L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 존재하지 않는 예약 시간입니다.");
+    }
+}
