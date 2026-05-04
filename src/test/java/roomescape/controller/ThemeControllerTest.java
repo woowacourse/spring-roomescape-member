@@ -84,7 +84,7 @@ class ThemeControllerTest {
         List<ThemeResponseDto> dtos = themes.stream()
                 .map(ThemeResponseDto::from)
                 .toList();
-        
+
         when(themeService.findAll())
                 .thenReturn(themes);
 
