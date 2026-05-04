@@ -10,35 +10,35 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.reservation.ReservationRequestDto;
-import roomescape.dto.reservation.ReservationResponseDto;
+import roomescape.dto.reservationTime.ReservationTimeRequesetDto;
+import roomescape.dto.reservationTime.ReservationTimeResponseDto;
 import roomescape.service.ReservationService;
 
 @RestController
-@RequestMapping("reservations")
-public class ReservationController {
+@RequestMapping("times")
+public class ReservationTimeController {
 
     private final ReservationService reservationService;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationTimeController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ReservationResponseDto> getReservations() {
-        return reservationService.getReservations();
+    public List<ReservationTimeResponseDto> getReservationTimes() {
+        return reservationService.getReservationTimes();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public ReservationResponseDto addReservation(@RequestBody ReservationRequestDto requestDto) {
-        return reservationService.addReservation(requestDto);
+    public ReservationTimeResponseDto addReservationTime(@RequestBody ReservationTimeRequesetDto requestDto) {
+        return reservationService.addReservationTime(requestDto);
     }
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteReservation(@PathVariable Long id) {
-        reservationService.deleteReservation(id);
+    public void deleteReservationTime(@PathVariable Long id) {
+        reservationService.deleteReservationTime(id);
     }
 }
