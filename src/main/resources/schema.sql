@@ -6,6 +6,18 @@ CREATE TABLE IF NOT EXISTS reservation_time
     PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS theme
+(
+    id       BIGINT NOT NULL AUTO_INCREMENT,
+    name    VARCHAR(255) NOT NULL,
+    description    VARCHAR(255) NOT NULL,
+    thumbnail_url    VARCHAR(255) NOT NULL,
+    runtime    BIGINT NOT NULL,
+
+    PRIMARY KEY (id)
+);
+
+
 CREATE TABLE IF NOT EXISTS reservation
 (
     id      BIGINT       NOT NULL AUTO_INCREMENT,

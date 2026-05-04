@@ -36,7 +36,7 @@
 ### 단계 1 - 테마 도메인 추가
 
 - [ ] 방탈출 게임에 theme 정보를 추가한다.
-    - [ ] theme는 theme name, theme description, theme thumbnail url을 가진다.
+    - [x] theme는 theme name, theme description, theme thumbnail url을 가진다.
     - [ ] 모든 theme의 start at과 runtime은 동일하다고 가정한다.
 - [ ] reservation에 theme 정보를 포함하도록 기존 코드를 변경한다.
 - [ ] admin이 theme를 추가·삭제할 수 있다.
