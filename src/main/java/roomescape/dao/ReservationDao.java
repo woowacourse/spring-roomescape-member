@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Repository
 public class ReservationDao {
@@ -18,11 +19,19 @@ public class ReservationDao {
                 resultSet.getTime("start_at").toLocalTime()
         );
 
+        Theme theme = new Theme(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail")
+        );
+
         Reservation reservation = new Reservation(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getDate("date").toLocalDate(),
-                reservationTime
+                reservationTime,
+                theme
         );
         return reservation;
     };
@@ -48,7 +57,8 @@ public class ReservationDao {
                 generatedId.longValue(),
                 reservation.getName(),
                 reservation.getDate(),
-                reservation.getTime()
+                reservation.getTime(),
+                reservation.getTheme()
         );
     }
 

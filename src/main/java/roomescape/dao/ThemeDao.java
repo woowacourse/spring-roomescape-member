@@ -45,7 +45,7 @@ public class ThemeDao {
         );
     }
 
-    public Optional<Theme> findById(long themeId) {
+    public Optional<Theme> selectById(long themeId) {
         String sql = """
                 SELECT id, 
                        name, 

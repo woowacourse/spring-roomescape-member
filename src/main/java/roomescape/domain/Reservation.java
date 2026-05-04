@@ -8,16 +8,18 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
-    public static Reservation createWithoutId(String name, LocalDate date, ReservationTime time) {
-        return new Reservation(null, name, date, time);
+    public static Reservation createWithoutId(String name, LocalDate date, ReservationTime time, Theme theme) {
+        return new Reservation(null, name, date, time, theme);
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
     public Long getId() {
@@ -36,6 +38,10 @@ public class Reservation {
         return time;
     }
 
+    public Theme getTheme() {
+        return theme;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (object == null || getClass() != object.getClass()) {
@@ -47,7 +53,8 @@ public class Reservation {
             return Objects.equals(id, reservation.id);
         }
         return Objects.equals(name, reservation.name)
-                && Objects.equals(date, reservation.date) && Objects.equals(time, reservation.time);
+                && Objects.equals(date, reservation.date) && Objects.equals(time, reservation.time)
+                && Objects.equals(theme, reservation.theme);
     }
 
     @Override
@@ -55,6 +62,6 @@ public class Reservation {
         if (id != null) {
             return Objects.hash(id);
         }
-        return Objects.hash(name, date, time);
+        return Objects.hash(name, date, time, theme);
     }
 }
