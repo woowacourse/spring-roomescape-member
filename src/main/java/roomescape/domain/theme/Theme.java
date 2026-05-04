@@ -25,4 +25,13 @@ public class Theme {
             url
         );
     }
+
+    public static Theme createWithoutId(String name, String content, String url) {
+        return new Theme(
+            null,
+            name,
+            content,
+            url
+        );
+    }
 }
