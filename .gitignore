@@ -1,11 +1,32 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local environment
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Java / Gradle
 HELP.md
-.gradle
+*.class
+.gradle/
+**/.gradle/
 build/
-!gradle/wrapper/gradle-wrapper.jar
+**/build/
+!**/gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### STS ###
+# Spring / local database
+*.h2.db
+*.mv.db
+
+# STS
 .apt_generated
 .classpath
 .factorypath
@@ -14,24 +35,36 @@ build/
 .springBeans
 .sts4-cache
 bin/
+**/bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
-### IntelliJ IDEA ###
+# IntelliJ IDEA
 .idea
 *.iws
 *.iml
 *.ipr
 out/
+**/out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
-### NetBeans ###
+# NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
+# VS Code
 .vscode/
+
+# Frontend packages (reserved for FE/)
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+coverage/
+**/coverage/
+.vite/
+**/.vite/
