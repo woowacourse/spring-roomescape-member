@@ -1,4 +1,4 @@
-package roomescape.dto;
+package roomescape.admin.dto;
 
 public record ThemeRequest (
         String name,

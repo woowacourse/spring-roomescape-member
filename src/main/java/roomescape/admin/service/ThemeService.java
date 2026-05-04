@@ -1,10 +1,10 @@
-package roomescape.service;
+package roomescape.admin.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.domain.Theme;
-import roomescape.dto.ThemeRequest;
-import roomescape.dto.ThemeResponse;
-import roomescape.repository.ThemeRepository;
+import roomescape.admin.domain.Theme;
+import roomescape.admin.dto.ThemeRequest;
+import roomescape.admin.dto.ThemeResponse;
+import roomescape.admin.repository.ThemeRepository;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,10 +1,10 @@
-package roomescape.controller;
+package roomescape.admin.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.dto.ThemeRequest;
-import roomescape.dto.ThemeResponse;
-import roomescape.service.ThemeService;
+import roomescape.admin.dto.ThemeRequest;
+import roomescape.admin.dto.ThemeResponse;
+import roomescape.admin.service.ThemeService;
 
 import java.util.List;
 
