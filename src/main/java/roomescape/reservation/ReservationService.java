@@ -6,10 +6,11 @@ import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.ReservationTime;
-import roomescape.time.ReservationTimeRepository;
+import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationService {

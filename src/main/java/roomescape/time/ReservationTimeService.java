@@ -6,9 +6,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
-import roomescape.reservation.ReservationRepository;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.dto.ReservationTimeRequest;
 import roomescape.time.dto.ReservationTimeResponse;
+import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {

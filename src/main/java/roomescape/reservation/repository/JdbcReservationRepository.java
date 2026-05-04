@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.reservation.repository;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
@@ -10,11 +10,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.reservation.Reservation;
 import roomescape.theme.Theme;
 import roomescape.time.ReservationTime;
 
 @Repository
-public class ReservationRepository {
+public class JdbcReservationRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
@@ -33,10 +34,11 @@ public class ReservationRepository {
             )
     );
 
-    public ReservationRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Reservation save(Reservation reservation) {
         String sql = "INSERT INTO reservation(user_name,theme_id, date, time_id) VALUES (?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -55,6 +57,7 @@ public class ReservationRepository {
                 reservation.getTime());
     }
 
+    @Override
     public List<Reservation> findAll() {
         String sql = "SELECT r.id, r.user_name, r.date, t.id as time_id, t.start_at, c.id as theme_id, " +
                 "c.name as theme_name, c.description as theme_description, c.thumbnail as theme_thumbnail " +
@@ -62,6 +65,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
+    @Override
     public Optional<Reservation> findById(Long id) {
         String sql = "SELECT r.id, r.user_name, r.date, t.id as time_id, t.start_at, c.id as theme_id, " +
                 "c.name as theme_name, c.description as theme_description, c.thumbnail as theme_thumbnail " +
@@ -72,6 +76,7 @@ public class ReservationRepository {
         return reservations.stream().findFirst();
     }
 
+    @Override
     public List<Reservation> findByThemeAndDate(Long themeId, LocalDate date) {
         String sql = "SELECT r.id, r.user_name, r.date, t.id as time_id, t.start_at, c.id as theme_id, " +
                 "c.name as theme_name, c.description as theme_description, c.thumbnail as theme_thumbnail " +
@@ -83,11 +88,13 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
     }
 
+    @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
+    @Override
     public boolean existsByTimeId(Long timeId) {
         String sql = "SELECT EXISTS (SELECT * FROM reservation WHERE time_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
