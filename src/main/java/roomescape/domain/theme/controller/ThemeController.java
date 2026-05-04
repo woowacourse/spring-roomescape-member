@@ -24,7 +24,7 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping("/admin/themes")
+    @GetMapping("/themes")
     public ResponseEntity<List<ThemeResponseDTO>> getThemes() {
         return ResponseEntity.ok(themeService.getThemes());
     }
