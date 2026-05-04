@@ -8,10 +8,16 @@ import roomescape.exception.DataReferencedException;
 import roomescape.exception.HttpErrorMapping;
 import roomescape.exception.NotFoundResourceException;
 import roomescape.exception.ReservationCommandException;
+import roomescape.exception.ReservationTimeConditionException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler({NotFoundResourceException.class, DataReferencedException.class, ReservationCommandException.class})
+    @ExceptionHandler({
+            NotFoundResourceException.class,
+            DataReferencedException.class,
+            ReservationCommandException.class,
+            ReservationTimeConditionException.class
+    })
     public ResponseEntity<String> handleCustomException(CustomException customException) {
         return new ResponseEntity<>(customException.getMessage(), HttpErrorMapping.getHttpStatus(customException.getErrorMessage()));
     }
