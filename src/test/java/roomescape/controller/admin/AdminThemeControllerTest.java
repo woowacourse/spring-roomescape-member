@@ -29,5 +29,12 @@ class AdminThemeControllerTest {
                 .when().post("/admin/theme")
                 .then().log().all()
                 .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().delete("/admin/theme/1")
+                .then().log().all()
+                .statusCode(204);
     }
 }
