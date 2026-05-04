@@ -8,8 +8,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.entity.ReservationEntity;
-import roomescape.repository.entity.ReservationTimeEntity;
-import roomescape.repository.entity.ReservationWithTimeEntity;
 
 import java.sql.*;
 import java.util.List;
@@ -33,9 +31,8 @@ public class ReservationRepository {
                 ORDER BY r.id
                 """;
 
-        return jdbcTemplate.query(sql, this::mapToEntity)
+        return jdbcTemplate.query(sql, this::mapToDomain)
                 .stream()
-                .map(this::toDomain)
                 .toList();
     }
 
@@ -93,18 +90,20 @@ public class ReservationRepository {
     /**
      * 엔티티 - 도메인 매핑 메서드
      */
-    private ReservationWithTimeEntity mapToEntity(
+    private Reservation mapToDomain(
             final ResultSet resultSet,
             final int rowNum
     ) throws SQLException {
-        return new ReservationWithTimeEntity(
+        final ReservationTime reservationTime = ReservationTime.restore(
+                resultSet.getLong("time_id"),
+                resultSet.getTime("time_start_at").toLocalTime()
+        );
+
+        return Reservation.restore(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("reservation_name"),
                 resultSet.getDate("reservation_date").toLocalDate(),
-                new ReservationTimeEntity(
-                        resultSet.getLong("time_id"),
-                        resultSet.getTime("time_start_at")
-                )
+                reservationTime
         );
     }
 
@@ -114,20 +113,6 @@ public class ReservationRepository {
                 reservation.getName(),
                 Date.valueOf(reservation.getDate()),
                 reservation.getTime().getId()
-        );
-    }
-
-    private Reservation toDomain(final ReservationWithTimeEntity entity) {
-        ReservationTime time = ReservationTime.restore(
-                entity.time().id(),
-                entity.time().startAt().toLocalTime()
-        );
-
-        return Reservation.restore(
-                entity.id(),
-                entity.name(),
-                entity.date(),
-                time
         );
     }
 }

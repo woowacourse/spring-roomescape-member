@@ -26,9 +26,8 @@ public class ReservationTimeDao {
                 ORDER BY id
                 """;
 
-        return jdbcTemplate.query(sql, this::mapToEntity)
+        return jdbcTemplate.query(sql, this::mapToDomain)
                 .stream()
-                .map(this::toDomain)
                 .toList();
     }
 
@@ -40,21 +39,22 @@ public class ReservationTimeDao {
                 """;
 
         try {
-            ReservationTimeEntity entity = jdbcTemplate.queryForObject(
+            ReservationTime reservationTime = jdbcTemplate.queryForObject(
                     sql,
-                    this::mapToEntity,
+                    this::mapToDomain,
                     timeId
             );
 
-            return Optional.of(toDomain(entity));
+            return Optional.of(reservationTime);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     public ReservationTime save(final ReservationTime newReservationTime) {
-        ///
-        final long newTimeId = insertReservationTime(newReservationTime);
+        final ReservationTimeEntity reservationTimeEntity = toEntity(newReservationTime);
+
+        final long newTimeId = insertReservationTime(reservationTimeEntity);
 
         return newReservationTime.saved(newTimeId);
     }
@@ -69,7 +69,7 @@ public class ReservationTimeDao {
     }
 
 
-    private long insertReservationTime(final ReservationTime newReservationTime) {
+    private long insertReservationTime(final ReservationTimeEntity reservationTimeEntity) {
         final String sql = """
                 INSERT INTO reservation_time (start_at)
                 VALUES (?)
@@ -83,7 +83,7 @@ public class ReservationTimeDao {
                     Statement.RETURN_GENERATED_KEYS
             );
 
-            preparedStatement.setTime(1, Time.valueOf(newReservationTime.getStartAt()));
+            preparedStatement.setTime(1, reservationTimeEntity.startAt());
 
             return preparedStatement;
         }, keyHolder);
@@ -103,10 +103,10 @@ public class ReservationTimeDao {
     /**
      * 엔티티 - 도메인 매핑 메서드
      */
-    private ReservationTimeEntity mapToEntity(final ResultSet resultSet, final int rowNum) throws SQLException {
-        return new ReservationTimeEntity(
+    private ReservationTime mapToDomain(final ResultSet resultSet, final int rowNum) throws SQLException {
+        return ReservationTime.restore(
                 resultSet.getLong("id"),
-                resultSet.getTime("start_at")
+                resultSet.getTime("start_at").toLocalTime()
         );
     }
 
@@ -114,13 +114,6 @@ public class ReservationTimeDao {
         return new ReservationTimeEntity(
                 reservationTime.getId(),
                 Time.valueOf(reservationTime.getStartAt())
-        );
-    }
-
-    private ReservationTime toDomain(final ReservationTimeEntity entity) {
-        return ReservationTime.restore(
-                entity.id(),
-                entity.startAt().toLocalTime()
         );
     }
 }
