@@ -48,5 +48,4 @@ public class ThemeDao {
         }, keyHolder);
         return keyHolder.getKey().longValue();
     }
-
 }

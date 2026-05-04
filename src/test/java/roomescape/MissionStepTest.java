@@ -37,7 +37,7 @@ public class MissionStepTest {
 
         RestAssured.given().contentType(ContentType.JSON)
                 .body(time)
-                .when().post("/times")
+                .when().post("/api/v1/times")
                 .then().statusCode(201);
     }
 
@@ -52,7 +52,7 @@ public class MissionStepTest {
     @Test
     void 예약_조회() {
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
@@ -63,7 +63,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationParams())
-                .when().post("/reservations")
+                .when().post("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(1));
@@ -74,13 +74,13 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationParams())
-                .when().post("/reservations")
+                .when().post("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(1));
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("[0].id", is(1))
@@ -95,24 +95,24 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationParams())
-                .when().post("/reservations")
+                .when().post("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(1));
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/api/v1/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
@@ -121,13 +121,13 @@ public class MissionStepTest {
     @Test
     void 존재하지_않는_예약을_삭제하면_404를_반환한다() {
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/api/v1/reservations/1")
                 .then().log().all()
                 .statusCode(404);
     }
@@ -149,7 +149,7 @@ public class MissionStepTest {
                 1);
 
         List<Reservation> reservations = RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", Reservation.class);
@@ -164,7 +164,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationParams())
-                .when().post("/reservations")
+                .when().post("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(201);
 
@@ -172,7 +172,7 @@ public class MissionStepTest {
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/api/v1/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
@@ -183,13 +183,13 @@ public class MissionStepTest {
     @Test
     void 시간_관리_API() {
         RestAssured.given().log().all()
-                .when().get("/times")
+                .when().get("/api/v1/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/api/v1/times/1")
                 .then().log().all()
                 .statusCode(204);
     }
@@ -199,12 +199,12 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationParams())
-                .when().post("/reservations")
+                .when().post("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
@@ -213,7 +213,7 @@ public class MissionStepTest {
     @Test
     void 존재하지_않는_예약시간을_삭제하면_404를_반환한다() {
         RestAssured.given().log().all()
-                .when().delete("/times/2")
+                .when().delete("/api/v1/times/2")
                 .then().log().all()
                 .statusCode(404);
     }
@@ -223,13 +223,13 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationParams())
-                .when().post("/reservations")
+                .when().post("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/api/v1/times/1")
                 .then().log().all()
                 .statusCode(409);
 

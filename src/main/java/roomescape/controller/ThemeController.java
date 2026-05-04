@@ -28,6 +28,6 @@ public class ThemeController {
                 request.imgUrl(),
                 request.userName()
         );
-        return ResponseEntity.created(URI.create("/themes/" + theme.getId())).body(theme);
+        return ResponseEntity.created(URI.create("/api/v1/themes/" + theme.getId())).body(theme);
     }
 }
