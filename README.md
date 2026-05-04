@@ -6,11 +6,21 @@
 
 ## 1단계: 테마 도메인 추가
 
-- [ ] 관리자가 테마를 추가할 수 있다.
+- [x] 관리자가 테마를 추가할 수 있다.
     ```
     POST /admin/themes
     ```
-    
+
+  **Request**
+
+    ```json
+    {
+      "name": "테마명",
+      "description": "설명",
+      "thumbnail": "image-path"
+    }
+    ```
+  
     **Response (201 Created)**
     
     ```json
@@ -127,6 +137,7 @@
 
 - 저장 성공 후 void / 저장한 결과를 반환할지 (테마 추가, 예약 추가)
 - 삭제 성공 시 200과 204 중 어떤 상태 코드를 반환할지
+- adminController 따로 만들지 아니면 해당 도메인 내에 넣을지
 
 ---
 
