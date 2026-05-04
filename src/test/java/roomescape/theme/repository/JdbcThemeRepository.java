@@ -36,4 +36,9 @@ public class JdbcThemeRepository implements ThemeRepository {
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, theme.getName(), theme.getDescription());
     }
+
+    @Override
+    public Integer delete(long id) {
+        return jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
+    }
 }

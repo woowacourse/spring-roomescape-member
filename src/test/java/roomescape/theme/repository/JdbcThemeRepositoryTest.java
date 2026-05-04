@@ -61,4 +61,13 @@ public class JdbcThemeRepositoryTest {
         Boolean alreadyExists = themeRepository.existsByNameAndDescription(theme2);
         assertThat(alreadyExists).isTrue();
     }
+
+    @DisplayName("db에서 테마 삭제를 테스트 합니다.")
+    @Test
+    void delete_theme_successfully() {
+        Theme theme1 = Theme.create("theme name", "theme description", "theme img url");
+        Theme savedTheme = themeRepository.save(theme1);
+
+        assertThat(themeRepository.delete(savedTheme.getId())).isEqualTo(1);
+    }
 }
