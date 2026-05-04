@@ -20,8 +20,8 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("존재하지 않는 테마를 삭제하려고 하면 에러를 반환한다.")
-    void wrongTest() {
-        ThemeResponse response = service.addTheme(ThemeRequest.builder()
+    void notExistsThemeIdTest() {
+        service.addTheme(ThemeRequest.builder()
                 .name("포비")
                 .description("포비가 나와요")
                 .thumbnailImageUrl("https://~~~~")
