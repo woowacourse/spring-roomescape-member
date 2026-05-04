@@ -1,5 +1,7 @@
 package roomescape.theme.repository;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,5 +39,26 @@ public class JdbcThemeRepositoryTest {
             assertSoftly.assertThat(savedTheme.getDescription()).isEqualTo("theme description");
             assertSoftly.assertThat(savedTheme.getThumbnailImgUrl()).isEqualTo("theme img url");
         });
+    }
+
+    @DisplayName("db에 특정 테마가 존재하지 않는 것을 테스트 합니다.")
+    @Test
+    void check_none_exists_successfully() {
+        Theme theme = Theme.create("theme name", "theme description", "theme img url");
+
+        Boolean alreadyExists = themeRepository.existsByNameAndDescription(theme);
+
+        assertThat(alreadyExists).isFalse();
+    }
+
+    @DisplayName("db에 특정 테마가 존재하는 것을 테스트 합니다.")
+    @Test
+    void check_exists_successfully() {
+        Theme theme1 = Theme.create("theme name", "theme description", "theme img url");
+        themeRepository.save(theme1);
+
+        Theme theme2 = Theme.create("theme name", "theme description", "theme img url");
+        Boolean alreadyExists = themeRepository.existsByNameAndDescription(theme2);
+        assertThat(alreadyExists).isTrue();
     }
 }
