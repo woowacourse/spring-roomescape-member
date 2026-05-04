@@ -1,4 +1,4 @@
-package roomescape.controller.console;
+package roomescape.admin.console;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

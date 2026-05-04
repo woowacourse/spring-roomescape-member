@@ -1,4 +1,4 @@
-package roomescape.controller.api;
+package roomescape.global.web;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;

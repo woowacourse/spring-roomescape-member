@@ -1,4 +1,4 @@
-package roomescape.controller.api;
+package roomescape.admin.api;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -20,7 +20,7 @@ import roomescape.service.command.ReservationCommand;
 import roomescape.service.result.ReservationResult;
 
 @RestController
-@RequestMapping("/reservations")
+@RequestMapping("/admin/reservations")
 @Validated
 @RequiredArgsConstructor
 public class ReservationApiController {

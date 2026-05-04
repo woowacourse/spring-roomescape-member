@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.admin;
 
 
 import static org.hamcrest.Matchers.containsString;
@@ -10,7 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.context.WebApplicationContext;
-import roomescape.controller.dummy.DummyController;
+import roomescape.admin.dummy.DummyController;
 
 @WebMvcTest(DummyController.class)
 public class RestExceptionHandlerTest {

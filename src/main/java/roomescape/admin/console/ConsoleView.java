@@ -1,4 +1,4 @@
-package roomescape.controller.console;
+package roomescape.admin.console;
 
 import java.util.List;
 import java.util.Scanner;

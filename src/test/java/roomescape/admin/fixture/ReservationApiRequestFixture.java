@@ -1,4 +1,4 @@
-package roomescape.controller.fixture;
+package roomescape.admin.fixture;
 
 import java.time.LocalDate;
 import java.util.stream.Stream;
