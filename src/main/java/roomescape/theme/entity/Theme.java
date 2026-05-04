@@ -22,4 +22,23 @@ public class Theme {
         return new Theme(id, name, description, thumbnailUrl, runtime);
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public Duration getRuntime() {
+        return runtime;
+    }
 }

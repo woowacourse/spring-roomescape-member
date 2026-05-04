@@ -40,4 +40,7 @@ public class Reservation {
         return time;
     }
 
+    public Theme getTheme() {
+        return theme;
+    }
 }
