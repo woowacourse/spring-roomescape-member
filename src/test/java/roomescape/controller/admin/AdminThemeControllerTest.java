@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.web.multipart.MultipartFile;
 import roomescape.controller.ReservationController;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -19,22 +18,16 @@ class AdminThemeControllerTest {
 
     @Test
     void 테마_관리_API() {
-        String name = "추리물";
-        String description = "추리";
-        byte[] fileContent = "fake-image-content".getBytes();
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "공포");
+        params.put("description", "너무무서워");
+        params.put("url", "/horror");
 
         RestAssured.given().log().all()
-                .contentType(ContentType.MULTIPART)
-                .multiPart("name", name)
-                .multiPart("description", description)
-                .multiPart("file", "test.png", fileContent, "image/png")
-                .when().post("/admin/themes")
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/theme")
                 .then().log().all()
                 .statusCode(201);
-
-        RestAssured.given().log().all()
-                .when().delete("/admin/themes/16")
-                .then().log().all()
-                .statusCode(204);
     }
 }
