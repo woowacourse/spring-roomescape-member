@@ -31,10 +31,7 @@ public class TimeRepository {
 
     public void removeById(Long id) {
         String sql = "delete from reservation_time where id = ?";
-        int rowsAffected = jdbcTemplate.update(sql, id);
-        if (rowsAffected == 0) {
-            throw new IllegalArgumentException("해당 ID를 가진 데이터를 찾을 수 없습니다 : " + id);
-        }
+        jdbcTemplate.update(sql, id);
     }
 
     public ReservationTime saveTime(LocalTime startAt) {
