@@ -2,13 +2,8 @@ package roomescape.reservation.application;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.domain.Theme;
 import roomescape.reservation.infra.ReservationRepository;
-import roomescape.reservation.infra.ReservationTimeRepository;
-import roomescape.reservation.infra.ThemeRepository;
 import roomescape.reservation.presentation.dto.request.ReservationSaveRequest;
 import roomescape.reservation.presentation.dto.response.ReservationFindResponse;
 import roomescape.reservation.presentation.dto.response.ReservationSaveResponse;
@@ -17,21 +12,14 @@ import roomescape.reservation.presentation.dto.response.dto.TimeInformation;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ReservationService {
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
 
-    @Transactional
     public ReservationSaveResponse save(ReservationSaveRequest body) {
-        ReservationTime time = reservationTimeRepository.findById(body.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID를 갖는 시간대는 존재하지 않습니다."));
-        Theme theme = themeRepository.findById(body.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID를 갖는 테마는 존재하지 않습니다."));
-        Reservation reservation = reservationRepository.save(body.toDomain(time, theme));
+        Reservation reservation = reservationRepository.save(body.name(), body.date(), body.timeId());
 
-        return ReservationSaveResponse.of(time, theme, reservation);
+        return new ReservationSaveResponse(reservation.getId(), reservation.getName(), reservation.getDate(),
+                new TimeInformation(reservation.getTime().getId(), reservation.getTime().getStartAt()));
     }
 
     public List<ReservationFindResponse> findAll() {
@@ -41,20 +29,14 @@ public class ReservationService {
                         reservation.getName(),
                         reservation.getDate(),
                         new TimeInformation(
-                                reservation.getTimeId(),
-                                reservation.getStartAt()
-                        ),
-                        reservation.getThemeId()
+                                reservation.getTime().getId(),
+                                reservation.getTime().getStartAt()
+                        )
                 ))
                 .toList();
     }
 
-    @Transactional
     public void delete(Long id) {
-        // TODO: 사이클2 요구사항에서 검증로직 추가 예정
-        /**
-         * 1. reservation id 존재 유무 검증
-         */
         reservationRepository.deleteById(id);
     }
 }

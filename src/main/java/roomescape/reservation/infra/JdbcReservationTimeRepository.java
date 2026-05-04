@@ -1,9 +1,7 @@
 package roomescape.reservation.infra;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -20,14 +18,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
             new ReservationTime(
                     resultSet.getLong("id"),
-                    resultSet.getObject("start_at", LocalTime.class));
+                    LocalTime.parse(resultSet.getString("start_at")));
 
     @Override
     public ReservationTime save(LocalTime startAt) {
         String sql = "INSERT INTO reservation_time(start_at) VALUES (:start_at)";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("start_at", startAt);
+                .addValue("start_at", startAt.toString());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(sql, params, keyHolder);
@@ -49,28 +47,5 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 .addValue("id", id);
 
         template.update(sql, params);
-    }
-
-    public Optional<ReservationTime> findById(long timeId) {
-        String sql = "SELECT * FROM reservation_time WHERE id = :timeId";
-
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("timeId", timeId);
-
-        return template.query(sql, params, reservationTimeRowMapper).stream().findFirst();
-    }
-
-
-    @Override
-    public List<ReservationTime> findTimesByDateAndThemeId(LocalDate date, long themeId) {
-        String sql = "SELECT rt.id, rt.start_at FROM schedule s " +
-                "JOIN reservation_time rt ON s.time_id = rt.id " +
-                "WHERE s.date = :date AND s.theme_id = :themeId";
-
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("date", date)
-                .addValue("themeId", themeId);
-
-        return template.query(sql, params, reservationTimeRowMapper);
     }
 }
