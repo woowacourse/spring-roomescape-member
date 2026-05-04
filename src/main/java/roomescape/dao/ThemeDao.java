@@ -12,9 +12,11 @@ public class ThemeDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public ThemeDao(JdbcTemplate jdbcTemplate, SimpleJdbcInsert jdbcInsert) {
+    public ThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = jdbcInsert;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
     }
 
     public Theme findThemeById(Long id) {
