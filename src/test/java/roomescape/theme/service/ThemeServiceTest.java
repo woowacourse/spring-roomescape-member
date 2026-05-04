@@ -55,4 +55,12 @@ public class ThemeServiceTest {
         Assertions.assertThatThrownBy(() -> themeService.saveTheme(createRequestDto))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("테마의 삭제를 테스트합니다.")
+    @Test
+    void delete_theme() {
+        themeService.delete(1L);
+
+        Mockito.verify(themeRepository).delete(1L);
+    }
 }

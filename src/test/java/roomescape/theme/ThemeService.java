@@ -12,7 +12,6 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-
     public ThemeResponse saveTheme(ThemeCreateRequest request) {
         Theme theme = request.toEntity();
         validateDuplicateTheme(theme);
@@ -24,5 +23,9 @@ public class ThemeService {
         if (themeRepository.existsByNameAndDescription(theme)) {
             throw new IllegalArgumentException();
         }
+    }
+
+    public int delete(long id) {
+        return themeRepository.delete(id);
     }
 }
