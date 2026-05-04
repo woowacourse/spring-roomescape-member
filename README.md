@@ -339,3 +339,114 @@
 **예외**
 - 403: 관리자가 아니면 [로그인 기능 추가시]
 - 401: 로그인을 하지 않았을 경우 [로그인 기능 추가시]
+
+## USER
+### 모든 테마 조회 - GET /themes
+**요청**
+- Method: `GET`
+- URL: `/themes`
+- Body:
+
+**응답**
+- Status: `200 OK`
+- Body:
+```json
+[
+  {
+    "id": 1,
+    "name": "이름",
+    "description": "설명",
+    "thumbnail_url": "url"
+  },
+  {
+    "id": 2,
+    "name": "이름",
+    "description": "설명",
+    "thumbnail_url": "url"
+  }
+]
+```
+- 401: 로그인을 하지 않았을 경우 [로그인 기능 추가시]
+
+## 단일 테마 조회 - GET /admin/themes/{id}
+
+**요청**
+- Method: `GET`
+- URL: `/admin/themes/{id}`
+
+**응답**
+- Status: `200 OK`
+- Body:
+```json
+{
+  "id": 1,
+  "name": "이름",
+  "description": "설명",
+  "thumbnail_url": "url"
+}
+```
+
+**예외**
+- 400: id 누락됐을 때
+- 404: id 없을 때
+- 401: 로그인을 하지 않았을 경우 [로그인 기능 추가시]
+
+### 특정 Date 선택 - GET /times 후 times
+
+### 예약 추가 - POST /reservations
+**요청**
+- Method: `POST`
+- URL: `/reservations`
+- Body:
+```json
+{
+"user_name": "이름",
+"date": "2026-05-04",
+"time_id": 1,
+"theme_id": 1
+}
+```
+**응답**
+- Status: `201 Created`
+- Headers: `Location: /reservations/{id}`
+- Body:
+```json
+{
+  "id": 1,
+  "user_name": "이름",
+  "date": "2026-05-04",
+  "time_id": 1,
+  "theme_id": 1
+}
+```
+
+## 인기 테마 조회 - GET /themes?sort=reservations&limit=10&days=7
+
+**요청**
+- Method: `GET`
+- URL: `/themes?sort=reservations&limit=10&days=7`
+
+**응답**
+- Status: `200 OK`
+- Body:
+```json
+[
+  {
+    "id": 1,
+    "name": "이름",
+    "description": "설명",
+    "thumbnail_url": "url"
+  },
+  {
+    "id": 2,
+    "name": "이름",
+    "description": "설명",
+    "thumbnail_url": "url"
+  }
+]
+```
+**예외**
+- 400: id 누락됐을 때
+- 404: id 없을 때
+- 401: 로그인을 하지 않았을 경우 [로그인 기능 추가시]
+
