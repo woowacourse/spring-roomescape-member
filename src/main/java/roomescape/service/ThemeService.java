@@ -21,10 +21,7 @@ public class ThemeService {
         Theme theme = Theme.of(
                 request.name(),
                 request.description(),
-                request.imageUrl(),
-                request.startAt(),
-                request.finishAt(),
-                request.playTime()
+                request.imageUrl()
         );
         Theme saved = themeRepository.save(theme);
         return ThemeResponse.from(saved);
