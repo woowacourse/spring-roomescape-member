@@ -12,8 +12,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.ReservationController;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.reservation.ReservationRepository;
+import roomescape.repository.reservationTime.ReservationTimeRepository;
 
 import java.util.HashMap;
 import java.util.List;

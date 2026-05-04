@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.domain.ReservationTime;
+import roomescape.repository.reservationTime.JdbcReservationTimeRepository;
+import roomescape.repository.reservationTime.ReservationTimeRepository;
 
 import javax.sql.DataSource;
 import java.util.List;

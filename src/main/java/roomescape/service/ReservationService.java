@@ -7,8 +7,8 @@ import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.dto.reservationTime.ReservationTimeRequesetDto;
 import roomescape.dto.reservationTime.ReservationTimeResponseDto;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.reservation.ReservationRepository;
+import roomescape.repository.reservationTime.ReservationTimeRepository;
 
 import java.util.ArrayList;
 import java.util.List;

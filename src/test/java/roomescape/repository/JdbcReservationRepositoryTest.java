@@ -1,12 +1,15 @@
 package roomescape.repository;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.repository.reservation.JdbcReservationRepository;
+import roomescape.repository.reservation.ReservationRepository;
+import roomescape.repository.reservationTime.JdbcReservationTimeRepository;
+import roomescape.repository.reservationTime.ReservationTimeRepository;
 
 import javax.sql.DataSource;
 import java.time.LocalTime;
