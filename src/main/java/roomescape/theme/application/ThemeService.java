@@ -28,10 +28,9 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
-        if (!repository.existsThemeById(id)) {
+        if (repository.delete(id) < 1) {
             throw new ThemeNotFoundException("존재하지 않는 테마입니다.");
         }
-        repository.delete(id);
     }
 
     @Transactional(readOnly = true)

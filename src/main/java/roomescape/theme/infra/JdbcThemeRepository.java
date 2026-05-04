@@ -50,15 +50,9 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public void delete(Long id) {
+    public int delete(Long id) {
         String sql = "DELETE FROM theme WHERE id = :id";
-        jdbcTemplate.update(sql, Map.of("id", id));
-    }
-
-    @Override
-    public boolean existsThemeById(Long id) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM theme WHERE id=:id)";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Map.of("id", id), Boolean.class));
+        return jdbcTemplate.update(sql, Map.of("id", id));
     }
 
     @Override
