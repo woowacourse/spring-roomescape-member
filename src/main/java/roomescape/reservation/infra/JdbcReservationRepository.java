@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
 
 @Repository
 @RequiredArgsConstructor
@@ -25,17 +26,19 @@ public class JdbcReservationRepository implements ReservationRepository {
                     new ReservationTime(
                             resultSet.getLong("time_id"),
                             LocalTime.parse(resultSet.getString("start_at"))
-                    ));
+                    ),
+                    new Theme(resultSet.getLong(theme_id),));
 
     @Override
-    public Reservation save(String name, LocalDate date, Long timeId) {
-        String insertReservationSql = "INSERT INTO reservation(name, date, time_id) VALUES (:name, :date, :timeId)";
+    public Reservation save(Reservation reservation) {
+        String insertReservationSql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (:name, :date, :timeId, :themeId)";
         String selectReservationTimeByIdSql = "SELECT start_at FROM reservation_time WHERE id = :timeId";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", name)
-                .addValue("date", date.toString())
-                .addValue("timeId", timeId);
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate().toString())
+                .addValue("timeId", reservation.getTime().getId())
+                .addValue("themeId", reservation.getTheme().getId());
 
         String startAt = template.queryForObject(selectReservationTimeByIdSql, params, String.class);
 
@@ -44,16 +47,17 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         return new Reservation(
                 keyHolder.getKey().longValue(),
-                name,
-                date,
-                new ReservationTime(timeId, LocalTime.parse(startAt))
+                reservation.getName(),
+                reservation.getDate(),
+                new ReservationTime(reservation.getTime().getId(), LocalTime.parse(startAt),
+                        new Theme())
         );
     }
 
     @Override
     public List<Reservation> findAll() {
         String sql = """
-                SELECT reservation.id, reservation.name, reservation.date, reservation.time_id, reservation_time.start_at
+                SELECT reservation.id, reservation.name, reservation.date, reservation.time_id, reservation_time.start_at, reservation.theme_id
                 FROM reservation
                 INNER JOIN reservation_time ON reservation.time_id = reservation_time.id
                 """;
