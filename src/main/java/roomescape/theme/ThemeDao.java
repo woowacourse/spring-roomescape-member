@@ -33,7 +33,7 @@ public class ThemeDao {
             ps.setString(2, description);
             ps.setString(3, thumbnail);
             return ps;
-        });
+        }, keyHolder);
 
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
