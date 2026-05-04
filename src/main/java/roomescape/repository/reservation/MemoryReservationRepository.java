@@ -1,3 +1,4 @@
+/*
 package roomescape.repository.reservation;
 
 import java.util.ArrayList;
@@ -47,3 +48,4 @@ public class MemoryReservationRepository implements ReservationRepository {
         return reservations.stream().anyMatch(reservation -> reservation.time().id() == timeId);
     }
 }
+*/

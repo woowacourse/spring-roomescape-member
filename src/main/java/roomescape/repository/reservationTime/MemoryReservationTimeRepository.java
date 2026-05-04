@@ -1,3 +1,4 @@
+/*
 package roomescape.repository.reservationTime;
 
 import java.util.ArrayList;
@@ -46,3 +47,4 @@ public class MemoryReservationTimeRepository implements ReservationTimeRepositor
         reservationTimes.remove(deletedReservationTime.get());
     }
 }
+*/

@@ -12,7 +12,6 @@ import roomescape.exception.ErrorMessage;
 import roomescape.exception.ReservationCommandException;
 
 class ReservationCommandTest {
-
     @Test
     @DisplayName("정상 생성 테스트")
     void initTest() {

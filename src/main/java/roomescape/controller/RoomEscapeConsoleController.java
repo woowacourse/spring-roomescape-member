@@ -1,3 +1,4 @@
+/*
 package roomescape.controller;
 
 import java.util.List;
@@ -110,3 +111,4 @@ public class RoomEscapeConsoleController implements CommandLineRunner {
         OutputView.printDeleteReservationTimeComplete();
     }
 }
+*/
