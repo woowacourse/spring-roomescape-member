@@ -1,5 +1,10 @@
 package roomescape.repository.reservation;
 
+import java.sql.PreparedStatement;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -7,17 +12,26 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-
-import javax.sql.DataSource;
-import java.sql.PreparedStatement;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
+import roomescape.domain.Theme;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (rs, rowNum) ->
+        new Reservation(
+            rs.getLong("reservation_id"),
+            rs.getString("name"),
+            rs.getString("date"),
+            new ReservationTime(
+                rs.getLong("time_id"),
+                rs.getString("time_value")),
+            new Theme(
+                rs.getLong("theme_id"),
+                rs.getString("theme_name"),
+                rs.getString("theme_description"),
+                rs.getString("theme_image_url"))
+        );
 
     private final JdbcTemplate template;
 
@@ -26,8 +40,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Long createReservation(Reservation reservation) {
-        String sql = "INSERT INTO reservation(name, date, time_id) VALUES (?, ?, ?);";
+    public Reservation createReservation(Reservation reservation) {
+        String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         template.update(conn -> {
@@ -35,46 +49,65 @@ public class JdbcReservationRepository implements ReservationRepository {
             ps.setString(1, reservation.getName().value());
             ps.setString(2, DATE_TIME_FORMATTER.format(reservation.getDate()));
             ps.setLong(3, reservation.getTime().getId());
+            ps.setLong(4, reservation.getTheme().getId());
             return ps;
         }, keyHolder);
 
         long key = keyHolder.getKey().longValue();
-        return key;
+        return reservation.withId(key);
     }
 
     @Override
     public void deleteById(Long id) {
-        String sql = "DELETE FROM reservation WHERE id = ?;";
+        int update = template.update("DELETE FROM reservation WHERE id = ?;", id);
 
-        template.update(sql, id);
+        if (update == 0) {
+            throw new NoSuchElementException("존재하지 않는 reservation 의 id 입니다. id = " + id);
+        }
     }
 
     @Override
     public List<Reservation> findAll() {
-        String sql = "SELECT id, name, date, time_id FROM reservation;";
-
-        List<Reservation> reservations = template.query(sql, reservationRowMapper());
-
-        return reservations;
+        return template.query(
+            "SELECT "
+                + "r.id as reservation_id, "
+                + "r.name, "
+                + "r.date, "
+                + "t.id as time_id, "
+                + "t.start_at as time_value, "
+                + "th.id as theme_id, "
+                + "th.name as theme_name, "
+                + "th.description as theme_description, "
+                + "th.image_url as theme_image_url "
+                + "FROM reservation as r "
+                + "INNER JOIN reservation_time as t "
+                + "ON r.time_id = t.id "
+                + "INNER JOIN theme as th "
+                + "ON r.theme_id = th.id",
+            RESERVATION_ROW_MAPPER
+        );
     }
 
     @Override
     public Reservation findById(Long id) {
-        String sql = "SELECT id, name, date, time_id FROM reservation WHERE id = ?;";
-
-        Reservation reservation = template.queryForObject(sql, reservationRowMapper(), id);
-
-        return reservation;
-    }
-
-    private RowMapper<Reservation> reservationRowMapper() {
-        return ((rs, rowNum) -> {
-            Reservation reservation = new Reservation(
-                    rs.getLong("id"),
-                    rs.getString("name"),
-                    rs.getString("date"),
-                    new ReservationTime(rs.getLong("time_id"), (LocalTime) null));
-            return reservation;
-        });
+        return template.queryForObject(
+            "SELECT "
+                + "r.id as reservation_id, "
+                + "r.name, "
+                + "r.date, "
+                + "t.id as time_id, "
+                + "t.start_at as time_value, "
+                + "th.id as theme_id, "
+                + "th.name as theme_name, "
+                + "th.description as theme_description, "
+                + "th.image_url as theme_image_url "
+                + "FROM reservation as r "
+                + "INNER JOIN reservation_time as t "
+                + "ON r.time_id = t.id "
+                + "INNER JOIN theme as th "
+                + "ON r.theme_id = th.id "
+                + "WHERE r.id = ?",
+            RESERVATION_ROW_MAPPER,
+            id);
     }
 }

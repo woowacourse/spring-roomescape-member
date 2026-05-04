@@ -54,6 +54,13 @@ public class JdbcThemeRepository implements ThemeRepository {
         return template.query(sql, themeRowMapper());
     }
 
+    @Override
+    public Theme findById(Long id) {
+        return template.queryForObject(
+            "SELECT id, name, description, image_url FROM theme;",
+            themeRowMapper());
+    }
+
     private RowMapper<Theme> themeRowMapper() {
         return (rs, rowNum) ->
                 new Theme(

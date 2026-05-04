@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface ReservationRepository {
 
-    Long createReservation(Reservation reservation);
+    Reservation createReservation(Reservation reservation);
 
     void deleteById(Long id);
 

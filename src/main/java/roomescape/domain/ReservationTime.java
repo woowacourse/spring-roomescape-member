@@ -29,6 +29,10 @@ public class ReservationTime {
         this.startAt = translateTime(startAt);
     }
 
+    public ReservationTime(String startAt) {
+        this(null, startAt);
+    }
+
     public Long getId() {
         return id;
     }
@@ -47,6 +51,10 @@ public class ReservationTime {
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("유효하지 않은 시간 값입니다: " + startAt);
         }
+    }
+
+    public ReservationTime withId(Long id) {
+        return new ReservationTime(id, this.startAt);
     }
 
     @Override

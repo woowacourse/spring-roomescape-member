@@ -6,104 +6,125 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.repository.reservation.JdbcReservationRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.JdbcReservationTimeRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
-import javax.sql.DataSource;
 import java.time.LocalTime;
 import java.util.List;
+import roomescape.repository.theme.JdbcThemeRepository;
+import roomescape.repository.theme.ThemeRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
-@Import({JdbcReservationRepository.class, JdbcReservationTimeRepository.class})
+@Import({JdbcReservationRepository.class, JdbcReservationTimeRepository.class, JdbcThemeRepository.class})
 @JdbcTest
 class JdbcReservationRepositoryTest {
 
-    private final ReservationRepository repository;
+    private static final ReservationTime RESERVATION_TIME = new ReservationTime("12:30");
+    private static final Theme THEME = new Theme("테마명", "설명", "url");
+    private static final Reservation RESERVATION = new Reservation(
+        null,
+        "브라운",
+        "2026-04-28",
+        RESERVATION_TIME,
+        THEME);
+    private static final Reservation SAVED_RESERVATION = new Reservation(
+        1L,
+        "브라운",
+        "2026-04-28",
+        RESERVATION_TIME.withId(1L),
+        THEME.withId(1L));
+
+    private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
 
     @Autowired
-    public JdbcReservationRepositoryTest(ReservationRepository repository, ReservationTimeRepository timeRepository) {
-        this.repository = repository;
+    public JdbcReservationRepositoryTest(
+        ReservationRepository repository,
+        ReservationTimeRepository timeRepository,
+        ThemeRepository themeRepository
+    ) {
+        this.reservationRepository = repository;
         this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
     }
 
 
     @Test
-    void 데이터_생성_테스트() {
+    void 예약을_저장한다() {
         // given
-        ReservationTime time = timeRepository.createReservationTime(
-            new ReservationTime(null, LocalTime.parse("20:43")));
-        Reservation reservation = new Reservation(null, "브라운", "2026-04-28", time);
+        ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
+        Theme savedTheme = themeRepository.createTheme(THEME);
 
         // when
-        Long id = repository.createReservation(reservation);
+        Reservation saved = reservationRepository.createReservation(new Reservation("", "2026-04-30", savedTime, savedTheme));
 
         // then
-        assertThat(id).isNotNull();
-
-        List<Reservation> all = repository.findAll();
-        assertThat(all).hasSize(1);
-        assertThat(all.get(0).getName().value()).isEqualTo("브라운");
+        assertThat(saved.getTime()).isEqualTo(savedTime);
+        assertThat(saved.getTheme()).isEqualTo(savedTheme);
     }
 
     @Test
-    void 데이터_전체_조회_테스트() {
+    void 전체_예약_목록을_조회한다() {
         // given
-        ReservationTime time1 = timeRepository.createReservationTime(
-            new ReservationTime(null, LocalTime.parse("13:43")));
-        ReservationTime time2 = timeRepository.createReservationTime(
-            new ReservationTime(null, LocalTime.parse("10:00")));
-        repository.createReservation(new Reservation(null, "브라운", "2026-04-28", time1));
-        repository.createReservation(new Reservation(null, "제임스", "2026-04-29", time2));
+        ReservationTime savedTime1 = timeRepository.createReservationTime(new ReservationTime("13:43"));
+        ReservationTime savedTime2 = timeRepository.createReservationTime(new ReservationTime("10:00"));
+
+        Theme savedTheme = themeRepository.createTheme(new Theme("a", "a", "a_url"));
+
+        reservationRepository.createReservation(new Reservation("브라운", "2026-04-28", savedTime1, savedTheme));
+        reservationRepository.createReservation(new Reservation("제임스", "2026-04-29", savedTime2, savedTheme));
 
         // when
-        List<Reservation> reservations = repository.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
 
         // then
         assertThat(reservations).hasSize(2);
-        assertThat(reservations)
-            .extracting(Reservation::getName)
-            .anySatisfy(name -> assertThat(name.value()).isEqualTo("브라운"))
-            .anySatisfy(name -> assertThat(name.value()).isEqualTo("제임스"));
 
         assertThat(reservations)
             .extracting(Reservation::getTime)
-            .anySatisfy(time -> assertThat(time).isEqualTo(time1))
-            .anySatisfy(time -> assertThat(time).isEqualTo(time2));
+            .anySatisfy(time -> assertThat(time).isEqualTo(savedTime1))
+            .anySatisfy(time -> assertThat(time).isEqualTo(savedTime2));
+
+        assertThat(reservations)
+            .extracting(Reservation::getTheme)
+            .allSatisfy(theme -> assertThat(theme.getName()).isEqualTo("a"));
     }
 
     @Test
-    void 데이터_삭제_테스트() {
+    void 저장되어_있는_예약을_아이디로_조회하여_삭제한다() {
         // given
-        ReservationTime time = timeRepository.createReservationTime(
-            new ReservationTime(null, LocalTime.parse("20:40")));
-        Long id = repository.createReservation(new Reservation(null, "브라운", "2026-04-28", time));
-        assertThat(repository.findAll()).hasSize(1);
+        ReservationTime time = timeRepository.createReservationTime(new ReservationTime("13:43"));
+        Theme theme = themeRepository.createTheme(new Theme("a", "a", "a_url"));
 
-        // when
-        repository.deleteById(id);
+        Reservation saved = reservationRepository.createReservation(new Reservation("브라운", "2026-04-28", time, theme));
 
-        // then
-        assertThat(repository.findAll()).isEmpty();
+        // when & then
+        assertThatCode(() -> reservationRepository.deleteById(saved.getId()))
+            .doesNotThrowAnyException();
     }
 
     @Test
-    void 아이디로_특정_데이터_조회_테스트() {
-        ReservationTime time = timeRepository.createReservationTime(
-            new ReservationTime(null, LocalTime.parse("16:00")));
-        Reservation test = new Reservation(null, "브라운", "2026-04-29", time);
-        Long id = repository.createReservation(test);
+    void 저장되어_있는_예약을_아이디로_조회한다() {
+        // given
+        ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
+        Theme savedTheme = themeRepository.createTheme(THEME);
+
+        Reservation saved = reservationRepository.createReservation(new Reservation("브라운", "2026-05-01", savedTime, savedTheme));
 
         // when
-        Reservation target = repository.findById(id);
+        Reservation target = reservationRepository.findById(saved.getId());
 
         // then
-        assertThat(target.getId()).isEqualTo(id);
-        assertThat(target.getName()).isEqualTo(test.getName());
-        assertThat(target.getDate()).isEqualTo(test.getDate());
-        assertThat(target.getTime()).isEqualTo(test.getTime());
+        assertThat(target.getId()).isEqualTo(saved.getId());
+        assertThat(target.getName()).isEqualTo(saved.getName());
+        assertThat(target.getDate()).isEqualTo(saved.getDate());
+        assertThat(target.getTime()).isEqualTo(saved.getTime());
+        assertThat(target.getTheme()).isEqualTo(saved.getTheme());
     }
 }
