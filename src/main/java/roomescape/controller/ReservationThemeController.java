@@ -16,20 +16,20 @@ import roomescape.domain.Theme.ThemeCommand;
 import roomescape.dto.theme.AddThemeRequest;
 import roomescape.dto.theme.AddThemeResponse;
 import roomescape.dto.theme.AllThemeResponse;
-import roomescape.service.ThemeService;
+import roomescape.service.ReservationThemeService;
 
 @RestController
 @RequestMapping("/themes")
-public class ThemeController {
-    private final ThemeService themeService;
+public class ReservationThemeController {
+    private final ReservationThemeService reservationThemeService;
 
-    public ThemeController(ThemeService themeService) {
-        this.themeService = themeService;
+    public ReservationThemeController(ReservationThemeService reservationThemeService) {
+        this.reservationThemeService = reservationThemeService;
     }
 
     @GetMapping()
     public ResponseEntity<AllThemeResponse> getThemes() {
-        List<Theme> themes = themeService.getAllTheme();
+        List<Theme> themes = reservationThemeService.getAllTheme();
 
         return new ResponseEntity<>(new AllThemeResponse(themes), HttpStatus.OK);
     }
@@ -37,14 +37,14 @@ public class ThemeController {
     @PostMapping()
     public ResponseEntity<AddThemeResponse> addTheme(@RequestBody @Valid AddThemeRequest addThemeRequest) {
         ThemeCommand themeCommand = addThemeRequest.from();
-        Theme addedTheme = themeService.addTheme(themeCommand);
+        Theme addedTheme = reservationThemeService.addTheme(themeCommand);
 
         return new ResponseEntity<>(new AddThemeResponse(addedTheme), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable long id) {
-        themeService.deleteTheme(id);
+        reservationThemeService.deleteTheme(id);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

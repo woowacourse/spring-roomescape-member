@@ -9,26 +9,26 @@ import roomescape.domain.Theme.ThemeCommand;
 import roomescape.exception.DataReferencedException;
 import roomescape.exception.ErrorMessage;
 import roomescape.repository.reservation.ReservationRepository;
-import roomescape.repository.theme.ThemeRepository;
+import roomescape.repository.ReservationTheme.ReservationThemeRepository;
 
 @Service
-public class ThemeService {
+public class ReservationThemeService {
 
-    private final ThemeRepository themeRepository;
+    private final ReservationThemeRepository reservationThemeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
-        this.themeRepository = themeRepository;
+    public ReservationThemeService(ReservationThemeRepository reservationThemeRepository, ReservationRepository reservationRepository) {
+        this.reservationThemeRepository = reservationThemeRepository;
         this.reservationRepository = reservationRepository;
     }
 
     @Transactional
     public Theme addTheme(ThemeCommand themeCommand) {
-        return themeRepository.addTheme(themeCommand);
+        return reservationThemeRepository.addTheme(themeCommand);
     }
 
     public List<Theme> getAllTheme() {
-        return themeRepository.getAllTheme();
+        return reservationThemeRepository.getAllTheme();
     }
 
     public void deleteTheme(long id) {
@@ -39,7 +39,7 @@ public class ThemeService {
         }
 
         try {
-            themeRepository.deleteTheme(id);
+            reservationThemeRepository.deleteTheme(id);
         } catch (DataIntegrityViolationException e) {
             throw new DataReferencedException(ErrorMessage.INTEGRITY_VIOLATION_ON_DELETE);
         }

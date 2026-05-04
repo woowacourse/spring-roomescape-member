@@ -12,18 +12,15 @@ import roomescape.exception.DataReferencedException;
 import roomescape.exception.ErrorMessage;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
-import roomescape.repository.theme.ThemeRepository;
 
 @Service
 public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
-    private final ThemeRepository themeRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository, ReservationRepository reservationRepository, ThemeRepository themeRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository, ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
-        this.themeRepository = themeRepository;
     }
 
     public List<ReservationTime> getAllReservationTime() {

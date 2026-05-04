@@ -9,20 +9,20 @@ import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.Theme.Theme;
 import roomescape.exception.ErrorMessage;
 import roomescape.exception.NotFoundResourceException;
+import roomescape.repository.ReservationTheme.ReservationThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
-import roomescape.repository.theme.ThemeRepository;
 
 @Service
 public class RoomReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
+    private final ReservationThemeRepository reservationThemeRepository;
 
-    public RoomReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+    public RoomReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ReservationThemeRepository reservationThemeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
+        this.reservationThemeRepository = reservationThemeRepository;
     }
 
     public List<Reservation> getAllReservation() {
@@ -34,7 +34,7 @@ public class RoomReservationService {
         ReservationTime reservationTime = reservationTimeRepository.getReservationTime(reservationCommand.timeId())
                 .orElseThrow(() -> new NotFoundResourceException(ErrorMessage.INVALID_RESERVATION_TIME_ID));
 
-        Theme theme = themeRepository.getTheme(reservationCommand.themeId())
+        Theme theme = reservationThemeRepository.getTheme(reservationCommand.themeId())
                 .orElseThrow(() -> new NotFoundResourceException(ErrorMessage.INVALID_THEME_ID));
 
         return reservationRepository.addReservation(reservationCommand, reservationTime, theme);

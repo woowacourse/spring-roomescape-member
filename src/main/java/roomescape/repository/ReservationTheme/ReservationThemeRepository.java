@@ -1,45 +1,45 @@
-package roomescape.repository.theme;
+package roomescape.repository.ReservationTheme;
 
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
-import roomescape.dao.ThemeDao;
+import roomescape.dao.ReservationThemeDao;
 import roomescape.domain.Theme.Theme;
 import roomescape.domain.Theme.ThemeCommand;
 import roomescape.domain.Theme.ThemeDaoData;
 
 @Repository
-public class ThemeRepository {
-    private final ThemeDao themeDao;
+public class ReservationThemeRepository {
+    private final ReservationThemeDao reservationThemeDao;
 
-    public ThemeRepository(ThemeDao themeDao) {
-        this.themeDao = themeDao;
+    public ReservationThemeRepository(ReservationThemeDao reservationThemeDao) {
+        this.reservationThemeDao = reservationThemeDao;
     }
 
     public Theme addTheme(ThemeCommand themeCommand) {
-        ThemeDaoData themeDaoData = themeDao.addTheme(themeCommand);
+        ThemeDaoData themeDaoData = reservationThemeDao.addTheme(themeCommand);
         return createTheme(themeDaoData);
     }
 
     public List<Theme> getAllTheme() {
-        List<ThemeDaoData> themeDaoAllData = themeDao.getAllTheme();
+        List<ThemeDaoData> themeDaoAllData = reservationThemeDao.getAllTheme();
         return themeDaoAllData.stream()
                 .map(this::createTheme)
                 .toList();
     }
 
     public Optional<Theme> getTheme(long id) {
-        Optional<ThemeDaoData> themeDaoData = themeDao.getTheme(id);
+        Optional<ThemeDaoData> themeDaoData = reservationThemeDao.getTheme(id);
 
         if(themeDaoData.isEmpty()) {
             return Optional.empty();
         }
 
-        return Optional.of(createTheme(themeDao.getTheme(id).get()));
+        return Optional.of(createTheme(reservationThemeDao.getTheme(id).get()));
     }
 
     public void deleteTheme(long id) {
-        themeDao.deleteTheme(id);
+        reservationThemeDao.deleteTheme(id);
     }
 
     private Theme createTheme(ThemeDaoData themeDaoData) {

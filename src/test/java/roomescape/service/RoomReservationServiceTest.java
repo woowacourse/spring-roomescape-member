@@ -17,7 +17,7 @@ import roomescape.exception.ErrorMessage;
 import roomescape.exception.NotFoundResourceException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
-import roomescape.repository.theme.ThemeRepository;
+import roomescape.repository.ReservationTheme.ThemeRepository;
 
 public class RoomReservationServiceTest {
     private ReservationRepository createReservationRepository() {

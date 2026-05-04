@@ -10,7 +10,7 @@ import roomescape.domain.Theme.ThemeCommand;
 import roomescape.domain.Theme.ThemeDaoData;
 
 @Repository
-public class ThemeDao {
+public class ReservationThemeDao {
     private static final String SELECT_ALL_SQL = "SELECT id, name, description, image_url FROM theme";
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM theme WHERE id = ?";
     private static final String SELECT_SPECIFIC_ID_SQL = "SELECT id, name, description, image_url FROM theme WHERE id = ?";
@@ -19,7 +19,7 @@ public class ThemeDao {
     private final SimpleJdbcInsert simpleJdbcInsert;
 
 
-    public ThemeDao(JdbcTemplate jdbcTemplate) {
+    public ReservationThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
