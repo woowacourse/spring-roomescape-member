@@ -10,7 +10,6 @@ import roomescape.domain.Theme.ThemeDaoData;
 
 @Repository
 public class ThemeRepository {
-
     private final ThemeDao themeDao;
 
     public ThemeRepository(ThemeDao themeDao) {
