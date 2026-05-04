@@ -9,15 +9,15 @@ import roomescape.domain.Theme.ThemeCommand;
 import roomescape.exception.DataReferencedException;
 import roomescape.exception.ErrorMessage;
 import roomescape.repository.reservation.ReservationRepository;
-import roomescape.repository.ReservationTheme.ReservationThemeRepository;
+import roomescape.repository.ReservationTheme.JdbcReservationThemeRepository;
 
 @Service
 public class ReservationThemeService {
 
-    private final ReservationThemeRepository reservationThemeRepository;
+    private final JdbcReservationThemeRepository reservationThemeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationThemeService(ReservationThemeRepository reservationThemeRepository, ReservationRepository reservationRepository) {
+    public ReservationThemeService(JdbcReservationThemeRepository reservationThemeRepository, ReservationRepository reservationRepository) {
         this.reservationThemeRepository = reservationThemeRepository;
         this.reservationRepository = reservationRepository;
     }

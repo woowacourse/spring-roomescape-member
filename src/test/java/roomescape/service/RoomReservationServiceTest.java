@@ -11,13 +11,15 @@ import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.ReservationTime.ReservationTimeCommand;
+import roomescape.domain.ReservationTime.ReservationTimeCondition;
+import roomescape.domain.ReservationTime.ReservationTimeWithAvailable;
 import roomescape.domain.Theme.Theme;
 import roomescape.domain.Theme.ThemeCommand;
 import roomescape.exception.ErrorMessage;
 import roomescape.exception.NotFoundResourceException;
+import roomescape.repository.ReservationTheme.ReservationThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
-import roomescape.repository.ReservationTheme.ThemeRepository;
 
 public class RoomReservationServiceTest {
     private ReservationRepository createReservationRepository() {
@@ -73,11 +75,17 @@ public class RoomReservationServiceTest {
             public void deleteReservationTime(long id) {
 
             }
+
+            @Override
+            public List<ReservationTimeWithAvailable> getReservationTimeByDateAndTheme(
+                    ReservationTimeCondition reservationTimeCondition) {
+                return List.of();
+            }
         };
     }
 
-    private ThemeRepository createThemeRepository(Theme theme) {
-        return new ThemeRepository() {
+    private ReservationThemeRepository createThemeRepository(Theme theme) {
+        return new ReservationThemeRepository() {
             @Override
             public Theme addTheme(ThemeCommand themeCommand) {
                 return new Theme(1, themeCommand.name(), themeCommand.description(), themeCommand.imageUrl());

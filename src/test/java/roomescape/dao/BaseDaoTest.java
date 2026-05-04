@@ -28,7 +28,8 @@ public abstract class BaseDaoTest {
     protected void createReservationTimeTable() {
         jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS reservation_time (" +
                 "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
-                "start_at VARCHAR(255) NOT NULL)");
+                "start_at VARCHAR(255) NOT NULL)"
+        );
     }
 
     protected void createReservationTable() {
@@ -36,20 +37,41 @@ public abstract class BaseDaoTest {
                 "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
                 "name VARCHAR(255) NOT NULL, " +
                 "date VARCHAR(255) NOT NULL, " +
-                "time_id BIGINT, " +
-                "FOREIGN KEY (time_id) REFERENCES reservation_time (id))");
+                "time_id BIGINT NOT NULL," +
+                "theme_id BIGINT NOT NULL, " +
+                "FOREIGN KEY (time_id) REFERENCES reservation_time (id)," +
+                "FOREIGN KEY (theme_id) REFERENCES theme (id))"
+        );
+    }
+
+    protected void createReservationThemeTable() {
+        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS theme (" +
+                "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+                "name VARCHAR(255) NOT NULL, " +
+                "description VARCHAR(255) NOT NULL, " +
+                "image_url VARCHAR(255) NOT NULL)"
+        );
     }
 
     protected void insertReservationTime(String time) {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", time);
     }
 
-    protected void insertReservation(String name, String date, long timeId) {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", name, date, timeId);
+    protected void insertReservationTheme(String name, String description, String imageUrl) {
+        jdbcTemplate.update("INSERT INTO theme (name, description, image_url) VALUES (?, ?, ?)", name, description, imageUrl);
+    }
+
+
+    protected void insertReservation(String name, String date, long timeId, long themeId) {
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", name, date, timeId, themeId);
     }
 
     protected void deleteReservationTable() {
         jdbcTemplate.execute("DROP TABLE reservation");
+    }
+
+    protected void deleteReservationThemeTable() {
+        jdbcTemplate.execute("DROP TABLE theme");
     }
 
     protected void deleteReservationTimeTable() {

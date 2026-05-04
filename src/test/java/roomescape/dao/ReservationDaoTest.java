@@ -13,15 +13,23 @@ import roomescape.domain.Theme.Theme;
 public class ReservationDaoTest extends BaseDaoTest {
     private ReservationDao reservationDao;
 
-    private final Reservation INIT_RESERVATION = new Reservation(1, "브라운", "2023-08-05", new ReservationTime(1, "10:00"), new Theme(1, "테마1", "테마 설명", "url"));
+    private final Reservation INIT_RESERVATION = new Reservation(
+            1,
+            "브라운",
+            "2023-08-05",
+            new ReservationTime(1, "10:00"),
+            new Theme(1, "테마1", "테마 설명", "image url")
+    );
 
     @Override
     protected void initTable() {
         createReservationTimeTable();
+        createReservationThemeTable();
         createReservationTable();
 
         insertReservationTime("10:00");
-        insertReservation("브라운", "2023-08-05", 1);
+        insertReservationTheme("테마1", "테마 설명", "image url");
+        insertReservation("브라운", "2023-08-05", 1, 1);
         this.reservationDao = new ReservationDao(jdbcTemplate);
     }
 
@@ -54,7 +62,7 @@ public class ReservationDaoTest extends BaseDaoTest {
         long updatedReservation = reservationDao.insertReservation(new ReservationCommand("테스트", "2023-08-15", 1, 1));
         List<Reservation> reservations = reservationDao.getAllReservation();
 
-        Reservation expectedReservation = new Reservation(2, "테스트", "2023-08-15", new ReservationTime(1, "10:00"), new Theme(1, "테마1", "테마 설명", "url"));
+        Reservation expectedReservation = new Reservation(2, "테스트", "2023-08-15", new ReservationTime(1, "10:00"), new Theme(1, "테마1", "테마 설명", "image url"));
 
         assertThat(updatedReservation).isEqualTo(2);
         assertThat(reservations).contains(expectedReservation);

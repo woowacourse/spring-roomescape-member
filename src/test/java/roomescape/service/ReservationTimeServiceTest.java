@@ -12,13 +12,16 @@ import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.ReservationTime.ReservationTimeCommand;
+import roomescape.domain.ReservationTime.ReservationTimeCondition;
+import roomescape.domain.ReservationTime.ReservationTimeWithAvailable;
+import roomescape.domain.Theme.Theme;
 import roomescape.exception.DataReferencedException;
 import roomescape.exception.ErrorMessage;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
 public class ReservationTimeServiceTest {
-    private ReservationRepository createReservationRepository(boolean isExist) {
+    private ReservationRepository createReservationRepository(boolean isExistTime, boolean isExistTheme) {
         return new ReservationRepository() {
             @Override
             public List<Reservation> getAllReservation() {
@@ -26,7 +29,7 @@ public class ReservationTimeServiceTest {
             }
 
             @Override
-            public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime) {
+            public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
                 return null;
             }
 
@@ -37,7 +40,12 @@ public class ReservationTimeServiceTest {
 
             @Override
             public boolean existsByTimeId(long timeId) {
-                return isExist;
+                return isExistTime;
+            }
+
+            @Override
+            public boolean existsByThemeId(long themeId) {
+                return isExistTheme;
             }
         };
     }
@@ -63,20 +71,25 @@ public class ReservationTimeServiceTest {
             public void deleteReservationTime(long id) {
                 runnable.run();
             }
+
+            @Override
+            public List<ReservationTimeWithAvailable> getReservationTimeByDateAndTheme(ReservationTimeCondition reservationTimeCondition) {
+                return List.of();
+            }
         };
     }
 
     @Test
     @DisplayName("정상 삭제 테스트")
     void deleteReservationTimeTest() {
-        ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {}), createReservationRepository(false));
+        ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {}), createReservationRepository(false, false));
         assertThatCode(() -> reservationTimeService.deleteReservationTime(1)).doesNotThrowAnyException();
     }
 
     @Test
     @DisplayName("외부에서 사용이 되었을 때 예외 발생 테스트")
     void deleteFailedWhenInUseTest() {
-        ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {}), createReservationRepository(true));
+        ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {}), createReservationRepository(true, true));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1))
                 .isExactlyInstanceOf(DataReferencedException.class)
@@ -88,7 +101,7 @@ public class ReservationTimeServiceTest {
     void deleteFailByIntegrityTest() {
         ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {
             throw new DataIntegrityViolationException("정합성 오류");
-        }), createReservationRepository(false));
+        }), createReservationRepository(false, false));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1))
                 .isExactlyInstanceOf(DataReferencedException.class)

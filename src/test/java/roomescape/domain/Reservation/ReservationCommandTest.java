@@ -18,8 +18,9 @@ class ReservationCommandTest {
         String name = "브라운";
         String date = "2024-05-18";
         long timeId = 1L;
+        long themeId = 1L;
 
-        ReservationCommand command = new ReservationCommand(name, date, timeId);
+        ReservationCommand command = new ReservationCommand(name, date, timeId, themeId);
 
         assertAll(
                 () -> assertThat(command.name()).isEqualTo(name),
@@ -32,7 +33,7 @@ class ReservationCommandTest {
     @ValueSource(strings = {"", " ", "  "})
     @DisplayName("이름이 비어있거나 공백인 경우 예외 테스트")
     void fail_name_blank(String invalidName) {
-        assertThatThrownBy(() -> new ReservationCommand(invalidName, "2023-05-18", 1L))
+        assertThatThrownBy(() -> new ReservationCommand(invalidName, "2023-05-18", 1L, 1L))
                 .isInstanceOf(ReservationCommandException.class)
                 .hasMessage(ErrorMessage.INVALID_NAME_BLANK.getMessage());
     }
@@ -42,7 +43,7 @@ class ReservationCommandTest {
     void fail_name_length() {
         String longName = "a".repeat(21);
 
-        assertThatThrownBy(() -> new ReservationCommand(longName, "2023-05-18", 1L))
+        assertThatThrownBy(() -> new ReservationCommand(longName, "2023-05-18", 1L, 1L))
                 .isInstanceOf(ReservationCommandException.class)
                 .hasMessage(ErrorMessage.INVALID_NAME_LENGTH.getMessage());
     }
@@ -50,7 +51,7 @@ class ReservationCommandTest {
     @Test
     @DisplayName("날짜가 null인 경우 예외 테스트")
     void fail_date_null() {
-        assertThatThrownBy(() -> new ReservationCommand("브라운", null, 1L))
+        assertThatThrownBy(() -> new ReservationCommand("브라운", null, 1L, 1L))
                 .isInstanceOf(ReservationCommandException.class)
                 .hasMessage(ErrorMessage.INVALID_DATE_NULL.getMessage());
     }
@@ -59,7 +60,7 @@ class ReservationCommandTest {
     @ValueSource(strings = {"2024-02-30", "2024-13-01", "not-a-date", "24-05-01"})
     @DisplayName("잘못된 형식의 날짜인 경우 예외 테스트")
     void fail_date_format(String invalidDate) {
-        assertThatThrownBy(() -> new ReservationCommand("브라운", invalidDate, 1L))
+        assertThatThrownBy(() -> new ReservationCommand("브라운", invalidDate, 1L, 1L))
                 .isInstanceOf(ReservationCommandException.class)
                 .hasMessage(ErrorMessage.INVALID_DATE_FORMAT.getMessage());
     }
@@ -68,7 +69,7 @@ class ReservationCommandTest {
     @ValueSource(longs = {0, -1, -100})
     @DisplayName("시간 ID가 0 이하인 경우 예외 테스트")
     void fail_timeId_format(long invalidTimeId) {
-        assertThatThrownBy(() -> new ReservationCommand("브라운", "2024-05-01", invalidTimeId))
+        assertThatThrownBy(() -> new ReservationCommand("브라운", "2024-05-01", invalidTimeId, 1L))
                 .isInstanceOf(ReservationCommandException.class)
                 .hasMessage(ErrorMessage.INVALID_TIME_ID_FORMAT.getMessage());
     }
