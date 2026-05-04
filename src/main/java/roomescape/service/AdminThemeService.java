@@ -17,4 +17,7 @@ public class AdminThemeService {
         return themeDao.save(request.name(), request.description(), request.thumbnail_url());
     }
 
+    public void delete(long id) {
+        themeDao.delete(id);
+    }
 }
