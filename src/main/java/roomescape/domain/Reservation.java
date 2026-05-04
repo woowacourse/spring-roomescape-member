@@ -10,17 +10,26 @@ public class Reservation {
     private final ReservationTime time;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
-        validate(id, name, date, time);
+        validate(name, date, time);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
     }
 
-    private void validate(Long id, String name, LocalDate date, ReservationTime time) {
-        if (id == null) {
-            throw new IllegalArgumentException("[ERROR] id는 비어 있을 수 없습니다.");
-        }
+    public Reservation(String name, LocalDate date, ReservationTime time) {
+        validate(name, date, time);
+        this.id = null;
+        this.name = name;
+        this.date = date;
+        this.time = time;
+    }
+
+    public static Reservation of(Long id, Reservation reservation) {
+        return new Reservation(id, reservation.name, reservation.date, reservation.time);
+    }
+
+    private void validate(String name, LocalDate date, ReservationTime time) {
         if (name.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 이름은 비어 있을 수 없습니다.");
         }

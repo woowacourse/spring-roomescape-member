@@ -7,18 +7,28 @@ public class Theme {
     private final String thumbnailUrl;
 
     public Theme(Long id, String name, String description, String thumbnailUrl) {
-        validate(id, name, description, thumbnailUrl);
+        validate(name, description, thumbnailUrl);
 
-        this.description = description;
         this.id = id;
         this.name = name;
+        this.description = description;
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    private void validate(Long id, String name, String description, String thumbnailUrl) {
-        if (id == null) {
-            throw new IllegalArgumentException("[ERROR] id는 비어 있을 수 없습니다.");
-        }
+    public Theme(String name, String description, String thumbnailUrl) {
+        validate(name, description, thumbnailUrl);
+
+        this.id = null;
+        this.name = name;
+        this.description = description;
+        this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public static Theme of(Long id, Theme theme) {
+        return new Theme(id, theme.name, theme.description, theme.thumbnailUrl);
+    }
+
+    private void validate(String name, String description, String thumbnailUrl) {
         if (name.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 이름은 비어 있을 수 없습니다.");
         }

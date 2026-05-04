@@ -27,6 +27,8 @@ public class JdbcReservationDao implements ReservationDao {
     public Reservation create(ReservationRequestDto requestDto, ReservationTime reservationTime) {
         String sql = "INSERT INTO `reservation`(`name`, `date`, `time_id`) VALUES (?, ?, ?)";
 
+        Reservation reservation = requestDto.toEntity(reservationTime);
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement preparedStatement = con.prepareStatement(sql, new String[]{"id"});
@@ -38,7 +40,7 @@ public class JdbcReservationDao implements ReservationDao {
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return new Reservation(id, requestDto.name(), requestDto.date(), reservationTime);
+        return Reservation.of(id, reservation);
     }
 
     @Override
