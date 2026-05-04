@@ -1,0 +1,27 @@
+package roomescape.domain.theme.service;
+
+import java.util.List;
+import org.springframework.stereotype.Service;
+import roomescape.domain.theme.dto.response.ThemeResponseDTO;
+import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.theme.repository.ThemeRepository;
+
+@Service
+public class ThemeService {
+
+    private final ThemeRepository themeRepository;
+
+    public ThemeService(ThemeRepository themeRepository) {
+        this.themeRepository = themeRepository;
+    }
+
+    public List<ThemeResponseDTO> getThemes() {
+        return convertThemesToDTO(themeRepository.findAllThemes());
+    }
+
+    private List<ThemeResponseDTO> convertThemesToDTO(List<Theme> themes) {
+        return themes.stream()
+            .map(Theme::toResponseDTO)
+            .toList();
+    }
+}
