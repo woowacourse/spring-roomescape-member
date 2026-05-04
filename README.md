@@ -46,3 +46,35 @@ Location: /themes/{id}
 
 #### 구현
 - [x] 구현 완료
+
+## 2단계 - 사용자 예약
+
+### 1. 예약 가능한 시간 조회 기능
+
+#### 구현
+- [ ] 구현 완료
+
+#### 메서드 / URL
+
+- GET /times
+
+#### 요청
+
+- query parameter
+
+```text
+date=2026-05-08&themeId=1
+```
+
+#### 응답
+
+- 200 ok
+
+```json
+[
+  {
+    id,
+    startAt
+  }
+]
+```
