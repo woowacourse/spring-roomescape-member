@@ -17,6 +17,7 @@ import roomescape.repository.ReservationUpdatingDao;
 import roomescape.repository.ThemeQueryingDao;
 
 import java.util.List;
+import java.util.Optional;
 
 @Transactional(readOnly = true)
 @Service
@@ -49,12 +50,17 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse create(ReservationRequest reservationReq) {
-        Long generatedId = reservationUpdatingDao.insert(reservationReq);
-
         ReservationTime reservationTimeById = reservationTimeQueryingDao.findReservationTimeById(reservationReq.getTimeId())
                 .orElseThrow(() -> new ReservationTimeNotFoundException(reservationReq.getTimeId()));
         Theme themeById = themeQueryingDao.findThemeById(reservationReq.getThemeId())
                 .orElseThrow(() -> new ThemeNotFoundException(reservationReq.getThemeId()));
+
+        Optional<Reservation> savedReservation = reservationQueryingDao.findReservationByThemeAndDateAndTime(themeById.getId(), reservationReq.getDate(), reservationTimeById.getId());
+        if (savedReservation.isPresent()) {
+            return ReservationResponse.from(savedReservation.get());
+        }
+
+        Long generatedId = reservationUpdatingDao.insert(reservationReq);
         return ReservationResponse.from(new Reservation(generatedId, reservationReq.getName(), reservationReq.getDate(), reservationTimeById, themeById));
     }
 
