@@ -1,10 +1,12 @@
 package roomescape.service;
 
+import org.springframework.stereotype.Service;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
 
+@Service
 public class ThemeService {
     private final ThemeDao themeDao;
 
