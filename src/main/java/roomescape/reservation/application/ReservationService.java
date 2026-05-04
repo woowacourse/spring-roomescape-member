@@ -34,7 +34,6 @@ public class ReservationService {
     public ReservationResponse addReservation(ReservationRequest request) {
         ReservationTime time = timeRepository.getById(request.timeId());
         Theme theme = themeRepository.getById(request.themeId());
-
         return ReservationResponse.from(reservationRepository.save(ReservationRequest.toEntity(request, time, theme)));
     }
 

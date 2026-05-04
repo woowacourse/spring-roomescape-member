@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.time.application.ReservationTimeService;
+import roomescape.time.presentation.dto.AvailableReservationTimeRequest;
+import roomescape.time.presentation.dto.AvailableReservationTimeResponse;
 import roomescape.time.presentation.dto.ReservationTimeRequest;
 import roomescape.time.presentation.dto.ReservationTimeResponse;
 
@@ -37,5 +40,10 @@ public class ReservationTimeController {
     public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
         service.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<AvailableReservationTimeResponse> getAvailableReservationTime(@RequestParam AvailableReservationTimeRequest request) {
+        return ResponseEntity.ok(service.getAvailableReservationTime(request));
     }
 }
