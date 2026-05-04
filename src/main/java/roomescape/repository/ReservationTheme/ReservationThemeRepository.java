@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import roomescape.domain.Theme.Theme;
 import roomescape.domain.Theme.ThemeCommand;
-import roomescape.domain.Theme.ThemeDaoData;
 
 public interface ReservationThemeRepository {
     Theme addTheme(ThemeCommand themeCommand);
