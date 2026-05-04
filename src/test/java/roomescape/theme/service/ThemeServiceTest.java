@@ -1,5 +1,6 @@
 package roomescape.theme.service;
 
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,5 +42,17 @@ public class ThemeServiceTest {
         });
 
         Mockito.verify(themeRepository).save(themeBeforeSaved);
+    }
+
+    @DisplayName("중복된 테마 추가 시 예외 발생을 테스트합니다.")
+    @Test
+    void save_duplicated_theme_exception() {
+        Theme themeBeforeSaved = Theme.create("theme name", "theme description", "theme img url1");
+        Mockito.when(themeRepository.existsByNameAndDescription(themeBeforeSaved)).thenReturn(true);
+
+        ThemeCreateRequest createRequestDto = new ThemeCreateRequest("theme name", "theme description", "theme img url2");
+
+        Assertions.assertThatThrownBy(() -> themeService.saveTheme(createRequestDto))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

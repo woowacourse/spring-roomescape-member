@@ -15,7 +15,14 @@ public class ThemeService {
 
     public ThemeResponse saveTheme(ThemeCreateRequest request) {
         Theme theme = request.toEntity();
+        validateDuplicateTheme(theme);
 
         return ThemeResponse.from(themeRepository.save(theme));
+    }
+
+    private void validateDuplicateTheme(Theme theme) {
+        if (themeRepository.existsByNameAndDescription(theme)) {
+            throw new IllegalArgumentException();
+        }
     }
 }
