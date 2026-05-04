@@ -127,12 +127,23 @@ public class RoomReservationServiceTest {
 
     @Test
     @DisplayName("예약 생성 시 존재하지 않는 시간ID인 경우 예외 테스트")
-    void addReservationFailTest() {
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(), createReservationTimeRepository(null), createThemeRepository(null));
+    void addReservationFailByInvalidTimeIdTest() {
+        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(), createReservationTimeRepository(null), createThemeRepository(new Theme(1, "테마1", "설명", "url")));
         ReservationCommand reservationCommand = new ReservationCommand("브라운", "2023-08-05", 1, 1);
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationCommand))
                 .isExactlyInstanceOf(NotFoundResourceException.class)
                 .hasMessage(ErrorMessage.INVALID_RESERVATION_TIME_ID.getMessage());
+    }
+
+    @Test
+    @DisplayName("예약 생성 시 존재하지 않는 테마 ID인 경우 예외 테스트")
+    void addReservationFailByInvalidThemeIdTest() {
+        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(), createReservationTimeRepository(new ReservationTime(1, "10:00")), createThemeRepository(null));
+        ReservationCommand reservationCommand = new ReservationCommand("브라운", "2023-08-05", 1, 1);
+
+        assertThatThrownBy(() -> reservationService.addReservation(reservationCommand))
+                .isExactlyInstanceOf(NotFoundResourceException.class)
+                .hasMessage(ErrorMessage.INVALID_THEME_ID.getMessage());
     }
 }
