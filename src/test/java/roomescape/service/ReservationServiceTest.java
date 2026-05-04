@@ -101,4 +101,12 @@ class ReservationServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 존재하지 않는 예약 시간입니다.");
     }
+
+    /*@Test
+    void 존재하지_않는_themeId로_예약_생성시_예외_발생() {
+        // when & then
+        assertThatThrownBy(() -> reservationService.create("홍길동", "2026-05-02", 1L, 999L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 존재하지 않는 테마입니다.");
+    }*/
 }

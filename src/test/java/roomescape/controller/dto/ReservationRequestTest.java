@@ -58,7 +58,17 @@ class ReservationRequestTest {
         // when & then
         assertThatThrownBy(() -> new ReservationRequest("홍길동", "2026-05-02", timeId, 1L))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] id는 양수이어야 합니다.");
+                .hasMessage("[ERROR] 시간ID는 양수이어야 합니다.");
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(longs = {0, -1})
+    void themeId가_양수가_아니면_예외_발생(Long themeId) {
+        // when & then
+        assertThatThrownBy(() -> new ReservationRequest("홍길동", "2026-05-02", 1L, themeId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 테마ID는 양수이어야 합니다.");
     }
 
     @Test
