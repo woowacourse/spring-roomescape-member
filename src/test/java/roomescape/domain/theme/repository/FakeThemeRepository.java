@@ -1,4 +1,4 @@
-성package roomescape.domain.theme.repository;
+package roomescape.domain.theme.repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,5 +13,13 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findAllThemes() {
         return List.of();
+    }
+
+    @Override
+    public Theme save(Theme theme) {
+        Theme savedTheme = Theme.reconstruct(id.addAndGet(1), theme.getName(), theme.getDescription(),
+            theme.getImageUrl());
+        themes.add(savedTheme);
+        return savedTheme;
     }
 }
