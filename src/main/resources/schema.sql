@@ -4,6 +4,14 @@ CREATE TABLE IF NOT EXISTS reservation_time (
     PRIMARY KEY (id)
     );
 
+CREATE TABLE IF NOT EXISTS theme (
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(255) NOT NULL,
+    description VARCHAR(255),
+    thumbnail VARCHAR(255),
+    PRIMARY KEY (id)
+);
+
 MERGE INTO reservation_time(start_at) KEY (start_at) VALUES
     ('10:00'), ('10:10'), ('10:20'), ('10:30'), ('10:40'), ('10:50'),
     ('11:00'), ('11:10'), ('11:20'), ('11:30'), ('11:40'), ('11:50'),
@@ -22,6 +30,8 @@ CREATE TABLE IF NOT EXISTS reservation (
     name    VARCHAR(255) NOT NULL,
     date    VARCHAR(255) NOT NULL,
     time_id BIGINT,
+--     theme_id BIGINT,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id)
+--     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
