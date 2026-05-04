@@ -6,11 +6,19 @@ public class Theme {
     private final String description;
     private final String thumbnailUrl;
 
-    public Theme(long id, String name, String description, String thumbnailUrl) {
+    private Theme(long id, String name, String description, String thumbnailUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public static Theme of(long id, String name, String description, String thumbnailUrl) {
+        return new Theme(id, name, description, thumbnailUrl);
+    }
+
+    public static Theme of(String name, String description, String thumbnailUrl) {
+        return new Theme(0L, name, description, thumbnailUrl);
     }
 
     public long getId() {

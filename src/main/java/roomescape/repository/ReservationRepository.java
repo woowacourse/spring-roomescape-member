@@ -18,7 +18,8 @@ public class ReservationRepository {
             resultSet.getString("name"),
             resultSet.getString("date"),
             ReservationTime.of(resultSet.getLong("time_id"), resultSet.getString("start_at")),
-            new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"), resultSet.getString("description"), resultSet.getString("thumbnail_url")));
+            Theme.of(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
+                    resultSet.getString("description"), resultSet.getString("thumbnail_url")));
     private static final String SELECT_ALL = """
             SELECT r.id   AS reservation_id,
                    r.name,
@@ -33,7 +34,7 @@ public class ReservationRepository {
             INNER JOIN reservation_time rt ON r.time_id  = rt.id
             INNER JOIN theme             t  ON r.theme_id = t.id
             """;
-    private static final String SELECT_BY_ID =  SELECT_ALL + "WHERE r.id = ?";
+    private static final String SELECT_BY_ID = SELECT_ALL + "WHERE r.id = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -64,7 +65,8 @@ public class ReservationRepository {
 
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return Reservation.of(generatedKey, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+        return Reservation.of(generatedKey, reservation.getName(), reservation.getDate(), reservation.getTime(),
+                reservation.getTheme());
     }
 
     public void deleteById(Long id) {
