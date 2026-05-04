@@ -1,11 +1,10 @@
-package theme.service;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import theme.domain.Theme;
-import theme.repository.ThemeRepository;
+package roomescape.theme.service;
 
 import java.util.List;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
 
 @Service
 @Transactional(readOnly = true)

@@ -3,9 +3,7 @@ package roomescape.reservation.controller.dto;
 import java.time.LocalDate;
 import roomescape.reservation.service.ReservationCommand;
 
-import java.util.regex.Pattern;
-
-public record ReservationRequest(String name, LocalDate date, Long timeId) {
+public record ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
 
     public ReservationRequest {
         validateEmptyName(name);
@@ -15,7 +13,8 @@ public record ReservationRequest(String name, LocalDate date, Long timeId) {
         return new ReservationCommand(
                 name,
                 date,
-                timeId
+                timeId,
+                themeId
         );
     }
 

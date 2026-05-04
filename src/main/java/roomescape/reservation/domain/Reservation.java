@@ -1,8 +1,8 @@
 package roomescape.reservation.domain;
 
-import roomescape.time.domain.ReservationTime;
-
 import java.time.LocalDate;
+import roomescape.theme.domain.Theme;
+import roomescape.time.domain.ReservationTime;
 
 public class Reservation {
 
@@ -12,17 +12,19 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
-    public static Reservation create(String name, LocalDate date, ReservationTime time) {
+    public static Reservation create(String name, LocalDate date, ReservationTime time, Theme theme) {
         validateNameSize(name);
-        return new Reservation(null, name, date, time);
+        return new Reservation(null, name, date, time, theme);
     }
 
     private static void validateNameSize(String name) {
@@ -45,5 +47,9 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 }

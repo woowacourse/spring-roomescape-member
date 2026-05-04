@@ -1,6 +1,6 @@
-package theme.controller.dto;
+package roomescape.theme.controller.dto;
 
-import theme.service.ThemeCommand;
+import roomescape.theme.service.ThemeCommand;
 
 public record ThemeRequest(String name, String description, String thumbnailUrl) {
 

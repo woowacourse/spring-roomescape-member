@@ -1,15 +1,14 @@
 package roomescape;
 
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -45,11 +44,23 @@ public class ThirdMissionStepTest {
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
+
+        Map<String, Object> theme = new HashMap<>();
+        theme.put("name", "우아한 테마");
+        theme.put("description", "우아한테크코스 전용 테마입니다.");
+        theme.put("thumbnailUrl", "https://example.com/image.png");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body("{\"startAt\": \"10:00\"}")
                 .when().post("/times")
+                .then().statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
                 .then().statusCode(201);
 
         RestAssured.given().log().all()
@@ -131,10 +142,22 @@ public class ThirdMissionStepTest {
                 .when().post("/times")
                 .then().statusCode(201);
 
+        Map<String, Object> theme = new HashMap<>();
+        theme.put("name", "우아한 테마");
+        theme.put("description", "우아한테크코스 전용 테마입니다.");
+        theme.put("thumbnailUrl", "https://example.com/image.png");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().statusCode(201);
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
