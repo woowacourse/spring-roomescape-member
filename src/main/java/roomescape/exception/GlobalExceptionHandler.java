@@ -15,6 +15,7 @@ import roomescape.reservationtime.DuplicateReservationTimeException;
 import roomescape.reservationtime.ReservationTimeException;
 import roomescape.reservationtime.ReservationTimeNotFoundException;
 import roomescape.reservationtime.ReservationTimeNotEmptyException;
+import roomescape.theme.DuplicateThemeException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -70,6 +71,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateReservationTimeException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateReservationTime(DuplicateReservationTimeException e) {
+        ErrorResponse response = new ErrorResponse(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
+
+    @ExceptionHandler(DuplicateThemeException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateTheme(DuplicateThemeException e) {
         ErrorResponse response = new ErrorResponse(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

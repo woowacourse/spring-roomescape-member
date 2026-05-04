@@ -1,5 +1,6 @@
 package roomescape.theme;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,7 +13,12 @@ public class ThemeService {
     }
 
     public long save(String name, String description, String thumbnail) {
-        return themeRepository.save(name, description, thumbnail);
+        try {
+            return themeRepository.save(name, description, thumbnail);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateThemeException("같은 이름의 테마가 존재합니다.");
+        }
+
     }
 
     public void delete(long id) {
