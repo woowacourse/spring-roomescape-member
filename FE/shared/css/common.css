@@ -1,0 +1,161 @@
+:root {
+  /* Colors */
+  --color-pure-black: #000000;
+  --color-light-gray: #f5f5f7;
+  --color-near-black: #1d1d1f;
+  --color-apple-blue: #0071e3;
+  --color-link-blue: #0066cc;
+  --color-bright-blue: #2997ff;
+  --color-white: #ffffff;
+  --color-secondary-text: rgba(0, 0, 0, 0.8);
+  --color-tertiary-text: rgba(0, 0, 0, 0.48);
+  
+  /* Dark Surface Variants */
+  --color-dark-surface-1: #272729;
+  --color-dark-surface-2: #262628;
+  
+  /* Typography */
+  --font-display: "SF Pro Display", "SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  --font-text: "SF Pro Text", "SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  
+  /* Spacing */
+  --spacing-base: 8px;
+  
+  /* Radius */
+  --radius-small: 5px;
+  --radius-standard: 8px;
+  --radius-comfortable: 11px;
+  --radius-large: 12px;
+  --radius-pill: 980px;
+  
+  /* Shadows */
+  --shadow-card: rgba(0, 0, 0, 0.22) 3px 5px 30px 0px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-text);
+  font-size: 17px;
+  line-height: 1.47;
+  letter-spacing: -0.374px;
+  color: var(--color-near-black);
+  background-color: var(--color-white);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+a {
+  color: var(--color-link-blue);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Apple Navigation */
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  height: 48px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: saturate(180%) blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-content {
+  width: 100%;
+  max-width: 980px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 30px;
+}
+
+.nav-links a {
+  color: #f5f5f7;
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.8;
+  text-decoration: none;
+}
+
+.nav-links a:hover {
+  opacity: 1;
+}
+
+/* Section Rhythm */
+section {
+  padding: 100px 0;
+}
+
+section.dark {
+  background-color: var(--color-pure-black);
+  color: var(--color-white);
+}
+
+section.light {
+  background-color: var(--color-light-gray);
+  color: var(--color-near-black);
+}
+
+/* Pill Button */
+.btn-primary {
+  background-color: var(--color-apple-blue);
+  color: var(--color-white);
+  padding: 8px 15px;
+  border-radius: var(--radius-standard);
+  font-size: 17px;
+}
+
+.btn-primary:hover {
+  background-color: #0077ed;
+}
+
+.btn-pill {
+  border-radius: var(--radius-pill);
+  padding: 8px 20px;
+  font-size: 14px;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--color-apple-blue);
+  color: var(--color-apple-blue);
+}
+
+.btn-outline.dark {
+  border-color: var(--color-white);
+  color: var(--color-white);
+}

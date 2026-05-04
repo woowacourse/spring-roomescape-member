@@ -1,0 +1,108 @@
+.display-hero {
+  font-size: 56px;
+  line-height: 1.07;
+  letter-spacing: -0.28px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 21px;
+  font-weight: 400;
+  color: var(--color-tertiary-text);
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.admin-card {
+  background: white;
+  padding: 30px;
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-card);
+}
+
+.card-title {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.item-list {
+  margin-bottom: 30px;
+  border-bottom: 1px solid var(--color-light-gray);
+  padding-bottom: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.item-name {
+  font-weight: 600;
+}
+
+.item-meta {
+  font-size: 14px;
+  color: var(--color-tertiary-text);
+}
+
+.btn-delete {
+  background: transparent;
+  color: #ff3b30;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.btn-delete:hover {
+  text-decoration: underline;
+}
+
+.add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.add-form h3 {
+  font-size: 21px;
+  margin-bottom: 5px;
+}
+
+input, textarea {
+  padding: 12px;
+  border-radius: var(--radius-standard);
+  border: 1px solid #d2d2d7;
+  font-family: var(--font-text);
+  font-size: 16px;
+}
+
+input:focus, textarea:focus {
+  outline: 2px solid var(--color-apple-blue);
+  border-color: transparent;
+}
+
+@media (max-width: 834px) {
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Room Escape - Reservation</title>
+  <link rel="stylesheet" href="../shared/css/common.css">
+  <link rel="stylesheet" href="../shared/css/user.css">
+</head>
+<body>
+  <nav class="nav-bar">
+    <div class="nav-content">
+      <div class="logo">
+        <a href="index.html" style="font-weight: 600; color: white;">ROOM ESCAPE</a>
+      </div>
+      <div class="nav-links">
+        <a href="index.html" style="opacity: 1;">Explore</a>
+        <a href="../admin/index.html">Admin</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="dark hero-section">
+      <div class="container">
+        <h1 class="display-hero">Escape the Ordinary.</h1>
+        <p class="subtitle white">The most immersive experiences in the city.</p>
+        <div class="hero-ctas">
+          <a href="#themes" class="btn-primary btn-pill">Browse All Themes</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Theme Grid -->
+    <section id="themes" class="light">
+      <div class="container">
+        <h2 class="section-title">Choose Your Story</h2>
+        <div id="theme-grid" class="theme-grid">
+          <!-- Themes loaded here -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Unified Booking Overlay -->
+    <div id="booking-overlay" class="booking-overlay" style="display: none;">
+      <div class="overlay-backdrop"></div>
+      <div class="overlay-content">
+        <button id="close-overlay" class="close-btn">&times;</button>
+        
+        <div class="booking-steps">
+          <div class="step active" data-step="1">1. Time</div>
+          <div class="step" data-step="2">2. Information</div>
+          <div class="step" data-step="3">3. Confirm</div>
+        </div>
+
+        <!-- Step 1: Date & Time -->
+        <div id="step-1-content" class="step-pane active">
+          <div class="theme-mini-info">
+            <h2 id="selected-theme-name">Theme Name</h2>
+            <p id="selected-theme-desc">Theme Description</p>
+          </div>
+          <div class="form-group">
+            <label>Pick a Date</label>
+            <input type="date" id="reservation-date" min="2026-05-04">
+          </div>
+          <div class="form-group">
+            <label>Select an Available Time</label>
+            <div id="time-slots" class="time-slots">
+              <!-- Time slots here -->
+            </div>
+          </div>
+          <button id="next-to-step-2" class="btn-primary btn-pill full-width" disabled>Continue</button>
+        </div>
+
+        <!-- Step 2: User Info -->
+        <div id="step-2-content" class="step-pane">
+          <h2>Your Details</h2>
+          <p class="pane-subtitle">Almost there. Tell us who is coming.</p>
+          <div class="form-group">
+            <label for="reservation-name">Reservation Name</label>
+            <input type="text" id="reservation-name" placeholder="Full Name">
+          </div>
+          <div class="step-actions">
+            <button id="back-to-step-1" class="btn-link">< Back</button>
+            <button id="reserve-btn" class="btn-primary btn-pill">Reserve Now</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Success -->
+        <div id="step-3-content" class="step-pane">
+          <div class="success-animation">
+            <div class="check-icon">✓</div>
+          </div>
+          <h2>Confirmed!</h2>
+          <div id="reservation-summary" class="summary-box"></div>
+          <button id="finish-btn" class="btn-primary btn-pill full-width">Done</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="../shared/js/user.js"></script>
+</body>
+</html>

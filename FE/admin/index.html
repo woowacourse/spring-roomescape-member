@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Room Escape</title>
+  <link rel="stylesheet" href="../shared/css/common.css">
+  <link rel="stylesheet" href="../shared/css/admin.css">
+</head>
+<body>
+  <nav class="nav-bar">
+    <div class="nav-content">
+      <div class="logo">
+        <a href="../user/index.html" style="font-weight: 600; color: white;">ROOM ESCAPE</a>
+      </div>
+      <div class="nav-links">
+        <a href="../user/index.html">User Page</a>
+        <a href="index.html" style="opacity: 1;">Admin Dashboard</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="light">
+      <div class="container">
+        <h1 class="display-hero">Admin Dashboard</h1>
+        <p class="subtitle">Manage your room escape themes and times.</p>
+      </div>
+    </section>
+
+    <section class="white">
+      <div class="container">
+        <div class="admin-grid">
+          <div class="admin-card">
+            <h2 class="card-title">Themes</h2>
+            <div id="theme-list" class="item-list"></div>
+            <div class="add-form">
+              <h3>Add New Theme</h3>
+              <input type="text" id="theme-name" placeholder="Theme Name">
+              <textarea id="theme-description" placeholder="Description"></textarea>
+              <input type="text" id="theme-thumbnail" placeholder="Thumbnail URL">
+              <button id="add-theme-btn" class="btn-primary">Add Theme</button>
+            </div>
+          </div>
+          <div class="admin-card">
+            <h2 class="card-title">Times</h2>
+            <div id="time-list" class="item-list"></div>
+            <div class="add-form">
+              <h3>Add New Time</h3>
+              <input type="time" id="time-start">
+              <button id="add-time-btn" class="btn-primary">Add Time</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="../shared/js/admin.js"></script>
+</body>
+</html>
