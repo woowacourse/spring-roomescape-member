@@ -1,11 +1,10 @@
 package roomescape.dao;
 
-import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
@@ -14,11 +13,13 @@ import roomescape.domain.ReservationTheme.ReservationTheme;
 
 @Repository
 public class ReservationDao {
-    private static final String FAILED_ID_GENERATE = "ID 생성에 실패하였습니다.";
+    private static final String TABLE_NAME = "reservation";
 
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_DATE = "date";
+    private static final String COLUMN_TIME_ID = "time_id";
+    private static final String COLUMN_THEME_ID = "theme_id";
 
     private static final String ALIAS_TIME_ID = "timeId";
     private static final String ALIAS_START_AT = "startAt";
@@ -43,7 +44,6 @@ public class ReservationDao {
         JOIN reservation_time AS rt ON r.time_id = rt.id
         JOIN reservation_theme AS t ON r.theme_id = t.id
     """;
-    private static final String INSERT_SQL = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation WHERE id = ?";
     private static final String EXIST_BY_TIME_ID_SQL = """
             SELECT EXISTS (\s
@@ -77,9 +77,13 @@ public class ReservationDao {
     );
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(TABLE_NAME)
+                .usingGeneratedKeyColumns(COLUMN_ID);
     }
 
     public List<Reservation> getAllReservation() {
@@ -87,23 +91,12 @@ public class ReservationDao {
     }
 
     public long insertReservation(ReservationCommand reservationCommand) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            PreparedStatement statement = connection.prepareStatement(INSERT_SQL, new String[] { COLUMN_ID });
-            statement.setString(1, reservationCommand.name());
-            statement.setString(2, reservationCommand.date());
-            statement.setLong(3, reservationCommand.timeId());
-            statement.setLong(4, reservationCommand.themeId());
-            return statement;
-        }, keyHolder);
-
-        Number key = keyHolder.getKey();
-
-        if(key == null) {
-            throw new RuntimeException(FAILED_ID_GENERATE);
-        }
-        return key.longValue();
+        return simpleJdbcInsert.executeAndReturnKey(Map.of(
+                COLUMN_NAME, reservationCommand.name(),
+                COLUMN_DATE, reservationCommand.date(),
+                COLUMN_TIME_ID, reservationCommand.timeId(),
+                COLUMN_THEME_ID, reservationCommand.themeId()
+        )).longValue();
     }
 
     public void deleteReservation(long id) {
