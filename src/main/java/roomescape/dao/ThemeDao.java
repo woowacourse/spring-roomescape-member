@@ -55,7 +55,7 @@ public class ThemeDao {
         jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
     }
 
-    public List<ReservationTime> findAvailableTime(Long id, LocalDate date) {
+    public List<ReservationTime> findAvailableTime(Long id, String date) {
         return jdbcTemplate.query(
                 """
                         SELECT t.id AS time_id, t.start_at

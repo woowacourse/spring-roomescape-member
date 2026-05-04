@@ -36,7 +36,7 @@ public class ThemeService {
         themeDao.delete(id);
     }
 
-    public List<ReservationTimeResponse> findAvailableTime(Long id, LocalDate date) {
+    public List<ReservationTimeResponse> findAvailableTime(Long id, String date) {
         List<ReservationTime> availableTimes = themeDao.findAvailableTime(id, date);
 
         return availableTimes.stream()
