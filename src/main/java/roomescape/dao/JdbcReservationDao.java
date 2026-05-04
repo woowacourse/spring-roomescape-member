@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequestDto;
 
 @Primary
@@ -24,10 +25,10 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Reservation create(ReservationRequestDto requestDto, ReservationTime reservationTime) {
-        String sql = "INSERT INTO `reservation`(`name`, `date`, `time_id`) VALUES (?, ?, ?)";
+    public Reservation create(ReservationRequestDto requestDto, ReservationTime reservationTime, Theme theme) {
+        String sql = "INSERT INTO `reservation`(`name`, `date`, `time_id`, `theme_id`) VALUES (?, ?, ?, ?)";
 
-        Reservation reservation = requestDto.toEntity(reservationTime);
+        Reservation reservation = requestDto.toEntity(reservationTime, theme);
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
@@ -35,6 +36,7 @@ public class JdbcReservationDao implements ReservationDao {
             preparedStatement.setString(1, requestDto.name());
             preparedStatement.setDate(2, Date.valueOf(requestDto.date()));
             preparedStatement.setLong(3, requestDto.timeId());
+            preparedStatement.setLong(4, requestDto.themeId());
 
             return preparedStatement;
         }, keyHolder);
@@ -45,9 +47,11 @@ public class JdbcReservationDao implements ReservationDao {
 
     @Override
     public List<Reservation> readAll() {
-        String sql = "SELECT r.id, r.name, r.date, t.id as time_id, t.start_at as time_value "
-                + "FROM `reservation` r "
-                + "INNER JOIN `reservation_time` t ON r.time_id = t.id";
+        String sql =
+                "SELECT r.id, r.name, r.date, t.id as time_id, t.start_at as time_value, th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail_url as theme_thumbnail_url"
+                        + "FROM `reservation` r "
+                        + "INNER JOIN `reservation_time` t ON r.time_id = t.id"
+                        + "INNER JOIN `theme` th ON r.theme_id = th.id";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             Long id = rs.getLong("id");
@@ -55,9 +59,14 @@ public class JdbcReservationDao implements ReservationDao {
             LocalDate date = rs.getDate("date").toLocalDate();
             Long timeId = rs.getLong("time_id");
             LocalTime timeValue = rs.getTime("time_value").toLocalTime();
+            Long themeId = rs.getLong("theme_id");
+            String themeName = rs.getString("theme_name");
+            String themeDescription = rs.getString("theme_description");
+            String themeThumbnailUrl = rs.getString("theme_thumbnail_url");
 
             ReservationTime reservationTime = new ReservationTime(timeId, timeValue);
-            return new Reservation(id, name, date, reservationTime);
+            Theme theme = new Theme(themeId, themeName, themeDescription, themeThumbnailUrl);
+            return new Reservation(id, name, date, reservationTime, theme);
         });
     }
 

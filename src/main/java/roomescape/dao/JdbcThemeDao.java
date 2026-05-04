@@ -16,6 +16,21 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
+    public Theme read(Long id) {
+        String sql = "SELECT * FROM `theme` WHERE `id` = id";
+
+        return jdbcTemplate.queryForObject(
+                sql,
+                (resultSet, rowNumber) -> {
+                    String name = resultSet.getString("name");
+                    String description = resultSet.getString("description");
+                    String thumbnailUrl = resultSet.getString("thumbnail_url");
+                    return new Theme(id, name, description, thumbnailUrl);
+                }
+        );
+    }
+
+    @Override
     public List<Theme> readAll() {
         String sql = "SELECT * FROM `theme`";
 
