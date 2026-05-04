@@ -17,7 +17,7 @@ public record CreateReservationResponse(
         return new CreateReservationResponse(
             reservation.getId(),
             reservation.getName(),
-            reservation.getDate(),
+            reservation.getDate().getDate(), // TODO: 네이밍 변경!!!
             reservation.getTime().getStartAt()
         );
     }

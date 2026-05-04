@@ -11,17 +11,19 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.reservationdate.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
 
 @Repository
 @RequiredArgsConstructor
 public class JdbcReservationRepository implements ReservationRepository {
 
-    private static final String INSERT_SQL = "insert into reservation(name, date, time_id) values (?, ?, ?)";
+    private static final String INSERT_SQL = "insert into reservation(name, date_id, time_id) values (?, ?, ?)";
     private static final String FIND_ALL_SQL =
         """
-            select r.id, r.name, r.date, rt.id as time_id, rt.start_at
+            select r.id, r.name, rd.id as date_id, rd.date, rt.id as time_id, rt.start_at
             from reservation r
+            join reservation_date rd on r.date_id = rd.id
             join reservation_time rt on r.time_id = rt.id
             order by r.id
             """;
@@ -41,7 +43,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, reservation.getName());
-            ps.setString(2, reservation.getDate().toString());
+            ps.setLong(2, reservation.getDate().getId());
             ps.setLong(3, reservation.getTime().getId());
             return ps;
         }, keyHolder);
@@ -68,7 +70,9 @@ public class JdbcReservationRepository implements ReservationRepository {
         return (rs, rowNum) -> Reservation.of(
             rs.getLong("id"),
             rs.getString("name"),
-            LocalDate.parse(rs.getString("date")),
+            ReservationDate.of(
+                rs.getLong("date_id"),
+                LocalDate.parse(rs.getString("date"))),
             ReservationTime.of(
                 rs.getLong("time_id"),
                 LocalTime.parse(rs.getString("start_at"))

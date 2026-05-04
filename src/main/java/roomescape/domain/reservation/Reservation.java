@@ -1,7 +1,7 @@
 package roomescape.domain.reservation;
 
-import java.time.LocalDate;
 import lombok.Getter;
+import roomescape.domain.reservationdate.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.support.exception.ReservationErrorCode;
 import roomescape.support.exception.ReservationTimeErrorCode;
@@ -12,10 +12,10 @@ public class Reservation {
 
     private final Long id;
     private final String name;
-    private final LocalDate date;
+    private final ReservationDate date;
     private final ReservationTime time;
 
-    private Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+    private Reservation(Long id, String name, ReservationDate date, ReservationTime time) {
         validate(name, date, time);
         this.id = id;
         this.name = name;
@@ -23,7 +23,7 @@ public class Reservation {
         this.time = time;
     }
 
-    public static Reservation createWithoutId(String name, LocalDate date, ReservationTime time) {
+    public static Reservation createWithoutId(String name, ReservationDate date, ReservationTime time) {
         return new Reservation(
             null,
             name,
@@ -35,13 +35,13 @@ public class Reservation {
     public static Reservation of(
         long id,
         String name,
-        LocalDate date,
+        ReservationDate date,
         ReservationTime time
     ) {
         return new Reservation(id, name, date, time);
     }
 
-    private static void validate(String name, LocalDate date, ReservationTime time) {
+    private static void validate(String name, ReservationDate date, ReservationTime time) {
         if (name == null || name.isBlank()) {
             throw new RoomescapeException(ReservationErrorCode.INVALID_RESERVATION_NAME);
         }
