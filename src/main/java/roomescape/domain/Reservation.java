@@ -1,0 +1,50 @@
+package roomescape.domain;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
+@Getter
+@EqualsAndHashCode(of = "id")
+public class Reservation {
+
+    private final Long id;
+    private final String name;
+    private final LocalDate date;
+    private final ReservationTime time;
+
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+        validateReservation(name, date, time);
+        this.id = id;
+        this.name = name;
+        this.date = date;
+        this.time = time;
+    }
+
+    public Reservation(String name, LocalDate date, ReservationTime time) {
+        this(null, name, date, time);
+    }
+
+    private static void validateReservation(String name, LocalDate date, ReservationTime time) {
+        validateReservationName(name);
+        validateReservationDateTime(date, time);
+    }
+
+    private static void validateReservationName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("예약자 정보는 비어있을 수 없습니다.");
+        }
+    }
+
+    private static void validateReservationDateTime(LocalDate date, ReservationTime time) {
+        if (date == null || time == null) {
+            throw new IllegalArgumentException("예약 날짜 및 시간 정보는 비어있을 수 없습니다.");
+        }
+
+        LocalDateTime reservationDateTime = time.toReservationDateTime(date);
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("이전 날짜로 예약할 수 없습니다.");
+        }
+    }
+}
