@@ -1,14 +1,17 @@
 package roomescape.theme.repository;
 
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
+import roomescape.time.domain.ReservationTime;
+
+import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -58,5 +61,23 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         return jdbcTemplate.query("select id, name from theme", ThemeMapper);
+    }
+
+    @Override
+    public List<ReservationTime> findAvailableTimes(Long themeId, LocalDate date) {
+        String sql = "SELECT rt.id, rt.start_at\n" +
+                "FROM reservation_time rt\n" +
+                "LEFT JOIN reservation r\n" +
+                "  ON rt.id = r.time_id\n" +
+                "  AND r.theme_id = ?\n" +
+                "  AND r.reservation_date = ?\n" +
+                "WHERE r.id IS NULL";
+
+        RowMapper<ReservationTime> reservationTimeMapper = (rs, rowNum) ->
+                new ReservationTime(
+                        rs.getLong("id"),
+                        rs.getTime("start_at").toLocalTime()
+                );
+        return jdbcTemplate.query(sql, reservationTimeMapper, themeId, date);
     }
 }
