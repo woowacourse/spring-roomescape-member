@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ReservationCommandService;
 import roomescape.service.ReservationQueryService;
 import roomescape.service.ReservationTimeCommandService;
@@ -81,26 +83,25 @@ public class AdminController {
     }
 
     @GetMapping("/themes")
-    public ResponseEntity<> getAllThemes() {
-        return ResponseEntity.ok(themeCommandService.findAllThemes());
+    public ResponseEntity<List<ThemeResponse>> getAllThemes() {
+        return ResponseEntity.ok(themeQueryService.findAllThemes());
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<ReservationTimeResponse> createTheme(@RequestBody ReservationTimeRequest request) {
-        ReservationTimeResponse reservationTimeResponse = themeQueryService.create(request.startAt());
+    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest request) {
+        ThemeResponse themeResponse = themeCommandService.create(request.name(), request.thumbnailUrl(), request.description());
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .build()
                 .toUri();
 
-        return ResponseEntity.created(location).body(reservationTimeResponse);
+        return ResponseEntity.created(location).body(themeResponse);
     }
 
-    @DeleteMapping("/themes")
+
+    @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
-        themeQueryService.delete(id);
+        themeCommandService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-
 }

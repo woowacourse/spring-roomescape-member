@@ -10,6 +10,7 @@ public class Reservation {
     private final String username;
     private final LocalDate reservationDate;
     private final ReservationTime reservationTime;
+//    private final Theme theme;
 
     public static Reservation pending(String username, LocalDate date) {
         return new Reservation(null, username, date, null);
@@ -30,6 +31,10 @@ public class Reservation {
     public ReservationTime reservationTime() {
         return reservationTime;
     }
+
+//    public Theme theme() {
+//        return theme;
+//    }
 
     public long id() {
         return id;
