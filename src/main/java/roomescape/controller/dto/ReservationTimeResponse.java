@@ -8,6 +8,8 @@ public record ReservationTimeResponse(
 ) {
 
     public static ReservationTimeResponse from(ReservationTime time) {
-        return new ReservationTimeResponse(time.getId(), time.getStartAt());
+        return new ReservationTimeResponse(
+                time.getId(),
+                time.getStartAt());
     }
 }

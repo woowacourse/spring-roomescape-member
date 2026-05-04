@@ -50,17 +50,17 @@ public class ReservationService {
         }
     }
 
-    private void validateId(Long id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("[ERROR] id는 양수이어야 합니다.");
-        }
-    }
-
     private Theme findTheme(Long themeId) {
         try {
             return themeDao.findBy(themeId);
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException("[ERROR] 존재하지 않는 테마입니다.");
+        }
+    }
+
+    private void validateId(Long id) {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("[ERROR] id는 양수이어야 합니다.");
         }
     }
 }

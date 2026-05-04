@@ -1,5 +1,7 @@
 package roomescape.controller.dto;
 
+import roomescape.domain.Theme;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -15,6 +17,7 @@ public record ReservationRequest(
         validateName(name);
         validateDate(date);
         validateTimeId(timeId);
+        validateTheme(themeId);
     }
 
     private void validateName(String name) {
@@ -40,7 +43,13 @@ public record ReservationRequest(
 
     private void validateTimeId(Long timeId) {
         if (timeId == null || timeId <= 0) {
-            throw new IllegalArgumentException("[ERROR] id는 양수이어야 합니다.");
+            throw new IllegalArgumentException("[ERROR] 시간ID는 양수이어야 합니다.");
+        }
+    }
+
+    private void validateTheme(Long themeId) {
+        if (themeId == null || themeId <= 0) {
+            throw new IllegalArgumentException("[ERROR] 테마ID는 양수이어야 합니다.");
         }
     }
 }
