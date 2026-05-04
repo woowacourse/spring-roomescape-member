@@ -74,7 +74,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public boolean existByTimeId(Long timeId) {
         String sql = "select count(*) from reservation where time_id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
         return count != null && count > 0;
     }
 
