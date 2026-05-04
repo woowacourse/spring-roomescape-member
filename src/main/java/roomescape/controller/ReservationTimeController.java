@@ -53,4 +53,7 @@ public class ReservationTimeController {
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping()
+    public ResponseEntity<List<ReservationTimeResponse>> get
 }

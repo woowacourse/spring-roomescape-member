@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.ReservationTime.ReservationTimeCommand;
+import roomescape.domain.ReservationTime.ReservationTimeCondition;
+import roomescape.domain.ReservationTime.ReservationTimeWithAvailable;
 
 @Repository
 @Profile("web")
@@ -36,5 +38,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public void deleteReservationTime(long id) {
         reservationTimeDao.deleteReservationTime(id);
+    }
+
+    @Override
+    public List<ReservationTimeWithAvailable> getReservationTimeByDateAndTheme(ReservationTimeCondition reservationTimeCondition) {
+        return reservationTimeDao.getReservationTimeByDateAndTheme(reservationTimeCondition);
     }
 }

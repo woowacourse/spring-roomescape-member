@@ -6,19 +6,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.ReservationTime.ReservationTimeCommand;
+import roomescape.domain.ReservationTime.ReservationTimeCondition;
+import roomescape.domain.ReservationTime.ReservationTimeWithAvailable;
 import roomescape.exception.DataReferencedException;
 import roomescape.exception.ErrorMessage;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
+import roomescape.repository.theme.ThemeRepository;
 
 @Service
 public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository, ReservationRepository reservationRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository, ReservationRepository reservationRepository, ThemeRepository themeRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<ReservationTime> getAllReservationTime() {
@@ -43,5 +48,13 @@ public class ReservationTimeService {
         }  catch(DataIntegrityViolationException e) {
             throw new DataReferencedException(ErrorMessage.INTEGRITY_VIOLATION_ON_DELETE);
         }
+    }
+
+    public List<ReservationTimeWithAvailable> getReservationTimeByDateAndTheme(ReservationTimeCondition reservationTimeCondition) {
+        long themeId = reservationTimeCondition.themeId();
+        if (themeRepository.existsByTimeId(themeId)) {
+
+        }
+        return reservationTimeRepository.getReservationTimeByDateAndTheme(reservationTimeCondition);
     }
 }
