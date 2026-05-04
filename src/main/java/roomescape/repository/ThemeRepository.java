@@ -33,4 +33,9 @@ public class ThemeRepository {
         Long id = keyHolder.getKey().longValue();
         return new Theme(id, themeRequest.getName(), themeRequest.getDescription(), themeRequest.getUrl());
     }
+
+    public void delete(long id) {
+        String sql = "DELETE FROM THEME WHERE ID = ?";
+        jdbcTemplate.update(sql, id);
+    }
 }

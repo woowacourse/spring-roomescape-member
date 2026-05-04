@@ -19,4 +19,8 @@ public class ThemeService {
         Theme theme = themeRepository.create(themeRequest);
         return ThemeResponse.from(theme);
     }
+
+    public void removeTheme(Long id) {
+        themeRepository.delete(id);
+    }
 }
