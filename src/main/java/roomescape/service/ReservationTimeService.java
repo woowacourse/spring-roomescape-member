@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.TimeRequest;
@@ -17,10 +18,10 @@ public class ReservationTimeService {
         this.timeRepository = timeRepository;
     }
 
-
     public TimeResponse createTime(TimeRequest request) {
         ReservationTime time = ReservationTime.of(
-            request.startAt()
+                request.startAt(),
+                request.finishAt()
         );
         ReservationTime saved = timeRepository.save(time);
         return TimeResponse.from(saved);
