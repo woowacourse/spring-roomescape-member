@@ -8,8 +8,7 @@ public interface ReservationTimeRepository {
     ReservationTime save(ReservationTime reservationTime);
     List<ReservationTime> findAll();
     Optional<ReservationTime> findById(Long id);
-    void deleteById(Long id);
-    boolean existsById(Long id);
+    int deleteById(Long id);
 
     default ReservationTime getById(Long id) {
         return findById(id).orElseThrow(() -> new ReservationTimeNotFoundException("존재하지 않는 시간ID 입니다."));

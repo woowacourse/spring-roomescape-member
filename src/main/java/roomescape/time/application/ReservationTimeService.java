@@ -42,13 +42,12 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long id) {
-        if (!reservationTimeRepository.existsById(id)) {
-            throw new ReservationTimeNotFoundException("존재하지 않는 시간ID 입니다.");
-        }
         if (reservationRepository.existsByReservationTime(id)) {
             throw new ReservationTimeInUseException("해당 시간에 예약이 존재합니다.");
         }
-        reservationTimeRepository.deleteById(id);
+        if (reservationTimeRepository.deleteById(id) < 1) {
+            throw new ReservationTimeNotFoundException("존재하지 않는 시간ID 입니다.");
+        }
     }
 
     @Transactional(readOnly = true)
