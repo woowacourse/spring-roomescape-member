@@ -20,22 +20,22 @@ public class ThemeService {
     private static final int DAYS_BOUND = 1;
     private static final int THEME_SIZE_LIMIT = 10;
 
-    private final ThemeRepository repository;
+    private final ThemeRepository themeRepository;
 
     public ThemeResponse addTheme(ThemeRequest request) {
-        Theme theme = repository.save(ThemeRequest.toEntity(request));
+        Theme theme = themeRepository.save(ThemeRequest.toEntity(request));
         return ThemeResponse.from(theme);
     }
 
     public void deleteTheme(Long id) {
-        if (repository.delete(id) < 1) {
+        if (themeRepository.delete(id) < 1) {
             throw new ThemeNotFoundException("존재하지 않는 테마입니다.");
         }
     }
 
     @Transactional(readOnly = true)
     public List<ThemeResponse> getThemes() {
-        List<Theme> themes = repository.findAll();
+        List<Theme> themes = themeRepository.findAll();
         return themes.stream()
                 .map(ThemeResponse::from)
                 .toList();
@@ -43,7 +43,7 @@ public class ThemeService {
 
     @Transactional(readOnly = true)
     public List<ThemeResponse> getWeeksTopThemes() {
-        List<Theme> themes = repository.findByReservationCountWithLimit(
+        List<Theme> themes = themeRepository.findByReservationCountWithLimit(
                 LocalDate.now().minusWeeks(WEEKS_BOUND),
                 LocalDate.now().minusDays(DAYS_BOUND),
                 THEME_SIZE_LIMIT
