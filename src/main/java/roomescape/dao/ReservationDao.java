@@ -53,6 +53,22 @@ public class ReservationDao {
         );
     }
 
+    public boolean existsBy(Theme theme, ReservationTime time) {
+        Boolean result = jdbcTemplate.queryForObject("""
+        SELECT EXISTS(
+            SELECT *
+            FROM reservation
+            WHERE time_id = ?
+              AND theme_id = ?
+        )
+        """,
+                Boolean.class,
+                time.getId(),
+                theme.getId()
+        );
+        return Boolean.TRUE.equals(result);
+    }
+
     public Reservation save(Reservation reservation) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", reservation.getName());
