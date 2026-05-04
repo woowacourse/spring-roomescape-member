@@ -11,7 +11,8 @@ import roomescape.reservation.domain.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.domain.validator.ReservationTimeValidator;
+import roomescape.time.domain.exception.ReservationTimeInUseException;
+import roomescape.time.domain.exception.ReservationTimeNotFoundException;
 import roomescape.time.domain.ReservationTimeRepository;
 import roomescape.time.presentation.dto.AvailableReservationTimeRequest;
 import roomescape.time.presentation.dto.AvailableReservationTimeResponse;
@@ -23,7 +24,6 @@ import roomescape.time.presentation.dto.ReservationTimeResponse;
 @RequiredArgsConstructor
 public class ReservationTimeService {
 
-    private final ReservationTimeValidator reservationTimeValidator;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
@@ -42,10 +42,16 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long id) {
-        reservationTimeValidator.validateDeletable(id);
+        if (!reservationTimeRepository.existsById(id)) {
+            throw new ReservationTimeNotFoundException("존재하지 않는 시간ID 입니다.");
+        }
+        if (reservationRepository.existsByReservationTime(id)) {
+            throw new ReservationTimeInUseException("해당 시간에 예약이 존재합니다.");
+        }
         reservationTimeRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public AvailableReservationTimeResponse getAvailableReservationTime(AvailableReservationTimeRequest request) {
         Theme theme = themeRepository.getById(request.themeId());
         List<Reservation> reservations = reservationRepository.findByThemeAndDate(
