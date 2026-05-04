@@ -1,5 +1,6 @@
 package roomescape.theme.application;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,5 +27,12 @@ public class ThemeService {
             throw new ThemeNotFoundException("존재하지 않는 테마입니다.");
         }
         repository.delete(id);
+    }
+
+    public List<ThemeResponse> getThemes() {
+        List<Theme> themes = repository.findAll();
+        return themes.stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 }

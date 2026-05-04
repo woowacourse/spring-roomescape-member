@@ -1,5 +1,6 @@
 package roomescape.theme.domain;
 
+import java.util.List;
 import roomescape.theme.domain.exception.ThemeNotFoundException;
 import java.util.Optional;
 
@@ -8,6 +9,7 @@ public interface ThemeRepository {
     void delete(Long id);
     boolean existsThemeById(Long id);
     Optional<Theme> findById(Long id);
+    List<Theme> findAll();
 
     default Theme getById(Long id) {
         return findById(id)

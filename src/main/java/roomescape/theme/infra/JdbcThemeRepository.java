@@ -67,4 +67,11 @@ public class JdbcThemeRepository implements ThemeRepository {
         List<Theme> themes = jdbcTemplate.query(sql, Map.of("id", id), rowMapper);
         return themes.stream().findFirst();
     }
+
+    @Override
+    public List<Theme> findAll() {
+        String sql = "SELECT id, name, description, thumbnail_image_url, duration_time FROM theme";
+
+        return jdbcTemplate.query(sql, Map.of(), rowMapper);
+    }
 }
