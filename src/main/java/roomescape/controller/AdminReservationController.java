@@ -1,15 +1,27 @@
-//package roomescape.controller;
-//
-//import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RestController;
-//
-//@RequestMapping("/admin/reservations")
-//@RestController
-//public class AdminReservationController {
-//    private final AdminReservationService adminReservationService;
-//
-//    @GetMapping
-//
-//
-//}
+package roomescape.controller;
+
+import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.ReservationResponse;
+import roomescape.service.AdminReservationService;
+
+@RequestMapping("/admin/reservations")
+@RestController
+public class AdminReservationController {
+    private final AdminReservationService adminReservationService;
+
+    public AdminReservationController(AdminReservationService adminReservationService) {
+        this.adminReservationService = adminReservationService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReservationResponse>> getAllReservations() {
+        final List<ReservationResponse> list = adminReservationService.getAllReservations();
+        return ResponseEntity.ok(list);
+    }
+
+
+}
