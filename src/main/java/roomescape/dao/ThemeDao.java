@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -9,8 +10,14 @@ import roomescape.domain.Theme.ThemeDaoData;
 
 @Repository
 public class ThemeDao {
-
-    private static final String INSERT_SQL = "INSERT INTO theme (name, description, image_url) VALUES (?, ?, ?)";
+    private static final String SELECT_ALL_SQL = """
+                SELECT\s
+                    id, \s
+                    name,\s
+                    description,\s
+                    image_url,\s
+                FROM theme\s
+            """;
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -31,5 +38,9 @@ public class ThemeDao {
         )).longValue();
 
         return ThemeDaoData.from(id, themeCommand);
+    }
+
+    public List<ThemeDaoData> getAllTheme() {
+        return jdbcTemplate.query(SELECT_ALL_SQL, (rs, i) -> ThemeDaoData.from(rs));
     }
 }
