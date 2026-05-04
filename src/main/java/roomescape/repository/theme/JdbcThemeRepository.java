@@ -1,13 +1,15 @@
 package roomescape.repository.theme;
 
-import java.util.NoSuchElementException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 
 import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -43,5 +45,21 @@ public class JdbcThemeRepository implements ThemeRepository {
         if (update == 0) {
             throw new NoSuchElementException("존재하지 않는 theme 의 id 입니다. id = " + id);
         }
+    }
+
+    @Override
+    public List<Theme> findAll() {
+        String sql = "SELECT id, name, description, image_url FROM theme;";
+
+        return template.query(sql, themeRowMapper());
+    }
+
+    private RowMapper<Theme> themeRowMapper() {
+        return (rs, rowNum) ->
+                new Theme(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getString("image_url"));
     }
 }

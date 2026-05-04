@@ -5,6 +5,8 @@ import roomescape.domain.Theme;
 import roomescape.dto.theme.ThemeRequestDto;
 import roomescape.repository.theme.ThemeRepository;
 
+import java.util.List;
+
 @Service
 public class ThemeService {
 
@@ -21,5 +23,9 @@ public class ThemeService {
 
     public void deleteThemeById(Long id) {
         themeRepository.deleteById(id);
+    }
+
+    public List<Theme> findAll() {
+        return themeRepository.findAll();
     }
 }
