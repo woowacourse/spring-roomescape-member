@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.support.exception.RoomescapeErrorCode;
 import roomescape.support.exception.RoomescapeException;
 
@@ -19,6 +18,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     private static final String FIND_ALL_SQL = "select id, name, content, url from theme order by id";
     private static final String INSERT_SQL = "insert into theme(name, content, url) values (?, ?, ?)";
+    private static final String DELETE_BY_ID_SQL = "delete from theme where id = ?";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -27,15 +27,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         return jdbcTemplate.query(FIND_ALL_SQL, themeRowMapper());
     }
 
-    private RowMapper<Theme> themeRowMapper() {
-        return ((rs, rowNum) -> Theme.of(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("content"),
-            rs.getString("url")
-        ));
-    }
-
+    @Override
     public Theme save(Theme theme) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -54,10 +46,25 @@ public class JdbcThemeRepository implements ThemeRepository {
         );
     }
 
+    @Override
+    public int deleteById(Long id) {
+        return jdbcTemplate.update(DELETE_BY_ID_SQL, id);
+    }
+
+    private RowMapper<Theme> themeRowMapper() {
+        return ((rs, rowNum) -> Theme.of(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("content"),
+            rs.getString("url")
+        ));
+    }
+
     private long extractId(KeyHolder keyHolder) {
         if (keyHolder.getKey() == null) {
             throw new RoomescapeException(RoomescapeErrorCode.INVALID_GENERATED_KEY);
         }
         return keyHolder.getKey().longValue();
     }
+
 }
