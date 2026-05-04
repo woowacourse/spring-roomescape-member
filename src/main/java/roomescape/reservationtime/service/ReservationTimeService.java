@@ -1,5 +1,6 @@
 package roomescape.reservationtime.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,5 +39,13 @@ public class ReservationTimeService {
 
     public void deleteReservationTime(Long id) {
         reservationTimeRepository.delete(id);
+    }
+
+    public List<ReservationTimeResponse> findAvailableTimes(Long themeId, LocalDate date) {
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findByThemeAndDate(themeId, date);
+
+        return reservationTimes.stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
     }
 }
