@@ -17,4 +17,11 @@ public class ReservationDate {
     public static ReservationDate of(long dateId, LocalDate date) {
         return new ReservationDate(dateId, date);
     }
+
+    public static ReservationDate createWithoutId(LocalDate reservationDate) {
+        return new ReservationDate(
+            null,
+            reservationDate
+        );
+    }
 }

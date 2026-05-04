@@ -1,7 +1,6 @@
 package roomescape.domain.reservation;
 
 import java.util.List;
-
 public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
@@ -11,4 +10,6 @@ public interface ReservationRepository {
     int deleteById(Long id);
 
     int countByTimeId(Long timeId);
+
+    int countByReservationDateId(Long dateId);
 }
