@@ -10,14 +10,7 @@ import roomescape.domain.Theme.ThemeDaoData;
 
 @Repository
 public class ThemeDao {
-    private static final String SELECT_ALL_SQL = """
-                SELECT\s
-                    id, \s
-                    name,\s
-                    description,\s
-                    image_url,\s
-                FROM theme\s
-            """;
+    private static final String SELECT_ALL_SQL = "SELECT id, name, description, image_url FROM theme";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
