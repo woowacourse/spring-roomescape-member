@@ -17,4 +17,9 @@ public class ThemeServiceImpl implements ThemeService {
     public Theme createTheme(String name, String description, String thumbnail) {
         return themeRepository.save(new Theme(name, description, thumbnail));
     }
+
+    @Override
+    public void removeTheme(Long id) {
+        themeRepository.remove(id);
+    }
 }
