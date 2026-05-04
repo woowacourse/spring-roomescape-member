@@ -2,6 +2,7 @@ package roomescape.theme;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -23,5 +24,9 @@ public class ThemeRepository {
 
     public List<Theme> findAll(String sort, String order, LocalDate startDate, LocalDate endDate, Long limit) {
         return themeDao.findAll(sort, order, startDate, endDate, limit);
+    }
+
+    public Optional<Theme> findById(long id) {
+        return themeDao.findById(id);
     }
 }

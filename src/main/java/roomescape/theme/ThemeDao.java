@@ -4,6 +4,8 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -52,17 +54,29 @@ public class ThemeDao {
     }
 
     private String getReservationSortSql(String sort, String order, Long limit) {
-        String sql = "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservationCount " + "FROM theme t "
-                + "INNER JOIN reservation r ON t.id = r.theme_id "
-                + "WHERE r.date >= ? AND r.date <= ? "
-                + "GROUP BY t.id, t.name, t.description, t.thumbnail "
-                + "ORDER BY "
-                + sort
-                + order;
+        String sql =
+                "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservationCount " + "FROM theme t "
+                        + "INNER JOIN reservation r ON t.id = r.theme_id "
+                        + "WHERE r.date >= ? AND r.date <= ? "
+                        + "GROUP BY t.id, t.name, t.description, t.thumbnail "
+                        + "ORDER BY "
+                        + sort
+                        + order;
 
         if (limit != null) {
             sql += " LIMIT " + limit;
         }
         return sql;
+    }
+
+    public Optional<Theme> findById(long id) {
+        String sql = "SELECT * FROM theme WHERE id = ?";
+
+        try {
+            Theme theme = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(theme);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 }
