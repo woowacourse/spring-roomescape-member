@@ -14,6 +14,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.domain.ReservationTimeRepository;
 
 @SpringBootTest
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -24,6 +25,9 @@ class ThemeRepositoryTest {
 
     @Autowired
     private ReservationRepository reservationRepository;
+
+    @Autowired
+    private ReservationTimeRepository timeRepository;
 
     @Test
     @DisplayName("관리자가 테마를 추가하면 정상적으로 저장된다.")
@@ -111,7 +115,7 @@ class ThemeRepositoryTest {
     }
 
     private ReservationTime saveTime(LocalTime time) {
-        return ReservationTime.builder().startAt(time).build();
+        return timeRepository.save(ReservationTime.builder().startAt(time).build());
     }
 
     private void saveReservations(String name, Theme theme, ReservationTime time, LocalDate date) {

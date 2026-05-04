@@ -28,7 +28,7 @@ class ThemeServiceTest {
                 .thumbnailImageUrl("https://~~~~")
                 .durationTime(LocalTime.of(1, 0))
                 .build());
-        Assertions.assertThatThrownBy(() -> service.deleteTheme(response.id() + 1))
+        Assertions.assertThatThrownBy(() -> service.deleteTheme(-1L))
                 .isInstanceOf(ThemeNotFoundException.class);
     }
 
