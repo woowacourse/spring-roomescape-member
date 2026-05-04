@@ -11,7 +11,7 @@ MERGE INTO reservation_time(start_at) KEY (start_at) VALUES
     ('19:00'), ('19:10'), ('19:20'), ('19:30'), ('19:40'), ('19:50'),
     ('20:00'), ('20:10'), ('20:20'), ('20:30');
 
-INSERT INTO theme(name, description, thumbnail) VALUES
+MERGE INTO theme(name, description, thumbnail) KEY (name, description, thumbnail) VALUES
     ('시간조작자 연구소', '반복되는 1시간, 탈출 못하면 다시 시작된다.', 'src/main/resources/static/images/themes/1.png'),
     ('사라진 개발자', '흔적만 남긴 채 사라진 개발자의 마지막 로그를 추적', 'src/main/resources/static/images/themes/2.png'),
     ('404호의 비밀', '존재하지 않는 방, 들어간 사람은 돌아오지 않는다.', 'src/main/resources/static/images/themes/3.png'),

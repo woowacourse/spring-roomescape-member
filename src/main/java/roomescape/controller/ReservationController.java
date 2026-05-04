@@ -31,7 +31,8 @@ public class ReservationController {
         Reservation reservation = service.create(
                 request.name(),
                 request.date(),
-                request.timeId());
+                request.timeId(),
+                request.themeId());
         return ReservationResponse.from(reservation);
     }
 

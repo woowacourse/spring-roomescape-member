@@ -16,9 +16,10 @@ class ReservationTest {
     void 이름이_null_또는_blank이면_예외(String name) {
         // given
         ReservationTime time = new ReservationTime(1L, "10:00");
+        Theme theme = new Theme(null, "테마 이름", "테마 설명", "썸네일");
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(null, name, "2026-05-02", time))
+        assertThatThrownBy(() -> new Reservation(null, name, "2026-05-02", time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 이름은 비어 있을 수 없습니다.");
     }
@@ -28,9 +29,10 @@ class ReservationTest {
         // given
         String name = "a".repeat(256);
         ReservationTime time = new ReservationTime(1L, "10:00");
+        Theme theme = new Theme(null, "테마 이름", "테마 설명", "썸네일");
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(null, name, "2026-05-02", time))
+        assertThatThrownBy(() -> new Reservation(null, name, "2026-05-02", time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 이름은 255자를 넘을 수 없습니다.");
     }
@@ -41,9 +43,10 @@ class ReservationTest {
         // given
         String name = "a".repeat(count);
         ReservationTime time = new ReservationTime(1L, "10:00");
+        Theme theme = new Theme(null, "테마 이름", "테마 설명", "썸네일");
 
         // when
-        Reservation result = new Reservation(null, name, "2026-05-02", time);
+        Reservation result = new Reservation(null, name, "2026-05-02", time, theme);
 
         // then
         assertThat(result.getName()).isEqualTo(name);
@@ -55,17 +58,32 @@ class ReservationTest {
     void 유효하지_않은_날짜로_예약_생성시_예외(String date) {
         // given
         ReservationTime time = new ReservationTime(1L, "10:00");
+        Theme theme = new Theme(null, "테마 이름", "테마 설명", "썸네일");
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(null, "구구", date, time))
+        assertThatThrownBy(() -> new Reservation(null, "구구", date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void 예약_시간이_null이면_예약_생성시_예외() {
+        // given
+        Theme theme = new Theme(null, "테마 이름", "테마 설명", "썸네일");
+
         // when & then
-        assertThatThrownBy(() -> new Reservation(null, "홍길동", "2026-05-02", null))
+        assertThatThrownBy(() -> new Reservation(null, "홍길동", "2026-05-02", null, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 예약 시간은 비어있을 수 없습니다.");
+    }
+
+    @Test
+    void 테마가_null이면_예약_생성시_예외() {
+        // given
+        ReservationTime time = new ReservationTime(1L, "10:00");
+
+        // when & then
+        assertThatThrownBy(() -> new Reservation(null, "홍길동", "2026-05-02", time, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 테마는 비어있을 수 없습니다.");
     }
 }

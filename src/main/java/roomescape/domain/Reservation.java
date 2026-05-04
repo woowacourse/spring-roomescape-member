@@ -11,16 +11,19 @@ public class Reservation {
     private final String name;
     private final String date;
     private final ReservationTime time;
+    private final Theme theme;
 
-    public Reservation(Long id, String name, String date, ReservationTime time) {
+    public Reservation(Long id, String name, String date, ReservationTime time, Theme theme) {
         validateName(name);
         validateDate(date);
         validateTime(time);
+        validateTheme(theme);
 
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
     public Long getId() {
@@ -37,6 +40,10 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     private void validateName(String name) {
@@ -63,6 +70,12 @@ public class Reservation {
     private void validateTime(ReservationTime time) {
         if (time == null) {
             throw new IllegalArgumentException("[ERROR] 예약 시간은 비어있을 수 없습니다.");
+        }
+    }
+
+    private void validateTheme(Theme theme) {
+        if (theme == null) {
+            throw new IllegalArgumentException("[ERROR] 테마는 비어있을 수 없습니다.");
         }
     }
 }

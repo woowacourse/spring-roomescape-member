@@ -28,7 +28,7 @@ class Theme
 - [X] 초기 테마 데이터 삽입 쿼리문 추가
 - [X] Theme 클래스 추가
     - [X] 검증 추가
-- [ ] 예약에 테마 필드 추가
-- [ ] reservation 스키마 수정(테마를 참조하도록)
-- [ ] reservation 테마 필드 null 검증 추가
+- [X] 예약에 테마 필드 추가
+- [X] reservation 스키마 수정(테마를 참조하도록)
+- [X] reservation 테마 필드 null 검증 추가
 - [ ] 테마 조회, 등록, 삭제 API 구현

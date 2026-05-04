@@ -11,6 +11,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 
 import java.util.List;
@@ -36,17 +37,19 @@ class ReservationServiceTest {
 
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScript(new ClassPathResource("schema.sql"));
+        populator.addScript(new ClassPathResource("data.sql"));
         populator.execute(dataSource);
 
         ReservationDao reservationDao = new ReservationDao(jdbcTemplate);
         ReservationTimeDao reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
-        this.reservationService = new ReservationService(reservationDao, reservationTimeDao);
+        ThemeDao themeDao = new ThemeDao(jdbcTemplate);
+        this.reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao);
     }
 
     @Test
     void 예약_생성_테스트() {
         // when
-        Reservation result = reservationService.create("브라운", "2023-08-05", 1L);
+        Reservation result = reservationService.create("브라운", "2023-08-05", 1L, 1L);
 
         // then
         assertAll(
@@ -59,8 +62,8 @@ class ReservationServiceTest {
     @Test
     void 전체_예약_조회_테스트() {
         // given
-        reservationService.create("브라운", "2023-08-05", 1L);
-        reservationService.create("구구", "2023-08-06", 1L);
+        reservationService.create("브라운", "2023-08-05", 1L, 1L);
+        reservationService.create("구구", "2023-08-06", 1L, 1L);
 
         // when
         List<Reservation> result = reservationService.findAll();
@@ -72,7 +75,7 @@ class ReservationServiceTest {
     @Test
     void 예약_삭제_테스트() {
         // given
-        Reservation created = reservationService.create("브라운", "2023-08-05", 1L);
+        Reservation created = reservationService.create("브라운", "2023-08-05", 1L, 1L);
 
         // when
         reservationService.delete(created.getId());
@@ -96,7 +99,7 @@ class ReservationServiceTest {
     @ValueSource(longs = {0, -1})
     void 예약_생성시_timeId가_양수가_아니면_예외_발생(Long timeId) {
         // when & then
-        assertThatThrownBy(() -> reservationService.create("홍길동", "2026-05-02", timeId))
+        assertThatThrownBy(() -> reservationService.create("홍길동", "2026-05-02", timeId, 1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] id가 올바르지 않습니다.");
     }
@@ -104,7 +107,7 @@ class ReservationServiceTest {
     @Test
     void 존재하지_않는_timeId로_예약_생성시_예외_발생() {
         // when & then
-        assertThatThrownBy(() -> reservationService.create("홍길동", "2026-05-02", 999L))
+        assertThatThrownBy(() -> reservationService.create("홍길동", "2026-05-02", 999L, 1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 존재하지 않는 예약 시간입니다.");
     }

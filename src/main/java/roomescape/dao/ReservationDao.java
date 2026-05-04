@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -20,12 +21,18 @@ public class ReservationDao {
         ReservationTime time = new ReservationTime(
                 resultSet.getLong("time_id"),
                 resultSet.getString("time_value"));
+        Theme theme = new Theme(
+                resultSet.getLong("theme_id"),
+                resultSet.getString("theme_name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail"));
 
         Reservation reservation = new Reservation(
                 resultSet.getLong("reservation_id"),
-                resultSet.getString("name"),
+                resultSet.getString("username"),
                 resultSet.getString("date"),
-                time);
+                time,
+                theme);
         return reservation;
     };
 
@@ -36,32 +43,44 @@ public class ReservationDao {
     public List<Reservation> findAll() {
         String sql = "SELECT\n" +
                 "    r.id as reservation_id,\n" +
-                "    r.name,\n" +
+                "    r.name as username,\n" +
                 "    r.date,\n" +
-                "    t.id as time_id,\n" +
-                "    t.start_at as time_value\n" +
+                "    rt.id as time_id,\n" +
+                "    rt.start_at as time_value,\n" +
+                "    t.id as theme_id,\n" +
+                "    t.name as theme_name,\n" +
+                "    t.description,\n" +
+                "    t.thumbnail\n" +
                 "FROM reservation as r\n" +
-                "INNER JOIN reservation_time as t\n" +
-                "  ON r.time_id = t.id";
+                "INNER JOIN reservation_time as rt\n" +
+                "  ON r.time_id = rt.id\n" +
+                "INNER JOIN theme as t\n" +
+                "  ON r.theme_id = t.id\n";
         return jdbcTemplate.query(sql, actorRowMapper);
     }
 
     public Reservation findBy(Long id) {
         String sql = "SELECT\n" +
                 "    r.id as reservation_id,\n" +
-                "    r.name,\n" +
+                "    r.name as username,\n" +
                 "    r.date,\n" +
-                "    t.id as time_id,\n" +
-                "    t.start_at as time_value\n" +
+                "    rt.id as time_id,\n" +
+                "    rt.start_at as time_value,\n" +
+                "    t.id as theme_id,\n" +
+                "    t.name as theme_name,\n" +
+                "    t.description,\n" +
+                "    t.thumbnail\n" +
                 "FROM reservation as r\n" +
-                "INNER JOIN reservation_time as t\n" +
-                "  ON r.time_id = t.id\n" +
+                "INNER JOIN reservation_time as rt\n" +
+                "  ON r.time_id = rt.id\n" +
+                "INNER JOIN theme as t\n" +
+                "  ON r.theme_id = t.id\n" +
                 "WHERE r.id = ?";
         return jdbcTemplate.queryForObject(sql, actorRowMapper, id);
     }
 
     public Long insert(Reservation reservation) {
-        String sql = "INSERT INTO reservation(name, date, time_id) VALUES (?, ?, ?);";
+        String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement pstmt = connection.prepareStatement(
@@ -70,6 +89,7 @@ public class ReservationDao {
             pstmt.setString(1, reservation.getName());
             pstmt.setString(2, reservation.getDate());
             pstmt.setLong(3, reservation.getTime().getId());
+            pstmt.setLong(4, reservation.getTheme().getId());
             return pstmt;
         }, keyHolder);
 
