@@ -37,4 +37,10 @@ public class ThemeDao {
 
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
+
+    public void delete(long id) {
+        String sql = "DELETE FROM themes WHERE id = ?";
+
+        jdbcTemplate.update(sql, id);
+    }
 }

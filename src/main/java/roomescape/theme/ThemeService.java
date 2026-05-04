@@ -14,4 +14,8 @@ public class ThemeService {
     public long save(String name, String description, String thumbnail) {
         return themeRepository.save(name, description, thumbnail);
     }
+
+    public void delete(long id) {
+        themeRepository.delete(id);
+    }
 }
