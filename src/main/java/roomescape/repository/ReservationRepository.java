@@ -4,18 +4,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Repository
 public class ReservationRepository {
-    public static final org.springframework.jdbc.core.RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> Reservation.of(
+    public static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> Reservation.of(
             resultSet.getLong("reservation_id"),
             resultSet.getString("name"),
             resultSet.getString("date"),
-            ReservationTime.of(resultSet.getLong("time_id"), resultSet.getString("start_at")));
+            ReservationTime.of(resultSet.getLong("time_id"), resultSet.getString("start_at")),
+            new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"), resultSet.getString("description"), resultSet.getString("thumbnail_url")));
+    private static final String SELECT_ALL = """
+            SELECT r.id   AS reservation_id,
+                   r.name,
+                   r.date,
+                   rt.id  AS time_id,
+                   rt.start_at,
+                   t.id   AS theme_id,
+                   t.name AS theme_name,
+                   t.description,
+                   t.thumbnail_url
+            FROM reservation r
+            INNER JOIN reservation_time rt ON r.time_id  = rt.id
+            INNER JOIN theme             t  ON r.theme_id = t.id
+            """;
+    private static final String SELECT_BY_ID =  SELECT_ALL + "WHERE r.id = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -28,26 +46,25 @@ public class ReservationRepository {
     }
 
     public Optional<Reservation> findById(long reservationId) {
-        String sql = "select r.id as reservation_id, r.name, r.date, rt.id as time_id, rt.start_at from reservation r inner join reservation_time rt on r.time_id = rt.id where r.id = ?";
-        List<Reservation> result = jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, reservationId);
+        List<Reservation> result = jdbcTemplate.query(SELECT_BY_ID, RESERVATION_ROW_MAPPER, reservationId);
         return result.stream().findFirst();
     }
 
     public List<Reservation> findAll() {
-        String sql = "select r.id as reservation_id, r.name, r.date, rt.id as time_id, rt.start_at from reservation r inner join reservation_time rt on r.time_id = rt.id";
-        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
+        return jdbcTemplate.query(SELECT_ALL, RESERVATION_ROW_MAPPER);
     }
 
     public Reservation save(Reservation reservation) {
         Map<String, Object> params = Map.of(
                 "name", reservation.getName(),
                 "date", reservation.getDate().getDate(),
-                "time_id", reservation.getTime().getId()
+                "time_id", reservation.getTime().getId(),
+                "theme_id", reservation.getTheme().getId()
         );
 
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return Reservation.of(generatedKey, reservation.getName(), reservation.getDate(), reservation.getTime());
+        return Reservation.of(generatedKey, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
     public void deleteById(Long id) {

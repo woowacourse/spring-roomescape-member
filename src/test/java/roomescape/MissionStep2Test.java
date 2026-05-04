@@ -26,6 +26,7 @@ public class MissionStep2Test {
     @BeforeEach
     void init() {
         jdbcTemplate.update("insert into reservation_time(start_at) values ('10:00')");
+        jdbcTemplate.update("insert into theme(name, description, thumbnail_url) values ('공포', '무서워요', 'https://zeze.com')");
     }
 
     @Test
@@ -41,8 +42,8 @@ public class MissionStep2Test {
 
     @Test
     void DB_조회_API_전환() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05",
-                1);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05",
+                1, 1);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -61,6 +62,7 @@ public class MissionStep2Test {
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

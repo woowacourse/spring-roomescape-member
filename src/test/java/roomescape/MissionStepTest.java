@@ -22,6 +22,7 @@ public class MissionStepTest {
     @BeforeEach
     void init() {
         jdbcTemplate.update("insert into reservation_time(start_at) values ('10:00')");
+        jdbcTemplate.update("insert into theme(name, description, thumbnail_url) values ('공포', '무서워요', 'https://zeze.com')");
     }
 
     @Test
@@ -40,6 +41,7 @@ public class MissionStepTest {
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

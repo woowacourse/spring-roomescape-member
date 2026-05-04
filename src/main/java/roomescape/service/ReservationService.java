@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.dto.ReservationCreateRequest;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 
 @Service
@@ -13,11 +14,14 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeService reservationTimeService;
+    private final ThemeService themeService;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeService reservationTimeService) {
+                              ReservationTimeService reservationTimeService,
+                              ThemeService themeService) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeService = reservationTimeService;
+        this.themeService = themeService;
     }
 
     public List<Reservation> findAll() {
@@ -26,8 +30,9 @@ public class ReservationService {
 
     public Reservation reserve(ReservationCreateRequest request) {
         ReservationTime reservationTime = reservationTimeService.find(request.getTimeId());
+        Theme theme = themeService.find(request.getThemeId());
 
-        Reservation reservation = Reservation.of(request.getName(), request.getDate(), reservationTime);
+        Reservation reservation = Reservation.of(request.getName(), request.getDate(), reservationTime, theme);
 
         return reservationRepository.save(reservation);
     }

@@ -45,10 +45,13 @@ public class MissionStep3Test {
     @Test
     void 예약과_시간_연결() {
         jdbcTemplate.update("insert into reservation_time(start_at) values ('10:00')");
+        jdbcTemplate.update("insert into theme(name, description, thumbnail_url) values ('공포', '무서워요', 'https://zeze.com')");
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
