@@ -1,6 +1,7 @@
 package roomescape.repository.theme;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme.Theme;
@@ -26,6 +27,16 @@ public class ThemeRepository {
         return themeDaoAllData.stream()
                 .map(this::createTheme)
                 .toList();
+    }
+
+    public Optional<Theme> getTheme(long id) {
+        Optional<ThemeDaoData> themeDaoData = themeDao.getTheme(id);
+
+        if(themeDaoData.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(createTheme(themeDao.getTheme(id).get()));
     }
 
     public void deleteTheme(long id) {

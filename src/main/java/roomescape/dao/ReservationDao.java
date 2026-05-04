@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
 import roomescape.domain.ReservationTime.ReservationTime;
+import roomescape.domain.Theme.Theme;
 
 @Repository
 public class ReservationDao {
@@ -22,23 +23,40 @@ public class ReservationDao {
     private static final String ALIAS_TIME_ID = "timeId";
     private static final String ALIAS_START_AT = "startAt";
 
+    private static final String ALIAS_THEME_ID = "themeId";
+    private static final String ALIAS_THEME_NAME = "themeName";
+    private static final String ALIAS_THEME_DESCRIPTION = "themeDescription";
+    private static final String ALIAS_THEME_IMAGE_URL = "themeImageUrl";
+
     private static final String SELECT_ALL_SQL = """
         SELECT\s
             r.id AS id,\s
             r.name AS name,\s
             r.date AS date,\s
-            t.id AS timeId,\s
-            t.start_at AS startAt\s
+            rt.id AS timeId,\s
+            rt.start_at AS startAt\s
+            t.id AS themeId\s
+            t.name AS themeName\s
+            t.description AS themeDescription\s
+            t.image_url AS themeImageUrl\s
         FROM reservation AS r\s
-        JOIN reservation_time AS t ON r.time_id = t.id
+        JOIN reservation_time AS rt ON r.time_id = rt.id
+        JOIN theme AS t ON r.theme_id = t.id
     """;
-    private static final String INSERT_SQL = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
+    private static final String INSERT_SQL = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation WHERE id = ?";
     private static final String EXIST_BY_TIME_ID_SQL = """
             SELECT EXISTS (\s
                 SELECT 1 \s
                     FROM reservation \s
                     WHERE time_id = ?\s
+            )
+    """;
+    private static final String EXIST_BY_THEME_ID_SQL = """
+            SELECT EXISTS (\s
+                SELECT 1 \s
+                    FROM reservation \s
+                    WHERE theme_id = ?\s
             )
     """;
 
@@ -49,6 +67,12 @@ public class ReservationDao {
             new ReservationTime(
                     rs.getLong(ALIAS_TIME_ID),
                     rs.getString(ALIAS_START_AT)
+            ),
+            new Theme(
+                    rs.getLong(ALIAS_THEME_ID),
+                    rs.getString(ALIAS_THEME_NAME),
+                    rs.getString(ALIAS_THEME_DESCRIPTION),
+                    rs.getString(ALIAS_THEME_IMAGE_URL)
             )
     );
 
@@ -70,6 +94,7 @@ public class ReservationDao {
             statement.setString(1, reservationCommand.name());
             statement.setString(2, reservationCommand.date());
             statement.setLong(3, reservationCommand.timeId());
+            statement.setLong(4, reservationCommand.themeId());
             return statement;
         }, keyHolder);
 
@@ -87,5 +112,9 @@ public class ReservationDao {
 
     public boolean existsByTimeId(long timeId) {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXIST_BY_TIME_ID_SQL, Boolean.class, timeId));
+    }
+
+    public boolean existsByThemeId(long themeId) {
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXIST_BY_THEME_ID_SQL, Boolean.class, themeId));
     }
 }
