@@ -2,6 +2,7 @@ package roomescape.domain.theme.repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.theme.entity.Theme;
 
@@ -21,5 +22,10 @@ public class FakeThemeRepository implements ThemeRepository {
             theme.getImageUrl());
         themes.add(savedTheme);
         return savedTheme;
+    }
+
+    @Override
+    public void deleteThemeById(Long id) {
+        themes.removeIf(time -> Objects.equals(time.getId(), id));
     }
 }

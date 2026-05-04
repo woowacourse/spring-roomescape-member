@@ -3,7 +3,9 @@ package roomescape.domain.theme.repository;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.entity.Theme;
@@ -44,5 +46,13 @@ public class JdbcThemeRepository implements ThemeRepository {
         );
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(args).longValue();
         return Theme.reconstruct(generatedKey, theme.getName(), theme.getDescription(), theme.getImageUrl());
+    }
+
+    @Override
+    public void deleteThemeById(Long id) {
+        final String sql = "DELETE FROM theme WHERE id = :id";
+        final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+
+        jdbcTemplate.update(sql, parameters);
     }
 }

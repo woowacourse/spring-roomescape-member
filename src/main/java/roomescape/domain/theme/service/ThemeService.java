@@ -30,4 +30,8 @@ public class ThemeService {
         Theme theme = Theme.create(requestDTO.name(), requestDTO.description(), requestDTO.imageUrl());
         return themeRepository.save(theme).toResponseDTO();
     }
+
+    public void deleteThemeById(Long id) {
+        themeRepository.deleteThemeById(id);
+    }
 }
