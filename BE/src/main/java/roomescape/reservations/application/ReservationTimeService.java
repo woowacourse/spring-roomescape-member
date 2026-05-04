@@ -26,8 +26,7 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTimeResponse saveTime(ReservationTimeRequest request) {
-        ReservationTime reservationTime = ReservationTime.of(
-                null,
+        ReservationTime reservationTime = ReservationTime.createWithNullId(
                 request.startAt()
         );
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);

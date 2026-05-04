@@ -7,7 +7,11 @@ public record ReservationTime(
     LocalTime startAt
 ) {
 
-    public static ReservationTime createWithNullId(Long id, LocalTime startAt) {
+    public static ReservationTime createWithNullId(LocalTime startAt) {
+        return new ReservationTime(null, startAt);
+    }
+
+    public static ReservationTime createWithId(Long id, LocalTime startAt) {
         return new ReservationTime(id, startAt);
     }
 }

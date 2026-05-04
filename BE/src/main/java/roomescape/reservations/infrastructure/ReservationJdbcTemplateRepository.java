@@ -32,7 +32,7 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
                 "time_id", reservation.time().id()
         );
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return Reservation.of(
+        return Reservation.createWithId(
                 id,
                 reservation.name(),
                 reservation.date(),
@@ -52,12 +52,12 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
         List<Reservation> reservation = jdbcTemplate.query(
                 sql,
                 (rs, rowNum) -> {
-                    ReservationTime time = ReservationTime.of(
+                    ReservationTime time = ReservationTime.createWithId(
                             rs.getLong("time_id"),
                             rs.getTime("start_at").toLocalTime()
                     );
 
-                    return Reservation.of(
+                    return Reservation.createWithId(
                             rs.getLong("id"),
                             rs.getString("name"),
                             rs.getDate("date").toLocalDate(),
@@ -81,12 +81,12 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
         """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            ReservationTime time = ReservationTime.of(
+            ReservationTime time = ReservationTime.createWithId(
                     rs.getLong("time_id"),
                     rs.getTime("start_at").toLocalTime()
             );
 
-            return Reservation.of(
+            return Reservation.createWithId(
                     rs.getLong("id"),
                     rs.getString("name"),
                     rs.getDate("date").toLocalDate(),

@@ -31,8 +31,7 @@ public class ReservationService {
     public ReservationResponse saveReservation(ReservationRequest request) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new ReservationTimeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
-        Reservation reservation = Reservation.of(
-                null,
+        Reservation reservation = Reservation.createWithNullId(
                 request.name(),
                 request.date(),
                 time
