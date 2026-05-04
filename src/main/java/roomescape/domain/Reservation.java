@@ -1,7 +1,9 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import lombok.Getter;
 
+@Getter
 public class Reservation {
 
     private final Long id;
@@ -26,28 +28,12 @@ public class Reservation {
         this.time = time;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public ReservationTime getTime() {
-        return time;
-    }
-
     private void validateNameFormat(String name) {
-        if(name == null || name.isBlank()){
+        if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("이름 형식은 2글자 이상 10글자 이하입니다");
         }
 
-        if(name.length()<2|| name.length()>10){
+        if (name.length() < 2 || name.length() > 10) {
             throw new IllegalArgumentException("이름 형식은 2글자 이상 10글자 이하입니다");
         }
     }
