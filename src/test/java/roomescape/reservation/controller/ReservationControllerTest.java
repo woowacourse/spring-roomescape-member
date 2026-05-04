@@ -6,6 +6,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.RequestReservation;
 import roomescape.reservation.dto.ResponseReservation;
 import roomescape.reservation.service.ReservationService;
+import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDate;
@@ -27,7 +28,8 @@ class ReservationControllerTest {
         List<Reservation> reservations = List.of(
                 new Reservation(
                         1L, "브라운", LocalDate.of(2026, 5, 10),
-                        new ReservationTime(1L, LocalTime.of(10, 0))
+                        new ReservationTime(1L, LocalTime.of(10, 0)),
+                        new Theme(1L, "공포방", "무서운방입니다.", "image-url")
                 )
         );
         fakeReservationService.toReturnReservations = reservations;
@@ -43,10 +45,11 @@ class ReservationControllerTest {
 
     @Test
     void 예약_생성_요청을_받으면_DTO_필드를_Service에_전달하고_결과를_반환한다() {
-        RequestReservation request = new RequestReservation("브라운", LocalDate.of(2026, 5, 10), 1L);
+        RequestReservation request = new RequestReservation("브라운", LocalDate.of(2026, 5, 10), 1L, 1L);
         Reservation created = new Reservation(
                 99L, "브라운", LocalDate.of(2026, 5, 10),
-                new ReservationTime(1L, LocalTime.of(10, 0))
+                new ReservationTime(1L, LocalTime.of(10, 0)),
+                new Theme(1L, "공포방", "무서운방입니다.", "image-url")
         );
         fakeReservationService.toReturn = created;
 
@@ -83,7 +86,7 @@ class ReservationControllerTest {
         }
 
         @Override
-        public Reservation createReservation(String name, LocalDate date, Long timeId) {
+        public Reservation createReservation(String name, LocalDate date, Long timeId, Long themeId) {
             this.capturedName = name;
             this.capturedDate = date;
             this.capturedTimeId = timeId;

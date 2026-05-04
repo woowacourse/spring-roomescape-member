@@ -4,8 +4,8 @@ import java.time.LocalTime;
 
 public class ReservationTime {
 
-    private final Long id;
-    private final LocalTime startAt;
+    private Long id;
+    private LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {
         if (startAt == null) {

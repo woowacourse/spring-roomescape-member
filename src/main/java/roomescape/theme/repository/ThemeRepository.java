@@ -37,4 +37,16 @@ public class ThemeRepository {
         String sql = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    public Theme findById(Long themeId) {
+        String sql = "SELECT * FROM theme WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+            Long id = rs.getLong("id");
+            String name = rs.getString("name");
+            String description = rs.getString("description");
+            String thumbnail = rs.getString("thumbnail");
+
+            return new Theme(id, name, description, thumbnail);
+        }, themeId);
+    }
 }

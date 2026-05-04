@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
+import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 import java.sql.PreparedStatement;
@@ -28,15 +29,20 @@ public class ReservationRepository {
                        r.name        AS reservation_name,
                        r.date        AS reservation_date,
                        t.id          AS time_id,
-                       t.start_at    AS time_start_at
+                       t.start_at    AS time_start_at,
+                       th.id    AS theme_id,
+                       th.name    AS theme_name,
+                       th.description    AS theme_description,
+                       th.thumbnail    AS theme_thumbnail
                 FROM reservation r
                 JOIN reservation_time t ON r.time_id = t.id
+                JOIN theme th ON r.theme_id = th.id
                 """;
         return jdbcTemplate.query(sql, reservationRowsMapper());
     }
 
-    public Long save(String name, LocalDate date, Long timeId) {
-        String sql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
+    public Long save(String name, LocalDate date, Long timeId, Long themeId) {
+        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -44,6 +50,7 @@ public class ReservationRepository {
             ps.setString(1, name);
             ps.setObject(2, date);
             ps.setObject(3, timeId);
+            ps.setObject(4, themeId);
             return ps;
         }, keyHolder);
         return keyHolder.getKey().longValue();
@@ -60,11 +67,20 @@ public class ReservationRepository {
                     rs.getLong("time_id"),
                     LocalTime.parse(rs.getString("time_start_at"))
             );
+
+            Theme theme = new Theme(
+                    rs.getLong("theme_id"),
+                    rs.getString("theme_name"),
+                    rs.getString("theme_description"),
+                    rs.getString("thumbnail")
+            );
+
             return new Reservation(
                     rs.getLong("reservation_id"),
                     rs.getString("reservation_name"),
                     LocalDate.parse(rs.getString("reservation_date")),
-                    time
+                    time,
+                    theme
             );
         };
     }

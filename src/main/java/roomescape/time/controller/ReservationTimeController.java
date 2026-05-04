@@ -1,7 +1,8 @@
 package roomescape.time.controller;
 
-import org.springframework.web.bind.annotation.*;
-import roomescape.time.dto.RequestReservationTime;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.time.dto.ResponseReservationTime;
 import roomescape.time.service.ReservationTimeService;
 
@@ -23,15 +24,5 @@ public class ReservationTimeController {
                 .stream()
                 .map(ResponseReservationTime::from)
                 .toList();
-    }
-
-    @PostMapping
-    public ResponseReservationTime createTime(@RequestBody RequestReservationTime request) {
-        return ResponseReservationTime.from(reservationTimeService.createTime(request.startAt()));
-    }
-
-    @DeleteMapping("/{id}")
-    public void removeTime(@PathVariable Long id) {
-        reservationTimeService.removeTime(id);
     }
 }

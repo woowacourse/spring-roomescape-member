@@ -5,6 +5,8 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.InvalidReservationTimeException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
@@ -22,14 +24,15 @@ class ReservationServiceImplTest {
 
     private final FakeReservationRepository fakeReservationRepository = new FakeReservationRepository();
     private final FakeReservationTimeRepository fakeReservationTimeRepository = new FakeReservationTimeRepository();
+    private final FakeThemeRepository fakeThemeRepository = new FakeThemeRepository();
     private final ReservationServiceImpl reservationService =
-            new ReservationServiceImpl(fakeReservationRepository, fakeReservationTimeRepository);
+            new ReservationServiceImpl(fakeReservationRepository, fakeReservationTimeRepository, fakeThemeRepository);
 
     @Test
     void 예약_목록을_조회하면_Repository_findAllWithTime_결과를_반환한다() {
         List<Reservation> reservations = List.of(
                 new Reservation(1L, "브라운", LocalDate.of(2026, 5, 10),
-                        new ReservationTime(1L, LocalTime.of(10, 0)))
+                        new ReservationTime(1L, LocalTime.of(10, 0)), new Theme(1L, "공포방", "무서운방입니다.","image-url"))
         );
         fakeReservationRepository.toReturnAllWithTime = reservations;
 
@@ -44,7 +47,7 @@ class ReservationServiceImplTest {
         fakeReservationTimeRepository.stubFindById.put(1L, Optional.of(time));
         fakeReservationRepository.toReturnSavedId = 99L;
 
-        Reservation result = reservationService.createReservation("브라운", LocalDate.of(2026, 5, 10), 1L);
+        Reservation result = reservationService.createReservation("브라운", LocalDate.of(2026, 5, 10), 1L, 1L);
 
         assertThat(result.getId()).isEqualTo(99L);
         assertThat(result.getName()).isEqualTo("브라운");
@@ -60,7 +63,7 @@ class ReservationServiceImplTest {
         fakeReservationTimeRepository.stubFindById.put(999L, Optional.empty());
 
         assertThatThrownBy(() ->
-                reservationService.createReservation("브라운", LocalDate.of(2026, 5, 10), 999L))
+                reservationService.createReservation("브라운", LocalDate.of(2026, 5, 10), 999L, 1L))
                 .isInstanceOf(InvalidReservationTimeException.class);
 
         assertThat(fakeReservationRepository.savedName).isNull();
@@ -90,6 +93,7 @@ class ReservationServiceImplTest {
         String savedName;
         LocalDate savedDate;
         Long savedTimeId;
+        Long savedThemeId;
         Long deletedId;
         int toReturnDeletedRows;
 
@@ -103,10 +107,11 @@ class ReservationServiceImplTest {
         }
 
         @Override
-        public Long save(String name, LocalDate date, Long timeId) {
+        public Long save(String name, LocalDate date, Long timeId, Long themeId) {
             this.savedName = name;
             this.savedDate = date;
             this.savedTimeId = timeId;
+            this.savedThemeId = themeId;
             return toReturnSavedId;
         }
 
@@ -128,6 +133,20 @@ class ReservationServiceImplTest {
         @Override
         public Optional<ReservationTime> findById(Long timeId) {
             return stubFindById.getOrDefault(timeId, Optional.empty());
+        }
+    }
+
+    static class FakeThemeRepository extends ThemeRepository {
+
+        Map<Long, Theme> stubFindById = new HashMap<>();
+
+        FakeThemeRepository() {
+            super(null);
+        }
+
+        @Override
+        public Theme findById(Long timeId) {
+            return stubFindById.get(timeId);
         }
     }
 }

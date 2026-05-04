@@ -26,15 +26,19 @@ class ReservationRepositoryTest {
 
     private Long timeId;
 
+    private Long themeId;
+
     @BeforeEach
     void setUp() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?,?,?)", "공포방", "무서운방입니다.", "image-url");
         this.timeId = jdbcTemplate.queryForObject("SELECT id FROM reservation_time", Long.class);
+        this.themeId = jdbcTemplate.queryForObject("SELECT id FROM theme", Long.class);
     }
 
     @Test
     void 예약을_저장하면_생성된_id를_반환하고_DB에_저장된다() {
-        Long id = reservationRepository.save("브라운", LocalDate.of(2026, 5, 10), timeId);
+        Long id = reservationRepository.save("브라운", LocalDate.of(2026, 5, 10), timeId, themeId);
 
         assertThat(id).isPositive();
         Integer count = jdbcTemplate.queryForObject(
@@ -44,7 +48,7 @@ class ReservationRepositoryTest {
 
     @Test
     void 예약을_저장한_뒤_전체_조회하면_예약과_시간을_함께_반환한다() {
-        reservationRepository.save("브라운", LocalDate.of(2026, 5, 10), timeId);
+        reservationRepository.save("브라운", LocalDate.of(2026, 5, 10), timeId, themeId);
 
         List<Reservation> result = reservationRepository.findAllWithTime();
 
@@ -58,7 +62,7 @@ class ReservationRepositoryTest {
 
     @Test
     void 존재하는_id로_삭제하면_해당_예약이_삭제된다() {
-        Long id = reservationRepository.save("브라운", LocalDate.of(2026, 5, 10), timeId);
+        Long id = reservationRepository.save("브라운", LocalDate.of(2026, 5, 10), timeId, themeId);
 
         reservationRepository.deleteById(id);
 

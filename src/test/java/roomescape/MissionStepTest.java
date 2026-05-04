@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.controller.ReservationController;
-import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dto.ResponseReservation;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -47,11 +47,13 @@ public class MissionStepTest {
     @Test
     void 예약을_생성한_뒤_삭제하면_예약_목록이_비어있다() {
         Long timeId = createTime("10:00");
+        Long themeId = createTheme();
 
         Map<String, String> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", String.valueOf(timeId));
+        reservation.put("themeId", String.valueOf(themeId));
 
         Long reservationId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -111,32 +113,34 @@ public class MissionStepTest {
     @Test
     void DB에_저장된_예약을_API로_조회하면_DB_건수와_응답_건수가_같다() {
         Long timeId = createTime("10:00");
+        Long themeId = createTheme();
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05", timeId);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05", timeId, themeId);
 
-        List<Reservation> reservations = RestAssured.given().log().all()
+        List<ResponseReservation> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", Reservation.class);
-
+                .jsonPath().getList(".", ResponseReservation.class);
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-
         assertThat(reservations.size()).isEqualTo(count);
     }
 
     @Test
     void 예약_생성과_삭제_API를_호출하면_DB_예약_건수가_변경된다() {
         Long timeId = createTime("10:00");
+        Long themeId = createTheme();
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", "2023-08-05");
-        params.put("timeId", timeId);
+        Map<String, String> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2023-08-05");
+        reservation.put("timeId", String.valueOf(timeId));
+        reservation.put("themeId", String.valueOf(themeId));
+
 
         Long reservationId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -158,18 +162,7 @@ public class MissionStepTest {
 
     @Test
     void 시간_생성_조회_삭제_API를_순서대로_호출하면_정상_응답한다() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
-
-        Long timeId = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .jsonPath()
-                .getLong("id");
+        Long timeId = createTime("10:00");
 
         RestAssured.given().log().all()
                 .when().get("/times")
@@ -178,7 +171,7 @@ public class MissionStepTest {
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/times/" + timeId)
+                .when().delete("/admin/times/" + timeId)
                 .then().log().all()
                 .statusCode(200);
     }
@@ -186,11 +179,13 @@ public class MissionStepTest {
     @Test
     void 시간_id로_예약을_생성하면_예약_목록에서_조회된다() {
         Long timeId = createTime("10:00");
+        Long themeId = createTheme();
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", timeId);
+        reservation.put("themeId", themeId);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -226,7 +221,24 @@ public class MissionStepTest {
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(time)
-                .when().post("/times")
+                .when().post("/admin/times")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getLong("id");
+    }
+
+    private Long createTheme() {
+        Map<String, String> theme = new HashMap<>();
+        theme.put("name", "공포방");
+        theme.put("description", "공포도 5");
+        theme.put("thumbnail", "image-url");
+
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(200)
                 .extract()

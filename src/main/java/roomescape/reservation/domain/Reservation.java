@@ -1,17 +1,19 @@
 package roomescape.reservation.domain;
 
+import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDate;
 
 public class Reservation {
 
-    private final Long id;
-    private final String name;
-    private final LocalDate date;
-    private final ReservationTime time;
+    private Long id;
+    private String name;
+    private LocalDate date;
+    private ReservationTime time;
+    private Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("예약자 이름은 비어 있을 수 없습니다.");
         }
@@ -25,6 +27,7 @@ public class Reservation {
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
     public Long getId() {
@@ -41,5 +44,9 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 }
