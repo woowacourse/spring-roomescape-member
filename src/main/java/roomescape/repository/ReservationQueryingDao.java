@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -10,6 +11,7 @@ import roomescape.domain.theme.Theme;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ReservationQueryingDao {
@@ -42,7 +44,7 @@ public class ReservationQueryingDao {
         );
     };
 
-    public Reservation findReservationById(long id) {
+    public Optional<Reservation> findReservationById(long id) {
         String sql = """
                 select r.id as reservation_id, r.name as reservation_name, r.date as reservation_date, r.time_id, t.start_at, th.id as theme_id, th.name as theme_name, th.description as theme_description, th.url as theme_url
                 from reservation as r
@@ -50,9 +52,12 @@ public class ReservationQueryingDao {
                 inner join theme as th on th.id = r.theme_id
                 where r.id = ?
                 """;
-        
-        
-        return jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
+            return Optional.of(reservation);
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
     }
 
     public List<Reservation> findAllReservations() {

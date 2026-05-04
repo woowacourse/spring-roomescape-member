@@ -9,6 +9,8 @@ import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.ReservationTimeResponse;
 import roomescape.domain.theme.Theme;
 import roomescape.exception.ReservationNotFoundException;
+import roomescape.exception.ReservationTimeNotFoundException;
+import roomescape.exception.ThemeNotFoundException;
 import roomescape.repository.ReservationQueryingDao;
 import roomescape.repository.ReservationTimeQueryingDao;
 import roomescape.repository.ReservationUpdatingDao;
@@ -32,7 +34,8 @@ public class ReservationService {
     }
 
     public ReservationResponse read(Long id) {
-        Reservation reservationById = reservationQueryingDao.findReservationById(id);
+        Reservation reservationById = reservationQueryingDao.findReservationById(id)
+                .orElseThrow(() -> new ReservationNotFoundException(id));
         return ReservationResponse.from(reservationById);
     }
 
@@ -46,8 +49,11 @@ public class ReservationService {
     @Transactional
     public ReservationResponse create(ReservationRequest reservationReq) {
         Long generatedId = reservationUpdatingDao.insert(reservationReq);
-        ReservationTime reservationTimeById = reservationTimeQueryingDao.findReservationTimeById(reservationReq.getTimeId());
-        Theme themeById = themeQueryingDao.findThemeById(reservationReq.getThemeId());
+
+        ReservationTime reservationTimeById = reservationTimeQueryingDao.findReservationTimeById(reservationReq.getTimeId())
+                .orElseThrow(() -> new ReservationTimeNotFoundException(reservationReq.getTimeId()));
+        Theme themeById = themeQueryingDao.findThemeById(reservationReq.getThemeId())
+                .orElseThrow(() -> new ThemeNotFoundException(reservationReq.getThemeId()));
         return ReservationResponse.from(new Reservation(generatedId, reservationReq.getName(), reservationReq.getDate(), reservationTimeById, themeById));
     }
 

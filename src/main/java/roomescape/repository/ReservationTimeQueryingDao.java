@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -8,6 +9,7 @@ import roomescape.domain.reservationtime.ReservationTimeResponse;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ReservationTimeQueryingDao {
@@ -26,9 +28,14 @@ public class ReservationTimeQueryingDao {
         return reservationTime;
     };
 
-    public ReservationTime findReservationTimeById(long id) {
+    public Optional<ReservationTime> findReservationTimeById(long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
-        return jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id);
+        try {
+            ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id);
+            return Optional.of(reservationTime);
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
     }
 
     public List<ReservationTime> findAllReservationTime() {
