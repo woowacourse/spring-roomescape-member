@@ -40,12 +40,12 @@ public abstract class BaseDaoTest {
                 "time_id BIGINT NOT NULL," +
                 "theme_id BIGINT NOT NULL, " +
                 "FOREIGN KEY (time_id) REFERENCES reservation_time (id)," +
-                "FOREIGN KEY (theme_id) REFERENCES theme (id))"
+                "FOREIGN KEY (theme_id) REFERENCES reservation_theme (id))"
         );
     }
 
     protected void createReservationThemeTable() {
-        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS theme (" +
+        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS reservation_theme (" +
                 "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
                 "name VARCHAR(255) NOT NULL, " +
                 "description VARCHAR(255) NOT NULL, " +
@@ -58,7 +58,7 @@ public abstract class BaseDaoTest {
     }
 
     protected void insertReservationTheme(String name, String description, String imageUrl) {
-        jdbcTemplate.update("INSERT INTO theme (name, description, image_url) VALUES (?, ?, ?)", name, description, imageUrl);
+        jdbcTemplate.update("INSERT INTO reservation_theme (name, description, image_url) VALUES (?, ?, ?)", name, description, imageUrl);
     }
 
 
@@ -71,7 +71,7 @@ public abstract class BaseDaoTest {
     }
 
     protected void deleteReservationThemeTable() {
-        jdbcTemplate.execute("DROP TABLE theme");
+        jdbcTemplate.execute("DROP TABLE reservation_theme");
     }
 
     protected void deleteReservationTimeTable() {

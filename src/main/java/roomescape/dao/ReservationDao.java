@@ -41,7 +41,7 @@ public class ReservationDao {
             t.image_url AS themeImageUrl\s
         FROM reservation AS r\s
         JOIN reservation_time AS rt ON r.time_id = rt.id
-        JOIN reservationTheme AS t ON r.theme_id = t.id
+        JOIN reservation_theme AS t ON r.theme_id = t.id
     """;
     private static final String INSERT_SQL = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation WHERE id = ?";

@@ -11,9 +11,9 @@ import roomescape.domain.ReservationTheme.ReservationThemeDaoData;
 
 @Repository
 public class ReservationThemeDao {
-    private static final String SELECT_ALL_SQL = "SELECT id, name, description, image_url FROM theme";
-    private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM theme WHERE id = ?";
-    private static final String SELECT_SPECIFIC_ID_SQL = "SELECT id, name, description, image_url FROM theme WHERE id = ?";
+    private static final String SELECT_ALL_SQL = "SELECT id, name, description, image_url FROM reservation_theme";
+    private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation_theme WHERE id = ?";
+    private static final String SELECT_SPECIFIC_ID_SQL = "SELECT id, name, description, image_url FROM reservation_theme WHERE id = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -22,7 +22,7 @@ public class ReservationThemeDao {
     public ReservationThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
+                .withTableName("reservation_theme")
                 .usingGeneratedKeyColumns("id");
     }
 
