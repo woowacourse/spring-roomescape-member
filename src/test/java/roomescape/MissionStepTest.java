@@ -34,18 +34,18 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("times.size()", is(1));
 
         RestAssured.given().log().all()
                 .when().delete("/times/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
     }
 
     @Test
@@ -63,20 +63,20 @@ public class MissionStepTest {
                 .body(time)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("reservations.size()", is(1));
     }
 
     @Test
