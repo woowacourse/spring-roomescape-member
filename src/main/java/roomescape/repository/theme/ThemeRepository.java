@@ -28,6 +28,10 @@ public class ThemeRepository {
                 .toList();
     }
 
+    public void deleteTheme(long id) {
+        themeDao.deleteTheme(id);
+    }
+
     private Theme createTheme(ThemeDaoData themeDaoData) {
         return new Theme(
                 themeDaoData.id(),
