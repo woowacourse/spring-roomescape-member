@@ -33,7 +33,7 @@ public class ReservationTimeDao {
 
     public ReservationTime insert(ReservationTime reservationTime) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", reservationTime.getStartAt());
+        parameters.put("start_at", reservationTime.getStartAt());
 
         Number generatedId = jdbcInsert.executeAndReturnKey(parameters);
         return new ReservationTime(generatedId.longValue(), reservationTime.getStartAt());

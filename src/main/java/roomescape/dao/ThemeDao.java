@@ -45,12 +45,12 @@ public class ThemeDao {
         );
     }
 
-    public Optional<Theme> selectById(long themeId) {
+    public Optional<Theme> selectById(Long themeId) {
         String sql = """
                 SELECT id, 
                        name, 
                        description,
-                       thumbnail,
+                       thumbnail
                 FROM theme
                 WHERE id = ?""";
 

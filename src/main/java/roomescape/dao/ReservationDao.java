@@ -15,20 +15,20 @@ import roomescape.domain.Theme;
 public class ReservationDao {
     private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> {
         ReservationTime reservationTime = new ReservationTime(
-                resultSet.getLong("id"),
+                resultSet.getLong("time_id"),
                 resultSet.getTime("start_at").toLocalTime()
         );
 
         Theme theme = new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
+                resultSet.getLong("theme_id"),
+                resultSet.getString("theme_name"),
                 resultSet.getString("description"),
                 resultSet.getString("thumbnail")
         );
 
         Reservation reservation = new Reservation(
                 resultSet.getLong("id"),
-                resultSet.getString("name"),
+                resultSet.getString("reservation_name"),
                 resultSet.getDate("date").toLocalDate(),
                 reservationTime,
                 theme
@@ -51,6 +51,7 @@ public class ReservationDao {
         parameters.put("name", reservation.getName());
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTime().getId());
+        parameters.put("theme_id", reservation.getTheme().getId());
 
         Number generatedId = jdbcInsert.executeAndReturnKey(parameters);
         return new Reservation(
@@ -65,13 +66,19 @@ public class ReservationDao {
     public List<Reservation> select() {
         String sql = """
                 SELECT r.id, 
-                       r.name, 
+                       r.name as reservation_name, 
                        r.date,
-                       rt.id ,
-                       rt.start_at
+                       rt.id as time_id,
+                       rt.start_at,
+                       t.id as theme_id,
+                       t.name as theme_name,
+                       t.description,
+                       t.thumbnail
                 FROM reservation AS r
                 INNER JOIN reservation_time AS rt 
-                ON r.time_id = rt.id""";
+                ON r.time_id = rt.id
+                INNER JOIN theme AS t 
+                ON r.theme_id = t.id""";
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
