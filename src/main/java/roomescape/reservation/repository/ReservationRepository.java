@@ -7,7 +7,7 @@ import roomescape.reservation.entity.Reservation;
 
 public interface ReservationRepository {
 
-    Long save(String name, LocalDate date, Long timeId);
+    Long save(String name, LocalDate date, Long timeId, Long themeId);
 
     Optional<Reservation> findById(Long id);
 

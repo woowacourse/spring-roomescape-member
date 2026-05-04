@@ -21,7 +21,8 @@ public class ReservationService {
         Long id = reservationRepository.save(
                 request.name(),
                 request.date(),
-                request.timeId()
+                request.timeId(),
+                request.themeId()
         );
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("예약 저장 후 조회에 실패했습니다. id=" + id));

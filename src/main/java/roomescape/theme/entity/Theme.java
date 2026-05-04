@@ -8,12 +8,18 @@ public class Theme {
     private final String name;
     private final String description;
     private final String thumbnailUrl;
-    private final Duration runtime = Duration.ofHours(1);
+    private final Duration runtime;
 
-    public Theme(Long id, String name, String description, String thumbnailUrl) {
+    private Theme(Long id, String name, String description, String thumbnailUrl, Duration runtime) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnailUrl = thumbnailUrl;
+        this.runtime = runtime;
     }
+
+    public static Theme of(Long id, String name, String description, String thumbnailUrl, Duration runtime) {
+        return new Theme(id, name, description, thumbnailUrl, runtime);
+    }
+
 }
