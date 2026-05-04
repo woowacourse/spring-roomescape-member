@@ -1,0 +1,53 @@
+# 요구사항
+1. 테마 정보 추가  
+   a. 이름, 설명, 썸네일 이미지 URL 포함  
+   b. 예약에 테마 정보 추가  
+   c. 테마 추가 및 삭제(관리자)
+2. 사용자 예약  
+   a. 날짜, 테마로 예약 가능 시간 목록 조회
+   b. 사용자가 목록에서 시간 선택 후 본인 이름으로 예약(input = 사용자 이름, timeId)  
+   c. 테마 다르면 같은 시간 예약 가능
+3. 인기 테마 조회
+   a. 예약 많은 상위 10개 테마 조회(1주일 단위, 금일 기준)
+
+서비스 흐름
+1. 관리자가 테마를 추가한다. -> 사용자가 날짜, 테마 선택 -> 예약 등록 가능 확인 -> 예약 진행
+
+진행 순서
+1. 테마 클래스 정의
+2. 관리자 API 구현
+3. 예약에 테마 클래스 필드로 추가
+4. 예약 로직 수정을 통해 DB에서 예약 테이블과 테마 테이블 연결
+
+필요한 API
+1. 관리자 테마 추가
+2. 관리자 테마 삭제
+
+```mermaid
+erDiagram
+%% Relationships
+theme ||--o{ reservation : "has (1:N)"
+reservation_time ||--o{ reservation : "has (1:N)"
+
+    %% Tables
+    theme {
+        BIGINT id PK
+        VARCHAR name
+        VARCHAR thumbnail_image_url
+        VARCHAR description
+        VARCHAR duration_time
+    }
+
+    reservation_time {
+        BIGINT id PK
+        VARCHAR start_at
+    }
+
+    reservation {
+        BIGINT id PK
+        VARCHAR name
+        VARCHAR date
+        BIGINT time_id FK
+        BIGINT theme_id FK
+    }
+```
