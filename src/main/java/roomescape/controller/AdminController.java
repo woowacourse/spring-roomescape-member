@@ -9,25 +9,34 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ReservationCommandService;
 import roomescape.service.ReservationQueryService;
 import roomescape.service.ReservationTimeCommandService;
 import roomescape.service.ReservationTimeQueryService;
+import roomescape.service.ThemeCommandService;
+import roomescape.service.ThemeQueryService;
 
 @RestController
+@RequestMapping(("/admin"))
 @RequiredArgsConstructor
-public class ReservationController {
+public class AdminController {
 
     private final ReservationCommandService reservationCommandService;
     private final ReservationQueryService reservationQueryService;
     private final ReservationTimeCommandService reservationTimeCommandService;
     private final ReservationTimeQueryService reservationTimeQueryService;
+    private final ThemeCommandService themeCommandService;
+    private final ThemeQueryService themeQueryService;
+
 
     @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponse>> getAllReservations() {
@@ -36,7 +45,7 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest request) {
-        ReservationResponse reservationResponse = reservationCommandService.create(request.name(), request.date(), request.timeId());
+        ReservationResponse reservationResponse = reservationCommandService.create(request.name(), request.date(), request.timeId(), request.themeId());
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .build()
@@ -70,6 +79,28 @@ public class ReservationController {
     @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
         reservationTimeCommandService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/themes")
+    public ResponseEntity<List<ThemeResponse>> getAllThemes() {
+        return ResponseEntity.ok(themeQueryService.findAllThemes());
+    }
+
+    @PostMapping("/themes")
+    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest request) {
+        ThemeResponse themeResponse = themeCommandService.create(request.name(), request.thumbnailUrl(), request.description());
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .build()
+                .toUri();
+
+        return ResponseEntity.created(location).body(themeResponse);
+    }
+
+    @DeleteMapping("/themes/{id}")
+    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
+        themeCommandService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

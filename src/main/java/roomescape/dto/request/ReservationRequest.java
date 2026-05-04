@@ -9,5 +9,7 @@ public record ReservationRequest(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
         LocalDate date,
 
-        long timeId) {
+        long timeId,
+        long themeId
+) {
 }
