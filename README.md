@@ -80,6 +80,7 @@
 
 | HTTP Method | 상태 코드 | Endpoint | 기능 | 요청 본문 | 응답 본문 |
 |:-----------:|:---------:|----------|------|-----------|-----------|
+| GET | 200 | `/themes` | 전체 테마 조회 | - | `[{ id, name, description, thumbnailImgUrl }]` |
 | POST | 201 | `/themes` | 테마 생성 | `{ name, description, thumbnailImgUrl }` | `{ id, name, description, thumbnailImgUrl }` |
 | DELETE | 204 | `/themes/{id}` | 테마 삭제 | - | - |
 | DELETE | 404 | `/themes/{id}` | 테마 삭제 (존재하지 않는 경우) | - | - |

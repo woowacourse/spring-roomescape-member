@@ -58,4 +58,13 @@ public class ThemeControllerTest {
                 .then().log().all()
                 .statusCode(404);
     }
+
+    @DisplayName("존재하는 모든 테마 조회를 테스트합니다.")
+    @Test
+    void find_all_themes() {
+        RestAssured.given().log().all()
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
