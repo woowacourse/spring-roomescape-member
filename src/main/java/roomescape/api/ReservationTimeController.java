@@ -19,12 +19,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/times")
-public class TimeController {
+public class ReservationTimeController {
 
     private final TimeService timeService;
     private final ReservationFacade reservationFacade;
 
-    public TimeController(TimeService timeService, ReservationFacade reservationFacade) {
+    public ReservationTimeController(TimeService timeService, ReservationFacade reservationFacade) {
         this.timeService = timeService;
         this.reservationFacade = reservationFacade;
     }
