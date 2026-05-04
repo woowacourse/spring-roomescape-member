@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.reservation.domain.validator.ReservationValidator;
+import roomescape.reservation.domain.exception.ReservationNotFoundException;
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationResponse;
 import roomescape.theme.domain.Theme;
@@ -20,7 +20,6 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository timeRepository;
-    private final ReservationValidator reservationValidator;
     private final ThemeRepository themeRepository;
 
     @Transactional(readOnly = true)
@@ -38,7 +37,8 @@ public class ReservationService {
     }
 
     public void cancelReservation(Long id) {
-        reservationValidator.validateDeletable(id);
-        reservationRepository.deleteById(id);
+        if (reservationRepository.deleteById(id) < 1) {
+            throw new ReservationNotFoundException("존재하지 않는 예약ID 입니다.");
+        }
     }
 }
