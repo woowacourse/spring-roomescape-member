@@ -122,7 +122,7 @@ DELETE /api/admin/reservations/{id}
 
 없음
 
-### ☑️ 관리자 시간 조회
+### ✅ 관리자 시간 조회
 
 #### URL
 
@@ -279,4 +279,112 @@ DELETE /api/admin/themes/{id}
 
 ## 사용자
 
-추후 작성 예정
+### ☑️사용자 테마 조회
+
+#### URL
+
+```http
+GET /api/themes
+```
+
+#### Query Parameters
+
+없음
+
+#### Request Body
+
+없음
+
+#### Response Body
+
+##### 200 OK
+
+```json
+[
+  {
+    "id": 1,
+    "name": "링",
+    "description": "이것은 링 방탈출 설명입니다.",
+    "imageUrl": "https://roomescape.com/images/themes/ring.png"
+  },
+  {
+    "id": 2,
+    "name": "감옥",
+    "description": "이것은 감옥 방탈출 설명입니다.",
+    "imageUrl": "https://roomescape.com/images/themes/prison-room.png"
+  }
+]
+```
+
+### ☑️사용자 예약 가능한 시간 조회
+
+#### URL
+
+```http
+GET /api/times?date={date}&themeId={themeId}
+```
+
+#### Query Parameters
+
+| 파라미터명   | 필수 여부 | 타입     | 설명        | 예시         |
+|---------|-------|--------|-----------|------------|
+| date    | 필수    | Date   | 예약할 날짜    | 2026-05-12 |
+| themeId | 필수    | BigInt | 예약할 테마 ID | 1          |
+
+#### Request Body
+
+없음
+
+#### Response Body
+
+##### 200 OK
+
+```json
+[
+  {
+    "id": 1,
+    "startAt": "20:30"
+  },
+  {
+    "id": 2,
+    "startAt": "22:30"
+  }
+]
+```
+
+### ☑️사용자 예약 생성
+
+#### URL
+
+```http
+POST /api/reservations
+```
+
+#### Query Parameters
+
+없음
+
+#### Request Body
+
+```json
+{
+  "name": "브라운",
+  "date": "2026-05-12",
+  "timeId": 1,
+  "themeId": 1
+}
+```
+
+#### Response Body
+
+##### 200 OK
+
+```json
+{
+  "id": 1,
+  "name": "브라운",
+  "date": "2026-05-12",
+  "timeId": 1,
+  "themeId": 1
+}
+```
