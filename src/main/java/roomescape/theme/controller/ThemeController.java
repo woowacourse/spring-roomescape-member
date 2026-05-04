@@ -24,7 +24,7 @@ public class ThemeController {
     }
     
     @GetMapping("/themes")
-    public ResponseEntity<List<ThemeResponseDto>> getThemes() {
+    public ResponseEntity<List<ThemeResponseDto>> getAll() {
         List<ThemeResponseDto> body = themeService.getThemes().stream()
                 .map(ThemeResponseDto::from)
                 .collect(Collectors.toList());
@@ -32,7 +32,7 @@ public class ThemeController {
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<ThemeResponseDto> saveThemes(
+    public ResponseEntity<ThemeResponseDto> create(
             @RequestBody ThemeSaveRequestDto themeRequest) {
         ThemeResponseDto body = ThemeResponseDto.from(
                 themeService.save(themeRequest.toServiceDto()));
@@ -40,7 +40,7 @@ public class ThemeController {
     }
 
     @DeleteMapping("/themes/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable long id) {
+    public ResponseEntity<Void> delete(@PathVariable long id) {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

@@ -24,24 +24,24 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<List<ReservationResponseDto>> getReservations() {
-        List<ReservationResponseDto> body = reservationService.getReservations().stream()
+    public ResponseEntity<List<ReservationResponseDto>> getAll() {
+        List<ReservationResponseDto> body = reservationService.getAll().stream()
                 .map(ReservationResponseDto::from)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(body);
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponseDto> saveReservation(
+    public ResponseEntity<ReservationResponseDto> create(
             @RequestBody ReservationSaveRequestDto reservationRequest) {
         ReservationResponseDto body = ReservationResponseDto.from(
-                reservationService.save(reservationRequest.toServiceDto()));
+                reservationService.create(reservationRequest.toServiceDto()));
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable long id) {
-        reservationService.deleteById(id);
+    public ResponseEntity<Void> cancel(@PathVariable long id) {
+        reservationService.cancel(id);
         return ResponseEntity.noContent().build();
     }
 }

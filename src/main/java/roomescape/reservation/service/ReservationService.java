@@ -5,7 +5,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
 
 public interface ReservationService {
-    List<Reservation> getReservations();
-    Reservation save(ReservationSaveServiceDto reservation);
-    void deleteById(long id);
+    List<Reservation> getAll();
+    Reservation create(ReservationSaveServiceDto reservation);
+    void cancel(long id);
 }

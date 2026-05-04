@@ -26,7 +26,7 @@ class ThemeControllerTest {
     }
 
     @Test
-    void getThemes() {
+    void getAll() {
         Map<String, String> body = themeBody();
 
         RestAssured.given().log().all()
@@ -48,7 +48,7 @@ class ThemeControllerTest {
     }
 
     @Test
-    void saveThemes() {
+    void create() {
         Map<String, String> body = themeBody();
 
         RestAssured.given().log().all()
@@ -64,7 +64,7 @@ class ThemeControllerTest {
     }
 
     @Test
-    void deleteTheme() {
+    void delete() {
         Map<String, String> body = themeBody();
 
         RestAssured.given().log().all()

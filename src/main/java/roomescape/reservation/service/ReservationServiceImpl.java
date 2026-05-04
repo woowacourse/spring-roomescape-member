@@ -22,12 +22,12 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<Reservation> getReservations() {
+    public List<Reservation> getAll() {
         return reservationRepository.findAll();
     }
 
     @Override
-    public Reservation save(ReservationSaveServiceDto reservation) {
+    public Reservation create(ReservationSaveServiceDto reservation) {
         ReservationTime time = findTime(reservation.getTimeId());
         Reservation newReservation = new Reservation(
                 reservation.getName(),
@@ -45,7 +45,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public void deleteById(long id) {
+    public void cancel(long id) {
         if (!reservationRepository.deleteById(id)) {
             throw new ReservationNotFoundException(id);
         }
