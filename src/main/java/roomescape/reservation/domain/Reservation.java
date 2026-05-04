@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 @Getter
@@ -19,4 +20,5 @@ public class Reservation {
     private String name;
     private LocalDate date;
     private ReservationTime time;
+    private Theme theme;
 }

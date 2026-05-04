@@ -1,8 +1,11 @@
 package roomescape.theme.infra;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -16,8 +19,14 @@ import roomescape.theme.domain.ThemeRepository;
 @RequiredArgsConstructor
 public class JdbcThemeRepository implements ThemeRepository {
 
-
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> Theme.builder()
+            .id(resultSet.getLong("id"))
+            .name(resultSet.getString("name"))
+            .description(resultSet.getString("description"))
+            .thumbnailImageUrl(resultSet.getString("thumbnail_image_url"))
+            .durationTime(resultSet.getTime("duration_time").toLocalTime())
+            .build();
 
     @Override
     public Theme save(Theme theme) {
@@ -49,5 +58,13 @@ public class JdbcThemeRepository implements ThemeRepository {
     public boolean existsThemeById(Long id) {
         String sql = "SELECT EXISTS (SELECT 1 FROM theme WHERE id=:id)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Map.of("id", id), Boolean.class));
+    }
+
+    @Override
+    public Optional<Theme> findById(Long id) {
+        String sql = "SELECT id, name, description, thumbnail_image_url, duration_time FROM theme WHERE id = :id";
+
+        List<Theme> themes = jdbcTemplate.query(sql, Map.of("id", id), rowMapper);
+        return themes.stream().findFirst();
     }
 }
