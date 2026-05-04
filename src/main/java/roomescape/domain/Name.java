@@ -19,6 +19,7 @@ public class Name {
         validateIsNull(value);
         String preprocessed = preprocess(value);
         validateLength(preprocessed);
+
         return new Name(preprocessed);
     }
 
@@ -32,7 +33,7 @@ public class Name {
         return value.strip();
     }
 
-    private static void validateLength(String value) {
+    public static void validateLength(String value) {
         if (value.length() < MIN_NAME_LENGTH || value.length() > MAX_NAME_LENGTH) {
             throw new IllegalArgumentException(INVALID_NAME_LENGTH);
         }
@@ -44,8 +45,12 @@ public class Name {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Name name = (Name) o;
         return Objects.equals(value, name.value);
     }

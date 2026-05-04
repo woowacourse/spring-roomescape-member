@@ -4,26 +4,20 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.ReservationCreateRequest;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 
 @Service
 public class ReservationService {
-    private static final String INVALID_RESERVATION_ID = "요청한 예약을 찾을 수 없습니다.";
-    private static final String DUPLICATED_RESERVATION = "이미 예약된 테마의 시간대입니다.";
+    public static final String INVALID_RESERVATION_ID = "요청한 예약을 찾을 수 없습니다.";
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeService reservationTimeService;
-    private final ThemeService themeService;
 
     public ReservationService(ReservationRepository reservationRepository,
-            ReservationTimeService reservationTimeService,
-            ThemeService themeService) {
+                              ReservationTimeService reservationTimeService) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeService = reservationTimeService;
-        this.themeService = themeService;
     }
 
     public List<Reservation> findAll() {
@@ -31,19 +25,9 @@ public class ReservationService {
     }
 
     public Reservation reserve(ReservationCreateRequest request) {
-        ReservationDate reservationDate = ReservationDate.from(request.getDate());
         ReservationTime reservationTime = reservationTimeService.find(request.getTimeId());
-        Theme theme = themeService.find(request.getThemeId());
 
-        boolean isExists = reservationRepository.findByTimeAndTheme(request.getTimeId(), request.getThemeId())
-                .stream()
-                .anyMatch(r -> r.getDate().equals(reservationDate));
-
-        if (isExists) {
-            throw new IllegalArgumentException(DUPLICATED_RESERVATION);
-        }
-
-        Reservation reservation = Reservation.of(request.getName(), request.getDate(), reservationTime, theme);
+        Reservation reservation = Reservation.of(request.getName(), request.getDate(), reservationTime);
 
         return reservationRepository.save(reservation);
     }

@@ -2,7 +2,6 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.controller.dto.AvailableTimeFindRequest;
 import roomescape.controller.dto.ReservationTimeCreateRequest;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
@@ -20,6 +19,7 @@ public class ReservationTimeService {
 
     public ReservationTime create(ReservationTimeCreateRequest request) {
         ReservationTime reservationTime = ReservationTime.of(request.getStartAt());
+
         return reservationTimeRepository.save(reservationTime);
     }
 
@@ -33,12 +33,8 @@ public class ReservationTimeService {
     }
 
     public void delete(long reservationTimeId) {
-        reservationTimeRepository.findById(reservationTimeId)
-                .orElseThrow(() -> new IllegalArgumentException(INVALID_TIME_ID));
+        reservationTimeRepository.findById(reservationTimeId).orElseThrow(
+                () -> new IllegalArgumentException(INVALID_TIME_ID));
         reservationTimeRepository.delete(reservationTimeId);
-    }
-
-    public List<ReservationTime> findAvailable(AvailableTimeFindRequest request) {
-        return reservationTimeRepository.findByDateAndTheme(request.getDate(), request.getThemeId());
     }
 }
