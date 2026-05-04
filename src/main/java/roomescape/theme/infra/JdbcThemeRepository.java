@@ -44,9 +44,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
         jdbcTemplate.update(sql, params, keyHolder);
         long generatedId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        theme.setId(generatedId);
-
-        return theme;
+        return theme.withId(generatedId);
     }
 
     @Override

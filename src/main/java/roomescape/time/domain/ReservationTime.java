@@ -4,13 +4,19 @@ import java.time.LocalTime;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @Builder
 @EqualsAndHashCode
 public class ReservationTime {
-    @Setter
+
     private Long id;
     private LocalTime startAt;
+
+    public ReservationTime withId(Long id) {
+        return ReservationTime.builder()
+                .id(id)
+                .startAt(this.startAt)
+                .build();
+    }
 }

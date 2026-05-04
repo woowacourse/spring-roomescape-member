@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -15,10 +14,19 @@ import roomescape.time.domain.ReservationTime;
 @AllArgsConstructor
 public class Reservation {
 
-    @Setter
     private Long id;
     private String name;
     private LocalDate date;
     private ReservationTime time;
     private Theme theme;
+
+    public Reservation withId(Long id) {
+        return Reservation.builder()
+                .id(id)
+                .name(this.name)
+                .date(this.date)
+                .time(this.time)
+                .theme(this.theme)
+                .build();
+    }
 }
