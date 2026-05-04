@@ -43,7 +43,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/available")
-    public ResponseEntity<AvailableReservationTimeResponse> getAvailableReservationTime(@ModelAttribute AvailableReservationTimeRequest request) {
+    public ResponseEntity<AvailableReservationTimeResponse> getAvailableReservationTime(@Valid @ModelAttribute AvailableReservationTimeRequest request) {
         return ResponseEntity.ok(service.getAvailableReservationTime(request));
     }
 }
