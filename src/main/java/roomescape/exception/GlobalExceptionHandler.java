@@ -22,4 +22,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Void> handleReservationTimeInUse() {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Void> handleUnauthorized() {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Void> handleUnexpectedException(Exception e) {
+        return ResponseEntity.internalServerError().build();
+    }
 }

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
+import roomescape.exception.UnauthorizedException;
 
 @Service
 @Transactional(readOnly = true)
@@ -15,7 +16,10 @@ public class ThemeService {
     }
 
     @Transactional
-    public Theme createTheme(String name, String description, String imgUrl) {
+    public Theme createTheme(String name, String description, String imgUrl, String userName) {
+        if (!userName.equals("ADMIN")) {
+            throw new UnauthorizedException();
+        }
         Long id = themeDao.insertTheme(name, description, imgUrl);
         return themeDao.findById(id);
     }

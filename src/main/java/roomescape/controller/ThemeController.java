@@ -25,7 +25,8 @@ public class ThemeController {
         Theme theme = themeService.createTheme(
                 request.name(),
                 request.description(),
-                request.imgUrl()
+                request.imgUrl(),
+                request.userName()
         );
         return ResponseEntity.created(URI.create("/themes/" + theme.getId())).body(theme);
     }

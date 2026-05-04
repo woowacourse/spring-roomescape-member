@@ -35,4 +35,16 @@ public class ThemeControllerTest {
                 .statusCode(201)
                 .body("id", is(1));
     }
+
+    @Test
+    void 테마_추가시_관리자가_아닌경우_401을_반환한다() {
+        Map<String, Object> adminThemeParams = themeParams();
+        adminThemeParams.put("userName", "정콩이");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(adminThemeParams)
+                .when().post("/api/v1/themes")
+                .then().log().all()
+                .statusCode(401);
+    }
 }

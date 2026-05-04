@@ -10,6 +10,7 @@
 - [ ]  모든 테마의 시작 시간과 소요 시간은 동일하다고 가정한다.
 - [ ]  예약에 테마 정보를 포함한다.
 - [x]  관리자가 테마를 추가할 수 있다.
+- [x]  관리자가 아닐경우 예외를 던진다.
 - [ ]  관리자가 테마를 삭제할 수 있다.
 - [ ]  [추후구현] 예약이 걸려있는 테마는 삭제할 수 없다.
 - [ ]  [추후구현] 존재하지 않는 테마는 삭제할 수 없다.
@@ -21,21 +22,21 @@ Theme - 01
 API 설명: 관리자가 테마를 추가할 수 있다.
 URI: /api/v1/themes
 Method: POST
-Path Variable: 
+Path Variable:
 Query Variable:
 RequestBody:
 {
-	"name": String,
-	"description" : String,
-	"imgUrl" : String,
-	"userName" : String,
+"name": String,
+"description" : String,
+"imgUrl" : String,
+"userName" : String,
 }
 ResponseBody:
 {
-	"id" : Long,
-	"name": String,
-	"description" : String,
-	"imgUrl" : String,
+"id" : Long,
+"name": String,
+"description" : String,
+"imgUrl" : String,
 }
 Status Code: 201
 
@@ -44,10 +45,10 @@ API 설명: 관리자가 테마를 삭제할 수 있다.
 URI: /api/v1/themes/{id}
 Method: DELETE
 Path Variable: themeId
-Query Variable: 
+Query Variable:
 RequestBody:
-{ 
-	"userName" : String
+{
+"userName" : String
 }
 ResponseBody:
 Status Code: 204
