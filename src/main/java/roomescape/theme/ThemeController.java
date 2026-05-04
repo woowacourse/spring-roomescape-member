@@ -1,8 +1,7 @@
 package roomescape.theme;
 
-import java.util.List;
-
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +17,7 @@ import roomescape.theme.dto.ThemeResponse;
 @RestController
 @RequestMapping("/themes")
 public class ThemeController {
+
     private final ThemeService themeService;
 
     public ThemeController(ThemeService themeService) {
