@@ -20,4 +20,9 @@ public class ThemeController {
     public ResponseEntity<List<ThemeResponse>> getThemes() {
         return ResponseEntity.ok(service.getThemes());
     }
+
+    @GetMapping("/weeks/top")
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
+        return ResponseEntity.ok(service.getWeeksTopThemes());
+    }
 }

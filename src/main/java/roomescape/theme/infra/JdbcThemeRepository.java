@@ -1,5 +1,6 @@
 package roomescape.theme.infra;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -73,5 +74,23 @@ public class JdbcThemeRepository implements ThemeRepository {
         String sql = "SELECT id, name, description, thumbnail_image_url, duration_time FROM theme";
 
         return jdbcTemplate.query(sql, Map.of(), rowMapper);
+    }
+
+    @Override
+    public List<Theme> findByReservationCountWithLimit(LocalDate startDate, LocalDate endDate, int limit) {
+        String sql = "SELECT t.id, t.name, t.description, t.thumbnail_image_url, t.duration_time "
+                + "FROM theme t "
+                + "INNER JOIN reservation r ON t.id = r.theme_id " // 올바른 FK 조인
+                + "WHERE r.date BETWEEN :startDate AND :endDate "  // 날짜 필터링
+                + "GROUP BY t.id, t.name, t.description, t.thumbnail_image_url, t.duration_time " // 표준 SQL 그룹화
+                + "ORDER BY COUNT(r.id) DESC " // 예약 건수가 많은 순으로 정렬
+                + "LIMIT :limit";
+
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("startDate", startDate)
+                .addValue("endDate", endDate)
+                .addValue("limit", limit);
+
+        return jdbcTemplate.query(sql, params, rowMapper);
     }
 }
