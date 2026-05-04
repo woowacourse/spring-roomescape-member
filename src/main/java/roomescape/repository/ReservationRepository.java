@@ -1,6 +1,8 @@
 package roomescape.repository;
 
+import java.time.Duration;
 import java.util.List;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -9,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Repository
 public class ReservationRepository {
@@ -17,43 +20,62 @@ public class ReservationRepository {
     private final SimpleJdbcInsert simpleJdbcInsert;
 
     private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> Reservation.of(
-        resultSet.getLong("reservation_id"),
-        resultSet.getString("name"),
-        resultSet.getDate("date").toLocalDate(),
-        ReservationTime.of(
-            resultSet.getLong("time_id"),
-            resultSet.getTime("start_at").toLocalTime()
-        )
+            resultSet.getLong("reservation_id"),
+            resultSet.getString("name"),
+            resultSet.getDate("date").toLocalDate(),
+            ReservationTime.of(
+                    resultSet.getLong("time_id"),
+                    resultSet.getTime("time_start_at").toLocalTime(),
+                    resultSet.getTime("time_finish_at").toLocalTime()
+            ),
+            Theme.of(
+                    resultSet.getLong("theme_id"),
+                    resultSet.getString("theme_name"),
+                    resultSet.getString("theme_description"),
+                    resultSet.getString("theme_image_url"),
+                    resultSet.getTime("theme_start_at").toLocalTime(),
+                    resultSet.getTime("theme_finish_at").toLocalTime(),
+                    Duration.ofHours(resultSet.getLong("theme_play_time"))
+            )
     );
 
     public ReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-            .withTableName("reservation")
-            .usingGeneratedKeyColumns("id");
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     public Reservation save(Reservation reservation) {
         SqlParameterSource parameters = new MapSqlParameterSource()
-            .addValue("name", reservation.getName())
-            .addValue("date", reservation.getDate())
-            .addValue("time_id", reservation.getTime().getId());
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate())
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return Reservation.of(id, reservation.getName(), reservation.getDate(), reservation.getTime());
+        return Reservation.of(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
     public List<Reservation> findAll() {
         String query = """
-            SELECT
-                r.id as reservation_id,
-                r.name,
-                r.date,
-                t.id as time_id,
-                t.start_at as start_at
-            FROM reservation as r
-            INNER JOIN reservation_time as t
-              ON r.time_id = t.id
-            """;
+                SELECT
+                    r.id as reservation_id,
+                    r.name,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_start_at,
+                    t.finish_at as time_finish_at,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description as theme_description,
+                    th.image_url as theme_image_url,
+                    th.start_at as theme_start_at,
+                    th.finish_at as theme_finish_at,
+                    th.play_time as theme_play_time
+                FROM reservation as r
+                INNER JOIN reservation_time as t ON r.time_id = t.id
+                INNER JOIN theme as th ON r.theme_id = th.id
+                """;
         return jdbcTemplate.query(query, rowMapper);
     }
 
