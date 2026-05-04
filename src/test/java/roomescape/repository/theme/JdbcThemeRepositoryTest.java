@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Theme;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
@@ -43,5 +45,23 @@ class JdbcThemeRepositoryTest {
         // when & then
         assertThatCode(() -> repository.deleteById(saved.getId()))
             .doesNotThrowAnyException();
+    }
+
+    @Test
+    void 저장된_모든_테마를_조회한다() {
+        // given
+        String first = "테마1";
+        String second = "테마2";
+        repository.createTheme(new Theme(first, "-", "url"));
+        repository.createTheme(new Theme(second, "-", "url"));
+
+        // when
+        List<Theme> all = repository.findAll();
+
+        // then
+        assertThat(all).hasSize(2);
+        assertThat(all).extracting(Theme::getName)
+                .anySatisfy(name -> assertThat(name).isEqualTo(first))
+                .anySatisfy(name -> assertThat(name).isEqualTo(second));
     }
 }
