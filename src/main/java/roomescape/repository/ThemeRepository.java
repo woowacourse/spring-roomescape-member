@@ -4,12 +4,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.exception.InUseTimeException;
 import roomescape.repository.dto.ReservedTheme;
 
 @Repository
@@ -72,6 +74,19 @@ public class ThemeRepository {
                 startDate, startDate, endDate,
                 limit
         );
+    }
+
+    public boolean delete(long id) {
+        String deleteSql = "DELETE FROM theme"
+                + " WHERE id = ?";
+
+        try {
+            int deletedRowCount = jdbcTemplate.update(deleteSql, id);
+
+            return deletedRowCount > 0;
+        } catch (DataIntegrityViolationException exception) {
+            throw new InUseTimeException("사용중이지 않은 시간만 제거할 수 있습니다. id = " + id);
+        }
     }
 
     private RowMapper<Theme> themeRowMapper() {

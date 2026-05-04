@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.controller.dto.ThemeCreateRequest;
 import roomescape.domain.Theme;
+import roomescape.exception.EntityNotFoundException;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.dto.ReservedTheme;
 
@@ -49,5 +50,13 @@ public class ThemeService {
         }
 
         return endDate;
+    }
+
+    public void delete(long id) {
+        boolean deleted = themeRepository.delete(id);
+
+        if (!deleted) {
+            throw new EntityNotFoundException("삭제할 테마를 조회하지 못했습니다. timeId = " + id);
+        }
     }
 }
