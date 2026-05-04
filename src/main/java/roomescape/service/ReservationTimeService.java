@@ -11,6 +11,7 @@ import roomescape.repository.ReservationTimeUpdatingDao;
 
 import java.util.List;
 
+@Transactional(readOnly = true)
 @Service
 public class ReservationTimeService {
 
@@ -40,10 +41,12 @@ public class ReservationTimeService {
         return ReservationTimeResponse.from(new ReservationTime(generatedId, reservationTimeReq.getStartAt()));
     }
 
+    @Transactional
     public void update(ReservationTimeRequest newReservationTimeReq, Long id) {
         reservationTimeUpdatingDao.save(id, newReservationTimeReq);
     }
 
+    @Transactional
     public void delete(Long id) {
         int delete = reservationTimeUpdatingDao.delete(id);
 

@@ -13,8 +13,8 @@ import roomescape.repository.ThemeUpdatingDao;
 import java.time.LocalDate;
 import java.util.List;
 
-@Service
 @Transactional(readOnly = true)
+@Service
 public class ThemeService {
 
     private final ThemeQueryingDao themeQueryingDao;

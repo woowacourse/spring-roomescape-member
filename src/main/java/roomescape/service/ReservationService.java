@@ -18,6 +18,7 @@ import roomescape.repository.ThemeQueryingDao;
 
 import java.util.List;
 
+@Transactional(readOnly = true)
 @Service
 public class ReservationService {
 
@@ -57,10 +58,12 @@ public class ReservationService {
         return ReservationResponse.from(new Reservation(generatedId, reservationReq.getName(), reservationReq.getDate(), reservationTimeById, themeById));
     }
 
+    @Transactional
     public void update(ReservationRequest newReservationReq, Long id) {
         reservationUpdatingDao.save(id, newReservationReq);
     }
 
+    @Transactional
     public void delete(Long id) {
         int count = reservationUpdatingDao.delete(id);
 
