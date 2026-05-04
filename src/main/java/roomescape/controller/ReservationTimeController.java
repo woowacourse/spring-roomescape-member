@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,8 @@ import roomescape.service.ReservationTimeService;
 @RestController
 @RequestMapping("/times")
 public class ReservationTimeController {
+    private static final String LOCATION_DEFAULT_VALUE = "/times/";
+
     private final ReservationTimeService reservationTimeService;
 
     public ReservationTimeController(ReservationTimeService reservationTimeService) {
@@ -26,18 +29,20 @@ public class ReservationTimeController {
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> addReservationTime(@RequestBody ReservationTimeRequest request) {
         ReservationTimeResponse response = reservationTimeService.addReservationTime(request);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return ResponseEntity.created(URI.create(LOCATION_DEFAULT_VALUE + response.id()))
+                .body(response);
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
         List<ReservationTimeResponse> responses = reservationTimeService.getReservationTimes();
-        return new ResponseEntity<>(responses, HttpStatus.OK);
+        return ResponseEntity.ok(responses);
     }
 
     @DeleteMapping("/{timesId}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable("timesId") Long reservationTimeId) {
         reservationTimeService.deleteReservationTime(reservationTimeId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent()
+                .build();
     }
 }
