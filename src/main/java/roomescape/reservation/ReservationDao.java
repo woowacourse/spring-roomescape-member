@@ -70,4 +70,13 @@ public class ReservationDao {
         return (count == null) ? 0 : count;
     }
 
+    List<Long> findByDateAndTheme(LocalDate date, long themeId) {
+        String sql = "SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?";
+        return jdbcTemplate.queryForList(sql, Long.class, date, themeId);
+    }
+
+    Reservation findById(long id) {
+        String sql = "SELECT * FROM reservation WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+    }
 }

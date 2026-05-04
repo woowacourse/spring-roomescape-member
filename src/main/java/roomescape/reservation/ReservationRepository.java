@@ -31,4 +31,11 @@ public class ReservationRepository {
         return reservationDao.countByTimeId(timeId);
     }
 
+    public List<Long> findByDateAndTheme(LocalDate date, long themeId) {
+        return reservationDao.findByDateAndTheme(date, themeId);
+    }
+
+    public Reservation findById(long id) {
+        return reservationDao.findById(id);
+    }
 }
