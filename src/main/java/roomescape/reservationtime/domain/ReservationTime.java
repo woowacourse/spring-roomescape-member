@@ -3,10 +3,12 @@ package roomescape.reservationtime.domain;
 import java.time.LocalTime;
 import java.util.Objects;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Builder
 @Getter
+@EqualsAndHashCode(of = "startAt")
 public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
@@ -16,22 +18,5 @@ public class ReservationTime {
                 .id(generatedId)
                 .startAt(this.startAt)
                 .build();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (id == null) {
-            return false;
-        }
-        ReservationTime that = (ReservationTime) o;
-        return Objects.equals(getId(), that.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getId());
     }
 }

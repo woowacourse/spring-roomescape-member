@@ -1,19 +1,26 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
-import java.util.Objects;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 
 @Builder
 @Getter
+@EqualsAndHashCode(of = {"name", "date", "theme", "time"})
 public class Reservation {
 
     private final Long id;
     private final String name;
     private final LocalDate date;
+    private final Theme theme;
     private final ReservationTime time;
+
+    public Long getThemeId() {
+        return theme.getId();
+    }
 
     public Long getTimeId() {
         return time.getId();
@@ -24,24 +31,8 @@ public class Reservation {
                 .id(generatedId)
                 .name(this.name)
                 .date(this.date)
+                .theme(theme)
                 .time(this.time)
                 .build();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (id == null) {
-            return false;
-        }
-        Reservation that = (Reservation) o;
-        return Objects.equals(getId(), that.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getId());
     }
 }
