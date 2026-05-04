@@ -57,7 +57,7 @@ class ThemeServiceTest {
                 .thenReturn(themes);
 
         // when
-        List<Theme> all = themeService.findAll();
+        List<Theme> all = themeService.getThemes();
 
         // then
         assertThat(all).hasSize(3);

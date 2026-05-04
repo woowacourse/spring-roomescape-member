@@ -25,7 +25,7 @@ public class ThemeService {
         themeRepository.deleteById(id);
     }
 
-    public List<Theme> findAll() {
+    public List<Theme> getThemes() {
         return themeRepository.findAll();
     }
 }

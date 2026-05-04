@@ -16,7 +16,6 @@ import roomescape.dto.theme.ThemeRequestDto;
 import roomescape.dto.theme.ThemeResponseDto;
 import roomescape.service.ThemeService;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -85,7 +84,7 @@ class ThemeControllerTest {
                 .map(ThemeResponseDto::from)
                 .toList();
 
-        when(themeService.findAll())
+        when(themeService.getThemes())
                 .thenReturn(themes);
 
         // when

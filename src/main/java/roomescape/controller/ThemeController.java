@@ -35,7 +35,7 @@ public class ThemeController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ThemeResponseDto> findAll() {
-        return themeService.findAll().stream()
+        return themeService.getThemes().stream()
                 .map(ThemeResponseDto::from)
                 .toList();
     }
