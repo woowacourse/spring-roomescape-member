@@ -11,7 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dao.ReservationDao;
-import roomescape.dto.ReservationRequest;
+import roomescape.dto.request.ReservationRequest;
 
 @ExtendWith(MockitoExtension.class)
 public class ReservationServiceTest {
