@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme.Theme;
@@ -18,5 +19,9 @@ public class ThemeService {
     @Transactional
     public Theme addTheme(ThemeCommand themeCommand) {
         return themeRepository.addTheme(themeCommand);
+    }
+
+    public List<Theme> getAllTheme() {
+        return themeRepository.getAllTheme();
     }
 }
