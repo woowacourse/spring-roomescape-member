@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.internal.matchers.Any;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.controller.dto.ReservationCreateRequest;
 import roomescape.domain.Reservation;
@@ -38,7 +36,7 @@ class ReservationServiceTest {
     void 예약_취소_성공() {
         ReservationTime reservationTime = ReservationTime.of("10:00");
         ReservationDate reservationDate = ReservationDate.from("2026-05-03");
-        Theme theme = new Theme(1L, "공포", "무서워요", "https://zeze.com");
+        Theme theme = Theme.of(1L, "공포", "무서워요", "https://zeze.com");
         Reservation reservation = Reservation.of(1L, "zeze", reservationDate, reservationTime, theme);
 
         given(reservationRepository.findById(1L)).willReturn(Optional.of(reservation));

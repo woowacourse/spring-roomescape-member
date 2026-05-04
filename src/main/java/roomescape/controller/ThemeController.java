@@ -1,0 +1,44 @@
+package roomescape.controller;
+
+import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.controller.dto.ThemeCreateRequest;
+import roomescape.domain.Theme;
+import roomescape.service.ThemeService;
+
+@RestController
+@RequestMapping("/theme")
+public class ThemeController {
+
+    private final ThemeService themeService;
+
+    public ThemeController(ThemeService themeService) {
+        this.themeService = themeService;
+    }
+
+    @DeleteMapping({"/{id}"})
+    @ResponseStatus(HttpStatus.OK)
+    public void delete(@PathVariable long id) {
+        themeService.delete(id);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Theme create(@RequestBody ThemeCreateRequest request) {
+        return themeService.create(request);
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<Theme> findAll() {
+        return themeService.findAll();
+    }
+}
