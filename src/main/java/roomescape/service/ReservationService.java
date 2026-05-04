@@ -3,8 +3,11 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
+import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 
@@ -31,10 +34,17 @@ public class ReservationService {
             throw new IllegalArgumentException("요청하신 시간 ID가 존재하지 않습니다.");
         }
 
+        Theme theme = themeDao.findThemeById(request.themeId());
+
+        if (theme == null) {
+            throw new IllegalArgumentException("요청하신 테마 ID가 존재하지 않습니다.");
+        }
+
         Reservation reservation = new Reservation(
                 request.name(),
                 request.date(),
-                time
+                time,
+                theme
         );
 
         Reservation saved = reservationDao.save(reservation);
