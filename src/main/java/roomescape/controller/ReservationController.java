@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
 import roomescape.dto.ReservationCreateRequest;
+import roomescape.dto.ReservationListResponse;
 import roomescape.dto.ReservationResponse;
 import roomescape.service.ReservationService;
 
@@ -24,11 +26,12 @@ public class ReservationController {
     }
 
     @GetMapping
-    public List<ReservationResponse> list() {
-        return reservationService.findAll()
-                .stream()
-                .map(ReservationResponse::from)
-                .toList();
+    public ResponseEntity<ReservationListResponse> list() {
+        return ResponseEntity.ok(
+                ReservationListResponse.from(reservationService.findAll()
+                        .stream()
+                        .map(ReservationResponse::from)
+                        .toList()));
     }
 
     @PostMapping
