@@ -45,7 +45,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public boolean deleteById(long id) {
+    public boolean deleteById(Long id) {
         int affectedRows = jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
         return affectedRows > 0;
     }

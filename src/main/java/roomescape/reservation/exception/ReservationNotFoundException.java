@@ -1,14 +1,14 @@
 package roomescape.reservation.exception;
 
 public class ReservationNotFoundException extends RuntimeException {
-    private final long id;
+    private final Long id;
 
-    public ReservationNotFoundException(long id) {
+    public ReservationNotFoundException(Long id) {
         super("예약이 존재하지 않습니다. id=" + id);
         this.id = id;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 }

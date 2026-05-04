@@ -7,5 +7,5 @@ import roomescape.theme.service.dto.ThemeSaveServiceDto;
 public interface ThemeService {
     List<Theme> getThemes();
     Theme save(ThemeSaveServiceDto theme);
-    void deleteById(long id);
+    void deleteById(Long id);
 }

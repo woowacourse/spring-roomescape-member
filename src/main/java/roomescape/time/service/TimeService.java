@@ -9,7 +9,7 @@ public interface TimeService {
 
   List<ReservationTime> findAll();
 
-  ReservationTime findById(long id);
+  ReservationTime findById(Long id);
 
-  void deleteById(long id);
+  void deleteById(Long id);
 }

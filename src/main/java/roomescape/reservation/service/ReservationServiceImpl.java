@@ -3,6 +3,7 @@ package roomescape.reservation.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.exception.ReservationNotFoundException;
@@ -45,7 +46,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public void cancel(long id) {
+    public void cancel(Long id) {
         if (!reservationRepository.deleteById(id)) {
             throw new ReservationNotFoundException(id);
         }

@@ -40,7 +40,7 @@ public class ThemeController {
     }
 
     @DeleteMapping("/themes/{id}")
-    public ResponseEntity<Void> delete(@PathVariable long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

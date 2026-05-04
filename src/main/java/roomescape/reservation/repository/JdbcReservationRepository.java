@@ -47,7 +47,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean deleteById(long id) {
+    public boolean deleteById(Long id) {
         int affectedRows = jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
         return affectedRows > 0;
     }
@@ -56,7 +56,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         @Override
         public Reservation mapRow(ResultSet rs, int rowNum) throws SQLException {
             ReservationTime time = null;
-            long timeId = rs.getLong("time_id");
+            Long timeId = rs.getLong("time_id");
             if (!rs.wasNull()) {
                 time = new ReservationTime(timeId, rs.getString("start_at"));
             }

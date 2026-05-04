@@ -1,14 +1,14 @@
 package roomescape.time.exception;
 
 public class TimeNotFoundException extends RuntimeException {
-  private final long id;
+  private final Long id;
 
-  public TimeNotFoundException(long id) {
+  public TimeNotFoundException(Long id) {
     super("예약 시간이 존재하지 않습니다. id=" + id);
     this.id = id;
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
   }
 }

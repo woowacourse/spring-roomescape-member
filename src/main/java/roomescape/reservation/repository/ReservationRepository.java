@@ -8,5 +8,5 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    boolean deleteById(long id);
+    boolean deleteById(Long id);
 }

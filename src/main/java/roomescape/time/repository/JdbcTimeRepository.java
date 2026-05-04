@@ -41,12 +41,12 @@ public class JdbcTimeRepository implements TimeRepository {
             .addValue("end_at", endAt)
     );
 
-    long timeId = id.longValue();
+    Long timeId = id.longValue();
     return new ReservationTime(timeId, startAt);
   }
 
   @Override
-  public Optional<ReservationTime> findById(long id) {
+  public Optional<ReservationTime> findById(Long id) {
     List<ReservationTime> results = jdbcTemplate.query(
         "SELECT id, start_at FROM reservation_time WHERE id = ?",
         new ReservationTimeRowMapper(),
@@ -56,7 +56,7 @@ public class JdbcTimeRepository implements TimeRepository {
   }
 
   @Override
-  public boolean deleteById(long id) {
+  public boolean deleteById(Long id) {
     int affectedRows = jdbcTemplate.update(
         "DELETE FROM reservation_time WHERE id = ?",
         id

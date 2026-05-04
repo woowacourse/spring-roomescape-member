@@ -27,13 +27,13 @@ public class TimeServiceImpl implements TimeService {
   }
 
   @Override
-  public ReservationTime findById(long id) {
+  public ReservationTime findById(Long id) {
     return timeRepository.findById(id)
         .orElseThrow(() -> new TimeNotFoundException(id));
   }
 
   @Override
-  public void deleteById(long id) {
+  public void deleteById(Long id) {
     boolean deleted = timeRepository.deleteById(id);
     if (!deleted) {
       throw new TimeNotFoundException(id);

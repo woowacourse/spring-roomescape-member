@@ -33,7 +33,7 @@ public class ThemeServiceImpl implements ThemeService {
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         if(!themeRepository.deleteById(id)) {
             throw new ThemeNotFoundException(id);
         }

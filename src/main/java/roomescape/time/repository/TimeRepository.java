@@ -10,7 +10,7 @@ public interface TimeRepository {
 
   ReservationTime save(String startAt, String endAt);
 
-  Optional<ReservationTime> findById(long id);
+  Optional<ReservationTime> findById(Long id);
 
-  boolean deleteById(long id);
+  boolean deleteById(Long id);
 }

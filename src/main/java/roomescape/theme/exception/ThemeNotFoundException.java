@@ -1,14 +1,14 @@
 package roomescape.theme.exception;
 
 public class ThemeNotFoundException extends RuntimeException {
-    private final long id;
+    private final Long id;
 
-    public ThemeNotFoundException(long id) {
+    public ThemeNotFoundException(Long id) {
         super("테마가 존재하지 않습니다. id=" + id);
         this.id = id;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 }
