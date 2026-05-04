@@ -165,11 +165,22 @@ Content-Type: application/json
 
 # 📝API 명세
 
-| 기능    | 메서드 / URL                   | 요청 본문                   | 응답                                 |
-|-------|-----------------------------|-------------------------|------------------------------------|
-| 예약 추가 | `POST /reservations`        | `{name, date, time_id}` | `{id, name, date, time_id}`        |
-| 예약 조회 | `GET /reservations`         |                         | `[{id, name, date, time_id}, ...]` |
-| 예약 삭제 | `DELETE /reservations/{id}` |                         | `200 OK`                           |
-| 시간 추가 | `POST /times`               | `{startAt}`             | `{id, startAt}`                    |
-| 시간 조회 | `GET /times`                |                         | `[{id, startAt}, ...]`             |
-| 시간 삭제 | `DELETE /times/{id}`        |                         | `200 OK`                           |
+| 기능    | 메서드 / URL                   | 요청 본문                             | 응답 본문                                                                                                 |
+|-------|-----------------------------|-----------------------------------|-------------------------------------------------------------------------------------------------------|
+| 예약 추가 | `POST /reservations`        | `{name, date, time_id, theme_id}` | `{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}`        |
+| 예약 조회 | `GET /reservations`         |                                   | `[{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}, ...]` |
+| 예약 삭제 | `DELETE /reservations/{id}` |                                   |                                                                                                       |
+| 시간 추가 | `POST /times`               | `{startAt}`                       | `{id, startAt}`                                                                                       |
+| 시간 조회 | `GET /times`                |                                   | `[{id, startAt}, ...]`                                                                                |
+| 시간 삭제 | `DELETE /times/{id}`        |                                   |                                                                                                       |
+
+# 응답 코드
+
+| 응답 코드                       | 상황                 |
+|-----------------------------|--------------------|
+| `200 Ok`                    | 정상적으로 조회됨          |
+| `201 Created`               | 정상적으로 생성됨          |
+| `204 No Content`            | 반환값이 없음            |
+| `400 Bad Request`           | 클라이언트 요청값이 올바르지 않음 |
+| `404 Not Found`             | 없는 자원에 대한 접근       |
+| `500 Internal Server Error` | 서버 내부 오류           |
