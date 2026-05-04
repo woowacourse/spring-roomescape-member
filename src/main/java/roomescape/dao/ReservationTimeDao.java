@@ -21,12 +21,11 @@ public class ReservationTimeDao {
 
     public ReservationTime findById(Long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
-        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> {
-            return new ReservationTime(
-                    resultSet.getLong("id"),
-                    LocalTime.parse(resultSet.getString("start_at"))
-            );
-        }, id);
+        return jdbcTemplate.queryForObject(sql,
+                (resultSet, rowNum) -> new ReservationTime(
+                resultSet.getLong("id"),
+                LocalTime.parse(resultSet.getString("start_at"))
+        ), id);
     }
 
     public List<ReservationTime> findAll(){
