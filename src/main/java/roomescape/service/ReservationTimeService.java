@@ -51,10 +51,6 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeWithAvailable> getReservationTimeByDateAndTheme(ReservationTimeCondition reservationTimeCondition) {
-        long themeId = reservationTimeCondition.themeId();
-        if (themeRepository.existsByTimeId(themeId)) {
-
-        }
         return reservationTimeRepository.getReservationTimeByDateAndTheme(reservationTimeCondition);
     }
 }

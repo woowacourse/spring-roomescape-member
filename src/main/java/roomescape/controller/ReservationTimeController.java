@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.ReservationTime.ReservationTimeCommand;
+import roomescape.domain.ReservationTime.ReservationTimeCondition;
+import roomescape.domain.ReservationTime.ReservationTimeWithAvailable;
 import roomescape.dto.ReservationTime.AddReservationTimeRequest;
 import roomescape.dto.ReservationTime.ReservationTimeResponse;
+import roomescape.dto.ReservationTime.ReservationTimeWithAvailableResponse;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -55,5 +59,10 @@ public class ReservationTimeController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<ReservationTimeResponse>> get
+    public ResponseEntity<ReservationTimeWithAvailableResponse> getReservationTimeWithAvailable(@ModelAttribute ReservationTimeCondition reservationTimeCondition) {
+        ReservationTimeCondition reservationTimeWithAvailableCondition = new ReservationTimeCondition(reservationTimeCondition.date(), reservationTimeCondition.themeId());
+        List<ReservationTimeWithAvailable> reservationTimesWithAvailable  = reservationTimeService.getReservationTimeByDateAndTheme(reservationTimeWithAvailableCondition);
+
+        return new ResponseEntity<>(new ReservationTimeWithAvailableResponse(reservationTimesWithAvailable), HttpStatus.OK);
+    }
 }
