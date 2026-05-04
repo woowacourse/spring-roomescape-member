@@ -13,13 +13,8 @@ public class Reservation {
 
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time) {
-        validateName(name);
-        validateDate(date);
-        validateTime(time);
-        this.name = name;
-        this.date = date;
-        this.time = time;
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, name, date, time, theme);
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
