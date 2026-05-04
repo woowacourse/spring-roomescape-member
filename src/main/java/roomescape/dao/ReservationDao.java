@@ -14,12 +14,12 @@ import roomescape.domain.ReservationTime;
 public class ReservationDao {
     private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> {
         ReservationTime reservationTime = new ReservationTime(
-                resultSet.getLong("time_id"),
+                resultSet.getLong("id"),
                 resultSet.getTime("start_at").toLocalTime()
         );
 
         Reservation reservation = new Reservation(
-                resultSet.getLong("reservation_id"),
+                resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getDate("date").toLocalDate(),
                 reservationTime
@@ -65,10 +65,10 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public void delete(Long id) {
+    public void delete(Long reservationId) {
         String sql = """
                 DELETE FROM reservation
                 WHERE id = ?""";
-        jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, reservationId);
     }
 }
