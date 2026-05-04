@@ -1,5 +1,8 @@
 package roomescape.time;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.exception.ErrorCode;
@@ -42,5 +45,18 @@ public class ReservationTimeService {
             throw new RoomescapeException(ErrorCode.RESERVATION_TIME_IN_USE);
         }
         reservationTimeRepository.deleteById(id);
+    }
+
+    public List<ReservationTimeResponse> readAvailableTimes(Long themeId, LocalDate date) {
+
+        List<LocalTime> reservedTimes = reservationRepository.findByThemeAndDate(themeId, date).stream()
+                .map(m -> m.getTime().getStartAt())
+                .toList();
+
+        List<ReservationTime> availableTimes = reservationTimeRepository.findAll().stream()
+                .filter(r -> !reservedTimes.contains(r.getStartAt()))
+                .toList();
+
+        return availableTimes.stream().map(ReservationTimeResponse::from).toList();
     }
 }

@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.cglib.core.Local;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -70,6 +71,17 @@ public class ReservationRepository {
                 "WHERE r.id = ?";
         List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, id);
         return reservations.stream().findFirst();
+    }
+
+    public List<Reservation> findByThemeAndDate(Long themeId, LocalDate date) {
+        String sql = "SELECT r.id, r.user_name, r.date, t.id as time_id, t.start_at, c.id as theme_id, " +
+                "c.name as theme_name, c.description as theme_description, c.thumbnail as theme_thumbnail " +
+                "FROM reservation r " +
+                "INNER JOIN reservation_time t ON r.time_id = t.id " +
+                "INNER JOIN theme c ON r.theme_id = c.id " +
+                "WHERE r.date = ? AND r.theme_id = ?";
+
+        return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
     }
 
     public void deleteById(Long id) {
