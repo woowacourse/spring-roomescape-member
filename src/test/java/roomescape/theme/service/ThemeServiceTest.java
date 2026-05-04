@@ -1,5 +1,6 @@
 package roomescape.theme.service;
 
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
@@ -69,5 +70,49 @@ public class ThemeServiceTest {
         themeService.delete(1L);
 
         Mockito.verify(themeRepository).delete(1L);
+    }
+
+    @DisplayName("테마의 전체 조회 시 DTO 정상 변환을 테스트합니다.")
+    @Test
+    void find_all_themes_dto_transfer() {
+        Theme theme1 = Theme.builder()
+                .name("theme name1")
+                .description("theme description1")
+                .thumbnailImgUrl("theme img url1")
+                .build();
+        Mockito.when(themeRepository.findAll()).thenReturn(List.of(theme1));
+
+        List<ThemeResponse> themeResponses = themeService.findAllThemes();
+
+        SoftAssertions.assertSoftly(assertSoftly -> {
+            assertSoftly.assertThat(themeResponses.getFirst().name()).isEqualTo("theme name1");
+            assertSoftly.assertThat(themeResponses.getFirst().description()).isEqualTo("theme description1");
+            assertSoftly.assertThat(themeResponses.getFirst().thumbnailImgUrl()).isEqualTo("theme img url1");
+        });
+    }
+
+    @DisplayName("테마의 전체 조회를 테스트합니다.")
+    @Test
+    void find_all_themes() {
+        Theme theme1 = Theme.builder()
+                .name("theme name1")
+                .description("theme description1")
+                .thumbnailImgUrl("theme img url1")
+                .build();
+        Theme theme2 = Theme.builder()
+                .name("theme name2")
+                .description("theme description2")
+                .thumbnailImgUrl("theme img url2")
+                .build();
+        Theme theme3 = Theme.builder()
+                .name("theme name3")
+                .description("theme description3")
+                .thumbnailImgUrl("theme img url3")
+                .build();
+        Mockito.when(themeRepository.findAll()).thenReturn(List.of(theme1, theme2, theme3));
+
+        List<ThemeResponse> themeResponses = themeService.findAllThemes();
+
+        Assertions.assertThat(themeResponses.size()).isEqualTo(3);
     }
 }

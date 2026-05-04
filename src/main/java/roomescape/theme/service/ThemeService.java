@@ -1,5 +1,6 @@
 package roomescape.theme.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.theme.domain.Theme;
@@ -28,5 +29,12 @@ public class ThemeService {
 
     public int delete(long id) {
         return themeRepository.delete(id);
+    }
+
+    public List<ThemeResponse> findAllThemes() {
+        List<Theme> themes = themeRepository.findAll();
+
+        return themes.stream().map(ThemeResponse::from)
+                .toList();
     }
 }
