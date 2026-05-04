@@ -48,7 +48,8 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation(null, "구구", date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 날짜는 비어 있을 수 없습니다.");;
+                .hasMessage("[ERROR] 날짜는 비어 있을 수 없습니다.");
+        ;
     }
 
     @Test

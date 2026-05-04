@@ -1,7 +1,5 @@
 package roomescape.controller.dto;
 
-import roomescape.domain.Theme;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;

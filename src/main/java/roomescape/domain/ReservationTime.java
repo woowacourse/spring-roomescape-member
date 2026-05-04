@@ -1,9 +1,5 @@
 package roomescape.domain;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-
 public class ReservationTime {
 
     private final Long id;

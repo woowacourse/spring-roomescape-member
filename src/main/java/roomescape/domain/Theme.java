@@ -44,13 +44,13 @@ public class Theme {
     }
 
     private void validateDescription(String description) {
-        if (description.length() > 255) {
+        if (description != null && description.length() > 255) {
             throw new IllegalArgumentException("[ERROR] 테마 설명은 255자를 넘을 수 없습니다.");
         }
     }
 
     private void validateThumbnail(String thumbnail) {
-        if (thumbnail.length() > 255) {
+        if (thumbnail != null && thumbnail.length() > 255) {
             throw new IllegalArgumentException("[ERROR] 썸네일 경로는 255자를 넘을 수 없습니다.");
         }
     }

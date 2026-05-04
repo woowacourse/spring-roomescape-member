@@ -34,6 +34,7 @@ class ReservationTimeServiceTest {
 
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScript(new ClassPathResource("schema.sql"));
+        populator.addScript(new ClassPathResource("data.sql"));
         populator.execute(dataSource);
 
         jdbcTemplate.update("DELETE FROM reservation_time;");
