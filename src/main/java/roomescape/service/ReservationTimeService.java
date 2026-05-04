@@ -17,7 +17,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse addReservationTime(ReservationTimeRequest request) {
-        ReservationTime reservationTime = new ReservationTime(request.startAt());
+        ReservationTime reservationTime = request.toReservationTime();
         ReservationTime newReservationTime = reservationTimeDao.insert(reservationTime);
         return ReservationTimeResponse.from(newReservationTime);
     }
@@ -26,7 +26,7 @@ public class ReservationTimeService {
         List<ReservationTime> reservationTimes = reservationTimeDao.select();
         return reservationTimes.stream()
                 .map(ReservationTimeResponse::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public void deleteReservationTime(Long reservationTimeId) {

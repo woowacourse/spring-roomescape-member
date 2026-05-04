@@ -6,8 +6,8 @@ public class ReservationTime {
     private Long id;
     private final String startAt;
 
-    public ReservationTime(String startAt) {
-        this.startAt = startAt;
+    public static ReservationTime createWithoutId(String startAt) {
+        return new ReservationTime(null, startAt);
     }
 
     public ReservationTime(Long id, String startAt) {

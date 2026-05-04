@@ -22,7 +22,7 @@ public class ReservationService {
 
     public ReservationResponse addReservation(ReservationRequest request) {
         ReservationTime reservationTime = reservationTimeDao.selectById(request.timeId());
-        Reservation reservation = new Reservation(request.name(), request.date(), reservationTime);
+        Reservation reservation = request.toReservation(reservationTime);
 
         Reservation savedReservation = reservationDao.insert(reservation);
         return ReservationResponse.from(savedReservation);
