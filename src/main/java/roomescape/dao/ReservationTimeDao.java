@@ -45,13 +45,13 @@ public class ReservationTimeDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public ReservationTime selectById(Long id) {
+    public ReservationTime selectById(Long reservationTimeId) {
         String sql = """
                 SELECT id, 
                        start_at
                 FROM reservation_time
                 WHERE id = ?""";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        return jdbcTemplate.queryForObject(sql, rowMapper, reservationTimeId);
     }
 
     public void delete(Long id) {
