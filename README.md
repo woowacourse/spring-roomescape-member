@@ -13,6 +13,23 @@
     - 삭제 DELETE /themes
     - 조회 GET /themes
 
+### 테마 도메인
+- 이름
+- 설명
+- 썸네일 이미지 URL
+- 시작 시간과 소요 시간은 동일하다고 가정한다.
+
+### 관리자가 테마를 추가, 삭제, 조회
+
+### 추가 API
+POST /themes
+
+### 조회 API
+GET /themes
+
+### 삭제
+DELETE /themes/{themeID}
+
 ## 2단계 - 사용자 예약
 
 ### 1. 테마들의 모든 정보 조회 API
