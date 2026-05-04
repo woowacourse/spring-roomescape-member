@@ -26,12 +26,13 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> times() {
-        return ResponseEntity.ok(convertToTimeResponses(themeService.allTimes()));
+        return ResponseEntity.ok(convertToTimeResponses(themeService.allTheme()));
     }
 
     @PostMapping
     public ResponseEntity<ThemeResponse> createTime(@RequestBody ThemeRequest themeRequest) {
-        Theme Theme = themeService.saveTime(themeRequest.name(), themeRequest.description(), themeRequest.thumbnailUrl());
+        Theme Theme = themeService.saveTime(themeRequest.name(), themeRequest.description(),
+                themeRequest.thumbnailUrl());
         return ResponseEntity.ok(ThemeResponse.from(Theme));
     }
 

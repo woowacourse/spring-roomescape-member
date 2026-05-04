@@ -14,7 +14,7 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public List<Theme> allTimes() {
+    public List<Theme> allTheme() {
         return themeRepository.findAll();
     }
 

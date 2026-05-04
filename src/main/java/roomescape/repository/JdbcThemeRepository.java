@@ -2,8 +2,8 @@ package roomescape.repository;
 
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
@@ -19,7 +19,8 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        return List.of();
+        String sql = "SELECT id, name, description, thumbnail_url FROM theme";
+        return jdbcTemplate.query(sql, rowMapper());
     }
 
     @Override
@@ -45,5 +46,14 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public void deleteById(long id) {
 
+    }
+
+    private RowMapper<Theme> rowMapper() {
+        return (rs, rowNum) -> new Theme(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getString("thumbnail_url")
+        );
     }
 }
