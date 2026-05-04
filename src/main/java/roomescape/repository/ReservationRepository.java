@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.repository.entity.ReservationEntity;
 
 import java.sql.*;
@@ -27,9 +28,13 @@ public class ReservationRepository {
                     r.theme_id AS theme_id,
                     t.id AS time_id,
                     t.start_at AS time_start_at,
-                    t.end_at AS time_end_at
+                    t.end_at AS time_end_at,
+                    h.name AS theme_name,
+                    h.description AS theme_description,
+                    h.thumbnail_url AS theme_thumbnail_url
                 FROM reservation r
                 JOIN reservation_time t ON r.time_id = t.id
+                JOIN theme h ON r.theme_id = h.id 
                 ORDER BY r.id
                 """;
 
@@ -103,12 +108,19 @@ public class ReservationRepository {
                 resultSet.getTime("time_end_at").toLocalTime()
         );
 
+        final Theme theme = Theme.restore(
+                resultSet.getLong("theme_id"),
+                resultSet.getString("theme_name"),
+                resultSet.getString("theme_description"),
+                resultSet.getString("theme_thumbnail_url")
+        );
+
         return Reservation.restore(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("reservation_name"),
                 resultSet.getDate("reservation_date").toLocalDate(),
                 reservationTime,
-                resultSet.getLong("theme_id")
+                theme
         );
     }
 
@@ -118,7 +130,7 @@ public class ReservationRepository {
                 reservation.getName(),
                 Date.valueOf(reservation.getDate()),
                 reservation.getTime().getId(),
-                reservation.getThemeId()
+                reservation.getTheme().getId()
         );
     }
 }

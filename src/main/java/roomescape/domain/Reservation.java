@@ -13,16 +13,16 @@ public class Reservation {
     private final PersonName name;
     private final LocalDate date;
     private final ReservationTime time;
-    private final Long themeId;
+    private final Theme theme;
 
-    private Reservation(final Long id, final PersonName name, final LocalDate date, final ReservationTime time, final Long themeId) {
+    private Reservation(final Long id, final PersonName name, final LocalDate date, final ReservationTime time, final Theme theme) {
         validateDateTime(date, time);
 
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
-        this.themeId = themeId;
+        this.theme = theme;
     }
 
     public static Reservation create(ReservationCreateCommand data) {
@@ -31,7 +31,7 @@ public class Reservation {
                 PersonName.from(data.name()),
                 data.date(),
                 data.time(),
-                data.themeId()
+                data.theme()
         );
     }
 
@@ -41,7 +41,7 @@ public class Reservation {
                 name,
                 date,
                 time,
-                themeId
+                theme
         );
     }
 
@@ -50,13 +50,13 @@ public class Reservation {
             final String name,
             final LocalDate date,
             final ReservationTime time,
-            final Long themeId) {
+            final Theme theme) {
         return new Reservation(
                 id,
                 PersonName.from(name),
                 date,
                 time,
-                themeId
+                theme
         );
     }
 

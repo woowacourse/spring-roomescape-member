@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.domain.dto.ReservationCreateCommand;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeDao;
+import roomescape.repository.ThemeDao;
 import roomescape.service.dto.request.ReservationCreateRequest;
 import roomescape.service.dto.response.ReservationResponse;
 
@@ -18,6 +20,7 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeDao reservationTimeDao;
+    private final ThemeDao themeDao;
 
     public List<ReservationResponse> getReservations() {
         return reservationRepository.findAll()
@@ -30,12 +33,15 @@ public class ReservationService {
         final ReservationTime reservationTime = reservationTimeDao.findById(data.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
 
+        final Theme theme = themeDao.findById(data.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+
         final Reservation reservation = Reservation.create(
                 new ReservationCreateCommand(
                         data.name(),
                         data.date(),
                         reservationTime,
-                        data.themeId()
+                        theme
                 )
         );
 

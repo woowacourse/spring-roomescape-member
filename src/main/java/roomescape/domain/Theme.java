@@ -1,7 +1,9 @@
 package roomescape.domain;
 
+import lombok.Getter;
 import roomescape.domain.dto.ThemeCreateData;
 
+@Getter
 public class Theme {
 
     private final Long id;
@@ -9,9 +11,9 @@ public class Theme {
     private final String description;
     private final String thumbnailUrl;
 
-    private Theme(final Long id, final ThemeName themeName, final String description, final String thumbnailUrl) {
+    private Theme(final Long id, final ThemeName name, final String description, final String thumbnailUrl) {
         this.id = id;
-        this.name = themeName;
+        this.name = name;
         this.description = description;
         this.thumbnailUrl = thumbnailUrl;
     }
@@ -46,5 +48,9 @@ public class Theme {
                 description,
                 thumbnailUrl
         );
+    }
+
+    public String getName() {
+        return name.getName();
     }
 }
