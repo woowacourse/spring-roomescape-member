@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.service.ThemeService;
@@ -18,10 +19,10 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping("/{id}/available-time?date={date}")
+    @GetMapping("/{id}/available-time")
     public ResponseEntity<List<ReservationTimeResponse>> getAvailableTime(
             @PathVariable long id,
-            @PathVariable String date
+            @RequestParam String date
     ) {
         List<ReservationTimeResponse> availableTimes = themeService.findAvailableTime(id, date);
 
