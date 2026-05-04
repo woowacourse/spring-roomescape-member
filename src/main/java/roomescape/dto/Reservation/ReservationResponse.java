@@ -1,7 +1,6 @@
 package roomescape.dto.Reservation;
 
 import roomescape.domain.Reservation.Reservation;
-import roomescape.domain.Theme.Theme;
 import roomescape.dto.ReservationTime.ReservationTimeResponse;
 import roomescape.dto.theme.ThemeResponse;
 
