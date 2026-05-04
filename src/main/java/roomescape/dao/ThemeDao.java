@@ -11,6 +11,7 @@ import roomescape.domain.Theme.ThemeDaoData;
 @Repository
 public class ThemeDao {
     private static final String SELECT_ALL_SQL = "SELECT id, name, description, image_url FROM theme";
+    private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM theme WHERE id = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -35,5 +36,9 @@ public class ThemeDao {
 
     public List<ThemeDaoData> getAllTheme() {
         return jdbcTemplate.query(SELECT_ALL_SQL, (rs, i) -> ThemeDaoData.from(rs));
+    }
+
+    public void deleteTheme(long id) {
+        jdbcTemplate.update(DELETE_SPECIFIC_ID_SQL, id);
     }
 }
