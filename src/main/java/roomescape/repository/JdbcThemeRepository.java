@@ -25,7 +25,8 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Theme findById(long id) {
-        return null;
+        String sql = "SELECT id, name, description, thumbnail_url FROM theme WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper(), id);
     }
 
     @Override
