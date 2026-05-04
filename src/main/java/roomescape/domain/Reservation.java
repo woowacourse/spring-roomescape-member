@@ -10,33 +10,39 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
     private Reservation(
             Long id,
             String name,
             LocalDate date,
-            ReservationTime time
+            ReservationTime time,
+            Theme theme
     ) {
         validateName(name);
         validateDate(date);
         validateTime(time);
+        validateTheme(theme);
 
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
     public static Reservation create(
             String name,
             LocalDate date,
-            ReservationTime time
+            ReservationTime time,
+            Theme theme
     ) {
         return new Reservation(
                 null,
                 name,
                 date,
-                time
+                time,
+                theme
         );
     }
 
@@ -44,13 +50,15 @@ public class Reservation {
             long id,
             String name,
             LocalDate date,
-            ReservationTime time
+            ReservationTime time,
+            Theme theme
     ) {
         return new Reservation(
                 id,
                 name,
                 date,
-                time
+                time,
+                theme
         );
     }
 
@@ -59,7 +67,8 @@ public class Reservation {
                 id,
                 this.name,
                 this.date,
-                this.time
+                this.time,
+                this.theme
         );
     }
 
@@ -81,6 +90,12 @@ public class Reservation {
         }
     }
 
+    private void validateTheme(Theme theme) {
+        if (theme == null) {
+            throw new InvalidReservationException("예약엔 테마가 존재해야 합니다.");
+        }
+    }
+
     public Long getId() {
         return id;
     }
@@ -99,6 +114,10 @@ public class Reservation {
 
     public Long getTimeId() {
         return time.getId();
+    }
+
+    public Long getThemeId() {
+        return theme.getId();
     }
 
     @Override

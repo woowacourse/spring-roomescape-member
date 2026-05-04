@@ -38,11 +38,13 @@ public class MissionStepTest {
     @Test
     void 예약_추가_및_삭제() {
         createTime();
+        createTheme();
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
         params.put("timeId", "1");
+        params.put("themeId", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -84,16 +86,19 @@ public class MissionStepTest {
     @Test
     void DB_조회_API_전환() {
         createTime();
+        createTheme();
 
         int id = 1;
         String name = "브라운";
         String date = "2023-08-05";
         int timeId = 1;
-        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id) VALUES (?, ?, ?, ?)",
+        int themeId = 1;
+        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (?, ?, ?, ?, ?)",
                 id,
                 name,
                 date,
-                timeId
+                timeId,
+                themeId
         );
 
         RestAssured.given().log().all()
@@ -113,11 +118,13 @@ public class MissionStepTest {
     @Test
     void DB_추가_삭제_API_전환() {
         createTime();
+        createTheme();
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
         params.put("timeId", "1");
+        params.put("themeId", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -165,11 +172,13 @@ public class MissionStepTest {
     @Test
     void 예약과_시간_연결() {
         createTime();
+        createTheme();
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -209,5 +218,15 @@ public class MissionStepTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    private void createTheme() {
+        jdbcTemplate.update(
+                "INSERT INTO theme(name, description, image_url)"
+                        + " VALUES (?, ?, ?)",
+                "themeName",
+                "themeDescription",
+                "themeUrl"
+        );
     }
 }

@@ -22,7 +22,8 @@ public class ReservationMapper {
         return new ReservationCreateCommand(
                 createRequest.name(),
                 createRequest.date(),
-                createRequest.timeId()
+                createRequest.timeId(),
+                createRequest.themeId()
         );
     }
 

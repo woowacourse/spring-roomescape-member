@@ -47,6 +47,15 @@ public class Theme {
         );
     }
 
+    public Theme with(long id) {
+        return new Theme(
+                id,
+                this.name,
+                this.description,
+                this.imageUrl
+        );
+    }
+
     private void validateName(String name) {
         if (!StringUtils.hasText(name)) {
             throw new IllegalArgumentException("테마엔 이름이 존재해야 합니다.");

@@ -16,6 +16,7 @@ class ReservationTest {
     private static final String DEFAULT_NAME = "name";
     private static final LocalDate DEFAULT_DATE = LocalDate.of(2025, 1, 1);
     private static final ReservationTime DEFAULT_TIME = ReservationTime.create(LocalTime.of(1, 1));
+    private static final Theme DEFAULT_THEME = Theme.create("themeName", "themeDesrciption", "themeUrl");
 
     @Nested
     class 이름을_검증한다 {
@@ -26,7 +27,8 @@ class ReservationTest {
             assertThatThrownBy(() -> Reservation.create(
                     emptyName,
                     DEFAULT_DATE,
-                    DEFAULT_TIME
+                    DEFAULT_TIME,
+                    DEFAULT_THEME
             )).isInstanceOf(InvalidReservationException.class)
                     .hasMessage("예약엔 이름이 존재해야 합니다.");
         }
@@ -36,7 +38,8 @@ class ReservationTest {
             assertThatThrownBy(() -> Reservation.create(
                     null,
                     DEFAULT_DATE,
-                    DEFAULT_TIME
+                    DEFAULT_TIME,
+                    DEFAULT_THEME
             )).isInstanceOf(InvalidReservationException.class)
                     .hasMessage("예약엔 이름이 존재해야 합니다.");
         }
@@ -48,7 +51,8 @@ class ReservationTest {
                     DEFAULT_ID,
                     emptyName,
                     DEFAULT_DATE,
-                    DEFAULT_TIME
+                    DEFAULT_TIME,
+                    DEFAULT_THEME
             )).isInstanceOf(InvalidReservationException.class)
                     .hasMessage("예약엔 이름이 존재해야 합니다.");
         }
@@ -59,7 +63,8 @@ class ReservationTest {
                     DEFAULT_ID,
                     null,
                     DEFAULT_DATE,
-                    DEFAULT_TIME
+                    DEFAULT_TIME,
+                    DEFAULT_THEME
             )).isInstanceOf(InvalidReservationException.class)
                     .hasMessage("예약엔 이름이 존재해야 합니다.");
         }
@@ -73,7 +78,8 @@ class ReservationTest {
             assertThatThrownBy(() -> Reservation.create(
                     DEFAULT_NAME,
                     null,
-                    DEFAULT_TIME
+                    DEFAULT_TIME,
+                    DEFAULT_THEME
             )).isInstanceOf(InvalidReservationException.class)
                     .hasMessage("예약엔 날짜가 존재해야 합니다.");
         }
@@ -84,7 +90,8 @@ class ReservationTest {
                     DEFAULT_ID,
                     DEFAULT_NAME,
                     null,
-                    DEFAULT_TIME
+                    DEFAULT_TIME,
+                    DEFAULT_THEME
             )).isInstanceOf(InvalidReservationException.class)
                     .hasMessage("예약엔 날짜가 존재해야 합니다.");
         }
@@ -98,7 +105,8 @@ class ReservationTest {
             assertThatThrownBy(() -> Reservation.create(
                     DEFAULT_NAME,
                     DEFAULT_DATE,
-                    null
+                    null,
+                    DEFAULT_THEME
             )).isInstanceOf(InvalidReservationException.class)
                     .hasMessage("예약엔 시간이 존재해야 합니다.");
         }
@@ -109,7 +117,8 @@ class ReservationTest {
                     DEFAULT_ID,
                     DEFAULT_NAME,
                     DEFAULT_DATE,
-                    null
+                    null,
+                    DEFAULT_THEME
             )).isInstanceOf(InvalidReservationException.class)
                     .hasMessage("예약엔 시간이 존재해야 합니다.");
         }

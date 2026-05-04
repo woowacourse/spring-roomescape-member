@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @JdbcTest
 class ReservationRepositoryTest {
@@ -25,6 +26,7 @@ class ReservationRepositoryTest {
     private static final String DEFAULT_NAME = "name";
     private static final LocalDate DEFAULT_DATE = LocalDate.of(2025, 1, 1);
     private static final LocalTime DEFAULT_START_AT = LocalTime.of(1, 1);
+    private static final Theme DEFAULT_THEME = Theme.create("themeName", "themeDesrciption", "themeUrl");
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -43,10 +45,12 @@ class ReservationRepositoryTest {
         void 새로운_예약_정보를_저장한다() {
             // given
             ReservationTime time = persistTime(DEFAULT_START_AT);
+            Theme theme = persistTheme(DEFAULT_THEME);
             Reservation transientReservation = Reservation.create(
                     DEFAULT_NAME,
                     DEFAULT_DATE,
-                    time
+                    time,
+                    theme
             );
 
             // when
@@ -63,19 +67,22 @@ class ReservationRepositoryTest {
         void 저장한_예약_정보를_반환한다() {
             // given
             ReservationTime time = persistTime(DEFAULT_START_AT);
+            Theme theme = persistTheme(DEFAULT_THEME);
             Reservation transientReservation = Reservation.create(
                     DEFAULT_NAME,
                     DEFAULT_DATE,
-                    time
+                    time,
+                    theme
             );
 
             // when
             Reservation persistedReservation = reservationRepository.persist(transientReservation);
 
             // then
-            String selectSql = "SELECT r.*, rt.start_at"
+            String selectSql = "SELECT r.*, rt.start_at, t.*"
                     + " FROM reservation r"
                     + " JOIN reservation_time rt"
+                    + " JOIN theme t"
                     + " ON r.time_id = rt.id";
             List<Reservation> foundReservations = jdbcTemplate.query(selectSql, reservationRowMapper());
 
@@ -104,15 +111,17 @@ class ReservationRepositoryTest {
         void ID_기반으로_예약을_제거한다() {
             // given
             ReservationTime time = persistTime(DEFAULT_START_AT);
-            String insertSql = "INSERT INTO reservation(id, name, date, time_id)"
-                    + " VALUES (?, ?, ?, ?)";
+            Theme theme = persistTheme(DEFAULT_THEME);
+            String insertSql = "INSERT INTO reservation(id, name, date, time_id, theme_id)"
+                    + " VALUES (?, ?, ?, ?, ?)";
 
             jdbcTemplate.update(
                     insertSql,
                     DEFAULT_ID,
                     DEFAULT_NAME,
                     DEFAULT_DATE,
-                    time.getId()
+                    time.getId(),
+                    theme.getId()
             );
 
             // when
@@ -135,15 +144,17 @@ class ReservationRepositoryTest {
         void 레코드가_제거됐다면_true를_반환한다() {
             // given
             ReservationTime time = persistTime(DEFAULT_START_AT);
-            String insertSql = "INSERT INTO reservation(id, name, date, time_id)"
-                    + " VALUES (?, ?, ?, ?)";
+            Theme theme = persistTheme(DEFAULT_THEME);
+            String insertSql = "INSERT INTO reservation(id, name, date, time_id, theme_id)"
+                    + " VALUES (?, ?, ?, ?, ?)";
 
             jdbcTemplate.update(
                     insertSql,
                     DEFAULT_ID,
                     DEFAULT_NAME,
                     DEFAULT_DATE,
-                    time.getId()
+                    time.getId(),
+                    theme.getId()
             );
 
             // when
@@ -164,16 +175,19 @@ class ReservationRepositoryTest {
     private void insertReservation(int count) {
         Long timeId = persistTime(DEFAULT_START_AT)
                 .getId();
+        Long themeId = persistTheme(DEFAULT_THEME)
+                .getId();
 
         for (int i = 0; i < count; i++) {
-            String insertSql = "INSERT INTO reservation(name, date, time_id)"
-                    + " VALUES (?, ?, ?)";
+            String insertSql = "INSERT INTO reservation(name, date, time_id, theme_id)"
+                    + " VALUES (?, ?, ?, ?)";
 
             jdbcTemplate.update(
                     insertSql,
                     DEFAULT_NAME,
                     DEFAULT_DATE,
-                    timeId
+                    timeId,
+                    themeId
             );
         }
     }
@@ -192,16 +206,35 @@ class ReservationRepositoryTest {
         );
     }
 
+    private Theme persistTheme(Theme theme) {
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
+        Number id = simpleJdbcInsert.executeAndReturnKey(Map.of(
+                "name", theme.getName(),
+                "description", theme.getDescription(),
+                "image_url", theme.getImageUrl()
+        ));
+
+        return theme.with(id.longValue());
+    }
+
     private RowMapper<Reservation> reservationRowMapper() {
         return (resultSet, rowNum) -> {
             long timeId = resultSet.getLong("time_id");
             LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
 
+            long themeId = resultSet.getLong("theme_id");
+            String name = resultSet.getString("name");
+            String description = resultSet.getString("description");
+            String imageUrl = resultSet.getString("image_url");
+
             return Reservation.retrieve(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getObject("date", LocalDate.class),
-                    ReservationTime.retrieve(timeId, startAt)
+                    ReservationTime.retrieve(timeId, startAt),
+                    Theme.retrieve(themeId, name, description, imageUrl)
             );
         };
     }

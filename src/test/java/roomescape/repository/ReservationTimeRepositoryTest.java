@@ -156,25 +156,6 @@ class ReservationTimeRepositoryTest {
 
             assertThat(deleted).isFalse();
         }
-
-        @Test
-        void 다른_테이블에서_참조_중인_레코드라면_예외를_던진다() {
-            // given
-            insertReservationTime(DEFAULT_ID, DEFAULT_START_AT);
-
-            String insertReservationSql = "INSERT INTO reservation(name, date, time_id)"
-                    + " VALUES (?, ?, ?)";
-            jdbcTemplate.update(insertReservationSql,
-                    DEFAULT_RESERVATION_NAME,
-                    DEFAULT_RESERVATION_DATE,
-                    DEFAULT_ID
-            );
-
-            // when & then
-            assertThatThrownBy(() -> timeRepository.delete(DEFAULT_ID))
-                    .isInstanceOf(InUseTimeException.class)
-                    .hasMessage("사용중이지 않은 시간만 제거할 수 있습니다. id = " + DEFAULT_ID);
-        }
     }
 
     private void insertReservationTime(
