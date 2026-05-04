@@ -28,10 +28,9 @@ public class ThemeDaoTest {
         jdbcTemplate.execute("DELETE FROM theme");
 
         jdbcTemplate.update("INSERT INTO theme(name, description, image) VALUES (?, ?, ?)", "은하수", "은하수 테마방입니다.",
-                "http.kkkk.jpg");
+                "http.123.jpg");
         jdbcTemplate.update("INSERT INTO theme(name, description, image) VALUES (?, ?, ?)", "지구", "지구 테마방입니다.",
-                "http.kkkk.jpg");
-
+                "http.123.jpg");
     }
 
     @Test
