@@ -26,8 +26,12 @@ public class ThemeServiceTest {
     @DisplayName("테마의 정상 추가를 테스트합니다.")
     @Test
     void save_theme_successfully() {
-        Theme themeBeforeSaved = Theme.create("theme name", "theme description", "theme img url");
-        Theme themeAfterSaved = Theme.create(1L, themeBeforeSaved);
+        Theme themeBeforeSaved = Theme.builder()
+                .name("theme name")
+                .description("theme description")
+                .thumbnailImgUrl("theme img url")
+                .build();
+        Theme themeAfterSaved = themeBeforeSaved.withId(1L);
         Mockito.when(themeRepository.save(themeBeforeSaved)).thenReturn(themeAfterSaved);
 
         ThemeCreateRequest createRequestDto = new ThemeCreateRequest("theme name", "theme description", "theme img url");
@@ -46,7 +50,11 @@ public class ThemeServiceTest {
     @DisplayName("중복된 테마 추가 시 예외 발생을 테스트합니다.")
     @Test
     void save_duplicated_theme_exception() {
-        Theme themeBeforeSaved = Theme.create("theme name", "theme description", "theme img url1");
+        Theme themeBeforeSaved = Theme.builder()
+                .name("theme name")
+                .description("theme description")
+                .thumbnailImgUrl("theme img url1")
+                .build();
         Mockito.when(themeRepository.existsByNameAndDescription(themeBeforeSaved)).thenReturn(true);
 
         ThemeCreateRequest createRequestDto = new ThemeCreateRequest("theme name", "theme description", "theme img url2");

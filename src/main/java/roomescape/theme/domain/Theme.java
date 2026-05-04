@@ -1,10 +1,12 @@
 package roomescape.theme.domain;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+@Builder
 @Getter
-@EqualsAndHashCode(of = {"name","description"})
+@EqualsAndHashCode(of = {"name", "description"})
 public class Theme {
 
     private final Long id;
@@ -12,18 +14,12 @@ public class Theme {
     private final String description;
     private final String thumbnailImgUrl;
 
-    private Theme(Long id, String name, String description, String thumbnailImgUrl) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.thumbnailImgUrl = thumbnailImgUrl;
-    }
-
-    public static Theme create(String name, String description, String thumbnailImgUrl) {
-        return new Theme(null, name, description, thumbnailImgUrl);
-    }
-
-    public static Theme create(Long id, Theme theme) {
-        return new Theme(id, theme.name, theme.description, theme.thumbnailImgUrl);
+    public Theme withId(Long generatedId) {
+        return Theme.builder()
+                .id(generatedId)
+                .name(this.name)
+                .description(this.description)
+                .thumbnailImgUrl(this.thumbnailImgUrl)
+                .build();
     }
 }

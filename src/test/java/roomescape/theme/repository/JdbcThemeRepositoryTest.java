@@ -27,7 +27,11 @@ public class JdbcThemeRepositoryTest {
     @DisplayName("db의 정상 저장을 테스트 합니다.")
     @Test
     void save_successfully() {
-        Theme theme = Theme.create("theme name", "theme description", "theme img url");
+        Theme theme = Theme.builder()
+                .name("theme name")
+                .description("theme description")
+                .thumbnailImgUrl("theme img url")
+                .build();
 
         Theme savedTheme = themeRepository.save(theme);
 
@@ -43,7 +47,11 @@ public class JdbcThemeRepositoryTest {
     @DisplayName("db에 특정 테마가 존재하지 않는 것을 테스트 합니다.")
     @Test
     void check_none_exists_successfully() {
-        Theme theme = Theme.create("theme name", "theme description", "theme img url");
+        Theme theme = Theme.builder()
+                .name("theme name")
+                .description("theme description")
+                .thumbnailImgUrl("theme img url")
+                .build();
 
         Boolean alreadyExists = themeRepository.existsByNameAndDescription(theme);
 
@@ -53,10 +61,18 @@ public class JdbcThemeRepositoryTest {
     @DisplayName("db에 특정 테마가 존재하는 것을 테스트 합니다.")
     @Test
     void check_exists_successfully() {
-        Theme theme1 = Theme.create("theme name", "theme description", "theme img url");
+        Theme theme1 = Theme.builder()
+                .name("theme name")
+                .description("theme description")
+                .thumbnailImgUrl("theme img url")
+                .build();
         themeRepository.save(theme1);
 
-        Theme theme2 = Theme.create("theme name", "theme description", "theme img url");
+        Theme theme2 = Theme.builder()
+                .name("theme name")
+                .description("theme description")
+                .thumbnailImgUrl("theme img url")
+                .build();
         Boolean alreadyExists = themeRepository.existsByNameAndDescription(theme2);
         assertThat(alreadyExists).isTrue();
     }
@@ -64,7 +80,11 @@ public class JdbcThemeRepositoryTest {
     @DisplayName("db에서 테마 삭제를 테스트 합니다.")
     @Test
     void delete_theme_successfully() {
-        Theme theme1 = Theme.create("theme name", "theme description", "theme img url");
+        Theme theme1 = Theme.builder()
+                .name("theme name")
+                .description("theme description")
+                .thumbnailImgUrl("theme img url")
+                .build();
         Theme savedTheme = themeRepository.save(theme1);
 
         assertThat(themeRepository.delete(savedTheme.getId())).isEqualTo(1);

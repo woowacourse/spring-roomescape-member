@@ -28,7 +28,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .addValue("thumbnail_img_url", theme.getThumbnailImgUrl());
 
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return Theme.create(id, theme);
+        return theme.withId(id);
     }
 
     @Override
