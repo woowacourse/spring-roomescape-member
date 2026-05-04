@@ -21,7 +21,8 @@ public class ReservationDao {
             rs.getString("name"),
             rs.getObject("date", LocalDate.class),
             new ReservationTime(rs.getLong("time_id"), rs.getObject("time_value", LocalTime.class)),
-            new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("theme_description"), rs.getString("theme_thumbnail"))
+            new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("theme_description"),
+                    rs.getString("theme_thumbnail"))
     );
 
 
@@ -48,9 +49,12 @@ public class ReservationDao {
     }
 
     List<Reservation> findAll() {
-        String sql = "SELECT r.id AS reservation_id, r.name, r.date, t.id AS time_id, t.start_at AS time_value " +
+        String sql = "SELECT r.id AS reservation_id, r.name, r.date, " +
+                "t.id AS time_id, t.start_at AS time_value, t.id AS theme_id, t.name AS theme_name, " +
+                "t.description AS theme_description, t.thumbnail AS theme_thumbnail " +
                 "FROM reservation AS r " +
-                "INNER JOIN reservation_time AS t ON r.time_id = t.id";
+                "INNER JOIN reservation_time AS t ON r.time_id = t.id" +
+                "INNER JOIN theme AS t ON r.theme_id = t.id";
 
         return jdbcTemplate.query(sql, rowMapper);
     }

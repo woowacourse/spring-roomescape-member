@@ -32,7 +32,7 @@ public class ReservationController {
     @PostMapping
     public ReservationResponse createReservation(@Valid @RequestBody ReservationRequest reservationRequest) {
         Reservation reservation = reservationService.createReservation(reservationRequest.name(),
-                reservationRequest.date(), reservationRequest.timeId());
+                reservationRequest.date(), reservationRequest.timeId(), reservationRequest.themeId());
         return ReservationResponse.from(reservation);
     }
 

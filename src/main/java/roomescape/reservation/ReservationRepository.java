@@ -20,7 +20,7 @@ public class ReservationRepository {
     }
 
     public Reservation save(Theme theme, String name, LocalDate date, ReservationTime time) {
-        return reservationDao.save(theme, name, date, time);
+        return reservationDao.save(name, date, time, theme);
     }
 
     public void delete(long id) {
