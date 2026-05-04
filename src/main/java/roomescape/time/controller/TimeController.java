@@ -3,6 +3,8 @@ package roomescape.time.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,20 +25,23 @@ public class TimeController {
   }
 
   @PostMapping("/times")
-  public TimeResponseDto create(@RequestBody TimeSaveRequestDto request) {
-    return TimeResponseDto.from(timeService.create(request.getStartAt()));
+  public ResponseEntity<TimeResponseDto> create(@RequestBody TimeSaveRequestDto request) {
+    TimeResponseDto body = TimeResponseDto.from(timeService.create(request.getStartAt()));
+    return ResponseEntity.status(HttpStatus.CREATED).body(body);
   }
 
   @GetMapping("/times")
-  public List<TimeResponseDto> findAll() {
-    return timeService.findAll()
+  public ResponseEntity<List<TimeResponseDto>> findAll() {
+    List<TimeResponseDto> body = timeService.findAll()
         .stream()
         .map(TimeResponseDto::from)
         .collect(Collectors.toList());
+    return ResponseEntity.ok(body);
   }
 
   @DeleteMapping("/times/{id}")
-  public void deleteById(@PathVariable long id) {
+  public ResponseEntity<Void> deleteById(@PathVariable long id) {
     timeService.deleteById(id);
+    return ResponseEntity.noContent().build();
   }
 }
