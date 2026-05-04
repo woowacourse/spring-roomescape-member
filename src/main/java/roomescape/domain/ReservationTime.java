@@ -8,7 +8,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ReservationTime {
+
     private static final Pattern TIME_PATTERN = Pattern.compile("^\\d{2}:\\d{2}$");
+
     private final Long id;
     private final LocalTime startAt;
 

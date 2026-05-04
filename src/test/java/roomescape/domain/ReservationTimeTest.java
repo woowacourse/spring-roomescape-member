@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class ReservationTimeTest {
+
     @Test
     void 정상형식_시간_생성_테스트() {
         // when, then

@@ -8,6 +8,7 @@ import roomescape.domain.Theme;
 import java.sql.PreparedStatement;
 
 public class JdbcThemeRepository implements ThemeRepository {
+
     private final JdbcTemplate template;
 
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {

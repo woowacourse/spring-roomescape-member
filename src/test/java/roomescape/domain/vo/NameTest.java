@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class NameTest {
+
     @Test
     void 같은_이름_동일_객체_테스트() {
         //given

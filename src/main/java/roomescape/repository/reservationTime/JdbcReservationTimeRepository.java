@@ -7,18 +7,19 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
-    private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
     private final JdbcTemplate template;
 
-    public JdbcReservationTimeRepository(DataSource dataSource) {
-        this.template = new JdbcTemplate(dataSource);
+    public JdbcReservationTimeRepository(JdbcTemplate template) {
+        this.template = template;
     }
 
     @Override
@@ -28,12 +29,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
         template.update(conn -> {
             PreparedStatement ps = conn.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, timeFormatter.format(reservationTime.getStartAt()));
+            ps.setString(1, DATE_TIME_FORMATTER.format(reservationTime.getStartAt()));
             return ps;
         }, keyHolder);
 
         long key = keyHolder.getKey().longValue();
-        return new ReservationTime(key, timeFormatter.format(reservationTime.getStartAt())); // QUESTION: 이럴 때 그냥 객체 새로 만들어서 보내면 되는 건지 아니면 만들어진걸 조회해서 보내야 하는 건지
+        return new ReservationTime(key, DATE_TIME_FORMATTER.format(reservationTime.getStartAt())); // QUESTION: 이럴 때 그냥 객체 새로 만들어서 보내면 되는 건지 아니면 만들어진걸 조회해서 보내야 하는 건지
     }
 
     @Override

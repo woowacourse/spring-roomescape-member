@@ -16,11 +16,13 @@ import java.util.List;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
-    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
     private final JdbcTemplate template;
 
-    public JdbcReservationRepository(DataSource dataSource) {
-        this.template = new JdbcTemplate(dataSource);
+    public JdbcReservationRepository(JdbcTemplate template) {
+        this.template = template;
     }
 
     @Override
@@ -31,7 +33,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         template.update(conn -> {
             PreparedStatement ps = conn.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, reservation.getName().value());
-            ps.setString(2, dateFormatter.format(reservation.getDate()));
+            ps.setString(2, DATE_TIME_FORMATTER.format(reservation.getDate()));
             ps.setLong(3, reservation.getTime().getId());
             return ps;
         }, keyHolder);

@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -10,15 +12,16 @@ import roomescape.dto.reservationTime.ReservationTimeResponseDto;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 public class ReservationService {
+
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository) {
+    public ReservationService(
+        ReservationRepository reservationRepository,
+        ReservationTimeRepository reservationTimeRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
     }
@@ -40,7 +43,8 @@ public class ReservationService {
 
     public ReservationResponseDto addReservation(ReservationRequestDto requestDto) {
         ReservationTime time = reservationTimeRepository.findById(requestDto.time_id());
-        Long id = reservationRepository.createReservation(new Reservation(null, requestDto.name(), requestDto.date(), time));
+        Long id = reservationRepository.createReservation(
+            new Reservation(null, requestDto.name(), requestDto.date(), time));
         Reservation reservation = reservationRepository.findById(id);
 
         return ReservationResponseDto.from(reservation);
@@ -62,7 +66,8 @@ public class ReservationService {
     }
 
     public ReservationTimeResponseDto addReservationTime(ReservationTimeRequesetDto requestDto) {
-        ReservationTime reservationTime = reservationTimeRepository.createReservationTime(new ReservationTime(null, requestDto.startAt()));
+        ReservationTime reservationTime = reservationTimeRepository.createReservationTime(
+            new ReservationTime(null, requestDto.startAt()));
 
         return ReservationTimeResponseDto.from(reservationTime);
     }

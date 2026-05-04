@@ -17,11 +17,12 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 @Import(JdbcReservationTimeRepository.class)
 @JdbcTest
 class JdbcReservationTimeRepositoryTest {
+
     private final ReservationTimeRepository repository;
 
     @Autowired
-    public JdbcReservationTimeRepositoryTest(DataSource dataSource) {
-        this.repository = new JdbcReservationTimeRepository(dataSource);
+    public JdbcReservationTimeRepositoryTest(ReservationTimeRepository repository) {
+        this.repository = repository;
     }
 
     @Test
