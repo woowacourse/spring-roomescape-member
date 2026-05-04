@@ -390,3 +390,44 @@ POST /api/reservations
   "themeId": 1
 }
 ```
+
+### 사용자 인기 테마 조회
+
+#### URL
+
+```http
+GET /themes/popular?startDate={startDate}&endDate={endDate}&limit={limit}
+```
+
+#### Query Parameters
+
+| 파라미터명     | 필수 여부   | 타입     | 설명        | 예시         |
+|-----------|---------|--------|-----------|------------|
+| startDate | 필수      | Date   | 조회 시작 날짜  | 2026-05-03 |
+| endDate   | 필수      | Date   | 조회 종료 날짜  | 2026-05-10 |
+| limit     | 필수      | BigInt | 조회할 테마 개수 | 10         |
+
+#### Request Body
+
+없음
+
+#### Response Body
+
+##### 200 OK
+
+```json
+[
+  {
+    "id": 1,
+    "name": "링",
+    "description": "이것은 링 방탈출 설명입니다.",
+    "imageUrl": "https://roomescape.com/images/themes/ring.png"
+  },
+  {
+    "id": 2,
+    "name": "감옥",
+    "description": "이것은 감옥 방탈출 설명입니다.",
+    "imageUrl": "https://roomescape.com/images/themes/prison-room.png"
+  }
+]
+```
