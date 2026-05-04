@@ -26,7 +26,6 @@ public class Reservation {
         this.id = id;
         validateName(name);
         validateDate(date);
-        validateTime(time);
         this.name = name;
         this.date = date;
         this.time = time;
@@ -42,12 +41,6 @@ public class Reservation {
     private void validateDate(LocalDate date) {
         if (date == null) {
             throw new IllegalArgumentException("예약 날짜가 유효하지 않습니다.");
-        }
-    }
-
-    private void validateTime(ReservationTime time) {
-        if (time == null) {
-            throw new IllegalArgumentException("예약 시간이 유효하지 않습니다.");
         }
     }
 
