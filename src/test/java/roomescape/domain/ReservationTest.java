@@ -18,10 +18,11 @@ class ReservationTest {
         // given
         String name = "아나키";
         LocalDate date = LocalDate.of(2026, 5, 4);
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10,0));
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+        Theme theme = new Theme(1L, "공포", "너무무서워", "/horror");
 
         // when
-        Reservation reservation = new Reservation(name, date, time);
+        Reservation reservation = new Reservation(name, date, time, theme);
 
         // then
         assertThat(reservation.getName()).isEqualTo(name);
@@ -36,9 +37,10 @@ class ReservationTest {
         // given
         LocalDate date = LocalDate.now();
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10,0));
+        Theme theme = new Theme(1L, "공포", "너무무서워", "/horror");
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(name, date, time))
+        assertThatThrownBy(() -> new Reservation(name, date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약자명이 유효하지 않습니다.");
     }
@@ -50,9 +52,10 @@ class ReservationTest {
         // given
         String name = "아나키";
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10,0));
+        Theme theme = new Theme(1L, "공포", "너무무서워", "/horror");
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(name, date, time))
+        assertThatThrownBy(() -> new Reservation(name, date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 날짜가 유효하지 않습니다.");
     }
@@ -64,9 +67,10 @@ class ReservationTest {
         // given
         String name = "아나키";
         LocalDate date = LocalDate.now();
+        Theme theme = new Theme(1L, "공포", "너무무서워", "/horror");
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(name, date, time))
+        assertThatThrownBy(() -> new Reservation(name, date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 시간이 유효하지 않습니다.");
     }
