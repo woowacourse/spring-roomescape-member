@@ -16,6 +16,10 @@ public class Theme {
         this.imageUrl = imageUrl;
     }
 
+    public Theme(String name, String description, String imageUrl) {
+        this(null, name, description, imageUrl);
+    }
+
     public Long getId() {
         return id;
     }

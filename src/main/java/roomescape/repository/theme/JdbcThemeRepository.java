@@ -3,10 +3,12 @@ package roomescape.repository.theme;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 
 import java.sql.PreparedStatement;
 
+@Repository
 public class JdbcThemeRepository implements ThemeRepository {
 
     private final JdbcTemplate template;
