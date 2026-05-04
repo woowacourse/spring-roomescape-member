@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Repository
 public class ReservationDao {
@@ -30,7 +31,8 @@ public class ReservationDao {
                     new ReservationTime(
                             resultSet.getLong("time_id"),
                             LocalTime.parse(resultSet.getString("start_at"))
-                    )
+                    ),
+                    resultSet.getLong("theme_id")
             );
             return newReservation;
         };
@@ -43,7 +45,8 @@ public class ReservationDao {
                     r.name,
                     r.date,
                     t.id as time_id,
-                    t.start_at
+                    t.start_at,
+                    r.theme_id
                 FROM reservation as r
                 INNER JOIN reservation_time as t
                   ON r.time_id = t.id
@@ -61,7 +64,8 @@ public class ReservationDao {
                     r.name,
                     r.date,
                     t.id as time_id,
-                    t.start_at
+                    t.start_at,
+                    r.theme_id
                 FROM reservation as r
                 INNER JOIN reservation_time as t
                   ON r.time_id = t.id
@@ -73,8 +77,8 @@ public class ReservationDao {
         return reservation;
     }
 
-    public Long insertWithKeyHolder(String name, LocalDate date, Long timeId) {
-        String sql = "insert into reservation (name, date, time_id) values (?, ?, ?)";
+    public Long insertWithKeyHolder(String name, LocalDate date, Long timeId, Long themeId) {
+        String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -85,6 +89,7 @@ public class ReservationDao {
             ps.setString(1, name);
             ps.setString(2, date.toString());
             ps.setLong(3, timeId);
+            ps.setLong(4, themeId);
             return ps;
         }, keyHolder);
 

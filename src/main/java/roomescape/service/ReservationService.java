@@ -23,8 +23,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation createReservation(String name, LocalDate date, Long timeId) {
-        Long id = reservationDao.insertWithKeyHolder(name, date, timeId);
+    public Reservation createReservation(String name, LocalDate date, Long timeId, Long themeId) {
+        Long id = reservationDao.insertWithKeyHolder(name, date, timeId, themeId);
         return reservationDao.findReservationById(id);
     }
 

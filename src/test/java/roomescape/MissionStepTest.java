@@ -39,6 +39,17 @@ public class MissionStepTest {
                 .body(time)
                 .when().post("/api/v1/times")
                 .then().statusCode(201);
+
+        Map<String, Object> themeParams = new HashMap<>();
+        themeParams.put("name", "이든의 공포 하우스");
+        themeParams.put("description", "이든이 귀신으로 나옴");
+        themeParams.put("imgUrl", "링크~");
+        themeParams.put("userName", "ADMIN");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/api/v1/themes")
+                .then().statusCode(201);
     }
 
     private Map<String, Object> reservationParams() {
@@ -46,6 +57,7 @@ public class MissionStepTest {
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
         params.put("timeId", 1);
+        params.put("themeId", 1);
         return params;
     }
 
@@ -145,8 +157,8 @@ public class MissionStepTest {
 
     @Test
     void DB_조회_API_전환() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05",
-                1);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05",
+                1, 1);
 
         List<Reservation> reservations = RestAssured.given().log().all()
                 .when().get("/api/v1/reservations")

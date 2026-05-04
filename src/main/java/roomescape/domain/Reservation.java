@@ -10,12 +10,14 @@ public class Reservation {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private final LocalDate date;
     private final ReservationTime time;
+    private final Long time_id;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Long time_id) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.time_id = time_id;
     }
 
     public Long getId() {
@@ -32,5 +34,9 @@ public class Reservation {
 
     public LocalDate getDate() {
         return date;
+    }
+
+    public Long getTime_id() {
+        return time_id;
     }
 }
