@@ -2,7 +2,7 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 
-public record Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime) {
+public record Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
 
     public Reservation {
         if (name == null || name.isBlank()) {
@@ -17,9 +17,12 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
         if (reservationTime == null) {
             throw new IllegalArgumentException("유효하지 않은 예약 시간대입니다.");
         }
+        if (theme == null) {
+            throw new IllegalArgumentException("유효하지 않은 테마입니다.");
+        }
     }
 
-    public static Reservation transientOf(String name, LocalDate date, ReservationTime reservationTime) {
-        return new Reservation(null, name, date, reservationTime);
+    public static Reservation transientOf(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+        return new Reservation(null, name, date, reservationTime, theme);
     }
 }

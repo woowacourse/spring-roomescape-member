@@ -1,16 +1,16 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
+import roomescape.domain.Theme;
 
 @Repository
 public class ReservationDao implements ReservationRepository {
@@ -23,8 +23,26 @@ public class ReservationDao implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = "SELECT r.id AS r_id, r.name, r.date, t.id AS t_id, t.start_at " +
-                "FROM reservation r INNER JOIN reservation_time t ON r.time_id = t.id";
+        String sql = """
+                SELECT 
+                    r.id AS r_id, 
+                    r.name, 
+                    r.date, 
+                    t.id AS t_id, 
+                    t.start_at,
+                    theme.id AS theme_id,
+                    theme.name AS theme_name,
+                    theme.description AS theme_description,
+                    theme.thumbnail_url AS theme_thumbnail_url
+                FROM 
+                    reservation r 
+                        INNER JOIN 
+                        reservation_time t 
+                            INNER JOIN 
+                        theme theme
+                            ON r.time_id = t.id 
+                                   AND r.theme_id = theme.id
+                """;
         return jdbcTemplate.query(sql, rowMapper());
     }
 
@@ -41,7 +59,8 @@ public class ReservationDao implements ReservationRepository {
         SimpleJdbcInsert insert = createInsert();
         Map<String, Object> params = createParams(reservation);
         long reservationId = insert.executeAndReturnKey(params).longValue();
-        return new Reservation(reservationId, reservation.name(), reservation.date(), reservation.reservationTime());
+        return new Reservation(reservationId, reservation.name(), reservation.date(), reservation.reservationTime(),
+                reservation.theme());
     }
 
     private SimpleJdbcInsert createInsert() {
@@ -51,7 +70,12 @@ public class ReservationDao implements ReservationRepository {
     }
 
     private Map<String, Object> createParams(Reservation reservation) {
-        return Map.of("name", reservation.name(), "date", reservation.date(), "time_id", reservation.reservationTime().id());
+        return Map.of(
+                "name", reservation.name(),
+                "date", reservation.date(),
+                "time_id", reservation.reservationTime().id(),
+                "theme_id", reservation.theme().id()
+        );
     }
 
     @Override
@@ -65,7 +89,15 @@ public class ReservationDao implements ReservationRepository {
                 rs.getLong("r_id"),
                 rs.getString("name"),
                 rs.getObject("date", LocalDate.class),
-                new ReservationTime(rs.getLong("t_id"), rs.getObject("start_at", LocalTime.class))
+                new ReservationTime(
+                        rs.getLong("t_id"),
+                        rs.getObject("start_at", LocalTime.class)),
+                new Theme(
+                        rs.getLong("theme_id"),
+                        rs.getString("theme_name"),
+                        rs.getString("theme_description"),
+                        rs.getString("theme_thumbnail_url")
+                )
         );
     }
 }
