@@ -34,6 +34,7 @@ public class ThemeService {
         repository.delete(id);
     }
 
+    @Transactional(readOnly = true)
     public List<ThemeResponse> getThemes() {
         List<Theme> themes = repository.findAll();
         return themes.stream()
@@ -41,13 +42,13 @@ public class ThemeService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<ThemeResponse> getWeeksTopThemes() {
         List<Theme> themes = repository.findByReservationCountWithLimit(
                 LocalDate.now().minusWeeks(WEEKS_BOUND),
                 LocalDate.now().minusDays(DAYS_BOUND),
                 THEME_SIZE_LIMIT
         );
-
         return themes.stream()
                 .map(ThemeResponse::from)
                 .toList();
