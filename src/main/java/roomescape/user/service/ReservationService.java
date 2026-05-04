@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.user.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -7,14 +7,14 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
+import roomescape.user.domain.Reservation;
+import roomescape.user.domain.ReservationTime;
+import roomescape.admin.domain.Theme;
+import roomescape.user.dto.ReservationRequest;
+import roomescape.user.dto.ReservationResponse;
+import roomescape.user.repository.ReservationRepository;
+import roomescape.user.repository.ReservationTimeRepository;
+import roomescape.admin.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
