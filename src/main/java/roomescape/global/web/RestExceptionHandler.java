@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import roomescape.domain.DuplicateEntityException;
 import roomescape.domain.EntityNotFoundException;
+import roomescape.global.auth.ForbiddenException;
 
 @RestControllerAdvice
 @Slf4j
@@ -22,6 +23,12 @@ public class RestExceptionHandler {
     @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})
     public ResponseEntity<String> handleDuplicateEntityException(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<String> handleForbiddenException(ForbiddenException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ex.getMessage());
     }
 
