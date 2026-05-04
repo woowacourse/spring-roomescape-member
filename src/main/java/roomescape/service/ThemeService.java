@@ -17,7 +17,7 @@ public class ThemeService {
 
     public ThemeResponse addTheme(ThemeRequest request) {
         Theme theme = request.toTheme();
-        Optional<Theme> newTheme = themeDao.findById(theme.getId());
+        Optional<Theme> newTheme = themeDao.selectById(theme.getId());
         validateUniqueTheme(newTheme);
 
         Theme savedTheme = themeDao.insert(theme);
@@ -25,7 +25,7 @@ public class ThemeService {
     }
 
     public void delete(long themeId) {
-        themeDao.findById(themeId)
+        themeDao.selectById(themeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
         themeDao.delete(themeId);
     }
