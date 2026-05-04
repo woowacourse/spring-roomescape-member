@@ -1,18 +1,21 @@
 package roomescape.controller;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.net.URI;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.response.ThemeResponse;
+import roomescape.dto.ThemeRequest;
+import roomescape.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
-@RequestMapping("/themes")
+@RequestMapping("/theme")
 public class ThemeController {
+    private static final String LOCATION_DEFAULT_VALUE = "/theme/";
 
     private final ThemeService themeService;
 
@@ -20,15 +23,17 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ThemeResponse>> getThemes() {
-        List<ThemeResponse> responses = themeService.getThemes();
-        return ResponseEntity.ok(responses);
+    @PostMapping
+    public ResponseEntity<ThemeResponse> addTheme(@RequestBody ThemeRequest request) {
+        ThemeResponse response = themeService.addTheme(request);
+        return ResponseEntity.created(URI.create(LOCATION_DEFAULT_VALUE + response.id()))
+                .body(response);
     }
 
-    @GetMapping(params = "endDate")
-    public ResponseEntity<List<ThemeResponse>> getPopularThemes(@RequestParam("endDate") LocalDate endDate) {
-        List<ThemeResponse> responses = themeService.getPopularThemes(endDate);
-        return ResponseEntity.ok(responses);
+    @DeleteMapping("/{reservationId}")
+    public ResponseEntity<Void> deleteReservation(@PathVariable("reservationId") Long reservationId) {
+        themeService.delete(reservationId);
+        return ResponseEntity.noContent()
+                .build();
     }
 }

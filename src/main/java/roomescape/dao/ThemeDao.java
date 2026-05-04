@@ -1,8 +1,6 @@
 package roomescape.dao;
 
-import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -47,12 +45,12 @@ public class ThemeDao {
         );
     }
 
-    public Optional<Theme> selectById(Long themeId) {
+    public Optional<Theme> findById(long themeId) {
         String sql = """
                 SELECT id, 
                        name, 
                        description,
-                       thumbnail
+                       thumbnail ,
                 FROM theme
                 WHERE id = ?""";
 
@@ -63,61 +61,10 @@ public class ThemeDao {
         }
     }
 
-    public List<Theme> selectAll() {
-        String sql = """
-                SELECT id, 
-                       name, 
-                       description,
-                       thumbnail
-                FROM theme""";
-        return jdbcTemplate.query(sql, ROW_MAPPER);
-    }
-
-    public List<Theme> selectPopularThemesByPeriod(LocalDate startDate, LocalDate endDate) {
-        String sql = """
-                SELECT t.id,
-                       t.name,
-                       t.description,
-                       t.thumbnail
-                FROM reservation AS r
-                INNER JOIN theme AS t 
-                ON r.theme_id = t.id
-                WHERE r.date BETWEEN ? AND ?
-                GROUP BY t.id, t.name, t.description, t.thumbnail
-                ORDER BY COUNT(r.id) DESC
-                LIMIT 10
-                """;
-        return jdbcTemplate.query(sql, ROW_MAPPER, startDate, endDate);
-    }
-
-    public boolean existsById(Long themeId) {
-        String sql = """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM theme
-                    WHERE id = ?
-                )
-                """;
-
-        return jdbcTemplate.queryForObject(sql, boolean.class, themeId);
-    }
-
-    public boolean existsByName(String name) {
-        String sql = """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM theme
-                    WHERE name = ?
-                )
-                """;
-
-        return jdbcTemplate.queryForObject(sql, boolean.class, name);
-    }
-
-    public int delete(long themeId) {
+    public void delete(long themeId) {
         String sql = """
                 DELETE FROM theme
                 WHERE id = ?""";
-        return jdbcTemplate.update(sql, themeId);
+        jdbcTemplate.update(sql, themeId);
     }
 }
