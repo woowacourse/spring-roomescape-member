@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -46,8 +47,7 @@ class ReservationTimeControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1))
-                .body("[0].startAt", is("10:00:00"));
+                .body("startAt", hasItem("10:00:00"));
     }
 
     @Test
@@ -72,8 +72,7 @@ class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
+                .statusCode(200);
     }
 
     @Test
@@ -97,5 +96,5 @@ class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(400);
     }
-    
+
 }

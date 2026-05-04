@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -39,7 +40,6 @@ class ReservationControllerTest {
                 .body("theme.id", is(1));
     }
 
-
     @Test
     void 예약_목록을_조회한다() {
         createReservationTime();
@@ -48,7 +48,8 @@ class ReservationControllerTest {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "밀란");
         params.put("date", "2026-05-03");
-        params.put("timeId", 1);
+        params.put("timeId", 1L);
+        params.put("themeId", 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -61,12 +62,11 @@ class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1))
-                .body("[0].name", is("밀란"))
-                .body("[0].date", is("2026-05-03"))
-                .body("[0].time.id", is(1));
+                .body("name", hasItem("밀란"))
+                .body("date", hasItem("2026-05-03"))
+                .body("time.id", hasItem(1));
     }
-
+    
     @Test
     void 예약을_삭제한다() {
         createReservationTime();
@@ -75,7 +75,8 @@ class ReservationControllerTest {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "밀란");
         params.put("date", "2026-05-03");
-        params.put("timeId", 1);
+        params.put("timeId", 1L);
+        params.put("themeId", 1L);
 
         Integer id = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

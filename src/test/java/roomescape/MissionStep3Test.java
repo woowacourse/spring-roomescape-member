@@ -51,10 +51,9 @@ public class MissionStep3Test {
                 .statusCode(200);
 
         Map<String, Object> theme = new HashMap<>();
-        reservationTime.put("name", "테마A");
-        reservationTime.put("description", "테마A란...");
-        reservationTime.put("thumbnailUrl", "www.d.d.d");
-        reservationTime.put("runtime", 1L);
+        theme.put("name", "테마A");
+        theme.put("description", "테마A란...");
+        theme.put("thumbnailUrl", "www.d.d.d");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
