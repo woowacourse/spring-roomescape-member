@@ -46,7 +46,7 @@ public class ThemeDao {
     }
 
     public Optional<ThemeDaoData> getTheme(long id) {
-        return jdbcTemplate.query(SELECT_SPECIFIC_ID_SQL, ((rs, rowNum) -> ThemeDaoData.from(rs)))
+        return jdbcTemplate.query(SELECT_SPECIFIC_ID_SQL, ((rs, rowNum) -> ThemeDaoData.from(rs)), id)
                 .stream()
                 .findFirst();
     }
