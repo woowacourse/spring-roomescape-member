@@ -1,7 +1,6 @@
 package roomescape.time.domain;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
 
 public class ReservationTime {
 
