@@ -105,4 +105,59 @@ class JdbcReservationRepositoryTest {
         assertThat(exists).isTrue();
         assertThat(notExists).isFalse();
     }
+
+    @Test
+    @DisplayName("직전 period일 동안의 예약 수를 기준으로 상위 limit 개의 테마들을 조회한다.")
+    void findPopularThemesTest() {
+        // given
+        jdbcTemplate.update(
+                "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)",
+                "페어", "페어 전용 테마", "https://pair.com"
+        );
+        Long pairId = jdbcTemplate.queryForObject(
+                "SELECT id FROM theme WHERE name = ?",
+                Long.class,
+                "페어"
+        );
+
+        jdbcTemplate.update(
+                "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)",
+                "당근", "당근 전용 테마", "https://carrot.com"
+        );
+        Long carrotId = jdbcTemplate.queryForObject(
+                "SELECT id FROM theme WHERE name = ?",
+                Long.class,
+                "당근"
+        );
+
+        Theme woowaTheme = new Theme(setupThemeId, "우테코", "우테코 전용 테마", "https://example.com");
+        Theme pairTheme = new Theme(pairId, "페어", "페어 전용 테마", "https://pair.com");
+        Theme carrotTheme = new Theme(carrotId, "당근", "당근 전용 테마", "https://carrot.com");
+
+        ReservationTime time = new ReservationTime(setupTimeId, LocalTime.of(10, 0));
+
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDate today = LocalDate.now();
+        LocalDate outsidePeriod = LocalDate.now().minusDays(8);
+
+        reservationRepository.save(new Reservation(null, "브라운", yesterday, time, woowaTheme));
+        reservationRepository.save(new Reservation(null, "포비", yesterday, time, woowaTheme));
+        reservationRepository.save(new Reservation(null, "제이슨", yesterday, time, woowaTheme));
+
+        reservationRepository.save(new Reservation(null, "이든", yesterday, time, pairTheme));
+        reservationRepository.save(new Reservation(null, "레아", yesterday, time, pairTheme));
+
+        reservationRepository.save(new Reservation(null, "웨지", yesterday, time, carrotTheme));
+
+        reservationRepository.save(new Reservation(null, "오늘예약", today, time, carrotTheme));
+        reservationRepository.save(new Reservation(null, "범위밖예약", outsidePeriod, time, carrotTheme));
+
+        // when
+        List<Theme> popularThemes = reservationRepository.findPopularThemes(7, 2);
+
+        // then
+        assertThat(popularThemes)
+                .extracting(Theme::getName)
+                .containsExactly("우테코", "페어");
+    }
 }

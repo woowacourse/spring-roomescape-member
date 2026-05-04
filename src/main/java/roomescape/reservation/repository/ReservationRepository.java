@@ -1,9 +1,9 @@
 package roomescape.reservation.repository;
 
-import roomescape.reservation.domain.Reservation;
-
 import java.time.LocalDate;
 import java.util.List;
+import roomescape.reservation.domain.Reservation;
+import roomescape.theme.domain.Theme;
 
 public interface ReservationRepository {
 
@@ -14,4 +14,6 @@ public interface ReservationRepository {
     List<Reservation> findAll();
 
     boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
+
+    List<Theme> findPopularThemes(int period, int limit);
 }

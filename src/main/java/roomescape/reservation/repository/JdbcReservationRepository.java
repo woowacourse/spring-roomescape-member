@@ -90,4 +90,36 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = "select exists (select 1 from reservation where reservation_date = ? and time_id = ? and theme_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
+
+    @Override
+    public List<Theme> findPopularThemes(int period, int limit) {
+        String sql = "select " +
+                "t.id, " +
+                "t.name, " +
+                "t.description, " +
+                "t.thumbnail_url " +
+                "from reservation r " +
+                "inner join theme t on r.theme_id = t.id " +
+                "where r.reservation_date >= ? " +
+                "and r.reservation_date < ? " +
+                "group by t.id, t.name, t.description, t.thumbnail_url " +
+                "order by count(r.id) desc, t.id asc " +
+                "limit ?";
+
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusDays(period);
+
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> new Theme(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail_url")
+                ),
+                Date.valueOf(startDate),
+                Date.valueOf(endDate),
+                limit
+        );
+    }
 }

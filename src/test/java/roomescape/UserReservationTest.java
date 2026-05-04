@@ -1,18 +1,18 @@
 package roomescape;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.time.domain.ReservationTime;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -45,27 +45,9 @@ public class UserReservationTest {
                 .then().statusCode(201);
 
 
-        Map<String, Object> woowaTheme = new HashMap<>();
-        woowaTheme.put("name", "우아한 테마");
-        woowaTheme.put("description", "우아한테크코스 전용 테마입니다.");
-        woowaTheme.put("thumbnailUrl", "https://example.com/image.png");
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(woowaTheme)
-                .when().post("/themes")
-                .then().statusCode(201);
-
-        Map<String, Object> pairTheme = new HashMap<>();
-        pairTheme.put("name", "페어 테마");
-        pairTheme.put("description", "페어 전용 테마입니다.");
-        pairTheme.put("thumbnailUrl", "https://example.com/pair.png");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(pairTheme)
-                .when().post("/themes")
-                .then().statusCode(201);
+        createTheme("우아한 테마", "우아한테크코스 전용 테마입니다.", "https://example.com/image.png");
+        createTheme( "페어 테마", "페어 전용 테마입니다.", "https://example.com/pair.png");
 
         List<ReservationTime> beforeReservationResults = RestAssured.given().log().all()
                 .when().get("/times/available?date=2026-05-01&themId=1")
@@ -75,29 +57,8 @@ public class UserReservationTest {
 
         assertThat(beforeReservationResults.size()).isEqualTo(4);
 
-        Map<String, Object> firstReservation = new HashMap<>();
-        firstReservation.put("name", "브라운");
-        firstReservation.put("date", "2026-05-01");
-        firstReservation.put("timeId", 1);
-        firstReservation.put("themeId", 1);
-
-        RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(firstReservation)
-                .when().post("/reservations")
-                .then().statusCode(201);
-
-        Map<String, Object> secondReservation = new HashMap<>();
-        secondReservation.put("name", "포비");
-        secondReservation.put("date", "2026-05-02");
-        secondReservation.put("timeId", 2);
-        secondReservation.put("themeId", 2);
-
-        RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(secondReservation)
-                .when().post("/reservations")
-                .then().statusCode(201);
+        createReservation("브라운", LocalDate.of(2026, 5, 1), 1L, 1L);
+        createReservation("포비", LocalDate.of(2026, 5, 2), 2L, 2L);
 
         List<ReservationTime> afterReservationResults = RestAssured.given().log().all()
                 .when().get("/times/available?date=2026-05-01&themId=1")
@@ -130,5 +91,32 @@ public class UserReservationTest {
                 .jsonPath().getList(".", ReservationTime.class);
 
         assertThat(afterReservationResults_4.size()).isEqualTo(3);
+    }
+
+    private void createTheme(String name, String description, String thumbnailUrl) {
+        Map<String, Object> theme = new HashMap<>();
+        theme.put("name", name);
+        theme.put("description", description);
+        theme.put("thumbnailUrl", thumbnailUrl);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().statusCode(201);
+    }
+
+    private void createReservation(String name, LocalDate date, Long timeId, Long themeId) {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", name);
+        reservation.put("date", date.toString());
+        reservation.put("timeId", timeId);
+        reservation.put("themeId", themeId);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().statusCode(201);
     }
 }
