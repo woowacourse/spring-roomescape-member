@@ -49,7 +49,6 @@ VALUES ('매트', 5, '2026-05-10', 4);
 INSERT INTO reservation (user_name, theme_id, date, time_id)
 VALUES ('동키', 5, '2026-05-10', 5);
 
--- 다른 날짜
 INSERT INTO reservation (user_name, theme_id, date, time_id)
 VALUES ('그해', 1, '2026-05-11', 1);
 INSERT INTO reservation (user_name, theme_id, date, time_id)
@@ -57,7 +56,6 @@ VALUES ('아루', 2, '2026-05-11', 2);
 INSERT INTO reservation (user_name, theme_id, date, time_id)
 VALUES ('매트', 3, '2026-05-11', 3);
 
--- 인기 테마 조회용 (테마 5가 가장 많은 예약)
 INSERT INTO reservation (user_name, theme_id, date, time_id)
 VALUES ('동키', 1, '2026-05-12', 2);
 INSERT INTO reservation (user_name, theme_id, date, time_id)
