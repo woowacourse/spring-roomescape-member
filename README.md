@@ -22,3 +22,32 @@
 필요한 API
 1. 관리자 테마 추가
 2. 관리자 테마 삭제
+
+```mermaid
+erDiagram
+%% Relationships
+theme ||--o{ reservation : "has (1:N)"
+reservation_time ||--o{ reservation : "has (1:N)"
+
+    %% Tables
+    theme {
+        BIGINT id PK
+        VARCHAR name
+        VARCHAR thumbnail_image_url
+        VARCHAR description
+        VARCHAR duration_time
+    }
+
+    reservation_time {
+        BIGINT id PK
+        VARCHAR start_at
+    }
+
+    reservation {
+        BIGINT id PK
+        VARCHAR name
+        VARCHAR date
+        BIGINT time_id FK
+        BIGINT theme_id FK
+    }
+```
