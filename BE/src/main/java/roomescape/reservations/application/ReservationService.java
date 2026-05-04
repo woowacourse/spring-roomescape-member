@@ -29,7 +29,6 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse saveReservation(ReservationRequest request) {
-        validateSaveRequest(request);
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new ReservationTimeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
         Reservation reservation = Reservation.of(
@@ -54,21 +53,5 @@ public class ReservationService {
             throw new ReservationException(ErrorCode.RESERVATION_ID_NULL);
         }
         reservationRepository.deleteById(id);
-    }
-
-    // TODO: 검증 로직 위치 분리
-    private void validateSaveRequest(ReservationRequest request) {
-        if (request == null) {
-            throw new ReservationException(ErrorCode.RESERVATION_REQUEST_NULL);
-        }
-        if (request.name() == null || request.name().trim().isBlank()) {
-            throw new ReservationException(ErrorCode.RESERVATION_NAME_EMPTY);
-        }
-        if (request.date() == null) {
-            throw new ReservationException(ErrorCode.RESERVATION_DATE_NULL);
-        }
-        if (request.timeId() == null) {
-            throw new ReservationTimeException(ErrorCode.RESERVATION_TIME_ID_NULL);
-        }
     }
 }

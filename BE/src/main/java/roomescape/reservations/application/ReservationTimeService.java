@@ -26,7 +26,6 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTimeResponse saveTime(ReservationTimeRequest request) {
-        validateSaveRequest(request);
         ReservationTime reservationTime = ReservationTime.of(
                 null,
                 request.startAt()
@@ -51,15 +50,5 @@ public class ReservationTimeService {
             throw new ReservationTimeException(ErrorCode.RESERVATION_TIME_ALREADY_USED);
         }
         reservationTimeRepository.deleteById(id);
-    }
-
-    // TODO: 검증 로직 위치 분리
-    private void validateSaveRequest(ReservationTimeRequest request) {
-        if (request == null) {
-            throw new ReservationTimeException(ErrorCode.RESERVATION_TIME_REQUEST_NULL);
-        }
-        if (request.startAt() == null) {
-            throw new ReservationTimeException(ErrorCode.RESERVATION_TIME_START_AT_NULL);
-        }
     }
 }
