@@ -7,8 +7,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.time.domain.ReservationTime;
 
 class ReservationTest {
@@ -20,14 +18,14 @@ class ReservationTest {
     void createSuccess() {
         // given
         String name = "브라운";
-        String date = "2024-05-01";
+        LocalDate date = LocalDate.of(2024, 5, 1);
 
         // when
         Reservation reservation = Reservation.create(name, date, reservationTime);
 
         // then
         assertThat(reservation.getName()).isEqualTo(name);
-        assertThat(reservation.getDate()).isEqualTo(LocalDate.of(2024, 5, 1));
+        assertThat(reservation.getDate()).isEqualTo(date);
         assertThat(reservation.getTime()).isEqualTo(reservationTime);
     }
 
@@ -38,19 +36,9 @@ class ReservationTest {
         String longName = "열한글자짜리이름입니다아";
 
         // when & then
-        assertThatThrownBy(() -> Reservation.create(longName, "2024-05-01", reservationTime))
+        assertThatThrownBy(() -> Reservation.create(longName, LocalDate.of(2024, 5, 1), reservationTime))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이름은 10글자 이하여야 합니다.");
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"2024/05/01", "24-05-01", "not-a-date", "2024-13-01", "2024-02-30"})
-    @DisplayName("잘못된 날짜 형식이나 존재하지 않는 날짜 입력 시 예외가 발생한다.")
-    void validateDateFormatTest(String invalidDate) {
-        // when & then
-        assertThatThrownBy(() -> Reservation.create("브라운", invalidDate, reservationTime))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("날짜 형식이 올바르지 않습니다.");
     }
 
     @Test

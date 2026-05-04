@@ -1,5 +1,9 @@
 package roomescape.reservation.repository;
 
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -8,24 +12,19 @@ import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.time.domain.ReservationTime;
 
-import java.sql.PreparedStatement;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
 
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
         ReservationTime time = new ReservationTime(
                 resultSet.getLong("time_id"),
-                resultSet.getObject("start_at", LocalTime.class)
+                resultSet.getTime("start_at").toLocalTime()
         );
 
         return new Reservation(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
-                resultSet.getObject("date", LocalDate.class),
+                resultSet.getDate("reservation_date").toLocalDate(),
                 time
         );
     };
@@ -38,13 +37,13 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        String sql = "insert into reservation (name, date, time_id) values (?, ?, ?)";
+        String sql = "insert into reservation (name, reservation_date, time_id) values (?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, reservation.getName());
-            ps.setObject(2, reservation.getDate());
+            ps.setDate(2, Date.valueOf(reservation.getDate()));
             ps.setLong(3, reservation.getTime().getId());
             return ps;
         }, keyHolder);
@@ -60,7 +59,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = "select r.id, r.name, r.date, r.time_id, t.start_at " +
+        String sql = "select r.id, r.name, r.reservation_date, r.time_id, t.start_at " +
                 "from reservation r " +
                 "inner join reservation_time t on r.time_id = t.id";
         return jdbcTemplate.query(sql, reservationRowMapper);
@@ -68,7 +67,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
-        String sql = "select exists (select 1 from reservation where date = ? and time_id = ?)";
+        String sql = "select exists (select 1 from reservation where reservation_date = ? and time_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId);
     }
 }
