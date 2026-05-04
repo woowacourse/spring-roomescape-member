@@ -47,4 +47,8 @@ public class ThemeDao {
                 theme.getUrl()
         );
     }
+
+    public void delete(Long id) {
+        jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+    }
 }

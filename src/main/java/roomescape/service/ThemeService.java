@@ -26,4 +26,8 @@ public class ThemeService {
 
         return ThemeResponse.from(saved);
     }
+
+    public void delete(Long id) {
+        themeDao.delete(id);
+    }
 }
