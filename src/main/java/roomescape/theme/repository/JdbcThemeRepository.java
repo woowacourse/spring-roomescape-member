@@ -1,13 +1,14 @@
 package roomescape.theme.repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.theme.domain.Theme;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 public class JdbcThemeRepository implements ThemeRepository {
 
@@ -51,7 +52,12 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Theme mapRow(ResultSet rs, int rowNum) throws SQLException {
-      return null;
+      Theme theme = new Theme(
+              rs.getString("name"),
+              rs.getString("description"),
+              rs.getString("image_url")
+      );
+      return theme.withId(rs.getLong("id"));
     }
   }
 }
