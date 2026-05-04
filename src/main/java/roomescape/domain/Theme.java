@@ -1,39 +1,15 @@
 package roomescape.domain;
 
 public class Theme {
-    private final long id;
     private final String name;
     private final String description;
     private final String thumbnailUrl;
 
-    private Theme(long id, String name, String description, String thumbnailUrl) {
-        this.id = id;
+    public Theme(String name, String description, String thumbnailUrl) {
         this.name = name;
         this.description = description;
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public static Theme of(long id, String name, String description, String thumbnailUrl) {
-        return new Theme(id, name, description, thumbnailUrl);
-    }
 
-    public static Theme of(String name, String description, String thumbnailUrl) {
-        return new Theme(0L, name, description, thumbnailUrl);
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getThumbnailUrl() {
-        return thumbnailUrl;
-    }
 }
