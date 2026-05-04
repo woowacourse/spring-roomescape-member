@@ -1,10 +1,8 @@
 package roomescape.domain;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ReservationTime {
@@ -41,7 +39,7 @@ public class ReservationTime {
         return startAt;
     }
 
-    private LocalTime translateTime(String startAt){
+    private LocalTime translateTime(String startAt) {
         if (!TIME_PATTERN.matcher(startAt).matches()) {
             throw new IllegalArgumentException("시간 형식이 HH:mm (예: 09:30) 형태여야 합니다: " + startAt);
         }

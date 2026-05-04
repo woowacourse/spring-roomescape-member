@@ -31,39 +31,29 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<ReservationResponseDto> getReservations() {
-        List<Reservation> reservations = reservationRepository.findAll();
-        return reservations.stream()
-            .map(ReservationResponseDto::from)
-            .toList();
+    public List<Reservation> getReservations() {
+        return reservationRepository.findAll();
     }
 
-    public ReservationResponseDto addReservation(ReservationRequestDto requestDto) {
+    public Reservation addReservation(ReservationRequestDto requestDto) {
         ReservationTime time = reservationTimeRepository.findById(requestDto.timeId());
         Theme theme = themeRepository.findById(requestDto.themeId());
 
         Reservation reservation = new Reservation(requestDto.name(), requestDto.date(), time, theme);
-        Reservation saved = reservationRepository.createReservation(reservation);
-
-        return ReservationResponseDto.from(saved);
+        return reservationRepository.createReservation(reservation);
     }
 
     public void deleteReservation(Long id) {
         reservationRepository.deleteById(id);
     }
 
-    public List<ReservationTimeResponseDto> getReservationTimes() {
-        List<ReservationTime> times = reservationTimeRepository.findAll();
-        return times.stream()
-            .map(ReservationTimeResponseDto::from)
-            .toList();
+    public List<ReservationTime> getReservationTimes() {
+        return reservationTimeRepository.findAll();
     }
 
-    public ReservationTimeResponseDto addReservationTime(ReservationTimeRequesetDto requestDto) {
-        ReservationTime reservationTime = reservationTimeRepository.createReservationTime(
-            new ReservationTime(null, requestDto.startAt()));
-
-        return ReservationTimeResponseDto.from(reservationTime);
+    public ReservationTime addReservationTime(ReservationTimeRequesetDto requestDto) {
+        return reservationTimeRepository.createReservationTime(
+            new ReservationTime(requestDto.startAt()));
     }
 
     public void deleteReservationTime(Long id) {

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.domain.Reservation;
 import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.service.ReservationService;
@@ -27,17 +28,20 @@ public class ReservationController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ReservationResponseDto> getReservations() {
-        return reservationService.getReservations();
+        return reservationService.getReservations().stream()
+                .map(ReservationResponseDto::from)
+                .toList();
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponseDto addReservation(@RequestBody ReservationRequestDto requestDto) {
-        return reservationService.addReservation(requestDto);
+        Reservation reservation = reservationService.addReservation(requestDto);
+        return ReservationResponseDto.from(reservation);
     }
 
     @DeleteMapping("{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservation(id);
     }
