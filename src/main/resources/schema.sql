@@ -1,3 +1,8 @@
+-- schema.sql
+DROP TABLE IF EXISTS reservation;
+DROP TABLE IF EXISTS reservation_time;
+DROP TABLE IF EXISTS theme;
+
 CREATE TABLE IF NOT EXISTS reservation_time
 (
     id       BIGINT NOT NULL AUTO_INCREMENT,
