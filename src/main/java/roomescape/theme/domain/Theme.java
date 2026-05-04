@@ -1,8 +1,10 @@
 package roomescape.theme.domain;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
+@EqualsAndHashCode(of = {"name","description"})
 public class Theme {
 
     private final Long id;
