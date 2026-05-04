@@ -1,5 +1,8 @@
 package roomescape;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
@@ -16,15 +19,14 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.ReservationController;
 import roomescape.domain.Reservation;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private ReservationController reservationController;
 
     @Test
     void 예약_조회() {
@@ -37,20 +39,21 @@ public class MissionStepTest {
 
     @Test
     void 예약_추가_및_삭제() {
+        insertTheme();
         insertReservationTime();
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200)
-                .body("id", is(1));
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -83,9 +86,10 @@ public class MissionStepTest {
 
     @Test
     void DB_조회_API_전환() {
+        insertTheme();
         insertReservationTime();
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05",
-                1);
+        jdbcTemplate.update("INSERT INTO reservation (name, theme_id, date, time_id) VALUES (?, ?, ?, ?)", "브라운", 1,
+                "2023-08-05", 1);
 
         List<Reservation> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -100,19 +104,21 @@ public class MissionStepTest {
 
     @Test
     void DB_추가_삭제_API_전환() {
+        insertTheme();
         insertReservationTime();
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(1);
@@ -136,7 +142,7 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/times")
@@ -152,19 +158,21 @@ public class MissionStepTest {
 
     @Test
     void 예약과_시간_연결() {
+        insertTheme();
         insertReservationTime();
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -173,12 +181,14 @@ public class MissionStepTest {
                 .body("size()", is(1));
     }
 
+    private void insertTheme() {
+        jdbcTemplate.execute(
+                "INSERT INTO theme(name, description, thumbnail_image_url) VALUES ('테마명', '테마설명', 'https://thumbnail.url')");
+    }
+
     private void insertReservationTime() {
         jdbcTemplate.execute("INSERT INTO reservation_time(start_at) VALUES ('10:00')");
     }
-
-    @Autowired
-    private ReservationController reservationController;
 
     @Test
     void 계층화_리팩터링() {
