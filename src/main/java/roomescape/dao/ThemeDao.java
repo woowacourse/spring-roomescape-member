@@ -35,6 +35,32 @@ public class ThemeDao {
         );
     }
 
+    public List<Theme> findTopThemes(Long count) {
+        return jdbcTemplate.query(
+                """
+                           SELECT
+                           t.id,
+                           t.name,
+                           t.description,
+                           t.url,
+                           COUNT(r.id) AS reservation_count
+                           FROM theme t
+                           INNER JOIN reservation r ON t.id = r.theme_id
+                           WHERE r.date BETWEEN DATEADD('DAY', -7, CURRENT_DATE) AND CURRENT_DATE
+                           GROUP BY t.id, t.name
+                           ORDER BY reservation_count DESC
+                           LIMIT ?;
+                        """, (rs, rowNum) -> new Theme(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getString("url")
+                ),
+                count
+        );
+    }
+
+
     public Theme save(Theme theme) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", theme.getName());
@@ -58,13 +84,13 @@ public class ThemeDao {
     public List<ReservationTime> findAvailableTime(Long id, String date) {
         return jdbcTemplate.query(
                 """
-                        SELECT t.id AS time_id, t.start_at
-                        FROM reservation_time t
-                        LEFT JOIN reservation r ON t.id = r.time_id
-                           AND r.theme_id = ?
-                           AND r.date = ?
-                        WHERE r.id is NULL
-                   """,
+                             SELECT t.id AS time_id, t.start_at
+                             FROM reservation_time t
+                             LEFT JOIN reservation r ON t.id = r.time_id
+                                AND r.theme_id = ?
+                                AND r.date = ?
+                             WHERE r.id is NULL
+                        """,
                 (rs, rowNum) -> new ReservationTime(
                         rs.getLong("time_id"),
                         rs.getTime("start_at").toLocalTime()
