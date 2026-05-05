@@ -1,5 +1,6 @@
 package roomescape.reservation.infra;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -57,5 +58,19 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 .addValue("timeId", timeId);
 
         return template.query(sql, params, reservationTimeRowMapper).stream().findFirst();
+    }
+
+
+    @Override
+    public List<ReservationTime> findTimesByDateAndThemeId(LocalDate date, long themeId) {
+        String sql = "SELECT rt.id, rt.start_at FROM schedule s " +
+                "JOIN reservation_time rt ON s.time_id = rt.id " +
+                "WHERE s.date = :date AND s.theme_id = :themeId";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("themeId", themeId);
+
+        return template.query(sql, params, reservationTimeRowMapper);
     }
 }
