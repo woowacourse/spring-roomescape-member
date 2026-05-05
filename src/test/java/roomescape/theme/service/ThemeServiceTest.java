@@ -7,11 +7,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.FakeThemeRepository;
+import roomescape.theme.fixture.FakeThemeRepository;
 
 class ThemeServiceTest {
     private static final String DEFAULT_DESCRIPTION = "테마 설명";
@@ -21,19 +22,19 @@ class ThemeServiceTest {
     private FakeThemeRepository themeRepository;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         this.themeRepository = new FakeThemeRepository();
         this.themeService = new ThemeService(themeRepository);
     }
 
     @Test
     @DisplayName("등록된 테마가 여러개이면 조회 시 등록된 갯수만큼 반환한다.")
-    void readThemes(){
+    void readThemes() {
         // given
         List<Theme> themes = List.of(
-            Theme.create( "테마1", "테마1 설명", "테마1 썸네일"),
-            Theme.create("테마2", "테마2 설명", "테마2 썸네일"),
-            Theme.create("테마3", "테마3 설명", "테마3 썸네일")
+                Theme.create("테마1", "테마1 설명", "테마1 썸네일"),
+                Theme.create("테마2", "테마2 설명", "테마2 썸네일"),
+                Theme.create("테마3", "테마3 설명", "테마3 썸네일")
         );
         themeRepository.saveAll(themes);
 
@@ -46,9 +47,9 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("등록된 테마와 조회되는 테마의 모든 필드가 일치한다.")
-    void readTheme(){
+    void readTheme() {
         // given
-        Theme savedTheme = themeRepository.save( Theme.create("테마1", "테마1 설명", "테마1 썸네일"));
+        Theme savedTheme = themeRepository.save(Theme.create("테마1", "테마1 설명", "테마1 썸네일"));
 
         // when
         Theme actual = themeService.readTheme(savedTheme.id());
@@ -61,7 +62,7 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("등록되지 않은 테마 조회 시 예외가 발생한다.")
-    void readTheme_unregistered(){
+    void readTheme_unregistered() {
         // given
         Long unregisteredId = Long.MIN_VALUE;
 
@@ -73,7 +74,7 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("활성화된 테마 목록을 가나다순으로 조회한다.")
-    void readActiveThemes(){
+    void readActiveThemes() {
         // given
         String name1 = "다테마";
         String name2 = "나테마";
@@ -94,7 +95,7 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("테마를 1개 등록하면 테마 데이터 수가 1 증가한다.")
-    void register(){
+    void register() {
         // given
         String name = "테마1";
         String description = "테마1 설명";
@@ -110,14 +111,14 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("등록한 테마와 다시 조회한 테마의 모든 필드가 일치한다.")
-    void register_theme_fields_match(){
+    void register_theme_fields_match() {
         // given
         String name = "테마1";
         String description = "테마1 설명";
         String thumbnail = "테마1 썸네일";
 
         // when
-        Theme registeredTheme =  themeService.register(name, description, thumbnail);
+        Theme registeredTheme = themeService.register(name, description, thumbnail);
 
         // then
         assertThat(registeredTheme)
@@ -128,7 +129,7 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("테마를 활성화한다.")
-    void updateStatus_active(){
+    void updateStatus_active() {
         // given
         Theme savedTheme = themeRepository.save(Theme.create("테마1", "테마1 설명", "테마1 썸네일"));
 
@@ -143,7 +144,7 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("테마를 비활성화한다.")
-    void updateStatus_deactivate(){
+    void updateStatus_deactivate() {
         // given
         Theme theme = Theme.create("테마1", "테마1 설명", "테마1 썸네일");
         theme.updateStatus(true);
@@ -157,18 +158,18 @@ class ThemeServiceTest {
                 .isFalse();
     }
 
-    private List<Theme> saveAll(List<Theme> themes){
+    private List<Theme> saveAll(List<Theme> themes) {
         List<Theme> savedThemes = new ArrayList<>();
-        for(Theme theme : themes){
+        for (Theme theme : themes) {
             Theme savedTheme = themeRepository.save(theme);
             savedThemes.add(savedTheme);
         }
         return savedThemes;
     }
 
-    private List<Theme> generateActiveThemesByName(List<String> names){
+    private List<Theme> generateActiveThemesByName(List<String> names) {
         List<Theme> themes = new ArrayList<>();
-        for(String name : names){
+        for (String name : names) {
             Theme theme = Theme.create(name, DEFAULT_DESCRIPTION, DEFAULT_THUMBNAIL_URL);
             theme.updateStatus(true);
             themes.add(theme);

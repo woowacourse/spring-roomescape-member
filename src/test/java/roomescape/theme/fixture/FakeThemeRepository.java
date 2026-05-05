@@ -1,12 +1,14 @@
-package roomescape.theme.repository;
+package roomescape.theme.fixture;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import roomescape.theme.domain.Theme;
 
-public class FakeThemeRepository implements ThemeRepository{
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
+
+public class FakeThemeRepository implements ThemeRepository {
     private final List<Theme> themes = new ArrayList<>();
     private Long autoIncrement = 0L;
 
@@ -18,23 +20,23 @@ public class FakeThemeRepository implements ThemeRepository{
         return savedTheme;
     }
 
-    @Override
-    public boolean updateStatus(Theme theme) {
-        boolean isActive = theme.isActive();
-        Optional<Theme> target = findById(theme.id());
-        if(target.isEmpty()){
-            return false;
-        }
-        target.get().updateStatus(isActive);
-        return true;
-    }
-
     public void saveAll(List<Theme> themes) {
         themes.forEach(this::save);
     }
 
     private void autoIncrement() {
-        autoIncrement = ++autoIncrement;
+        autoIncrement = autoIncrement + 1;
+    }
+
+    @Override
+    public boolean updateStatus(Theme theme) {
+        boolean isActive = theme.isActive();
+        Optional<Theme> target = findById(theme.id());
+        if (target.isEmpty()) {
+            return false;
+        }
+        target.get().updateStatus(isActive);
+        return true;
     }
 
     @Override
