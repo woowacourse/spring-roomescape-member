@@ -5,11 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.exception.ReservationInUseException;
 import roomescape.reservation.domain.exception.ReservationNotFoundException;
-import roomescape.reservation.presentation.dto.ReservationRequest;
-import roomescape.reservation.presentation.dto.ReservationResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
@@ -25,20 +24,17 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
 
     @Transactional(readOnly = true)
-    public List<ReservationResponse> getReservations() {
-        return reservationRepository.findAll()
-                .stream()
-                .map(ReservationResponse::from)
-                .toList();
+    public List<Reservation> getReservations() {
+        return reservationRepository.findAll();
     }
 
-    public ReservationResponse addReservation(ReservationCreateCommand command) {
+    public Reservation addReservation(ReservationCreateCommand command) {
         ReservationTime time = timeRepository.getById(command.timeId());
         Theme theme = themeRepository.getById(command.themeId());
         if (reservationRepository.existsByReservationTimeAndThemeAndDate(time.getId(), theme.getId(), command.date())) {
             throw new ReservationInUseException("이미 예약이 존재합니다.");
         }
-        return ReservationResponse.from(reservationRepository.save(command.toEntity(time, theme)));
+        return reservationRepository.save(command.toEntity(time, theme));
     }
 
     public void cancelReservation(Long id) {

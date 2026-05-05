@@ -18,11 +18,19 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getThemes() {
-        return ResponseEntity.ok(service.getThemes());
+        List<ThemeResponse> responses = service.getThemes()
+                .stream()
+                .map(ThemeResponse::from)
+                .toList();
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/weeks/top")
     public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
-        return ResponseEntity.ok(service.getWeeksTopThemes());
+        List<ThemeResponse> responses = service.getWeeksTopThemes()
+                .stream()
+                .map(ThemeResponse::from)
+                .toList();
+        return ResponseEntity.ok(responses);
     }
 }

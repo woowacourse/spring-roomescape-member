@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.time.application.ReservationTimeService;
+import roomescape.time.application.dto.AvailableReservationTimeInfo;
 import roomescape.time.presentation.dto.AvailableReservationTimeRequest;
 import roomescape.time.presentation.dto.AvailableReservationTimeResponse;
 import roomescape.time.presentation.dto.ReservationTimeRequest;
@@ -28,12 +29,19 @@ public class ReservationTimeController {
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
-        return ResponseEntity.ok().body(service.getReservationTimes());
+        List<ReservationTimeResponse> responses = service.getReservationTimes()
+                .stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createReservationTime(@Valid @RequestBody ReservationTimeRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.addReservationTime(ReservationTimeRequest.toEntity(request)));
+        ReservationTimeResponse response = ReservationTimeResponse.from(
+                service.addReservationTime(ReservationTimeRequest.toEntity(request))
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
@@ -44,6 +52,8 @@ public class ReservationTimeController {
 
     @GetMapping("/available")
     public ResponseEntity<AvailableReservationTimeResponse> getAvailableReservationTime(@Valid @ModelAttribute AvailableReservationTimeRequest request) {
-        return ResponseEntity.ok(service.getAvailableReservationTime(request.toCommand()));
+        AvailableReservationTimeInfo reservationTimeInfo = service.getAvailableReservationTime(
+                request.toCommand());
+        return ResponseEntity.ok(AvailableReservationTimeResponse.from(reservationTimeInfo));
     }
 }

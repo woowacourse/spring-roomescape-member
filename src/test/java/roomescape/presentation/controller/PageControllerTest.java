@@ -15,13 +15,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.reservation.application.ReservationService;
-import roomescape.reservation.presentation.dto.ReservationResponse;
+import roomescape.reservation.domain.Reservation;
 import roomescape.theme.application.ThemeService;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.presentation.dto.ThemeResponse;
 import roomescape.time.application.ReservationTimeService;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.presentation.dto.ReservationTimeResponse;
 
 @WebMvcTest(PageController.class)
 class PageControllerTest {
@@ -73,8 +71,8 @@ class PageControllerTest {
                 .andExpect(model().attributeExists("themes", "times", "reservations"));
     }
 
-    private ThemeResponse themeResponse() {
-        return ThemeResponse.builder()
+    private Theme themeResponse() {
+        return Theme.builder()
                 .id(1L)
                 .name("미드나잇")
                 .thumbnailImageUrl("https://example.com/theme.png")
@@ -83,14 +81,14 @@ class PageControllerTest {
                 .build();
     }
 
-    private ReservationTimeResponse timeResponse() {
-        return ReservationTimeResponse.builder()
+    private ReservationTime timeResponse() {
+        return ReservationTime.builder()
                 .id(1L)
                 .startAt(LocalTime.of(10, 0))
                 .build();
     }
 
-    private ReservationResponse reservationResponse() {
+    private Reservation reservationResponse() {
         Theme theme = Theme.builder()
                 .id(1L)
                 .name("미드나잇")
@@ -103,12 +101,12 @@ class PageControllerTest {
                 .startAt(LocalTime.of(10, 0))
                 .build();
 
-        return ReservationResponse.builder()
+        return Reservation.builder()
                 .id(1L)
                 .name("포비")
                 .date(LocalDate.of(2026, 5, 4))
-                .time(ReservationTimeResponse.from(time))
-                .theme(ThemeResponse.from(theme))
+                .time(time)
+                .theme(theme)
                 .build();
     }
 }

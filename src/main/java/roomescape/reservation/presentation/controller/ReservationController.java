@@ -25,12 +25,17 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations() {
-        return ResponseEntity.ok().body(service.getReservations());
+        List<ReservationResponse> responses = service.getReservations()
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.addReservation(request.toCommand()));
+        ReservationResponse response = ReservationResponse.from(service.addReservation(request.toCommand()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")

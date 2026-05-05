@@ -13,9 +13,9 @@ import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.theme.application.ThemeService;
 import roomescape.theme.presentation.dto.ThemeRequest;
 import roomescape.theme.presentation.dto.ThemeResponse;
+import roomescape.time.domain.ReservationTime;
 import roomescape.time.presentation.dto.AvailableReservationTimeRequest;
 import roomescape.time.presentation.dto.ReservationTimeRequest;
-import roomescape.time.presentation.dto.ReservationTimeResponse;
 
 @Transactional
 @SpringBootTest
@@ -42,10 +42,10 @@ class ReservationTimeServiceTest {
                 .durationTime(LocalTime.of(1, 30))
                 .build();
         ThemeResponse themeResponse = themeService.addTheme(ThemeRequest.toEntity(theme));
-        ReservationTimeResponse timeResponse = timeService.addReservationTime(ReservationTimeRequest.toEntity(new ReservationTimeRequest(LocalTime.now())));
+        ReservationTime time = timeService.addReservationTime(ReservationTimeRequest.toEntity(new ReservationTimeRequest(LocalTime.now())));
         timeService.addReservationTime(ReservationTimeRequest.toEntity(new ReservationTimeRequest(LocalTime.now().plusHours(1))));
         timeService.addReservationTime(ReservationTimeRequest.toEntity(new ReservationTimeRequest(LocalTime.now().plusHours(2))));
-        reservationService.addReservation(new ReservationCreateCommand("포비", LocalDate.now(), timeResponse.id(), themeResponse.id()));
+        reservationService.addReservation(new ReservationCreateCommand("포비", LocalDate.now(), time.getId(), themeResponse.id()));
         AvailableReservationTimeRequest availableReservationTimeRequest = new AvailableReservationTimeRequest(
                 themeResponse.id(), LocalDate.now());
         Assertions.assertThat(reservationTimeService.getAvailableReservationTime(availableReservationTimeRequest.toCommand())

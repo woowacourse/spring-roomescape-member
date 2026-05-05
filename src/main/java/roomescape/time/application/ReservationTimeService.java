@@ -11,12 +11,11 @@ import roomescape.reservation.domain.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 import roomescape.time.application.dto.AvailableReservationTimeFindCommand;
+import roomescape.time.application.dto.AvailableReservationTimeInfo;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.exception.ReservationTimeInUseException;
 import roomescape.time.domain.exception.ReservationTimeNotFoundException;
 import roomescape.time.domain.ReservationTimeRepository;
-import roomescape.time.presentation.dto.AvailableReservationTimeResponse;
-import roomescape.time.presentation.dto.ReservationTimeResponse;
 
 @Service
 @Transactional
@@ -28,15 +27,12 @@ public class ReservationTimeService {
     private final ThemeRepository themeRepository;
 
     @Transactional(readOnly = true)
-    public List<ReservationTimeResponse> getReservationTimes() {
-        return reservationTimeRepository.findAll()
-                .stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
+    public List<ReservationTime> getReservationTimes() {
+        return reservationTimeRepository.findAll();
     }
 
-    public ReservationTimeResponse addReservationTime(ReservationTime time) {
-        return ReservationTimeResponse.from(reservationTimeRepository.save(time));
+    public ReservationTime addReservationTime(ReservationTime time) {
+        return reservationTimeRepository.save(time);
     }
 
     public void deleteReservationTime(Long id) {
@@ -49,7 +45,7 @@ public class ReservationTimeService {
     }
 
     @Transactional(readOnly = true)
-    public AvailableReservationTimeResponse getAvailableReservationTime(AvailableReservationTimeFindCommand command) {
+    public AvailableReservationTimeInfo getAvailableReservationTime(AvailableReservationTimeFindCommand command) {
         Theme theme = themeRepository.getById(command.themeId());
         List<Reservation> reservations = reservationRepository.findByThemeAndDate(
                 command.themeId(), command.date());
@@ -60,6 +56,6 @@ public class ReservationTimeService {
         List<ReservationTime> availableTime = allTimes.stream()
                 .filter(time -> !reservedTimes.contains(time))
                 .toList();
-        return AvailableReservationTimeResponse.from(theme, availableTime);
+        return AvailableReservationTimeInfo.from(theme, availableTime);
     }
 }

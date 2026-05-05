@@ -32,22 +32,16 @@ public class ThemeService {
     }
 
     @Transactional(readOnly = true)
-    public List<ThemeResponse> getThemes() {
-        List<Theme> themes = themeRepository.findAll();
-        return themes.stream()
-                .map(ThemeResponse::from)
-                .toList();
+    public List<Theme> getThemes() {
+        return themeRepository.findAll();
     }
 
     @Transactional(readOnly = true)
-    public List<ThemeResponse> getWeeksTopThemes() {
-        List<Theme> themes = themeRepository.findByReservationCountWithLimit(
+    public List<Theme> getWeeksTopThemes() {
+        return themeRepository.findByReservationCountWithLimit(
                 LocalDate.now().minusWeeks(WEEKS_BOUND),
                 LocalDate.now().minusDays(DAYS_BOUND),
                 THEME_SIZE_LIMIT
         );
-        return themes.stream()
-                .map(ThemeResponse::from)
-                .toList();
     }
 }
