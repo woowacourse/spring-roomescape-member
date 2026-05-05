@@ -1,84 +1,64 @@
-package roomescape.model;
+package roomescape.reservation.model;
 
+import roomescape.schedule.model.Schedule;
 import roomescape.theme.model.Theme;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
+import roomescape.user.model.User;
 
 public class Reservation {
 
     private Long id;
-    private String name;
-    private LocalDate date;
-    private ReservationTime time;
+    private User user;
+    private Schedule schedule;
     private Theme theme;
 
     protected Reservation() {
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(User user, Schedule schedule, Theme theme) {
+        this(null, user, schedule, theme);
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateName(name);
-        validateDate(date);
-        validateTime(time);
-        validateNotPast(date, time);
+    public Reservation(Long id, User user, Schedule schedule, Theme theme) {
+        validateUser(user);
+        validateSchedule(schedule);
+        validateTheme(theme);
         this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
+        this.user = user;
+        this.schedule = schedule;
         this.theme = theme;
-    }
-
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("예약자 이름은 필수이며, 공백일 수 없습니다.");
-        }
-    }
-
-    private void validateDate(LocalDate date) {
-        if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 필수입니다.");
-        }
-    }
-
-    private void validateTime(ReservationTime time) {
-        if (time == null) {
-            throw new IllegalArgumentException("예약 시간은 필수입니다.");
-        }
-    }
-
-    private void validateNotPast(LocalDate date, ReservationTime time) {
-        LocalDate today = LocalDate.now();
-
-        if (date.isBefore(today)) {
-            throw new IllegalArgumentException("이미 지난 날짜는 예약할 수 없습니다.");
-        }
-
-        if (date.isEqual(today) && time.getStartTime().isBefore(LocalTime.now())) {
-            throw new IllegalArgumentException("오늘의 지난 시간은 예약할 수 없습니다.");
-        }
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public User getUser() {
+        return user;
     }
 
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public ReservationTime getTime() {
-        return time;
+    public Schedule getSchedule() {
+        return schedule;
     }
 
     public Theme getTheme() {
         return theme;
+    }
+
+    private void validateUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("사용자 정보는 필수입니다.");
+        }
+    }
+
+    private void validateSchedule(Schedule schedule) {
+        if (schedule == null) {
+            throw new IllegalArgumentException("스케줄 정보는 필수입니다.");
+        }
+    }
+
+    private void validateTheme(Theme theme) {
+        if (theme == null) {
+            throw new IllegalArgumentException("테마 정보는 필수입니다.");
+        }
     }
 }
