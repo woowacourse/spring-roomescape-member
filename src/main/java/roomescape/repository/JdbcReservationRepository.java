@@ -7,13 +7,12 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.DomainException;
+import roomescape.domain.Theme;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.InfrastructureException;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -24,15 +23,21 @@ public class JdbcReservationRepository implements ReservationRepository {
                 r.name,
                 r.date,
                 t.id AS time_id,
-                t.start_at
+                t.start_at,
+                th.id AS theme_id,
+                th.name AS theme_name,
+                th.description AS theme_description,
+                th.thumbnail AS theme_thumbnail
             FROM reservation r
             INNER JOIN reservation_time t
                 ON r.time_id = t.id
+            INNER JOIN theme th
+                ON r.theme_id = th.id
             """;
 
     private static final String INSERT_SQL = """
-            INSERT INTO reservation (name, date, time_id)
-            VALUES (?, ?, ?)
+            INSERT INTO reservation (name, date, time_id, theme_id)
+            VALUES (?, ?, ?, ?)
             """;
 
     private static final String DELETE_SQL = """
@@ -43,14 +48,22 @@ public class JdbcReservationRepository implements ReservationRepository {
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
         ReservationTime reservationTime = new ReservationTime(
                 resultSet.getLong("time_id"),
-                LocalTime.parse(resultSet.getString("start_at"))
+                resultSet.getTime("start_at").toLocalTime()
+        );
+
+        Theme theme = new Theme(
+                resultSet.getLong("theme_id"),
+                resultSet.getString("theme_name"),
+                resultSet.getString("theme_description"),
+                resultSet.getString("theme_thumbnail")
         );
 
         return new Reservation(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("name"),
-                LocalDate.parse(resultSet.getString("date")),
-                reservationTime
+                resultSet.getDate("date").toLocalDate(),
+                reservationTime,
+                theme
         );
     };
 
@@ -88,8 +101,9 @@ public class JdbcReservationRepository implements ReservationRepository {
                     new String[]{"id"}
             );
             preparedStatement.setString(1, reservation.getName());
-            preparedStatement.setString(2, reservation.getDate().toString());
+            preparedStatement.setDate(2, Date.valueOf(reservation.getDate()));
             preparedStatement.setLong(3, reservation.getTime().getId());
+            preparedStatement.setLong(4, reservation.getTheme().getId());
             return preparedStatement;
         }, keyHolder);
     }

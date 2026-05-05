@@ -38,7 +38,8 @@ public class ReservationController {
         Reservation reservation = reservationService.create(
                 reservationCreateRequest.name(),
                 reservationCreateRequest.date(),
-                reservationCreateRequest.timeId()
+                reservationCreateRequest.timeId(),
+                reservationCreateRequest.themeId()
         );
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))

@@ -23,6 +23,8 @@ public class ErrorStatusMapper {
         statusByErrorCode.put(ErrorCode.RESERVATION_CREATE_FAILED, HttpStatus.INTERNAL_SERVER_ERROR);
         statusByErrorCode.put(ErrorCode.RESERVATION_TIME_NOT_FOUND, HttpStatus.NOT_FOUND);
         statusByErrorCode.put(ErrorCode.RESERVATION_TIME_CREATE_FAILED, HttpStatus.INTERNAL_SERVER_ERROR);
+        statusByErrorCode.put(ErrorCode.INVALID_THEME, HttpStatus.BAD_REQUEST);
+        statusByErrorCode.put(ErrorCode.THEME_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
     public HttpStatus map(ErrorCode errorCode) {
