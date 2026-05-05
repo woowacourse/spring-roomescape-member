@@ -12,6 +12,7 @@ import roomescape.user.model.User;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -45,6 +46,9 @@ public class ReservationRepository {
                        u.name AS user_name, 
                        u.role AS user_role,
                        t.id AS theme_id, 
+                       t.description AS theme_description,
+                       t.image_url AS theme_image,         
+                       t.required_time AS theme_required_time,
                        t.name AS theme_name,
                        s.id AS schedule_id, 
                        s.start_at AS start_at, 
@@ -63,7 +67,9 @@ public class ReservationRepository {
                     Role.valueOf(resultSet.getString("user_role"))
             );
 
-            Theme theme = new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"), "", "");
+            Theme theme = new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
+                    resultSet.getString("description"), resultSet.getString("image_url"),
+                    resultSet.getObject("required_time", LocalTime.class));
 
             Schedule schedule = new Schedule(resultSet.getLong("schedule_id"),
                     resultSet.getObject("start_at", LocalDateTime.class),
