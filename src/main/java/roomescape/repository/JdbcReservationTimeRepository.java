@@ -1,12 +1,11 @@
 package roomescape.repository;
 
-import java.sql.PreparedStatement;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 
@@ -21,19 +20,18 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
-        String sql = "insert into reservation_time (start_at) values (?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
 
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    sql,
-                    new String[]{"id"});
-            ps.setString(1, reservationTime.getStartTime().toString());
-            return ps;
-        }, keyHolder);
+        long generatedKey = simpleJdbcInsert.executeAndReturnKey(
+                new BeanPropertySqlParameterSource(reservationTime)
+        ).longValue();
 
-        return findById(keyHolder.getKey().longValue()).orElseThrow(
-                () -> new RuntimeException("저장된 데이터를 찾을 수 없습니다;"));
+        return new ReservationTime(
+                generatedKey,
+                reservationTime.getStartAt()
+        );
     }
 
     @Override

@@ -1,13 +1,12 @@
 package roomescape.repository;
 
-import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -24,22 +23,21 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
 
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    sql,
-                    new String[]{"id"});
-            ps.setString(1, reservation.getName());
-            ps.setString(2, reservation.getDate().toString());
-            ps.setLong(3, reservation.getTime().getId());
-            ps.setLong(4, reservation.getTheme().getId());
-            return ps;
-        }, keyHolder);
+        long generatedKey = simpleJdbcInsert.executeAndReturnKey(
+                new BeanPropertySqlParameterSource(reservation)
+        ).longValue();
 
-        return findById(keyHolder.getKey().longValue()).stream().findFirst()
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 데이터입니다."));
+        return new Reservation(
+                generatedKey,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme()
+        );
     }
 
     @Override
@@ -143,12 +141,16 @@ public class JdbcReservationRepository implements ReservationRepository {
                     th.name as reservation_theme_name,
                     th.description as reservation_theme_description,
                     th.image_url as reservation_theme_image_url
+                    
                     from reservation as r 
                     inner join reservation_time as t
                     on r.time_id = t.id 
+                    
                     inner join theme as th
                     on r.theme_id = th.id
                 """;
+
+
 
         return jdbcTemplate.query(
                 sql,

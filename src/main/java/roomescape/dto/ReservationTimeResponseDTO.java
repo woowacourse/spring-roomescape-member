@@ -11,7 +11,7 @@ public record ReservationTimeResponseDTO(
     public static ReservationTimeResponseDTO from(ReservationTime reservationTime) {
         return new ReservationTimeResponseDTO(
                 reservationTime.getId(),
-                reservationTime.getStartTime().toString()
+                reservationTime.getStartAt().toString()
         );
     }
 }

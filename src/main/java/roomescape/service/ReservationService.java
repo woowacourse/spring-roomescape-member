@@ -47,10 +47,13 @@ public class ReservationService {
         Theme theme = themeRespository.findById(reservationRequestDTO.themeId())
                 .orElseThrow(
                         () -> new RuntimeException("존재하지 않는 테마입니다."));
+
         Reservation reservation = new Reservation(reservationRequestDTO.name(),
                 reservationRequestDTO.date(), time, theme);
+
         Reservation savedReservation = reservationRepository.save(reservation);
-        return ReservationResponseDTO.from(savedReservation);
+        ReservationResponseDTO response = ReservationResponseDTO.from(savedReservation);
+        return response;
     }
 
 

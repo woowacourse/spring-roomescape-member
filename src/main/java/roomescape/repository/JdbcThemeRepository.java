@@ -1,10 +1,9 @@
 package roomescape.repository;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
@@ -20,15 +19,12 @@ public class JdbcThemeRepository implements ThemeRespository {
 
     @Override
     public Long save(Theme theme) {
-        SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate);
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", theme.getName());
-        parameters.put("description", theme.getDescription());
-        parameters.put("image_url", theme.getImageUrl());
-        insert.withTableName("theme");
-        insert.setGeneratedKeyName("id");
-        return insert.executeAndReturnKeyHolder(parameters).getKey().longValue();
+        SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
+        return insert.executeAndReturnKey(
+                new BeanPropertySqlParameterSource(theme)
+        ).longValue();
     }
 
     @Override
@@ -53,7 +49,6 @@ public class JdbcThemeRepository implements ThemeRespository {
 
     @Override
     public Optional<Theme> findById(Long id) {
-        System.out.println("id = " + id);
         String sql = "select id, name, description, image_url from theme where id=?";
         List<Theme> themes = jdbcTemplate.query(
                 sql,
