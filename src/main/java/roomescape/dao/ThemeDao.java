@@ -1,6 +1,8 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -59,6 +61,23 @@ public class ThemeDao {
         } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
             return Optional.empty();
         }
+    }
+
+    public List<Theme> selectPopularThemesByPeriod(LocalDate startDate, LocalDate endDate) {
+        String sql = """
+                SELECT t.id,
+                       t.name,
+                       t.description,
+                       t.thumbnail
+                FROM reservation AS r
+                INNER JOIN theme AS t 
+                ON r.theme_id = t.id
+                WHERE r.date BETWEEN ? AND ?
+                GROUP BY t.id, t.name, t.description, t.thumbnail
+                ORDER BY COUNT(r.id) DESC
+                LIMIT 10
+                """;
+        return jdbcTemplate.query(sql, ROW_MAPPER, startDate, endDate);
     }
 
     public void delete(long themeId) {
