@@ -35,5 +35,21 @@ public class ReservationTest {
                     .when().post("/reservations")
                     .then().log().all()
                     .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().get("/admin/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("[39].id", is(40))
+                .body("[39].name", is("녀녕"))
+                .body("[39].date", is("2025-05-05"))
+                .body("[39].time.id", is(1))
+                .body("[39].time.startAt", is("10:00"))
+                .body("[39].theme.id", is(2))
+                .body("[39].theme.name", is("우주 탐험대"))
+                .body("[39].theme.thumbnailUrl", is("https://picsum.photos/seed/space/400/300"))
+                .body("[39].theme.description", is("은하계를 누비는 우주 탐험"));
     }
 }
