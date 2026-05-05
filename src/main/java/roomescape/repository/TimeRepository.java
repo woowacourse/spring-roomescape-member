@@ -47,4 +47,9 @@ public class TimeRepository {
         Long id = keyHolder.getKey().longValue();
         return new ReservationTime(id, startAt);
     }
+
+    public ReservationTime selectById(Long id) {
+        String sql = "select * from reservation_time where id = ?";
+        return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
+    }
 }

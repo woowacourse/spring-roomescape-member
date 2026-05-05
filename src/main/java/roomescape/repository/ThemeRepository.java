@@ -1,8 +1,6 @@
 package roomescape.repository;
 
 import java.sql.PreparedStatement;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -15,6 +13,13 @@ import roomescape.model.Theme;
 public class ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
+
+    private final RowMapper<Theme> themeRowMapper = ((rs, rowNum) -> new Theme(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("description"),
+            rs.getString("url")
+    ));
 
     public ThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -37,5 +42,10 @@ public class ThemeRepository {
     public void delete(long id) {
         String sql = "DELETE FROM THEME WHERE ID = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public Theme selectById(Long id) {
+        String sql = "SELECT * FROM THEME WHERE ID = ?";
+        return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
     }
 }
