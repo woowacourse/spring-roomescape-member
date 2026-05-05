@@ -53,10 +53,16 @@ public class MissionStepTest {
         Map<String, String> time = new HashMap<>();
         time.put("startAt", "10:00");
 
+        Map<String, String> theme = new HashMap<>();
+        theme.put("name", "이름");
+        theme.put("description", "내용");
+        theme.put("thumbnail", "https://example.com/theme.png");
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -67,16 +73,27 @@ public class MissionStepTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .body("time.id", is(1))
+                .body("theme.id", is(1));
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("reservations.size()", is(1));
+                .body("reservations.size()", is(1))
+                .body("reservations[0].time.id", is(1))
+                .body("reservations[0].theme.id", is(1));
     }
 
     @Test

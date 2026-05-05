@@ -6,20 +6,18 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.DomainException;
-import roomescape.exception.ErrorCode;
+import roomescape.domain.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 class ReservationRepositoryTest {
 
     private ReservationRepository reservationRepository;
     private ReservationTimeRepository reservationTimeRepository;
+    private ThemeRepository themeRepository;
 
     @BeforeEach
     void setUp() {
@@ -33,27 +31,41 @@ class ReservationRepositoryTest {
 
         jdbcTemplate.execute("DROP TABLE IF EXISTS reservation");
         jdbcTemplate.execute("DROP TABLE IF EXISTS reservation_time");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS theme");
 
         jdbcTemplate.execute("""
+                CREATE TABLE theme (
+                    id          BIGINT       NOT NULL AUTO_INCREMENT,
+                    name        VARCHAR(255) NOT NULL,
+                    description VARCHAR(255) NOT NULL,
+                    thumbnail   VARCHAR(255) NOT NULL,
+                    PRIMARY KEY (id)
+                )
+                """);
+        jdbcTemplate.execute("""
                 CREATE TABLE reservation_time (
-                    id       BIGINT       NOT NULL AUTO_INCREMENT,
-                    start_at VARCHAR(255) NOT NULL,
+                    id       BIGINT NOT NULL AUTO_INCREMENT,
+                    start_at TIME   NOT NULL,
                     PRIMARY KEY (id)
                 )
                 """);
 
         jdbcTemplate.execute("""
                 CREATE TABLE reservation (
-                    id      BIGINT       NOT NULL AUTO_INCREMENT,
-                    name    VARCHAR(255) NOT NULL,
-                    date    VARCHAR(255) NOT NULL,
-                    time_id BIGINT,
+                    id       BIGINT       NOT NULL AUTO_INCREMENT,
+                    name     VARCHAR(255) NOT NULL,
+                    date     DATE         NOT NULL,
+                    time_id  BIGINT       NOT NULL,
+                    theme_id BIGINT       NOT NULL,
                     PRIMARY KEY (id),
-                    FOREIGN KEY (time_id) REFERENCES reservation_time (id)
+                    UNIQUE (date, time_id, theme_id),
+                    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
+                    FOREIGN KEY (theme_id) REFERENCES theme (id)
                 )
                 """);
 
         reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
+        themeRepository = new JdbcThemeRepository(jdbcTemplate);
         reservationRepository = new JdbcReservationRepository(jdbcTemplate);
     }
 
@@ -61,7 +73,8 @@ class ReservationRepositoryTest {
     @Test
     void 예약을_저장하고_조회한다() {
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        Reservation reservation = reservationRepository.save(new Reservation("브라운", LocalDate.of(2023, 8, 5), time));
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        Reservation reservation = reservationRepository.save(new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme));
 
         List<Reservation> reservations = reservationRepository.findAll();
 
@@ -70,15 +83,22 @@ class ReservationRepositoryTest {
         Reservation found = reservations.getFirst();
         assertThat(found.getId()).isEqualTo(reservation.getId());
         assertThat(found.getName()).isEqualTo("브라운");
-        assertThat(found.getDate()).isEqualTo("2023-08-05");
+        assertThat(found.getDate()).isEqualTo(LocalDate.of(2023, 8, 5));
+
         assertThat(found.getTime().getId()).isEqualTo(time.getId());
         assertThat(found.getTime().getStartAt()).isEqualTo(LocalTime.of(10, 0));
+
+        assertThat(found.getTheme().getId()).isEqualTo(theme.getId());
+        assertThat(found.getTheme().getName()).isEqualTo(theme.getName());
+        assertThat(found.getTheme().getDescription()).isEqualTo(theme.getDescription());
+        assertThat(found.getTheme().getThumbnail()).isEqualTo(theme.getThumbnail());
     }
 
     @Test
     void 예약을_삭제한다() {
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        Reservation reservation = reservationRepository.save(new Reservation("브라운", LocalDate.of(2023, 8, 5), time));
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        Reservation reservation = reservationRepository.save(new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme));
 
         reservationRepository.deleteById(reservation.getId());
 

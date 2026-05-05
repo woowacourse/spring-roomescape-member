@@ -31,11 +31,12 @@ class ReservationTimeRepositoryTest {
 
         jdbcTemplate.execute("DROP TABLE IF EXISTS reservation");
         jdbcTemplate.execute("DROP TABLE IF EXISTS reservation_time");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS theme");
 
         jdbcTemplate.execute("""
                 CREATE TABLE reservation_time (
-                    id       BIGINT       NOT NULL AUTO_INCREMENT,
-                    start_at VARCHAR(255) NOT NULL,
+                    id       BIGINT NOT NULL AUTO_INCREMENT,
+                    start_at TIME   NOT NULL,
                     PRIMARY KEY (id)
                 )
                 """);
