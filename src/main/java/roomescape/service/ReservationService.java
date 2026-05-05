@@ -36,9 +36,14 @@ public class ReservationService {
 
     public Reservation addReservation(ReservationRequestDto requestDto) {
         ReservationTime time = reservationTimeRepository.findById(requestDto.timeId())
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다. timeId: " + requestDto.timeId()));
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
         Theme theme = themeRepository.findById(requestDto.themeId())
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다. themeId: " + requestDto.themeId()));
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+
+        List<ReservationTime> availableTimes = reservationTimeRepository.findByDateAndThemeId(requestDto.date(), requestDto.themeId());
+        if (!availableTimes.contains(time)) {
+            throw new IllegalArgumentException("해당 테마에서 이미 예약된 날짜입니다.");
+        }
 
         Reservation reservation = new Reservation(requestDto.name(), requestDto.date(), time, theme);
         return reservationRepository.createReservation(reservation);

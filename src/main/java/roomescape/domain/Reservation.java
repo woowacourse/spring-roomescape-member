@@ -48,6 +48,10 @@ public class Reservation {
         this(null, name, date, time, theme);
     }
 
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, new Name(name), date, time, theme);
+    }
+
     private LocalDate translateDate(String date) {
         Matcher matcher = DATE_PATTERN.matcher(date);
         if (!matcher.matches()){
