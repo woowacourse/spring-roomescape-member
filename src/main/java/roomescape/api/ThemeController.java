@@ -1,6 +1,5 @@
 package roomescape.api;
 
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +12,8 @@ import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.service.ThemeService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/themes")
@@ -36,7 +37,7 @@ public class ThemeController {
     @PostMapping
     public ResponseEntity<ThemeResponse> add(@RequestBody ThemeRequest request) {
         Theme theme = new Theme(null, request.name(), request.description(), request.thumbnailImageUrl());
-        ThemeResponse response = ThemeResponse.from(theme);
+        ThemeResponse response = ThemeResponse.from(themeService.addTheme(theme));
 
         return ResponseEntity.ok().body(response);
     }
