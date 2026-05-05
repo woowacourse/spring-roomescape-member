@@ -24,6 +24,13 @@ public class TimeService {
                 .collect(Collectors.toList());
     }
 
+    public List<TimeResponse> readTimeAllByThemeIdAndDate(Long themeId, String date) {
+        List<ReservationTime> times = timeRepository.findAllByThemeIdAndDate(themeId, date);
+        return times.stream()
+                .map(TimeResponse::from)
+                .collect(Collectors.toList());
+    }
+
     public void removeTime(Long id) {
         timeRepository.removeById(id);
     }

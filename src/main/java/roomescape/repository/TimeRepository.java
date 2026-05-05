@@ -29,6 +29,18 @@ public class TimeRepository {
         return jdbcTemplate.query(sql, timeRowMapper);
     }
 
+    public List<ReservationTime> findAllByThemeIdAndDate(Long themeId, String date) {
+        String sql =
+                // [덩어리 1] 우리 매장의 모든 운영 시간 (전체 집합)
+                "SELECT id, start_at FROM reservation_time " +
+                        "EXCEPT " +
+                        // [덩어리 2] 특정 날짜/테마에 이미 누군가 예약한 시간 (차집합)
+                        "SELECT t.id, t.start_at FROM reservation r " +
+                        "JOIN reservation_time t ON r.time_id = t.id " +
+                        "WHERE r.date = ? AND r.theme_id = ?";
+        return jdbcTemplate.query(sql, timeRowMapper, date, themeId);
+    }
+
     public void removeById(Long id) {
         String sql = "delete from reservation_time where id = ?";
         jdbcTemplate.update(sql, id);

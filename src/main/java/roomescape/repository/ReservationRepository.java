@@ -27,7 +27,7 @@ public class ReservationRepository {
 
     private static final RowMapper<Reservation> reservationMapper = (rs, rowNum) -> new Reservation(
             rs.getLong("id"),
-            rs.getString("name"),
+            rs.getString("username"),
             rs.getObject("date", LocalDate.class),
             new ReservationTime(
                     rs.getLong("time_id"),
@@ -42,7 +42,7 @@ public class ReservationRepository {
     );
 
     public List<Reservation> findAll() {
-        String selectSql = "SELECT r.id, r.name, r.date, t.id as time_id, t.start_at, m.id as theme_id, m.name as theme_name, m.description, m.url  " +
+        String selectSql = "SELECT r.id, r.username, r.date, t.id as time_id, t.start_at, m.id as theme_id, m.name as theme_name, m.description, m.url  " +
                 "FROM reservation r " +
                 "INNER JOIN reservation_time t ON r.time_id = t.id " +
                 "INNER JOIN theme m ON r.theme_id = m.id ";
@@ -55,7 +55,7 @@ public class ReservationRepository {
     }
 
     public Reservation register(ReservationRequest reservationRequest, TimeResponse timeResponse, ThemeResponse themeResponse) {
-        String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO reservation(username, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});

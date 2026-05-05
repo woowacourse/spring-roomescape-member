@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import roomescape.dto.TimeRequest;
 import roomescape.dto.TimeResponse;
@@ -28,6 +29,13 @@ public class TimeController {
     @ResponseBody
     public ResponseEntity<List<TimeResponse>> getReservationTime() {
         List<TimeResponse> reservationTimes = timeService.readTimeAll();
+        return ResponseEntity.ok().body(reservationTimes);
+    }
+
+    @GetMapping("/{themeId}")
+    @ResponseBody
+    public ResponseEntity<List<TimeResponse>> getReservationTimeByThemeIdAndDate(@PathVariable Long themeId, @RequestParam("date")String date) {
+        List<TimeResponse> reservationTimes = timeService.readTimeAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(reservationTimes);
     }
 
