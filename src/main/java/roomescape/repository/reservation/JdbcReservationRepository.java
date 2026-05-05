@@ -50,4 +50,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     public boolean existsByThemeId(long themeId) {
         return reservationDao.existsByThemeId(themeId);
     }
+
+    @Override
+    public boolean existsByTimeIdAndThemeIdAndDate(ReservationCommand reservationCommand) {
+        return reservationDao.existsByTimeIdAndThemeIdAndDate(reservationCommand);
+    }
 }

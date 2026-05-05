@@ -7,6 +7,7 @@ import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.ReservationTheme.ReservationTheme;
+import roomescape.exception.DuplicatedReservationRequestException;
 import roomescape.exception.ErrorMessage;
 import roomescape.exception.NotFoundResourceException;
 import roomescape.repository.ReservationTheme.ReservationThemeRepository;
@@ -40,6 +41,10 @@ public class RoomReservationService {
 
         ReservationTheme theme = reservationThemeRepository.getTheme(reservationCommand.themeId())
                 .orElseThrow(() -> new NotFoundResourceException(ErrorMessage.INVALID_THEME_ID));
+
+        if (reservationRepository.existsByTimeIdAndThemeIdAndDate(reservationCommand)) {
+            throw new DuplicatedReservationRequestException(ErrorMessage.DUPLICATED_RESERVATION_REQUEST);
+        }
 
         return reservationRepository.addReservation(reservationCommand, reservationTime, theme);
     }

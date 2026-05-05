@@ -61,6 +61,16 @@ public class ReservationDao {
             )
     """;
 
+    private static final String EXIST_BY_TIME_ID_AND_THEME_ID_AND_DATE = """
+            SELECT EXISTS (\s
+                SELECT 1 \s
+                    FROM reservation \s
+                    WHERE time_id = ?\s
+                    AND theme_id = ?\s
+                    AND date = ?\s
+            )
+            """;
+
     private static final RowMapper<Reservation> MAPPER = (rs, rowNumber) -> new Reservation(
             rs.getLong(COLUMN_ID),
             rs.getString(COLUMN_NAME),
@@ -114,5 +124,10 @@ public class ReservationDao {
 
     public boolean existsByThemeId(long themeId) {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXIST_BY_THEME_ID_SQL, Boolean.class, themeId));
+    }
+
+    public boolean existsByTimeIdAndThemeIdAndDate(ReservationCommand reservationCommand) {
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXIST_BY_TIME_ID_AND_THEME_ID_AND_DATE,
+                Boolean.class, reservationCommand.timeId(), reservationCommand.themeId(), reservationCommand.date()));
     }
 }
