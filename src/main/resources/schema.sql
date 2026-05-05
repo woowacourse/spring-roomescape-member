@@ -3,6 +3,7 @@ CREATE TABLE `theme` (
     `name` VARCHAR(255) NOT NULL,
     `description` VARCHAR(255) NULL,
     `image_url` VARCHAR(255) NULL,
+    `required_time` TIME NOT NULL,
     CONSTRAINT `PK_THEME` PRIMARY KEY (`id`)
 );
 
