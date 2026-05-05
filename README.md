@@ -141,6 +141,10 @@ GET /times?themeId=1&date=2026-05-08 HTTP/1.1
 <summary>Exception</summary>
 <div markdown="1">
 
+id, start_at, is_available(서비스 단에서 넣어줌)
+reservation 테이블의 date = 파라미터로 받은 date 일치
+reservation 테이블의 themeId = 파라미터로 받은 themeId
+
 - [ ] 존재하지 않는 테마면 예외가 발생한다.
     - 상태 코드: T-404-002
     - 메시지: "존재하지 않는 테마입니다."
@@ -148,6 +152,10 @@ GET /times?themeId=1&date=2026-05-08 HTTP/1.1
 - [ ] 날짜 형식이 `yyyy-MM-dd`가 아니면 예외가 발생한다.
   - 상태 코드: T-400-003
   - 메시지: "날짜 형식이 'yyyy-MM-dd'가 아닙니다."
+
+- [ ] 지난 날짜면 예외가 발생한다.
+    - 상태 코드: T-400-004
+    - 메시지: "날짜 형식이 '지난 날짜는 예약할 수 없습니다."
 
 </div>
 </details>

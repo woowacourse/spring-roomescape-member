@@ -61,7 +61,7 @@ public class ReservationTimeDao {
         }
     }
 
-    public void delete(Long id) {
+    public void delete(long id) {
         String sql = """
                 DELETE FROM reservation_time
                 WHERE id = ?""";
