@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -47,5 +48,10 @@ public class ThemeRepository {
     public Theme selectById(Long id) {
         String sql = "SELECT * FROM THEME WHERE ID = ?";
         return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
+    }
+
+    public List<Theme> findAll() {
+        String sql = "SELECT * FROM THEME";
+        return jdbcTemplate.query(sql, themeRowMapper);
     }
 }
