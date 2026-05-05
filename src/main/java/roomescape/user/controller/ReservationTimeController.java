@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
 import roomescape.user.dto.ReservationTimeRequest;
@@ -15,6 +16,7 @@ import roomescape.user.dto.ReservationTimeResponse;
 import roomescape.user.service.ReservationTimeService;
 
 @RestController
+@RequestMapping("user")
 public class ReservationTimeController {
 
     private final ReservationTimeService timeService;

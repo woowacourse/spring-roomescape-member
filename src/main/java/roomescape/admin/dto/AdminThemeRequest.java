@@ -1,6 +1,6 @@
 package roomescape.admin.dto;
 
-public record ThemeRequest(
+public record AdminThemeRequest(
         String name,
         String description,
         String image

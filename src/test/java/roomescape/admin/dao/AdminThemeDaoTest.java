@@ -15,13 +15,13 @@ import roomescape.domain.Theme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ThemeDaoTest {
+public class AdminThemeDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private ThemeDao themeDao;
+    private AdminThemeDao adminThemeDao;
 
     @BeforeEach
     public void setUp() {
@@ -46,7 +46,7 @@ public class ThemeDaoTest {
 
     @Test
     void 테마_전체_조회_테스트() {
-        List<Theme> themes = themeDao.selectAll();
+        List<Theme> themes = adminThemeDao.selectAll();
         assertThat(themes.size()).isEqualTo(2);
 
         Theme theme = themes.get(0);
@@ -55,10 +55,10 @@ public class ThemeDaoTest {
 
     @Test
     void 테마_단일_조회_테스트() {
-        Theme firstTheme = themeDao.selectById(1L);
+        Theme firstTheme = adminThemeDao.selectById(1L);
         assertThat(firstTheme.getName()).isEqualTo("은하수");
 
-        Theme secoundTheme = themeDao.selectById(2L);
+        Theme secoundTheme = adminThemeDao.selectById(2L);
         assertThat(secoundTheme.getName()).isEqualTo("지구");
 
     }
@@ -66,7 +66,7 @@ public class ThemeDaoTest {
     @Test
     void 테마_생성_테스트() {
         Theme theme = new Theme("수성", "수성 테마방입니다", "http.jp");
-        Theme result = themeDao.insert(theme);
+        Theme result = adminThemeDao.insert(theme);
 
         assertThat(result.getId()).isEqualTo(3L);
         assertThat(result.getName()).isEqualTo(theme.getName());
@@ -75,9 +75,9 @@ public class ThemeDaoTest {
     @Test
     void 테마_삭제_테스트() {
         long id = 1L;
-        themeDao.deleteById(id);
+        adminThemeDao.deleteById(id);
 
-        List<Theme> themes = themeDao.selectAll();
+        List<Theme> themes = adminThemeDao.selectAll();
         assertThat(themes.size()).isEqualTo(1);
         assertThat(themes.getFirst().getName()).isEqualTo("지구");
     }

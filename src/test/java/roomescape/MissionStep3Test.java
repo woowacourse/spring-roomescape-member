@@ -36,7 +36,7 @@ class MissionStep3Test {
     void 시간_조회_API() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         RestAssured.given().log().all()
-                .when().get("/times")
+                .when().get("/user/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
@@ -50,12 +50,12 @@ class MissionStep3Test {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/user/times")
                 .then().log().all()
                 .statusCode(200);
 
         RestAssured.given().log().all()
-                .when().get("/times")
+                .when().get("/user/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
@@ -69,18 +69,18 @@ class MissionStep3Test {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/user/times")
                 .then().log().all()
                 .statusCode(200);
 
         RestAssured.given().log().all()
-                .when().get("/times")
+                .when().get("/user/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/user/times/1")
                 .then().log().all()
                 .statusCode(200);
     }
@@ -93,7 +93,7 @@ class MissionStep3Test {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/user/times")
                 .then().log().all()
                 .statusCode(200);
 
@@ -105,12 +105,12 @@ class MissionStep3Test {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("/user/reservations")
                 .then().log().all()
                 .statusCode(200);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/user/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));

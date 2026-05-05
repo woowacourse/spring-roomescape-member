@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 
 @Repository
-public class ThemeDao {
+public class AdminThemeDao {
 
     private static final RowMapper<Theme> rowMapper =
             (rs, rowNum) -> {
@@ -22,7 +22,7 @@ public class ThemeDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public ThemeDao(JdbcTemplate jdbcTemplate) {
+    public AdminThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
