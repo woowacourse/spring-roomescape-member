@@ -1,62 +1,52 @@
-package roomescape.repository;
+package roomescape.schedule.repository;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.model.ReservationTime;
+import roomescape.schedule.model.Schedule;
+import roomescape.theme.model.Theme;
 
-import java.sql.PreparedStatement;
-import java.time.LocalTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public class ReservationTimeRepository {
+public class ScheduleRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ReservationTimeRepository(JdbcTemplate jdbcTemplate) {
+    public ScheduleRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long create(ReservationTime reservationTime) {
-        String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
+    public List<Schedule> findAll(Long themeId, LocalDate date) {
+        String sql = """
+                SELECT s.id AS schedule_id, 
+                       s.start_at, 
+                       s.end_at, 
+                       t.id AS theme_id, 
+                       t.name AS theme_name,
+                       t.description,
+                       t.image_url
+                FROM schedule s
+                INNER JOIN theme t ON s.theme_id = t.id
+                LEFT JOIN reservation r ON s.id = r.schedule_id
+                WHERE s.theme_id = ?
+                  AND s.start_at >= ? 
+                  AND s.start_at < ?
+                """;
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(
-                connection -> {
-                    PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-                    ps.setObject(1, reservationTime.getStartTime());
-                    return ps;
-                }, keyHolder);
-        return keyHolder.getKey().longValue();
-    }
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
 
-    public ReservationTime findById(Long id) {
-        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.queryForObject(
-                sql,
-                (resultSet, rowNum) -> {
-                    return new ReservationTime(
-                        resultSet.getLong("id"),
-                        resultSet.getObject("start_at", LocalTime.class));
-                    }, id);
-    }
-
-    public List<ReservationTime> findAll() {
-        String sql = "SELECT id, start_at FROM reservation_time";
-        return jdbcTemplate.query(
-                sql,
-                (resultSet, rowNum) -> {
-                    return new ReservationTime(
-                            resultSet.getLong("id"),
-                            resultSet.getObject("start_at", LocalTime.class)
-                    );
-                });
-    }
-
-    public int delete(Long id) {
-        String sql = "DELETE FROM reservation_time where id = ?";
-        return jdbcTemplate.update(sql, id);
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> {
+            Theme theme = new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
+                    resultSet.getString("description"), resultSet.getString("image_url"));
+            return new Schedule(
+                    resultSet.getLong("schedule_id"),
+                    resultSet.getObject("start_at", LocalDateTime.class),
+                    resultSet.getObject("end_at", LocalDateTime.class),
+                    theme
+            );
+        }, themeId, startOfDay, endOfDay);
     }
 }
