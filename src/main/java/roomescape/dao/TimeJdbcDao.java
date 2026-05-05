@@ -1,7 +1,6 @@
 package roomescape.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -10,22 +9,15 @@ import roomescape.dao.vo.TimeRows;
 import roomescape.domain.Time;
 
 import java.sql.PreparedStatement;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@Repository
-public class TimeJdbcDao implements TimeDao{
-    private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<TimeRow> rowMapper = (resultSet, rowNum) -> {
-        TimeRow row = new TimeRow(
-                resultSet.getLong("id"),
-                LocalTime.parse(resultSet.getString("start_at"))
-        );
+import static roomescape.dao.vo.TimeRow.ROW_MAPPER;
 
-        return row;
-    };
+@Repository
+public class TimeJdbcDao implements TimeDao {
+    private final JdbcTemplate jdbcTemplate;
 
     public TimeJdbcDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -55,7 +47,7 @@ public class TimeJdbcDao implements TimeDao{
                 WHERE id = ?
                 """;
 
-        return jdbcTemplate.query(sql, rowMapper, id).stream()
+        return jdbcTemplate.query(sql, ROW_MAPPER, id).stream()
                 .findFirst()
                 .map(TimeRow::toTime);
     }
@@ -65,7 +57,7 @@ public class TimeJdbcDao implements TimeDao{
         String sql = """
                 SELECT * FROM reservation_time
                 """;
-        return new TimeRows(jdbcTemplate.query(sql, rowMapper)).toTimes();
+        return new TimeRows(jdbcTemplate.query(sql, ROW_MAPPER)).toTimes();
     }
 
     @Override

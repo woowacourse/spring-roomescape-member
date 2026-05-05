@@ -1,7 +1,6 @@
 package roomescape.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -10,27 +9,16 @@ import roomescape.dao.vo.ReservationRows;
 import roomescape.domain.Reservation;
 
 import java.sql.PreparedStatement;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static roomescape.dao.vo.ReservationRow.ROW_MAPPER;
+
 @Repository
-public class ReservationJdbcDao implements ReservationDao{
+public class ReservationJdbcDao implements ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<ReservationRow> rowMapper = (resultSet, rowNum) -> {
-        ReservationRow row = new ReservationRow(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                LocalDate.parse(resultSet.getString("date")),
-                resultSet.getLong("time_id"),
-                LocalTime.parse(resultSet.getString("start_at"))
-        );
-
-        return row;
-    };
 
     public ReservationJdbcDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -48,7 +36,7 @@ public class ReservationJdbcDao implements ReservationDao{
                     FROM reservation r
                 INNER JOIN reservation_time t ON r.time_id = t.id
                 """;
-        return new ReservationRows(jdbcTemplate.query(sql, rowMapper)).toReservations();
+        return new ReservationRows(jdbcTemplate.query(sql, ROW_MAPPER)).toReservations();
     }
 
     @Override
@@ -64,7 +52,7 @@ public class ReservationJdbcDao implements ReservationDao{
                 INNER JOIN reservation_time t ON r.time_id = t.id
                 WHERE r.id = ?
                 """;
-        return jdbcTemplate.query(sql, rowMapper, id).stream()
+        return jdbcTemplate.query(sql, ROW_MAPPER, id).stream()
                 .findFirst()
                 .map(ReservationRow::toReservation);
     }
