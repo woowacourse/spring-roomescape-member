@@ -6,6 +6,7 @@ import java.time.LocalTime;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 class ReservationTest {
@@ -17,8 +18,10 @@ class ReservationTest {
         ReservationTime reservationTime = new ReservationTime(LocalTime.now());
         LocalDate now = LocalDate.now();
 
+        Theme theme = new Theme(null, "hello", "world", "/resources/image/...");
+
         //when & then
-        Assertions.assertThatThrownBy(() -> new Reservation(name, now, reservationTime))
+        Assertions.assertThatThrownBy(() -> new Reservation(name, now, reservationTime, theme))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

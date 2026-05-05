@@ -61,9 +61,10 @@ class MissionStepTest {
     @Test
     void DB_조회_API_전환() {
         dataInitializer.initializeReservationTime(LocalTime.now());
+        dataInitializer.initializeTheme("hello", "world", "/resources/image/...");
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05",
-                1);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05",
+                1, 1);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -79,11 +80,12 @@ class MissionStepTest {
     @Test
     void DB_추가_삭제_API_전환() {
         dataInitializer.initializeReservationTime(LocalTime.now());
-
+        dataInitializer.initializeTheme("hello", "world", "/resources/image/...");
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

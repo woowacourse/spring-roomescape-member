@@ -7,6 +7,8 @@ import roomescape.reservation.mapper.ReservationMapper;
 import roomescape.reservation.repository.dao.ReservationDao;
 import roomescape.reservation.repository.dto.CreateReservationParams;
 import roomescape.reservation.repository.entity.ReservationEntity;
+import roomescape.theme.repository.dao.ThemeDao;
+import roomescape.theme.repository.entity.ThemeEntity;
 import roomescape.time.repository.dao.ReservationTimeDao;
 import roomescape.time.repository.entity.ReservationTimeEntity;
 
@@ -15,25 +17,30 @@ public class ReservationRepository {
 
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
+    private final ThemeDao themeDao;
 
-    public ReservationRepository(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao) {
+    public ReservationRepository(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao,
+                                 ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
+        this.themeDao = themeDao;
     }
 
     public List<Reservation> findAll() {
         return reservationDao.selectAll().stream()
                 .map(reservation ->
                         ReservationMapper.toReservation(reservation,
-                                reservationTimeDao.findById(reservation.getTimeId()))
+                                reservationTimeDao.getByID(reservation.getTimeId()),
+                                themeDao.getById(reservation.getThemeId()))
                 ).toList();
     }
 
     public Reservation save(CreateReservationParams params) {
-        Long id = reservationDao.insert(params.name(), params.date(), params.timeId());
-        ReservationEntity reservationEntity = new ReservationEntity(id, params.name(), params.date(), params.timeId());
-        ReservationTimeEntity reservationTimeEntity = reservationTimeDao.findById(params.timeId());
-        return ReservationMapper.toReservation(reservationEntity, reservationTimeEntity);
+        Long id = reservationDao.insert(params.name(), params.date(), params.timeId(), params.themeId());
+        ReservationEntity reservationEntity = new ReservationEntity(id, params.name(), params.date(), params.timeId(), params.themeId());
+        ReservationTimeEntity reservationTimeEntity = reservationTimeDao.getByID(params.timeId());
+        ThemeEntity themeEntity = themeDao.getById(params.themeId());
+        return ReservationMapper.toReservation(reservationEntity, reservationTimeEntity, themeEntity);
     }
 
     public void deleteById(Long id) {

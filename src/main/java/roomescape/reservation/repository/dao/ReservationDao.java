@@ -18,7 +18,8 @@ public class ReservationDao {
                     rs.getLong("id"),
                     rs.getString("name"),
                     LocalDate.parse(rs.getString("date")),
-                    rs.getLong("time_id")
+                    rs.getLong("time_id"),
+                    rs.getLong("theme_id")
             );
     private final JdbcTemplate jdbcTemplate;
 
@@ -31,14 +32,15 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
-    public Long insert(String name, LocalDate date, Long timeId) {
-        String sql = "insert into reservation (name, date, time_id) values (?,?,?);";
+    public Long insert(String name, LocalDate date, Long timeId, Long themeId) {
+        String sql = "insert into reservation (name, date, time_id, theme_id) values (?,?,?,?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement pstm = connection.prepareStatement(sql, new String[]{"id"});
             pstm.setString(1, name);
             pstm.setString(2, String.valueOf(date));
             pstm.setString(3, String.valueOf(timeId));
+            pstm.setString(4, String.valueOf(themeId));
             return pstm;
         }, keyHolder);
 

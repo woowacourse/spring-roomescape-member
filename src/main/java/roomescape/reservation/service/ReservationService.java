@@ -7,6 +7,8 @@ import roomescape.reservation.controller.dto.CreateReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.dto.CreateReservationParams;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
@@ -15,11 +17,13 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository) {
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<ReservationResponse> findAllReservations() {
@@ -30,8 +34,11 @@ public class ReservationService {
 
     public ReservationResponse reserve(CreateReservationRequest request) {
         ReservationTime time = reservationTimeRepository.findById(request.getTimeId());
+        Theme theme = themeRepository.findById(request.getThemeId());
+
+
         CreateReservationParams params = new CreateReservationParams(request.getName(), request.getDate(),
-                time.getId());
+                time.getId(), request.getTimeId());
         Reservation reservation = reservationRepository.save(params);
 
         return ReservationResponse.from(reservation);

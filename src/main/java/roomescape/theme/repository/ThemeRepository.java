@@ -36,4 +36,11 @@ public class ThemeRepository {
             throw new IllegalArgumentException("존재하지 않는 테마 번호입니다.");
         }
     }
+
+    public Theme findById(Long id) {
+        ThemeEntity themeEntity = themeDao.selectById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+
+        return ThemeMapper.toTheme(themeEntity);
+    }
 }

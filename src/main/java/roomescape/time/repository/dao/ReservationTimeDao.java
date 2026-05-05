@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -42,11 +43,16 @@ public class ReservationTimeDao {
         return key.longValue();
     }
 
-    public ReservationTimeEntity findById(Long id) {
+    public Optional<ReservationTimeEntity> selectById(Long id) {
         String sql = "select * from reservation_time where id = ?;";
-        return jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id));
     }
 
+    public ReservationTimeEntity getByID(Long id) {
+        String sql = "select * from reservation_time where id = ?;";
+        return Optional.of(jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id))
+                .orElseThrow(() -> new IllegalArgumentException("ReservationTime not found"));
+    }
     public List<ReservationTimeEntity> selectAll() {
         String sql = "select * from reservation_time;";
         return jdbcTemplate.query(sql, reservationTimeRowMapper);
