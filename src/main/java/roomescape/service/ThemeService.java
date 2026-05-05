@@ -18,4 +18,8 @@ public class ThemeService {
         Long newThemeId = themeDao.save(request);
         return themeDao.findById(newThemeId);
     }
+
+    public void deleteTheme(Long id) {
+        themeDao.deleteById(id);
+    }
 }

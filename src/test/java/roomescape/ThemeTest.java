@@ -35,6 +35,16 @@ public class ThemeTest {
     }
 
     @Test
+    void 테마_삭제() {
+        insertTheme();
+
+        RestAssured.given().log().all()
+                .when().delete("/admin/themes/1")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
     void 테마_DB_추가() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "테마명");
@@ -50,5 +60,24 @@ public class ThemeTest {
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme", Integer.class);
         assertThat(count).isEqualTo(1);
+    }
+
+    @Test
+    void 테마_DB_삭제() {
+        insertTheme();
+
+        RestAssured.given().log().all()
+                .when().delete("/admin/themes/1")
+                .then().log().all()
+                .statusCode(200);
+
+        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme", Integer.class);
+        assertThat(count).isEqualTo(0);
+    }
+
+
+    private void insertTheme() {
+        jdbcTemplate.execute(
+                "INSERT INTO theme(name, description, thumbnail_image_url) VALUES ('테마명', '테마설명', 'https://thumbnail.url')");
     }
 }
