@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -15,14 +16,6 @@ import static org.hamcrest.Matchers.is;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationTimeControllerTest {
 
-    private Map<String, Object> themeParams() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "이든의 공포 하우스");
-        params.put("description", "이든이 귀신으로 나옴");
-        params.put("imgUrl", "링크~");
-        return params;
-    }
-
     private Map<String, Object> reservationParams() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
@@ -32,23 +25,19 @@ public class ReservationTimeControllerTest {
         return params;
     }
 
-    @Test
-    void 예약_가능_시간_조회() {
-        Map<String, Object> adminThemeParams = themeParams();
-        adminThemeParams.put("userName", "ADMIN");
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(adminThemeParams)
-                .when().post("/api/v1/themes")
-                .then().log().all()
-                .statusCode(201)
-                .body("id", is(1));
+    private Map<String, Object> reservationParams(Map<String, Object> overrides) {
+        Map<String, Object> params = reservationParams();
+        params.putAll(overrides);
+        return params;
+    }
 
-        Map<String, String> time1 = new HashMap<>();
-        time1.put("startAt", "10:00");
+    @BeforeEach
+    void setUp() {
+        Map<String, String> time = new HashMap<>();
+        time.put("startAt", "10:00");
 
         RestAssured.given().contentType(ContentType.JSON)
-                .body(time1)
+                .body(time)
                 .when().post("/api/v1/times")
                 .then().statusCode(201);
 
@@ -68,6 +57,33 @@ public class ReservationTimeControllerTest {
                 .when().post("/api/v1/times")
                 .then().statusCode(201);
 
+        Map<String, Object> themeParams = new HashMap<>();
+        themeParams.put("name", "이든의 공포 하우스");
+        themeParams.put("description", "이든이 귀신으로 나옴");
+        themeParams.put("imgUrl", "링크~");
+        themeParams.put("userName", "ADMIN");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/api/v1/themes")
+                .then().statusCode(201);
+
+        Map<String, Object> themeParams2 = new HashMap<>();
+        themeParams2.put("name", "정콩이의 방탈출");
+        themeParams2.put("description", "니는 못나간다");
+        themeParams2.put("imgUrl", "링크~");
+        themeParams2.put("userName", "ADMIN");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams2)
+                .when().post("/api/v1/themes")
+                .then().statusCode(201);
+    }
+
+    @Test
+    void 예약_가능_시간_조회() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationParams())
@@ -81,5 +97,57 @@ public class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(3));
+    }
+
+    @Test
+    void 사용자는_예약_가능한_시간을_선택하여_예약_가능하다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams())
+                .when().post("/api/v1/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams(Map.of("timeId", 2)))
+                .when().post("/api/v1/reservations")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    @Test
+    void 사용자가_예약된_시간을_선택하여_예약할경우_409를_반환한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams())
+                .when().post("/api/v1/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams(Map.of("timeId", 1)))
+                .when().post("/api/v1/reservations")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+
+    @Test
+    void 사용자는_같은_날짜_시간이라도_테마가_다르면_각각_예약_가능하다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams())
+                .when().post("/api/v1/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams(Map.of("themeId", 2)))
+                .when().post("/api/v1/reservations")
+                .then().log().all()
+                .statusCode(201);
     }
 }

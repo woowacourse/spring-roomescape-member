@@ -23,6 +23,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
+    @ExceptionHandler(ReservationAlreadyExistsException.class)
+    public ResponseEntity<Void> handleReservationAlreadyExists() {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<Void> handleUnauthorized() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

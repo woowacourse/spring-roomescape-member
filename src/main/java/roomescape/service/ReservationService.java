@@ -2,10 +2,12 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
+import roomescape.exception.ReservationAlreadyExistsException;
 import roomescape.exception.ReservationNotFoundException;
 
 @Service
@@ -24,8 +26,12 @@ public class ReservationService {
 
     @Transactional
     public Reservation createReservation(String name, LocalDate date, Long timeId, Long themeId) {
-        Long id = reservationDao.insertWithKeyHolder(name, date, timeId, themeId);
-        return reservationDao.findReservationById(id);
+        try {
+            Long id = reservationDao.insertWithKeyHolder(name, date, timeId, themeId);
+            return reservationDao.findReservationById(id);
+        } catch (DuplicateKeyException e) {
+            throw new ReservationAlreadyExistsException();
+        }
     }
 
     @Transactional
