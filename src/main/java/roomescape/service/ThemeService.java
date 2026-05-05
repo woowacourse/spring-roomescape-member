@@ -25,4 +25,8 @@ public class ThemeService {
                 .map(ThemeResponseDto::from)
                 .toList();
     }
+
+    public void delete(Long id) {
+        jdbcThemeDao.delete(id);
+    }
 }

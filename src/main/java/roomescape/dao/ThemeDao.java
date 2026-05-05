@@ -9,4 +9,6 @@ public interface ThemeDao {
     Theme read(Long id);
 
     List<Theme> readAll();
+
+    void delete(Long id);
 }
