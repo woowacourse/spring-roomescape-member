@@ -33,7 +33,7 @@ public class ReservationTimeController {
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createReservationTime(@Valid @RequestBody ReservationTimeRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.addReservationTime(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.addReservationTime(ReservationTimeRequest.toEntity(request)));
     }
 
     @DeleteMapping("/{id}")
@@ -44,6 +44,6 @@ public class ReservationTimeController {
 
     @GetMapping("/available")
     public ResponseEntity<AvailableReservationTimeResponse> getAvailableReservationTime(@Valid @ModelAttribute AvailableReservationTimeRequest request) {
-        return ResponseEntity.ok(service.getAvailableReservationTime(request));
+        return ResponseEntity.ok(service.getAvailableReservationTime(request.toCommand()));
     }
 }

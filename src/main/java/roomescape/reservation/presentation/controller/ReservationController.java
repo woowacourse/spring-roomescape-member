@@ -30,7 +30,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.addReservation(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.addReservation(request.toCommand()));
     }
 
     @DeleteMapping("/{id}")

@@ -10,13 +10,12 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
+import roomescape.time.application.dto.AvailableReservationTimeFindCommand;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.exception.ReservationTimeInUseException;
 import roomescape.time.domain.exception.ReservationTimeNotFoundException;
 import roomescape.time.domain.ReservationTimeRepository;
-import roomescape.time.presentation.dto.AvailableReservationTimeRequest;
 import roomescape.time.presentation.dto.AvailableReservationTimeResponse;
-import roomescape.time.presentation.dto.ReservationTimeRequest;
 import roomescape.time.presentation.dto.ReservationTimeResponse;
 
 @Service
@@ -36,8 +35,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public ReservationTimeResponse addReservationTime(ReservationTimeRequest request) {
-        ReservationTime time = ReservationTimeRequest.toEntity(request);
+    public ReservationTimeResponse addReservationTime(ReservationTime time) {
         return ReservationTimeResponse.from(reservationTimeRepository.save(time));
     }
 
@@ -51,10 +49,10 @@ public class ReservationTimeService {
     }
 
     @Transactional(readOnly = true)
-    public AvailableReservationTimeResponse getAvailableReservationTime(AvailableReservationTimeRequest request) {
-        Theme theme = themeRepository.getById(request.themeId());
+    public AvailableReservationTimeResponse getAvailableReservationTime(AvailableReservationTimeFindCommand command) {
+        Theme theme = themeRepository.getById(command.themeId());
         List<Reservation> reservations = reservationRepository.findByThemeAndDate(
-                request.themeId(), request.date());
+                command.themeId(), command.date());
         List<ReservationTime> allTimes = reservationTimeRepository.findAll();
         Set<ReservationTime> reservedTimes = reservations.stream()
                 .map(Reservation::getTime)

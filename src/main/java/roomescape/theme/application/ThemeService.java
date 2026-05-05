@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.domain.exception.ThemeNotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
-import roomescape.theme.presentation.dto.ThemeRequest;
 import roomescape.theme.presentation.dto.ThemeResponse;
 
 @Service
@@ -22,9 +21,8 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
 
-    public ThemeResponse addTheme(ThemeRequest request) {
-        Theme theme = themeRepository.save(ThemeRequest.toEntity(request));
-        return ThemeResponse.from(theme);
+    public ThemeResponse addTheme(Theme theme) {
+        return ThemeResponse.from(themeRepository.save(theme));
     }
 
     public void deleteTheme(Long id) {

@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.exception.ReservationInUseException;
 import roomescape.reservation.domain.exception.ReservationNotFoundException;
@@ -31,13 +32,13 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse addReservation(ReservationRequest request) {
-        ReservationTime time = timeRepository.getById(request.timeId());
-        Theme theme = themeRepository.getById(request.themeId());
-        if (reservationRepository.existsByReservationTimeAndThemeAndDate(time.getId(), theme.getId(), request.date())) {
+    public ReservationResponse addReservation(ReservationCreateCommand command) {
+        ReservationTime time = timeRepository.getById(command.timeId());
+        Theme theme = themeRepository.getById(command.themeId());
+        if (reservationRepository.existsByReservationTimeAndThemeAndDate(time.getId(), theme.getId(), command.date())) {
             throw new ReservationInUseException("이미 예약이 존재합니다.");
         }
-        return ReservationResponse.from(reservationRepository.save(ReservationRequest.toEntity(request, time, theme)));
+        return ReservationResponse.from(reservationRepository.save(command.toEntity(time, theme)));
     }
 
     public void cancelReservation(Long id) {

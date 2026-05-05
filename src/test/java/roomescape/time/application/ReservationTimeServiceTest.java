@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.application.ReservationService;
-import roomescape.reservation.presentation.dto.ReservationRequest;
+import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.theme.application.ThemeService;
 import roomescape.theme.presentation.dto.ThemeRequest;
 import roomescape.theme.presentation.dto.ThemeResponse;
@@ -41,14 +41,14 @@ class ReservationTimeServiceTest {
                 .description("추리 테마")
                 .durationTime(LocalTime.of(1, 30))
                 .build();
-        ThemeResponse themeResponse = themeService.addTheme(theme);
-        ReservationTimeResponse timeResponse = timeService.addReservationTime(new ReservationTimeRequest(LocalTime.now()));
-        timeService.addReservationTime(new ReservationTimeRequest(LocalTime.now().plusHours(1)));
-        timeService.addReservationTime(new ReservationTimeRequest(LocalTime.now().plusHours(2)));
-        reservationService.addReservation(new ReservationRequest("포비", LocalDate.now(), timeResponse.id(), themeResponse.id()));
+        ThemeResponse themeResponse = themeService.addTheme(ThemeRequest.toEntity(theme));
+        ReservationTimeResponse timeResponse = timeService.addReservationTime(ReservationTimeRequest.toEntity(new ReservationTimeRequest(LocalTime.now())));
+        timeService.addReservationTime(ReservationTimeRequest.toEntity(new ReservationTimeRequest(LocalTime.now().plusHours(1))));
+        timeService.addReservationTime(ReservationTimeRequest.toEntity(new ReservationTimeRequest(LocalTime.now().plusHours(2))));
+        reservationService.addReservation(new ReservationCreateCommand("포비", LocalDate.now(), timeResponse.id(), themeResponse.id()));
         AvailableReservationTimeRequest availableReservationTimeRequest = new AvailableReservationTimeRequest(
                 themeResponse.id(), LocalDate.now());
-        Assertions.assertThat(reservationTimeService.getAvailableReservationTime(availableReservationTimeRequest)
+        Assertions.assertThat(reservationTimeService.getAvailableReservationTime(availableReservationTimeRequest.toCommand())
                 .times()
                 .size()
         ).isEqualTo(2);

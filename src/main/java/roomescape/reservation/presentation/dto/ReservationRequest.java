@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import roomescape.reservation.domain.Reservation;
-import roomescape.theme.domain.Theme;
-import roomescape.time.domain.ReservationTime;
+import roomescape.reservation.application.dto.ReservationCreateCommand;
 
 public record ReservationRequest(
         @NotBlank(message = "이름은 필수입니다.")
@@ -19,12 +17,12 @@ public record ReservationRequest(
         @NotNull(message = "테마 ID는 필수입니다.")
         Long themeId
 ) {
-    public static Reservation toEntity(ReservationRequest request, ReservationTime time, Theme theme) {
-        return Reservation.builder()
-                .name(request.name)
-                .date(request.date)
-                .time(time)
-                .theme(theme)
+    public ReservationCreateCommand toCommand() {
+        return ReservationCreateCommand.builder()
+                .name(this.name)
+                .date(this.date)
+                .timeId(this.timeId)
+                .themeId(this.themeId)
                 .build();
     }
 }
