@@ -14,13 +14,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
 
 @Repository
-public class ThemeDaoJdbcDao implements ThemeDao {
-    private final NamedParameterJdbcTemplate jdbcTemplate;
-
-    public ThemeDaoJdbcDao(NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
+public class ThemeJdbcDao implements ThemeDao {
     public static final RowMapper<Theme> ROW_MAPPER = (rs, rowNum) ->
             new Theme(
                     rs.getLong(1),
@@ -28,6 +22,11 @@ public class ThemeDaoJdbcDao implements ThemeDao {
                     rs.getString("thumbnail_url"),
                     rs.getString("description")
             );
+    private final NamedParameterJdbcTemplate jdbcTemplate;
+
+    public ThemeJdbcDao(NamedParameterJdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public List<Theme> findAll() {

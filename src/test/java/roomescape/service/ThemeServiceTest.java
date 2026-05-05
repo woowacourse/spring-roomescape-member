@@ -1,21 +1,15 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.dao.ThemeDao;
-import roomescape.dao.ThemeDaoJdbcDao;
 import roomescape.domain.Theme;
-import roomescape.domain.Time;
 import roomescape.domain.vo.Name;
 import roomescape.dto.ThemeRequestDto;
-import roomescape.dto.TimeRequestDto;
 import roomescape.service.fake.FakeThemeDao;
-
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ThemeServiceTest {
     private ThemeService themeService;
@@ -35,7 +29,7 @@ public class ThemeServiceTest {
 
     @Test
     void 테마을_생성하면_id가_부여된_테마가_생성된다() {
-        Theme theme = themeService.create(new ThemeRequestDto("테마1", "www.url.com","테마1 입니다."));
+        Theme theme = themeService.create(new ThemeRequestDto("테마1", "www.url.com", "테마1 입니다."));
 
         assertThat(theme).isNotNull();
         assertThat(theme.getId()).isEqualTo(1L);

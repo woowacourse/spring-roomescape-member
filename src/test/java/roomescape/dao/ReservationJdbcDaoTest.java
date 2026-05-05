@@ -20,7 +20,7 @@ import roomescape.domain.vo.Name;
 @Import({
         ReservationJdbcDao.class,
         TimeJdbcDao.class,
-        ThemeDaoJdbcDao.class
+        ThemeJdbcDao.class
 })
 class ReservationJdbcDaoTest {
     private static final int DELETED = 1;
