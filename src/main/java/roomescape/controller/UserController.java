@@ -46,8 +46,9 @@ public class UserController {
     }
 
     @GetMapping("/themes")
-    public ResponseEntity<List<ThemeResponse>> getSortedPopularThemesAtPeriod(@RequestParam("limit") int limit) {
-        LocalDate today = LocalDate.now();
+    public ResponseEntity<List<ThemeResponse>> getSortedPopularThemesAtPeriod(
+            @RequestParam("date") LocalDate today,
+            @RequestParam("limit") int limit) {
 
         LocalDate startAt = today.minusWeeks(1L);
         LocalDate endAt = today.minusDays(1);
