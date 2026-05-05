@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Timer;
+
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -110,5 +112,22 @@ class JdbcReservationRepositoryTest {
         int rowCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
 
         assertThat(rowCount).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("이미 예약된 시간을 조회할 수 있다.")
+    void findTimeIdByDateAndThemeId_테스트(){
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?,?,?)", "꿀잼 방탈출",
+                "재밌는 분위기의 방탈출", "https://example.com/theme_happy.jpg");
+        Long themeId = jdbcTemplate.queryForObject("SELECT id FROM theme WHERE name = ?", Long.class, "꿀잼 방탈출");
+
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:00");
+        Long timeId = jdbcTemplate.queryForObject("SELECT id FROM reservation_time LIMIT 1", Long.class);
+
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)","이삭", "2023-08-05", timeId, themeId);
+
+        List<Long> result = reservationRepository.findTimeIdByDateAndThemeId(LocalDate.parse("2023-08-05"), themeId);
+
+        assertThat(result).containsExactly(timeId);
     }
 }

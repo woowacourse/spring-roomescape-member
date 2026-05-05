@@ -48,12 +48,12 @@ public class ReservationTimeController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<AvailableTimeFindResponse>> findTimesByDateAndThemeId(
-//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-//            @RequestParam long themeId
-//    ) {
-//        List<AvailableTimeFindResponse> responses = reservationTimeService.findTimesByDateAndThemeId(date, themeId);
-//        return ResponseEntity.status(HttpStatus.OK).body(responses);
-//    }
+    @GetMapping("/availability")
+    public ResponseEntity<List<AvailableTimeFindResponse>> findTimesByDateAndThemeId(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam long themeId
+    ) {
+        List<AvailableTimeFindResponse> responses = reservationTimeService.findTimesByDateAndThemeId(date, themeId);
+        return ResponseEntity.status(HttpStatus.OK).body(responses);
+    }
 }
