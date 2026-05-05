@@ -4,9 +4,9 @@
 
 ### **테마 (Theme)**
 
-- [ ] 테마는 이름, 설명, 썸네일 URL를 가진다.
-- [ ] 관리자는 테마를 추가할 수 있다.
-- [ ] 관리자는 테마를 삭제할 수 있다.
+- [x] 테마는 이름, 설명, 썸네일 URL를 가진다.
+- [x] 관리자는 테마를 추가할 수 있다.
+- [x] 관리자는 테마를 삭제할 수 있다.
 - [ ] 테마 삭제 시 해당 테마의 기존 예약이 존재하면 삭제 요청을 거부하거나 처리 정책에 따라 제한한다.
 
 ### **예약 시간 (Time)**
@@ -87,7 +87,10 @@
 - **Response (201 Created):**
 ```json
 {
-  "themeId": 1
+  "themeId": 1,
+  "themeName": "귀신의 집",
+  "description": "무서워요",
+  "thumbnailImageUrl": "/resources/image/..."
 }
 ```
 
@@ -144,7 +147,11 @@
 - **Response (201 Created):**
 ```json
 {
-  "reservationId": 1
+  "reservationId": 1,
+  "userName": "고래",
+  "date": "2026-05-01",
+  "timeId": 1,
+  "themeId": 1
 }
 ```
 - **Error Response (400 Bad Request):** 동시성 문제 등으로 예약이 불가능한 경우.
