@@ -26,10 +26,23 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
+        Map<String, String> themeParams = new HashMap<>();
+        themeParams.put("name", "방탈출1");
+        themeParams.put("description", "다함께 탈출해요 방탈출.");
+        themeParams.put("thumbnail", "https://asdfsdf.sdfs");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -52,10 +65,23 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
+        Map<String, String> themeParams = new HashMap<>();
+        themeParams.put("name", "방탈출1");
+        themeParams.put("description", "다함께 탈출해요 방탈출.");
+        themeParams.put("thumbnail", "https://asdfsdf.sdfs");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -83,10 +109,23 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
+        Map<String, String> themeParams = new HashMap<>();
+        themeParams.put("name", "방탈출11");
+        themeParams.put("description", "다함께 탈출해요 방탈출.");
+        themeParams.put("thumbnail", "https://asdfsdf.sdfs");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
