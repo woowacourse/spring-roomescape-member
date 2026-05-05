@@ -30,7 +30,7 @@ public class TimeJdbcDao implements TimeDao {
     @Override
     public List<Time> findAll() {
         String sql = """
-                SELECT * FROM reservation_time
+                SELECT * FROM times
                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
@@ -38,7 +38,7 @@ public class TimeJdbcDao implements TimeDao {
     @Override
     public Optional<Time> findById(Long id) {
         String sql = """
-                SELECT * FROM reservation_time
+                SELECT * FROM times
                 WHERE id = ?
                 """;
 
@@ -50,7 +50,7 @@ public class TimeJdbcDao implements TimeDao {
     public Long insert(Time time) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = """
-                INSERT INTO reservation_time
+                INSERT INTO times
                 (start_at)
                 VALUES (?)
                 """;
@@ -66,7 +66,7 @@ public class TimeJdbcDao implements TimeDao {
     @Override
     public int delete(Long id) {
         String sql = """
-                DELETE FROM reservation_time
+                DELETE FROM times
                 WHERE id = ?
                 """;
 

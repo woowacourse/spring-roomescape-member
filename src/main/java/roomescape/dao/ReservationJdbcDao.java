@@ -1,14 +1,13 @@
 package roomescape.dao;
 
-import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 
@@ -24,23 +23,28 @@ public class ReservationJdbcDao implements ReservationDao {
             );
 
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public ReservationJdbcDao(JdbcTemplate jdbcTemplate) {
+    public ReservationJdbcDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public List<Reservation> findAll() {
         String sql = """
-                SELECT 
+                SELECT
                     r.id,
                     r.name,
                     r.date,
                     t.id AS time_id,
-                    t.start_at
-                    FROM reservation r
-                INNER JOIN reservation_time t ON r.time_id = t.id
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name,
+                    th.thumbnail_url,
+                    th.description
+                FROM reservations r
+                INNER JOIN times t ON r.time_id = t.id
+                INNER JOIN themes th ON r.theme_id = th.id;
                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
@@ -53,40 +57,44 @@ public class ReservationJdbcDao implements ReservationDao {
                     r.name,
                     r.date,
                     t.id AS time_id,
-                    t.start_at
-                FROM reservation r
-                INNER JOIN reservation_time t ON r.time_id = t.id
-                WHERE r.id = ?
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name,
+                    th.thumbnail_url,
+                    th.description
+                FROM reservations r
+                INNER JOIN times t ON r.time_id = t.id
+                INNER JOIN themes th ON r.theme_id = th.id
+                WHERE r.id = :id
                 """;
-        return jdbcTemplate.query(sql, ROW_MAPPER, id).stream()
+        SqlParameterSource params = new MapSqlParameterSource("id", id);
+        return jdbcTemplate.query(sql, params, ROW_MAPPER).stream()
                 .findFirst();
     }
 
     @Override
     public Long insert(Reservation reservation) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = """
-                INSERT INTO reservation
-                (name, date, time_id)
-                VALUES (?, ?, ?)
-                """;
-        jdbcTemplate.update(con -> {
-            PreparedStatement pstmt = con.prepareStatement(sql, new String[]{"id"});
-            pstmt.setString(1, reservation.getName());
-            pstmt.setString(2, reservation.getDate().toString());
-            pstmt.setLong(3, reservation.getTime().getId());
-            return pstmt;
-        }, keyHolder);
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
+                .withTableName("reservations")
+                .usingGeneratedKeyColumns("id")
+                .usingColumns("name", "date", "time_id", "theme_id");
 
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate())
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
+        
+        return simpleJdbcInsert.executeAndReturnKey(sqlParameterSource).longValue();
     }
 
     @Override
     public int delete(Long id) {
         String sql = """
-                DELETE FROM reservation
-                WHERE id = ?
+                DELETE FROM reservations
+                WHERE id = :id
                 """;
-        return jdbcTemplate.update(sql, id);
+        SqlParameterSource params = new MapSqlParameterSource("id", id);
+        return jdbcTemplate.update(sql, params);
     }
 }

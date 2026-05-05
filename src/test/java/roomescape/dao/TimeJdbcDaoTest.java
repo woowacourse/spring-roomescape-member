@@ -19,7 +19,6 @@ class TimeJdbcDaoTest {
     @Autowired
     private TimeDao timeDao;
 
-
     @ParameterizedTest
     @CsvSource("1,2,3")
     void findAll(int count) {

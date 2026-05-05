@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -46,7 +47,8 @@ class ReservationJdbcDaoTest {
         for (int i = 0; i < count; i++) {
             createAndInsertReservation();
         }
-        assertThat(reservationDao.findAll())
+        List<Reservation> reservations = reservationDao.findAll();
+        assertThat(reservations)
                 .hasSize(count);
     }
 
@@ -68,7 +70,7 @@ class ReservationJdbcDaoTest {
 
     @Test
     void delete() {
-        Long savedId = timeDao.insert(new Time(LocalTime.parse("10:00")));
+        Long savedId = createAndInsertReservation();
 
         assertThat(reservationDao.delete(savedId)).isEqualTo(DELETED);
     }

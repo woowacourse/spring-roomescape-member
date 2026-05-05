@@ -17,7 +17,7 @@ import roomescape.domain.vo.Name;
 public class ThemeJdbcDao implements ThemeDao {
     public static final RowMapper<Theme> ROW_MAPPER = (rs, rowNum) ->
             new Theme(
-                    rs.getLong(1),
+                    rs.getLong("id"),
                     new Name(rs.getString("name")),
                     rs.getString("thumbnail_url"),
                     rs.getString("description")
@@ -53,9 +53,8 @@ public class ThemeJdbcDao implements ThemeDao {
     @Override
     public Long insert(Theme theme) {
         String sql = """
-                INSERT INTO themes
-                (name, thumbnail_url, description)
-                VALUE (:name, :thumbnailUrl, :description)
+                INSERT INTO themes(name, thumbnail_url, description)
+                VALUES(:name, :thumbnailUrl, :description)
                 """;
 
         SqlParameterSource params = new MapSqlParameterSource()
@@ -73,7 +72,7 @@ public class ThemeJdbcDao implements ThemeDao {
     public int delete(Long id) {
         String sql = """
                 DELETE FROM themes
-                WHEE id = :id
+                WHERE id = :id
                 """;
 
         SqlParameterSource params = new MapSqlParameterSource()
