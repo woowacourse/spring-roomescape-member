@@ -19,9 +19,9 @@ public class ThemeService {
 
     @Transactional
     public ThemeResponse create(ThemeRequest request) {
-        Theme theme = new Theme(request.name(), request.description(), request.imageUrl());
+        Theme theme = new Theme(request.name(), request.description(), request.imageUrl(), request.requiredTime());
         Long id = themeRepository.create(theme);
-        return ThemeResponse.from(new Theme(id, request.name(), request.description(), request.imageUrl()));
+        return ThemeResponse.from(new Theme(id, request.name(), request.description(), request.imageUrl(), request.requiredTime()));
     }
 
     public void delete(Long id) {

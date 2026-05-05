@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
 
+import java.time.LocalTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -19,7 +21,7 @@ class ThemeServiceTest {
 
     @Test
     void 새로운_테마를_생성하고_쩡상적으로_응답을_반환한다() {
-        ThemeRequest request = new ThemeRequest("공포 테마", "무서워", "무서워");
+        ThemeRequest request = new ThemeRequest("공포 테마", "무서워", "무서워", LocalTime.of(2, 0));
 
         ThemeResponse response = themeService.create(request);
 
@@ -32,7 +34,7 @@ class ThemeServiceTest {
 
     @Test
     void 테마를_정상적으로_삭제한다() {
-        ThemeRequest request = new ThemeRequest("코믹 테마", "웃겨", "웃겨");
+        ThemeRequest request = new ThemeRequest("코믹 테마", "웃겨", "웃겨", LocalTime.of(2, 0));
         ThemeResponse response = themeService.create(request);
 
         assertDoesNotThrow(() -> themeService.delete(response.getId()));
