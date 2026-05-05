@@ -54,6 +54,71 @@ public class ReservationControllerTest {
     }
 
     @Test
+    void 같은_날짜_및_시간이더라도_테마가_다르면_예약_가능하다() {
+        Map<String, String> timeParams = new HashMap<>();
+        timeParams.put("startAt", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(timeParams)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, String> themeParams = new HashMap<>();
+        themeParams.put("name", "방탈출1");
+        themeParams.put("description", "다함께 탈출해요 방탈출.");
+        themeParams.put("thumbnail", "https://asdfsdf.sdfs");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, String> themeParams2 = new HashMap<>();
+        themeParams2.put("name", "방탈출2");
+        themeParams2.put("description", "다함께 탈출해요 방탈출2.");
+        themeParams2.put("thumbnail", "https://asdfsdf.sdfssdafdasf");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams2)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, Object> resersvationParams1 = new HashMap<>();
+        resersvationParams1.put("name", "로지");
+        resersvationParams1.put("date", "2026-05-05");
+        resersvationParams1.put("timeId", 1);
+        resersvationParams1.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(resersvationParams1)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .body("name", is("로지"));
+
+        Map<String, Object> reservationParams2 = new HashMap<>();
+        reservationParams2.put("name", "러키");
+        reservationParams2.put("date", "2026-05-05");
+        reservationParams2.put("timeId", 1);
+        reservationParams2.put("themeId", 2);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams2)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .body("name", is("러키"));
+    }
+
+    @Test
     void 예약_조회() {
         Map<String, String> timeParams = new HashMap<>();
         timeParams.put("startAt", "10:00");
