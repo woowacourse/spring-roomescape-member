@@ -1,73 +1,57 @@
-//package roomescape.schedule.service;
-//
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.transaction.annotation.Transactional;
-//import roomescape.schedule.dto.ScheduleRequest;
-//import roomescape.schedule.dto.ScheduleResponse;
-//
-//import java.time.LocalTime;
-//import java.util.List;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//
-//@SpringBootTest
-//@Transactional
-//class ReservationTimeServiceTest {
-//
-//    @Autowired
-//    private ScheduleService reservationTimeService;
-//
-//    @Test
-//    @DisplayName("새로운 예약 시간을 생성하고 실제 DB에 저장된다.")
-//    void create() {
-//        // given
-//        LocalTime startTime = LocalTime.of(14, 0);
-//        ScheduleRequest request = new ScheduleRequest(startTime);
-//
-//        // when
-//        ScheduleResponse response = reservationTimeService.create(request);
-//
-//        // then
-//        assertThat(response.getId()).isNotNull();
-//        assertThat(response.getStartAt()).isEqualTo(startTime);
-//
-//        List<ScheduleResponse> allTimes = reservationTimeService.findAll();
-//        assertThat(allTimes).anyMatch(time -> time.getStartAt().equals(startTime));
-//    }
-//
-//    @Test
-//    @DisplayName("실제 DB에 저장된 모든 예약 시간을 조회한다.")
-//    void findAll() {
-//        // given
-//        reservationTimeService.create(new ScheduleRequest(LocalTime.of(10, 0)));
-//        reservationTimeService.create(new ScheduleRequest(LocalTime.of(13, 0)));
-//
-//        // when
-//        List<ScheduleResponse> responses = reservationTimeService.findAll();
-//
-//        // then
-//        assertThat(responses).hasSize(2);
-//        assertThat(responses).extracting("startAt")
-//                .containsExactly(LocalTime.of(10, 0), LocalTime.of(13, 0));
-//    }
-//
-//    @Test
-//    @DisplayName("실제 DB에서 ID를 이용해 예약 시간을 삭제한다.")
-//    void delete() {
-//        // given
-//        ScheduleResponse saved = reservationTimeService.create(new ScheduleRequest(LocalTime.of(15, 0)));
-//        Long targetId = saved.getId();
-//
-//        // when
-//        int result = reservationTimeService.delete(targetId);
-//
-//        // then
-//        assertThat(result).isEqualTo(1);
-//
-//        List<ScheduleResponse> remaining = reservationTimeService.findAll();
-//        assertThat(remaining).extracting("id").doesNotContain(targetId);
-//    }
-//}
+package roomescape.schedule.service;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.schedule.dto.ScheduleRequest;
+import roomescape.schedule.dto.ScheduleResponse;
+import roomescape.schedule.dto.SchedulesResponse;
+import roomescape.schedule.model.Schedule;
+import roomescape.theme.model.Theme;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest
+@Transactional
+class ScheduleServiceTest {
+
+    private final Theme theme = new Theme("테마", "설명", "경로");
+    
+    private final Schedule schedule1 = new Schedule(LocalDateTime.of(2026, 12, 10, 12, 0),
+            LocalDateTime.of(2026, 12, 10, 14, 0), theme);
+    private final Schedule schedule2 = new Schedule(LocalDateTime.of(2026, 12, 10, 16, 0),
+            LocalDateTime.of(2026, 12, 10, 18, 0), theme);
+
+    @Autowired
+    private ScheduleService scheduleService;
+    
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Test
+    void 데이터베이스에_저장된_모든_스케줄을_조회한다() {
+        Long themeId = 1L;
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, image_url) VALUES (?, ?, ?, ?)",
+                themeId, theme.getName(), theme.getDescription(), theme.getImageUrl());
+        jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
+                1L, themeId, schedule1.getStartAt(), schedule1.getEndAt());
+        jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
+                2L, themeId, schedule2.getStartAt(), schedule2.getEndAt());
+
+        ScheduleRequest request = new ScheduleRequest(LocalDate.of(2026, 12, 10), themeId);
+
+        SchedulesResponse responses = scheduleService.findAll(request);
+        List<ScheduleResponse> responseList = responses.getScheduleResponses(); 
+
+        assertThat(responseList).isNotNull();
+        assertThat(responseList).hasSize(2);
+        assertThat(responseList.get(0).getStartAt()).isEqualTo(schedule1.getStartAt());
+        assertThat(responseList.get(1).getStartAt()).isEqualTo(schedule2.getStartAt());
+    }
+}
