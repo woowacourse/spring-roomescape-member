@@ -1,46 +1,41 @@
-package roomescape.dto;
+package roomescape.reservation.dto;
 
-import roomescape.model.Reservation;
+import roomescape.reservation.model.Reservation;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 public class ReservationResponse {
 
-    private final long id;
-    private final String name;
-    private final LocalDate date;
-    private final ReservationTimeResponse time;
+    private final Long reservationId;
+    private final Long userId;
+    private final String userName;
+    private final Long themeId;
+    private final String themeName;
+    private final Long scheduleId;
+    private final LocalDateTime startAt;
+    private final LocalDateTime endAt;
 
-    private ReservationResponse(long id, String name, LocalDate date, ReservationTimeResponse time) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
+    private ReservationResponse(Long reservationId, Long userId, String userName, Long themeId, String themeName, Long scheduleId, LocalDateTime startAt, LocalDateTime endAt) {
+        this.reservationId = reservationId;
+        this.userId = userId;
+        this.userName = userName;
+        this.themeId = themeId;
+        this.themeName = themeName;
+        this.scheduleId = scheduleId;
+        this.startAt = startAt;
+        this.endAt = endAt;
     }
 
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getName(),
-                reservation.getDate(),
-                ReservationTimeResponse.from(reservation.getTime())
+                reservation.getUser().getId(),
+                reservation.getUser().getName(),
+                reservation.getTheme().getId(),
+                reservation.getTheme().getName(),
+                reservation.getSchedule().getId(),
+                reservation.getSchedule().getStartAt(),
+                reservation.getSchedule().getEndAt()
         );
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public LocalTime getTime() {
-        return time.getStartAt();
     }
 }
