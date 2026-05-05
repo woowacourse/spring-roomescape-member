@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.DomainException;
-import roomescape.exception.ErrorCode;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -15,7 +13,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class ReservationTimeRepositoryTest {
+class JdbcReservationTimeRepositoryTest {
 
     private ReservationTimeRepository reservationTimeRepository;
 
