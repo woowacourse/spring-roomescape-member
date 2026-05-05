@@ -29,6 +29,10 @@ public class RoomReservationService {
         return reservationRepository.getAllReservation();
     }
 
+    public List<Reservation> getAllReservationByName(String name) {
+        return reservationRepository.getAllReservationByName(name);
+    }
+
     @Transactional
     public Reservation addReservation(ReservationCommand reservationCommand) {
         ReservationTime reservationTime = reservationTimeRepository.getReservationTime(reservationCommand.timeId())

@@ -25,6 +25,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> getAllReservationByName(String name) {
+        return Collections.unmodifiableList(reservationDao.getAllReservationByName(name));
+    }
+
+    @Override
     public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, ReservationTheme reservationTheme) {
         long id = reservationDao.insertReservation(reservationCommand);
         return new Reservation(id, reservationCommand.name(), reservationCommand.date(), reservationTime,

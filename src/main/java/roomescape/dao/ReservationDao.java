@@ -44,6 +44,7 @@ public class ReservationDao {
         JOIN reservation_time AS rt ON r.time_id = rt.id
         JOIN reservation_theme AS t ON r.theme_id = t.id
     """;
+
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation WHERE id = ?";
     private static final String EXIST_BY_TIME_ID_SQL = """
             SELECT EXISTS (\s
@@ -88,6 +89,10 @@ public class ReservationDao {
 
     public List<Reservation> getAllReservation() {
         return jdbcTemplate.query(SELECT_ALL_SQL, MAPPER);
+    }
+
+    public List<Reservation> getAllReservationByName(String name) {
+        return jdbcTemplate.query(SELECT_ALL_SQL + "WHERE r.name = ?", MAPPER, name);
     }
 
     public long insertReservation(ReservationCommand reservationCommand) {

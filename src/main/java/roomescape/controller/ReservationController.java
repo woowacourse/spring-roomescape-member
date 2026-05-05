@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
@@ -32,6 +33,7 @@ public class ReservationController {
     public ResponseEntity<List<ReservationResponse>> getReservations() {
         List<Reservation> reservations = roomReservationService.getAllReservation();
         List<ReservationResponse> response = reservations.stream().map(ReservationResponse::from).toList();
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -49,5 +51,13 @@ public class ReservationController {
         roomReservationService.deleteReservation(id);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping(params = {"name"})
+    public ResponseEntity<List<ReservationResponse>> getReservation(@RequestParam String name) {
+        List<Reservation> reservations = roomReservationService.getAllReservationByName(name);
+        List<ReservationResponse> response = reservations.stream().map(ReservationResponse::from).toList();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
