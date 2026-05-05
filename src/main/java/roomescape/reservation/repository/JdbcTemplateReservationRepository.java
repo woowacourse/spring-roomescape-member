@@ -72,6 +72,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
+    // TODO boolean으로 변환후 예외처리는 비즈니스로직에서 수행
     @Override
     public void delete(Long id) {
         String sql = "DELETE FROM reservation WHERE id = :id";
