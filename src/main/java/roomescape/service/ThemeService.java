@@ -19,6 +19,13 @@ public class ThemeService {
         this.themeDao = themeDao;
     }
 
+    public List<ThemeResponse> findTopTheme(Long count) {
+        List<Theme> topTheme = themeDao.findTopThemes(count);
+        return topTheme.stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
+
     public ThemeResponse create(ThemeRequest request) {
         Theme theme = new Theme(
                 null,
