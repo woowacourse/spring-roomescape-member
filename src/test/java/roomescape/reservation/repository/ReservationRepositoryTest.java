@@ -13,6 +13,7 @@ import roomescape.user.model.User;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ReservationRepositoryTest {
 
     private final User user = new User(1L, "user1", Role.USER);
-    private final Theme theme = new Theme(1L, "공포", "설명", "경로");
+    private final Theme theme = new Theme(1L, "공포", "설명", "경로", LocalTime.of(2, 0));
     private final Schedule schedule = new Schedule(1L, LocalDateTime.of(2026, 12, 10, 12, 0),
             LocalDateTime.of(2026, 12, 10, 14, 0), theme);
 
@@ -36,8 +37,8 @@ public class ReservationRepositoryTest {
     void setUp() {
         jdbcTemplate.update("INSERT INTO \"USER\" (id, name, role) VALUES (?, ?, ?)",
                 1L, "user1", "USER");
-        jdbcTemplate.update("INSERT INTO theme (id, name, description, image_url) VALUES (?, ?, ?, ?)",
-                1L, "공포", "설명", "경로");
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, image_url, required_time) VALUES (?, ?, ?, ?, ?)",
+                1L, "공포", "설명", "경로", LocalTime.of(2, 0));
         jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
                 1L, 1L, "2026-12-10 12:00:00", "2026-12-10 14:00:00");
     }
