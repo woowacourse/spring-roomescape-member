@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -27,5 +28,15 @@ public class ThemeController {
         List<ReservationTimeResponse> availableTimes = themeService.findAvailableTime(id, date);
 
         return ResponseEntity.ok().body(availableTimes);
+    }
+
+    // /theme?limit=10
+    @GetMapping()
+    public ResponseEntity<List<ThemeResponse>> getTopThemes(
+            @RequestParam("limit") long limit
+    ) {
+        List<ThemeResponse> topTheme = themeService.findTopTheme(limit);
+
+        return ResponseEntity.ok().body(topTheme);
     }
 }
