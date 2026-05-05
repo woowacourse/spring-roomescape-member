@@ -81,6 +81,10 @@ public class Reservation {
         return theme;
     }
 
+    public Long getThemeId() {
+        return theme.getId();
+    }
+
     public Reservation withId(Long key) {
         return new Reservation(key, this.name, this.date, this.time, this.theme);
     }
