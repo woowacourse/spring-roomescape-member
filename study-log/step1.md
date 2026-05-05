@@ -55,6 +55,19 @@ Theme과 ThemeResponse가 사실상 동일한 구조라 좀 어색했고, getter
 
 **합의**: 존재하든 존재하지 않든 DELETE 요청에 대해서는 일괄적으로 `204 No Content`를 반환하도록 전면 수정하기로 결정했다.
 
+
+
+#### 6. Reservation 조회 — JOIN을 줄이는 대신 Service 간 의존을 추가
+기존 ReservationRepository에서는 time과 theme를 함께 가져오기 위해 JOIN을 두 번 수행하고 있었다. 이 구조가 불필요한 SQL 연산을 동반한다고 느꼈다.
+이를 개선하기 위해 ReservationService가 다른 Service(ThemeService, TimeService)를 의존하도록 변경했다. ReservationRepository는 단순히 reservation 데이터만 조회하고, 필요한 Theme, Time 정보는 각 Service의 Response를 통해 받아오는 방식으로 구현하기로 일단 합의했다.
+
+
+Repository가 굉장히 단순해졌고, 불필요한 SQL문이 사라졌다.
+다만 Service에서 다른 Service를 호출해 다른 도메인의 Response 값을 가져오는 것이 올바른 구조인지에 대해서는 확신이 없다.
+
+합의: 일단 이 구조로 가되, Service 간 의존이 적절한 설계인지는 리뷰어 피드백을 통해 확인해 보고 싶다.
+
+
 ---
 
 ### 미결 — 리뷰어 피드백을 받고 싶은 부분
