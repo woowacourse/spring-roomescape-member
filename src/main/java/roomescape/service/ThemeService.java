@@ -1,7 +1,7 @@
 package roomescape.service;
 
-import java.time.LocalDate;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.controller.dto.ThemeCreateRequest;
@@ -13,13 +13,10 @@ import roomescape.repository.dto.ReservedTheme;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
-
-    public ThemeService(ThemeRepository themeRepository) {
-        this.themeRepository = themeRepository;
-    }
 
     @Transactional(readOnly = true)
     public List<Theme> findAll() {

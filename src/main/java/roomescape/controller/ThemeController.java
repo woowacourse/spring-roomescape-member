@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,15 +23,11 @@ import roomescape.service.ThemeService;
 
 @RestController
 @RequestMapping("/themes")
+@RequiredArgsConstructor
 public class ThemeController {
 
     private final ThemeService themeService;
     private final ThemeMapper themeMapper;
-
-    public ThemeController(ThemeService themeService, ThemeMapper themeMapper) {
-        this.themeService = themeService;
-        this.themeMapper = themeMapper;
-    }
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> findAll() {

@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
@@ -9,15 +10,10 @@ import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.command.ReservationTimeCreateCommand;
 
 @Service
+@RequiredArgsConstructor
 public class ReservationTimeService {
 
     private final ReservationTimeRepository repository;
-
-    public ReservationTimeService(
-            ReservationTimeRepository repository
-    ) {
-        this.repository = repository;
-    }
 
     @Transactional
     public ReservationTime create(

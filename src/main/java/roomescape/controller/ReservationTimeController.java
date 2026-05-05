@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,18 +19,11 @@ import roomescape.service.command.ReservationTimeCreateCommand;
 
 @RestController
 @RequestMapping("/times")
+@RequiredArgsConstructor
 public class ReservationTimeController {
 
     private final ReservationTimeService service;
     private final ReservationTimeMapper mapper;
-
-    public ReservationTimeController(
-            ReservationTimeService service,
-            ReservationTimeMapper mapper
-    ) {
-        this.service = service;
-        this.mapper = mapper;
-    }
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> create(
