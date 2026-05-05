@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -59,5 +60,25 @@ public class ThemeDao {
                 """;
 
         return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    public List<Theme> findSortedPopularThemesBy(LocalDate startAt, LocalDate endAt, int limit) {
+        String sql = """
+                SELECT 
+                    theme.id, 
+                    theme.name, 
+                    theme.thumbnail_url, 
+                    theme.description,
+                    COUNT(reservation.id) as count
+                FROM reservation
+                INNER JOIN theme ON reservation.theme_id = theme.id
+                WHERE reservation.date BETWEEN ? AND ?
+                GROUP BY theme.id
+                ORDER BY COUNT(reservation.id) DESC
+                LIMIT ?
+                """;
+
+        return jdbcTemplate.query(sql, rowMapper, startAt, endAt, limit);
+
     }
 }
