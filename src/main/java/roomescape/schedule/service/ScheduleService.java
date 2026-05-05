@@ -1,41 +1,26 @@
-package roomescape.service;
+package roomescape.schedule.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.model.ReservationTime;
-import roomescape.repository.ReservationTimeRepository;
+import roomescape.schedule.dto.ScheduleRequest;
+import roomescape.schedule.dto.SchedulesResponse;
+import roomescape.schedule.model.Schedule;
+import roomescape.schedule.repository.ScheduleRepository;
 
 import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
-public class ReservationTimeService {
+public class ScheduleService {
 
-    private final ReservationTimeRepository reservationTimeRepository;
+    private final ScheduleRepository scheduleRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
-        this.reservationTimeRepository = reservationTimeRepository;
+    public ScheduleService(ScheduleRepository scheduleRepository) {
+        this.scheduleRepository = scheduleRepository;
     }
 
-    @Transactional
-    public ReservationTimeResponse create(ReservationTimeRequest request) {
-        ReservationTime reservationTime = new ReservationTime(request.startAt());
-        Long id = reservationTimeRepository.create(reservationTime);
-        ReservationTime savedReservationTime = new ReservationTime(id, reservationTime.getStartTime());
-        return ReservationTimeResponse.of(savedReservationTime);
-    }
-
-    public List<ReservationTimeResponse> findAll() {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        return reservationTimes.stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
-    }
-
-    @Transactional
-    public int delete(Long id) {
-        return reservationTimeRepository.delete(id);
+    public SchedulesResponse findAll(ScheduleRequest request) {
+        List<Schedule> schedules = scheduleRepository.findAll(request.themeId(), request.date());
+        return SchedulesResponse.from(schedules);
     }
 }
