@@ -17,26 +17,13 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class AdminThemeControllerTest {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    public void setUp() {
-        jdbcTemplate.execute("DELETE FROM theme");
-
-        jdbcTemplate.update("INSERT INTO theme(name, description, image) VALUES (?, ?, ?)", "은하수", "은하수 테마방입니다.",
-                "http.123.jpg");
-        jdbcTemplate.update("INSERT INTO theme(name, description, image) VALUES (?, ?, ?)", "지구", "지구 테마방입니다.",
-                "http.123.jpg");
-    }
-
     @Test
     void 관리자_전체_테마_조회() throws Exception {
         RestAssured.given().log().all()
                 .when().get("/admin/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(11));
 
     }
 
@@ -52,8 +39,8 @@ public class AdminThemeControllerTest {
     @Test
     void 관리자_테마_추가() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "수성");
-        params.put("description", "수성 테마방입니다.");
+        params.put("name", "디스커버리");
+        params.put("description", "디스커버리 테마방입니다.");
         params.put("image", "http.jpg");
 
         RestAssured.given().log().all()
@@ -62,7 +49,7 @@ public class AdminThemeControllerTest {
                 .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201)
-                .and().body("name", is("수성"));
+                .and().body("name", is("디스커버리"));
     }
 
     @Test

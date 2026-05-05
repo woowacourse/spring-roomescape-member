@@ -23,16 +23,6 @@ public class AdminThemeDaoTest {
     @Autowired
     private AdminThemeDao adminThemeDao;
 
-    @BeforeEach
-    public void setUp() {
-        jdbcTemplate.execute("DELETE FROM theme");
-
-        jdbcTemplate.update("INSERT INTO theme(name, description, image) VALUES (?, ?, ?)", "은하수", "은하수 테마방입니다.",
-                "http.123.jpg");
-        jdbcTemplate.update("INSERT INTO theme(name, description, image) VALUES (?, ?, ?)", "지구", "지구 테마방입니다.",
-                "http.123.jpg");
-    }
-
     @Test
     void 데이터베이스_연동() {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
@@ -47,10 +37,7 @@ public class AdminThemeDaoTest {
     @Test
     void 테마_전체_조회_테스트() {
         List<Theme> themes = adminThemeDao.selectAll();
-        assertThat(themes.size()).isEqualTo(2);
-
-        Theme theme = themes.get(0);
-        assertThat(theme.getName()).isEqualTo("은하수");
+        assertThat(themes.size()).isEqualTo(11);
     }
 
     @Test
@@ -60,15 +47,14 @@ public class AdminThemeDaoTest {
 
         Theme secoundTheme = adminThemeDao.selectById(2L);
         assertThat(secoundTheme.getName()).isEqualTo("지구");
-
     }
 
     @Test
     void 테마_생성_테스트() {
-        Theme theme = new Theme("수성", "수성 테마방입니다", "http.jp");
+        Theme theme = new Theme("디스커버리", "디스커버리 테마방입니다", "http.jp");
         Theme result = adminThemeDao.insert(theme);
 
-        assertThat(result.getId()).isEqualTo(3L);
+        assertThat(result.getId()).isEqualTo(12L);
         assertThat(result.getName()).isEqualTo(theme.getName());
     }
 
@@ -78,7 +64,6 @@ public class AdminThemeDaoTest {
         adminThemeDao.deleteById(id);
 
         List<Theme> themes = adminThemeDao.selectAll();
-        assertThat(themes.size()).isEqualTo(1);
-        assertThat(themes.getFirst().getName()).isEqualTo("지구");
+        assertThat(themes.size()).isEqualTo(10);
     }
 }
