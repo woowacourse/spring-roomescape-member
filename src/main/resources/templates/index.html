@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room Escape</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<header class="app-header">
+    <a class="brand" th:href="@{/}">
+        <span class="brand-mark">R</span>
+        <span>Room Escape</span>
+    </a>
+    <nav class="nav-links" aria-label="주요 메뉴">
+        <a class="active" th:href="@{/}">예약</a>
+        <a th:href="@{/admin}">관리자</a>
+    </nav>
+</header>
+
+<main class="shell">
+    <section class="page-title">
+        <div>
+            <p class="eyebrow">Reservation</p>
+            <h1>방탈출 예약</h1>
+        </div>
+        <p class="status" role="status" th:text="${message}"></p>
+    </section>
+
+    <section class="layout-grid">
+        <form class="panel reservation-form" th:action="@{/reservations}" method="post">
+            <div class="panel-heading">
+                <h2>예약 정보</h2>
+            </div>
+            <label>
+                <span>예약자</span>
+                <input name="name" type="text" placeholder="이름" required>
+            </label>
+            <label>
+                <span>날짜</span>
+                <input name="date" type="date" th:value="${today}" required>
+            </label>
+            <label>
+                <span>시간</span>
+                <select name="timeId" required>
+                    <option value="">시간 선택</option>
+                    <option th:each="time : ${times}" th:value="${time.id}" th:text="${time.startAt}"></option>
+                </select>
+            </label>
+            <label>
+                <span>테마</span>
+                <select name="themeId">
+                    <option value="">테마 선택</option>
+                    <option th:each="theme : ${themes}" th:value="${theme.id}" th:text="${theme.name}"></option>
+                </select>
+            </label>
+            <button class="primary-button" type="submit">예약하기</button>
+        </form>
+
+        <section class="panel">
+            <div class="panel-heading">
+                <h2>테마</h2>
+            </div>
+            <div class="theme-grid">
+                <p class="empty" th:if="${#lists.isEmpty(themes)}">등록된 테마가 없습니다.</p>
+                <article class="theme-card" th:each="theme : ${themes}">
+                    <img th:if="${theme.image != null and !theme.image.isBlank()}" th:src="${theme.image}" th:alt="${theme.name}" loading="lazy">
+                    <div th:unless="${theme.image != null and !theme.image.isBlank()}" class="image-fallback" th:text="${#strings.substring(theme.name, 0, 1)}"></div>
+                    <div class="theme-body">
+                        <h3 th:text="${theme.name}">테마 이름</h3>
+                        <p th:text="${theme.description}">테마 설명</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </section>
+
+    <section class="panel table-panel">
+        <div class="panel-heading">
+            <h2>예약 목록</h2>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>예약자</th>
+                    <th>날짜</th>
+                    <th>시간</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(reservations)}">
+                    <td class="empty" colspan="4">예약 내역이 없습니다.</td>
+                </tr>
+                <tr th:each="reservation : ${reservations}">
+                    <td th:text="${reservation.name}">예약자</td>
+                    <td th:text="${reservation.date}">날짜</td>
+                    <td th:text="${reservation.time.startAt}">시간</td>
+                    <td>
+                        <form th:action="@{/reservations/{id}/delete(id=${reservation.id})}" method="post">
+                            <button class="danger-button" type="submit">취소</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

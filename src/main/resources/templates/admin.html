@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room Escape Admin</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<header class="app-header">
+    <a class="brand" th:href="@{/}">
+        <span class="brand-mark">R</span>
+        <span>Room Escape</span>
+    </a>
+    <nav class="nav-links" aria-label="주요 메뉴">
+        <a th:href="@{/}">예약</a>
+        <a class="active" th:href="@{/admin}">관리자</a>
+    </nav>
+</header>
+
+<main class="shell">
+    <section class="page-title">
+        <div>
+            <p class="eyebrow">Admin</p>
+            <h1>테마 관리</h1>
+        </div>
+        <p class="status" role="status" th:text="${message}"></p>
+    </section>
+
+    <section class="layout-grid admin-layout">
+        <form class="panel reservation-form" th:action="@{/admin/theme}" method="post">
+            <div class="panel-heading">
+                <h2>테마 등록</h2>
+            </div>
+            <label>
+                <span>이름</span>
+                <input name="name" type="text" placeholder="테마 이름" required>
+            </label>
+            <label>
+                <span>설명</span>
+                <textarea name="description" placeholder="테마 설명" rows="5"></textarea>
+            </label>
+            <label>
+                <span>이미지 URL</span>
+                <input name="image" type="url" placeholder="https://example.com/image.jpg">
+            </label>
+            <button class="primary-button" type="submit">등록하기</button>
+        </form>
+
+        <section class="panel">
+            <div class="panel-heading">
+                <h2>등록된 테마</h2>
+            </div>
+            <div class="theme-grid admin-theme-grid">
+                <p class="empty" th:if="${#lists.isEmpty(themes)}">등록된 테마가 없습니다.</p>
+                <article class="theme-card" th:each="theme : ${themes}">
+                    <img th:if="${theme.image != null and !theme.image.isBlank()}" th:src="${theme.image}" th:alt="${theme.name}" loading="lazy">
+                    <div th:unless="${theme.image != null and !theme.image.isBlank()}" class="image-fallback" th:text="${#strings.substring(theme.name, 0, 1)}"></div>
+                    <div class="theme-body">
+                        <h3 th:text="${theme.name}">테마 이름</h3>
+                        <p th:text="${theme.description}">테마 설명</p>
+                        <div class="theme-actions">
+                            <form th:action="@{/admin/theme/{id}/delete(id=${theme.id})}" method="post">
+                                <button class="danger-button" type="submit">삭제</button>
+                            </form>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </section>
+</main>
+</body>
+</html>

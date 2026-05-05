@@ -1,0 +1,398 @@
+:root {
+    --bg: #f6f4ef;
+    --surface: #ffffff;
+    --surface-strong: #111827;
+    --line: #ded8ce;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --accent: #0f766e;
+    --accent-strong: #0b5f59;
+    --danger: #b42318;
+    --shadow: 0 16px 40px rgba(31, 41, 55, 0.10);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-width: 320px;
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 64px;
+    padding: 0 28px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(246, 244, 239, 0.92);
+    backdrop-filter: blur(12px);
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text);
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.brand-mark {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border-radius: 8px;
+    background: var(--surface-strong);
+    color: #fff;
+    font-size: 17px;
+}
+
+.nav-links {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #ebe6dc;
+}
+
+.nav-links a {
+    min-width: 76px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+}
+
+.nav-links a.active {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 4px 12px rgba(31, 41, 55, 0.08);
+}
+
+.shell {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 34px 0 56px;
+}
+
+.page-title {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.eyebrow {
+    margin: 0 0 6px;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+    margin-top: 0;
+}
+
+h1 {
+    margin-bottom: 0;
+    font-size: 36px;
+    line-height: 1.18;
+}
+
+h2 {
+    margin-bottom: 0;
+    font-size: 18px;
+}
+
+.status {
+    min-height: 20px;
+    margin-bottom: 4px;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: right;
+}
+
+.status.error {
+    color: var(--danger);
+}
+
+.layout-grid {
+    display: grid;
+    grid-template-columns: 360px minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.admin-layout {
+    grid-template-columns: 380px minmax(0, 1fr);
+}
+
+.panel {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--line);
+}
+
+.reservation-form {
+    display: grid;
+    gap: 16px;
+    padding-bottom: 20px;
+}
+
+.reservation-form label {
+    display: grid;
+    gap: 7px;
+    padding: 0 20px;
+}
+
+.reservation-form label:first-of-type {
+    padding-top: 2px;
+}
+
+.reservation-form span {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid #cfc7ba;
+    border-radius: 8px;
+    background: #fff;
+    color: var(--text);
+    padding: 10px 12px;
+    outline: none;
+}
+
+textarea {
+    resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+}
+
+.primary-button,
+.danger-button,
+.ghost-button,
+.icon-button {
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.primary-button {
+    min-height: 46px;
+    margin: 0 20px;
+    background: var(--accent);
+    color: #fff;
+}
+
+.primary-button:hover {
+    background: var(--accent-strong);
+}
+
+.danger-button {
+    min-height: 36px;
+    padding: 0 12px;
+    background: #fee4e2;
+    color: var(--danger);
+}
+
+.ghost-button {
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--text);
+}
+
+.icon-button {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--text);
+    font-size: 20px;
+    line-height: 1;
+}
+
+.theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+    padding: 20px;
+}
+
+.theme-card {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.theme-card img,
+.image-fallback {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background: linear-gradient(135deg, #0f766e, #111827 55%, #a16207);
+}
+
+.image-fallback {
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-size: 24px;
+    font-weight: 900;
+}
+
+.theme-body {
+    display: grid;
+    gap: 8px;
+    padding: 14px;
+}
+
+.theme-body h3 {
+    margin: 0;
+    font-size: 17px;
+}
+
+.theme-body p {
+    min-height: 42px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.theme-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.table-panel {
+    margin-top: 20px;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 560px;
+}
+
+th,
+td {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+}
+
+th {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+td:last-child,
+th:last-child {
+    width: 110px;
+    text-align: right;
+}
+
+.empty {
+    padding: 28px 20px;
+    color: var(--muted);
+    text-align: center;
+}
+
+@media (max-width: 840px) {
+    .app-header {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 14px 16px;
+    }
+
+    .nav-links {
+        width: 100%;
+    }
+
+    .nav-links a {
+        flex: 1;
+    }
+
+    .shell {
+        width: min(100% - 20px, 620px);
+        padding-top: 24px;
+    }
+
+    .page-title {
+        align-items: start;
+        flex-direction: column;
+    }
+
+    .status {
+        text-align: left;
+    }
+
+    h1 {
+        font-size: 30px;
+    }
+
+    .layout-grid,
+    .admin-layout {
+        grid-template-columns: 1fr;
+    }
+}
