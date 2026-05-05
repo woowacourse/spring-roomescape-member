@@ -44,6 +44,13 @@ public class JdbcThemeRepository implements ThemeRepository{
     }
 
     @Override
+    public List<Theme> findByStatus(boolean status) {
+        String sql = "SELECT * FROM theme WHERE is_active = :status ORDER BY name ASC";
+        SqlParameterSource params = new MapSqlParameterSource("status", status);
+        return jdbcTemplate.query(sql, params, themeRowMapper);
+    }
+
+    @Override
     public Theme save(Theme theme) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.name())

@@ -3,6 +3,9 @@ package roomescape.theme.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +14,9 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.FakeThemeRepository;
 
 class ThemeServiceTest {
+    private static final String DEFAULT_DESCRIPTION = "테마 설명";
+    private static final String DEFAULT_THUMBNAIL_URL = "테마 썸네일";
+
     private ThemeService themeService;
     private FakeThemeRepository themeRepository;
 
@@ -64,6 +70,27 @@ class ThemeServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 테마가 존재하지 않습니다.");
     }
+
+    @Test
+    @DisplayName("활성화된 테마 목록을 가나다순으로 조회한다.")
+    void readActiveThemes(){
+        // given
+        String name1 = "다테마";
+        String name2 = "나테마";
+        String name3 = "가테마";
+
+        List<Theme> themes = saveAll(generateActiveThemesByName(List.of(name1, name2, name3)));
+        Collections.sort(themes, Comparator.comparing(Theme::name));
+
+        // when
+        List<Theme> actual = themeService.readActiveThemes();
+
+        // then
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .isEqualTo(themes);
+    }
+
 
     @Test
     @DisplayName("테마를 1개 등록하면 테마 데이터 수가 1 증가한다.")
@@ -130,4 +157,22 @@ class ThemeServiceTest {
                 .isFalse();
     }
 
+    private List<Theme> saveAll(List<Theme> themes){
+        List<Theme> savedThemes = new ArrayList<>();
+        for(Theme theme : themes){
+            Theme savedTheme = themeRepository.save(theme);
+            savedThemes.add(savedTheme);
+        }
+        return savedThemes;
+    }
+
+    private List<Theme> generateActiveThemesByName(List<String> names){
+        List<Theme> themes = new ArrayList<>();
+        for(String name : names){
+            Theme theme = Theme.create(name, DEFAULT_DESCRIPTION, DEFAULT_THUMBNAIL_URL);
+            theme.updateStatus(true);
+            themes.add(theme);
+        }
+        return themes;
+    }
 }

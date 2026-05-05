@@ -1,6 +1,7 @@
 package roomescape.theme.repository;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import roomescape.theme.domain.Theme;
@@ -46,5 +47,13 @@ public class FakeThemeRepository implements ThemeRepository{
         return themes.stream()
                 .filter(theme -> theme.id().equals(id))
                 .findFirst();
+    }
+
+    @Override
+    public List<Theme> findByStatus(boolean status) {
+        return themes.stream()
+                .filter(theme -> theme.isActive() == status)
+                .sorted(Comparator.comparing(Theme::name))
+                .toList();
     }
 }

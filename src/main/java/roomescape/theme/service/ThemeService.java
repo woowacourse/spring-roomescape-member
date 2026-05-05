@@ -25,6 +25,11 @@ public class ThemeService {
         return getTheme(id);
     }
 
+    @Transactional(readOnly = true)
+    public List<Theme> readActiveThemes() {
+        return themeRepository.findByStatus(true);
+    }
+
     @Transactional
     public Theme register(String name, String description, String thumbnailUrl) {
         return themeRepository.save(Theme.create(name, description, thumbnailUrl));
