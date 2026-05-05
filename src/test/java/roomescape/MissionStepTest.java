@@ -50,7 +50,8 @@ public class MissionStepTest {
     @Test
     void DB_조회_API_전환() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05", 1);
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "테마1", "테마1 설명", "테마1 썸네일");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05", 1, 1);
 
         List<Reservation> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -97,6 +98,19 @@ public class MissionStepTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(200);
+
+
+        Map<String, Object> theme = new HashMap<>();
+        theme.put("name", "테마1");
+        theme.put("description", "테마1 설명");
+        theme.put("thumbnailUrl", "테마1 썸네일");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(200);
+
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
