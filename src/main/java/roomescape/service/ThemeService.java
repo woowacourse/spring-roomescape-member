@@ -17,12 +17,16 @@ public class ThemeService {
 
     public ThemeResponse addTheme(ThemeRequest request) {
         Theme theme = request.toTheme();
+        validateTheme(theme);
+        Theme savedTheme = themeDao.insert(theme);
+        return ThemeResponse.from(savedTheme);
+    }
+
+    private void validateTheme(Theme theme) {
         Optional<Theme> newTheme = themeDao.selectById(theme.getId());
         if (newTheme.isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 테마입니다.");
         }
-        Theme savedTheme = themeDao.insert(theme);
-        return ThemeResponse.from(savedTheme);
     }
 
     public void delete(long themeId) {

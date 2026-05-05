@@ -40,7 +40,7 @@ public class ReservationService {
         List<Reservation> reservations = reservationDao.select();
         return reservations.stream()
                 .map(ReservationResponse::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public void delete(Long reservationId) {
