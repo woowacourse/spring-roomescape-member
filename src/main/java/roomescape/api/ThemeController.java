@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.facade.ReservationFacade;
 import roomescape.service.ThemeService;
 
 import java.util.List;
@@ -20,9 +21,11 @@ import java.util.List;
 public class ThemeController {
 
     private final ThemeService themeService;
+    private final ReservationFacade reservationFacade;
 
-    public ThemeController(ThemeService themeService) {
+    public ThemeController(ThemeService themeService, ReservationFacade reservationFacade) {
         this.themeService = themeService;
+        this.reservationFacade = reservationFacade;
     }
 
     @GetMapping
@@ -44,7 +47,7 @@ public class ThemeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        themeService.deleteTheme(id);
+        reservationFacade.deleteTheme(id);
 
         return ResponseEntity.ok().build();
     }

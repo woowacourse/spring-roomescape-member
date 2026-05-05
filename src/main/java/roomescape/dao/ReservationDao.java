@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.utils.DateTimeConverter;
 
 import java.sql.PreparedStatement;
@@ -27,11 +28,18 @@ public class ReservationDao {
                 rs.getLong("time_id"),
                 DateTimeConverter.timeConverter(rs.getString("time_value"))
         );
+        Theme theme = new Theme(
+                rs.getLong("theme_id"),
+                rs.getString("theme_name"),
+                rs.getString("description"),
+                rs.getString("thumbnail_image_url")
+        );
         return new Reservation(
                 rs.getLong("reservation_id"),
                 rs.getString("name"),
                 DateTimeConverter.dateConverter(rs.getString("date")),
-                time
+                time,
+                theme
         );
     };
 
@@ -41,14 +49,28 @@ public class ReservationDao {
         return count != null && count > 0;
     }
 
+    public boolean existsByThemeId(Long themeId) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
+        return count != null && count > 0;
+    }
+
     public List<Reservation> findAll() {
-        String sql = "SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value " +
-                "FROM reservation as r INNER JOIN reservation_time as t ON r.time_id = t.id";
+        String sql = """
+                SELECT r.id as reservation_id, r.name, r.date,
+                       t.id as time_id, t.start_at as time_value,
+                       th.id as theme_id, th.name as theme_name,
+                       th.description as theme_description, th.thumbnail_image_url as theme_thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as t ON r.time_id = t.id
+                INNER JOIN theme as th ON r.theme_id = th.id
+                """;
+
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     public Long save(Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -56,6 +78,7 @@ public class ReservationDao {
             ps.setString(1, reservation.getName());
             ps.setString(2, reservation.getDate().toString());
             ps.setLong(3, reservation.getTime().getId());
+            ps.setLong(4, reservation.getTheme().getId());
             return ps;
         }, keyHolder);
 
@@ -67,9 +90,17 @@ public class ReservationDao {
     }
 
     public Optional<Reservation> findById(Long id) {
-        String sql = "SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value " +
-                "FROM reservation as r INNER JOIN reservation_time as t ON r.time_id = t.id " +
-                "WHERE r.id = ?";
+        String sql = """
+                SELECT r.id as reservation_id, r.name, r.date,
+                       t.id as time_id, t.start_at as time_value,
+                       th.id as theme_id, th.name as theme_name,
+                       th.description as theme_description, th.thumbnail_image_url as theme_thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as t ON r.time_id = t.id
+                INNER JOIN theme as th ON r.theme_id = th.id
+                WHERE r.id = ?;
+                """;
+
         List<Reservation> results = jdbcTemplate.query(sql, reservationRowMapper, id);
         return results.stream().findFirst();
     }

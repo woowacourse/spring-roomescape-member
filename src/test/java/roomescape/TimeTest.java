@@ -50,10 +50,22 @@ public class TimeTest {
                 .then().log().all()
                 .statusCode(200);
 
+        Map<String, String> themeParams = new HashMap<>();
+        themeParams.put("name", "공포");
+        themeParams.put("description", "무서운 테마");
+        themeParams.put("thumbnailImageUrl", "https://example.com/horror.jpg");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(200);
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

@@ -35,4 +35,8 @@ public class ReservationRepository {
     public Optional<Reservation> findById(Long id) {
         return reservationDao.findById(id);
     }
+
+    public boolean existsByThemeId(Long themeId) {
+        return reservationDao.existsByThemeId(themeId);
+    }
 }

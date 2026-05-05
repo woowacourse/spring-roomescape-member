@@ -4,38 +4,54 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
+import roomescape.service.ThemeService;
 import roomescape.utils.DateTimeConverter;
 
 @Component
-public class ReservationTimeFacade {
+public class ReservationFacade {
+
+    private static final String ALREADY_EXISTS_RESERVATION = "해당 시간과 테마를 사용 중인 예약이 존재하여 삭제할 수 없습니다.";
 
     private final ReservationService reservationService;
     private final ReservationTimeService reservationTimeService;
+    private final ThemeService themeService;
 
-    public ReservationTimeFacade(ReservationService reservationService, ReservationTimeService reservationTimeService) {
+    public ReservationFacade(ReservationService reservationService, ReservationTimeService reservationTimeService, ThemeService themeService) {
         this.reservationService = reservationService;
         this.reservationTimeService = reservationTimeService;
+        this.themeService = themeService;
     }
 
     @Transactional
     public void deleteTime(Long id) {
         if (reservationService.hasReservationsByTimeId(id)) {
-            throw new IllegalArgumentException("해당 시간을 사용 중인 예약이 존재하여 삭제할 수 없습니다.");
+            throw new IllegalArgumentException(ALREADY_EXISTS_RESERVATION);
         }
         reservationTimeService.deleteTime(id);
     }
 
     @Transactional
+    public void deleteTheme(Long id) {
+        if (reservationService.hasReservationsByThemeId(id)) {
+            throw new IllegalArgumentException(ALREADY_EXISTS_RESERVATION);
+        }
+        themeService.deleteTheme(id);
+    }
+
+    @Transactional
     public Reservation addReservation(ReservationRequest request) {
         ReservationTime reservationTime = reservationTimeService.findById(request.timeId());
+        Theme theme = themeService.findById(request.themeId());
 
         return reservationService.addReservation(new Reservation(
                         request.name(),
                         DateTimeConverter.dateConverter(request.date()),
-                        reservationTime
+                        reservationTime,
+                        theme
                 )
         );
     }

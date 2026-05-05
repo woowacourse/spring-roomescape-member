@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
 
 import java.util.List;
 
@@ -13,11 +12,9 @@ import java.util.List;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository) {
+    public ReservationService(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
     }
 
     public List<Reservation> getReservations() {
@@ -30,11 +27,8 @@ public class ReservationService {
 
     @Transactional
     public Reservation addReservation(Reservation reservation) {
-        if (!reservationTimeRepository.existsById(reservation.getTime().getId())) {
-            throw new IllegalArgumentException("존재하지 않는 시간 ID입니다.");
-        }
-
         Long id = reservationRepository.save(reservation);
+
         return findById(id);
     }
 
@@ -43,8 +37,11 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    @Transactional(readOnly = true)
     public Reservation findById(Long id) {
         return reservationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 ID입니다."));
+    }
+
+    public boolean hasReservationsByThemeId(Long themeId) {
+        return reservationRepository.existsByThemeId(themeId);
     }
 }

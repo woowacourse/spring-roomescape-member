@@ -28,11 +28,13 @@ class ReservationApiTest {
     @Test
     void 예약_추가() {
         Integer timeId = createTime("11:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "민욱");
         params.put("date", "2026-08-05");
         params.put("timeId", timeId);
+        params.put("themeId", themeId);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -48,11 +50,13 @@ class ReservationApiTest {
     @Test
     void 예약_추가_후_조회() {
         Integer timeId = createTime("14:00");
+        Integer themeId = createTheme("추리", "단서를 찾아라", "https://example.com/mystery.jpg");
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "티뉴");
         params.put("date", "2026-09-01");
         params.put("timeId", timeId);
+        params.put("themeId", themeId);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -72,11 +76,13 @@ class ReservationApiTest {
     @Test
     void 예약_추가_및_삭제() {
         Integer timeId = createTime("18:00");
+        Integer themeId = createTheme("SF", "우주에서 탈출", "https://example.com/sf.jpg");
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2026-10-10");
         params.put("timeId", timeId);
+        params.put("themeId", themeId);
 
         Integer reservationId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -106,6 +112,21 @@ class ReservationApiTest {
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/times")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().get("id");
+    }
+
+    private Integer createTheme(String name, String description, String thumbnailImageUrl) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("description", description);
+        params.put("thumbnailImageUrl", thumbnailImageUrl);
+
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
                 .then().log().all()
                 .statusCode(200)
                 .extract().jsonPath().get("id");

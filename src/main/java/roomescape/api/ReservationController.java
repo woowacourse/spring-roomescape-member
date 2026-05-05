@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
-import roomescape.facade.ReservationTimeFacade;
+import roomescape.facade.ReservationFacade;
 import roomescape.service.ReservationService;
 
 import java.util.List;
@@ -21,11 +21,11 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
-    private final ReservationTimeFacade reservationTimeFacade;
+    private final ReservationFacade reservationFacade;
 
-    public ReservationController(ReservationService reservationService, ReservationTimeFacade reservationTimeFacade) {
+    public ReservationController(ReservationService reservationService, ReservationFacade reservationFacade) {
         this.reservationService = reservationService;
-        this.reservationTimeFacade = reservationTimeFacade;
+        this.reservationFacade = reservationFacade;
     }
 
     @GetMapping
@@ -39,7 +39,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> add(@RequestBody ReservationRequest request) {
-        Reservation reservation = reservationTimeFacade.addReservation(request);
+        Reservation reservation = reservationFacade.addReservation(request);
         ReservationResponse response = ReservationResponse.from(reservation);
 
         return ResponseEntity.ok().body(response);

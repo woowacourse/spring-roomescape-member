@@ -1,10 +1,11 @@
 package roomescape.service;
 
-import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -31,7 +32,6 @@ public class ThemeService {
         themeRepository.deleteById(id);
     }
 
-    @Transactional(readOnly = true)
     public Theme findById(Long id) {
         return themeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마 ID입니다."));
     }

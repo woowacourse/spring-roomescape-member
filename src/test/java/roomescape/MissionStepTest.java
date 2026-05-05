@@ -37,10 +37,24 @@ public class MissionStepTest {
                 .statusCode(200)
                 .extract().jsonPath().get("id");
 
+        Map<String, String> themeParams = new HashMap<>();
+        themeParams.put("name", "공포");
+        themeParams.put("description", "무서운 테마");
+        themeParams.put("thumbnailImageUrl", "https://example.com/horror.jpg");
+
+        Integer themeId = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().get("id");
+
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
         params.put("timeId", timeId);
+        params.put("themeId", themeId);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

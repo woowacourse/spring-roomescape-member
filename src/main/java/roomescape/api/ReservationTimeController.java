@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.facade.ReservationTimeFacade;
+import roomescape.facade.ReservationFacade;
 import roomescape.service.ReservationTimeService;
 import roomescape.utils.DateTimeConverter;
 
@@ -22,11 +22,11 @@ import java.util.List;
 public class ReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
-    private final ReservationTimeFacade reservationTimeFacade;
+    private final ReservationFacade reservationFacade;
 
-    public ReservationTimeController(ReservationTimeService reservationTimeService, ReservationTimeFacade reservationTimeFacade) {
+    public ReservationTimeController(ReservationTimeService reservationTimeService, ReservationFacade reservationFacade) {
         this.reservationTimeService = reservationTimeService;
-        this.reservationTimeFacade = reservationTimeFacade;
+        this.reservationFacade = reservationFacade;
     }
 
     @GetMapping
@@ -49,7 +49,7 @@ public class ReservationTimeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        reservationTimeFacade.deleteTime(id);
+        reservationFacade.deleteTime(id);
 
         return ResponseEntity.ok().build();
     }
