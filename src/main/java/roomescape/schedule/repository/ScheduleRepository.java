@@ -47,7 +47,6 @@ public class ScheduleRepository {
             return new Schedule(
                     resultSet.getLong("schedule_id"),
                     resultSet.getObject("start_at", LocalDateTime.class),
-                    resultSet.getObject("end_at", LocalDateTime.class),
                     theme
             );
         }, themeId, startOfDay, endOfDay);
