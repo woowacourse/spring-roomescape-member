@@ -3,15 +3,11 @@ package roomescape.controller;
 import java.time.LocalDate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.controller.dto.AvailableTimeResponse;
 import roomescape.controller.dto.ThemeRequest;
 import roomescape.controller.dto.ThemeResponse;
-import roomescape.domain.AvailableTime;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
+import roomescape.service.dto.AvailableTimeDto;
 import roomescape.domain.Theme;
 import roomescape.service.ReservationService;
-import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
 
 import java.net.URI;
@@ -23,13 +19,10 @@ public class ThemeController {
 
     private final ThemeService themeService;
     private final ReservationService reservationService;
-    private final ReservationTimeService reservationTimeService;
 
-    public ThemeController(ThemeService themeService, ReservationService reservationService,
-                           ReservationTimeService reservationTimeService) {
+    public ThemeController(ThemeService themeService, ReservationService reservationService) {
         this.themeService = themeService;
         this.reservationService = reservationService;
-        this.reservationTimeService = reservationTimeService;
     }
 
     @GetMapping
@@ -56,8 +49,7 @@ public class ThemeController {
     }
 
     @GetMapping("/{id}/times")
-    public List<AvailableTime> getAvailableTimes(@PathVariable Long id,
-                                                                 @RequestParam("date") LocalDate date) {
+    public List<AvailableTimeDto> getAvailableTimes(@PathVariable Long id, @RequestParam("date") LocalDate date) {
         return reservationService.findAvailableTime(id, date);
     }
 }

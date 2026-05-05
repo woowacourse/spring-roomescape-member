@@ -13,7 +13,9 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
+import roomescape.service.dto.AvailableTimeDto;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class ReservationServiceTest {
 
     private ReservationService reservationService;
+
+    private LocalDate date = LocalDate.parse("2023-08-05");
 
     @BeforeEach
     void setup() {
@@ -49,21 +53,21 @@ class ReservationServiceTest {
     @Test
     void 예약_생성_테스트() {
         // when
-        Reservation result = reservationService.create("브라운", "2023-08-05", 1L, 1L);
+        Reservation result = reservationService.create("브라운", date, 1L, 1L);
 
         // then
         assertAll(
                 () -> assertThat(result.getId()).isNotNull(),
                 () -> assertThat(result.getName()).isEqualTo("브라운"),
-                () -> assertThat(result.getDate()).isEqualTo("2023-08-05")
+                () -> assertThat(result.getDate()).isEqualTo(date)
         );
     }
 
     @Test
     void 전체_예약_조회_테스트() {
         // given
-        reservationService.create("브라운", "2023-08-05", 1L, 1L);
-        reservationService.create("구구", "2023-08-06", 1L, 1L);
+        reservationService.create("브라운", date, 1L, 1L);
+        reservationService.create("구구", date, 1L, 1L);
 
         // when
         List<Reservation> result = reservationService.findAll();
@@ -75,7 +79,7 @@ class ReservationServiceTest {
     @Test
     void 예약_삭제_테스트() {
         // given
-        Reservation created = reservationService.create("브라운", "2023-08-05", 1L, 1L);
+        Reservation created = reservationService.create("브라운", date, 1L, 1L);
 
         // when
         reservationService.delete(created.getId());
@@ -97,7 +101,7 @@ class ReservationServiceTest {
     @Test
     void 존재하지_않는_timeId로_예약_생성시_예외_발생() {
         // when & then
-        assertThatThrownBy(() -> reservationService.create("홍길동", "2026-05-02", 999L, 1L))
+        assertThatThrownBy(() -> reservationService.create("홍길동", date, 999L, 1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 존재하지 않는 예약 시간입니다.");
     }
@@ -105,8 +109,21 @@ class ReservationServiceTest {
     @Test
     void 존재하지_않는_themeId로_예약_생성시_예외_발생() {
         // when & then
-        assertThatThrownBy(() -> reservationService.create("홍길동", "2026-05-02", 1L, 999L))
+        assertThatThrownBy(() -> reservationService.create("홍길동", date, 1L, 999L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 존재하지 않는 테마입니다.");
+    }
+
+    @Test
+    void 예약_가능한_시간_조회_테스트() {
+        // given
+        reservationService.create("브라운", date, 1L, 1L);
+
+        // when
+        List<AvailableTimeDto> result = reservationService.findAvailableTime(1L, date);
+
+        // then
+        assertThat(result).extracting(AvailableTimeDto::available)
+                .containsOnlyOnce(false);
     }
 }

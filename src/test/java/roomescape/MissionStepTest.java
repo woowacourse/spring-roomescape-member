@@ -44,7 +44,7 @@ public class MissionStepTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
-        params.put("timeId", "35");
+        params.put("timeId", "1");
         params.put("themeId", "1");
 
         RestAssured.given().log().all()
@@ -214,5 +214,10 @@ public class MissionStepTest {
                 .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(204);
+
+        RestAssured.given().log().all()
+                .when().get("/themes/1/times?date=2026-05-05")
+                .then().log().all()
+                .statusCode(200);
     }
 }

@@ -11,6 +11,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,6 +23,8 @@ class ReservationDaoTest {
 
     private JdbcTemplate jdbcTemplate;
     private ReservationDao reservationDao;
+
+    private LocalDate date = LocalDate.of(2023, 8, 5);
 
     @BeforeEach
     void setup() {
@@ -44,9 +48,9 @@ class ReservationDaoTest {
     @Test
     void 예약_추가_테스트() {
         // given
-        ReservationTime time = findTimeByStartAt("15:40");
+        ReservationTime time = findTimeByStartAt("15:00");
         Theme theme = new Theme(1L, "테마 이름", "테마 설명", "썸네일");
-        Reservation reservation = new Reservation(null, "브라운", "2023-08-05", time, theme);
+        Reservation reservation = new Reservation(null, "브라운", date, time, theme);
 
         // when
         Long id = reservationDao.insert(reservation);
@@ -65,12 +69,12 @@ class ReservationDaoTest {
     @Test
     void 예약_삭제_테스트() {
         // given
-        ReservationTime time1 = findTimeByStartAt("15:40");
+        ReservationTime time1 = findTimeByStartAt("15:00");
         Theme theme1 = new Theme(1L, "테마 이름1", "테마 설명1", "썸네일1");
         ReservationTime time2 = findTimeByStartAt("12:00");
         Theme theme2 = new Theme(2L, "테마 이름2", "테마 설명2", "썸네일2");
-        Reservation reservation1 = new Reservation(null, "브라운", "2023-08-05", time1, theme1);
-        Reservation reservation2 = new Reservation(null, "구구", "2023-08-06", time2, theme2);
+        Reservation reservation1 = new Reservation(null, "브라운", date, time1, theme1);
+        Reservation reservation2 = new Reservation(null, "구구", date, time2, theme2);
         Long id1 = reservationDao.insert(reservation1);
         Long id2 = reservationDao.insert(reservation2);
 
@@ -93,7 +97,7 @@ class ReservationDaoTest {
                 (resultSet, rowNum) -> {
                     ReservationTime reservationTime = new ReservationTime(
                             resultSet.getLong("id"),
-                            resultSet.getString("start_at"));
+                            resultSet.getObject("start_at", LocalTime.class));
                     return reservationTime;
                 }, startAt);
     }

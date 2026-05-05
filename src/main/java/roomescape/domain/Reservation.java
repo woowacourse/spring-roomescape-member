@@ -45,12 +45,6 @@ public class Reservation {
         return theme;
     }
 
-    public boolean isSameTime(LocalTime time) {
-        return this.time.getStartAt()
-                .truncatedTo(ChronoUnit.MINUTES)
-                .equals(time.truncatedTo(ChronoUnit.MINUTES));
-    }
-
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 이름은 비어 있을 수 없습니다.");

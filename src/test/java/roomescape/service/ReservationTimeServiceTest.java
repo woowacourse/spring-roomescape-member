@@ -12,6 +12,7 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,20 +47,20 @@ class ReservationTimeServiceTest {
     @Test
     void 시간_생성_테스트() {
         // when
-        ReservationTime result = reservationTimeService.create("08:00");
+        ReservationTime result = reservationTimeService.create(LocalTime.of(8, 0));
 
         // then
         assertAll(
                 () -> assertThat(result.getId()).isNotNull(),
-                () -> assertThat(result.getStartAt()).isEqualTo("08:00")
+                () -> assertThat(result.getStartAt()).isEqualTo(LocalTime.of(8, 0))
         );
     }
 
     @Test
     void 전체_시간_조회_테스트() {
         // given
-        reservationTimeService.create("08:00");
-        reservationTimeService.create("21:00");
+        reservationTimeService.create(LocalTime.of(8, 0));
+        reservationTimeService.create(LocalTime.of(21, 0));
 
         // when
         List<ReservationTime> result = reservationTimeService.findAll();
@@ -71,7 +72,7 @@ class ReservationTimeServiceTest {
     @Test
     void 시간_삭제_테스트() {
         // given
-        ReservationTime created = reservationTimeService.create("08:00");
+        ReservationTime created = reservationTimeService.create(LocalTime.of(8, 0));
 
         // when
         reservationTimeService.delete(created.getId());

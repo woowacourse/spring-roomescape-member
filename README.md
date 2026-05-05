@@ -10,7 +10,7 @@ class Theme
 ```
 ### 방탈출 API 명세
 | 기능          | 메서드 / URL                              | 요청                                  | 응답                                          | 상태 코드 |
-| ----------- | -------------------------------------- |-------------------------------------| ------------------------------------------- | ----- |
+| ----------- | -------------------------------------- |-------------------------------------|---------------------------------------------| ----- |
 | 예약 조회       | GET `/reservations`                     | —                                   | `[{id, name, date, time, theme}, ...]`      | 200   |
 | 예약 등록       | POST `/reservations`                    | `{name, date, timeId, themeId}`     | `{id, name, date, time, theme}`             | 201   |
 | 예약 삭제       | DELETE `/reservations/{id}`             | —                                   |                                             | 204   |
@@ -20,7 +20,7 @@ class Theme
 | 테마 조회       | GET `/themes`                           | —                                   | `[{id, name, description, thumbnail}, ...]` | 200   |
 | 테마 등록       | POST `/themes`                          | `{name, description, thumbnail}`    | `{id, name, description, thumbnail}`        | 201   |
 | 테마 삭제       | DELETE `/themes/{id}`                   | —                                   |                                             | 204   |
-| 예약 가능 시간 조회 | GET `/themes/{id}/times?date=2026-05-08` | —                                   | `[{id, startAt}, ...]`                      | 200   |
+| 예약 가능 시간 조회 | GET `/themes/{id}/times?date=2026-05-08` | —                                   | `[{time, available}, ...]`                  | 200   |
 | 예약 등록       | POST `/reservations`                     | `{name, date, timeId, themeId}`<br> | `{id, name, date, time, theme}`<br>         | 201   |
 
 ### 1단계 - 테마 도메인 추가
