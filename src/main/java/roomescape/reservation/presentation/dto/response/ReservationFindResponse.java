@@ -7,5 +7,6 @@ import roomescape.reservation.presentation.dto.response.dto.TimeInformation;
 public record ReservationFindResponse(@NotNull Long id,
                                       @NotNull String name,
                                       @NotNull LocalDate date,
-                                      @NotNull TimeInformation time) {
+                                      @NotNull TimeInformation time,
+                                      @NotNull Long themeId) {
 }

@@ -27,7 +27,12 @@ public class JdbcReservationRepository implements ReservationRepository {
                             resultSet.getLong("time_id"),
                             LocalTime.parse(resultSet.getString("start_at"))
                     ),
-                    new Theme(resultSet.getLong(theme_id),));
+                    new Theme(
+                            resultSet.getLong("theme_id"),
+                            resultSet.getString("theme_name"),
+                            resultSet.getString("theme_description"),
+                            resultSet.getString("theme_thumbnail")
+                    ));
 
     @Override
     public Reservation save(Reservation reservation) {
@@ -53,10 +58,22 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = """
-                SELECT reservation.id, reservation.name, reservation.date, reservation.time_id, reservation_time.start_at, reservation.theme_id
-                FROM reservation
-                INNER JOIN reservation_time ON reservation.time_id = reservation_time.id
+        String sql = """                
+                SELECT                
+                    r.id AS reservation_id,
+                    r.name AS reservation_name,
+                    r.date AS reservation_date,
+                    rt.id AS time_id,
+                    rt.start_at AS start_at,
+                    t.id AS theme_id,
+                    t.name AS theme_name,
+                    t.description AS theme_description,
+                    t.thumbnail_url AS theme_thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time rt
+                    ON r.time_id = rt.id
+                INNER JOIN theme t
+                    ON r.theme_id = t.id
                 """;
 
         return template.query(sql, reservationRowMapper);

@@ -1,6 +1,7 @@
 package roomescape.reservation.presentation;
 
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
@@ -27,10 +29,24 @@ public class ReservationControllerTest {
                 .statusCode(201)
                 .body("id", is(1));
 
+        Map<String, String> theme = new HashMap<>();
+        theme.put("name", "무서운게 딱좋아");
+        theme.put("description", "무서운 방탈출");
+        theme.put("thumbnailUrl", "https://example.com/theme.jpg");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(1));
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -63,10 +79,24 @@ public class ReservationControllerTest {
                 .statusCode(201)
                 .body("id", is(1));
 
+        Map<String, String> theme = new HashMap<>();
+        theme.put("name", "무서운게 딱좋아");
+        theme.put("description", "무서운 방탈출");
+        theme.put("thumbnailUrl", "https://example.com/theme.jpg");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(1));
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -95,7 +125,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void 예약과_시간_연결() {
+    void 예약과_시간과_테마_연결() {
         Map<String, String> time = new HashMap<>();
         time.put("startAt", "15:40");
 
@@ -107,10 +137,24 @@ public class ReservationControllerTest {
                 .statusCode(201)
                 .body("id", is(1));
 
+        Map<String, String> theme = new HashMap<>();
+        theme.put("name", "무서운게 딱좋아");
+        theme.put("description", "무서운 방탈출");
+        theme.put("thumbnailUrl", "https://example.com/theme.jpg");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(1));
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -125,5 +169,4 @@ public class ReservationControllerTest {
                 .statusCode(200)
                 .body("size()", is(1));
     }
-
 }
