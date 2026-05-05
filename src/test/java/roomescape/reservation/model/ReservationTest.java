@@ -16,8 +16,7 @@ class ReservationTest {
 
     private final User user = new User(1L, "user1", Role.USER);
     private final Theme theme = new Theme(1L, "공포", "설명", "경로", LocalTime.of(2, 0));
-    private final Schedule schedule = new Schedule(1L, LocalDateTime.of(2026, 12, 10, 12, 0),
-            LocalDateTime.of(2026, 12, 10, 14, 0), theme);
+    private final Schedule schedule = new Schedule(1L, LocalDateTime.of(2026, 12, 10, 12, 0), theme);
 
     @Test
     void 올바른_정보로_예약을_생성하면_예외가_발생하지_않는다() {
