@@ -10,6 +10,7 @@ public record ReservationRequestDto(
         @NotBlank @Size(max = 20, message = "이름은 20자 이하여야 합니다")
         String name,
         @NotNull LocalDate date,
-        @NotNull Long timeId
+        @NotNull Long timeId,
+        @NotNull Long themeId
 ) {
 }

@@ -1,21 +1,28 @@
 package roomescape.dao;
 
-import static roomescape.dao.vo.ReservationRow.ROW_MAPPER;
-
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.dao.vo.ReservationRow;
-import roomescape.dao.vo.ReservationRows;
 import roomescape.domain.Reservation;
 
 @Repository
 public class ReservationJdbcDao implements ReservationDao {
+    public static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) ->
+            new Reservation(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    LocalDate.parse(rs.getString("date")),
+                    TimeJdbcDao.ROW_MAPPER.mapRow(rs, rowNum),
+                    ThemeDaoJdbcDao.ROW_MAPPER.mapRow(rs, rowNum)
+            );
+
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -35,7 +42,7 @@ public class ReservationJdbcDao implements ReservationDao {
                     FROM reservation r
                 INNER JOIN reservation_time t ON r.time_id = t.id
                 """;
-        return new ReservationRows(jdbcTemplate.query(sql, ROW_MAPPER)).toReservations();
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
@@ -52,8 +59,7 @@ public class ReservationJdbcDao implements ReservationDao {
                 WHERE r.id = ?
                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER, id).stream()
-                .findFirst()
-                .map(ReservationRow::toReservation);
+                .findFirst();
     }
 
     @Override
