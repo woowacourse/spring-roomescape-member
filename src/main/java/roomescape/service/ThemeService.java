@@ -29,4 +29,8 @@ public class ThemeService {
         return jdbcThemeRepository.getAll().stream().map(ThemeResponseDTO::from)
                 .collect(Collectors.toList());
     }
+
+    public void deleteTheme(Long id) {
+        jdbcThemeRepository.delete(id);
+    }
 }
