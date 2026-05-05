@@ -64,4 +64,12 @@ public class ThemeControllerTest {
                 .statusCode(201)
                 .and().body("name", is("수성"));
     }
+
+    @Test
+    void 관리자_테마_삭제() {
+        RestAssured.given().log().all()
+                .when().delete("/admin/themes/1")
+                .then().log().all()
+                .statusCode(204);
+    }
 }

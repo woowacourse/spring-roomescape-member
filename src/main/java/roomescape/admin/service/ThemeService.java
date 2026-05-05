@@ -26,4 +26,8 @@ public class ThemeService {
         Theme theme = new Theme(name, description, image);
         return themeDao.insert(theme);
     }
+
+    public void removeById(Long id) {
+        themeDao.deleteById(id);
+    }
 }

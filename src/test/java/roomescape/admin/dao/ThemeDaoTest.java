@@ -71,4 +71,14 @@ public class ThemeDaoTest {
         assertThat(result.getId()).isEqualTo(3L);
         assertThat(result.getName()).isEqualTo(theme.getName());
     }
+
+    @Test
+    void 테마_삭제_테스트() {
+        long id = 1L;
+        themeDao.deleteById(id);
+
+        List<Theme> themes = themeDao.selectAll();
+        assertThat(themes.size()).isEqualTo(1);
+        assertThat(themes.getFirst().getName()).isEqualTo("지구");
+    }
 }

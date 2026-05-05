@@ -49,4 +49,9 @@ public class ThemeDao {
         long id = (long) simpleJdbcInsert.executeAndReturnKey(params);
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getImage());
     }
+
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM theme where id = ?";
+        jdbcTemplate.update(sql, id);
+    }
 }
