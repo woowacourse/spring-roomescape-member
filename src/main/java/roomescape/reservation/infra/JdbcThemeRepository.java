@@ -74,6 +74,24 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
+    public List<Theme> findByDayAndLimit(int day, int limit) {
+        String sql = "SELECT t.id, t.name, t.description, t.thumbnail_url " +
+                "FROM theme t " +
+                "LEFT JOIN reservation r " +
+                    "ON t.id = r.theme_id " +
+                    "AND PARSEDATETIME(r.date, 'yyyy-MM-dd') >= DATEADD('DAY', -:day, CURRENT_DATE) " +
+                "GROUP BY t.id " +
+                "ORDER BY COUNT(t.id) DESC " +
+                "LIMIT :limit";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("day", day)
+                .addValue("limit", limit);
+
+        return template.query(sql, params, themeRowMapper);
+    }
+
+    @Override
     public Optional<Theme> findById(long id) {
         String sql = "SELECT * FROM theme WHERE id = :id";
 

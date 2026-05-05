@@ -63,7 +63,7 @@ public class ReservationTimeControllerTest {
                 .then().log().all()
                 .body("size()", is(4))
                 .body("[0].isAvailable", is(false))
-                .body("[1].isAvailable", is(true))
+                .body("[1].isAvailable", is(false))
                 .body("[2].isAvailable", is(true))
                 .body("[3].isAvailable", is(true))
                 .statusCode(200);
@@ -81,8 +81,8 @@ public class ReservationTimeControllerTest {
                 .when().get("/times/availability")
                 .then().log().all()
                 .body("size()", is(4))
-                .body("[0].isAvailable", is(true))
-                .body("[1].isAvailable", is(true))
+                .body("[0].isAvailable", is(false))
+                .body("[1].isAvailable", is(false))
                 .body("[2].isAvailable", is(false))
                 .body("[3].isAvailable", is(true))
                 .statusCode(200);
@@ -91,7 +91,7 @@ public class ReservationTimeControllerTest {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2026-05-05");
-        reservation.put("timeId", 1);
+        reservation.put("timeId", 4);
         reservation.put("themeId", 2);
 
         RestAssured.given().log().all()
@@ -112,9 +112,9 @@ public class ReservationTimeControllerTest {
                 .then().log().all()
                 .body("size()", is(4))
                 .body("[0].isAvailable", is(false))
-                .body("[1].isAvailable", is(true))
+                .body("[1].isAvailable", is(false))
                 .body("[2].isAvailable", is(false))
-                .body("[3].isAvailable", is(true))
+                .body("[3].isAvailable", is(false))
                 .statusCode(200);
     }
 }

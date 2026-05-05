@@ -47,4 +47,14 @@ public class ThemeController {
 
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeFindResponse>> findByDayAndLimit(
+            @RequestParam int day,
+            @RequestParam int limit
+    ) {
+        List<ThemeFindResponse> responses = themeService.findByDayAndLimit(day,limit);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responses);
+    }
 }

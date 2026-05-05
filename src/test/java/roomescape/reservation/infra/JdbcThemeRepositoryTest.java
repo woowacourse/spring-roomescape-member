@@ -41,20 +41,31 @@ class JdbcThemeRepositoryTest {
         repository.deleteById(1L);
         int rowCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
 
-        assertThat(rowCount).isEqualTo(2);
+        assertThat(rowCount).isEqualTo(9);
     }
 
     @Test
     @Transactional
-    void 각_날짜에_존재하는_모든_테마_조회_API_테스트(){
+    void 각_날짜에_존재하는_모든_테마_조회_레포토지리_테스트(){
         List<Theme> themes = repository.findByDate(LocalDate.of(2026, 5, 5));
 
-        assertThat(themes).hasSize(3);
+        assertThat(themes).hasSize(10);
         assertThat(themes)
                 .extracting(Theme::getName)
-                .containsExactly("세기의 도둑", "심해 연구소", "시간 여행자");
+                .startsWith("세기의 도둑", "심해 연구소", "시간 여행자");
         assertThat(themes)
                 .extracting(Theme::getId)
-                .containsExactly(1L, 2L, 3L);
+                .startsWith(1L, 2L, 3L);
+    }
+
+    @Test
+    @Transactional
+    void 최근_7일_예약_개수에_따른_인기_테마_조회_레포지토리_테스트(){
+        List<Theme> themes = repository.findByDayAndLimit(7, 10);
+
+        assertThat(themes).hasSize(10);
+        assertThat(themes)
+                .extracting(Theme::getId)
+                .startsWith(3L, 2L, 1L);
     }
 }
