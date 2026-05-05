@@ -14,6 +14,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.domain.ReservationTimeRepository;
 
 @SpringBootTest
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -24,6 +25,9 @@ class ThemeRepositoryTest {
 
     @Autowired
     private ReservationRepository reservationRepository;
+
+    @Autowired
+    private ReservationTimeRepository timeRepository;
 
     @Test
     @DisplayName("관리자가 테마를 추가하면 정상적으로 저장된다.")
@@ -85,9 +89,9 @@ class ThemeRepositoryTest {
         Theme fantasy = saveTheme("판타지");
         Theme reasoning = saveTheme("추리");
         ReservationTime time = saveTime(LocalTime.now());
-        saveReservations("포비", horror, time, LocalDate.now().minusDays( 1));
-        saveReservations("브리", fantasy, time, LocalDate.now().minusDays( 2));
-        saveReservations("브리", fantasy, time, LocalDate.now().minusDays( 3));
+        saveReservations("포비", horror, time, LocalDate.now().minusDays(1));
+        saveReservations("브리", fantasy, time, LocalDate.now().minusDays(2));
+        saveReservations("브리", fantasy, time, LocalDate.now().minusDays(3));
         saveReservations("리사", reasoning, time, LocalDate.now().minusDays(4));
         saveReservations("리사", reasoning, time, LocalDate.now().minusDays(5));
         saveReservations("리사", reasoning, time, LocalDate.now().minusDays(6));
@@ -111,15 +115,18 @@ class ThemeRepositoryTest {
     }
 
     private ReservationTime saveTime(LocalTime time) {
-        return ReservationTime.builder().startAt(time).build();
+        return timeRepository.save(ReservationTime.builder()
+                .startAt(time)
+                .build()
+        );
     }
 
     private void saveReservations(String name, Theme theme, ReservationTime time, LocalDate date) {
-            reservationRepository.save(Reservation.builder()
-                    .name(name)
-                    .theme(theme)
-                    .date(date)
-                    .time(time)
-                    .build());
+        reservationRepository.save(Reservation.builder()
+                .name(name)
+                .theme(theme)
+                .date(date)
+                .time(time)
+                .build());
     }
 }
