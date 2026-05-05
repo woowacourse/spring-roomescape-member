@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 import org.junit.jupiter.api.Test;
 import roomescape.theme.model.Theme;
 
@@ -13,8 +15,7 @@ class ScheduleTest {
     void 스케줄을_성공적으로_생성한다() {
         LocalDateTime startAt = LocalDateTime.of(2026,12,10,10, 0);
         LocalDateTime endAt = LocalDateTime.of(2026,12,10,12, 0);
-        Theme theme = new Theme("테마", "설명", "경로");
-        Boolean isAvailable = true;
+        Theme theme = new Theme("테마", "설명", "경로", LocalTime.of(2, 0));
 
         Schedule schedule = new Schedule(1L, startAt, endAt, theme);
 
@@ -28,7 +29,7 @@ class ScheduleTest {
     void 시작_시간이_null이면_예외가_발생한다() {
         LocalDateTime startAt = null;
         LocalDateTime endAt = LocalDateTime.of(2026,12,10,12, 0);
-        Theme theme = new Theme("테마", "설명", "경로");
+        Theme theme = new Theme("테마", "설명", "경로", LocalTime.of(2, 0));
 
         assertThatThrownBy(() -> new Schedule(startAt, endAt, theme))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -39,7 +40,7 @@ class ScheduleTest {
     void ID가_없어도_시작_시간이_있으면_객체_생성에_성공한다() {
         LocalDateTime startAt = LocalDateTime.of(2026,12,10,10, 0);
         LocalDateTime endAt = LocalDateTime.of(2026,12,10,12, 0);
-        Theme theme = new Theme("테마", "설명", "경로");
+        Theme theme = new Theme("테마", "설명", "경로", LocalTime.of(2, 0));
 
         Schedule schedule = new Schedule(startAt, endAt, theme);
 

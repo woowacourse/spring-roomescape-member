@@ -10,6 +10,7 @@ import roomescape.theme.model.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 public class ScheduleRepositoryTest {
 
-    private final Theme theme = new Theme("테마", "설명", "경로");
+    private final Theme theme = new Theme("테마", "설명", "경로", LocalTime.of(2, 0));
     private final Schedule schedule = new Schedule(LocalDateTime.of(2026, 12, 10, 12, 0),
             LocalDateTime.of(2026, 12, 10, 14, 0), theme);
 
@@ -31,8 +32,8 @@ public class ScheduleRepositoryTest {
     @Test
     void 예약된_스케줄을_데이터베이스에서_정상적으로_조회한다() {
         Long themeId = 1L;
-        jdbcTemplate.update("INSERT INTO theme (id, name, description, image_url) VALUES (?, ?, ?, ?)",
-                themeId, theme.getName(), theme.getDescription(), theme.getImageUrl());
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, image_url, required_time) VALUES (?, ?, ?, ?, ?)",
+                themeId, theme.getName(), theme.getDescription(), theme.getImageUrl(), theme.getRequiredTime());
         jdbcTemplate.update("INSERT INTO schedule (theme_id, start_at, end_at) VALUES (?, ?, ?)",
                 themeId, schedule.getStartAt(), schedule.getEndAt());
 
