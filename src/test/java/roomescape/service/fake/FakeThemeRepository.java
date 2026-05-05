@@ -37,8 +37,8 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public boolean existByNameAndIsActiveFalse(String name) {
+    public boolean isActiveByName(String name) {
         return themes.values().stream()
-                .anyMatch(theme -> theme.getName().equals(name) && !theme.isActive());
+                .anyMatch(theme -> theme.getName().equals(name) && theme.isActive());
     }
 }

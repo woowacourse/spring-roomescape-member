@@ -5,8 +5,9 @@ CREATE TABLE theme
     description         VARCHAR(255) NOT NULL,
     thumbnail_image_url VARCHAR(500) NOT NULL,
     is_active           TINYINT      NOT NULL DEFAULT 0,
+    active_name         VARCHAR(20) AS (CASE WHEN is_active = 1 THEN name ELSE NULL END),
     PRIMARY KEY (id),
-    CONSTRAINT uk_theme_name_is_active UNIQUE (name, is_active)
+    CONSTRAINT uk_active_name UNIQUE (active_name)
 );
 
 CREATE TABLE reservation_time (

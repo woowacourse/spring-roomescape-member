@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import roomescape.admin.api.dto.ReservationTimeRequest;
+import roomescape.admin.api.dto.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
-import roomescape.service.command.ReservationTimeCommand;
 import roomescape.service.result.ReservationTimeResult;
 
 @RestController
@@ -28,13 +28,12 @@ public class ReservationTimeApiController {
     private final ReservationTimeService reservationTimeService;
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResult> register(@Valid @RequestBody ReservationTimeCommand request) {
-        ReservationTimeResult result = reservationTimeService.register(request);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(result.id())
-                .toUri();
-        return ResponseEntity.created(location).body(result);
+    public ResponseEntity<ReservationTimeResponse> register(@Valid @RequestBody ReservationTimeRequest request) {
+        ReservationTimeResult result = reservationTimeService.register(request.toCommand());
+
+        URI location = URI.create("/admin/times/" + result.id());
+
+        return ResponseEntity.created(location).body(ReservationTimeResponse.from(result));
     }
 
     @DeleteMapping("/{id}")
@@ -48,7 +47,11 @@ public class ReservationTimeApiController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResult>> getAllTimes() {
-        return ResponseEntity.ok(reservationTimeService.getAllReservationTimes());
+    public ResponseEntity<List<ReservationTimeResponse>> getAllTimes() {
+        List<ReservationTimeResponse> response = reservationTimeService.getAllReservationTimes()
+                .stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
+        return ResponseEntity.ok(response);
     }
 }

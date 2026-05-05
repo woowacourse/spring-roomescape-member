@@ -20,8 +20,8 @@ public class JdbcThemeRepository implements ThemeRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public boolean existByNameAndIsActiveFalse(String name) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM theme WHERE name=? and is_active=0)";
+    public boolean isActiveByName(String name) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM theme WHERE name=? and is_active=1)";
         Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, name);
         return Boolean.TRUE.equals(result);
     }
@@ -54,6 +54,7 @@ public class JdbcThemeRepository implements ThemeRepository {
             SET name = ?, description = ?, thumbnail_image_url = ?, is_active = ?
             WHERE id=?
         """;
+        System.out.println("dddddd -> " + theme.getId());
         jdbcTemplate.update(sql,
                 theme.getName(),
                 theme.getDescription(),

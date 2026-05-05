@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.context.WebApplicationContext;
 import roomescape.admin.api.ReservationTimeApiController;
+import roomescape.admin.api.dto.ReservationTimeResponse;
 import roomescape.admin.fixture.ReservationTimeApiRequestFixture;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.command.ReservationTimeCommand;
@@ -57,7 +58,7 @@ class ReservationTimeApiControllerTest extends BaseControllerUnitTest {
         when(reservationTimeService.register(any(ReservationTimeCommand.class))).thenReturn(result);
 
         // when & then
-        ReservationTimeResult response = RestAssuredMockMvc.given().spec(requestSpec()).log().all()
+        ReservationTimeResponse response = RestAssuredMockMvc.given().spec(requestSpec()).log().all()
                 .body(body)
                 .when().post("/admin/times")
                 .then().log().all()
@@ -65,7 +66,7 @@ class ReservationTimeApiControllerTest extends BaseControllerUnitTest {
                 .header("Location", containsString("/admin/times/1"))
                 .extract().as(new TypeRef<>() {
                 });
-        assertThat(response).isEqualTo(result);
+        assertThat(response).isEqualTo(ReservationTimeResponse.from(result));
     }
 
     @ParameterizedTest
@@ -94,14 +95,15 @@ class ReservationTimeApiControllerTest extends BaseControllerUnitTest {
         // given
         List<ReservationTimeResult> result = List.of(new ReservationTimeResult(1L, LocalTime.of(10, 0)));
         when(reservationTimeService.getAllReservationTimes()).thenReturn(result);
+        List<ReservationTimeResponse> expected = result.stream().map(ReservationTimeResponse::from).toList();
 
         // when & then
-        List<ReservationTimeResult> response = RestAssuredMockMvc.given().spec(requestSpec()).log().all()
+        List<ReservationTimeResponse> response = RestAssuredMockMvc.given().spec(requestSpec()).log().all()
                 .when().get("/admin/times")
                 .then().log().all()
                 .status(HttpStatus.OK)
                 .extract().as(new TypeRef<>() {
                 });
-        assertThat(response).isEqualTo(result);
+        assertThat(response).isEqualTo(expected);
     }
 }

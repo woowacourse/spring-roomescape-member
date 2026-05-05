@@ -25,7 +25,7 @@ class ThemeTest {
         // then: 기본 생성 시 삭제되지 않은 상태이다.
         assertThat(theme)
                 .extracting(Theme::getName, Theme::getDescription, Theme::getThumbnailImageUrl, Theme::isActive)
-                .containsExactly(name, description, thumbnailImageUrl, false);
+                .containsExactly(name, description, thumbnailImageUrl, true);
     }
 
     @ParameterizedTest
@@ -85,7 +85,7 @@ class ThemeTest {
         theme.deactivate();
 
         // then
-        assertThat(theme.isActive()).isTrue();
+        assertThat(theme.isActive()).isFalse();
     }
 
     @Test

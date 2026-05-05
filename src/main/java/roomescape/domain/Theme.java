@@ -25,7 +25,7 @@ public class Theme {
     }
 
     public Theme(String name, String description, String thumbnailImageUrl) {
-        this(null, name, description, thumbnailImageUrl, false);
+        this(null, name, description, thumbnailImageUrl, true);
     }
 
     private static void validateTheme(String name, String description, String thumbnailImageUrl) {
@@ -62,9 +62,9 @@ public class Theme {
     }
 
     public void deactivate() {
-        if (isActive) {
+        if (!isActive) {
             throw new IllegalArgumentException("이미 비활성화 된 테마입니다.");
         }
-        this.isActive = true;
+        this.isActive = false;
     }
 }
