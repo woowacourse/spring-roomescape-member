@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,7 +30,7 @@ public class ReservationTimeController {
     public ResponseEntity<ReservationTimeResponseDTO> add(
             @RequestBody ReservationTimeRequestDTO request) {
         ReservationTimeResponseDTO saved = reservationTimeService.addReservationTime(request);
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.created(URI.create("/time/" + saved.id())).build();
     }
 
     @GetMapping

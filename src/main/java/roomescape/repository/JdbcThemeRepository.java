@@ -3,6 +3,7 @@ package roomescape.repository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -26,7 +27,6 @@ public class JdbcThemeRepository implements ThemeRespository {
         parameters.put("description", theme.getDescription());
         parameters.put("image_url", theme.getImageUrl());
         insert.withTableName("theme");
-
         insert.setGeneratedKeyName("id");
         return insert.executeAndReturnKeyHolder(parameters).getKey().longValue();
     }
@@ -51,6 +51,22 @@ public class JdbcThemeRepository implements ThemeRespository {
         jdbcTemplate.update("delete from theme where id=?", id);
     }
 
+    @Override
+    public Optional<Theme> findById(Long id) {
+        System.out.println("id = " + id);
+        String sql = "select id, name, description, image_url from theme where id=?";
+        List<Theme> themes = jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> new Theme(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("image_url")
+                ),
+                id
+        );
+        return themes.stream().findFirst();
+    }
 }
 
 
