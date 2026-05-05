@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.DuplicateEntityException;
 import roomescape.domain.EntityNotFoundException;
+import roomescape.global.auth.Accessor;
+import roomescape.global.auth.CustomPrincipal;
 
 @RestController
 @Validated
@@ -52,5 +54,9 @@ public class DummyController {
     @GetMapping("/internal")
     public ResponseEntity<Long> internal() {
         throw new RuntimeException();
+    }
+
+    @GetMapping("/access")
+    public void accessCheck(@CustomPrincipal Accessor accessor) {
     }
 }

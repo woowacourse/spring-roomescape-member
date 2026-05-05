@@ -1,7 +1,5 @@
 package roomescape.service;
 
-import static java.util.Objects.requireNonNull;
-
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +9,7 @@ import roomescape.domain.DuplicateEntityException;
 import roomescape.domain.EntityNotFoundException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.global.auth.Accessor;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.command.ReservationCommand;
@@ -25,8 +24,8 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
 
     @Transactional
-    public ReservationResult reserve(ReservationCommand command) {
-        requireNonNull(command, "예약 정보가 필요합니다.");
+    public ReservationResult reserve(Accessor accessor, ReservationCommand command) {
+        accessor.validateAdmin();
 
         ReservationTime time = findTimeWithThrow(command.timeId());
         validateAlreadyReservation(command.date(), command.timeId(), time);
@@ -38,7 +37,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public void cancelReservation(long id) {
+    public void cancelReservation(Accessor accessor, long id) {
+        accessor.validateAdmin();
         reservationRepository.delete(id);
     }
 

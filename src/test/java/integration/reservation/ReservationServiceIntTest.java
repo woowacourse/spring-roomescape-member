@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import roomescape.global.auth.Accessor;
 import roomescape.service.ReservationService;
 import roomescape.service.command.ReservationCommand;
 
@@ -38,6 +39,7 @@ class ReservationServiceIntTest extends BaseIntegrationTest {
     @Test
     void 동시에_2명이_예약하면_1명만_성공해야_한다() throws InterruptedException {
         // given
+        Accessor admin = new Accessor("ADMIN");
         ReservationCommand command = new ReservationCommand("이프", LocalDate.now().plusDays(1), 1L);
         int threadCount = 2;
         CountDownLatch latch = new CountDownLatch(threadCount);
@@ -48,7 +50,7 @@ class ReservationServiceIntTest extends BaseIntegrationTest {
             for (int i = 0; i < threadCount; i++) {
                 executorService.execute(() -> {
                     try {
-                        reservationService.reserve(command);
+                        reservationService.reserve(admin, command);
                     } catch (DataIntegrityViolationException e) {
                         errorCount.incrementAndGet();
                     } finally {

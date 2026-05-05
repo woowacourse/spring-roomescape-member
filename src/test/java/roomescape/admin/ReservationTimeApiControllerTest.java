@@ -19,7 +19,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.context.WebApplicationContext;
 import roomescape.admin.api.ReservationTimeApiController;
@@ -29,21 +28,20 @@ import roomescape.service.command.ReservationTimeCommand;
 import roomescape.service.result.ReservationTimeResult;
 
 @WebMvcTest(ReservationTimeApiController.class)
-class ReservationTimeApiControllerTest {
+class ReservationTimeApiControllerTest extends BaseControllerUnitTest {
 
     @MockitoBean
     private ReservationTimeService reservationTimeService;
 
     @BeforeEach
     void setUp(WebApplicationContext webApplicationContext) {
-        RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+        mockMvcSetting(webApplicationContext);
     }
 
     @ParameterizedTest(name = "요청 정보가 {0} 일 때, 예외 메세지 \"{1}\"가 발생한다.")
     @MethodSource("roomescape.admin.fixture.ReservationTimeApiRequestFixture#registerFailRequestFixture")
     void 시간_등록_요청_시_형식_검증에_실패하면_예외가_발생한다(ReservationTimeCommand body, String exceptionMessage) {
-        RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
+        RestAssuredMockMvc.given().spec(requestSpec()).log().all()
                 .body(body)
                 .when().post("/admin/times")
                 .then().log().all()
@@ -59,8 +57,7 @@ class ReservationTimeApiControllerTest {
         when(reservationTimeService.register(any(ReservationTimeCommand.class))).thenReturn(result);
 
         // when & then
-        ReservationTimeResult response = RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
+        ReservationTimeResult response = RestAssuredMockMvc.given().spec(requestSpec()).log().all()
                 .body(body)
                 .when().post("/admin/times")
                 .then().log().all()
@@ -75,8 +72,7 @@ class ReservationTimeApiControllerTest {
     @ValueSource(ints = {0, -1})
     void 시간_삭제를_요청하는_식별자가_양수가_아니라면_예외가_발생한다(int timeId) {
         // when & then
-        RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
+        RestAssuredMockMvc.given().spec(requestSpec()).log().all()
                 .when().delete("/admin/times/" + timeId)
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
@@ -86,8 +82,7 @@ class ReservationTimeApiControllerTest {
     @Test
     void 정상적인_ID로_시간_삭제_요청시_204_응답을_한다() {
         // when & then
-        RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
+        RestAssuredMockMvc.given().spec(requestSpec()).log().all()
                 .when().delete("/admin/times/1")
                 .then().log().all()
                 .status(HttpStatus.NO_CONTENT);
@@ -101,8 +96,7 @@ class ReservationTimeApiControllerTest {
         when(reservationTimeService.getAllReservationTimes()).thenReturn(result);
 
         // when & then
-        List<ReservationTimeResult> response = RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
+        List<ReservationTimeResult> response = RestAssuredMockMvc.given().spec(requestSpec()).log().all()
                 .when().get("/admin/times")
                 .then().log().all()
                 .status(HttpStatus.OK)

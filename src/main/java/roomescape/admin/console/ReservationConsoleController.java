@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import roomescape.global.auth.Accessor;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.command.ReservationCommand;
@@ -11,6 +12,8 @@ import roomescape.service.command.ReservationTimeCommand;
 
 @RequiredArgsConstructor
 public class ReservationConsoleController implements CommandLineRunner {
+
+    private static final Accessor ADMIN_ROLE = new Accessor("ADMIN");
 
     private final ReservationService reservationService;
     private final ReservationTimeService reservationTimeService;
@@ -52,13 +55,13 @@ public class ReservationConsoleController implements CommandLineRunner {
         String date = ConsoleView.readInput("날짜(YYYY-MM-DD): ");
         Long timeId = Long.parseLong(ConsoleView.readInput("시간 ID: "));
 
-        reservationService.reserve(new ReservationCommand(name, LocalDate.parse(date), timeId));
+        reservationService.reserve(ADMIN_ROLE, new ReservationCommand(name, LocalDate.parse(date), timeId));
         ConsoleView.printMessage("예약이 완료되었습니다.");
     }
 
     private void cancelAllReservation() {
-        Long id = Long.parseLong(ConsoleView.readInput("삭제할 예약 ID: "));
-        reservationService.cancelReservation(id);
+        long id = Long.parseLong(ConsoleView.readInput("삭제할 예약 ID: "));
+        reservationService.cancelReservation(ADMIN_ROLE, id);
         ConsoleView.printMessage("예약이 삭제되었습니다.");
     }
 
@@ -73,7 +76,7 @@ public class ReservationConsoleController implements CommandLineRunner {
     }
 
     private void removeReservationTime() {
-        Long id = Long.parseLong(ConsoleView.readInput("삭제할 시간 ID: "));
+        long id = Long.parseLong(ConsoleView.readInput("삭제할 시간 ID: "));
         reservationTimeService.remove(id);
         ConsoleView.printMessage("시간이 삭제되었습니다.");
     }

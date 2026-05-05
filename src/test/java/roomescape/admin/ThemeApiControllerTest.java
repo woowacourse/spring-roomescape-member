@@ -28,14 +28,14 @@ import roomescape.service.command.ThemeRegisterCommand;
 import roomescape.service.result.ThemeRegisterResult;
 
 @WebMvcTest(ThemeApiController.class)
-class ThemeApiControllerTest {
+class ThemeApiControllerTest extends BaseControllerUnitTest {
 
     @MockitoBean
     private ThemeService themeService;
 
     @BeforeEach
-    void setUp(WebApplicationContext webApplicationContext) {
-        RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+    public void setUp(WebApplicationContext webApplicationContext) {
+        mockMvcSetting(webApplicationContext);
     }
 
     @Test
@@ -49,9 +49,7 @@ class ThemeApiControllerTest {
         ThemeResponse expected = ThemeResponse.from(result);
 
         // when : admin 헤더를 포함해서 요청한다.
-        ThemeResponse response = RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("role", "ADMIN")
+        ThemeResponse response = RestAssuredMockMvc.given().spec(requestSpec()).log().all()
                 .body(body)
                 .when().post("/admin/themes")
                 .then().log().all()
@@ -64,29 +62,13 @@ class ThemeApiControllerTest {
         assertThat(response).isEqualTo(expected);
     }
 
-    @Test
-    void 관리자가_아닌_사용자가_테마_정보로_테마_추가_요청_시_실패한다() {
-        // given
-        ThemeRequest body = new ThemeRequest("공포", "공포 방탈출입니다.", "http://image.com/image.png");
-
-        // when & then : admin 헤더가 존재하지 않아서 실패한다.
-        RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(body)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .status(HttpStatus.FORBIDDEN);
-    }
-
     @ParameterizedTest(name = "요청 정보가 {0} 일 때, 예외 메세지 \"{1}\"가 발생한다.")
     @MethodSource("roomescape.admin.fixture.ThemeApiRequestFixture#themeFailRequestFixture")
     void 테마_추가_요청_시_형식_검증에_실패하면_예외가_발생한다(ThemeRequest body, String exceptionMessage) {
         // given: 실패하는 request body가 주어짐
 
         // when & then: validation 위반으로 400 Bad Request가 발생한다.
-        RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("role", "ADMIN")
+        RestAssuredMockMvc.given().spec(requestSpec()).log().all()
                 .body(body)
                 .when().post("/admin/themes")
                 .then().log().all()
@@ -97,7 +79,7 @@ class ThemeApiControllerTest {
     @Test
     void 관리자가_특정_테마_삭제_요청_시_204_NoContent를_응답한다() {
         // when & then: 관리자 헤더를 포함해서 요청했을 때, 삭제 로직을 수행한다.
-        RestAssuredMockMvc.given().log().all()
+        RestAssuredMockMvc.given().spec(requestSpec()).log().all()
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("role", "ADMIN")
                 .when().delete("/admin/themes/1")
@@ -105,15 +87,5 @@ class ThemeApiControllerTest {
                 .status(HttpStatus.NO_CONTENT);
 
         verify(themeService, times(1)).remove(any(Accessor.class), anyLong());
-    }
-
-    @Test
-    void 관리자가_아닌_사용자가_특정_테마_삭제_요청_시_실패한다() {
-        // when & then: 관리자 헤더 정보 없이 1번 테마를 삭제
-        RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
-                .when().delete("/admin/themes/1")
-                .then().log().all()
-                .status(HttpStatus.FORBIDDEN);
     }
 }
