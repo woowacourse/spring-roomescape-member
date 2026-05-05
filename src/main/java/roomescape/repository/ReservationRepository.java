@@ -5,6 +5,7 @@ import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ReservationRepository {
@@ -29,5 +30,9 @@ public class ReservationRepository {
 
     public boolean existsByTimeId(Long timeId) {
         return reservationDao.existsByTimeId(timeId);
+    }
+
+    public Optional<Reservation> findById(Long id) {
+        return reservationDao.findById(id);
     }
 }

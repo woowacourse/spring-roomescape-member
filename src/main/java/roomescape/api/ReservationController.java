@@ -9,12 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationCreateResponse;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.facade.ReservationTimeFacade;
 import roomescape.service.ReservationService;
-import roomescape.utils.DateTimeConverter;
 
 import java.util.List;
 
@@ -23,34 +21,34 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final ReservationTimeFacade reservationTimeFacade;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService, ReservationTimeFacade reservationTimeFacade) {
         this.reservationService = reservationService;
+        this.reservationTimeFacade = reservationTimeFacade;
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> search() {
-        List<ReservationResponse> responses = reservationService.getReservations();
+        List<ReservationResponse> responses = reservationService.getReservations().stream()
+                .map(ReservationResponse::from)
+                .toList();
+
         return ResponseEntity.ok().body(responses);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationCreateResponse> add(@RequestBody ReservationRequest request) {
-        ReservationTime time = new ReservationTime(request.timeId(), null);
-        Reservation reservation = new Reservation(
-                null,
-                request.name(),
-                DateTimeConverter.dateConverter(request.date()),
-                time
-        );
+    public ResponseEntity<ReservationResponse> add(@RequestBody ReservationRequest request) {
+        Reservation reservation = reservationTimeFacade.addReservation(request);
+        ReservationResponse response = ReservationResponse.from(reservation);
 
-        ReservationCreateResponse response = reservationService.addReservation(reservation);
         return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.deleteReservation(id);
+
         return ResponseEntity.ok().build();
     }
 }

@@ -10,6 +10,7 @@ import roomescape.utils.DateTimeConverter;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ReservationTimeDao {
@@ -50,5 +51,11 @@ public class ReservationTimeDao {
         String sql = "SELECT COUNT(*) FROM reservation_time WHERE id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
+    }
+
+    public Optional<ReservationTime> findById(Long id) {
+        String sql = "SELECT * FROM reservation_time WHERE id = ?";
+        List<ReservationTime> results = jdbcTemplate.query(sql, timeRowMapper, id);
+        return results.stream().findFirst();
     }
 }

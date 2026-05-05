@@ -11,6 +11,7 @@ import roomescape.utils.DateTimeConverter;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ReservationDao {
@@ -63,5 +64,13 @@ public class ReservationDao {
 
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
+    }
+
+    public Optional<Reservation> findById(Long id) {
+        String sql = "SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value " +
+                "FROM reservation as r INNER JOIN reservation_time as t ON r.time_id = t.id " +
+                "WHERE r.id = ?";
+        List<Reservation> results = jdbcTemplate.query(sql, reservationRowMapper, id);
+        return results.stream().findFirst();
     }
 }
