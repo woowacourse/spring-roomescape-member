@@ -1,7 +1,8 @@
 package roomescape.domain;
 
-import java.time.LocalTime;
 import lombok.RequiredArgsConstructor;
+
+import java.time.LocalTime;
 
 @RequiredArgsConstructor
 public class ReservationTime {
