@@ -6,7 +6,7 @@ import roomescape.domain.Theme;
 
 public interface ThemeRespository {
 
-    Long save(Theme theme);
+    Theme save(Theme theme);
 
     List<Theme> getAll();
 

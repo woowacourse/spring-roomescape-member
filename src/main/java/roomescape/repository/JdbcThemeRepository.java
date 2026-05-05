@@ -18,13 +18,20 @@ public class JdbcThemeRepository implements ThemeRespository {
     }
 
     @Override
-    public Long save(Theme theme) {
+    public Theme save(Theme theme) {
         SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
-        return insert.executeAndReturnKey(
+        long generatedKey = insert.executeAndReturnKey(
                 new BeanPropertySqlParameterSource(theme)
         ).longValue();
+
+        return new Theme(
+                generatedKey,
+                theme.getName(),
+                theme.getDescription(),
+                theme.getImageUrl()
+        );
     }
 
     @Override

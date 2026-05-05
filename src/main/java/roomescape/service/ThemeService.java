@@ -20,8 +20,7 @@ public class ThemeService {
 
     public ThemeResponseDTO addTheme(ThemeRequestDTO request) {
         Theme theme = new Theme(request.name(), request.description(), request.imageUrl());
-        Theme savedTheme = new Theme(jdbcThemeRepository.save(theme), request.name(),
-                request.description(), request.imageUrl());
+        Theme savedTheme = jdbcThemeRepository.save(theme);
         return ThemeResponseDTO.from(savedTheme);
     }
 
