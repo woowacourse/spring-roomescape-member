@@ -7,15 +7,17 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.repository.dto.ReservationTimesWithStatus;
 import roomescape.repository.entity.ReservationTimeEntity;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class ReservationTimeDao {
+public class ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -49,6 +51,32 @@ public class ReservationTimeDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public List<ReservationTimesWithStatus> findByDateAndThemeId(final LocalDate date, final Long themeId) {
+        final String sql = """
+                SELECT
+                    rt.id,
+                    rt.start_at,
+                    CASE
+                        WHEN r.id IS NOT NULL THEN TRUE
+                        ELSE FALSE
+                    END AS reserved
+                FROM reservation_time rt
+                LEFT JOIN reservation r
+                    ON r.time_id = rt.id
+                   AND r.date = ?
+                   AND r.theme_id = ?
+                ORDER BY rt.start_at;
+                """;
+
+        return jdbcTemplate.query(
+                        sql,
+                        this::mapToTimesWithStatus,
+                        date,
+                        themeId
+                ).stream()
+                .toList();
     }
 
     public ReservationTime save(final ReservationTime newReservationTime) {
@@ -117,6 +145,18 @@ public class ReservationTimeDao {
                 reservationTime.getId(),
                 Time.valueOf(reservationTime.getStartAt()),
                 Time.valueOf(reservationTime.getEndAt())
+        );
+    }
+
+
+    /**
+     * dto 매핑 메서드
+     */
+    private ReservationTimesWithStatus mapToTimesWithStatus(final ResultSet resultSet, final int rowNum) throws SQLException {
+        return new ReservationTimesWithStatus(
+                resultSet.getLong("id"),
+                resultSet.getTime("start_at").toLocalTime(),
+                resultSet.getBoolean("reserved")
         );
     }
 }
