@@ -29,8 +29,8 @@ public class UserController {
 
     @GetMapping("/times")
     public ResponseEntity<List<ReservationTimeResponse>> getAvailableTimes(
-            @RequestParam LocalDate date,
-            @RequestParam long themeId) {
+            @RequestParam("date") LocalDate date,
+            @RequestParam("themeId") long themeId) {
         return ResponseEntity.ok(reservationTimeQueryService.findAvailableReservationTimes(date, themeId));
     }
 
@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @GetMapping("/themes")
-    public ResponseEntity<List<ThemeResponse>> getSortedPopularThemesAtPeriod(@RequestParam int limit) {
+    public ResponseEntity<List<ThemeResponse>> getSortedPopularThemesAtPeriod(@RequestParam("limit") int limit) {
         LocalDate today = LocalDate.now();
 
         LocalDate startAt = today.minusWeeks(1L);

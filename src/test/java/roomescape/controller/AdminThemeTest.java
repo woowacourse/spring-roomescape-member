@@ -21,7 +21,7 @@ class AdminThemeTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "공포");
         params.put("thumbnailUrl", "test_url");
-        params.put("discription", "공포_설명");
+        params.put("description", "공포_설명");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
