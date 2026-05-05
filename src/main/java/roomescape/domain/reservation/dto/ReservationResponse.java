@@ -5,12 +5,14 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.theme.Theme;
 
 public record ReservationResponse(
     Long id,
     String name,
     LocalDate date,
-    ReservationTimePayload time
+    ReservationTimePayload time,
+    ThemePayload theme
 ) {
 
     public static ReservationResponse from(Reservation reservation) {
@@ -18,7 +20,8 @@ public record ReservationResponse(
             reservation.getId(),
             reservation.getName(),
             reservation.getDate().getDate(),
-            ReservationTimePayload.from(reservation.getTime())
+            ReservationTimePayload.from(reservation.getTime()),
+            ThemePayload.from(reservation.getTheme())
         );
     }
 
@@ -30,6 +33,23 @@ public record ReservationResponse(
 
         public static ReservationTimePayload from(ReservationTime reservationTime) {
             return new ReservationTimePayload(reservationTime.getId(), reservationTime.getStartAt());
+        }
+    }
+
+    public record ThemePayload(
+        Long id,
+        String name,
+        String content,
+        String url
+    ) {
+
+        public static ThemePayload from(Theme theme) {
+            return new ThemePayload(
+                theme.getId(),
+                theme.getName(),
+                theme.getContent(),
+                theme.getUrl()
+            );
         }
     }
 }

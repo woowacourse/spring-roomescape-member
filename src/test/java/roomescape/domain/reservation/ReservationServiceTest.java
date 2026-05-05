@@ -16,6 +16,8 @@ import roomescape.domain.reservationdate.ReservationDate;
 import roomescape.domain.reservationdate.ReservationDateRepository;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.ReservationTimeRepository;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeRepository;
 import roomescape.support.exception.RoomescapeException;
 
 class ReservationServiceTest {
@@ -26,19 +28,24 @@ class ReservationServiceTest {
         FakeReservationRepository reservationRepository = new FakeReservationRepository();
         FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
         FakeReservationDateRepository reservationDateRepository = new FakeReservationDateRepository();
+        FakeThemeRepository themeRepository = new FakeThemeRepository();
         ReservationTime reservationTime = ReservationTime.of(1L, LocalTime.of(10, 0));
         ReservationDate reservationDate = ReservationDate.of(2L, LocalDate.of(2026, 5, 4));
+        Theme theme = Theme.of(3L, "공포", "무서운 테마", "theme-url");
         reservationTimeRepository.reservationTime = reservationTime;
         reservationDateRepository.reservationDate = reservationDate;
+        themeRepository.theme = theme;
         ReservationService reservationService = new ReservationService(
             reservationRepository,
             reservationTimeRepository,
-            reservationDateRepository
+            reservationDateRepository,
+            themeRepository
         );
         CreateReservationRequest request = new CreateReservationRequest(
             "보예",
             2L,
-            1L
+            1L,
+            3L
         );
 
         // when
@@ -50,7 +57,9 @@ class ReservationServiceTest {
             assertThat(response.name()).isEqualTo("보예");
             assertThat(response.date()).isEqualTo(LocalDate.of(2026, 5, 4));
             assertThat(response.time()).isEqualTo(LocalTime.of(10, 0));
+            assertThat(response.theme().name()).isEqualTo("공포");
             assertThat(reservationRepository.savedReservation.getTime()).isEqualTo(reservationTime);
+            assertThat(reservationRepository.savedReservation.getTheme()).isEqualTo(theme);
         });
     }
 
@@ -60,10 +69,12 @@ class ReservationServiceTest {
         ReservationService reservationService = new ReservationService(
             new FakeReservationRepository(),
             new FakeReservationTimeRepository(),
-            new FakeReservationDateRepository()
+            new FakeReservationDateRepository(),
+            new FakeThemeRepository()
         );
         CreateReservationRequest request = new CreateReservationRequest(
             "보예",
+            1L,
             1L,
             1L
         );
@@ -72,6 +83,32 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.createReservation(request))
             .isInstanceOf(RoomescapeException.class)
             .hasMessage("존재하지 않는 예약 시간대 입니다.");
+    }
+
+    @Test
+    void 존재하지_않는_테마로_예약을_생성하면_예외가_발생한다() {
+        // given
+        FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
+        FakeReservationDateRepository reservationDateRepository = new FakeReservationDateRepository();
+        reservationTimeRepository.reservationTime = ReservationTime.of(1L, LocalTime.of(10, 0));
+        reservationDateRepository.reservationDate = ReservationDate.of(2L, LocalDate.of(2026, 5, 4));
+        ReservationService reservationService = new ReservationService(
+            new FakeReservationRepository(),
+            reservationTimeRepository,
+            reservationDateRepository,
+            new FakeThemeRepository()
+        );
+        CreateReservationRequest request = new CreateReservationRequest(
+            "보예",
+            2L,
+            1L,
+            3L
+        );
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.createReservation(request))
+            .isInstanceOf(RoomescapeException.class)
+            .hasMessage("존재하지 않는 테마 입니다.");
     }
 
     @Test
@@ -84,13 +121,15 @@ class ReservationServiceTest {
                 1L,
                 "보예",
                 ReservationDate.of(3L, LocalDate.of(2026, 5, 4)),
-                ReservationTime.of(2L, LocalTime.of(10, 0))
+                ReservationTime.of(2L, LocalTime.of(10, 0)),
+                Theme.of(4L, "공포", "무서운 테마", "theme-url")
             )
         );
         ReservationService reservationService = new ReservationService(
             reservationRepository,
             reservationTimeRepository,
-            new FakeReservationDateRepository()
+            new FakeReservationDateRepository(),
+            new FakeThemeRepository()
         );
 
         // when
@@ -104,6 +143,8 @@ class ReservationServiceTest {
             assertThat(responses.getFirst().date()).isEqualTo(LocalDate.of(2026, 5, 4));
             assertThat(responses.getFirst().time().id()).isEqualTo(2L);
             assertThat(responses.getFirst().time().startAt()).isEqualTo(LocalTime.of(10, 0));
+            assertThat(responses.getFirst().theme().id()).isEqualTo(4L);
+            assertThat(responses.getFirst().theme().name()).isEqualTo("공포");
         });
     }
 
@@ -115,7 +156,8 @@ class ReservationServiceTest {
         @Override
         public Reservation save(Reservation reservation) {
             savedReservation = reservation;
-            return Reservation.of(1L, reservation.getName(), reservation.getDate(), reservation.getTime());
+            return Reservation.of(1L, reservation.getName(), reservation.getDate(), reservation.getTime(),
+                reservation.getTheme());
         }
 
         @Override
@@ -181,6 +223,31 @@ class ReservationServiceTest {
         @Override
         public ReservationDate save(ReservationDate reservationDate) {
             return reservationDate;
+        }
+
+        @Override
+        public int deleteById(Long id) {
+            return 0;
+        }
+    }
+
+    private static class FakeThemeRepository implements ThemeRepository {
+
+        private Theme theme;
+
+        @Override
+        public Optional<Theme> findById(Long id) {
+            return Optional.ofNullable(theme);
+        }
+
+        @Override
+        public List<Theme> findAll() {
+            return List.of();
+        }
+
+        @Override
+        public Theme save(Theme theme) {
+            return theme;
         }
 
         @Override

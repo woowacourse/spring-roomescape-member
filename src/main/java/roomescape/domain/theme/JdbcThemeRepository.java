@@ -3,6 +3,7 @@ package roomescape.domain.theme;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -17,10 +18,17 @@ import roomescape.support.exception.RoomescapeException;
 public class JdbcThemeRepository implements ThemeRepository {
 
     private static final String FIND_ALL_SQL = "select id, name, content, url from theme order by id";
+    private static final String FIND_BY_ID_SQL = "select id, name, content, url from theme where id = ?";
     private static final String INSERT_SQL = "insert into theme(name, content, url) values (?, ?, ?)";
     private static final String DELETE_BY_ID_SQL = "delete from theme where id = ?";
 
     private final JdbcTemplate jdbcTemplate;
+
+    @Override
+    public Optional<Theme> findById(Long id) {
+        List<Theme> result = jdbcTemplate.query(FIND_BY_ID_SQL, themeRowMapper(), id);
+        return result.stream().findFirst();
+    }
 
     @Override
     public List<Theme> findAll() {

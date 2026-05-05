@@ -13,18 +13,23 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservationdate.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.theme.Theme;
 
 @Repository
 @RequiredArgsConstructor
 public class JdbcReservationRepository implements ReservationRepository {
 
-    private static final String INSERT_SQL = "insert into reservation(name, date_id, time_id) values (?, ?, ?)";
+    private static final String INSERT_SQL = "insert into reservation(name, date_id, time_id, theme_id) values (?, ?, ?, ?)";
     private static final String FIND_ALL_SQL =
         """
-            select r.id, r.name, rd.id as date_id, rd.date, rt.id as time_id, rt.start_at
+            select r.id, r.name,
+                   rd.id as date_id, rd.date,
+                   rt.id as time_id, rt.start_at,
+                   th.id as theme_id, th.name as theme_name, th.content as theme_content, th.url as theme_url
             from reservation r
             join reservation_date rd on r.date_id = rd.id
             join reservation_time rt on r.time_id = rt.id
+            join theme th on r.theme_id = th.id
             order by r.id
             """;
     private static final String COUNT_BY_TIME_ID_SQL =
@@ -51,6 +56,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             ps.setString(1, reservation.getName());
             ps.setLong(2, reservation.getDate().getId());
             ps.setLong(3, reservation.getTime().getId());
+            ps.setLong(4, reservation.getTheme().getId());
             return ps;
         }, keyHolder);
         long id = extractId(keyHolder);
@@ -58,7 +64,8 @@ public class JdbcReservationRepository implements ReservationRepository {
             id,
             reservation.getName(),
             reservation.getDate(),
-            reservation.getTime()
+            reservation.getTime(),
+            reservation.getTheme()
         );
     }
 
@@ -100,6 +107,12 @@ public class JdbcReservationRepository implements ReservationRepository {
             ReservationTime.of(
                 rs.getLong("time_id"),
                 LocalTime.parse(rs.getString("start_at"))
+            ),
+            Theme.of(
+                rs.getLong("theme_id"),
+                rs.getString("theme_name"),
+                rs.getString("theme_content"),
+                rs.getString("theme_url")
             )
         );
     }

@@ -13,6 +13,7 @@ class CreateReservationRequestTest {
         CreateReservationRequest request = new CreateReservationRequest(
             null,
             1L,
+            1L,
             1L
         );
 
@@ -27,6 +28,7 @@ class CreateReservationRequestTest {
         // given
         CreateReservationRequest request = new CreateReservationRequest(
             "   ",
+            1L,
             1L,
             1L
         );
@@ -43,6 +45,7 @@ class CreateReservationRequestTest {
         CreateReservationRequest request = new CreateReservationRequest(
             "보예",
             null,
+            1L,
             1L
         );
 
@@ -58,12 +61,29 @@ class CreateReservationRequestTest {
         CreateReservationRequest request = new CreateReservationRequest(
             "보예",
             1L,
-            null
+            null,
+            1L
         );
 
         // when & then
         assertThatThrownBy(request::validate)
             .isInstanceOf(RoomescapeException.class)
             .hasMessage("시간은 필수입니다.");
+    }
+
+    @Test
+    void 테마_id가_null이면_예외가_발생한다() {
+        // given
+        CreateReservationRequest request = new CreateReservationRequest(
+            "보예",
+            1L,
+            1L,
+            null
+        );
+
+        // when & then
+        assertThatThrownBy(request::validate)
+            .isInstanceOf(RoomescapeException.class)
+            .hasMessage("테마는 필수입니다.");
     }
 }
