@@ -27,12 +27,12 @@ public class ThemeService {
     }
 
     public Theme create(
-            ThemeCreateRequest themeCreateRequest
+            ThemeCreateRequest createRequest
     ) {
         Theme theme = Theme.create(
-                themeCreateRequest.name(),
-                themeCreateRequest.description(),
-                themeCreateRequest.imageUrl()
+                createRequest.name(),
+                createRequest.description(),
+                createRequest.imageUrl()
         );
 
         return themeRepository.persist(theme);
