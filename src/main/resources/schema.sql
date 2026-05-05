@@ -10,8 +10,8 @@ CREATE TABLE theme
     id          BIGINT       NOT NULL AUTO_INCREMENT,
     name        VARCHAR(255) NOT NULL,
     description VARCHAR(255),
-    imageUrl    VARCHAR(255),
-    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    image_url    VARCHAR(255),
+    is_deleted BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (id)
 );
 
