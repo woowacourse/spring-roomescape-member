@@ -18,7 +18,7 @@ public class ThemeRepository {
     }
 
     public Long create(Theme theme) {
-        String sql = "INSERT INTO theme (name, description, image_url) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO theme (name, description, image_url, required_time) VALUES (?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
@@ -27,6 +27,7 @@ public class ThemeRepository {
                     ps.setString(1, theme.getName());
                     ps.setString(2, theme.getDescription());
                     ps.setString(3, theme.getImageUrl());
+                    ps.setObject(4, theme.getRequiredTime());
                     return ps;
                 }, keyHolder);
         return keyHolder.getKey().longValue();
