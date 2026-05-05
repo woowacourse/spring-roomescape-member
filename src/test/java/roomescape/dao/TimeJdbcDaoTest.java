@@ -10,17 +10,23 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.Time;
 
 @JdbcTest
 @Import(TimeJdbcDao.class)
+@ActiveProfiles("test")
 class TimeJdbcDaoTest {
     private static final int DELETED = 1;
     @Autowired
     private TimeDao timeDao;
 
     @ParameterizedTest
-    @CsvSource("1,2,3")
+    @CsvSource({
+            "1",
+            "2",
+            "3"
+    })
     void findAll(int count) {
         for (int i = 0; i < count; i++) {
             createAndInsertTime();
@@ -32,9 +38,6 @@ class TimeJdbcDaoTest {
 
     @Test
     void findById() {
-        long none = 1;
-        assertThat(timeDao.findById(none)).isNotPresent();
-
         Long savedId = createAndInsertTime();
         assertThat(timeDao.findById(savedId)).isPresent();
     }

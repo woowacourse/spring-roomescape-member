@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
@@ -23,6 +24,7 @@ import roomescape.domain.vo.Name;
         TimeJdbcDao.class,
         ThemeJdbcDao.class
 })
+@ActiveProfiles("test")
 class ReservationJdbcDaoTest {
     private static final int DELETED = 1;
     @Autowired
@@ -42,7 +44,11 @@ class ReservationJdbcDaoTest {
     }
 
     @ParameterizedTest
-    @CsvSource("1,2,3")
+    @CsvSource({
+            "1",
+            "2",
+            "3"
+    })
     void findAll(int count) {
         for (int i = 0; i < count; i++) {
             createAndInsertReservation();
