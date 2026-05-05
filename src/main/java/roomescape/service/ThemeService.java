@@ -35,7 +35,7 @@ public class ThemeService {
     }
 
     private void validateDuplicationName(ThemeRegisterCommand command) {
-        if (themeRepository.existByNameAndIsDeletedFalse(command.name())) {
+        if (themeRepository.existByNameAndIsActiveFalse(command.name())) {
             throw new DuplicateEntityException("이미 존재하는 테마입니다. 테마 명: %s", command.name());
         }
     }

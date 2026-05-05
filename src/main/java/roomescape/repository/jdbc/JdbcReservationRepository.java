@@ -23,17 +23,22 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, reservation.getName());
             ps.setDate(2, Date.valueOf(reservation.getDate()));
-            ps.setLong(3, reservation.getTime().getId());
+            ps.setLong(3, reservation.getTheme().getId());
+            ps.setLong(4, reservation.getTime().getId());
             return ps;
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime());
+        return new Reservation(id,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTheme(),
+                reservation.getTime());
     }
 
     @Override
@@ -52,10 +57,19 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         String sql = """
                 SELECT r.id AS res_id, r.name AS res_name, r.date AS res_date,
-                       t.id AS time_id, t.start_at AS time_start
+                       rt.id AS time_id, rt.start_at AS time_start,
+                       t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail_image_url, t.is_active
                 FROM reservation r
-                INNER JOIN reservation_time t ON r.time_id = t.id;
+                JOIN reservation_time rt ON r.time_id = rt.id
+                JOIN theme t ON r.theme_id = t.id
             """;
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
     }
+
+    record testRecord(
+            Long id,
+            String name,
+            LocalDate date,
+            Long theme,
+            Long time){}
 }

@@ -5,7 +5,7 @@ import roomescape.domain.Theme;
 
 public interface ThemeRepository {
 
-    boolean existByNameAndIsDeletedFalse(String name);
+    boolean existByNameAndIsActiveFalse(String name);
 
     Theme save(Theme theme);
 

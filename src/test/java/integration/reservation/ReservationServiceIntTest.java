@@ -25,8 +25,11 @@ class ReservationServiceIntTest extends BaseIntegrationTest {
     @Autowired
     private ReservationDataSource reservationDataSource;
 
+    private Accessor admin = new Accessor("ADMIN");
+
     @BeforeEach
     void setUp() {
+        reservationDataSource.insertTheme("공포의 테마", "공포 테마", "https://image.com/image.png");
         reservationDataSource.insertReservationTime(LocalTime.of(10, 0));
     }
 
@@ -39,8 +42,7 @@ class ReservationServiceIntTest extends BaseIntegrationTest {
     @Test
     void 동시에_2명이_예약하면_1명만_성공해야_한다() throws InterruptedException {
         // given
-        Accessor admin = new Accessor("ADMIN");
-        ReservationCommand command = new ReservationCommand("이프", LocalDate.now().plusDays(1), 1L);
+        ReservationCommand command = new ReservationCommand("이프", LocalDate.now().plusDays(1), 1L, 1L);
         int threadCount = 2;
         CountDownLatch latch = new CountDownLatch(threadCount);
         AtomicInteger errorCount = new AtomicInteger(0);
@@ -62,7 +64,7 @@ class ReservationServiceIntTest extends BaseIntegrationTest {
         latch.await();
 
         // then: DB에 예약이 딱 하나만 있어야 하고, DataIntergrityViolation 예외가 한 번 발생해야 됨.
-        assertThat(reservationService.getAllReservations()).hasSize(1);
+        assertThat(reservationService.getAllReservations(admin)).hasSize(1);
         assertThat(errorCount.get()).isEqualTo(1);
     }
 }

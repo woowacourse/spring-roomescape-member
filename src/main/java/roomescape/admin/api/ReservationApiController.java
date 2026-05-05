@@ -54,8 +54,8 @@ public class ReservationApiController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getAllReservations() {
-        List<ReservationResponse> response = reservationService.getAllReservations()
+    public ResponseEntity<List<ReservationResponse>> getAllReservations(@CustomPrincipal Accessor accessor) {
+        List<ReservationResponse> response = reservationService.getAllReservations(accessor)
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();

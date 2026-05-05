@@ -3,9 +3,11 @@ package roomescape.domain;
 import java.net.URI;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @EqualsAndHashCode(of = "id")
+@ToString
 public class Theme {
     private final Long id;
     private final String name;

@@ -1,5 +1,6 @@
 package integration.reservation;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestComponent;
@@ -14,15 +15,27 @@ public class ReservationDataSource {
     public void clearTable() {
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
 
-        jdbcTemplate.execute("TRUNCATE TABLE reservation");
+        jdbcTemplate.execute("TRUNCATE TABLE theme");
         jdbcTemplate.execute("TRUNCATE TABLE reservation_time");
+        jdbcTemplate.execute("TRUNCATE TABLE reservation");
 
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
     public void clearId() {
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+    }
+
+    public void insertTheme(String name, String description, String thumbnailImageUrl) {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_image_url) VALUES (?, ?, ?)",
+                name, description, thumbnailImageUrl);
+    }
+
+    public void insertReservation(String name, LocalDate date, Long themeId, Long timeId) {
+        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)",
+                name, date, themeId, timeId);
     }
 
     public void insertReservationTime(LocalTime reservationTime) {

@@ -103,7 +103,7 @@ class ReservationApiControllerTest extends BaseControllerUnitTest {
     void 전체_예약_정보_조회_요청시_200OK와_예약_정보들을_응답한다() {
         // given
         List<ReservationResult> result = List.of();
-        when(reservationService.getAllReservations()).thenReturn(result);
+        when(reservationService.getAllReservations(any(Accessor.class))).thenReturn(result);
         
         // when & then
         RestAssuredMockMvc.given().spec(requestSpec()).log().all()

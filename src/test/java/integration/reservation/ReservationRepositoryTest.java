@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 
 class ReservationRepositoryTest extends BaseIntegrationTest {
@@ -23,9 +24,11 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     private ReservationDataSource dataSource;
 
     private ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+    private Theme theme = new Theme(1L, "공포", "어마무시한 공포 테마", "https://theme.com/image.png", false);
 
     @BeforeEach
     void setUp() {
+        dataSource.insertTheme(theme.getName(), theme.getDescription(), theme.getThumbnailImageUrl());
         dataSource.insertReservationTime(reservationTime.getStartAt());
     }
 
@@ -38,7 +41,7 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     @Test
     void 예약을_저장하고_ID로_조회한다() {
         // given: 시간 먼저 저장
-        Reservation reservation = new Reservation("이프", LocalDate.now().plusDays(1), reservationTime);
+        Reservation reservation = Reservation.reserve("이프", LocalDate.now().plusDays(1), theme, reservationTime);
 
         // when
         Reservation saved = reservationRepository.save(reservation);
@@ -51,8 +54,8 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     @Test
     void 동일한_날짜와_시간으로_저장하면_DB_제약조건_에러가_발생한다() {
         // given
-        Reservation first = new Reservation("이프", LocalDate.now().plusDays(1), reservationTime);
-        Reservation second = new Reservation("아루", LocalDate.now().plusDays(1), reservationTime);
+        Reservation first = Reservation.reserve("이프", LocalDate.now().plusDays(1), theme, reservationTime);
+        Reservation second = Reservation.reserve("아루", LocalDate.now().plusDays(1), theme, reservationTime);
         reservationRepository.save(first);
 
         // when & then: 서비스 로직 없이 DB의 UK Constraint 확인
@@ -64,7 +67,7 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     void 특정_날짜와_시간에_예약이_존재하는지_확인한다() {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
-        reservationRepository.save(new Reservation("이프", date, reservationTime));
+        reservationRepository.save(Reservation.reserve("이프", date, theme, reservationTime));
 
         // when & then
         Long otherTimeId = 99L;
@@ -77,7 +80,7 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     @Test
     void 예약을_삭제한다() {
         // given
-        Reservation saved = reservationRepository.save(new Reservation("이프", LocalDate.now().plusDays(1), reservationTime));
+        Reservation saved = reservationRepository.save(Reservation.reserve("이프", LocalDate.now().plusDays(1), theme, reservationTime));
 
         // when
         reservationRepository.delete(saved.getId());
@@ -88,14 +91,15 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
 
     @Test
     void 모든_예약_목록을_조회한다() {
-        // given
-        reservationRepository.save(new Reservation("이프", LocalDate.now().plusDays(1), reservationTime));
-        reservationRepository.save(new Reservation("이프", LocalDate.now().plusDays(2), reservationTime));
+        // given: 과거 부터 미래 예약 목록 주어짐
+        dataSource.insertReservation("이프", LocalDate.now().minusDays(1), 1L, 1L);
+        dataSource.insertReservation("이프", LocalDate.now(), 1L, 1L);
+        dataSource.insertReservation("이프", LocalDate.now().plusDays(1), 1L, 1L);
 
         // when
         List<Reservation> reservations = reservationRepository.findAll();
 
         // then
-        assertThat(reservations).hasSize(2);
+        assertThat(reservations).hasSize(3);
     }
 }

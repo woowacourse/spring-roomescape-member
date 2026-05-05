@@ -47,7 +47,7 @@ public class ReservationConsoleController implements CommandLineRunner {
     }
 
     private void printAllReservations() {
-        ConsoleView.printReservations(reservationService.getAllReservations());
+        ConsoleView.printReservations(reservationService.getAllReservations(ADMIN_ROLE));
     }
 
     private void reserve() {
@@ -55,7 +55,8 @@ public class ReservationConsoleController implements CommandLineRunner {
         String date = ConsoleView.readInput("날짜(YYYY-MM-DD): ");
         Long timeId = Long.parseLong(ConsoleView.readInput("시간 ID: "));
 
-        reservationService.reserve(ADMIN_ROLE, new ReservationCommand(name, LocalDate.parse(date), timeId));
+        // 테마 선택은 콘솔에 반영하지 않을 것임.
+        reservationService.reserve(ADMIN_ROLE, new ReservationCommand(name, LocalDate.parse(date), 1L, timeId));
         ConsoleView.printMessage("예약이 완료되었습니다.");
     }
 

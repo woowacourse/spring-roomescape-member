@@ -15,7 +15,13 @@ public class MemoryReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        Reservation saved = new Reservation(counter.getAndIncrement(), reservation.getName(), reservation.getDate(), reservation.getTime());
+        Reservation saved = new Reservation(
+                counter.getAndIncrement(),
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTheme(),
+                reservation.getTime()
+        );
         reservations.add(saved);
         return saved;
     }
