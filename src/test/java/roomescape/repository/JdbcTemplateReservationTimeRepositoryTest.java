@@ -2,18 +2,22 @@ package roomescape.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import roomescape.domain.ReservationTime;
 
+import java.sql.PreparedStatement;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@JdbcTest
+@Import(JdbcTemplateReservationTimeRepository.class)
 class JdbcTemplateReservationTimeRepositoryTest {
 
     @Autowired
@@ -51,19 +55,33 @@ class JdbcTemplateReservationTimeRepositoryTest {
 
     @Test
     void id로_시간을_조회한다() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(conn -> {
+            PreparedStatement ps = conn.prepareStatement(
+                    "INSERT INTO reservation_time (start_at) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS);
+            ps.setString(1, "10:00");
+            return ps;
+        }, keyHolder);
+        long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
-        ReservationTime time = reservationTimeRepository.findById(1L).get();
+        ReservationTime time = reservationTimeRepository.findById(id).get();
 
-        assertThat(time.id()).isEqualTo(1L);
+        assertThat(time.id()).isEqualTo(id);
         assertThat(time.startAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
     @Test
     void id로_시간을_삭제한다() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(conn -> {
+            PreparedStatement ps = conn.prepareStatement(
+                    "INSERT INTO reservation_time (start_at) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS);
+            ps.setString(1, "10:00");
+            return ps;
+        }, keyHolder);
+        long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
-        reservationTimeRepository.deleteTime(1L);
+        reservationTimeRepository.deleteTime(id);
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM reservation_time", Integer.class);
         assertThat(count).isEqualTo(0);
