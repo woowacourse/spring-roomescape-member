@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -31,6 +32,15 @@ public class ThemeDao {
     public Theme findById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
+    }
+
+    public List<Theme> findAllThemes() {
+        String sql = "SELECT * FROM theme";
+        List<Theme> themes = jdbcTemplate.query(
+                sql,
+                themeRowMapper
+        );
+        return themes;
     }
 
     public Long insertTheme(String name, String description, String imgUrl) {

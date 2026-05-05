@@ -58,6 +58,25 @@ public class ThemeControllerTest {
     }
 
     @Test
+    void 테마_조회() {
+        Map<String, Object> adminThemeParams = themeParams();
+        adminThemeParams.put("userName", "ADMIN");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(adminThemeParams)
+                .when().post("/api/v1/themes")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(1));
+
+        RestAssured.given().log().all()
+                .when().get("/api/v1/themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
+    }
+
+    @Test
     void 테마_삭제() {
         Map<String, Object> adminThemeParams = themeParams();
         adminThemeParams.put("userName", "ADMIN");

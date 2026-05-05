@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,10 @@ public class ThemeService {
         } catch (DataIntegrityViolationException e) {
             throw new ReservationTimeInUseException();
         }
+    }
+
+    public List<Theme> getThemes() {
+        return themeDao.findAllThemes();
     }
 
     private void validateDelete(int deleteCount) {
