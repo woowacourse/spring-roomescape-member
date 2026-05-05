@@ -4,8 +4,10 @@ import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.ReservationTheme.PopularThemeCondition;
 import roomescape.domain.ReservationTheme.ReservationTheme;
 import roomescape.domain.ReservationTheme.ReservationThemeCommand;
+import roomescape.domain.ReservationTheme.ReservationThemeWithCount;
 import roomescape.exception.DataReferencedException;
 import roomescape.exception.ErrorMessage;
 import roomescape.repository.ReservationTheme.ReservationThemeRepository;
@@ -43,5 +45,9 @@ public class ReservationThemeService {
         } catch (DataIntegrityViolationException e) {
             throw new DataReferencedException(ErrorMessage.INTEGRITY_VIOLATION_ON_DELETE);
         }
+    }
+
+    public List<ReservationThemeWithCount> getPopularTheme(PopularThemeCondition popularThemeCondition) {
+        return reservationThemeRepository.getPopularTheme(popularThemeCondition);
     }
 }

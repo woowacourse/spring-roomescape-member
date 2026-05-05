@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.ReservationThemeDao;
+import roomescape.domain.ReservationTheme.PopularThemeCondition;
 import roomescape.domain.ReservationTheme.ReservationTheme;
 import roomescape.domain.ReservationTheme.ReservationThemeCommand;
 import roomescape.domain.ReservationTheme.ReservationThemeDaoData;
+import roomescape.domain.ReservationTheme.ReservationThemeWithCount;
+import roomescape.domain.ReservationTheme.ReservationThemeWithCountDaoData;
 
 @Repository
 public class JdbcReservationThemeRepository implements ReservationThemeRepository {
@@ -42,12 +45,29 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
         reservationThemeDao.deleteTheme(id);
     }
 
+    public List<ReservationThemeWithCount> getPopularTheme(PopularThemeCondition popularThemeCondition) {
+        return reservationThemeDao.getPopularTheme(popularThemeCondition).stream()
+                .map(this::createReservationThemeWithCount)
+                .toList();
+    }
+
     private ReservationTheme createTheme(ReservationThemeDaoData reservationThemeDaoData) {
         return new ReservationTheme(
                 reservationThemeDaoData.id(),
                 reservationThemeDaoData.name(),
                 reservationThemeDaoData.description(),
                 reservationThemeDaoData.imageUrl()
+        );
+    }
+
+    private ReservationThemeWithCount createReservationThemeWithCount(
+            ReservationThemeWithCountDaoData reservationThemeWithCount) {
+        return new ReservationThemeWithCount(
+                reservationThemeWithCount.id(),
+                reservationThemeWithCount.name(),
+                reservationThemeWithCount.description(),
+                reservationThemeWithCount.imageUrl(),
+                reservationThemeWithCount.count()
         );
     }
 }

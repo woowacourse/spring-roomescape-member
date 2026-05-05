@@ -6,16 +6,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.domain.ReservationTheme.PopularThemeCondition;
 import roomescape.domain.ReservationTheme.ReservationTheme;
 import roomescape.domain.ReservationTheme.ReservationThemeCommand;
+import roomescape.domain.ReservationTheme.ReservationThemeWithCount;
 import roomescape.dto.theme.AddThemeRequest;
 import roomescape.dto.theme.AddThemeResponse;
 import roomescape.dto.theme.AllThemeResponse;
+import roomescape.dto.theme.PopularConditionRequest;
+import roomescape.dto.theme.PopularThemeResponse;
 import roomescape.service.ReservationThemeService;
 
 @RestController
@@ -47,5 +52,13 @@ public class ReservationThemeController {
         reservationThemeService.deleteTheme(id);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping(value = "/popular", params = {"start_date", "end_date", "size", "order"})
+    public ResponseEntity<PopularThemeResponse> getPopularTheme(@ModelAttribute PopularConditionRequest popularConditionRequest) {
+        PopularThemeCondition popularThemeCondition = popularConditionRequest.to();
+        List<ReservationThemeWithCount> reservationThemeWithCounts = reservationThemeService.getPopularTheme(popularThemeCondition);
+
+        return new ResponseEntity<>(PopularThemeResponse.from(reservationThemeWithCounts), HttpStatus.OK);
     }
 }
