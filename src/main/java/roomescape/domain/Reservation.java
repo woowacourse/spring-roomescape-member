@@ -11,7 +11,7 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validate(name, date, time);
+        validate(name, date, time, theme);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -20,7 +20,7 @@ public class Reservation {
     }
 
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        validate(name, date, time);
+        validate(name, date, time, theme);
         this.id = null;
         this.name = name;
         this.date = date;
@@ -32,7 +32,7 @@ public class Reservation {
         return new Reservation(id, reservation.name, reservation.date, reservation.time, reservation.theme);
     }
 
-    private void validate(String name, LocalDate date, ReservationTime time) {
+    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
         if (name.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 이름은 비어 있을 수 없습니다.");
         }
