@@ -1,8 +1,5 @@
 package roomescape.repository;
 
-import java.time.LocalTime;
-import java.util.List;
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,6 +8,11 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Repository
 @RequiredArgsConstructor
@@ -51,5 +53,18 @@ public class ReservationTimeDao {
     public List<ReservationTime> findAllReservationTimes() {
         String sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    public List<ReservationTime> findAvailableReservationTimes(LocalDate date, long themeId) {
+        String sql = """
+                SELECT rt.id, rt.start_at
+                FROM reservation_time rt
+                LEFT JOIN reservation r
+                    ON rt.id = r.time_id
+                    AND r.date = ?
+                    AND r.theme_id = ?
+                WHERE r.id IS NULL
+                """;
+        return jdbcTemplate.query(sql, rowMapper, date, themeId);
     }
 }
