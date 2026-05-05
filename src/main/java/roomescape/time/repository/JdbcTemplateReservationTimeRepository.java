@@ -1,11 +1,11 @@
 package roomescape.time.repository;
 
-import static roomescape.time.repository.ReservationTimeRowMapper.RESERVATION_TIME_ROW_MAPPER;
-
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -18,6 +18,10 @@ import roomescape.time.domain.ReservationTime;
 public class JdbcTemplateReservationTimeRepository implements ReservationTimeRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+    RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (resultSet, rowNum) -> ReservationTime.of(
+            resultSet.getLong("id"),
+            resultSet.getTime("start_at").toLocalTime()
+    );
 
     public JdbcTemplateReservationTimeRepository(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

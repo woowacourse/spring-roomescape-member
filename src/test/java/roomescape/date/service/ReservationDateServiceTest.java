@@ -93,7 +93,7 @@ class ReservationDateServiceTest {
         // then
         assertThat(registered)
                 .usingRecursiveComparison()
-                .isEqualTo(reservationDateRepository.findById(registered.id()));
+                .isEqualTo(reservationDateRepository.findById(registered.id()).get());
     }
 
     @Test

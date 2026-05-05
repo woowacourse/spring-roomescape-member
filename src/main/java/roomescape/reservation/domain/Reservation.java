@@ -2,7 +2,8 @@ package roomescape.reservation.domain;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Objects;
+
+import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 public class Reservation {
@@ -10,29 +11,33 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
-    private Reservation(Long id, String name, LocalDate date, ReservationTime time) {
-        validate(name, date, time);
+    private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+        validate(name, date, time, theme);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
-    public static Reservation create(String name, LocalDate date, ReservationTime time) {
+    public static Reservation create(String name, LocalDate date, ReservationTime time, Theme theme) {
+        validate(name, date, time, theme);
         validatePast(date, time);
-        return new Reservation(null, name, date, time);
+        return new Reservation(null, name, date, time, theme);
     }
 
-    public static Reservation of(Long id, String name, LocalDate date, ReservationTime time) {
+    public static Reservation of(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validateId(id);
-        return new Reservation(id, name, date, time);
+        return new Reservation(id, name, date, time, theme);
     }
 
-    private static void validate(String name, LocalDate date, ReservationTime time) {
+    private static void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
         validateName(name);
         validateDate(date);
         validateTime(time);
+        validateTheme(theme);
     }
 
     private static void validateName(String name) {
@@ -60,6 +65,12 @@ public class Reservation {
         }
     }
 
+    private static void validateTheme(Theme theme) {
+        if (theme == null) {
+            throw new IllegalArgumentException("테마는 필수입니다.");
+        }
+    }
+
     private static void validateId(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("예약 ID는 필수입니다.");
@@ -82,21 +93,7 @@ public class Reservation {
         return time;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(this.id);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof Reservation that)) {
-            return false;
-        }
-
-        if (that.id == null || this.id == null) {
-            return false;
-        }
-
-        return Objects.equals(this.id, that.id);
+    public Theme theme() {
+        return theme;
     }
 }

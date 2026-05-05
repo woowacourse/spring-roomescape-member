@@ -12,13 +12,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.reservation.domain.Reservation;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.JdbcTemplateReservationTimeRepository;
 
 @JdbcTest
 class ReservationRepositoryTest {
+
+    private final String name = "한다";
+    private final LocalDate date = LocalDate.now().plusMonths(1);
+    private ReservationTime time;
+    private Theme theme;
+
     private JdbcTemplateReservationRepository jdbcTemplateReservationRepository;
     private JdbcTemplateReservationTimeRepository jdbcTemplateReservationTimeRepository;
+    private JdbcThemeRepository jdbcThemeRepository;
     private Long timeId;
     private Long reservationId;
 
@@ -29,31 +38,32 @@ class ReservationRepositoryTest {
     void setup() {
         jdbcTemplateReservationRepository = new JdbcTemplateReservationRepository(jdbcTemplate);
         jdbcTemplateReservationTimeRepository = new JdbcTemplateReservationTimeRepository(jdbcTemplate);
+        jdbcThemeRepository = new JdbcThemeRepository(jdbcTemplate);
 
         timeId = jdbcTemplateReservationTimeRepository.save(ReservationTime.create(LocalTime.of(15, 40)));
-        ReservationTime reservationTime = jdbcTemplateReservationTimeRepository.findById(timeId).get();
+        time = jdbcTemplateReservationTimeRepository.findById(timeId).get();
+        theme = jdbcThemeRepository.save(Theme.create("테마", "설명", "썸네일"));
 
-        reservationId = jdbcTemplateReservationRepository.save(
-                Reservation.create("한다", LocalDate.now().plusWeeks(1), reservationTime));
-        jdbcTemplateReservationRepository.save(Reservation.create("판다", LocalDate.now().plusWeeks(1), reservationTime));
+        reservationId = jdbcTemplateReservationRepository.save(Reservation.create(name, date, time, theme));
+        jdbcTemplateReservationRepository.save(Reservation.create("판다", date, time, theme));
     }
 
     @Test
     @DisplayName("모든 예약 정보를 조회한다.")
     void findAll() {
-        assertThat(jdbcTemplateReservationRepository.findAll().size()).isEqualTo(2);
+        assertThat(jdbcTemplateReservationRepository.findAll())
+                .hasSize(2);
     }
 
     @Test
     @DisplayName("예약을 추가한다.")
     void save() {
         //given & when
-        ReservationTime reservationTime = jdbcTemplateReservationTimeRepository.findById(timeId).get();
-        jdbcTemplateReservationRepository.save(
-                Reservation.create("새로운사람", LocalDate.now().plusWeeks(3), reservationTime));
+        jdbcTemplateReservationRepository.save(Reservation.create("새로운사람", date, time, theme));
 
         //then
-        assertThat(jdbcTemplateReservationRepository.findAll().size()).isEqualTo(3);
+        assertThat(jdbcTemplateReservationRepository.findAll())
+                .hasSize(3);
     }
 
     @Test
@@ -63,15 +73,20 @@ class ReservationRepositoryTest {
         jdbcTemplateReservationRepository.delete(reservationId);
 
         //then
-        assertThat(jdbcTemplateReservationRepository.findAll().size()).isEqualTo(1);
+        assertThat(jdbcTemplateReservationRepository.findAll())
+                .hasSize(1);
     }
 
     @Test
     @DisplayName("예약 날짜와 시간 ID 정보로 존재하는지 확인한다.")
     void exitsByDateAndTimeId() {
-        assertThat(
-                jdbcTemplateReservationRepository.existsByDateAndTimeId(LocalDate.now().plusWeeks(1), timeId)).isTrue();
-        assertThat(jdbcTemplateReservationRepository.existsByDateAndTimeId(LocalDate.now().plusWeeks(3),
-                timeId)).isFalse();
+        // given
+        LocalDate wrongDate = LocalDate.now().plusWeeks(3);
+
+        // when & then
+        assertThat(jdbcTemplateReservationRepository.existsByDateAndTimeId(date, timeId))
+                .isTrue();
+        assertThat(jdbcTemplateReservationRepository.existsByDateAndTimeId(wrongDate, timeId))
+                .isFalse();
     }
 }
